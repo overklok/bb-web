@@ -1,0 +1,29 @@
+{
+  "name": "codehour-breadboard-web",
+  "version": "1.0.0",
+  "description": "A Codehour web application for bread board",
+  "main": "index.js",
+  "dependencies": {
+    "webpack": "^3.10.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "webpack -p",
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/makeitlab/codehour-breadboard-web.git"
+  },
+  "keywords": [
+    "codehour",
+    "breadboard",
+    "makeitlab",
+    "tapanda",
+    "topanda"
+  ],
+  "author": "Alexander Molodykh",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/makeitlab/codehour-breadboard-web#readme"
+}
