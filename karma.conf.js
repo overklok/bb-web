@@ -29,12 +29,16 @@ config.set({
         'karma-jasmine', 'karma-mocha',
         'karma-chai', 'karma-coverage',
         'karma-webpack', 'karma-phantomjs-launcher',
-        'karma-mocha-reporter', 'karma-sourcemap-loader'
+        'karma-mocha-reporter', 'karma-sourcemap-loader',
+        'karma-junit-reporter', 'karma-chrome-launcher', 'karma-firefox-launcher',
+        'karma-opera-launcher', 'karma-ie-launcher',
+
+        'chai-spies'
     ],
     // передаем конфигурацию webpack
     webpack: webpackConfig,
     webpackMiddleware: {
-      noInfo:true
+        noInfo: true
     }
   });
 };

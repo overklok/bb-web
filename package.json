@@ -7,6 +7,7 @@
     "blockly": "^1.0.0",
     "jquery": "^3.2.1",
     "socket.io-client": "^2.0.4",
+    "svgjs": "^2.6.2",
     "webpack": "^3.10.0"
   },
   "devDependencies": {
@@ -14,16 +15,22 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
+    "chai-spies": "^0.7.1",
     "html-webpack-plugin": "^2.30.1",
     "jasmine-core": "^2.8.0",
     "jshint": "^2.9.5",
     "jshint-loader": "^0.8.4",
     "karma": "^1.7.1",
     "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.1",
+    "karma-junit-reporter": "^1.2.0",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.5",
+    "karma-opera-launcher": "^1.0.0",
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.7",
@@ -33,8 +40,8 @@
   "scripts": {
     "build": "webpack -p",
     "watch": "webpack --watch",
-    "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers PhantomJS",
-    "test:watch": "karma start karma.conf.js --browsers PhantomJS"
+    "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
+    "test:watch": "karma start karma.conf.js --browsers Chrome"
   },
   "repository": {
     "type": "git",

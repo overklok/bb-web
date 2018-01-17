@@ -1,4 +1,4 @@
-import Module from '../core/Module.js'
+import Module from '../core/Module'
 
 import BlocklyWrapper from '../wrappers/BlocklyWrapper'
 import VirtLEDWrapper from '../wrappers/VirtLEDWrapper'
@@ -6,9 +6,7 @@ import VirtLEDWrapper from '../wrappers/VirtLEDWrapper'
 /**
  * Модуль "Рабочая область"
  *
- * Предоставляет набор методов для управления содержимым, отображаемым на странице:
- *      - Список уровней
- *      - Виртуальная гирлянда
+ * Предоставляет набор методов для управления интерфейсом Blockly
  */
 class WorkspaceModule extends Module {
     static get eventspace_name() {return "ws"}
@@ -16,8 +14,7 @@ class WorkspaceModule extends Module {
     constructor() {
         super();
 
-        this.blockly  = new BlocklyWrapper();
-        this.virt_led = new VirtLEDWrapper();
+        this.blockly  = new BlocklyWrapper();å
     }
 }
 
