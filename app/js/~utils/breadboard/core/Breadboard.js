@@ -3,16 +3,16 @@ import Grid from './Grid';
 import SVG from 'svgjs'
 
 const WS_WIDTH = 1000;              // Ширина рабочей области
-const WS_HEIGHT = 900;              // Высота рабочей области
+const WS_HEIGHT = 1000;              // Высота рабочей области
 
-const GRID_WIDTH = 700;             // Ширина сетки точек
-const GRID_HEIGHT = 600;            // Высота сетки точек
+const GRID_WIDTH = 900;             // Ширина сетки точек
+const GRID_HEIGHT = 900;            // Высота сетки точек
 
 const WRAP_MARGIN = 50;             // Отступ обёртки
 const GRID_MARGIN = 50;             // Отступ сетки
 
-const GRID_ROWS = 7;                // Количество рядов в сетке точек
-const GRID_COLS = 7;                // Количество колонок в сетке точек
+const GRID_ROWS = 9;                // Количество рядов в сетке точек
+const GRID_COLS = 9;                // Количество колонок в сетке точек
 
 const LABELS_FONT_SIZE = 12;        // Кегль подписей
 
@@ -62,6 +62,8 @@ class Breadboard {
         // Размещение контейнеров в рабочей среде
         this._composeContainers();
 
+        this._drawBackground();
+
         // Создать логический объект "Сетка точек"
         this.grid = new Grid(this.containers.grid, GRID_ROWS, GRID_COLS);
 
@@ -84,8 +86,9 @@ class Breadboard {
         // Главная обёртка
         this.containers.wrap = brush.nested();
 
-        // В ней - сетка и панели подписей
-        this.containers.grid = this.containers.wrap.nested();
+        // В ней - фон, сетка и панели подписей
+        this.containers.background  = this.containers.wrap.nested();
+        this.containers.grid        = this.containers.wrap.nested();
 
         this.containers.label_panes = {
             left: this.containers.wrap.nested(),    // левая
@@ -103,12 +106,22 @@ class Breadboard {
         this.containers.wrap.move(WRAP_MARGIN, WRAP_MARGIN);
 
         // Сместить сетки
-        this.containers.grid.move(GRID_MARGIN - 20, GRID_MARGIN - 20);
+        this.containers.grid.move(GRID_MARGIN, GRID_MARGIN);
 
         // Сместить панели
-        this.containers.label_panes.left.move(0, GRID_MARGIN - 20);  // левая - сверху
-        this.containers.label_panes.top.move(GRID_MARGIN - 20, 0);   // верхняя - слева
+        this.containers.label_panes.left.move(0, GRID_MARGIN);  // левая - сверху
+        this.containers.label_panes.top.move(GRID_MARGIN, 0);   // верхняя - слева
     };
+
+    /**
+     * Нарисовать фон макетной платы
+     *
+     * Наполняется контейнер  this.containers.background
+     */
+    _drawBackground() {
+        this.containers.background.rect('100%', '100%')
+                                  .fill('#f06');
+    }
 
     /**
      * Нарисовать панели текстовых подписей для сетки
@@ -224,10 +237,10 @@ class Breadboard {
         );
 
         // Фильтры должны храниться в этом узле
-        let defs_elem = document.getElementsByTagName("defs");
+        let defs_elem = document.getElementsByTagName("defs")[0];
 
-        defs_elem.html(filters[0]);
-        defs_elem.html(filters[1]);
+        defs_elem.insertAdjacentHTML('beforeend', filters[0]);
+        defs_elem.insertAdjacentHTML('beforeend', filters[1]);
     };
 
 }

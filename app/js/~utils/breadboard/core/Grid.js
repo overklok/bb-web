@@ -204,15 +204,15 @@ class Grid {
                     this.dots_container
                         .circle(GRID_DOT_SIZE)
                         .move(
-                            ((width) * (1 + 2 * xi) / (2 * this.size.x)) - (GRID_DOT_SIZE / 2),
-                            ((height) * (1 + 2 * yi) / (2 * this.size.y)) - (GRID_DOT_SIZE / 2)
+                            ((width) * (2 * xi) / (2 * this.size.x)) - xi * (GRID_DOT_SIZE / 2),
+                            ((height) * (2 * yi) / (2 * this.size.y)) - yi * (GRID_DOT_SIZE / 2)
                         );
 
                 this.dots_container
                         .circle(GRID_DOT_SIZE + 4)
                         .move(
-                            ((width) * (1 + 2 * xi) / (2 * this.size.x)) - ((GRID_DOT_SIZE + 4)/ 2),
-                            ((height) * (1 + 2 * yi) / (2 * this.size.y)) - ((GRID_DOT_SIZE + 4)/ 2)
+                            ((width) * (2 * xi) / (2 * this.size.x)) - xi * ((GRID_DOT_SIZE + 4)/ 2),
+                            ((height) * (2 * yi) / (2 * this.size.y)) - yi * ((GRID_DOT_SIZE + 4)/ 2)
                         )
                         .opacity(0.2);
             }

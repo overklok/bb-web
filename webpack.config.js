@@ -3,6 +3,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './app/js/index.js',
+  devtool: 'eval-source-map', // 'source-map' for production
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')

@@ -13,19 +13,16 @@ class Application {
         /// Диспетчер событий
         this._dispatcher = new Dispatcher();
 
-        $(document).ready(function () {
-           /// Модули
-            this.ls = new LocalServiceModule();    // рабочая область
-            this.bb = new BreadboardModule();      // макетная плата
+        /// Модули
+        // this.ls = new LocalServiceModule();    //
+        this.bb = new BreadboardModule();      // макетная плата
 
-        this._dispatcher.subscribe(this.ls);
+        // this._dispatcher.subscribe(this.ls);
 
-        this.defineChains();
+        this._defineChains();
+      }
 
-        });
-    }
-
-    defineChains() {
+    _defineChains() {
         this._dispatcher.on('ls:connect', function () {
            console.log('Connected');
         });
