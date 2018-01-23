@@ -4,13 +4,27 @@
         <meta charset="UTF-8">
         <title>Webpack App</title>
     </head>
-    <body>
-        <button id="begin">Begin</button>
-        <button id="end">End</button>
-        <button id="echo">Echo</button>
+    <body class="ui-layout-container">
+        <div class="ui-layout-north" id="main-north">
+            North pane
+        </div>
+        <div class="ui-layout-center" id="main-center">
+        </div>
 
-        <svg id="workspace" viewBox="0 0 1000 1000" style="width: 50%;">
-        </svg>
+        <div class="ui-layout-east" id="main-east">
+            <div class="ui-layout-north" id="east-north">
+                East - North
+                <button id="switch-btn">Switch Layout</button>
+            </div>
+            <div class="ui-layout-center" id="east-center"> East - Center </div>
+            <div class="ui-layout-south" id="east-south"></div>
+        </div>
+
+
+<!--         <img> -->
+<!--             <svg id="workspace" viewBox="0 0 600 680" style="width: 100%; height: 100%;"> -->
+<!--             </svg> -->
+<!--         </img> -->
 
     </body>
     <script>

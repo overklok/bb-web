@@ -2,22 +2,29 @@ import Grid from './Grid';
 
 import SVG from 'svgjs'
 
-const WS_WIDTH = 1000;              // Ширина рабочей области
-const WS_HEIGHT = 1000;              // Высота рабочей области
+const WRAP_WIDTH = 600;              // Ширина рабочей области
+const WRAP_HEIGHT = 680;             // Высота рабочей области
 
-const GRID_WIDTH = 900;             // Ширина сетки точек
-const GRID_HEIGHT = 900;            // Высота сетки точек
+// 260 = 1000
+// 30 = 120
+// 20 = 80
 
-const WRAP_MARGIN = 50;             // Отступ обёртки
-const GRID_MARGIN = 50;             // Отступ сетки
+const GRID_MARGIN = {                 // Отступ сетки
+    TOP:    65,
+    LEFT:   40,
+    RIGHT:  40,
+    BOTTOM: 40
+};
 
-const GRID_ROWS = 9;                // Количество рядов в сетке точек
-const GRID_COLS = 9;                // Количество колонок в сетке точек
+const GRID_ROWS = 11;                // Количество рядов в сетке точек
+const GRID_COLS = 10;                // Количество колонок в сетке точек
 
-const LABELS_FONT_SIZE = 12;        // Кегль подписей
-
-const LABEL_LEFT_LAST_PRE = "-";    // Текст предпоследней текстовой метки слева
-const LABEL_LEFT_LAST = "+";        // Текст последней текстовой метки слева
+const LABELS_HEIGHT = 24;           // Высота подписей (~кегль)
+const LABELS_FONT_SIZE = 24;        // Кегль подписей
+const LABELS = {
+    X: ['  ', 'A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
+    Y: ['  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '+', '-']
+};
 
 /**
  * Класс, отвечающий за разметку рабочей среды
@@ -49,10 +56,17 @@ class Breadboard {
      * которое видит пользователь при загрузке страницы
      *
      * Запускать в $(document).ready()
+     *
+     * @param {object} dom_node DOM-элемент
      */
-    start() {
+    start(dom_node) {
+        if (dom_node === undefined) {
+            throw new TypeError("Breadboard::start(): DOM node is undefined");
+        }
+
         // Базовая кисть
-        this.brush = SVG('workspace').size(WS_WIDTH, WS_HEIGHT);
+        this.brush = SVG(dom_node).size(WRAP_WIDTH, WRAP_HEIGHT);
+        this.brush.node.setAttribute("viewBox", "0 0 " + WRAP_WIDTH + " " + WRAP_HEIGHT);
 
         this._defineFilters();
 
@@ -60,7 +74,7 @@ class Breadboard {
         this._initContainers(this.brush);
 
         // Размещение контейнеров в рабочей среде
-        this._composeContainers();
+        this._composeContainers(true);
 
         this._drawBackground();
 
@@ -68,11 +82,15 @@ class Breadboard {
         this.grid = new Grid(this.containers.grid, GRID_ROWS, GRID_COLS);
 
         // Отрисовать элементы сетки в контейнере
-        this.grid.drawDots(GRID_WIDTH, GRID_HEIGHT);
+        this.grid.drawDots();
 
         // Отрисовать панели с подписями
-        this._drawLabelPanes(GRID_WIDTH, GRID_HEIGHT, GRID_COLS, GRID_ROWS);
+        this._drawLabelPanes();
     };
+
+    clear() {
+        this.brush.node.remove();
+    }
 
     /**
      * Инициализировать контейнеры
@@ -99,18 +117,34 @@ class Breadboard {
     /**
      * Скомпоновать (разметить) контейнеры в рабочей области
      *
+     * @param {Boolean} debug режим отладки
      * @private
      */
-    _composeContainers() {
-        // Сместить главную обёртку
-        this.containers.wrap.move(WRAP_MARGIN, WRAP_MARGIN);
+    _composeContainers(debug = false) {
+        if (debug) {
+            this.containers.wrap.rect('100%', '100%').fill({opacity: 0}).stroke({color: 'black', width: 1});
+            this.containers.grid.rect('100%', '100%').fill({opacity: 0}).stroke({color: 'red', width: 1});
+            this.containers.label_panes.left.rect('100%', '100%').fill({opacity: 0}).stroke({color: 'green', width: 1});
+            this.containers.label_panes.top.rect('100%', '100%').fill({opacity: 0}).stroke({color: 'blue', width: 1});
+        }
 
-        // Сместить сетки
-        this.containers.grid.move(GRID_MARGIN, GRID_MARGIN);
+        // Ресайз сетки
+        this.containers.grid.width (WRAP_WIDTH  - (GRID_MARGIN.RIGHT + GRID_MARGIN.LEFT));
+        this.containers.grid.height(WRAP_HEIGHT - (GRID_MARGIN.TOP + GRID_MARGIN.BOTTOM));
 
-        // Сместить панели
-        this.containers.label_panes.left.move(0, GRID_MARGIN);  // левая - сверху
-        this.containers.label_panes.top.move(GRID_MARGIN, 0);   // верхняя - слева
+        // Смещение сетки
+        this.containers.grid.move(GRID_MARGIN.LEFT, GRID_MARGIN.TOP);
+
+        // Ресайз панелей
+        this.containers.label_panes.top.width(this.containers.grid.width());
+        this.containers.label_panes.top.height(LABELS_HEIGHT);
+
+        this.containers.label_panes.left.width(LABELS_HEIGHT);
+        this.containers.label_panes.left.height(this.containers.grid.height());
+
+        // Смещение панелей
+        this.containers.label_panes.left.move(GRID_MARGIN.LEFT - LABELS_HEIGHT / 2, GRID_MARGIN.TOP);  // левая - сверху
+        this.containers.label_panes.top.move(GRID_MARGIN.LEFT, GRID_MARGIN.TOP - LABELS_HEIGHT / 2);   // верхняя - слева
     };
 
     /**
@@ -119,8 +153,8 @@ class Breadboard {
      * Наполняется контейнер  this.containers.background
      */
     _drawBackground() {
-        this.containers.background.rect('100%', '100%')
-                                  .fill('#f06');
+        // this.containers.background.rect('100%', '100%')
+        //                           .fill('#f06');
     }
 
     /**
@@ -129,20 +163,16 @@ class Breadboard {
      * Наполняются контейнеры   this.containers.label_panes.left,
      *                          this.containers.label_panes.right,
      *
-     * @param grd_w     Ширина сетки
-     * @param grd_h     Высота сетки
-     * @param grd_cols  Количество колонок
-     * @param grd_rows  Количество рядов
      * @private
      */
-    _drawLabelPanes(grd_w, grd_h, grd_cols, grd_rows) {
+    _drawLabelPanes() {
         // Используем сокращения
         let left = this.containers.label_panes.left;
         let top = this.containers.label_panes.top;
 
         // Отрисовать сами текстовые метки
-        this._drawLabels(left, grd_rows);
-        this._drawLabels(top, grd_cols);
+        this._drawLabels(left, GRID_ROWS);
+        this._drawLabels(top, GRID_COLS);
     };
 
     /**
@@ -156,47 +186,52 @@ class Breadboard {
         // Проходим циклом по всем колонокам/рядам
         for (let iter = 0; iter < grd_steps; iter++)
         {
-            // Текстовое содержимое метки по умолчанию - номер колонки/ряда
-            let text = iter;
+            // Текстовое содержимое метки по умолчанию
+            let text = 'UNSET';
             // Цвет по умолчанию - чёрный
             let color = "#000";
             // Выравнивание по умоланию - по центру
-            let positioning = "center";
+            let align = "middle";
 
-            // Если панель - слева
             if (this.containers.label_panes.left === label_pane) {
+                // Если панель - слева
 
                 // Выравнивание - по концу строки
-                positioning = "end";
+//                 align = "end";
 
-                if (grd_steps - 1 === iter) {        // Если метка последняя
-                    text = LABEL_LEFT_LAST;
-                    color = "#00f";
-                } else if (grd_steps - 2 === iter) { // Если метка предпоследняя
-                    text = LABEL_LEFT_LAST_PRE;
-                    color = "#f00";
+                if (iter in LABELS.Y) {
+                    text = LABELS.Y[iter];
                 }
+            } else {
+                // Если панель - сверху
 
+//                 align = "middle"
+
+                if (iter in LABELS.X) {
+                    text = LABELS.X[iter];
+                }
             }
 
             // Непосредственно формирование текста
             let label = label_pane
-                .text(text + "")
-                .font({fill: color, anchor: positioning, size: LABELS_FONT_SIZE});
+                .text(text)
+                .font({fill: color, anchor: align, size: LABELS_FONT_SIZE});
 
             // Размещение текста зависит от того, левая панель или верхняя
             if (this.containers.label_panes.left === label_pane) {
-                label
-                    .move(
-                        GRID_MARGIN,
-                        this.grid.dots[0][iter].y() - 4
-                )
-            } else {
-                label
-                    .move(
-                        this.grid.dots[iter][0].x(),
-                        GRID_MARGIN - LABELS_FONT_SIZE
-                )
+                // Если левая панель
+                label.move(
+                    LABELS_HEIGHT / 2,
+                    this.grid.dots[0][iter].y() - LABELS_FONT_SIZE / 2,
+                );
+            }
+
+            if (this.containers.label_panes.top === label_pane) {
+                // Если верхняя панель
+                label.move(
+                    this.grid.dots[iter][0].x() + this.grid.dots[iter][0].width() / 2,
+                    0,
+                );
             }
         }
     };

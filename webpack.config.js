@@ -1,5 +1,8 @@
 var path = require('path');
+var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+
+var lib_dir = __dirname + '/vendor/js';
 
 module.exports = {
   entry: './app/js/index.js',
@@ -8,6 +11,12 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
   },
+  // resolve: {
+    // alias: {
+        // 'jquery-ui':  "jquery-ui/jquery-ui.js",
+        // modules: path.join(__dirname, "node_modules"),
+    // }
+  // },
   module: {
     loaders: [
       {
@@ -19,6 +28,20 @@ module.exports = {
         loader: 'babel-loader',
         test: /\.js$/,
         exclude: /node_modules/
+      },
+      {
+        loaders: ['style-loader', 'css-loader'],
+        test: /\.css/,
+        exclude: /node_modules/
+      },
+      {
+        test: require.resolve('jquery'),
+        use: [
+          {
+            loader: 'expose-loader',
+            options: '$'
+          },
+        ]
       }
     ]
   },
@@ -26,6 +49,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './app/html/index.html',
       inject: 'body'
+    }),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
     })
   ]
 };

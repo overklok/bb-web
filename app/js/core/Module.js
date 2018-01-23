@@ -61,6 +61,16 @@ class Module {
         this._event_listeners[name] = handler;
     }
 
+    /**
+     * Инициировать событие типа name
+     *
+     * @param {string} name имя типа события
+     * @param {Object} data данные события
+     */
+    emitEvent(name, data) {
+        this._getEventListener(name)(data);
+    }
+
 // private:
 
     /**
@@ -79,7 +89,7 @@ class Module {
 
         if (this._event_listeners[name] === undefined || strict) {
             this._event_listeners[name] = function (data) {
-                console.warn("Unattached listener called with data", data)
+                console.warn("Unattached listener `" + name + "` called with data", data);
             };
         }
     }

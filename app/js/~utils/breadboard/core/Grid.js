@@ -1,6 +1,7 @@
 import Current from './Current';
 
-const GRID_DOT_SIZE = 10;           // Радиус точек
+const GRID_DOT_SIZE = 5;           // Радиус точек
+const GRID_DOT_BEZEL_SIZE = 40      // Размер окантовки точки
 
 //TODO: сделать градиент, по центру - белый, по бокам - синий, со свечением
 const CURRENT_COLOR_GOOD    = '#7DF9FF';    // Цвет тока здорового человека
@@ -182,11 +183,9 @@ class Grid {
      *
      * При необходимости изменить ширину и/или длину сетки следует вызвать эту функцию повторно.
      *
-     * @param width     ширина контейнера
-     * @param height    высота контейнера
      * @private
      */
-    drawDots(width, height) {
+    drawDots() {
         // Массив ссылок на отрисованные точки
         this.dots = [];
 
@@ -200,21 +199,32 @@ class Grid {
             // Цикл по колонкам
             for (let yi = 0; yi < this.size.y; yi++)
             {
+                let mv_x = ((this.container.width()) / (this.size.x + 1) * (xi));
+                let mv_y = ((this.container.height()) / (this.size.y + 1) * (yi));
+
+                mv_x += GRID_DOT_BEZEL_SIZE;
+                mv_y += GRID_DOT_BEZEL_SIZE;                
+
                 this.dots[xi][yi] =
                     this.dots_container
                         .circle(GRID_DOT_SIZE)
                         .move(
-                            ((width) * (2 * xi) / (2 * this.size.x)) - xi * (GRID_DOT_SIZE / 2),
-                            ((height) * (2 * yi) / (2 * this.size.y)) - yi * (GRID_DOT_SIZE / 2)
+                            mv_x,
+                            mv_y
                         );
 
                 this.dots_container
-                        .circle(GRID_DOT_SIZE + 4)
-                        .move(
-                            ((width) * (2 * xi) / (2 * this.size.x)) - xi * ((GRID_DOT_SIZE + 4)/ 2),
-                            ((height) * (2 * yi) / (2 * this.size.y)) - yi * ((GRID_DOT_SIZE + 4)/ 2)
-                        )
-                        .opacity(0.2);
+                    .rect(
+                        GRID_DOT_BEZEL_SIZE,
+                        GRID_DOT_BEZEL_SIZE
+                    )
+                    .move(
+                        this.dots[xi][yi].x() + (GRID_DOT_SIZE - GRID_DOT_BEZEL_SIZE) / 2,
+                        this.dots[xi][yi].y() + (GRID_DOT_SIZE - GRID_DOT_BEZEL_SIZE) / 2,
+                    )
+                    .fill({
+                        opacity: 0.5
+                    });
             }
         }
     };

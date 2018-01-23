@@ -109,7 +109,13 @@ class Dispatcher {
      * @param eventspace
      */
     only(eventspace) {
+        if (eventspace && !Array.isArray(eventspace))    {throw new TypeError ('Eventspace should be an array!')}
 
+        this._event_types_listening.current.clear();
+
+        this._event_types_listening.current = new Set(
+            [...this._event_types].filter(Dispatcher.getFilterByEventspace(eventspace))
+        );
     }
 
     /**
