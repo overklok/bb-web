@@ -1,3 +1,5 @@
+const ERROR_EVENT_NAME = 'error';
+
 /**
  * Диспетчер - менеджер суррогатных событий.
  * Каждое приложение обладает единственным диспетчером.
@@ -11,6 +13,8 @@
  */
 class Dispatcher {
     constructor() {
+        this._modules = {};
+
         this._handlers = {};
         this._event_types_listening = {
             always: new Set(),
@@ -31,6 +35,9 @@ class Dispatcher {
      * События модуля будут обрабатываться подключёнными к нему обработчиками суррогатных событий
      * по имени "краткое_имя_модуля:имя_события" (см. метод [Dispatcher.on()])
      *
+     * Событие "краткое_имя_модуля:ERROR_EVENT_NAME" переданного модуля
+     * автоматически заносится в список прослушиваемых
+     *
      * @param {Module} module экземпляр модуля, на события которого требуется подписка
      */
     subscribe(module) {
@@ -39,17 +46,21 @@ class Dispatcher {
         let event_types = module.event_types;
         let module_prefix = module.eventspace_name;
 
-        event_types.forEach(function(name, index) {
+        event_types.forEach((name, index) => {
             let full_name = module_prefix + ':' + name;
 
-            module.attachEventListener(name, function (data) {
-                let fn = self._getHandler(full_name);
+            module.attachEventListener(name, (data) => {
+                let fn = this._getHandler(full_name);
                 fn(data);
             });
 
             /// Добавить тип события в общий список
-            self._event_types.add(full_name);
+            this._event_types.add(full_name);
         });
+
+        /// Обязательным является прослушивание события 'error' - обработка ошибок
+        /// начиается непосредственно с момента подписки
+        this._event_types_listening.always.add(module_prefix + ':' + ERROR_EVENT_NAME)
     }
 
     /**
@@ -125,6 +136,25 @@ class Dispatcher {
      */
     aside(eventspace) {
 
+    }
+
+    /**
+     * Запрет на прослушивание любого типа событий, за исключением заданных
+     * в always()
+     */
+    taboo() {
+        this._event_types_listening.current.clear();
+    }
+
+    /**
+     * Выгрузить отладочные записи всех модулей в единый JSON-объект
+     *
+     * @param flush
+     */
+    dumpLogs(flush) {
+        for (module of this._modules) {
+
+        }
     }
 
     /**

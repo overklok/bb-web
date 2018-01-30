@@ -11,11 +11,11 @@ class SocketWrapper extends Wrapper {
         this._addr = addr;
         this._port = port;
 
-        this.socket = io(this._getFullAddr());
+        this._socket = io(this._getFullAddr());
     }
 
     on(name, handler) {
-        this.socket.on(name, handler);
+        this._socket.on(name, handler);
     }
 
 // private:

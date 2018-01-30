@@ -1,3 +1,5 @@
+import Loggable from './Loggable';
+
 /**
  * Модули - независимые компоненты приложений.
  * Модули самостоятельны, не знают о существовании приложений и других модулей.
@@ -20,7 +22,7 @@
  * Имена классов-модулей именуются в стиле CamelCase с постфиксом Module.
  * Каждый класс должен быть расположен в отдельном одноимённом файле.
  */
-class Module {
+class Module extends Loggable {
 // public:
 
     /**
@@ -34,6 +36,8 @@ class Module {
     static get event_types()     {throw new TypeError("This method should be overridden by inheriting classes")}
 
     constructor() {
+        super();
+
         this.eventspace_name = this.constructor.eventspace_name;
         this.event_types = this.constructor.event_types;
 

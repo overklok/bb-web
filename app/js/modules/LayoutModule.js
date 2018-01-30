@@ -33,8 +33,6 @@ class LayoutModule extends Module {
     constructor(settings) {
         super();
 
-        let self = this;
-
         this._layout = undefined;
 
         this._layout_options_default = {
@@ -53,7 +51,7 @@ class LayoutModule extends Module {
                 },
 
                 center: {
-                    onresize_end: function() {self.emitEvent("resize")},
+                    onresize_end: () => {this.emitEvent("resize")},
                 },
 
                 //	some pane-size settings
@@ -90,28 +88,31 @@ class LayoutModule extends Module {
      * @param mode {int} режим компоновки
      */
     compose(mode) {
-        let self = this;
-
         let layout_options  = undefined;
         let layout_map      = undefined;
 
         switch(mode) {
             case MODES.DEBUG: {
-                layout_options  = self._layout_options_debug;
-                layout_map      = self._layout_map_debug;
+                layout_options  = this._layout_options_debug;
+                layout_map      = this._layout_map_debug;
                 break;
             }
             case MODES.DEFAULT:
             default: {
-                layout_options  = self._layout_options_default;
-                layout_map      = self._layout_map_default;
+                layout_options  = this._layout_options_default;
+                layout_map      = this._layout_map_default;
                 break;
             }
         }
 
-        $(document).ready(function () {
-            self._layout = $('body').layout(layout_options);
-            self.emitEvent("compose", self._transformMapToNodes(layout_map));
+        $(document).ready(() => {
+            this._layout = $('body').layout(layout_options);
+
+            let nodes = this._transformMapToNodes(layout_map);
+
+            this.emitEvent("compose", nodes);
+
+            this._debug.log("Layout composed: ", nodes);
         });
     }
 
