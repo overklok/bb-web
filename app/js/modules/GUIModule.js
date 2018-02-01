@@ -2,7 +2,7 @@ import Module from "../core/Module";
 
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["switch", "upgrade"]}
+    static get event_types() {return ["switch"]}
 
     constructor(settings) {
         super();
@@ -23,10 +23,6 @@ class GUIModule extends Module {
 
             this._debug.log('Switch clicked: ', this._state.switched);
         });
-
-        $("#upgrade-btn").click(() => {
-            this.emitEvent("upgrade");
-        })
     }
 }
 

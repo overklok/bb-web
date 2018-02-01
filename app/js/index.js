@@ -22,15 +22,15 @@ class Application {
         this.ls     = new LocalServiceModule();     // макетная плата - electron
         this.gs     = new GlobalServiceModule();    // веб-сервер
 
-
         this._dispatcher.subscribe(this.gui);
         this._dispatcher.subscribe(this.lay);
         this._dispatcher.subscribe(this.ls);
-
-        this._defineChains();
+        this._dispatcher.subscribe(this.gs);
 
         this._dispatcher.only(['ls:connect']);
-        this._dispatcher.always(['lay:*', 'ls:disconnect']);
+        this._dispatcher.always(['*:error', 'lay:*', 'ls:disconnect']);
+
+        this._defineChains();
       }
 
     _defineChains() {
@@ -38,7 +38,18 @@ class Application {
          * Когда плата готова к работе
          */
         this._dispatcher.on('ls:connect', () => {
-           console.log("Connected");
+            this.gs.getUpgradeURLS()
+                .then(urls  => this.ls.upgrade(urls))
+                .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
+                .catch(err  => this._dispatcher.only(['ls:*']));
+        });
+
+        this._dispatcher.on('ls:error', (err) => {
+            console.error('[LSERR]', err);
+        });
+
+        this._dispatcher.on('gs:error', (err) => {
+            console.error('[GSERR]', err);
         });
 
         /**
@@ -77,24 +88,6 @@ class Application {
                 this.lay.compose(0xFF);
             }
         });
-
-        /**
-         * Когда нажата кнопка обновления
-         */
-        this._dispatcher.on('gui:upgrade', () => {
-            let urls = this.gs.getUpgradeURLS();
-            this.ls.upgrade(urls);
-        });
-
-        this._dispatcher.on('ls:ready', () => {
-            alert('Local service says that board is ready to use');
-        });
-
-        this._dispatcher.on('ls:error', (err) => {
-            console.error('Local service error:', err);
-        });
-
-
     }
 }
 

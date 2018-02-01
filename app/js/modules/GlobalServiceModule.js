@@ -1,21 +1,26 @@
 import Module from '../core/Module';
 
-const UPGRD_URLS_STUB = [
-    'http://127.0.0.1:8000/static/firmwares/test.txt'
-];
+const URL_REQUESTS = {
+    FIRMWARE: 'http://127.0.0.1/urls/firmware/last'
+};
 
 class GlobalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "gs"}
-    static get event_types()        {return []};
+    static get event_types()        {return ["error"]};
 
     constructor() {
         super();
     }
 
     getUpgradeURLS() {
-        return UPGRD_URLS_STUB;
+        return fetch(URL_REQUESTS.FIRMWARE)
+            .then((response) => {
+                return response.json();
+            }).catch((err) => {
+                this.emitEvent('error', err);
+            });
     }
 
     /**

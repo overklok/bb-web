@@ -25,7 +25,17 @@ class LocalServiceModule extends Module {
      * @param {Array} urls массив ссылок на файлы прошивки
      */
     upgrade(urls) {
-        this._ipc.send('upgrade', urls);
+        return new Promise(resolve => {
+            let result = this._ipc.sendSync('upgrade', urls);
+
+            if (result.type === 'error') {
+                throw result.error;
+            }
+
+            if (result.type === 'success') {
+                resolve();
+            }
+        });
     }
 
     /**
@@ -50,11 +60,11 @@ class LocalServiceModule extends Module {
      * @private
      */
     _subscribeToWrapperEvents() {
-        this._ipc.on('connect',     () => {this._getEventListener('connect')()});
-        this._ipc.on('disconnect',  () => {this._getEventListener('disconnect')()});
-        this._ipc.on('ready',       () => {this._getEventListener('ready')()});
+        this._ipc.on('connect',     ()          => {this._getEventListener('connect')()});
+        this._ipc.on('disconnect',  ()          => {this._getEventListener('disconnect')()});
+        this._ipc.on('ready',       ()          => {this._getEventListener('ready')()});
 
-        this._ipc.on('error',       () => {this._getEventListener('error')});
+        this._ipc.on('error',       (evt, arg)  => {this._getEventListener('error')(arg)});
     }
 }
 

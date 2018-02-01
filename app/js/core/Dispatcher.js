@@ -57,10 +57,6 @@ class Dispatcher {
             /// Добавить тип события в общий список
             this._event_types.add(full_name);
         });
-
-        /// Обязательным является прослушивание события 'error' - обработка ошибок
-        /// начиается непосредственно с момента подписки
-        this._event_types_listening.always.add(module_prefix + ':' + ERROR_EVENT_NAME)
     }
 
     /**
@@ -180,7 +176,7 @@ class Dispatcher {
                 return function(data) {console.warn("Dispatcher._getHandler(): handler for ", name, " was not defined, data:", data)};
             }
         } else {
-            return function(data) {console.warn("Dispatcher_getHandler(): Event listener was disabled for a while, data:", data);}
+            return function(data) {console.warn("Dispatcher_getHandler(): Event listener ", name , "was disabled for a while, data:", data);}
         }
     }
 
@@ -204,15 +200,32 @@ class Dispatcher {
      */
     static getFilterByEventspace(eventspace) {
         return function(item) {
+            /// Если пространство событий содержит фильтрующий элемент
             if (eventspace.includes(item)) {
                 return true;
             }
 
+            /// Для всех элементов из заданного массива
             for (let i = 0; i < eventspace.length; i++) {
+                /// Является ли групповым символом
                 let is_wildcard = (eventspace[i] === '*');
+                /// Имя модуля, если групповой символ стоит после двоеточия
                 let module_name = Dispatcher._isWildcardAfterColon(eventspace[i]);
+                /// Имя события, если групповой символ стоит до двоеточия
+                let event_name  = Dispatcher._isWildcardBeforeColon(eventspace[i]);
 
-                if ((is_wildcard) || (module_name && (module_name === item.split(':')[0]))) {
+                /// Если является групповым символом
+                if ((is_wildcard)) {
+                    return true;
+                }
+
+                /// Если групповой символ стоит после двоеточия и совпадает с именем модуля фильтрующего элемента
+                if ((module_name && (module_name === item.split(':')[0]))) {
+                    return true;
+                }
+
+                /// Если групповой символ стоит до двоеточия и совпадает с именем события фильтрующего элемента
+                if ((event_name && (event_name === item.split(':')[1]))) {
                     return true;
                 }
             }
@@ -239,6 +252,29 @@ class Dispatcher {
 
         if (mask.split(':')[1] === "*") {
             return mask.split(':')[0];
+        }
+    }
+
+    /**
+     * Проверить, содержит ли маска символ '*' перед двоеточием
+     *
+     * Если символ есть, функция возвращает подстроку после двоеточия
+     * Если символа нет, функция возвращает false
+     *
+     * @param   {string}            mask    исходная маска
+     * @returns {boolean|string}    соответствует ли маска требованию / подстрока после двоеточия
+     * @private
+     */
+    static _isWildcardBeforeColon(mask) {
+        if (typeof name !== "string")
+            throw new TypeError("Dispatcher._isWildcard(): mask in not a string");
+
+        if (mask.split(':').length === 1) {
+            return false;
+        }
+
+        if (mask.split(':')[0] === "*") {
+            return mask.split(':')[1];
         }
     }
 }

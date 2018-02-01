@@ -119,7 +119,7 @@ describe('Dispatcher', function() {
 
             disp.always(eventspace);
 
-            let event_types_after = disp._event_types_listening;
+            let event_types_after = disp._event_types_listening.always;
 
             expect(eventspace).to.deep.equal(event_types_expected);
         });
@@ -151,23 +151,46 @@ describe('Dispatcher', function() {
         it("Should return a function that filters an array using given array of masks by specified rules", function() {
             let disp    = new Dispatcher();
 
-            let base        = ['module1:event1', 'module1:event2', 'module2:event1', 'module2:event2'];
+            /// Исходный массив событий
+            let base        = [
+                'module1:event0', 'module1:event1', 'module1:event2',
+                'module2:event0', 'module2:event1', 'module2:event2',
+            ];
 
+            /// Случай 1:
+            /// - Применение группового символа по отношению к конкретному модулю
+            /// - Использование полного названия (модуль + тип события)
+            /// - Отстутствующее событие отсутствующего модуля игнорируется
             let masks       = ['module1:*', 'module2:event1', 'nomodule:noevent'];
-            let expected    = ['module1:event1', 'module1:event2', 'module2:event1'];
+            let expected    = ['module1:event0', 'module1:event1', 'module1:event2', 'module2:event1'];
 
             let result = base.filter(Dispatcher.getFilterByEventspace(masks));
 
             expect(result).to.deep.equal(expected);
 
-            masks       = ['module2:event2', '*'];
+            /// Случай 2:
+            /// - Применение группового символа по отношению к конкретному событию
+            /// - Применение группового символа по отношению к несуществующему событию игнорируется
+            masks       = ['*:event0', '*:noevent'];
+            expected    = ['module1:event0', 'module2:event0'];
+
+            result = base.filter(Dispatcher.getFilterByEventspace(masks));
+
+            expect(result).to.deep.equal(expected);
+
+            /// Случай 3:
+            /// - Применения общего группового символа должно быть достаточно для добавления всех событий всех модулей
+            masks       = ['*'];
             expected    = base;
 
             result = base.filter(Dispatcher.getFilterByEventspace(masks));
 
             expect(result).to.deep.equal(expected);
 
-            masks       = ['*'];
+            /// Случай 4:
+            /// - Применение общего группового символа
+            /// - Наличие других событий не должно влиять на эффект применения группового символа
+            masks       = ['module2:event2', '*'];
             expected    = base;
 
             result = base.filter(Dispatcher.getFilterByEventspace(masks));

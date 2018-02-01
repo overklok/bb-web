@@ -18,6 +18,10 @@ class SocketWrapper extends Wrapper {
         this._socket.on(name, handler);
     }
 
+    send(name) {
+        // stub
+    }
+
 // private:
 
     _getFullAddr() {
