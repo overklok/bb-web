@@ -38,18 +38,14 @@ class Application {
          * Когда плата готова к работе
          */
         this._dispatcher.on('ls:connect', () => {
+            /// Запросить ссылки для прошивки
             this.gs.getUpgradeURLS()
+                /// Обновить прошивку
                 .then(urls  => this.ls.upgrade(urls))
+                /// Разрешить обрабатывать события платы и GUI
                 .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
-                .catch(err  => this._dispatcher.only(['ls:*']));
-        });
-
-        this._dispatcher.on('ls:error', (err) => {
-            console.error('[LSERR]', err);
-        });
-
-        this._dispatcher.on('gs:error', (err) => {
-            console.error('[GSERR]', err);
+                /// Обработать ошибки
+                .catch(err  => {throw err})
         });
 
         /**
@@ -87,6 +83,14 @@ class Application {
             if (on === false) {
                 this.lay.compose(0xFF);
             }
+        });
+
+        this._dispatcher.on('ls:error', (err) => {
+            console.error('[LSERR]', err);
+        });
+
+        this._dispatcher.on('gs:error', (err) => {
+            console.error('[GSERR]', err);
         });
     }
 }

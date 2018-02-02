@@ -3,6 +3,13 @@ import Module from '../core/Module';
 import SocketWrapper from '../wrappers/SocketWrapper';
 import ElectronIPCWrapper from '../wrappers/ElectronIPCWrapper';
 
+/**
+ * Модуль взаимодействия с локальным сервисом
+ *
+ * Работает в двух режимах:
+ *      - Electron IPC (при запуске в среде Electron)
+ *      - Socket.IO (при запуске в браузере)
+ */
 class LocalServiceModule extends Module {
 // public:
 
@@ -26,15 +33,15 @@ class LocalServiceModule extends Module {
      */
     upgrade(urls) {
         return new Promise(resolve => {
-            let result = this._ipc.sendSync('upgrade', urls);
+            this._ipc.send('upgrade', urls);
 
-            if (result.type === 'error') {
-                throw result.error;
-            }
-
-            if (result.type === 'success') {
-                resolve();
-            }
+            this._ipc.once('upgrade-result', (event, error) => {
+                if (error) {
+                    throw error;
+                } else {
+                    resolve();
+                }
+            });
         });
     }
 

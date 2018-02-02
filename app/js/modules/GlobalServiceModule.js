@@ -1,7 +1,7 @@
 import Module from '../core/Module';
 
 const URL_REQUESTS = {
-    FIRMWARE: 'http://127.0.0.1/urls/firmware/last'
+    FIRMWARE: 'http://127.0.0.1:8000/fwsvc/geturls/last'
 };
 
 class GlobalServiceModule extends Module {
