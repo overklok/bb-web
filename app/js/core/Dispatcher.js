@@ -13,7 +13,7 @@ const ERROR_EVENT_NAME = 'error';
  */
 class Dispatcher {
     constructor() {
-        this._modules = {};
+        this._modules = [];
 
         this._handlers = {};
         this._event_types_listening = {
@@ -57,6 +57,8 @@ class Dispatcher {
             /// Добавить тип события в общий список
             this._event_types.add(full_name);
         });
+
+        this._modules.push(module);
     }
 
     /**
@@ -148,9 +150,15 @@ class Dispatcher {
      * @param flush
      */
     dumpLogs(flush) {
-        for (module of this._modules) {
+        return new Promise(resolve => {
+           let logs = [];
 
-        }
+            for (module of this._modules) {
+                logs.push(module.getDebugBuffer(flush));
+            }
+
+            resolve(logs);
+        });
     }
 
     /**

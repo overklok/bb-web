@@ -22,7 +22,7 @@ class ElectronIPCWrapper extends Wrapper {
     }
 
     once(channel, handler) {
-        ipcRenderer.once(channel, handler);
+        ipcRenderer.once(channel, handler)
     }
 
     send(channel, data) {

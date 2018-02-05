@@ -37,6 +37,7 @@ class LocalServiceModule extends Module {
 
             this._ipc.once('upgrade-result', (event, error) => {
                 if (error) {
+                    this._debug.error(error);
                     throw error;
                 } else {
                     resolve();

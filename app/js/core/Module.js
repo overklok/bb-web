@@ -35,11 +35,32 @@ class Module extends Loggable {
      */
     static get event_types()     {throw new TypeError("This method should be overridden by inheriting classes")}
 
-    constructor() {
+    /**
+     * Установить опции по умолчанию
+     *
+     * Метод должен возвращать объект, в котором ключи означают
+     * настройки, а значения - их опции по умолчанию
+     *
+     * Вызывается конструкторами классов-наслдеников
+     * Заданные настройки и опции по умолчанию используются впоследствии методом _coverOptions(),
+     * передающим опции из конструктора во внутренний атрибут объекта this._options
+     *
+     * @abstract
+     */
+    static defaults() {
+        // throw new TypeError("_setDefaults() should be overridden by inherited classes");
+        return {};
+    }
+
+    constructor(options) {
         super();
 
-        this.eventspace_name = this.constructor.eventspace_name;
-        this.event_types = this.constructor.event_types;
+        /// Загрузить опции по умолчанию, перекрыть их кастомными опциями
+        this.__defaults = this.constructor.defaults();
+        this._options   = this._coverOptions(this.__defaults, options);
+
+        this.eventspace_name    = this.constructor.eventspace_name;
+        this.event_types        = this.constructor.event_types;
 
         this._event_listeners = {};
     }
@@ -128,9 +149,40 @@ class Module extends Loggable {
      * Виртуальный метод: его должен реализовать каждый наследник.
      *
      * @abstract
+     * @private
      */
     _subscribeToWrapperEvents() {
-        throw new TypeError("This method should be overridden by inheriting classes");
+        throw new TypeError("_subscribeToWrapperEvents() should be overridden by inherited classes");
+    }
+
+
+    /**
+     * Наложить заданные опции поверх опций по умолчанию и сохранить в объект
+     * в соответствии с настройками, заданными в defaults()
+     *
+     * TODO: критическая функция, нужно покрывать тестами
+     *
+     * @private
+     */
+    _coverOptions(defaults, options) {
+        /// Если не заданы настройки с опциями по умолчанию - выдать пустой объект
+        if (typeof defaults === "undefined") return {};
+        /// Если не заданы опции - выдать опции по умолчанию
+        if (typeof options === "undefined") return defaults;
+        /// Если настроек нет - выдать пустой объект
+        // if (Object.keys(defaults).length === 0) return 'undefined';
+
+        /// Если options - не объект, то возвратить значение
+        if (typeof options !== 'object') return options;
+
+        let settings = {};
+
+        /// Для каждой заданной опции выполнить рекурсивно поиск опции
+        for (let setting of Object.keys(defaults)) {
+            settings[setting] = this._coverOptions(defaults[setting], options[setting]);
+        }
+
+        return settings;
     }
 }
 

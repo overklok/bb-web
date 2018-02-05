@@ -63,11 +63,17 @@ class Loggable {
     _bindBuffer() {
         for (let cfn in window.console) {
             this._debug[cfn] = () => {
-                let debug_item = {};
+                let debug_item = JSON.stringify(arguments);
 
-                debug_item[cfn] = JSON.stringify(arguments);
+                /// Запись в буфер
+                this._debug_buffer.push({
+                    module: this.constructor.name,
+                    type:   cfn,
+                    data:   debug_item
+                });
 
-                this._debug_buffer.push(debug_item);
+                /// Стандартное логирование
+                console[cfn]("[" + this.constructor.name + "]", arguments);
             }
         }
     }
