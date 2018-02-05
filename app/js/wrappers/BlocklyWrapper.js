@@ -18,6 +18,16 @@ class BlocklyWrapper extends Wrapper {
         this.container     = undefined;     // контейнер Blockly
         this.toolbox       = undefined;     // узел с описанием типов блоков
         this.workspace     = undefined;     // SVG-контейнер с графикой Blockly
+        this._block_types  = undefined;     // XML- и JSON-типы блоков
+    }
+
+    registerBlockTypes(blocksJSON, blocksXML) {
+        this._block_types = {
+            JSON:   blocksJSON,
+            XML:    blocksXML
+        };
+
+        this._loadBlocksJSON();
     }
 
     /**
@@ -25,22 +35,32 @@ class BlocklyWrapper extends Wrapper {
      *
      * @param {Object} dom_node DOM-узел, в который нужно вставить Blockly
      */
-    inject(dom_node) {
+    include(dom_node) {
         /// Определить узел вставки контейнера
         this.area        = dom_node;
         /// Сгенерировать контейнеры для Blockly и для типов блоков
         this.container   = document.createElement('div');
-        this.toolbox     = document.createElement('div');
+        this.toolbox     = document.createElement('xml');
         /// Задать контейнерам соответствующие идентификаторы
         this.container.setAttribute("id", DIV_IDS.BLOCKLY);
         this.toolbox.setAttribute("id", DIV_IDS.TOOLBOX);
+
+        this.toolbox.style.display = 'none';
 
         /// Разместить контейнеры в DOM-дереве
         dom_node.appendChild(this.container);
         dom_node.appendChild(this.toolbox);
 
         /// Встроить Blockly в заданную систему контейнеров
-        this.workspace = Blockly.inject(this.container, {toolbox: this.toolbox});
+        this.workspace = Blockly.inject(
+            this.container,
+            {
+                toolbox: this.toolbox,
+                zoom: {
+                    startScale: 0.7
+                }
+            }
+        );
 
         // window.addEventListener('resize', this._onResize, false);
 
@@ -54,7 +74,7 @@ class BlocklyWrapper extends Wrapper {
      *
      * Сам экземпляр Blockly, его содержимое и параметры отображения сохраняются
      */
-    takeout() {
+    exclude() {
         /// Отключить отображение Blockly
         this.workspace.dispose();
         /// Удалить контейнеры
@@ -63,6 +83,41 @@ class BlocklyWrapper extends Wrapper {
 
         // window.removeEventListener('resize', this._onResize, false);
     }
+
+    useBlockTypes() {
+        this.toolbox.innerHTML = "<block type='set_leds_mix'></block>";
+
+        this._loadBlocksXML();
+
+        this.workspace.updateToolbox(this.toolbox);
+    }
+
+    /**
+     * Получить текущий код программы Blockly в нотации XML
+     *
+     * https://developers.google.com/blockly/guides/get-started/web
+     *
+     * @returns {string} строка, содержащая XML-код программы
+     */
+    getXMLCode() {
+        let xml = Blockly.Xml.workspaceToDom(this.workspace);
+
+        return Blockly.Xml.domToText(xml);
+    }
+
+    _loadBlocksJSON() {
+        for (let block_name of Object.keys(this._block_types.JSON)) {
+            Blockly.Blocks[block_name] = this._block_types.JSON[block_name];
+        }
+    }
+
+    _loadBlocksXML() {
+        for (let block_name of Object.keys(this._block_types.XML)) {
+            $('block[type="' + block_name + '"]').html(this._block_types.XML[block_name]);
+        }
+    }
+
+
 
     /**
      * Изменить размер среды Blockly

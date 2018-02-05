@@ -2,7 +2,7 @@ import Module from "../core/Module";
 
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["switch"]}
+    static get event_types() {return ["switch", "launch"]}
 
     constructor(settings) {
         super();
@@ -12,8 +12,6 @@ class GUIModule extends Module {
         };
 
         this._subscribeToWrapperEvents();
-
-        this._debug.log("GUI Module was constructed");
     }
 
     _subscribeToWrapperEvents() {
@@ -22,6 +20,10 @@ class GUIModule extends Module {
             this.emitEvent("switch", this._state.switched);
 
             this._debug.log('Switch clicked: ', this._state.switched);
+        });
+
+        $("#launch-btn").click(() => {
+            this.emitEvent("launch");
         });
     }
 }

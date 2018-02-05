@@ -16,7 +16,7 @@ class LogModule extends Module {
 
     static defaults() {
         return {
-            ticker_interval: 5000
+            ticker_interval: 15000
         }
     }
 
@@ -58,7 +58,7 @@ class LogModule extends Module {
             this._state.auto = false;
         }
 
-        setInterval(() => {
+        setTimeout(() => {
             if (this._state.auto) {
                 /// emit tick event but only if no onbeforeupload external event happened
                 this.emitEvent("tick");

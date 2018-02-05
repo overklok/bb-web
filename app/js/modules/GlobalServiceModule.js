@@ -27,8 +27,6 @@ class GlobalServiceModule extends Module {
 
         this._csrfToken = undefined;
 
-        console.log(this._options);
-
         if (this._options.csrfRequired) {
             this._configureCSRF();
         }
@@ -56,7 +54,7 @@ class GlobalServiceModule extends Module {
             });
     }
 
-    getUpgradeURLS() {
+    getUpgradeURLs() {
         return fetch(URL_REQUESTS.FIRMWARE)
             .then(response => {
                 return response.json();

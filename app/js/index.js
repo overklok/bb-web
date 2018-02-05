@@ -76,18 +76,18 @@ class Application {
         /// Модули
         this.gui    = new GUIModule(this._config.gui);
         this.lay    = new LayoutModule(this._config.lay);
-        this.ws     = new WorkspaceModule(this._config.ws);                // Blockly
-        this.bb     = new BreadboardModule(this._config.bb);               // макетная плата - графика
-        // this.ls     = new LocalServiceModule(this._config.ls);          // макетная плата - electron
-        this.gs     = new GlobalServiceModule(this._config.gs); // веб-сервер
-        this.log    = new LogModule(this._config.log);                      // логирование
+        this.ws     = new WorkspaceModule(this._config.ws);                 // Blockly
+        this.bb     = new BreadboardModule(this._config.bb);                // макетная плата - графика
+        this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
+        this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
+        // this.log    = new LogModule(this._config.log);                      // логирование
     }
 
     _subscribeToModules() {
-        this._dispatcher.subscribe(this.log);
+        // this._dispatcher.subscribe(this.log);
         this._dispatcher.subscribe(this.gui);
         this._dispatcher.subscribe(this.lay);
-        // this._dispatcher.subscribe(this.ls);
+        this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
     }
 
@@ -97,9 +97,9 @@ class Application {
          */
         this._dispatcher.on('ls:connect', () => {
             /// Запросить ссылки для прошивки
-            this.gs.getUpgradeURLS()
+            this.gs.getUpgradeURLs()
                 /// Обновить прошивку
-                .then(urls  => this.ls.upgrade(urls))
+                .then(urls  => this.ls.firmwareUpgrade(urls))
                 /// Разрешить обрабатывать события платы и GUI
                 .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
                 /// Обработать ошибки
@@ -110,11 +110,16 @@ class Application {
          * Когда разметка скомпонована
          */
         this._dispatcher.on('lay:compose', (data) => {
-            this.ws.inject(data.editor);
+            this.ws.include(data.editor);
             this.bb.inject(data.board);
 
             /// Прослушивать все события GUI
             this._dispatcher.only(['gui:*']);
+        });
+
+        this._dispatcher.on('gui:launch', () => {
+            let code = this.ws.getCode();
+            this.ls.codeUpdate(code);
         });
 
         /**
@@ -123,7 +128,7 @@ class Application {
         this._dispatcher.on('gui:switch', (on) => {
             this._dispatcher.taboo();
 
-            this.ws.takeout();
+            this.ws.exclude();
             this.bb.takeout();
 
 
@@ -140,10 +145,10 @@ class Application {
             console.log('tick');
 
             this._dispatcher.dumpLogs(true)
-                .then(logs => this.log.collectLogs(logs))
+                .then(logs      => this.log.collectLogs(logs))
                 .then(log_bunch => this.gs.reportLogBunch(log_bunch))
-                .then(() => this.log.runTicker())
-                .catch(err => console.error('[LOGERR]', err));
+                .then(()        => this.log.runTicker())
+                .catch(err      => console.error('[LOGERR]', err));
         });
 
         /**

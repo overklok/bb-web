@@ -73,7 +73,7 @@ class Loggable {
                 });
 
                 /// Стандартное логирование
-                console[cfn]("[" + this.constructor.name + "]", arguments);
+                window.console[cfn]("[" + this.constructor.name + "]", arguments);
             }
         }
     }

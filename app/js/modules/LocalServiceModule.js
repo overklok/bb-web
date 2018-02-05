@@ -26,12 +26,27 @@ class LocalServiceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    codeUpdate(code) {
+        return new Promise(resolve => {
+           this._ipc.send('code-update', code);
+
+           this._ipc.once('code-update-result', (event, error) => {
+               if (error) {
+                   this._debug.error(error);
+                   throw error;
+               } else {
+                   resolve();
+               }
+           });
+        });
+    }
+
     /**
      * Обновить прошивку платы по указанной ссылке
      *
      * @param {Array} urls массив ссылок на файлы прошивки
      */
-    upgrade(urls) {
+    firmwareUpgrade(urls) {
         return new Promise(resolve => {
             this._ipc.send('upgrade', urls);
 
@@ -40,6 +55,7 @@ class LocalServiceModule extends Module {
                     this._debug.error(error);
                     throw error;
                 } else {
+                    this._debug.info('Firmware upgraded successfully');
                     resolve();
                 }
             });
@@ -68,11 +84,22 @@ class LocalServiceModule extends Module {
      * @private
      */
     _subscribeToWrapperEvents() {
-        this._ipc.on('connect',     ()          => {this._getEventListener('connect')()});
-        this._ipc.on('disconnect',  ()          => {this._getEventListener('disconnect')()});
-        this._ipc.on('ready',       ()          => {this._getEventListener('ready')()});
+        this._ipc.on('connect', () => {
+            this.emitEvent('connect');
+            this._debug.info('Connected to IPC');
+        });
 
-        this._ipc.on('error',       (evt, arg)  => {this._getEventListener('error')(arg)});
+        this._ipc.on('disconnect', () => {
+            this.emitEvent('disconnect');
+        });
+
+        this._ipc.on('ready', () => {
+            this.emitEvent('ready');
+        });
+
+        this._ipc.on('error', (evt, arg) => {
+            this.emitEvent('error', arg)
+        });
     }
 }
 

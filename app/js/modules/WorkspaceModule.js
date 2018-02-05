@@ -3,6 +3,8 @@ import Module from '../core/Module'
 import BlocklyWrapper from '../wrappers/BlocklyWrapper'
 import VirtLEDWrapper from '../wrappers/VirtLEDWrapper'
 
+import {JSONBlocks, XMLBlocks} from '../~utils/blockly/extras/blocks';
+
 /**
  * Модуль "Рабочая область"
  *
@@ -17,22 +19,30 @@ class WorkspaceModule extends Module {
 
         this._blockly  = new BlocklyWrapper();
         this._display = false;
+
+        this._blockly.registerBlockTypes(JSONBlocks, XMLBlocks);
     }
 
-    inject(dom_node) {
+    include(dom_node) {
         if (dom_node !== undefined) {
-            this._blockly.inject(dom_node);
+            this._blockly.include(dom_node);
             this._display = true;
         }
+
+        this._blockly.useBlockTypes();
     }
 
-    takeout() {
-        this._blockly.takeout();
+    exclude() {
+        this._blockly.exclude();
         this._display = false;
     }
 
     resize() {
         this._blockly._onResize();
+    }
+
+    getCode() {
+        this._blockly.getXMLCode();
     }
 
     _subscribeToWrapperEvents() {
