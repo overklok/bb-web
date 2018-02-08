@@ -33,13 +33,20 @@ class GlobalServiceModule extends Module {
     }
 
     reportLogBunch(log_bunch) {
+        let data = new FormData();
+        data.append("json", JSON.stringify(log_bunch));
+
+        console.log(log_bunch)
+
         let request = {
             mode: 'no-cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 // 'Access-Control-Allow-Origin': ORIGIN,
-                // 'Access-Control-Allow-Credentials': true
+                // 'Access-Control-Allow-Credentials': true,
+                // 'Access-Control-Allow-Methods': 'POST',
+                // 'X-CSRFToken': undefined
             },
             method: "POST",
             body: JSON.stringify(log_bunch)

@@ -19,6 +19,7 @@ class BlocklyWrapper extends Wrapper {
         this.toolbox       = undefined;     // узел с описанием типов блоков
         this.workspace     = undefined;     // SVG-контейнер с графикой Blockly
         this._block_types  = undefined;     // XML- и JSON-типы блоков
+        this._generators   = undefined;     // JS-генератор кода
     }
 
     registerBlockTypes(blocksJSON, blocksXML) {
@@ -28,6 +29,15 @@ class BlocklyWrapper extends Wrapper {
         };
 
         this._loadBlocksJSON();
+    }
+
+    registerGenerators(generatorsJS) {
+        this._generators = generatorsJS;
+
+        console.log('SMTH');
+        console.log(this._generators);
+
+        this._loadGenerators();
     }
 
     /**
@@ -84,12 +94,29 @@ class BlocklyWrapper extends Wrapper {
         // window.removeEventListener('resize', this._onResize, false);
     }
 
-    useBlockTypes() {
-        this.toolbox.innerHTML = "<block type='set_leds_mix'></block>";
+    /**
+     * Использовать типы блоков
+     *
+     * Обновляется содержимое тулбокса
+     *
+     * @param block_types {Array} массив типов блоков
+     */
+    useBlockTypes(block_types) {
+        let toolbox_content = "";
+
+        for (let block_type of block_types) {
+            toolbox_content += "<block type='" + block_type + "'></block>";
+        }
+
+        this.toolbox.innerHTML = toolbox_content;
 
         this._loadBlocksXML();
 
         this.workspace.updateToolbox(this.toolbox);
+    }
+
+    highlightBlock(block_id) {
+        this.workspace.highlightBlock(block_id);
     }
 
     /**
@@ -105,6 +132,10 @@ class BlocklyWrapper extends Wrapper {
         return Blockly.Xml.domToText(xml);
     }
 
+    getJSONCode() {
+        return Blockly.JavaScript.workspaceToCode(this.workspace);
+    }
+
     _loadBlocksJSON() {
         for (let block_name of Object.keys(this._block_types.JSON)) {
             Blockly.Blocks[block_name] = this._block_types.JSON[block_name];
@@ -117,7 +148,11 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
-
+    _loadGenerators() {
+        for (let generator_name of Object.keys(this._generators)) {
+            Blockly.JavaScript[generator_name] = this._generators[generator_name];
+        }
+    }
 
     /**
      * Изменить размер среды Blockly

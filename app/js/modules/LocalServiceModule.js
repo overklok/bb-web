@@ -14,7 +14,7 @@ class LocalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "ls"}
-    static get event_types()        {return ["connect", "disconnect", "ready", "error"]};
+    static get event_types()        {return ["connect", "disconnect", "ready", "command", "error"]};
 
     constructor() {
         super();
@@ -95,6 +95,10 @@ class LocalServiceModule extends Module {
 
         this._ipc.on('ready', () => {
             this.emitEvent('ready');
+        });
+
+        this._ipc.on('command', (evt, data) => {
+            this.emitEvent('command', data);
         });
 
         this._ipc.on('error', (evt, arg) => {

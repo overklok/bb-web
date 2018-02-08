@@ -1,8 +1,8 @@
+const colour_circles_b64 = require('./colour-circles.json');
+
 //================================================================
 //                  XML-ПЕРЕОПРЕДЕЛЕНИЯ БЛОКОВ
 //================================================================
-
-const COLOUR_CIRCLE_URL = "/static/levelgen/image/blockly-labels/colour-circle/";
 
 const BUTTON_CODES = {
   UP:     "38",
@@ -147,7 +147,7 @@ let BlocklyXMLBlocks = () => {
                               '</shadow>' +
                             '</value>',
 
-    set_led_color_mix:      '<value name="NUM">' +
+    set_led_mix:            '<value name="NUM">' +
                               '<shadow type="led_number">' +
                                 '<field name="NUM">1</field>' +
                               '</shadow>' +
@@ -597,7 +597,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "red.gif",
+              "src": colour_circles_b64.red,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -609,7 +609,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "green.gif",
+              "src": colour_circles_b64.green,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -621,7 +621,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "blue.gif",
+              "src": colour_circles_b64.blue,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -652,7 +652,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "red.gif",
+              "src": colour_circles_b64.red,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -664,7 +664,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "green.gif",
+              "src": colour_circles_b64.green,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -676,7 +676,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "blue.gif",
+              "src": colour_circles_b64.blue,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -706,7 +706,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "red.gif",
+              "src": colour_circles_b64.red,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -718,7 +718,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "green.gif",
+              "src": colour_circles_b64.green,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -730,7 +730,7 @@ let BlocklyJSONBlocks = () => {
             },
             {
               "type": "field_image",
-              "src": COLOUR_CIRCLE_URL + "blue.gif",
+              "src": colour_circles_b64.blue,
               "width": 15,
               "height": 15,
               "alt": "*"
@@ -760,7 +760,7 @@ let BlocklyJSONBlocks = () => {
               },
               {
                 "type": "field_image",
-                "src": COLOUR_CIRCLE_URL + "red.gif",
+                "src": colour_circles_b64.red,
                 "width": 15,
                 "height": 15,
                 "alt": "*"
@@ -772,7 +772,7 @@ let BlocklyJSONBlocks = () => {
               },
               {
                 "type": "field_image",
-                "src": COLOUR_CIRCLE_URL + "green.gif",
+                "src": colour_circles_b64.green,
                 "width": 15,
                 "height": 15,
                 "alt": "*"
@@ -784,7 +784,7 @@ let BlocklyJSONBlocks = () => {
               },
               {
                 "type": "field_image",
-                "src": COLOUR_CIRCLE_URL + "blue.gif",
+                "src": colour_circles_b64.blue,
                 "width": 15,
                 "height": 15,
                 "alt": "*"

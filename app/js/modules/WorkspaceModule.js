@@ -4,6 +4,7 @@ import BlocklyWrapper from '../wrappers/BlocklyWrapper'
 import VirtLEDWrapper from '../wrappers/VirtLEDWrapper'
 
 import {JSONBlocks, XMLBlocks} from '../~utils/blockly/extras/blocks';
+import JSONGenerators from '../~utils/blockly/extras/generators';
 
 /**
  * Модуль "Рабочая область"
@@ -21,6 +22,7 @@ class WorkspaceModule extends Module {
         this._display = false;
 
         this._blockly.registerBlockTypes(JSONBlocks, XMLBlocks);
+        this._blockly.registerGenerators(JSONGenerators);
     }
 
     include(dom_node) {
@@ -29,7 +31,7 @@ class WorkspaceModule extends Module {
             this._display = true;
         }
 
-        this._blockly.useBlockTypes();
+        this._blockly.useBlockTypes(['leds_off', 'wait_seconds', 'controls_repeat_ext', 'controls_if', 'logic_boolean']);
     }
 
     exclude() {
@@ -41,8 +43,13 @@ class WorkspaceModule extends Module {
         this._blockly._onResize();
     }
 
+    highlightBlock(block_id) {
+        this._blockly.highlightBlock(block_id);
+    }
+
     getCode() {
-        this._blockly.getXMLCode();
+        return this._blockly.getJSONCode();
+        // return this._blockly.getXMLCode();
     }
 
     _subscribeToWrapperEvents() {

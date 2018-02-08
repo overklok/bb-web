@@ -62,7 +62,7 @@ class Application {
         this._subscribeToModules();
 
         this._dispatcher.only(['ls:connect']);
-        this._dispatcher.always(['*:error', 'lay:*', 'log:*', 'ls:disconnect']);
+        this._dispatcher.always(['ls:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
     }
 
     /**
@@ -74,17 +74,17 @@ class Application {
      */
     _initModules() {
         /// Модули
+        this.log    = new LogModule(this._config.log);                      // логирование
         this.gui    = new GUIModule(this._config.gui);
         this.lay    = new LayoutModule(this._config.lay);
         this.ws     = new WorkspaceModule(this._config.ws);                 // Blockly
         this.bb     = new BreadboardModule(this._config.bb);                // макетная плата - графика
         this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
-        // this.log    = new LogModule(this._config.log);                      // логирование
     }
 
     _subscribeToModules() {
-        // this._dispatcher.subscribe(this.log);
+        this._dispatcher.subscribe(this.log);
         this._dispatcher.subscribe(this.gui);
         this._dispatcher.subscribe(this.lay);
         this._dispatcher.subscribe(this.ls);
@@ -106,6 +106,11 @@ class Application {
                 .catch(err  => {throw err})
         });
 
+        this._dispatcher.on('ls:command', (data) => {
+            console.log(data);
+            this.ws.highlightBlock(data.block_id);
+        });
+
         /**
          * Когда разметка скомпонована
          */
@@ -119,7 +124,9 @@ class Application {
 
         this._dispatcher.on('gui:launch', () => {
             let code = this.ws.getCode();
+            // console.log(code);
             this.ls.codeUpdate(code);
+            // this._dispatcher.only(['gui:stop', 'ls:command']);
         });
 
         /**

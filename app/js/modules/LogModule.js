@@ -75,7 +75,8 @@ class LogModule extends Module {
             browser:        identifier.browser,
             browserVersion: identifier.browserVersion,
             os:             identifier.OS,
-            osVersion:      identifier.OSVersion
+            osVersion:      identifier.OSVersion,
+            clientVersion:  "0.0.1"
         }
     }
 
