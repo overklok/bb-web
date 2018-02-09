@@ -20,22 +20,23 @@ class BlocklyWrapper extends Wrapper {
         this.workspace     = undefined;     // SVG-контейнер с графикой Blockly
         this._block_types  = undefined;     // XML- и JSON-типы блоков
         this._generators   = undefined;     // JS-генератор кода
+
+        this._state = {
+            code_buffer: undefined
+        };
+
+        Blockly.HSV_SATURATION = 1;
+        Blockly.HSV_HUE = 1;
     }
 
-    registerBlockTypes(blocksJSON, blocksXML) {
-        this._block_types = {
-            JSON:   blocksJSON,
-            XML:    blocksXML
-        };
+    registerBlockTypes(blocksJSON) {
+        this._block_types = blocksJSON;
 
         this._loadBlocksJSON();
     }
 
     registerGenerators(generatorsJS) {
         this._generators = generatorsJS;
-
-        console.log('SMTH');
-        console.log(this._generators);
 
         this._loadGenerators();
     }
@@ -72,6 +73,10 @@ class BlocklyWrapper extends Wrapper {
             }
         );
 
+        if (typeof this._state.code_buffer !== "undefined") {
+            Blockly.Xml.domToWorkspace(this.workspace, this._state.code_buffer);
+        }
+
         // window.addEventListener('resize', this._onResize, false);
 
         /// Адаптировать размер Blockly под начальный размер контейнера
@@ -85,6 +90,8 @@ class BlocklyWrapper extends Wrapper {
      * Сам экземпляр Blockly, его содержимое и параметры отображения сохраняются
      */
     exclude() {
+        this._state.code_buffer = Blockly.Xml.workspaceToDom(this.workspace);
+
         /// Отключить отображение Blockly
         this.workspace.dispose();
         /// Удалить контейнеры
@@ -109,8 +116,6 @@ class BlocklyWrapper extends Wrapper {
         }
 
         this.toolbox.innerHTML = toolbox_content;
-
-        this._loadBlocksXML();
 
         this.workspace.updateToolbox(this.toolbox);
     }
@@ -137,14 +142,8 @@ class BlocklyWrapper extends Wrapper {
     }
 
     _loadBlocksJSON() {
-        for (let block_name of Object.keys(this._block_types.JSON)) {
-            Blockly.Blocks[block_name] = this._block_types.JSON[block_name];
-        }
-    }
-
-    _loadBlocksXML() {
-        for (let block_name of Object.keys(this._block_types.XML)) {
-            $('block[type="' + block_name + '"]').html(this._block_types.XML[block_name]);
+        for (let block_name of Object.keys(this._block_types)) {
+            Blockly.Blocks[block_name] = this._block_types[block_name];
         }
     }
 
