@@ -74,7 +74,7 @@ class BlocklyWrapper extends Wrapper {
         );
 
         if (typeof this._state.code_buffer !== "undefined") {
-            Blockly.Xml.domToWorkspace(this.workspace, this._state.code_buffer);
+            Blockly.Xml.domToWorkspace(this._state.code_buffer, this.workspace);
         }
 
         // window.addEventListener('resize', this._onResize, false);
@@ -138,7 +138,7 @@ class BlocklyWrapper extends Wrapper {
     }
 
     getJSONCode() {
-        return Blockly.JavaScript.workspaceToCode(this.workspace);
+        return Blockly.JSON.workspaceToCode(this.workspace);
     }
 
     _loadBlocksJSON() {
@@ -149,8 +149,18 @@ class BlocklyWrapper extends Wrapper {
 
     _loadGenerators() {
         for (let generator_name of Object.keys(this._generators)) {
-            Blockly.JavaScript[generator_name] = this._generators[generator_name];
+            Blockly.JSON[generator_name] = this._generators[generator_name];
         }
+    }
+
+    getXMLText() {
+        let dom = Blockly.Xml.workspaceToDom(this.workspace);
+        return Blockly.Xml.domToText(dom);
+    }
+
+    setXMLText(text) {
+        let dom = Blockly.Xml.textToDom(text);
+        Blockly.Xml.domToWorkspace(dom, this.workspace);
     }
 
     /**

@@ -14,29 +14,46 @@ class LocalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "ls"}
-    static get event_types()        {return ["connect", "disconnect", "ready", "command", "error"]};
+    static get event_types()        {return ["connect", "disconnect", "command", "error"]};
 
-    constructor() {
-        super();
+    static defaults() {
+        return {
+            modeDummy: false
+        }
+    }
+
+    constructor(options) {
+        super(options);
 
         this._ipc = undefined;
 
-        this._launchIPC();
-
-        this._subscribeToWrapperEvents();
+        /// если режим холостой
+        if (this._options.modeDummy) {
+            this._debug.log('Working in DUMMY mode');
+        } else {
+            this._launchIPC();
+            this._subscribeToWrapperEvents();
+        }
     }
 
+    /**
+     * Обновить код на плате
+     *
+     * @param {string} code код
+     */
     codeUpdate(code) {
         return new Promise(resolve => {
-           this._ipc.send('code-update', code);
+            if (this._options.modeDummy) {resolve()}
 
-           this._ipc.once('code-update-result', (event, error) => {
-               if (error) {
+            this._ipc.send('code-update', code);
+
+            this._ipc.once('code-update-result', (event, error) => {
+                if (error) {
                    this._debug.error(error);
                    throw error;
-               } else {
+                } else {
                    resolve();
-               }
+                }
            });
         });
     }
@@ -48,6 +65,8 @@ class LocalServiceModule extends Module {
      */
     firmwareUpgrade(urls) {
         return new Promise(resolve => {
+            if (this._options.modeDummy) {resolve()}
+
             this._ipc.send('upgrade', urls);
 
             this._ipc.once('upgrade-result', (event, error) => {
@@ -68,6 +87,8 @@ class LocalServiceModule extends Module {
      * @private
      */
     _launchIPC() {
+        if (this._options.modeDummy) {return true};
+
         if (window && window.process && window.process.type) {
             this._debug.log("Swtiching on IPCWrapper");
             this._ipc = new ElectronIPCWrapper();
@@ -93,9 +114,9 @@ class LocalServiceModule extends Module {
             this.emitEvent('disconnect');
         });
 
-        this._ipc.on('ready', () => {
-            this.emitEvent('ready');
-        });
+        // this._ipc.on('ready', () => {
+        //     this.emitEvent('ready');
+        // });
 
         this._ipc.on('command', (evt, data) => {
             this.emitEvent('command', data);

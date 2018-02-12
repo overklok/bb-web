@@ -18,7 +18,8 @@ class GlobalServiceModule extends Module {
 
     static defaults() {
         return {
-            csrfRequired: true
+            csrfRequired: true,
+            modeDummy: false
         }
     }
 
@@ -30,13 +31,17 @@ class GlobalServiceModule extends Module {
         if (this._options.csrfRequired) {
             this._configureCSRF();
         }
+
+        this._subscribeToWrapperEvents();
     }
 
     reportLogBunch(log_bunch) {
+        if (this._options.modeDummy) {return true}
+
         let data = new FormData();
         data.append("json", JSON.stringify(log_bunch));
 
-        console.log(log_bunch)
+        console.log(log_bunch);
 
         let request = {
             mode: 'no-cors',
@@ -62,6 +67,8 @@ class GlobalServiceModule extends Module {
     }
 
     getUpgradeURLs() {
+        if (this._options.modeDummy) {return true}
+
         return fetch(URL_REQUESTS.FIRMWARE)
             .then(response => {
                 return response.json();
@@ -72,6 +79,8 @@ class GlobalServiceModule extends Module {
     }
 
     _configureCSRF() {
+        if (this._options.modeDummy) {return true}
+
         this._csrfToken = Cookies.get('csrftoken');
 
         if (typeof this._csrfToken === "undefined") {
@@ -84,7 +93,9 @@ class GlobalServiceModule extends Module {
      * @private
      */
     _subscribeToWrapperEvents() {
-
+        if (this._options.modeDummy) {
+            this._debug.log("Working in DUMMY mode");
+        }
     }
 }
 

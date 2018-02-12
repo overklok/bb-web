@@ -1,29 +1,7 @@
 // const colour_circles_b64 = require('./colour-circles.json');
 
-import {CATEGORIES, BLOCK_INPUTS_CONSTRAINTS, STRIP_LENGTH} from './constants'
-
-//================================================================
-//                  XML-ПЕРЕОПРЕДЕЛЕНИЯ БЛОКОВ
-//================================================================
-
-const DATATYPES = {
-    NUMBER:     "Number",
-    STRING:     "String",
-    COLOUR:     "Colour",
-    BRIGHTNESS: "Brightness",
-    LINE:       "Line"
-};
-
-let appendShadowBlock = (block_svg, input_name, block_name) => {
-    let numberShadowBlock = block_svg.workspace.newBlock(block_name);
-    numberShadowBlock.setShadow(true);
-    numberShadowBlock.initSvg();
-    numberShadowBlock.render();
-    let ob = numberShadowBlock.outputConnection;
-
-    let cc = block_svg.getInput(input_name).connection;
-    cc.connect(ob);
-};
+import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS, STRIP_LENGTH} from '../constants'
+import {appendShadowBlock} from '../_common'
 
 let BlocklyJSONBlocks = () => {
     return {
@@ -36,7 +14,7 @@ let BlocklyJSONBlocks = () => {
                     type:           "block_type",
                     message0:       "номер лампочки",
                     inputsInline:   false,
-                    output:         DATATYPES.NUMBER,
+                    output:         FIELDTYPES.NUMBER,
                     colour:         CATEGORIES.INDEX.colour,
                     tooltip:        "Хранит номер лапмочки"
                 });
@@ -49,7 +27,7 @@ let BlocklyJSONBlocks = () => {
                     type:           "block_type",
                     message0:       "цвет",
                     inputsInline:   false,
-                    output:         DATATYPES.COLOUR,
+                    output:         FIELDTYPES.COLOUR,
                     colour:         CATEGORIES.COLOUR.colour,
                     tooltip:        "Хранит цвет"
                 })
@@ -62,7 +40,7 @@ let BlocklyJSONBlocks = () => {
                     type:           "block_type",
                     message0:       "яркость",
                     inputsInline:   false,
-                    output:         DATATYPES.BRIGHTNESS,
+                    output:         FIELDTYPES.BRIGHTNESS,
                     colour:         CATEGORIES.BRIGHTNESS.colour,
                     tooltip:        "Хранит значение яркости"
                 })
@@ -75,7 +53,7 @@ let BlocklyJSONBlocks = () => {
                     type:           "block_type",
                     message0:       "полоса цветов",
                     inputsInline:   false,
-                    output:         DATATYPES.LINE,
+                    output:         FIELDTYPES.LINE,
                     colour:         CATEGORIES.LINE.colour,
                     tooltip:        "Хранит полосу цветов"
                 })
@@ -96,7 +74,7 @@ let BlocklyJSONBlocks = () => {
                         options:    BLOCK_INPUTS_CONSTRAINTS.COLOURS
                     }],
                     inputsInline:   true,
-                    output:         DATATYPES.COLOUR,
+                    output:         FIELDTYPES.COLOUR,
                     colour:         CATEGORIES.COLOUR.colour,
                     tooltip:        "Варианты готовых цветов"
                 })
@@ -186,8 +164,8 @@ let BlocklyJSONBlocks = () => {
                     nextStatement: null,
                     inputsInline: true,
                     colour: CATEGORIES.INDEX.colour,
-                    tooltip: "Генерирует случайное число в пределах от 1-го заданного номера до 2-го. " +
-                    "Встроенная переменная \"Номер лампочки\" получает сгененрированное значение."
+                    tooltip:    "Генерирует случайное число в пределах от 1-го заданного номера до 2-го. " +
+                                "Встроенная переменная \"Номер лампочки\" получает сгененрированное значение."
                 })
             },
         },
@@ -204,7 +182,7 @@ let BlocklyJSONBlocks = () => {
                         {
                             type:       "input_value",
                             name:       "CLR",
-                            check:      DATATYPES.COLOUR
+                            check:      FIELDTYPES.COLOUR
                         }
                     ],
                     previousStatement:  null,
@@ -230,7 +208,7 @@ let BlocklyJSONBlocks = () => {
             }
         },
 
-        strip_colour_chn_inc_number: {
+        strip_colour_chn_inc: {
             init: function() {
                 this.jsonInit({
                     type:               "block_type",
@@ -238,8 +216,8 @@ let BlocklyJSONBlocks = () => {
                     args0: [
                         {
                             type:       "input_value",
-                            name:       "BRTN",
-                            check:      DATATYPES.BRIGHTNESS
+                            name:       "BRT",
+                            check:      FIELDTYPES.BRIGHTNESS
                         },
                         {
                             type:       "field_dropdown",
@@ -256,7 +234,7 @@ let BlocklyJSONBlocks = () => {
             }
         },
 
-        strip_colour_chn_dec_number: {
+        strip_colour_chn_dec: {
             init: function() {
                 this.jsonInit({
                     type:               "block_type",
@@ -264,8 +242,8 @@ let BlocklyJSONBlocks = () => {
                     args0: [
                         {
                             type:       "input_value",
-                            name:       "BRTN",
-                            check:      DATATYPES.BRIGHTNESS
+                            name:       "BRT",
+                            check:      FIELDTYPES.BRIGHTNESS
                         },
                         {
                             "type":     "field_dropdown",
@@ -379,7 +357,7 @@ let BlocklyJSONBlocks = () => {
                         {
                             type:       "input_value",
                             name:       "BRT",
-                            check:      DATATYPES.BRIGHTNESS
+                            check:      FIELDTYPES.BRIGHTNESS
                         }
                     ],
                     previousStatement:  null,

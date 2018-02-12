@@ -48,7 +48,7 @@ module.exports = {
   },
   externals: [
     (function () {
-      var IGNORES = [
+      let IGNORES = [
         'electron'
       ];
       return function (context, request, callback) {
@@ -71,6 +71,9 @@ module.exports = {
     new CopyWebpackPlugin([
       {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
       {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'}
-    ])
+    ]),
+    new webpack.WatchIgnorePlugin([
+        /\.d\.ts$/
+    ]),
   ]
 };

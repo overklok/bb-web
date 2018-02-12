@@ -1,368 +1,242 @@
 import Blockly from 'node-blockly/browser';
 
-const DATATYPES = {
-    EXPRSN: "expression",
-    NUMBER: "number",
-    STRING: "string"
-};
+import {getPredef, getArgument, getArguments} from '../_common';
 
-const POSTFIXES = {
-    END: 'end',
-    ELSE: 'else',
-    ELSE_IF: 'else_if',
-};
-
-/**
- * Получить аргумент с предопределённым значением
- *
- * @param value     значение
- * @param datatype  тип данных аргумента
- * @returns {{value: *, datatype: *}}   аргумент
- */
-let getPredef = (value, datatype) => {
-    return {
-        value: value,
-        type: datatype
-    }
-};
-
-/**
- * Получить аргумент в заданном блоке
- *
- * Для сложных полей тип данных аргумента может изменяться, если
- * поле содержит арифметическое выражение
- *
- * @param block             блок Blockly
- * @param field_name        название поля
- * @param default_value     значение аргумента по умолчанию
- * @param datatype          предполагаемый тип данных аргумента
- * @param complex           является ли поле сложным
- * @returns {{value: *, type: *}}   аргумент
- */
-let getArgument = (block, field_name, default_value, datatype, complex) => {
-    let arg = {
-        value: default_value,
-        type: datatype
-    };
-
-    if (block.getField(field_name)) {
-        // Internal number
-        if (datatype === DATATYPES.NUMBER) {
-            // arg.value = String(Number(block.getFieldValue(field_name)));
-            arg.value = parseInt(block.getFieldValue(field_name));
-        }
-
-        if (datatype === DATATYPES.STRING) {
-            arg.value = block.getFieldValue(field_name);
-        }
-    } else if (complex) {
-        // External number
-        arg.value = Blockly.JavaScript.valueToCode(block, field_name, Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-        arg.type = DATATYPES.EXPRSN
-    }
-
-    return arg;
-};
-
-/**
- * Получить массив аргументов по заданному массиву полей
- *
- * @param block
- * @param fields
- * @returns {Array}
- */
-let getArguments = (block, fields) => {
-    let args = [];
-
-    for (let field of fields) {
-        args.push(getArgument(block, field.name, field.default, field.datatype, field.complex));
-    }
-
-    return args;
-};
-
+import {DATATYPES, POSTFIXES} from '../constants';
 
 let BlocklyJSONGenerators = {
-    leds_color: block => {
-        let result = JSON.stringify({
-            name: "leds_color",
-            block_id: block.id,
-            args: getArguments(block, [
-                {name: "COLOR", default: "black", datatype: DATATYPES.STRING, complex: false}
+    strip_index: block => {
+        return ["strip_index", Blockly.JSON.ORDER_ATOMIC]
+    },
+
+    strip_colour: block => {
+        return ["strip_colour", Blockly.JSON.ORDER_ATOMIC]
+    },
+
+    strip_brightness: block => {
+        return ["strip_brightness", Blockly.JSON.ORDER_ATOMIC]
+    },
+
+    strip_line: block => {
+        return ["strip_line", Blockly.JSON.ORDER_ATOMIC]
+    },
+
+    strip_colour_string: block => {
+        let color = block.getFieldValue("CLR") || "black";
+
+        return [color, Blockly.JSON.ORDER_ATOMIC]
+    },
+
+    strip_index_set_number: block => {
+        return JSON.stringify({
+            name:       "strip_index_set_number",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "IDX", default: 1, datatype: DATATYPES.NUMBER, complex: true},
             ])
-        });
-
-        return result + ",";
+        }) + ","
     },
 
-    leds_off: block => {
-        let result = JSON.stringify({
-            name: "leds_off",
-            block_id: block.id,
-            args: []
-        });
-
-        return result + ",";
+    strip_index_inc_one: block => {
+        return JSON.stringify({
+            name:       "strip_index_inc_one",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    led_off: block => {
-        let result = JSON.stringify({
-            name: "led_off",
-            block_id: block.id,
-            args: [
-                getArgument(block, "NUM", 0, DATATYPES.NUMBER, true),
-            ]
-        });
-
-        return result + ",";
+    strip_index_dec_one: block => {
+        return JSON.stringify({
+            name:       "strip_index_dec_one",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    swap_leds: block => {
-        let result = JSON.stringify({
-            name: "swap_leds",
-            block_id: block.id,
-            args: getArguments(block, [
-                {name: "NUM1", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "NUM2", default: 0, datatype: DATATYPES.NUMBER, complex: true}
+    strip_index_set_rand: block => {
+        return JSON.stringify({
+            name:       "strip_index_set_rand",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "IDX_FROM",  default: 1, datatype: DATATYPES.NUMBER, complex: true},
+                {name: "IDX_TO",    default: 1, datatype: DATATYPES.NUMBER, complex: true},
             ])
-        });
-
-        return result + ",";
+        }) + ","
     },
 
-    led_color: block => {
-        let result = JSON.stringify({
-            name: "led_color",
-            block_id: block.id,
-            args: getArguments(block, [
-                {name: "NUM", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR", default: "black", datatype: DATATYPES.STRING, complex: false}
+    strip_colour_set_string: block => {
+        return JSON.stringify({
+            name:       "strip_colour_set_string",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "CLR", default: "black", datatype: DATATYPES.STRING, complex: true}
             ])
-        });
-
-        return result + ",";
+        }) + ","
     },
 
-    set_next_led: block => {
-        let result = JSON.stringify({
-            name: "set_next_led",
-            block_id: block.id,
-            args: [
-                getArgument(block, "COLOR", "black", DATATYPES.STRING, false)
-            ]
-        });
-
-        return result + ",";
+    strip_colour_set_off: block => {
+        return JSON.stringify({
+            name:       "strip_colour_set_off",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    set_prev_led: block => {
-        let result = JSON.stringify({
-            name: "set_prev_led",
-            block_id: block.id,
-            args: [
-                getArgument(block, "COLOR", "black", DATATYPES.STRING, false)
-            ]
-        });
-
-        return result + ",";
-    },
-
-    set_leds_mix: block => {
-        let result = JSON.stringify({
-            name: "set_leds_mix",
-            block_id: block.id,
-            args: getArguments(block, [
-                {name: "COLOR_RED", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_GREEN", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_BLUE", default: 0, datatype: DATATYPES.NUMBER, complex: true},
+    strip_colour_chn_inc: block => {
+        return JSON.stringify({
+            name:       "strip_colour_chn_inc",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "BRT",       default: 0,     datatype: DATATYPES.NUMBER, complex: true},
+                {name: "CLRCHN",    default: "red", datatype: DATATYPES.STRING, complex: false},
             ])
-        });
-
-        return result + ",";
+        }) + ","
     },
 
-    set_led_mix: block => {
-        let result = JSON.stringify({
-            name: "set_led_mix",
-            block_id: block.id,
-            args: getArguments(block, [
-                {name: "NUM", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_RED", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_GREEN", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_BLUE", default: 0, datatype: DATATYPES.NUMBER, complex: true},
+    strip_colour_chn_dec: block => {
+        return JSON.stringify({
+            name:       "strip_colour_chn_dec",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "BRT",       default: 0,     datatype: DATATYPES.NUMBER, complex: true},
+                {name: "CLRCHN",    default: "red", datatype: DATATYPES.STRING, complex: false},
             ])
-        });
-
-        return result + ",";
+        }) + ","
     },
 
-    set_next_led_mix: block => {
-        let result = JSON.stringify({
-            name: "set_next_led_mix",
-            block_id: block.id,
-            args: getArguments(block, [
-                {name: "COLOR_RED", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_GREEN", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_BLUE", default: 0, datatype: DATATYPES.NUMBER, complex: true},
+    strip_colour_set_rand_string: block => {
+        return JSON.stringify({
+            name:       "strip_colour_set_rand_string",
+            block_id:   block.id,
+            args:       []
+        }) + ","
+    },
+
+    strip_colour_set_rand_number: block => {
+        return JSON.stringify({
+            name:       "strip_colour_set_rand_number",
+            block_id:   block.id,
+            args:       []
+        }) + ","
+    },
+
+    strip_colour_current_chn_inc: block => {
+        return JSON.stringify({
+            name:       "strip_colour_current_chn_inc",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "CLRCHN", default: "red", datatype: DATATYPES.STRING, complex: false}
             ])
-        });
-
-        return result + ",";
+        }) + ","
     },
 
-    set_prev_led_mix: block => {
-        let result = JSON.stringify({
-            name: "set_prev_led_mix",
-            block_id: block.id,
-            args: getArguments(block, [
-                {name: "COLOR_RED", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_GREEN", default: 0, datatype: DATATYPES.NUMBER, complex: true},
-                {name: "COLOR_BLUE", default: 0, datatype: DATATYPES.NUMBER, complex: true},
+    strip_colour_current_chn_dec: block => {
+        return JSON.stringify({
+            name:       "strip_colour_current_chn_dec",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "CLRCHN", default: "red", datatype: DATATYPES.STRING, complex: false}
             ])
-        });
-
-        return result + ",";
+        }) + ","
     },
 
-    slide_leds: block => {
-        let result = JSON.stringify({
-            name: "slide_leds",
-            block_id: block.id,
-            args: [
-                getArgument(block, "DIRECTION", "left", DATATYPES.STRING, false)
-            ]
-        });
-
-        return result + ",";
+    strip_colour_current_set_line: block => {
+        return JSON.stringify({
+            name:       "strip_colour_current_set_line",
+            block_id:   block.id,
+            args:       getArguments(block, [])
+        }) + ","
     },
 
-    //brightness
-    set_brightness: block => {
-        let result = JSON.stringify({
-            name: "set_brightness",
-            block_id: block.id,
-            args: [
-                getArgument(block, "VALUE", 0, DATATYPES.NUMBER, true),
-                getArgument(block, "NUM", 0, DATATYPES.NUMBER, false)
-            ]
-        });
-
-        return result + ",";
+    strip_brightness_set_number: block => {
+        return JSON.stringify({
+            name:       "strip_brightness_set_number",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "BRT", default: 0, datatype: DATATYPES.NUMBER, complex: true}
+            ])
+        }) + ","
     },
 
-    //change brightness
-    change_brightness_up: block => {
-        let result = JSON.stringify({
-            name: "change_brightness_up",
-            block_id: block.id,
-            args: [
-                getArgument(block, "DIFF", 0, DATATYPES.NUMBER, true),
-                getArgument(block, "NUM", 0, DATATYPES.NUMBER, false)
-            ]
-        });
-
-        return result + ",";
+    strip_brightness_set_rand: block => {
+        return JSON.stringify({
+            name:       "strip_brightness_set_rand",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    change_brightness_down: block => {
-        let result = JSON.stringify({
-            name: "change_brightness_down",
-            block_id: block.id,
-            args: [
-                getArgument(block, "DIFF", 0, DATATYPES.NUMBER, true),
-                getArgument(block, "NUM", 0, DATATYPES.NUMBER, false)
-            ]
-        });
-
-        return result + ",";
+    strip_line_set_off: block => {
+        return JSON.stringify({
+            name:       "strip_line_set_off",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    wait_seconds: block => {
-        let result = JSON.stringify({
-            name: "wait_seconds",
-            block_id: block.id,
-            args: [
-                getArgument(block, "SECS", 0, DATATYPES.NUMBER, true)
-            ]
-        });
-
-        return result + ",";
+    strip_line_set_rand: block => {
+        return JSON.stringify({
+            name:       "strip_line_set_rand",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    //Shadow blocks
-    led_number: block => {
-        // Integer value
-        let code = parseInt(block.getFieldValue('NUM'));
-
-        return [code, Blockly.JavaScript.ORDER_ATOMIC];
+    strip_emit_current_color: block => {
+        return JSON.stringify({
+            name:       "strip_emit_current_color",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    brightness_value: block => {
-        // Integer value
-        let code = parseInt(block.getFieldValue('VALUE'));
-
-        return [code, Blockly.JavaScript.ORDER_ATOMIC];
+    strip_emit_all_off: block => {
+        return JSON.stringify({
+            name:       "strip_emit_all_off",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    brightness_diff: block => {
-        // Integer value.
-        let code = parseInt(block.getFieldValue('DIFF'));
-
-        return [code, Blockly.JavaScript.ORDER_ATOMIC];
+    strip_emit_all_colour: block => {
+        return JSON.stringify({
+            name:       "strip_emit_all_colour",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
-    seconds_value: block => {
-        // Integer value.
-        let code = parseInt(block.getFieldValue('SECS'));
-
-        return [code, Blockly.JavaScript.ORDER_ATOMIC];
-    },
-
-    repeats_value: block => {
-        // Integer value.
-        let code = parseInt(block.getFieldValue('TIMES'));
-
-        return [code, Blockly.JavaScript.ORDER_ATOMIC];
-    },
-
-//Output blocks
-    get_brightness: block => {
-        let br_num = parseInt(block.getFieldValue('NUM')) - 1;
-        let output = 'brightness_' + br_num;
-
-        return [output, Blockly.JavaScript.ORDER_ATOMIC];
-    },
-
-    get_led_num: block => {
-        let ln_num = parseInt(block.getFieldValue('NUM')) - 1;
-        let output = 'led_num' + ln_num;
-
-        return [output, Blockly.JavaScript.ORDER_ATOMIC];
+    strip_emit_all_list: block => {
+        return JSON.stringify({
+            name:       "strip_emit_all_list",
+            block_id:   block.id,
+            args:       []
+        }) + ","
     },
 
     //Math (should be in math.js)
     math_multiply: block => {
-        let a = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_MULTIPLICATION) || '0';
-        let b = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_MULTIPLICATION) || '0';
+        let a = Blockly.JSON.valueToCode(block, 'A', Blockly.JSON.ORDER_MULTIPLICATION) || '0';
+        let b = Blockly.JSON.valueToCode(block, 'B', Blockly.JSON.ORDER_MULTIPLICATION) || '0';
 
-        return [ a + ' * ' + b, Blockly.JavaScript.ORDER_MULTIPLICATION];
+        return [ a + ' * ' + b, Blockly.JSON.ORDER_MULTIPLICATION];
     },
 
     number: block => {
         let num = block.getFieldValue('NUM');
 
-        return [num, Blockly.JavaScript.ORDER_ATOMIC];
+        return [num, Blockly.JSON.ORDER_ATOMIC];
     },
 
     math_subtract: block => {
-        let a = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_SUBTRACTION) || '0';
-        let b = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_SUBTRACTION) || '0';
+        let a = Blockly.JSON.valueToCode(block, 'A', Blockly.JSON.ORDER_SUBTRACTION) || '0';
+        let b = Blockly.JSON.valueToCode(block, 'B', Blockly.JSON.ORDER_SUBTRACTION) || '0';
 
-        return [ a + ' - ' + b, Blockly.JavaScript.ORDER_SUBTRACTION];
+        return [ a + ' - ' + b, Blockly.JSON.ORDER_SUBTRACTION];
     },
 
     arrow_btn_pressed: block => {
-        let branch = Blockly.JavaScript.statementToCode(block, 'DO');
+        let branch = Blockly.JSON.statementToCode(block, 'DO');
 
         let head = JSON.stringify({
             name: "arrow_btn_pressed",
@@ -383,7 +257,7 @@ let BlocklyJSONGenerators = {
     // Переопределение сторонних генераторов
 
     controls_repeat_ext: block => {
-        let branch = Blockly.JavaScript.statementToCode(block, 'DO');
+        let branch = Blockly.JSON.statementToCode(block, 'DO');
 
         let head = JSON.stringify({
             name: "controls_repeat_ext",
@@ -408,8 +282,8 @@ let BlocklyJSONGenerators = {
         let code = "";
 
         do {
-            condition_code = Blockly.JavaScript.valueToCode(block, 'IF' + n, Blockly.JavaScript.ORDER_NONE) || 0;
-            branch_code = Blockly.JavaScript.statementToCode(block, 'DO' + n);
+            condition_code = Blockly.JSON.valueToCode(block, 'IF' + n, Blockly.JSON.ORDER_NONE) || 0;
+            branch_code = Blockly.JSON.statementToCode(block, 'DO' + n);
 
             if (n === 0) {
                 code += JSON.stringify({
@@ -433,7 +307,7 @@ let BlocklyJSONGenerators = {
         } while(block.getInput("IF" + n));
 
         if (block.getInput("ELSE")) {
-            branch_code = Blockly.JavaScript.statementToCode(block, 'ELSE');
+            branch_code = Blockly.JSON.statementToCode(block, 'ELSE');
 
             code += JSON.stringify({
                 name: "controls_if" + "." + POSTFIXES.ELSE,
@@ -453,14 +327,9 @@ let BlocklyJSONGenerators = {
 
     logic_boolean: block => {
         let code = (block.getFieldValue('BOOL') === 'TRUE') ? "1" : "0";
-        return [code, Blockly.JavaScript.ORDER_ATOMIC];
+        return [code, Blockly.JSON.ORDER_ATOMIC];
     }
 };
-
-BlocklyJSONGenerators['brightness_value_red'] =
-    BlocklyJSONGenerators['brightness_value_green'] =
-        BlocklyJSONGenerators['brightness_value_blue'] =
-            BlocklyJSONGenerators['brightness_value'];
 
 BlocklyJSONGenerators['letter_btn_pressed'] =
     BlocklyJSONGenerators['arrow_btn_pressed'];

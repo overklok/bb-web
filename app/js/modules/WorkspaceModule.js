@@ -5,6 +5,7 @@ import VirtLEDWrapper from '../wrappers/VirtLEDWrapper'
 
 import JSONBlocks       from '../~utils/blockly/extras/blocks';
 import JSONGenerators   from '../~utils/blockly/extras/generators';
+import Blockly from "node-blockly/browser";
 
 /**
  * Модуль "Рабочая область"
@@ -15,8 +16,14 @@ class WorkspaceModule extends Module {
     static get eventspace_name() {return "ws"}
     static get event_types() {return []}
 
-    constructor() {
-        super();
+    static defaults() {
+        return {
+            allBlocks: false
+        }
+    }
+
+    constructor(options) {
+        super(options);
 
         this._blockly  = new BlocklyWrapper();
         this._display = false;
@@ -31,10 +38,13 @@ class WorkspaceModule extends Module {
             this._display = true;
         }
 
-        console.log(Object.keys(JSONBlocks));
+        // console.log(Object.keys(JSONBlocks));
 
-        // this._blockly.useBlockTypes(['leds_off', 'wait_seconds', 'controls_repeat_ext', 'controls_if', 'logic_boolean']);
-        this._blockly.useBlockTypes(Object.keys(JSONBlocks));
+        if (this._options.allBlocks) {
+            this._blockly.useBlockTypes(Object.keys(JSONBlocks));
+        } else {
+            // this._blockly.useBlockTypes(['leds_off', 'wait_seconds', 'controls_repeat_ext', 'controls_if', 'logic_boolean']);
+        }
     }
 
     exclude() {
@@ -52,7 +62,16 @@ class WorkspaceModule extends Module {
 
     getCode() {
         return this._blockly.getJSONCode();
-        // return this._blockly.getXMLCode();
+    }
+
+    getTree() {
+        return this._blockly.getXMLText();
+    }
+
+    loadTree(tree) {
+        if (!tree) {return false}
+
+        this._blockly.setXMLText(tree);
     }
 
     _subscribeToWrapperEvents() {

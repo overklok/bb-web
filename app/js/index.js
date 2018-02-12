@@ -27,6 +27,8 @@ class Application {
      * @param config пользовательская конфигурация
      */
     configure(config) {
+        if (!config) {return true}
+
         this._config = {
             gui: {
 
@@ -35,16 +37,17 @@ class Application {
 
             },
             ws: {
-
+                allBlocks: config.allBlocks
             },
             bb: {
 
             },
             gs: {
-                csrfRequired: config.isInternal
+                csrfRequired: config.isInternal,
+                modeDummy:  config.offline
             },
             ls: {
-
+                modeDummy: config.isolated
             },
             log: {
 
@@ -124,7 +127,7 @@ class Application {
 
         this._dispatcher.on('gui:launch', () => {
             let code = this.ws.getCode();
-            // console.log(code);
+            console.log(code);
             this.ls.codeUpdate(code);
             // this._dispatcher.only(['gui:stop', 'ls:command']);
         });
@@ -132,7 +135,7 @@ class Application {
         /**
          * Когда нажата кнопка переключения разметки
          */
-        this._dispatcher.on('gui:switch', (on) => {
+        this._dispatcher.on('gui:switch', on => {
             this._dispatcher.taboo();
 
             this.ws.exclude();
@@ -148,9 +151,17 @@ class Application {
             }
         });
 
-        this._dispatcher.on('log:tick', () => {
-            console.log('tick');
+        this._dispatcher.on('gui:unload-tree', () => {
+            let tree = this.ws.getTree();
 
+            this.gui.saveToFile(tree);
+        });
+
+        this._dispatcher.on('gui:load-tree', (tree) => {
+            this.ws.loadTree(tree);
+        });
+
+        this._dispatcher.on('log:tick', () => {
             this._dispatcher.dumpLogs(true)
                 .then(logs      => this.log.collectLogs(logs))
                 .then(log_bunch => this.gs.reportLogBunch(log_bunch))

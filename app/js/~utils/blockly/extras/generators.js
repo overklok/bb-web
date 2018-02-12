@@ -1,9 +1,16 @@
-import {BlocklyJSONGenerators as StripJSONGenerators} from './strip/generators';
-import {BlocklyJSONGenerators as EventJSONGenerators} from './event/generators';
+require('./json');
 
-let BlocklyJSONGenerators = {};
+import StripJSONGenerators from './strip/generators';
+import EventJSONGenerators from './event/generators';
 
-for (let strip_generator in StripJSONGenerators) {BlocklyJSONGenerators.push(strip_block)}
-for (let event_generator in EventJSONGenerators) {BlocklyJSONGenerators.push(event_block)}
+let JSONGenerators = {};
 
-export default BlocklyJSONGenerators;
+for (let strip_generator in StripJSONGenerators) {
+    JSONGenerators[strip_generator] = StripJSONGenerators[strip_generator]
+}
+
+for (let event_generator in EventJSONGenerators) {
+    JSONGenerators[event_generator] = EventJSONGenerators[event_generator]
+}
+
+export default JSONGenerators;

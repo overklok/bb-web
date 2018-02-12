@@ -1,3 +1,24 @@
+const DATATYPES = {
+    EXPRSN: "expression",
+    NUMBER: "number",
+    STRING: "string",
+    STATMT: "statement"
+};
+
+const FIELDTYPES = {
+    NUMBER:     "Number",
+    STRING:     "String",
+    COLOUR:     "Colour",
+    BRIGHTNESS: "Brightness",
+    LINE:       "Line"
+};
+
+const POSTFIXES = {
+    END: 'end',
+    ELSE: 'else',
+    ELSE_IF: 'else_if',
+};
+
 const CATEGORIES = {
     INDEX: {
         colour: 54
@@ -74,4 +95,4 @@ const BLOCK_INPUTS_CONSTRAINTS = {
     ]
 };
 
-export {CATEGORIES, BLOCK_INPUTS_CONSTRAINTS, STRIP_LENGTH}
+export {DATATYPES, FIELDTYPES, POSTFIXES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS, STRIP_LENGTH}
