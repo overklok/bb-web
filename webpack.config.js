@@ -48,7 +48,7 @@ module.exports = {
   },
   externals: [
     (function () {
-      let IGNORES = [
+      var IGNORES = [
         'electron'
       ];
       return function (context, request, callback) {
