@@ -235,27 +235,7 @@ let BlocklyJSONGenerators = {
         return [ a + ' - ' + b, Blockly.JSON.ORDER_SUBTRACTION];
     },
 
-    arrow_btn_pressed: block => {
-        let branch = Blockly.JSON.statementToCode(block, 'DO');
-
-        let head = JSON.stringify({
-            name: "arrow_btn_pressed",
-            block_id: block.id,
-            args: [
-                getArgument(block, "SCANCODE", 0, DATATYPES.NUMBER, false)
-            ]
-        });
-
-        let tail = JSON.stringify({
-            name: "arrow_btn_pressed" + "." + POSTFIXES.END,
-            args: []
-        });
-
-        return head + "," + branch + tail + ",";
-    },
-
     // Переопределение сторонних генераторов
-
     controls_repeat_ext: block => {
         let branch = Blockly.JSON.statementToCode(block, 'DO');
 

@@ -36,6 +36,9 @@ let getArgument = (block, field_name, default_value, datatype, complex) => {
     };
 
     if (block.getField(field_name)) {
+
+        console.log(field_name, "getField branch");
+
         // Internal number
         if (datatype === DATATYPES.NUMBER) {
             // arg.value = String(Number(block.getFieldValue(field_name)));
@@ -45,14 +48,14 @@ let getArgument = (block, field_name, default_value, datatype, complex) => {
         if (datatype === DATATYPES.STRING) {
             arg.value = block.getFieldValue(field_name);
         }
-
+    } else if (complex) {
+        // External number
         if (datatype === DATATYPES.STATMT) {
             arg.value = Blockly.JSON.statementToCode(block, field_name);
         }
-    } else if (complex) {
-        // External number
-        arg.value = Blockly.JavaScript.valueToCode(block, field_name, Blockly.JavaScript.ORDER_ATOMIC) || default_value;
-        arg.type = DATATYPES.EXPRSN
+        if (datatype === DATATYPES.EXPRSN) {
+            arg.value = Blockly.JavaScript.valueToCode(block, field_name, Blockly.JavaScript.ORDER_ATOMIC) || default_value;
+        }
     }
 
     return arg;

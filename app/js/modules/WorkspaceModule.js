@@ -5,7 +5,6 @@ import VirtLEDWrapper from '../wrappers/VirtLEDWrapper'
 
 import JSONBlocks       from '../~utils/blockly/extras/blocks';
 import JSONGenerators   from '../~utils/blockly/extras/generators';
-import Blockly from "node-blockly/browser";
 
 /**
  * Модуль "Рабочая область"

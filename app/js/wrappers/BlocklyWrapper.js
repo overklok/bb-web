@@ -138,7 +138,10 @@ class BlocklyWrapper extends Wrapper {
     }
 
     getJSONCode() {
-        return Blockly.JSON.workspaceToCode(this.workspace);
+        let code = Blockly.JSON.workspaceToCode(this.workspace);
+        let statements = Blockly.JSON.statements;
+
+        return {main: code, sub: statements};
     }
 
     _loadBlocksJSON() {

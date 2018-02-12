@@ -15,7 +15,28 @@ let BlocklyJSONGenerators = {
             block_id:   block.id,
             args:       getArguments(block, [
                 {name: "BTN", default: 81, datatype: DATATYPES.NUMBER, complex: false},
-                {name: "DO", default: "", datatype: DATATYPES.STATMT, complex: false},
+                {name: "DO", default: "", datatype: DATATYPES.STATMT, complex: true},
+            ])
+        }) + ","
+    },
+
+    event_key_onpush_number: block => {
+        return JSON.stringify({
+            name:       "event_key_onpush_number",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "BTN", default: 48, datatype: DATATYPES.NUMBER, complex: false},
+                {name: "DO", default: "", datatype: DATATYPES.STATMT, complex: true},
+            ])
+        }) + ","
+    },
+
+    event_key_onpush_any: block => {
+        return JSON.stringify({
+            name:       "event_key_onpush_any",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "DO", default: "", datatype: DATATYPES.STATMT, complex: true},
             ])
         }) + ","
     },
