@@ -1,6 +1,9 @@
 import Wrapper from '../core/Wrapper'
 
-import Blockly from 'node-blockly/browser'
+import Blockly  from 'node-blockly/browser'
+import Ru       from 'node-blockly/lib/i18n/ru';
+
+Blockly.setLocale(Ru);
 
 const DIV_IDS = {
     BLOCKLY: "blockly-div",

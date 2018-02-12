@@ -10,7 +10,9 @@ const FIELDTYPES = {
     STRING:     "String",
     COLOUR:     "Colour",
     BRIGHTNESS: "Brightness",
-    LINE:       "Line"
+    LINE:       "Line",
+    SECONDS:    "Seconds",
+    BOOL:       "Boolean"
 };
 
 const POSTFIXES = {
@@ -21,7 +23,7 @@ const POSTFIXES = {
 
 const CATEGORIES = {
     INDEX: {
-        colour: 54
+        colour: 36
     },
     COLOUR: {
         colour: 194
@@ -37,10 +39,23 @@ const CATEGORIES = {
     },
     LINE: {
         colour: 70
+    },
+    WAIT: {
+        colour: 300
+    },
+    EVENTS: {
+        colour: 230
+    },
+    MATH: {
+        colour: 100
+    },
+    LOOP: {
+        colour: 100
+    },
+    LOGIC: {
+        colour: "%{BKY_LOGIC_HUE}"
     }
 };
-
-const STRIP_LENGTH = 110;
 
 const BUTTON_CODES = {
     SYM_0: "48",    SYM_Q: "81",    SYM_A: "65",    UP: "38",
@@ -57,6 +72,7 @@ const BUTTON_CODES = {
 
 // Ограничения ввода в блоках
 const BLOCK_INPUTS_CONSTRAINTS = {
+    MAX_INDEX_VALUE: 110,
     // Максимальное число итераций в циклах
     MAX_REPEAT_TIMES: 500,
     // Максимальное время в команде "ждать"
@@ -92,7 +108,42 @@ const BLOCK_INPUTS_CONSTRAINTS = {
     SLIDE_DIRECTIONS: [
         ['← влево', 'left'],
         ['→ вправо', 'right']
+    ],
+
+    // Список доступных кнопок для обработки нажатий
+    NUMBER_BUTTONS: [
+        ['0', BUTTON_CODES.SYM_0],
+        ['1', BUTTON_CODES.SYM_1],
+        ['2', BUTTON_CODES.SYM_2],
+        ['3', BUTTON_CODES.SYM_3],
+        ['4', BUTTON_CODES.SYM_4],
+        ['5', BUTTON_CODES.SYM_5],
+        ['6', BUTTON_CODES.SYM_6],
+        ['7', BUTTON_CODES.SYM_7],
+        ['8', BUTTON_CODES.SYM_8],
+        ['9', BUTTON_CODES.SYM_9]
+    ],
+
+    LETTER_BUTTONS: [
+        ['Q', BUTTON_CODES.SYM_Q],
+        ['W', BUTTON_CODES.SYM_W],
+        ['E', BUTTON_CODES.SYM_E],
+        ['R', BUTTON_CODES.SYM_R],
+        ['T', BUTTON_CODES.SYM_T],
+        ['Y', BUTTON_CODES.SYM_Y],
+
+        ['A', BUTTON_CODES.SYM_A],
+        ['S', BUTTON_CODES.SYM_S],
+        ['D', BUTTON_CODES.SYM_D],
+        ['E', BUTTON_CODES.SYM_E],
+        ['F', BUTTON_CODES.SYM_F],
+        ['G', BUTTON_CODES.SYM_G],
+
+        ['↑', BUTTON_CODES.UP],
+        ['↓', BUTTON_CODES.DOWN],
+        ['←', BUTTON_CODES.LEFT],
+        ['→', BUTTON_CODES.RIGHT]
     ]
 };
 
-export {DATATYPES, FIELDTYPES, POSTFIXES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS, STRIP_LENGTH}
+export {DATATYPES, FIELDTYPES, POSTFIXES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS}

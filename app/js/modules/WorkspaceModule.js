@@ -40,7 +40,7 @@ class WorkspaceModule extends Module {
         // console.log(Object.keys(JSONBlocks));
 
         if (this._options.allBlocks) {
-            this._blockly.useBlockTypes(Object.keys(JSONBlocks));
+            this._blockly.useBlockTypes(Object.keys(JSONGenerators));
         } else {
             // this._blockly.useBlockTypes(['leds_off', 'wait_seconds', 'controls_repeat_ext', 'controls_if', 'logic_boolean']);
         }
