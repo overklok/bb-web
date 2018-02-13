@@ -135,9 +135,9 @@ const BLOCK_INPUTS_CONSTRAINTS = {
         ['A', BUTTON_CODES.SYM_A],
         ['S', BUTTON_CODES.SYM_S],
         ['D', BUTTON_CODES.SYM_D],
-        ['E', BUTTON_CODES.SYM_E],
         ['F', BUTTON_CODES.SYM_F],
         ['G', BUTTON_CODES.SYM_G],
+        ['H', BUTTON_CODES.SYM_H],
 
         ['↑', BUTTON_CODES.UP],
         ['↓', BUTTON_CODES.DOWN],

@@ -77,7 +77,7 @@ class WorkspaceModule extends Module {
     }
 
     _subscribeToWrapperEvents() {
-        this._blockly.onChange(this.emitEvent("change-main"));
+        this._blockly.onChange(() => {this.emitEvent("change-main")});
 
         this._blockly.onChangeDeep((block_code, statement_code) => {
             this.emitEvent("change-deep", {

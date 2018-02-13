@@ -25,7 +25,7 @@ class BlocklyWrapper extends Wrapper {
         this._generators        = undefined;     // JS-генератор кода
         this._audibles          = undefined;     // Прослушиваемые типы блоков
 
-        this.callback = {
+        this._callbacks = {
             onChange: () => {
                 this._debug.warn("onChange default callback was called")
             },
@@ -187,7 +187,7 @@ class BlocklyWrapper extends Wrapper {
     }
 
     onChange(callback) {
-        this.callbacks.onChange = callback;
+        this._callbacks.onChange = callback;
     }
 
     /**
@@ -205,7 +205,7 @@ class BlocklyWrapper extends Wrapper {
      *                      - {string} вложенный код блока-родителя (если изменён)
      */
     onChangeDeep(callback) {
-        this.callbacks.onChangeDeep = callback;
+        this._callbacks.onChangeDeep = callback;
     }
 
     /**
@@ -232,7 +232,10 @@ class BlocklyWrapper extends Wrapper {
 
                 /// Если изменение не является результатом перемещения родительского блока
                 if (!(event.type === Blockly.Events.MOVE && block === root)) {
-                    console.log("ROOT", root.type, this._audibles);
+
+                    if (typeof Blockly.JSON.statements === "undefined") {
+                        Blockly.JSON.statements = {};
+                    }
 
                     let nested_code_before = Blockly.JSON.statements[root.id];
                     let block_code = Blockly.JSON.blockToCode(root);
@@ -241,7 +244,7 @@ class BlocklyWrapper extends Wrapper {
                     let nested_code = (nested_code_before === nested_code_after) ? null : nested_code_after;
 
                     if (this._audibles.indexOf(root.type) >= 0) {
-                        this.callbacks.onChangeDeep(block_code, nested_code);
+                        this._callbacks.onChangeDeep(block_code, nested_code);
 
                         is_deep_change = true;
                     }
@@ -250,7 +253,7 @@ class BlocklyWrapper extends Wrapper {
 
             /// Если изменение - не глубокое, учесть этот случай
             if (!is_deep_change) {
-                this.callbacks.onChange();
+                this._callbacks.onChange();
             }
         }
     }
