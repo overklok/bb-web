@@ -17,12 +17,22 @@ class BlocklyWrapper extends Wrapper {
     constructor() {
         super();
 
-        this.area          = undefined;     // узел вставки контейнера
-        this.container     = undefined;     // контейнер Blockly
-        this.toolbox       = undefined;     // узел с описанием типов блоков
-        this.workspace     = undefined;     // SVG-контейнер с графикой Blockly
-        this._block_types  = undefined;     // XML- и JSON-типы блоков
-        this._generators   = undefined;     // JS-генератор кода
+        this.area               = undefined;     // узел вставки контейнера
+        this.container          = undefined;     // контейнер Blockly
+        this.toolbox            = undefined;     // узел с описанием типов блоков
+        this.workspace          = undefined;     // SVG-контейнер с графикой Blockly
+        this._block_types       = undefined;     // JSON-типы блоков
+        this._generators        = undefined;     // JS-генератор кода
+        this._audibles          = undefined;     // Прослушиваемые типы блоков
+
+        this.callback = {
+            onChange: () => {
+                this._debug.warn("onChange default callback was called")
+            },
+            onChangeDeep: (block_code, statement) => {
+                this._debug.warn("onChangeDeep default callback was called", block_code, statement)
+            }
+        };
 
         this._state = {
             code_buffer: undefined
@@ -80,6 +90,7 @@ class BlocklyWrapper extends Wrapper {
             Blockly.Xml.domToWorkspace(this._state.code_buffer, this.workspace);
         }
 
+        this.workspace.addChangeListener(event => {this._onAudibleDeepChanges(event)});
         // window.addEventListener('resize', this._onResize, false);
 
         /// Адаптировать размер Blockly под начальный размер контейнера
@@ -93,6 +104,8 @@ class BlocklyWrapper extends Wrapper {
      * Сам экземпляр Blockly, его содержимое и параметры отображения сохраняются
      */
     exclude() {
+        this.workspace.removeChangeListener(this._onAudibleChange);
+
         this._state.code_buffer = Blockly.Xml.workspaceToDom(this.workspace);
 
         /// Отключить отображение Blockly
@@ -169,6 +182,32 @@ class BlocklyWrapper extends Wrapper {
         Blockly.Xml.domToWorkspace(dom, this.workspace);
     }
 
+    setAudibles(audibles) {
+        this._audibles = audibles;
+    }
+
+    onChange(callback) {
+        this.callbacks.onChange = callback;
+    }
+
+    /**
+     * Назначить обработчик события глубоких изменений в коде
+     *
+     * К глубоким изменениям относятся:
+     *  - изменение параметров блоков, заданных в _audibles
+     *  - изменение параметров блоков, вложенных в блоки, заданные в _audibles
+     *
+     *  О пределе уровня вложенности см. [[_onAudibleDeepChanges()]]
+     *
+     * @param callback  функция обратного вызова, в которую при глубоких изменениях будут передаваться
+     *                  следующие параметры:
+ *                          - {string} код изменённого блока-родителя
+     *                      - {string} вложенный код блока-родителя (если изменён)
+     */
+    onChangeDeep(callback) {
+        this.callbacks.onChangeDeep = callback;
+    }
+
     /**
      * Изменить размер среды Blockly
      *
@@ -178,6 +217,42 @@ class BlocklyWrapper extends Wrapper {
         this.container.style.width   = (this.area.offsetWidth - 20) + 'px';
         this.container.style.height  = (this.area.offsetHeight - 20) + 'px';
         Blockly.svgResize(this.workspace);
+    }
+
+    _onAudibleDeepChanges(event) {
+        if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
+
+            let is_deep_change = false;
+
+            let block = this.workspace.getBlockById(event.blockId);
+
+            if (block) {
+                /// Корневой блок (не имеющих родителей)
+                let root = block.getRootBlock();
+
+                /// Если изменение не является результатом перемещения родительского блока
+                if (!(event.type === Blockly.Events.MOVE && block === root)) {
+                    console.log("ROOT", root.type, this._audibles);
+
+                    let nested_code_before = Blockly.JSON.statements[root.id];
+                    let block_code = Blockly.JSON.blockToCode(root);
+                    let nested_code_after = Blockly.JSON.statements[root.id];
+
+                    let nested_code = (nested_code_before === nested_code_after) ? null : nested_code_after;
+
+                    if (this._audibles.indexOf(root.type) >= 0) {
+                        this.callbacks.onChangeDeep(block_code, nested_code);
+
+                        is_deep_change = true;
+                    }
+                }
+            }
+
+            /// Если изменение - не глубокое, учесть этот случай
+            if (!is_deep_change) {
+                this.callbacks.onChange();
+            }
+        }
     }
 }
 

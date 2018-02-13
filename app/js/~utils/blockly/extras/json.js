@@ -6,20 +6,23 @@ Blockly.JSON.STC = Blockly.JSON.statementToCode;
 Blockly.JSON.WTC = Blockly.JSON.workspaceToCode;
 
 Blockly.JSON.workspaceToCode = function (block, name) {
-    Blockly.JSON.statements = [];
+    Blockly.JSON.statements = {};
 
     return Blockly.JSON.WTC(block, name);
 };
 
-Blockly.JSON.statementToCode = function(block, name) {
-
-    if (!Blockly.JSON.statements) {
-        Blockly.JSON.statements = [];
+Blockly.JSON.statementToCode = function(block, name, buffer=false) {
+    if (!buffer) {
+        return Blockly.JSON.STC(block, name);
     }
 
-    Blockly.JSON.statements.push(Blockly.JSON.STC(block, name));
+    if (!Blockly.JSON.statements) {
+        Blockly.JSON.statements = {};
+    }
 
-    return Blockly.JSON.statements.length - 1;
+    Blockly.JSON.statements[block.id] = (Blockly.JSON.STC(block, name));
+
+    return "REF";
 };
 
 Blockly.JSON.scrubNakedValue = function(line) {

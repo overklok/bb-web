@@ -48,7 +48,7 @@ let getArgument = (block, field_name, default_value, datatype, complex) => {
     } else if (complex) {
         // External number
         if (datatype === DATATYPES.STATMT) {
-            arg.value = Blockly.JSON.statementToCode(block, field_name);
+            arg.value = Blockly.JSON.statementToCode(block, field_name, true);
         } else {
             arg.value = Blockly.JSON.valueToCode(block, field_name, Blockly.JavaScript.ORDER_ATOMIC) || default_value;
             arg.type = DATATYPES.EXPRSN;

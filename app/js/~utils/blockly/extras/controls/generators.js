@@ -15,7 +15,7 @@ let BlocklyJSONGenerators = {
     },
 
     controls_repeat_ext: block => {
-        let branch = Blockly.JSON.statementToCode(block, 'DO');
+        let branch = Blockly.JSON.statementToCode(block, 'DO', false);
 
         let head = JSON.stringify({
             name: "controls_repeat_ext",
@@ -41,7 +41,7 @@ let BlocklyJSONGenerators = {
 
         do {
             condition_code = Blockly.JSON.valueToCode(block, 'IF' + n, Blockly.JSON.ORDER_NONE) || 0;
-            branch_code = Blockly.JSON.statementToCode(block, 'DO' + n);
+            branch_code = Blockly.JSON.statementToCode(block, 'DO' + n, false);
 
             if (n === 0) {
                 code += JSON.stringify({
@@ -65,7 +65,7 @@ let BlocklyJSONGenerators = {
         } while (block.getInput("IF" + n));
 
         if (block.getInput("ELSE")) {
-            branch_code = Blockly.JSON.statementToCode(block, 'ELSE');
+            branch_code = Blockly.JSON.statementToCode(block, 'ELSE', false);
 
             code += JSON.stringify({
                 name: "controls_if" + "." + POSTFIXES.ELSE,
