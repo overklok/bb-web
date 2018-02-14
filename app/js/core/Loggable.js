@@ -10,12 +10,16 @@
  * содержимое которого можно получить с помощью метода getDebugBuffer()
  */
 class Loggable {
-    constructor(in_console = true) {
+    constructor(options) {
+        let logOptions = options.logging || {};
+
+        let local = logOptions.local || false;
+
         this._debug_buffer = [];
 
         this._debug = {};
 
-        if (in_console) {
+        if (local) {
             this._bindConsole();
         } else {
             this._bindBuffer();
@@ -73,7 +77,7 @@ class Loggable {
                 });
 
                 /// Стандартное логирование
-                window.console[cfn]("[" + this.constructor.name + "]", arguments);
+                window.console[cfn].bind(window.console, "[" + this.constructor.name + "]")();
             }
         }
     }

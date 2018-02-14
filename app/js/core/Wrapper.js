@@ -20,8 +20,9 @@ import Loggable from './Loggable';
  * Каждый класс должен быть расположен в отдельном одноимённом файле.
  */
 class Wrapper extends Loggable {
-    constructor() {
-        super();
+    constructor(options) {
+        options = options || {};
+        super(options);
     }
 }
 

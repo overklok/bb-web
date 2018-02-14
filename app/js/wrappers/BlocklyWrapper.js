@@ -25,12 +25,16 @@ class BlocklyWrapper extends Wrapper {
         this._generators        = undefined;     // JS-генератор кода
         this._audibles          = undefined;     // Прослушиваемые типы блоков
 
+        this.silent            = false;          // "тихий" режим, не обрабатывать события
+
+        this._lastCodeMain      = undefined;     // последнее состояние главного кода
+
         this._callbacks = {
-            onChange: () => {
-                this._debug.warn("onChange default callback was called")
+            onChange: (statement) => {
+                this._debug.warn("onChangeMain default callback was called", statement)
             },
             onChangeDeep: (block_code, statement) => {
-                this._debug.warn("onChangeDeep default callback was called", block_code, statement)
+                this._debug.warn("onChangeAudible default callback was called", block_code, statement)
             }
         };
 
@@ -90,7 +94,11 @@ class BlocklyWrapper extends Wrapper {
             Blockly.Xml.domToWorkspace(this._state.code_buffer, this.workspace);
         }
 
-        this.workspace.addChangeListener(event => {this._onAudibleDeepChanges(event)});
+        this.workspace.addChangeListener(event => {
+            if (!this.silent) {
+                this._onAudibleDeepChanges(event)
+            }
+        });
         // window.addEventListener('resize', this._onResize, false);
 
         /// Адаптировать размер Blockly под начальный размер контейнера
@@ -157,6 +165,8 @@ class BlocklyWrapper extends Wrapper {
         let code = Blockly.JSON.workspaceToCode(this.workspace);
         let statements = Blockly.JSON.statements;
 
+        this._lastCodeMain = code;
+
         return {main: code, sub: statements};
     }
 
@@ -186,7 +196,7 @@ class BlocklyWrapper extends Wrapper {
         this._audibles = audibles;
     }
 
-    onChange(callback) {
+    onChangeMain(callback) {
         this._callbacks.onChange = callback;
     }
 
@@ -204,7 +214,7 @@ class BlocklyWrapper extends Wrapper {
  *                          - {string} код изменённого блока-родителя
      *                      - {string} вложенный код блока-родителя (если изменён)
      */
-    onChangeDeep(callback) {
+    onChangeAudible(callback) {
         this._callbacks.onChangeDeep = callback;
     }
 
@@ -253,7 +263,13 @@ class BlocklyWrapper extends Wrapper {
 
             /// Если изменение - не глубокое, учесть этот случай
             if (!is_deep_change) {
-                this._callbacks.onChange();
+                let code_after = Blockly.JSON.workspaceToCode(this.workspace);
+
+                if (this._lastCodeMain !== code_after) {
+                    this._callbacks.onChange(code_after);
+
+                    this._lastCodeMain = code_after;
+                }
             }
         }
     }

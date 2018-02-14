@@ -30,8 +30,8 @@ class LayoutModule extends Module {
     static get eventspace_name() {return "lay"}
     static get event_types() {return ["compose", "resize"]}
 
-    constructor(settings) {
-        super();
+    constructor(options) {
+        super(options);
 
         this._layout = undefined;
 

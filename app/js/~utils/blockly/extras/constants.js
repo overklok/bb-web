@@ -23,34 +23,34 @@ const POSTFIXES = {
 
 const CATEGORIES = {
     INDEX: {
-        colour: 36
+        colour: "#4E4BFF"
     },
     COLOUR: {
-        colour: 194
+        colour: "#ff8106"
     },
     BUTTON: {
-        colour: 230
+        colour: "#00a897"
     },
     BRIGHTNESS: {
-        colour: 152
+        colour: "#08938b"
     },
     EMIT: {
-        colour: 280
+        colour: "#53a633"
     },
     LINE: {
-        colour: 70
+        colour: "#a10088"
     },
     WAIT: {
-        colour: 300
+        colour: "#ffce75"
     },
     EVENTS: {
-        colour: 230
+        colour: "#0800a1"
     },
     MATH: {
-        colour: 100
+        colour: "#3200ff"
     },
     LOOP: {
-        colour: 100
+        colour: "#00a511"
     },
     LOGIC: {
         colour: "%{BKY_LOGIC_HUE}"

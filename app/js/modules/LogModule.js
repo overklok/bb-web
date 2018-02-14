@@ -16,7 +16,8 @@ class LogModule extends Module {
 
     static defaults() {
         return {
-            ticker_interval: 15000
+            modeDummy: false,
+            tickerInterval: 15000
         }
     }
 
@@ -29,9 +30,12 @@ class LogModule extends Module {
 
         this._client_data = {};
 
-        this._collectClientData();
-
-        this.runTicker(true);
+        if (this._options.modeDummy) {
+            this._debug.log('Working in DUMMY mode');
+        } else {
+            this._collectClientData();
+            this.runTicker(true);
+        }
     }
 
     /**
@@ -45,6 +49,8 @@ class LogModule extends Module {
      * @returns {{userData: {}|*, logs: *}}
      */
     collectLogs(logs) {
+        if (this._options.modeDummy) {return true}
+
         return new Promise(resolve => {
             resolve({
                 userData: this._client_data,
@@ -54,6 +60,8 @@ class LogModule extends Module {
     }
 
     runTicker(auto=true) {
+        if (this._options.modeDummy) {return true}
+
         if (!auto) {
             this._state.auto = false;
         }
@@ -63,10 +71,12 @@ class LogModule extends Module {
                 /// emit tick event but only if no onbeforeupload external event happened
                 this.emitEvent("tick");
             }
-        }, this._options.ticker_interval);
+        }, this._options.tickerInterval);
     }
 
     _collectClientData() {
+        if (this._options.modeDummy) {return true}
+
         let identifier = new IdentifierWrapper();
 
         this._client_data = {

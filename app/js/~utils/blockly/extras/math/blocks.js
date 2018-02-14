@@ -37,11 +37,13 @@ let JSONBlocks = {
                 args0: [
                     {
                         type:       "input_value",
-                        name:       "A"
+                        name:       "A",
+                        check:      FIELDTYPES.NUMBER
                     },
                     {
                         type:       "input_value",
-                        name:       "B"
+                        name:       "B",
+                        check:      FIELDTYPES.NUMBER
                     }
                 ],
                 inputsInline:   true,
@@ -62,11 +64,13 @@ let JSONBlocks = {
                 args0: [
                     {
                         type:       "input_value",
-                        name:       "A"
+                        name:       "A",
+                        check:      FIELDTYPES.NUMBER
                     },
                     {
                         type:       "input_value",
-                        name:       "B"
+                        name:       "B",
+                        check:      FIELDTYPES.NUMBER
                     }
                 ],
                 inputsInline:   true,

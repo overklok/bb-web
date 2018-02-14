@@ -6,8 +6,8 @@ class BreadboardModule extends Module {
     static get eventspace_name() {return "bb"}
     static get event_types() {return []}
 
-    constructor(settings) {
-        super();
+    constructor(options) {
+        super(options);
 
         this._board = new BreadboardWrapper();
     }

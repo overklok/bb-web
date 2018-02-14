@@ -4,10 +4,10 @@ import FileWrapper from '../wrappers/FileWrapper';
 
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["switch", "launch", "load-tree", "unload-tree"]}
+    static get event_types() {return ["switch", "check", "launch", "load-tree", "unload-tree"]}
 
-    constructor(settings) {
-        super();
+    constructor(options) {
+        super(options);
 
         this._filer = new FileWrapper();
 
@@ -33,6 +33,10 @@ class GUIModule extends Module {
             this.emitEvent("switch", this._state.switched);
 
             this._debug.log('Switch clicked: ', this._state.switched);
+        });
+
+        $("#check-btn").click(() => {
+            this.emitEvent("check");
         });
 
         $("#launch-btn").click(() => {

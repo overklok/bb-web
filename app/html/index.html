@@ -17,6 +17,7 @@
                 <button id="switch-btn">Switch Layout</button>
                 <!--<button id="upgrade-btn">Upgrade Board</button>-->
                 <button id="launch-btn">Send Code</button>
+                <button id="check-btn">Check Code</button>
 
                 <button id="unload-btn">Unload WS to clipboard</button>
                 <input type="file" id="load-btn" />
@@ -38,8 +39,9 @@
         app.configure({
             isInternal: false,
             allBlocks: true,
-            offline: true,
-            isolated: true
+            offline: false,
+            isolated: true,
+            noRemoteLogs: true
         });
 
         app.run();

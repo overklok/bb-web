@@ -53,7 +53,8 @@ class Module extends Loggable {
     }
 
     constructor(options) {
-        super();
+        options = options || {};
+        super(options);
 
         /// Загрузить опции по умолчанию, перекрыть их кастомными опциями
         this.__defaults = this.constructor.defaults();

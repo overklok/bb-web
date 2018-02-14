@@ -50,7 +50,13 @@ class Application {
                 modeDummy: config.isolated
             },
             log: {
+                modeDummy: config.noRemoteLogs
+            }
+        };
 
+        for (let conf_item in this._config) {
+            this._config[conf_item].logging = {
+                local: config.noRemoteLogs
             }
         }
     }
@@ -128,7 +134,7 @@ class Application {
         this._dispatcher.on('gui:launch', () => {
             let code = this.ws.getCode();
             console.log(code);
-            this.ls.codeUpdate(code);
+            this.ls.codeUpdate(code.main);
             // this._dispatcher.only(['gui:stop', 'ls:command']);
         });
 
@@ -157,8 +163,18 @@ class Application {
             this.gui.saveToFile(tree);
         });
 
-        this._dispatcher.on('gui:load-tree', (tree) => {
+        this._dispatcher.on('gui:load-tree', tree => {
             this.ws.loadTree(tree);
+        });
+
+        this._dispatcher.on('gui:check', () => {
+            let handlers = this.ws.getCode();
+            this.gs.commitCode(handlers);
+        });
+
+        this._dispatcher.on('ws:change', handler => {
+            // this.ls.codeUpdate(code);
+            console.log("WS HDLR", handler);
         });
 
         this._dispatcher.on('log:tick', () => {
