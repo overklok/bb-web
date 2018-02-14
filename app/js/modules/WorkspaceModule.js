@@ -17,7 +17,8 @@ class WorkspaceModule extends Module {
 
     static defaults() {
         return {
-            allBlocks: false
+            allBlocks: false,
+            useScrollbars: false
         }
     }
 
@@ -35,7 +36,7 @@ class WorkspaceModule extends Module {
 
     include(dom_node) {
         if (dom_node !== undefined) {
-            this._blockly.include(dom_node);
+            this._blockly.include(dom_node, this._options.useScrollbars);
             this._display = true;
         }
 
@@ -62,8 +63,8 @@ class WorkspaceModule extends Module {
         this._blockly.highlightBlock(block_id);
     }
 
-    getCode() {
-        return this._blockly.getJSONCode();
+    getHandlers() {
+        return this._blockly.getJSONHandlers();
     }
 
     getTree() {

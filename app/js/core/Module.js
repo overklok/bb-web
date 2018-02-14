@@ -115,7 +115,8 @@ class Module extends Loggable {
 
         if (this._event_listeners[name] === undefined || strict) {
             this._event_listeners[name] = function (data) {
-                console.warn("Unattached listener `" + name + "` called with data", data);
+                console.warn("Unattached listener `" + name + "` called with data", data,
+                    "(did you subscribe dispatcher to this module?)");
             };
         }
     }

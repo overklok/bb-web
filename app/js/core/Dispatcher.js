@@ -130,6 +130,7 @@ class Dispatcher {
     /**
      * Прослушивать все типы событий, кроме заданных
      *
+     * TODO
      * @param eventspace
      */
     aside(eventspace) {

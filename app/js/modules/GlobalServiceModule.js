@@ -15,7 +15,7 @@ class GlobalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "gs"}
-    static get event_types()        {return ["error"]};
+    static get event_types()        {return ["error"]}
 
     static defaults() {
         return {
@@ -36,7 +36,7 @@ class GlobalServiceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
-    commitCode(meta, handlers) {
+    commitHandlers(meta, handlers) {
         if (this._options.modeDummy) {return true}
 
         let packet = {meta: meta, handlers: handlers};
@@ -45,7 +45,7 @@ class GlobalServiceModule extends Module {
         // data.append("json", JSON.stringify(packet));
 
         let request = {
-            mode: 'no-cors',
+            // mode: 'no-cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ class GlobalServiceModule extends Module {
 
         return fetch(URL_REQUESTS.CHECK_HANDLERS, request)
             .then(response => {
-                return response;
+                return response.json();
             }).catch(err => {
                 this._debug.error(err);
                 this.emitEvent('error', err);
@@ -76,7 +76,7 @@ class GlobalServiceModule extends Module {
         console.log(log_bunch);
 
         let request = {
-            mode: 'no-cors',
+            // mode: 'no-cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

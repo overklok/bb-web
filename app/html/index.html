@@ -37,11 +37,11 @@
         var app = new Application();
 
         app.configure({
-            isInternal: false,
-            allBlocks: true,
-            offline: false,
-            isolated: true,
-            noRemoteLogs: true
+            isInternal: false,  // на другом хосте
+            allBlocks: true,    // все блоки
+            offline: false,     // без сервера
+            isolated: true,     // без платы
+            noRemoteLogs: true  // без удалённого логирования
         });
 
         app.run();

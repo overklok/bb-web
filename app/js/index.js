@@ -5,6 +5,7 @@ import GUIModule            from "./modules/GUIModule";
 import LayoutModule         from "./modules/LayoutModule";
 import BreadboardModule     from "./modules/BreadboardModule";
 import WorkspaceModule      from "./modules/WorkspaceModule";
+import InstructorModule     from './modules/InstructorModule';
 import LocalServiceModule   from "./modules/LocalServiceModule";
 import GlobalServiceModule  from "./modules/GlobalServiceModule";
 
@@ -71,7 +72,7 @@ class Application {
         this._subscribeToModules();
 
         this._dispatcher.only(['ls:connect']);
-        this._dispatcher.always(['ls:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
+        this._dispatcher.always(['ls:*', 'ws:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
     }
 
     /**
@@ -88,6 +89,7 @@ class Application {
         this.lay    = new LayoutModule(this._config.lay);
         this.ws     = new WorkspaceModule(this._config.ws);                 // Blockly
         this.bb     = new BreadboardModule(this._config.bb);                // макетная плата - графика
+        this.ins    = new InstructorModule(this._config.ins);               // дед
         this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
     }
@@ -96,6 +98,8 @@ class Application {
         this._dispatcher.subscribe(this.log);
         this._dispatcher.subscribe(this.gui);
         this._dispatcher.subscribe(this.lay);
+        this._dispatcher.subscribe(this.ws);
+        this._dispatcher.subscribe(this.ins);
         this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
     }
@@ -111,8 +115,6 @@ class Application {
                 .then(urls  => this.ls.firmwareUpgrade(urls))
                 /// Разрешить обрабатывать события платы и GUI
                 .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
-                /// Обработать ошибки
-                .catch(err  => {throw err})
         });
 
         this._dispatcher.on('ls:command', (data) => {
@@ -132,9 +134,9 @@ class Application {
         });
 
         this._dispatcher.on('gui:launch', () => {
-            let code = this.ws.getCode();
-            console.log(code);
-            this.ls.codeUpdate(code.main);
+            let handlers = this.ws.getHandlers();
+            console.log(handler);
+            this.ls.updateHandlers(code.main);
             // this._dispatcher.only(['gui:stop', 'ls:command']);
         });
 
@@ -149,17 +151,16 @@ class Application {
 
 
             if (on === true) {
-                this.lay.compose(0x00);
+                this.lay.compose("default");
             }
 
             if (on === false) {
-                this.lay.compose(0xFF);
+                this.lay.compose("debug");
             }
         });
 
         this._dispatcher.on('gui:unload-tree', () => {
             let tree = this.ws.getTree();
-
             this.gui.saveToFile(tree);
         });
 
@@ -168,13 +169,14 @@ class Application {
         });
 
         this._dispatcher.on('gui:check', () => {
-            let handlers = this.ws.getCode();
-            this.gs.commitCode(handlers);
+            let handlers = this.ws.getHandlers();
+            this.gs.commitHandlers(handlers)
+                .then(response => {console.log(response)})
         });
 
-        this._dispatcher.on('ws:change', handler => {
-            // this.ls.codeUpdate(code);
-            console.log("WS HDLR", handler);
+        this._dispatcher.on('ws:change', handlers => {
+            this.ls.updateHandlers(handlers);
+            // console.log("WS HDLR", handlers);
         });
 
         this._dispatcher.on('log:tick', () => {
@@ -182,7 +184,6 @@ class Application {
                 .then(logs      => this.log.collectLogs(logs))
                 .then(log_bunch => this.gs.reportLogBunch(log_bunch))
                 .then(()        => this.log.runTicker())
-                .catch(err      => console.error('[LOGERR]', err));
         });
 
         /**

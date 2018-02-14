@@ -19,8 +19,8 @@ const PANE_IDS = {
 };
 
 const MODES = {
-    DEFAULT: 0x00,
-    DEBUG: 0xFF
+    DEFAULT: "default",
+    DEBUG: "debug"
 };
 
 /// jQuery Layout conflict fix

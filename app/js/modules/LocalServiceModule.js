@@ -41,7 +41,7 @@ class LocalServiceModule extends Module {
      *
      * @param {string} code код
      */
-    codeUpdate(code) {
+    updateHandlers(code) {
         return new Promise(resolve => {
             if (this._options.modeDummy) {resolve()}
 

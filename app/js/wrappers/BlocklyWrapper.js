@@ -62,8 +62,9 @@ class BlocklyWrapper extends Wrapper {
      * Встроить Blockly в DOM-дерево
      *
      * @param {Object} dom_node DOM-узел, в который нужно вставить Blockly
+     * @param {Boolean} use_scrollbars использовать ли скролл-бары
      */
-    include(dom_node) {
+    include(dom_node, use_scrollbars=false) {
         /// Определить узел вставки контейнера
         this.area        = dom_node;
         /// Сгенерировать контейнеры для Blockly и для типов блоков
@@ -86,7 +87,8 @@ class BlocklyWrapper extends Wrapper {
                 toolbox: this.toolbox,
                 zoom: {
                     startScale: 0.7
-                }
+                },
+                scrollbars: use_scrollbars
             }
         );
 
@@ -161,7 +163,7 @@ class BlocklyWrapper extends Wrapper {
         return Blockly.Xml.domToText(xml);
     }
 
-    getJSONCode() {
+    getJSONHandlers() {
         let code = Blockly.JSON.workspaceToCode(this.workspace);
         let statements = Blockly.JSON.statements;
 
