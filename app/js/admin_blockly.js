@@ -1,13 +1,6 @@
 import Dispatcher from "./core/Dispatcher";
 
-import LogModule            from "./modules/LogModule";
-import GUIModule            from "./modules/GUIModule";
-import LayoutModule         from "./modules/LayoutModule";
-import BreadboardModule     from "./modules/BreadboardModule";
 import WorkspaceModule      from "./modules/WorkspaceModule";
-import InstructorModule     from './modules/InstructorModule';
-import LocalServiceModule   from "./modules/LocalServiceModule";
-import GlobalServiceModule  from "./modules/GlobalServiceModule";
 
 class Application {
     constructor() {
@@ -65,8 +58,20 @@ class Application {
         return this.ws.getHandlers();
     }
 
+    getCodeXml() {
+        return this.ws.getTree();
+    }
+
+    setCodeXml(code_xml) {
+        this.ws.loadTree(code_xml);
+    }
+
     onChange(callback) {
         this._on_change_callback = callback;
+    }
+
+    resize() {
+        this.ws.resize();
     }
 
     /**

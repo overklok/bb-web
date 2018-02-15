@@ -190,6 +190,8 @@ class BlocklyWrapper extends Wrapper {
     }
 
     setXMLText(text) {
+        console.log(this.workspace);
+
         let dom = Blockly.Xml.textToDom(text);
         Blockly.Xml.domToWorkspace(dom, this.workspace);
     }
