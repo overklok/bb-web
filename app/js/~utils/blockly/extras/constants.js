@@ -2,7 +2,8 @@ const DATATYPES = {
     EXPRSN: "expression",
     NUMBER: "number",
     STRING: "string",
-    STATMT: "statement"
+    STATMT: "statement",
+    STMBTN: "statement_and_btn"
 };
 
 const FIELDTYPES = {

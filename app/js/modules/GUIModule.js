@@ -11,11 +11,17 @@ class GUIModule extends Module {
 
         this._filer = new FileWrapper();
 
+        this._button_codes = {};
+
         this._state = {
             switched: true // debug only
         };
 
         this._subscribeToWrapperEvents();
+    }
+
+    setButtonCodes(button_codes) {
+        this._button_codes = button_codes;
     }
 
     saveToFile(str) {
@@ -25,6 +31,10 @@ class GUIModule extends Module {
     loadFromFile(files) {
         this._filer.readStrFromFile(files[0])
             .then(str => this.emitEvent("load-tree", str));
+    }
+
+    _filterKeypress() {
+        //TODO
     }
 
     _subscribeToWrapperEvents() {
@@ -49,7 +59,9 @@ class GUIModule extends Module {
 
         $("#unload-btn").click(() => {
             this.emitEvent("unload-tree");
-        })
+        });
+
+
     }
 }
 

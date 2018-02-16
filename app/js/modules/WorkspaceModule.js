@@ -89,53 +89,37 @@ class WorkspaceModule extends Module {
         /**
          * При изменении главного кода
          */
-        this._blockly.onChangeMain(main_code => {
-            this.emitEvent("change", {
-                main: {
-                    commands:   main_code,
-                    btn:        null
-                },
-            });
-        });
+        // this._blockly.onChangeMain(main_code => {
+        //     this.emitEvent("change", {
+        //         main: {
+        //             commands:   main_code,
+        //             btn:        "None"
+        //         },
+        //     });
+        // });
 
-        this._blockly.onChangeAudible((block_code, statement_code) => {
-            let audible_params  = WorkspaceModule._preprocessAudibleCode(block_code, statement_code);
-            statement_code      = WorkspaceModule._preprocessStatementCode(statement_code);
+        this._blockly.onChangeAudible((audible_id, audible_args) => {
+            audible_args.code = WorkspaceModule._preprocessCode(audible_args.code);
 
             let data_to_send = {};
 
-            data_to_send[audible_params.block_id] = {
-                commands:   statement_code,
-                btn:        audible_params.button_code
+            data_to_send[audible_id] = {
+                code:   audible_args.code,
+                btn:    audible_args.btn
             };
 
             this.emitEvent("change", data_to_send);
         });
     }
 
-    static _preprocessAudibleCode(block_code) {
-        if (!block_code) throw new TypeError("An event was emitted by wrapper but no any data for audible was passed");
+    static _preprocessCode(code) {
+        if (!code) return code;
 
-        if (block_code.slice(-1) === ",") {
-            block_code = block_code.slice(0, -1);
+        if (code.slice(-1) === ",") {
+            code = code.slice(0, -1);
         }
 
-        let block_JSON = JSON.parse(block_code);
-
-        return {
-            block_id: block_JSON.block_id,
-            button_code: block_JSON.args[0]
-        };
-    }
-
-    static _preprocessStatementCode(statement_code) {
-        if (!statement_code) return statement_code;
-
-        if (statement_code.slice(-1) === ",") {
-            statement_code = statement_code.slice(0, -1);
-        }
-
-        return statement_code;
+        return code;
     }
 }
 

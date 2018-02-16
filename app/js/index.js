@@ -175,7 +175,8 @@ class Application {
         });
 
         this._dispatcher.on('ws:change', handlers => {
-            this.ls.updateHandlers(handlers);
+            console.log(handlers);
+            // this.ls.updateHandlers(handlers);
             // console.log("WS HDLR", handlers);
         });
 

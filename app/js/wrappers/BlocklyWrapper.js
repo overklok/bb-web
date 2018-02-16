@@ -33,7 +33,7 @@ class BlocklyWrapper extends Wrapper {
             onChange: (statement) => {
                 this._debug.warn("onChangeMain default callback was called", statement)
             },
-            onChangeDeep: (block_code, statement) => {
+            onChangeAudible: (block_code, statement) => {
                 this._debug.warn("onChangeAudible default callback was called", block_code, statement)
             }
         };
@@ -98,7 +98,7 @@ class BlocklyWrapper extends Wrapper {
 
         this.workspace.addChangeListener(event => {
             if (!this.silent) {
-                this._onAudibleDeepChanges(event)
+                this._filterEvent(event)
             }
         });
         // window.addEventListener('resize', this._onResize, false);
@@ -165,7 +165,7 @@ class BlocklyWrapper extends Wrapper {
 
     getJSONHandlers() {
         let code = Blockly.JSON.workspaceToCode(this.workspace);
-        let statements = Blockly.JSON.statements;
+        let statements = Blockly.JSON.audible_args;
 
         this._lastCodeMain = code;
 
@@ -211,7 +211,7 @@ class BlocklyWrapper extends Wrapper {
      *  - изменение параметров блоков, заданных в _audibles
      *  - изменение параметров блоков, вложенных в блоки, заданные в _audibles
      *
-     *  О пределе уровня вложенности см. [[_onAudibleDeepChanges()]]
+     *  О пределе уровня вложенности см. [[_filterEvent()]]
      *
      * @param callback  функция обратного вызова, в которую при глубоких изменениях будут передаваться
      *                  следующие параметры:
@@ -219,7 +219,7 @@ class BlocklyWrapper extends Wrapper {
      *                      - {string} вложенный код блока-родителя (если изменён)
      */
     onChangeAudible(callback) {
-        this._callbacks.onChangeDeep = callback;
+        this._callbacks.onChangeAudible = callback;
     }
 
     /**
@@ -233,47 +233,68 @@ class BlocklyWrapper extends Wrapper {
         Blockly.svgResize(this.workspace);
     }
 
-    _onAudibleDeepChanges(event) {
+    _filterEvent(event) {
         if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
-
             let is_deep_change = false;
 
-            let block = this.workspace.getBlockById(event.blockId);
+            let block = undefined;
+            let is_orphan = false;
+
+            if (event.oldParentId) {
+                block = this.workspace.getBlockById(event.oldParentId);
+                is_orphan = true;
+            } else {
+                block = this.workspace.getBlockById(event.blockId);
+            }
 
             if (block) {
-                /// Корневой блок (не имеющих родителей)
+                /// Корневой блок (не имеющий родителей)
                 let root = block.getRootBlock();
 
-                /// Если изменение не является результатом перемещения родительского блока
-                if (!(event.type === Blockly.Events.MOVE && block === root)) {
-
-                    if (typeof Blockly.JSON.statements === "undefined") {
-                        Blockly.JSON.statements = {};
-                    }
-
-                    let nested_code_before = Blockly.JSON.statements[root.id];
-                    let block_code = Blockly.JSON.blockToCode(root);
-                    let nested_code_after = Blockly.JSON.statements[root.id];
-
-                    let nested_code = (nested_code_before === nested_code_after) ? null : nested_code_after;
-
-                    if (this._audibles.indexOf(root.type) >= 0) {
-                        this._callbacks.onChangeDeep(block_code, nested_code);
-
+                /// Если этот блок нужно глубоко прослушивать (напр., это обработчик)
+                if (this._audibles.indexOf(root.type) >= 0) {
+                    /// Если изменение не является результатом перемещения родительского блока
+                    if (!(event.type === Blockly.Events.MOVE && block === root && !is_orphan)) {
+                        /// отметить, что изменение - глубокое
                         is_deep_change = true;
-                    }
-                }
-            }
+
+                        /// если нет объекта с данными обработчиков, создать пустой
+                        if (typeof Blockly.JSON.audible_args === "undefined") {
+                            Blockly.JSON.audible_args = {};
+                        }
+
+                        /// зафиксировать обработчик "до"
+                        let audible_args_before = Blockly.JSON.audible_args[root.id];
+                        /// обновить информацию об обработчике
+                        Blockly.JSON.blockToCode(root);
+                        /// зафиксировать обработчик "после"
+                        let audible_args_after = Blockly.JSON.audible_args[root.id];
+
+                        /// по умолчанию
+                        let audible_args = {
+                            btn: audible_args_after.btn
+                        };
+
+                        /// если код обработчика изменился
+                        if (!audible_args_before || (audible_args_before.code !== audible_args_after.code)) {
+                            audible_args["code"] = audible_args_after.code;
+                        }
+
+                        this._callbacks.onChangeAudible(root.id, audible_args);
+
+                    } // <если изменение не является результатом перемещения родительского блока>
+                } // <если блок в списке _audibles>
+            } // <если событие для блока>
 
             /// Если изменение - не глубокое, учесть этот случай
             if (!is_deep_change) {
-                let code_after = Blockly.JSON.workspaceToCode(this.workspace);
-
-                if (this._lastCodeMain !== code_after) {
-                    this._callbacks.onChange(code_after);
-
-                    this._lastCodeMain = code_after;
-                }
+                // let code_after = Blockly.JSON.workspaceToCode(this.workspace);
+                //
+                // if (this._lastCodeMain !== code_after) {
+                //     this._callbacks.onChange(code_after);
+                //
+                //     this._lastCodeMain = code_after;
+                // }
             }
         }
     }
