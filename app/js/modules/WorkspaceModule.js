@@ -104,22 +104,29 @@ class WorkspaceModule extends Module {
             let data_to_send = {};
 
             data_to_send[audible_id] = {
-                code:   audible_args.code,
-                btn:    audible_args.btn
+                btn:        audible_args.btn
             };
+
+            if (audible_args.code.length > 0) {
+                data_to_send[audible_id].commands = audible_args.code;
+            }
 
             this.emitEvent("change", data_to_send);
         });
     }
 
     static _preprocessCode(code) {
-        if (!code) return code;
+        if (!code) return [];
+
+        code = code.trim();
 
         if (code.slice(-1) === ",") {
             code = code.slice(0, -1);
         }
 
-        return code;
+        console.log(code);
+
+        return JSON.parse("[" + code + "]");
     }
 }
 

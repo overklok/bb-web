@@ -11,7 +11,7 @@ let BlocklyJSONGenerators = {
             args: [
                 getArgument(block, "SECS", 1, DATATYPES.NUMBER, true)
             ]
-        })
+        }) + ","
     },
 
     controls_repeat_ext: block => {

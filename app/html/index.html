@@ -16,10 +16,12 @@
                 East - North
                 <button id="switch-btn">Switch Layout</button>
                 <!--<button id="upgrade-btn">Upgrade Board</button>-->
-                <button id="launch-btn">Send Code</button>
                 <button id="check-btn">Check Code</button>
 
-                <button id="unload-btn">Unload WS to clipboard</button>
+                <button id="launch-btn">RUN Code</button>
+                <button id="stop-btn">STOP Code</button>
+
+                <button id="unload-btn">Unload Code</button>
                 <input type="file" id="load-btn" />
             </div>
             <div class="ui-layout-center" id="east-center"> East - Center </div>
@@ -40,8 +42,9 @@
             isInternal: false,  // на другом хосте
             allBlocks: true,    // все блоки
             offline: false,     // без сервера
-            isolated: true,     // без платы
-            noRemoteLogs: true  // без удалённого логирования
+            isolated: false,     // без платы
+            noRemoteLogs: true, // без удалённого логирования
+            anyKey: true,       // обрабатывать нажатия всех клавиш
         });
 
         app.run();

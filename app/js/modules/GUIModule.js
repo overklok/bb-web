@@ -4,7 +4,13 @@ import FileWrapper from '../wrappers/FileWrapper';
 
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["switch", "check", "launch", "load-tree", "unload-tree"]}
+    static get event_types() {return ["switch", "check", "launch", "stop", "keyup", "load-tree", "unload-tree"]}
+
+    static defaults() {
+        return {
+            anyKey: false,
+        }
+    }
 
     constructor(options) {
         super(options);
@@ -21,6 +27,10 @@ class GUIModule extends Module {
     }
 
     setButtonCodes(button_codes) {
+        if (!Array.isArray(button_codes)) {
+            throw new TypeError("setButtonCodes(): button codes should be an Array instance");
+        }
+
         this._button_codes = button_codes;
     }
 
@@ -33,8 +43,12 @@ class GUIModule extends Module {
             .then(str => this.emitEvent("load-tree", str));
     }
 
-    _filterKeypress() {
-        //TODO
+    _filterKeyEvent(keycode) {
+        if (keycode in this._button_codes || this._options.anyKey) {
+            return keycode;
+        }
+
+        return false;
     }
 
     _subscribeToWrapperEvents() {
@@ -53,6 +67,10 @@ class GUIModule extends Module {
             this.emitEvent("launch");
         });
 
+        $("#stop-btn").click(() => {
+            this.emitEvent("stop");
+        });
+
         $(" #load-btn").change((evt) => {
             this.loadFromFile(evt.target.files);
         });
@@ -61,7 +79,11 @@ class GUIModule extends Module {
             this.emitEvent("unload-tree");
         });
 
-
+        $(document).keyup(event => {
+            if (this._filterKeyEvent(event.which)) {
+                this.emitEvent("keyup", event.which);
+            }
+        });
     }
 }
 

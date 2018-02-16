@@ -32,7 +32,7 @@ class Application {
 
         this._config = {
             gui: {
-
+                anyKey: config.anyKey
             },
             lay: {
 
@@ -92,6 +92,8 @@ class Application {
         this.ins    = new InstructorModule(this._config.ins);               // дед
         this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
+
+        this.gui.setButtonCodes([81, 87, 69]);
     }
 
     _subscribeToModules() {
@@ -122,10 +124,14 @@ class Application {
             this.ws.highlightBlock(data.block_id);
         });
 
+        this._dispatcher.on('ls:finish', () => {
+            this.ws.highlightBlock(null);
+        });
+
         /**
          * Когда разметка скомпонована
          */
-        this._dispatcher.on('lay:compose', (data) => {
+        this._dispatcher.on('lay:compose', data => {
             this.ws.include(data.editor);
             this.bb.inject(data.board);
 
@@ -135,9 +141,15 @@ class Application {
 
         this._dispatcher.on('gui:launch', () => {
             let handlers = this.ws.getHandlers();
-            console.log(handler);
-            this.ls.updateHandlers(code.main);
+            let code = WorkspaceModule._preprocessCode(handlers.main);
+
+            this.ls.updateHandlers({main: {commands: code, btn: "None"}});
             // this._dispatcher.only(['gui:stop', 'ls:command']);
+        });
+
+        this._dispatcher.on('gui:stop', data => {
+            this.ls.stop();
+            this.ws.highlightBlock(null);
         });
 
         /**
@@ -174,9 +186,14 @@ class Application {
                 .then(response => {console.log(response)})
         });
 
+        this._dispatcher.on('gui:keyup', button_code => {
+            this.ls.keyUp(button_code);
+            console.log('keyup', button_code);
+        });
+
         this._dispatcher.on('ws:change', handlers => {
-            console.log(handlers);
-            // this.ls.updateHandlers(handlers);
+            // console.log(handlers);
+            this.ls.updateHandlers(handlers);
             // console.log("WS HDLR", handlers);
         });
 

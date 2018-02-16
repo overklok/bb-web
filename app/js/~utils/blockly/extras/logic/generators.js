@@ -32,7 +32,7 @@ let BlocklyJSONGenerators = {
         let argument0 = Blockly.JSON.valueToCode(block, 'A', order) || '0';
         let argument1 = Blockly.JSON.valueToCode(block, 'B', order) || '0';
 
-        let code = argument0 + ' < ' + argument1;
+        let code = argument0 + ' << ' + argument1;
 
         return [code, order];
     },
@@ -43,7 +43,7 @@ let BlocklyJSONGenerators = {
         let argument0 = Blockly.JSON.valueToCode(block, 'A', order) || '0';
         let argument1 = Blockly.JSON.valueToCode(block, 'B', order) || '0';
 
-        let code = argument0 + ' > ' + argument1;
+        let code = argument0 + ' >> ' + argument1;
 
         return [code, order];
     },
