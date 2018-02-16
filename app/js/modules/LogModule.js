@@ -59,6 +59,13 @@ class LogModule extends Module {
         });
     }
 
+    /**
+     * Запустить повторяющийся таймер
+     * для периодического сбора лог-записей
+     *
+     * @param auto {boolean} включить таймер / авто-режим
+     * @returns {boolean} true, если модуль в холостом режиме
+     */
     runTicker(auto=true) {
         if (this._options.modeDummy) {return true}
 
@@ -74,6 +81,14 @@ class LogModule extends Module {
         }, this._options.tickerInterval);
     }
 
+    /**
+     * Собрать данные о клиенте
+     *
+     * Данные включаются в каждый лог-пакет для идентификации клиента пользователя
+     *
+     * @returns {boolean} true, если режим холостой
+     * @private
+     */
     _collectClientData() {
         if (this._options.modeDummy) {return true}
 

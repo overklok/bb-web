@@ -2,15 +2,9 @@ import Module from '../core/Module';
 
 import Cookies from 'js-cookie';
 
-// TODO: сделать динамическим через конфиг
-const ORIGIN = 'http://127.0.0.1:8000';
-
-const URL_REQUESTS = {
-    FIRMWARE:   ORIGIN      + '/fwsvc/geturls/last',
-    LOG_BUNCH:  ORIGIN      + '/logsvc/logbunch',
-    CHECK_HANDLERS: ORIGIN  + '/coursesvc/check'
-};
-
+/**
+ * Модулья для работы с глобальным сервером
+ */
 class GlobalServiceModule extends Module {
 // public:
 
@@ -19,6 +13,12 @@ class GlobalServiceModule extends Module {
 
     static defaults() {
         return {
+            origin: 'http://127.0.0.1:8000',
+            api: {
+                firmware: '/fwsvc/geturls/last',
+                log_bunch: '/logsvc/logbunch',
+                check_handlers: '/coursesvc/check',
+            },
             csrfRequired: true,
             modeDummy: false
         }
@@ -36,6 +36,13 @@ class GlobalServiceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    /**
+     * Отправить код на проверку
+     *
+     * @param meta      Информация о текущем задании
+     * @param handlers  Коды (основной и обработчики)
+     * @returns {Promise}   JSON-ответ с результатом проверки / undefined, если в холостом режиме
+     */
     commitHandlers(meta, handlers) {
         if (this._options.modeDummy) {return true}
 
@@ -58,7 +65,7 @@ class GlobalServiceModule extends Module {
             body: JSON.stringify(packet)
         };
 
-        return fetch(URL_REQUESTS.CHECK_HANDLERS, request)
+        return fetch(this._options.origin + this._options.api.check_handlers, request)
             .then(response => {
                 return response.json();
             }).catch(err => {
@@ -67,8 +74,14 @@ class GlobalServiceModule extends Module {
             });
     }
 
+    /**
+     * Отправить лог-записи
+     *
+     * @param log_bunch собранный пакет лог-записей
+     * @returns {Promise} Ответ сервера / undefined, если в холостом режиме
+     */
     reportLogBunch(log_bunch) {
-        if (this._options.modeDummy) {return true}
+        if (this._options.modeDummy) {return new Promise(resolve => {resolve()})}
 
         // let data = new FormData();
         // data.append("json", JSON.stringify(log_bunch));
@@ -89,7 +102,7 @@ class GlobalServiceModule extends Module {
             body: JSON.stringify(log_bunch)
         };
 
-        return fetch(URL_REQUESTS.LOG_BUNCH, request)
+        return fetch(this._options.origin + this._options.api.log_bunch, request)
             .then(response => {
                 return response;
             }).catch(err => {
@@ -98,10 +111,15 @@ class GlobalServiceModule extends Module {
             });
     }
 
+    /**
+     * Отправить запрос на получение ссылок на прошивку платы
+     *
+     * @returns {Promise} массив ссылок на файлы прошивки платы / [], если в холостом режиме
+     */
     getUpgradeURLs() {
-        if (this._options.modeDummy) {return true}
+        if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
 
-        return fetch(URL_REQUESTS.FIRMWARE)
+        return fetch(this._options.origin + this._options.api.firmware)
             .then(response => {
                 return response.json();
             }).catch(err => {
@@ -110,6 +128,12 @@ class GlobalServiceModule extends Module {
             });
     }
 
+    /**
+     * Получить CSRF-токен (если есть)
+     *
+     * @returns {boolean} true, если модуль в холостом режиме
+     * @private
+     */
     _configureCSRF() {
         if (this._options.modeDummy) {return true}
 

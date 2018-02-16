@@ -148,7 +148,7 @@ class Application {
         });
 
         this._dispatcher.on('gui:stop', data => {
-            this.ls.stop();
+            this.ls.stopExecution();
             this.ws.highlightBlock(null);
         });
 
@@ -171,12 +171,22 @@ class Application {
             }
         });
 
-        this._dispatcher.on('gui:unload-tree', () => {
+        this._dispatcher.on('gui:switch1', () => {
+            this.lay.switchMode("default", "simple")
+                .then(() => {this.lay.switchMode("simple", "default")})
+        });
+
+        this._dispatcher.on('gui:switch2', () => {
+            this.lay.switchMode("simple", "default")
+                .then(() => {console.log("testicular")})
+        });
+
+        this._dispatcher.on('gui:unload-file', () => {
             let tree = this.ws.getTree();
             this.gui.saveToFile(tree);
         });
 
-        this._dispatcher.on('gui:load-tree', tree => {
+        this._dispatcher.on('gui:load-file', tree => {
             this.ws.loadTree(tree);
         });
 
@@ -187,7 +197,7 @@ class Application {
         });
 
         this._dispatcher.on('gui:keyup', button_code => {
-            this.ls.keyUp(button_code);
+            this.ls.registerKeyUp(button_code);
             console.log('keyup', button_code);
         });
 

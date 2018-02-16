@@ -26,63 +26,130 @@ class WorkspaceModule extends Module {
         super(options);
 
         this._blockly  = new BlocklyWrapper();
-        this._display = false;
+
+        this._state = {
+            display: false,
+            block_types: [],
+        };
 
         this._blockly.registerBlockTypes(JSONBlocks);
         this._blockly.registerGenerators(JSONGenerators);
 
+        this._blockly.setAudibles(['event_key_onpush_letter', 'event_key_onpush_number']);
+
         this._subscribeToWrapperEvents();
     }
 
+    /**
+     * Встроить рабочую область в DOM-узел
+     *
+     * @param {Element} dom_node DOM-узел, в который будет встроена рабочая область
+     */
     include(dom_node) {
         if (dom_node !== undefined) {
             this._blockly.include(dom_node, this._options.useScrollbars);
-            this._display = true;
+            this._state.display = true;
         }
-
-        // console.log(Object.keys(JSONBlocks));
 
         if (this._options.allBlocks) {
-            this._blockly.useBlockTypes(Object.keys(JSONGenerators));
-            this._blockly.setAudibles(['event_key_onpush_letter', 'event_key_onpush_number']);
+            this._blockly.updateBlockTypes(Object.keys(JSONGenerators));
         } else {
-            // this._blockly.useBlockTypes(['leds_off', 'wait_seconds', 'controls_repeat_ext', 'controls_if', 'logic_boolean']);
+            this._blockly.setBlockTypes(this._state.block_types);
         }
     }
 
+    /**
+     * Извлечь рабочую область
+     *
+     * Метод не сбрасывает настройки отображения Blockly
+     * и не изменяет его текущее состояние
+     */
     exclude() {
         this._blockly.exclude();
-        this._display = false;
+        this._state.display = false;
     }
 
-    resize() {
-        this._blockly._onResize();
+    /**
+     * Установить используемые блоки
+     *
+     * @param {Array} block_types массив строк с названиями типов блоков
+     */
+    setBlockTypes(block_types) {
+        this._state.block_types = block_types;
+        this._blockly.updateBlockTypes(block_types);
     }
 
+    /**
+     * Подсветить блок
+     *
+     * Подсвеченный ранее блок гаснет.
+     * Если в качестве идентификатора задать null, только гаснет подсвеченный ранее блок
+     *
+     * @param {String|null} block_id идентификатор блока
+     */
     highlightBlock(block_id) {
         this._blockly.highlightBlock(block_id);
     }
 
+    /**
+     * Получить список обработчиков в формате объекта
+     *
+     * @returns {{main, sub}}, где main - главный обработчик, sub - обработчик нажатий клавиши
+     *                         main и sub имеют следующий формат:
+     *                         TODO: определить формат для обработчика
+     */
     getHandlers() {
         return this._blockly.getJSONHandlers();
     }
 
+    /**
+     * Получить XML-дерево кода в виде строки
+     *
+     * @returns {String} строка с XML-деревом
+     */
     getTree() {
         return this._blockly.getXMLText();
     }
 
+    /**
+     * Загрузить XML-дерево в виде строки
+     *
+     * @param   {String} tree дерево в виде строки
+     * @returns {boolean} false, если строка пустая или не задана
+     */
     loadTree(tree) {
         if (!tree) {return false}
 
         this._blockly.setXMLText(tree);
     }
 
-    pipeUp() {
+    /**
+     * Разрешить обработку событий Blockly
+     *
+     */
+    wakeUp() {
         this._blockly.silent = false;
     }
 
+    /**
+     * Запретить обработку событий Blockly
+     *
+     * При отсутствии необходимости работы с Blockly
+     * обработку событий желательно отключить, так как сложные процедуры могут
+     * значительно повлиять на производительность всей среды
+     */
     shutUp() {
         this._blockly.silent = true;
+    }
+
+    /**
+     * Обновить размер рабочей области
+     *
+     * Вызывать в случае, когда необходимо подогнать размер рабочей области
+     * под размер её контейнера
+     */
+    resize() {
+        this._blockly._onResize();
     }
 
     _subscribeToWrapperEvents() {
@@ -98,6 +165,7 @@ class WorkspaceModule extends Module {
         //     });
         // });
 
+        /* В момент изменения кода обработчиков Blockly */
         this._blockly.onChangeAudible((audible_id, audible_args) => {
             audible_args.code = WorkspaceModule._preprocessCode(audible_args.code);
 
@@ -115,6 +183,15 @@ class WorkspaceModule extends Module {
         });
     }
 
+    /**
+     * Предварительная обработка кода, генерируемого Blockly
+     *
+     * Преобразует строку в JSON-объект
+     *
+     * @param {string} code исходный код, сгенерированный в Blockly
+     * @returns {Object} JSON-версия исходного кода, сгенерированного в Blockly
+     * @private
+     */
     static _preprocessCode(code) {
         if (!code) return [];
 

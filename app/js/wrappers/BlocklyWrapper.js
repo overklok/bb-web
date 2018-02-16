@@ -14,6 +14,8 @@ const DIV_IDS = {
  * Обёртка библиотеки Blockly для отображения среды программирования
  */
 class BlocklyWrapper extends Wrapper {
+    static get BLOCKS_REGISTERED() {return false}
+
     constructor() {
         super();
 
@@ -27,7 +29,10 @@ class BlocklyWrapper extends Wrapper {
 
         this.silent            = false;          // "тихий" режим, не обрабатывать события
 
-        this._lastCodeMain      = undefined;     // последнее состояние главного кода
+        this._state = {
+            lastCodeMain: undefined,            // последнее состояние главного кода
+            change_listener_registered: false,  // зарегистрирован ли обработчик событий изменения
+        };
 
         this._callbacks = {
             onChange: (statement) => {
@@ -50,6 +55,8 @@ class BlocklyWrapper extends Wrapper {
         this._block_types = blocksJSON;
 
         this._loadBlocksJSON();
+
+        BlocklyWrapper.BLOCKLY_BLOCK_TYPES_REGISTERED = () => {return true};
     }
 
     registerGenerators(generatorsJS) {
@@ -61,10 +68,12 @@ class BlocklyWrapper extends Wrapper {
     /**
      * Встроить Blockly в DOM-дерево
      *
-     * @param {Object} dom_node DOM-узел, в который нужно вставить Blockly
-     * @param {Boolean} use_scrollbars использовать ли скролл-бары
+     * @param {Object}  dom_node        DOM-узел, в который нужно вставить Blockly
+     * @param {boolean} use_scrollbars  использовать ли скролл-бары
+     * @param {number}  zoom_initial    исходный зум-фактор
+     * @param {boolean} read_only       режим только чтения
      */
-    include(dom_node, use_scrollbars=false) {
+    include(dom_node, use_scrollbars=false, read_only=false, zoom_initial=0.7) {
         /// Определить узел вставки контейнера
         this.area        = dom_node;
         /// Сгенерировать контейнеры для Blockly и для типов блоков
@@ -85,22 +94,27 @@ class BlocklyWrapper extends Wrapper {
             this.container,
             {
                 toolbox: this.toolbox,
+                readOnly: read_only,
                 zoom: {
-                    startScale: 0.7
+                    startScale: zoom_initial
                 },
                 scrollbars: use_scrollbars
             }
         );
 
+        /// Заполнить буфер текущего кода, если ранее не был заполнен
         if (typeof this._state.code_buffer !== "undefined") {
             Blockly.Xml.domToWorkspace(this._state.code_buffer, this.workspace);
         }
 
-        this.workspace.addChangeListener(event => {
-            if (!this.silent) {
-                this._filterEvent(event)
-            }
-        });
+        /// если не включён режим только чтения и обработчик событий изменения не был зарегистрирован ранее
+        if (!read_only && !this._state.change_listener_registered) {
+            this.workspace.addChangeListener(event => {
+                if (!this.silent) {
+                    this._filterEvent(event)
+                }
+            });
+        }
         // window.addEventListener('resize', this._onResize, false);
 
         /// Адаптировать размер Blockly под начальный размер контейнера
@@ -114,8 +128,6 @@ class BlocklyWrapper extends Wrapper {
      * Сам экземпляр Blockly, его содержимое и параметры отображения сохраняются
      */
     exclude() {
-        this.workspace.removeChangeListener(this._onAudibleChange);
-
         this._state.code_buffer = Blockly.Xml.workspaceToDom(this.workspace);
 
         /// Отключить отображение Blockly
@@ -134,7 +146,7 @@ class BlocklyWrapper extends Wrapper {
      *
      * @param block_types {Array} массив типов блоков
      */
-    useBlockTypes(block_types) {
+    updateBlockTypes(block_types) {
         let toolbox_content = "";
 
         for (let block_type of block_types) {
@@ -163,6 +175,13 @@ class BlocklyWrapper extends Wrapper {
         return Blockly.Xml.domToText(xml);
     }
 
+    /**
+     * Получить список обработчиков в виде объекта
+     *
+     * @returns {{main, sub}}, где main - главный обработчик, sub - обработчик нажатий клавиши
+     *                         main и sub имеют следующий формат:
+     *                         TODO: определить формат для обработчика
+     */
     getJSONHandlers() {
         let code = Blockly.JSON.workspaceToCode(this.workspace);
         let statements = Blockly.JSON.audible_args;
@@ -172,23 +191,21 @@ class BlocklyWrapper extends Wrapper {
         return {main: code, sub: statements};
     }
 
-    _loadBlocksJSON() {
-        for (let block_name of Object.keys(this._block_types)) {
-            Blockly.Blocks[block_name] = this._block_types[block_name];
-        }
-    }
-
-    _loadGenerators() {
-        for (let generator_name of Object.keys(this._generators)) {
-            Blockly.JSON[generator_name] = this._generators[generator_name];
-        }
-    }
-
+    /**
+     * Получить строку с XML-кодом состояния рабочей области Blockly
+     *
+     * @returns {string} строка, содержащая XML-представление набранного кода
+     */
     getXMLText() {
         let dom = Blockly.Xml.workspaceToDom(this.workspace);
         return Blockly.Xml.domToText(dom);
     }
 
+    /**
+     * Задать состояние рабочей области Blockly через строку с XML-кодом
+     *
+     * @param text строка, содержащая XML-представление кода Blockly
+     */
     setXMLText(text) {
         console.log(this.workspace);
 
@@ -196,10 +213,24 @@ class BlocklyWrapper extends Wrapper {
         Blockly.Xml.domToWorkspace(dom, this.workspace);
     }
 
+    /**
+     * Задать массив блоков-обработчиков
+     *
+     * Впоследствии в этих блоках будут обнаржуиваться глубокие изменения
+     *
+     * @param {Array} audibles массив названий типов блоков-обработчиков
+     */
     setAudibles(audibles) {
         this._audibles = audibles;
     }
 
+    /**
+     * Задать обработчик события изменения основного кода
+     *
+     * @deprecated
+     *
+     * @param {function} callback функция, вызывающаяся при изменении основного кода
+     */
     onChangeMain(callback) {
         this._callbacks.onChange = callback;
     }
@@ -223,6 +254,28 @@ class BlocklyWrapper extends Wrapper {
     }
 
     /**
+     * Загрузить типы блоков в JSON
+     *
+     * @private
+     */
+    _loadBlocksJSON() {
+        for (let block_name of Object.keys(this._block_types)) {
+            Blockly.Blocks[block_name] = this._block_types[block_name];
+        }
+    }
+
+    /**
+     * Загрузить генераторы для типов блоков
+     *
+     * @private
+     */
+    _loadGenerators() {
+        for (let generator_name of Object.keys(this._generators)) {
+            Blockly.JSON[generator_name] = this._generators[generator_name];
+        }
+    }
+
+    /**
      * Изменить размер среды Blockly
      *
      * https://developers.google.com/blockly/guides/configure/web/resizable
@@ -233,6 +286,15 @@ class BlocklyWrapper extends Wrapper {
         Blockly.svgResize(this.workspace);
     }
 
+    /**
+     * Первичная обработка стандартных событий Blockly
+     *
+     * Обнаруживаются глубокие изменения для блоков-обработчиков, задаваемых
+     * с помощью функции [[setAudibles()]]
+     *
+     * @param event событие Blockly
+     * @private
+     */
     _filterEvent(event) {
         if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
             let is_deep_change = false;

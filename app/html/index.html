@@ -23,6 +23,9 @@
 
                 <button id="unload-btn">Unload Code</button>
                 <input type="file" id="load-btn" />
+
+                <button id="switch1-btn">Switch Layout Mode -></button>
+                <button id="switch2-btn">Switch Layout Mode <-</button>
             </div>
             <div class="ui-layout-center" id="east-center"> East - Center </div>
             <div class="ui-layout-south" id="east-south"></div>
@@ -41,8 +44,8 @@
         app.configure({
             isInternal: false,  // на другом хосте
             allBlocks: true,    // все блоки
-            offline: false,     // без сервера
-            isolated: false,     // без платы
+            offline: true,     // без сервера
+            isolated: true,     // без платы
             noRemoteLogs: true, // без удалённого логирования
             anyKey: true,       // обрабатывать нажатия всех клавиш
         });

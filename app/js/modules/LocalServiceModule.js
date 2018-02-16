@@ -14,11 +14,12 @@ class LocalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "ls"}
-    static get event_types()        {return ["connect", "disconnect", "command", "finish", "error"]};
+    static get event_types()        {return ["connect", "disconnect", "command", "terminate", "error"]};
 
     static defaults() {
         return {
-            modeDummy: false
+            modeDummy: false,       // холостой режим
+            connectTimeout: 5000,   // время в мс, через которое запустится проверка подключения сервиса
         }
     }
 
@@ -26,6 +27,10 @@ class LocalServiceModule extends Module {
         super(options);
 
         this._ipc = undefined;
+
+        this._state = {
+            connected: false,
+        };
 
         /// если режим холостой
         if (this._options.modeDummy) {
@@ -39,13 +44,21 @@ class LocalServiceModule extends Module {
     /**
      * Обновить код на плате
      *
-     * @param {string} code код
+     * @param {Object} handlers обработчики, формат:
+     *                          {
+     *                              "<ID обработчика>": {
+     *                                  commands: "<код обработчика>",
+     *                                  key: "<код клавиши обработчика>"
+     *                              }
+     *                           }
+     *
+     *                           Для главного обработчика ID = main, key = "None"
      */
-    updateHandlers(code) {
+    updateHandlers(handlers) {
         return new Promise(resolve => {
             if (this._options.modeDummy) {resolve()}
 
-            this._ipc.send('code-update', code);
+            this._ipc.send('code-update', handlers);
 
             this._ipc.once('code-update-result', (event, error) => {
                 if (error) {
@@ -58,11 +71,26 @@ class LocalServiceModule extends Module {
         });
     }
 
-    keyUp(button_code) {
+    /**
+     * Зарегистрировать нажатие клавиши
+     *
+     * @param button_code   код клавиши
+     * @returns {boolean}   true, если модуль в холостом режиме
+     */
+    registerKeyUp(button_code) {
+        if (this._options.modeDummy) {return true}
+
         this._ipc.send('keyup', button_code);
     }
 
-    stop() {
+    /**
+     * Остановить выполнение программы
+     *
+     * @returns {boolean}   true, если модуль в холостом режиме
+     */
+    stopExecution() {
+        if (this._options.modeDummy) {return true}
+
         this._ipc.send('stop');
     }
 
@@ -95,7 +123,7 @@ class LocalServiceModule extends Module {
      * @private
      */
     _launchIPC() {
-        if (this._options.modeDummy) {return true};
+        if (this._options.modeDummy) {return true}
 
         if (window && window.process && window.process.type) {
             this._debug.log("Swtiching on IPCWrapper");
@@ -106,6 +134,25 @@ class LocalServiceModule extends Module {
         }
 
         this._ipc.send('connect');
+
+        this._checkConnection();
+    }
+
+    /**
+     * Проверить установление соединения
+     *
+     * Проверка срабатывает через время, указанное в опциях модуля
+     *
+     * Результат проверки зависит от значения внутренней переменной состояния [[connected]]
+     *
+     * @private
+     */
+    _checkConnection() {
+        setTimeout(() => {
+            if (this._state.connected === false) {
+                this.emitEvent("error", new Error("Connection timeout"));
+            }
+        }, this._options.connectTimeout)
     }
 
     /**
@@ -113,27 +160,29 @@ class LocalServiceModule extends Module {
      * @private
      */
     _subscribeToWrapperEvents() {
+        /* Как только сервис сообщил о соединении */
         this._ipc.on('connect', () => {
+            this._state.connected = true;
             this.emitEvent('connect');
             this._debug.info('Connected to IPC');
         });
 
+        /* Как только сервис сообщил о разъединении */
         this._ipc.on('disconnect', () => {
             this.emitEvent('disconnect');
         });
 
-        // this._ipc.on('ready', () => {
-        //     this.emitEvent('ready');
-        // });
-
+        /* Как только сервис сообщил об исполнении команды */
         this._ipc.on('command', (evt, data) => {
             this.emitEvent('command', data);
         });
 
-        this._ipc.on('finish', (evt) => {
-            this.emitEvent('finish');
+        /* Как только сервис сообщил о завершении исполнения кода */
+        this._ipc.on('terminate', (evt) => {
+            this.emitEvent('terminate');
         });
 
+        /* Как только сервис сообщил об ошибке- */
         this._ipc.on('error', (evt, arg) => {
             this.emitEvent('error', arg)
         });
