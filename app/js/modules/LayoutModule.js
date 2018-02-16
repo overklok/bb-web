@@ -78,11 +78,11 @@ class LayoutModule extends Module {
                 childOptions: {
                     north: {
                         size: .3,
-                        fxSpeed: this._options.animSpeed,
+                        fxSpeed: this._options.animSpeed / 5,
                     },
                     south: {
                         size: .4,
-                        fxSpeed: this._options.animSpeed,
+                        fxSpeed: this._options.animSpeed / 5,
                     }
                 }
             },
@@ -170,9 +170,9 @@ class LayoutModule extends Module {
                     resolve();
                 };
 
-                this._layout.sizePane("east", .4);
                 this._layout.east.children.layout1.hide("north");
                 this._layout.east.children.layout1.hide("south");
+                this._layout.sizePane("east", .4);
             }
 
             if (mode_from === MODES.SIMPLE && mode_to === MODES.DEFAULT) {
