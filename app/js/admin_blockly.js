@@ -92,7 +92,7 @@ class Application {
 
     _defineChains() {
         $(document).ready(() => {
-            this.ws.include(document.getElementById(this._container_id));
+            this.ws.inject(document.getElementById(this._container_id));
         });
 
         this._dispatcher.on("ws:change", () => {

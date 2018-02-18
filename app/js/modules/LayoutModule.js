@@ -5,30 +5,79 @@ require("jquery-ui-bundle");
 
 import styles from "../../css/layout.css";
 
+/// jQuery Layout conflict fix
+(function ($){$.fn.selector = { split: function() { return ""; }};})(jQuery);
+
+/**
+ * DOM-идентификаторы панелей
+ * @type {object}
+ */
 const PANE_IDS = {
-    MAIN: {
-        CENTER: "main-center",
-        EAST: "main-east"
-    },
-    EAST: {
-        NORTH: "east-north",
-        CENTER: {
-            CENTER: "east-center-center",
-            SOUTH: "east-center-south"
-        },
-        SOUTH: "east-south"
-    }
+    MAIN_CENTER:    "main-center",
+    MAIN_EAST:      "main-east",
+
+    EAST_NORTH:         "east-north",
+    EAST_CENTER_CENTER: "east-center-center",
+    EAST_CENTER_SOUTH:  "east-center-south",
+
+    EAST_SOUTH:     "east-south"
 };
 
+
+/**
+ * Режимы разметки
+ *
+ * @type {object}
+ */
 const MODES = {
     FULL:   "full",
     SIMPLE: "simple"
 };
 
-const DURATION_INITIAL = 100;
 
-/// jQuery Layout conflict fix
-(function ($){$.fn.selector = { split: function() { return ""; }};})(jQuery);
+/**
+ * Отображения "назначение панели" -> "ID DOM-узла" для режимов разметки
+ *
+ * @type {object}
+ */
+const MAPPINGS = {
+    full: {
+        workspace: PANE_IDS.MAIN_CENTER,
+        breadboard: PANE_IDS.EAST_SOUTH
+    },
+    simple: {
+        breadboard: PANE_IDS.MAIN_CENTER
+    }
+};
+
+/**
+ * Элементы режимов разметки, которые должны быть проигнорированы
+ * при анимации перехода между режимами
+ *
+ * @type {{full: *[string], simple: *[string]}}
+ */
+const FADEBLOCKINGS = {
+    full: [
+        PANE_IDS.MAIN_EAST,
+        PANE_IDS.EAST_NORTH,
+        PANE_IDS.EAST_CENTER_SOUTH,
+    ],
+    simple: [
+        PANE_IDS.MAIN_EAST,
+        PANE_IDS.EAST_NORTH,
+        PANE_IDS.EAST_CENTER_SOUTH,
+    ]
+};
+
+/**
+ * Начальная задержка
+ *
+ * Используется для устранения вероятных коллизий
+ * при частой смене режимов разметки
+ *
+ * @type {number}
+ */
+const DURATION_INITIAL = 100;
 
 /**
  * Модуль автоматической разметки страницы
@@ -38,12 +87,14 @@ const DURATION_INITIAL = 100;
  */
 class LayoutModule extends Module {
     static get eventspace_name() {return "lay"}
-    static get event_types() {return ["compose", "resize"]}
+    static get event_types() {return ["compose-begin", "compose-end", "resize"]}
 
     static defaults() {
         return {
-            animSpeedMain: 500,
-            animSpeedSub: 100
+            animSpeedMain: 500,     // скорость анимации главных элементов
+            animSpeedSub: 100,      // скорость анимации мелких элементов
+            animSpeedFade: 200,     // скорость анимации перехода
+            delayBeforeEnd: 100     // задержка для прогрузки внутренностей
         }
     }
 
@@ -51,7 +102,7 @@ class LayoutModule extends Module {
         super(options);
 
         this._state = {
-            mode: undefined,
+            mode: MODES.FULL,
             transition_active: false,
             transition_dummy: false,
             buttons_pane_visible: true,
@@ -66,25 +117,43 @@ class LayoutModule extends Module {
         this._layout = $('body').layout(this._layout_options);
 
         this._panes = this._getPanes();
+
+        if (!this._options.animSpeedFade) {
+            this._options.delayBeforeEnd = 0;
+        }
     }
 
     /**
      * Скомпоновать разметку страницы
      *
-     * @param mode {int} режим компоновки
+     * @param mode {string} режим компоновки
      */
     compose(mode) {
         return new Promise(resolve => {
-            if (this._state.mode === mode) {
-                resolve();
-                return;
-            }
+            let nodes = this._transformMappingToNodes(MAPPINGS[mode]);
 
             let duration = DURATION_INITIAL;
 
+            if (this._state.mode === mode) {
+                setTimeout(() => {
+                    resolve();
+                    this.emitEvent("compose-end", nodes);
+                }, duration);
+
+                return;
+            }
+
+            if (this._options.animSpeedFade) {
+                duration += this._options.animSpeedFade;
+                this._hidePanes(this._state.mode, this._options.animSpeedFade);
+            }
+
+            setTimeout(() => {
+                this.emitEvent("compose-begin", nodes);
+            }, duration);
+
             switch (mode) {
                 case MODES.SIMPLE: {
-
                     this._panes.east.hide("north");
                     duration += this._options.animSpeedSub;
 
@@ -122,14 +191,32 @@ class LayoutModule extends Module {
                     throw new TypeError("Mode " + mode + "is not supported");
                 }
             }
-            // let nodes = this._transformMapToNodes(layout_map);
 
             this._state.mode = mode;
 
-            setTimeout(resolve, duration);
+            /// задержка для анимации смены разметки
+            setTimeout(() => {
+                this.emitEvent("compose-end", nodes);
+                /// задержка для прогрузки внутренностей
+                setTimeout(() => {
+                    if (this._options.animSpeedFade) {
+                        this._showPanes(this._options.animSpeedFade);
+                    }
+                    /// задержка для анимации появления
+                    setTimeout(() => {
+                        resolve();
+                    }, this._options.animSpeedFade) // задержка для анимации появления
+                }, this._options.delayBeforeEnd) // задержка для прогрузки внутренностей
+            }, duration); // задержка для анимации смены разметки
         });
     }
 
+    /**
+     * Переключить панель, отображающую нажатые кнопки
+     *
+     * @param on
+     * @returns {Promise<any>}
+     */
     switchButtonsPane(on) {
         return new Promise(resolve => {
             if (on === this._state.buttons_pane_visible || this._state.mode === MODES.SIMPLE) {
@@ -151,8 +238,47 @@ class LayoutModule extends Module {
                 duration += this._options.animSpeedSub;
             }
 
-            setTimeout(resolve, duration);
+            setTimeout(() => {
+                resolve();
+            }, duration);
         });
+    }
+
+    /**
+     * Скрыть панели
+     *
+     * Вызывается при смене режимов разметки
+     *
+     * @param {string} mode     режим разметки, из которого необходимо выйти
+     * @param {number} speed    время анимации сокрытия в миллисекундах
+     * @private
+     */
+    _hidePanes(mode, speed) {
+        for (let pane_id of Object.values(PANE_IDS)) {
+            if (FADEBLOCKINGS[mode].indexOf(pane_id) >= 0) {
+                continue;
+            }
+
+            if (Object.values(MAPPINGS[mode]).indexOf(pane_id) >= 0) {
+                $("#" + pane_id).animate({opacity: 0}, speed)
+            } else {
+                $("#" + pane_id).animate({opacity: 0}, 0)
+            }
+        }
+    }
+
+    /**
+     * Показать панели
+     *
+     * Вызывается при смене режимов разметки
+     *
+     * @param {number} speed время анимации сокрытия в миллисекундах
+     * @private
+     */
+    _showPanes(speed) {
+        for (let pane_id of Object.values(PANE_IDS)) {
+            $("#" + pane_id).animate({opacity: 1}, speed)
+        }
     }
 
 
@@ -164,7 +290,7 @@ class LayoutModule extends Module {
      * @returns {Object}    Соответствия "ID области" -> "DOM-узел области"
      * @private
      */
-    _transformMapToNodes(map) {
+    _transformMappingToNodes(map) {
         let nodes = {};
 
         for ([k, node_id] of Object.entries(map)) {
@@ -174,10 +300,23 @@ class LayoutModule extends Module {
         return nodes;
     }
 
+    /**
+     * Обработать событие "изменение размера"
+     *
+     * @private
+     */
     _onResize() {
         this.emitEvent("resize");
     }
 
+    /**
+     * Получить полную разметку
+     *
+     * Метод используется для сокрытия большого объекта из конструктора
+     *
+     * @returns {object}
+     * @private
+     */
     _getFullLayout() {
         return {
             closable: true,	    // pane can open & close
@@ -226,6 +365,14 @@ class LayoutModule extends Module {
         };
     }
 
+    /**
+     * Получить ссылки на панели jQuery UI Layouts
+     *
+     * Метод используется упрощённого доступа к элементам разметки
+     *
+     * @returns {object}
+     * @private
+     */
     _getPanes() {
         console.log(this._layout);
 

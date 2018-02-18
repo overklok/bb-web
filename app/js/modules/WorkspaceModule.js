@@ -45,7 +45,7 @@ class WorkspaceModule extends Module {
      *
      * @param {Element} dom_node DOM-узел, в который будет встроена рабочая область
      */
-    include(dom_node) {
+    inject(dom_node) {
         if (!dom_node) {return false}
 
         this._blockly.include(dom_node, this._options.useScrollbars);
@@ -63,8 +63,16 @@ class WorkspaceModule extends Module {
      *
      * Метод не сбрасывает настройки отображения Blockly
      * и не изменяет его текущее состояние
+     *
+     * В строгом режиме выполняет проверку существования будущего DOM-узла,
+     * при его отсутствии извлечение произведено не будет
+     *
+     * @param {boolean} strict строгий режим
+     * @param {Element} dom_node будущий DOM-узел
      */
-    exclude() {
+    eject(strict=false, dom_node) {
+        // if (strict && !dom_node) {return false}
+
         this._blockly.exclude();
         this._state.display = false;
     }

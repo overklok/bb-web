@@ -29,7 +29,7 @@ class BreadboardWrapper extends Wrapper {
      *
      * Сам экземпляр Breadboard, его содержимое и параметры отображения сохраняются
      */
-    takeout() {
+    eject() {
         this._bb.clear();
     }
 

@@ -73,6 +73,28 @@ class Application {
 
         this._dispatcher.only(['ls:connect']);
         this._dispatcher.always(['ls:*', 'ws:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
+
+        console.log("INITIALIZED");
+        this.lay.compose("full");
+
+        setTimeout(() => {
+            this.lay.compose("simple");
+        }, 500);
+
+        setTimeout(() => {
+            this.lay.compose("full");
+        }, 5500);
+            // .then(() => console.log("FULL READY"))
+            // .then(() => this.lay.compose("simple"))
+            // .then(() => this.lay.compose("simple"))
+            // .then(() => this.lay.compose("simple"))
+            // .then(() => this.lay.compose("full"))
+            // .then(() => this.lay.compose("full"))
+            // .then(() => this.lay.compose("simple"))
+            // .then(() => this.lay.compose("simple"))
+            // .then(() => this.lay.compose("full"))
+            // .then(() => console.log("SIMPLE READY"))
+            // .then(() => this.lay.compose("full"))
     }
 
     /**
@@ -105,15 +127,15 @@ class Application {
         this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
 
-        this.lay.compose("simple")
-            .then(() => this.lay.switchButtonsPane(true))
-            .then(() => this.lay.switchButtonsPane(false))
-            .then(() => this.lay.switchButtonsPane(true))
-            .then(() => this.lay.compose("full"))
-            .then(() => this.lay.switchButtonsPane(true))
-            .then(() => this.lay.switchButtonsPane(false))
-            .then(() => this.lay.switchButtonsPane(true))
-            .then(() => this.lay.compose("simple"));
+        // this.lay.compose("simple")
+        //     .then(() => this.lay.switchButtonsPane(true))
+        //     .then(() => this.lay.switchButtonsPane(false))
+        //     .then(() => this.lay.switchButtonsPane(true))
+        //     .then(() => this.lay.compose("full"))
+        //     .then(() => this.lay.switchButtonsPane(true))
+        //     .then(() => this.lay.switchButtonsPane(false))
+        //     .then(() => this.lay.switchButtonsPane(true))
+        //     .then(() => this.lay.compose("simple"));
     }
 
     _defineChains() {
@@ -141,14 +163,21 @@ class Application {
         /**
          * Когда разметка скомпонована
          */
-        this._dispatcher.on('lay:compose', data => {
-            console.log("COMPOSED", data);
+        this._dispatcher.on('lay:compose-begin', data => {
+            console.log("COMPOSE BEGIN", data);
+            this.ws.eject(true, data.workspace);
+            this.bb.eject(true, data.breadboard);
 
-            // this.ws.include(data.editor);
-            // this.bb.inject(data.board);
 
             /// Прослушивать все события GUI
             // this._dispatcher.only(['gui:*']);
+        });
+
+        this._dispatcher.on('lay:compose-end', data => {
+           console.log("COMPOSE END", data);
+
+            this.ws.inject(data.workspace);
+            this.bb.inject(data.breadboard);
         });
 
         this._dispatcher.on('gui:launch', () => {
@@ -168,8 +197,8 @@ class Application {
          * Когда нажата кнопка переключения разметки
          */
         this._dispatcher.on('gui:switch', on => {
-            this.ws.exclude();
-            this.bb.takeout();
+            this.ws.eject();
+            this.bb.eject();
 
 
             if (on === true) {
