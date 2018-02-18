@@ -1,7 +1,6 @@
 import Module from "../core/Module";
 
 import layout   from "../../vendor/js/jquery.layout.js";
-// import ui       from "../../vendor/js/jquery.ui.js";
 require("jquery-ui-bundle");
 
 import styles from "../../css/layout.css";
@@ -13,16 +12,20 @@ const PANE_IDS = {
     },
     EAST: {
         NORTH: "east-north",
-        CENTER: "east-center",
+        CENTER: {
+            CENTER: "east-center-center",
+            SOUTH: "east-center-south"
+        },
         SOUTH: "east-south"
     }
 };
 
 const MODES = {
-    DEFAULT:    "default",
-    SIMPLE:     "simple",
-    DEBUG:      "debug",
+    FULL:   "full",
+    SIMPLE: "simple"
 };
+
+const DURATION_INITIAL = 100;
 
 /// jQuery Layout conflict fix
 (function ($){$.fn.selector = { split: function() { return ""; }};})(jQuery);
@@ -39,88 +42,30 @@ class LayoutModule extends Module {
 
     static defaults() {
         return {
-            animSpeed: 500
+            animSpeedMain: 500,
+            animSpeedSub: 100
         }
     }
 
     constructor(options) {
         super(options);
 
-        this._layout = undefined;
-
-        console.log(this._state);
-
-        this._layout_options_default = {
-            closable: true,	    // pane can open & close
-            resizable: true,	// when open, pane can be resized
-            slidable: true,	    // when closed, pane can 'slide' open over other panes - closes on mouse-out
-            livePaneResizing: true,
-            fxSpeed: this._options.animSpeed,
-            animatePaneSizing: true,
-
-            //	some resizing/toggling settings
-            north: {
-                slidable: false,	            // OVERRIDE the pane-default of 'slidable=true'
-                closable: false,
-                spacing_closed: 20,		        // big resizer-bar when open (zero height)
-                size: .1,
-                maxSize: 100
-            },
-
-            center: {
-                onresize_end: () => {this.emitEvent("resize")},
-            },
-
-            //	some pane-size settings
-            east: {
-                size: .3,
-                fxSpeed: this._options.animSpeed,
-                childOptions: {
-                    north: {
-                        size: .3,
-                        fxSpeed: this._options.animSpeed / 5,
-                    },
-                    south: {
-                        size: .4,
-                        fxSpeed: this._options.animSpeed / 5,
-                    }
-                }
-            },
-        };
-        this._layout_options_simple = Object.assign({}, this._layout_options_default);
-        this._layout_options_debug = this._layout_options_default;
-
-        this._layout_options_simple.east = {
-            size: .4,
-            fxSpeed: this._options.animSpeed,
-            childOptions: {
-                north: {
-                    initClosed: true,
-                    closable: false,
-                },
-                south: {
-                    initClosed: true,
-                    closable: false,
-                }
-            }
+        this._state = {
+            mode: undefined,
+            transition_active: false,
+            transition_dummy: false,
+            buttons_pane_visible: true,
         };
 
-        this._layout_map_default = {
-            editor: PANE_IDS.MAIN.CENTER,
-            board: PANE_IDS.EAST.SOUTH,
+        this._callbacks = {
+            on_transition_end: function() {}
         };
 
-        this._layout_map_simple = {
-            editor: PANE_IDS.MAIN.CENTER,
-            board: PANE_IDS.EAST,
-        };
+        this._layout_options = this._getFullLayout();
 
-        this._layout_map_debug = {
-            editor: PANE_IDS.EAST.SOUTH,
-            board: PANE_IDS.MAIN.CENTER,
-        };
+        this._layout = $('body').layout(this._layout_options);
 
-        this.compose();
+        this._panes = this._getPanes();
     }
 
     /**
@@ -129,64 +74,87 @@ class LayoutModule extends Module {
      * @param mode {int} режим компоновки
      */
     compose(mode) {
-        let layout_options  = undefined;
-        let layout_map      = undefined;
-
-        switch(mode) {
-            case MODES.DEBUG: {
-                layout_options  = this._layout_options_debug;
-                layout_map      = this._layout_map_debug;
-                break;
-            }
-            case MODES.SIMPLE: {
-                layout_options  = this._layout_options_simple;
-                layout_map      = this._layout_map_simple;
-                break;
-            }
-            case MODES.DEFAULT:
-            default: {
-                layout_options  = this._layout_options_default;
-                layout_map      = this._layout_map_default;
-                break;
-            }
-        }
-
-        $(document).ready(() => {
-            this._layout = $('body').layout(layout_options);
-
-            let nodes = this._transformMapToNodes(layout_map);
-
-            this.emitEvent("compose", nodes);
-
-            this._debug.log("Layout composed: ", nodes);
-        });
-    }
-
-    switchMode(mode_from, mode_to) {
         return new Promise(resolve => {
-            if (mode_from === MODES.DEFAULT && mode_to === MODES.SIMPLE) {
-                this._layout.east.children.layout1.south.options.onhide_end = () => {
-                    this._layout.east.children.layout1.south.options.onhide_end = null;
-                    resolve();
-                };
-
-                this._layout.east.children.layout1.hide("north");
-                this._layout.east.children.layout1.hide("south");
-                this._layout.sizePane("east", .4);
+            if (this._state.mode === mode) {
+                resolve();
+                return;
             }
 
-            if (mode_from === MODES.SIMPLE && mode_to === MODES.DEFAULT) {
-                this._layout.east.children.layout1.south.options.onshow_end = () => {
-                    this._layout.east.children.layout1.south.options.onshow_end = null;
-                    resolve();
-                };
+            let duration = DURATION_INITIAL;
 
-                this._layout.sizePane("east", .3);
-                this._layout.east.children.layout1.show("north");
-                this._layout.east.children.layout1.show("south");
+            switch (mode) {
+                case MODES.SIMPLE: {
+
+                    this._panes.east.hide("north");
+                    duration += this._options.animSpeedSub;
+
+                    this._panes.east.hide("south");
+                    duration += this._options.animSpeedSub;
+
+                    this._layout.sizePane("east", .4);
+                    duration += this._options.animSpeedMain;
+
+                    if (this._state.buttons_pane_visible) {
+                        this._panes._east.center.hide("south");
+                        duration += this._options.animSpeedSub;
+                    }
+
+                    break;
+                }
+                case MODES.FULL: {
+                    this._panes.east.show("north");
+                    duration += this._options.animSpeedSub;
+
+                    this._panes.east.show("south");
+                    duration += this._options.animSpeedSub;
+
+                    this._layout.sizePane("east", .3);
+                    duration += this._options.animSpeedMain;
+
+                    if (this._state.buttons_pane_visible) {
+                        this._panes._east.center.show("south");
+                        duration += this._options.animSpeedSub;
+                    }
+
+                    break;
+                }
+                default: {
+                    throw new TypeError("Mode " + mode + "is not supported");
+                }
             }
+            // let nodes = this._transformMapToNodes(layout_map);
+
+            this._state.mode = mode;
+
+            setTimeout(resolve, duration);
         });
     }
+
+    switchButtonsPane(on) {
+        return new Promise(resolve => {
+            if (on === this._state.buttons_pane_visible || this._state.mode === MODES.SIMPLE) {
+                resolve();
+                return;
+            }
+
+            let duration = DURATION_INITIAL;
+
+            if (on) {
+                this._state.buttons_pane_visible = true;
+
+                this._panes._east.center.show("south");
+                duration += this._options.animSpeedSub;
+            } else {
+                this._state.buttons_pane_visible = false;
+
+                this._panes._east.center.hide("south");
+                duration += this._options.animSpeedSub;
+            }
+
+            setTimeout(resolve, duration);
+        });
+    }
+
 
     /**
      * Преобразовать соответствия "ID области" -> "ID DOM-узла области"
@@ -204,6 +172,79 @@ class LayoutModule extends Module {
         }
 
         return nodes;
+    }
+
+    _onResize() {
+        this.emitEvent("resize");
+    }
+
+    _getFullLayout() {
+        return {
+            closable: true,	    // pane can open & close
+            resizable: true,	// when open, pane can be resized
+            slidable: true,	    // when closed, pane can 'slide' open over other panes - closes on mouse-out
+            livePaneResizing: true,
+            fxSpeed: this._options.animSpeedMain,
+            animatePaneSizing: true,
+            onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+
+            //	some resizing/toggling settings
+            north: {
+                slidable: false,	            // OVERRIDE the pane-default of 'slidable=true'
+                closable: false,
+                spacing_closed: 20,		        // big resizer-bar when open (zero height)
+                size: .1,
+                maxSize: 100
+            },
+
+            center: {},
+
+            //	some pane-size settings
+            east: {
+                size: .3,
+                fxSpeed: this._options.animSpeedMain,
+                childOptions: {
+                    north: {
+                        size: .3,
+                        fxSpeed: this._options.animSpeedSub,
+                    },
+                    south: {
+                        size: .4,
+                        fxSpeed: this._options.animSpeedSub,
+                    },
+                    center: {
+                        childOptions: {
+                            south: {
+                              size: .2,
+                                slidable: false,
+                                closable: false,
+                            }
+                        }
+                    }
+                }
+            },
+        };
+    }
+
+    _getPanes() {
+        console.log(this._layout);
+
+        return {
+            north: this._layout.north,
+            center: this._layout.center,
+            east: this._layout.east.children.layout1,
+
+            _east: {
+                north:  this._layout.east.children.layout1.north,
+                south:  this._layout.east.children.layout1.south,
+                center: this._layout.east.children.layout1.center.children.layout1,
+
+                _center: {
+                    center: this._layout.east.children.layout1.center.children.layout1.center,
+                    south:  this._layout.east.children.layout1.center.children.layout1.south,
+                }
+            }
+        }
     }
 
     _subscribeToWrapperEvents() {

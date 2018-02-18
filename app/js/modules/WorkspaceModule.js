@@ -46,10 +46,10 @@ class WorkspaceModule extends Module {
      * @param {Element} dom_node DOM-узел, в который будет встроена рабочая область
      */
     include(dom_node) {
-        if (dom_node !== undefined) {
-            this._blockly.include(dom_node, this._options.useScrollbars);
-            this._state.display = true;
-        }
+        if (!dom_node) {return false}
+
+        this._blockly.include(dom_node, this._options.useScrollbars);
+        this._state.display = true;
 
         if (this._options.allBlocks) {
             this._blockly.updateBlockTypes(Object.keys(JSONGenerators));
@@ -149,7 +149,9 @@ class WorkspaceModule extends Module {
      * под размер её контейнера
      */
     resize() {
-        this._blockly._onResize();
+        if (this._state.display) {
+            this._blockly._onResize();
+        }
     }
 
     _subscribeToWrapperEvents() {

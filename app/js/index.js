@@ -104,6 +104,16 @@ class Application {
         this._dispatcher.subscribe(this.ins);
         this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
+
+        this.lay.compose("simple")
+            .then(() => this.lay.switchButtonsPane(true))
+            .then(() => this.lay.switchButtonsPane(false))
+            .then(() => this.lay.switchButtonsPane(true))
+            .then(() => this.lay.compose("full"))
+            .then(() => this.lay.switchButtonsPane(true))
+            .then(() => this.lay.switchButtonsPane(false))
+            .then(() => this.lay.switchButtonsPane(true))
+            .then(() => this.lay.compose("simple"));
     }
 
     _defineChains() {
@@ -132,11 +142,13 @@ class Application {
          * Когда разметка скомпонована
          */
         this._dispatcher.on('lay:compose', data => {
-            this.ws.include(data.editor);
-            this.bb.inject(data.board);
+            console.log("COMPOSED", data);
+
+            // this.ws.include(data.editor);
+            // this.bb.inject(data.board);
 
             /// Прослушивать все события GUI
-            this._dispatcher.only(['gui:*']);
+            // this._dispatcher.only(['gui:*']);
         });
 
         this._dispatcher.on('gui:launch', () => {
@@ -156,8 +168,6 @@ class Application {
          * Когда нажата кнопка переключения разметки
          */
         this._dispatcher.on('gui:switch', on => {
-            this._dispatcher.taboo();
-
             this.ws.exclude();
             this.bb.takeout();
 
@@ -169,16 +179,6 @@ class Application {
             if (on === false) {
                 this.lay.compose("debug");
             }
-        });
-
-        this._dispatcher.on('gui:switch1', () => {
-            this.lay.switchMode("default", "simple")
-                .then(() => {this.lay.switchMode("simple", "default")})
-        });
-
-        this._dispatcher.on('gui:switch2', () => {
-            this.lay.switchMode("simple", "default")
-                .then(() => {console.log("testicular")})
         });
 
         this._dispatcher.on('gui:unload-file', () => {

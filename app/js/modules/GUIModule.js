@@ -12,7 +12,7 @@ import FileWrapper from '../wrappers/FileWrapper';
  */
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["switch", "switch1", "switch2", "check", "launch", "stop", "keyup", "load-file", "unload-file"]}
+    static get event_types() {return ["switch", "check", "launch", "stop", "keyup", "load-file", "unload-file"]}
 
     static defaults() {
         return {
@@ -96,14 +96,6 @@ class GUIModule extends Module {
             this.emitEvent("switch", this._state.switched);
 
             this._debug.log('Switch clicked: ', this._state.switched);
-        });
-
-        $("#switch1-btn").click(() => {
-            this.emitEvent("switch1");
-        });
-
-        $("#switch2-btn").click(() => {
-            this.emitEvent("switch2");
         });
 
         /* Как только нажата кнопка проверки */
