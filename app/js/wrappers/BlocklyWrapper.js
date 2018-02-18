@@ -10,11 +10,13 @@ const DIV_IDS = {
     TOOLBOX: "blockly-toolbox"
 };
 
+window.BLOCKLY_BTS_REG = false;
+
 /**
  * Обёртка библиотеки Blockly для отображения среды программирования
  */
 class BlocklyWrapper extends Wrapper {
-    static get BLOCKS_REGISTERED() {return false}
+    static get BLOCKLY_BLOCK_TYPES_REGISTERED() {return BLOCKLY_BTS_REG}
 
     constructor() {
         super();
@@ -27,7 +29,9 @@ class BlocklyWrapper extends Wrapper {
         this._generators        = undefined;     // JS-генератор кода
         this._audibles          = undefined;     // Прослушиваемые типы блоков
 
-        this.silent            = false;          // "тихий" режим, не обрабатывать события
+        this.silent             = false;          // "тихий" режим, не обрабатывать события
+
+        this._variable_blocks   = [];
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
@@ -56,7 +60,7 @@ class BlocklyWrapper extends Wrapper {
 
         this._loadBlocksJSON();
 
-        BlocklyWrapper.BLOCKLY_BLOCK_TYPES_REGISTERED = () => {return true};
+        BLOCKLY_BTS_REG = true;
     }
 
     registerGenerators(generatorsJS) {
@@ -275,14 +279,54 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
+    createVariableBlock(type, value=0) {
+        let block = this.workspace.newBlock(type);
+        block.initSvg();
+        block.render();
+
+        let variable_name = "";
+
+        try {
+            variable_name = block.inputList[0].fieldRow[0].text_;
+        } catch (e) {
+            console.error("Variable block of type `" + type + "` has not a dummy input at 0 index");
+        }
+
+        this._variable_blocks[type] = {name: variable_name, element: block};
+
+        block.setFieldValue(variable_name + " = " + value);
+    }
+
+    createBlock(type) {
+        let block = this.workspace.newBlock(type);
+        block.initSvg();
+        block.render();
+
+
+
+        // var parentBlock = workspace.newBlock('text_print');
+        // parentBlock.initSvg();
+        // parentBlock.render();
+        //
+        // var childBlock = workspace.newBlock('text');
+        //
+        // childBlock.setFieldValue('Hello', 'TEXT');
+        // childBlock.initSvg();
+        // childBlock.render();
+        //
+        // var parentConnection = parentBlock.getInput('TEXT').connection;
+        // var childConnection = childBlock.outputConnection;
+        // parentConnection.connect(childConnection);
+    }
+
     /**
      * Изменить размер среды Blockly
      *
      * https://developers.google.com/blockly/guides/configure/web/resizable
      */
     _onResize() {
-        this.container.style.width   = (this.area.offsetWidth - 20) + 'px';
-        this.container.style.height  = (this.area.offsetHeight - 20) + 'px';
+        this.container.style.width   = (this.area.offsetWidth - 24) + 'px';
+        this.container.style.height  = (this.area.offsetHeight - 24) + 'px';
         Blockly.svgResize(this.workspace);
     }
 

@@ -10,6 +10,8 @@ import styles from "../../css/layout.css";
 
 /**
  * DOM-идентификаторы панелей
+ *
+ * @const
  * @type {object}
  */
 const PANE_IDS = {
@@ -27,6 +29,7 @@ const PANE_IDS = {
 /**
  * Режимы разметки
  *
+ * @const
  * @type {object}
  */
 const MODES = {
@@ -38,12 +41,15 @@ const MODES = {
 /**
  * Отображения "назначение панели" -> "ID DOM-узла" для режимов разметки
  *
+ * @const
  * @type {object}
  */
 const MAPPINGS = {
     full: {
         workspace: PANE_IDS.MAIN_CENTER,
-        breadboard: PANE_IDS.EAST_SOUTH
+        breadboard: PANE_IDS.EAST_SOUTH,
+        tracing: PANE_IDS.EAST_CENTER_CENTER,
+        buttons: PANE_IDS.EAST_CENTER_SOUTH
     },
     simple: {
         breadboard: PANE_IDS.MAIN_CENTER
@@ -54,6 +60,7 @@ const MAPPINGS = {
  * Элементы режимов разметки, которые должны быть проигнорированы
  * при анимации перехода между режимами
  *
+ * @const
  * @type {{full: *[string], simple: *[string]}}
  */
 const FADEBLOCKINGS = {
@@ -75,6 +82,7 @@ const FADEBLOCKINGS = {
  * Используется для устранения вероятных коллизий
  * при частой смене режимов разметки
  *
+ * @const
  * @type {number}
  */
 const DURATION_INITIAL = 100;
@@ -84,6 +92,9 @@ const DURATION_INITIAL = 100;
  *
  * Автоматически распределяет зоны среды
  * и задаёт параметры их отображения
+ *
+ * @class
+ * @classdesc APPROVED, STRESS-TESTED, NEEDS MORE TESTS
  */
 class LayoutModule extends Module {
     static get eventspace_name() {return "lay"}
@@ -98,6 +109,10 @@ class LayoutModule extends Module {
         }
     }
 
+    /**
+     * @constructor
+     * @param options Настройки модуля
+     */
     constructor(options) {
         super(options);
 
@@ -129,6 +144,10 @@ class LayoutModule extends Module {
      * @param mode {string} режим компоновки
      */
     compose(mode) {
+        if (!(mode in MAPPINGS)) {
+            throw new RangeError("There are no layout mode named `" + mode + "` in mappings");
+        }
+
         return new Promise(resolve => {
             let nodes = this._transformMappingToNodes(MAPPINGS[mode]);
 
@@ -342,14 +361,17 @@ class LayoutModule extends Module {
             east: {
                 size: .3,
                 fxSpeed: this._options.animSpeedMain,
+                onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                 childOptions: {
                     north: {
                         size: .3,
                         fxSpeed: this._options.animSpeedSub,
+                        onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
                     south: {
                         size: .4,
                         fxSpeed: this._options.animSpeedSub,
+                        onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
                     center: {
                         childOptions: {
@@ -357,6 +379,7 @@ class LayoutModule extends Module {
                               size: .2,
                                 slidable: false,
                                 closable: false,
+                                onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                             }
                         }
                     }

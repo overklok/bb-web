@@ -63,16 +63,8 @@ class WorkspaceModule extends Module {
      *
      * Метод не сбрасывает настройки отображения Blockly
      * и не изменяет его текущее состояние
-     *
-     * В строгом режиме выполняет проверку существования будущего DOM-узла,
-     * при его отсутствии извлечение произведено не будет
-     *
-     * @param {boolean} strict строгий режим
-     * @param {Element} dom_node будущий DOM-узел
      */
-    eject(strict=false, dom_node) {
-        // if (strict && !dom_node) {return false}
-
+    eject() {
         this._blockly.exclude();
         this._state.display = false;
     }
@@ -97,6 +89,10 @@ class WorkspaceModule extends Module {
      */
     highlightBlock(block_id) {
         this._blockly.highlightBlock(block_id);
+    }
+
+    getBlockMultiplet(neighbours_amount=3) {
+
     }
 
     /**

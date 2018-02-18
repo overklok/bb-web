@@ -26,7 +26,7 @@ class BreadboardModule extends Module {
         }
     }
 
-    eject(strict, dom_node) {
+    eject() {
         // if (strict && !dom_node) {return false}
 
         if (!this._state.display) {return true}

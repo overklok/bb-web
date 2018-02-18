@@ -35,6 +35,11 @@ class LocalServiceModule extends Module {
         /// если режим холостой
         if (this._options.modeDummy) {
             this._debug.log('Working in DUMMY mode');
+
+            setTimeout(() => {
+                this.emitEvent("connect");
+            }, 1000);
+
         } else {
             this._launchIPC();
             this._subscribeToWrapperEvents();
@@ -55,9 +60,9 @@ class LocalServiceModule extends Module {
      *                           Для главного обработчика ID = main, key = "None"
      */
     updateHandlers(handlers) {
-        return new Promise(resolve => {
-            if (this._options.modeDummy) {resolve()}
+        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
+        return new Promise(resolve => {
             this._ipc.send('code-update', handlers);
 
             this._ipc.once('code-update-result', (event, error) => {
@@ -100,9 +105,9 @@ class LocalServiceModule extends Module {
      * @param {Array} urls массив ссылок на файлы прошивки
      */
     firmwareUpgrade(urls) {
-        return new Promise(resolve => {
-            if (this._options.modeDummy) {resolve()}
+        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
+        return new Promise(resolve => {
             this._ipc.send('upgrade', urls);
 
             this._ipc.once('upgrade-result', (event, error) => {

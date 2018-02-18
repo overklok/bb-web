@@ -81,7 +81,7 @@ class GlobalServiceModule extends Module {
      * @returns {Promise} Ответ сервера / undefined, если в холостом режиме
      */
     reportLogBunch(log_bunch) {
-        if (this._options.modeDummy) {return new Promise(resolve => {resolve()})}
+        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
         // let data = new FormData();
         // data.append("json", JSON.stringify(log_bunch));
