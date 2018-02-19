@@ -236,7 +236,7 @@ let JSONBlocks = {
         }
     },
 
-    strip_colour_chn_dec: {
+    strip_colour_chn_inc: {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
@@ -333,7 +333,7 @@ let JSONBlocks = {
         }
     },
 
-    strip_colour_current_set_line: {
+    strip_line_set_current_colour: {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
@@ -342,8 +342,8 @@ let JSONBlocks = {
                 nextStatement:      null,
                 inputsInline:       false,
                 colour:             CATEGORIES.COLOUR.colour,
-                tooltip:            "Цвет текущей лампочки становится равным цвету элемента из переменной " +
-                                    "\"Полоса цветов\" с соответствующим номером"
+                tooltip:            "Цвет текущей лампочки в списке \"Полоса цветов\" становится равным текущему значению " +
+                                    "переменной Цвет"
             })
         }
     },

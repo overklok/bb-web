@@ -91,6 +91,16 @@ class WorkspaceModule extends Module {
         this._blockly.highlightBlock(block_id);
     }
 
+    highlightErrorBlocks(block_ids) {
+        for (let block_id of block_ids) {
+            this._blockly.highlightErrorBlock(block_id);
+        }
+    }
+
+    clearErrorBlocks() {
+        this._blockly.clearErrorBlocks();
+    }
+
     getBlockMultiplet(neighbours_amount=3) {
 
     }
@@ -102,8 +112,29 @@ class WorkspaceModule extends Module {
      *                         main и sub имеют следующий формат:
      *                         TODO: определить формат для обработчика
      */
-    getHandlers() {
-        return this._blockly.getJSONHandlers();
+    getMainHandler() {
+        let handlers = this._blockly.getJSONHandlers();
+
+        let code = WorkspaceModule._preprocessCode(handlers.main);
+
+        return {commands: code, button: "None"};
+    }
+
+    getAllHandlers() {
+        let _handlers = this._blockly.getJSONHandlers();
+
+        let code_main = WorkspaceModule._preprocessCode(_handlers.main);
+
+        let handlers_result = {main: {commands: code_main, btn: "None"}};
+
+        for (let block_id of Object.keys(_handlers.sub)) {
+            handlers_result[block_id] = {
+                commands: WorkspaceModule._preprocessCode(_handlers.sub[block_id].code),
+                btn: _handlers.sub[block_id].btn
+            }
+        }
+
+        return handlers_result;
     }
 
     /**
@@ -206,8 +237,6 @@ class WorkspaceModule extends Module {
         if (code.slice(-1) === ",") {
             code = code.slice(0, -1);
         }
-
-        console.log(code);
 
         return JSON.parse("[" + code + "]");
     }

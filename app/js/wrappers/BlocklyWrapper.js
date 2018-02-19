@@ -5,6 +5,8 @@ import Ru       from 'node-blockly/lib/i18n/ru';
 
 Blockly.setLocale(Ru);
 
+const ERROR_COLOUR = "#920000";
+
 const DIV_IDS = {
     BLOCKLY: "blockly-div",
     TOOLBOX: "blockly-toolbox"
@@ -31,7 +33,9 @@ class BlocklyWrapper extends Wrapper {
 
         this.silent             = false;          // "тихий" режим, не обрабатывать события
 
-        this._variable_blocks   = [];
+        this._error_blocks = {};
+
+        this._variable_blocks_shown   = [];
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
@@ -124,6 +128,8 @@ class BlocklyWrapper extends Wrapper {
         /// Адаптировать размер Blockly под начальный размер контейнера
         this._onResize();
         Blockly.svgResize(this.workspace);
+
+        this._variable_blocks_shown = [];
     }
 
     /**
@@ -164,6 +170,26 @@ class BlocklyWrapper extends Wrapper {
 
     highlightBlock(block_id) {
         this.workspace.highlightBlock(block_id);
+    }
+
+    highlightErrorBlock(block_id) {
+        let block = this.workspace.getBlockById(block_id);
+        let colour = block.getColour(ERROR_COLOUR);
+
+        block.setColour(ERROR_COLOUR);
+
+        this._error_blocks[block_id] = {colour: colour, block: block};
+    }
+
+    clearErrorBlocks() {
+        for (let block_id of Object.keys(this._error_blocks)) {
+            let block = this._error_blocks[block_id].block;
+            let colour = this._error_blocks[block_id].colour;
+
+            block.setColour(colour);
+            
+            delete this._error_blocks[block_id];
+        }
     }
 
     /**
@@ -279,12 +305,13 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
-    createVariableBlock(type, value=0) {
+    showVariableBlock(type, value=0) {
         let block = this.workspace.newBlock(type);
         block.initSvg();
         block.render();
 
         let variable_name = "";
+        let pos_y = this._getAllVariablesHeight();
 
         try {
             variable_name = block.inputList[0].fieldRow[0].text_;
@@ -292,12 +319,29 @@ class BlocklyWrapper extends Wrapper {
             console.error("Variable block of type `" + type + "` has not a dummy input at 0 index");
         }
 
-        this._variable_blocks[type] = {name: variable_name, element: block};
-
         block.setFieldValue(variable_name + " = " + value);
+        block.moveBy(0, pos_y);
+
+        this._variable_blocks_shown[type] = {name: variable_name, element: block, pos_y: pos_y};
     }
 
-    createBlock(type) {
+    clearVariableBlocks() {
+        for (let block_type in this._variable_blocks_shown) {
+            this._variable_blocks_shown[block_type].element.dispose();
+        }
+
+        this._variable_blocks_shown = [];
+    }
+
+    setVariableValue(type, value=0) {
+        let block = this._variable_blocks_shown[type];
+
+        if (!block) {throw new RangeError("Variable of type `" + type + "`does not exist in the base")}
+
+        block.element.setFieldValue(block.name + " = " + value);
+    }
+
+    addBlock(type) {
         let block = this.workspace.newBlock(type);
         block.initSvg();
         block.render();
@@ -317,6 +361,16 @@ class BlocklyWrapper extends Wrapper {
         // var parentConnection = parentBlock.getInput('TEXT').connection;
         // var childConnection = childBlock.outputConnection;
         // parentConnection.connect(childConnection);
+    }
+
+    _getAllVariablesHeight() {
+        let height_sum = 0;
+
+        for (let block_type in this._variable_blocks_shown) {
+            height_sum += this._variable_blocks_shown[block_type].element.height;
+        }
+
+        return height_sum;
     }
 
     /**

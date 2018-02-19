@@ -43,6 +43,17 @@ let BlocklyJSONGenerators = {
         /// извлечь значения аргументов
         Blockly.JSON.statementToCode(block, "DO", true);
     },
+
+    /**
+     * Генератор не изменяет общий код,
+     * а модифицирует объект, содержащий аргументы обработчиков
+     *
+     * @param block
+     */
+    event_key_onpush_any_number: block => {
+        /// извлечь значения аргументов
+        Blockly.JSON.statementToCode(block, "DO", true);
+    },
 };
 
 export default BlocklyJSONGenerators;

@@ -111,6 +111,11 @@ class Application {
         this._dispatcher.subscribe(this.gs);
 
         this.lay.compose("full");
+
+        this.trc.registerVariableTypes([
+            {name: "strip_index", initial_value: 1},
+            {name: "strip_colour", initial_value: 1},
+        ]);
     }
 
     _defineChains() {
@@ -126,9 +131,14 @@ class Application {
                 .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
         });
 
-        this._dispatcher.on('ls:command', (data) => {
+        this._dispatcher.on('ls:command', data => {
             console.log(data);
             this.ws.highlightBlock(data.block_id);
+        });
+
+        this._dispatcher.on('ls:variable', data => {
+            console.log(data);
+            this.trc.setVariableValue(data.id, data.value);
         });
 
         this._dispatcher.on('ls:finish', () => {
@@ -151,10 +161,11 @@ class Application {
         });
 
         this._dispatcher.on('gui:launch', () => {
-            let handlers = this.ws.getHandlers();
-            let code = WorkspaceModule._preprocessCode(handlers.main);
+            let handler = this.ws.getMainHandler();
 
-            this.ls.updateHandlers({main: {commands: code, btn: "None"}});
+            this.ls.updateHandlers({main: handler});
+            console.log({main: handler});
+
             // this._dispatcher.only(['gui:stop', 'ls:command']);
         });
 
@@ -194,9 +205,15 @@ class Application {
         });
 
         this._dispatcher.on('gui:check', () => {
-            let handlers = this.ws.getHandlers();
-            this.gs.commitHandlers(handlers)
-                .then(response => {console.log(response)})
+            this.ws.clearErrorBlocks();
+
+            let handlers = this.ws.getAllHandlers();
+            this.gs.commitHandlers({}, handlers)
+                .then(verdict => {
+                    this._dispatcher.only(['ins:*']);
+                    return verdict;
+                })
+                .then(verdict => this.ins.applyVerdict(verdict));
         });
 
         this._dispatcher.on('gui:keyup', button_code => {
@@ -208,6 +225,17 @@ class Application {
             // console.log(handlers);
             this.ls.updateHandlers(handlers);
             // console.log("WS HDLR", handlers);
+        });
+
+        this._dispatcher.on('ins:pass', verdict => {
+            alert(verdict.message);
+            this._dispatcher.only(['gui:*']);
+        });
+
+        this._dispatcher.on('ins:fault', verdict => {
+            alert(verdict.message);
+            this.ws.highlightErrorBlocks(verdict.blocks);
+            this._dispatcher.only(['gui:*']);
         });
 
         this._dispatcher.on('log:tick', () => {

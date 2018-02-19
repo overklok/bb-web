@@ -55,7 +55,7 @@ class Application {
     }
 
     getHandlers() {
-        return this.ws.getHandlers();
+        return this.ws.getAllHandlers();
     }
 
     getCodeXml() {

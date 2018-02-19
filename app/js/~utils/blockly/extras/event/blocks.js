@@ -84,6 +84,24 @@ let JSONBlocks = {
                                 "Код нажатой кнопки записывается в переменную \"Номер клавиши\"."
             })
         }
+    },
+
+    event_key_onpush_any_number: {
+        init: function() {
+            this.jsonInit({
+                type:           "block_type",
+                message0:       "когда нажата любая цифра %1",
+                args0: [
+                    {
+                        "type": "input_statement",
+                        "name": "DO"
+                    }
+                ],
+                colour:         CATEGORIES.EVENTS.colour,
+                tooltip:        "По нажатию любой кнопки выполнится код внутри этого блока." +
+                                "Код нажатой кнопки записывается в переменную \"Номер клавиши\"."
+            })
+        }
     }
 };
 

@@ -44,7 +44,7 @@ class GlobalServiceModule extends Module {
      * @returns {Promise}   JSON-ответ с результатом проверки / undefined, если в холостом режиме
      */
     commitHandlers(meta, handlers) {
-        if (this._options.modeDummy) {return true}
+        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
         let packet = {meta: meta, handlers: handlers};
 
@@ -56,7 +56,7 @@ class GlobalServiceModule extends Module {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                // 'Access-Control-Allow-Origin': ORIGIN,
+                // 'Access-Control-Allow-Origin': this._options.origin,
                 // 'Access-Control-Allow-Credentials': true,
                 // 'Access-Control-Allow-Methods': 'POST',
                 // 'X-CSRFToken': undefined
@@ -67,6 +67,10 @@ class GlobalServiceModule extends Module {
 
         return fetch(this._options.origin + this._options.api.check_handlers, request)
             .then(response => {
+                if (response.error) {
+                    throw response.error();
+                }
+
                 return response.json();
             }).catch(err => {
                 this._debug.error(err);
@@ -93,7 +97,7 @@ class GlobalServiceModule extends Module {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                // 'Access-Control-Allow-Origin': ORIGIN,
+                'Access-Control-Allow-Origin': this._options.origin,
                 // 'Access-Control-Allow-Credentials': true,
                 // 'Access-Control-Allow-Methods': 'POST',
                 // 'X-CSRFToken': undefined
