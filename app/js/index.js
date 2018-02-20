@@ -112,9 +112,9 @@ class Application {
 
         this.lay.compose("full");
 
-        this.trc.registerVariableTypes([
-            {name: "strip_index", initial_value: 1},
-            {name: "strip_colour", initial_value: 1},
+        this.trc.registerVariables([
+            {name: "strip_index", initial_value: 1, type: "string"},
+            {name: "strip_colour", initial_value: "00FF00", type: "colour"},
         ]);
     }
 

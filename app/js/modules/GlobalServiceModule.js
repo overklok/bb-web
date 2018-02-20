@@ -97,7 +97,7 @@ class GlobalServiceModule extends Module {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': this._options.origin,
+                // 'Access-Control-Allow-Origin': this._options.origin,
                 // 'Access-Control-Allow-Credentials': true,
                 // 'Access-Control-Allow-Methods': 'POST',
                 // 'X-CSRFToken': undefined

@@ -12,6 +12,12 @@ const DIV_IDS = {
     TOOLBOX: "blockly-toolbox"
 };
 
+const FIELD_TYPES = {
+    NUMBER: "number",
+    STRING: "string",
+    COLOUR: "colour"
+};
+
 window.BLOCKLY_BTS_REG = false;
 
 /**
@@ -35,7 +41,7 @@ class BlocklyWrapper extends Wrapper {
 
         this._error_blocks = {};
 
-        this._variable_blocks_shown   = [];
+        this._variable_blocks   = [];
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
@@ -129,7 +135,7 @@ class BlocklyWrapper extends Wrapper {
         this._onResize();
         Blockly.svgResize(this.workspace);
 
-        this._variable_blocks_shown = [];
+        this._variable_blocks = [];
     }
 
     /**
@@ -305,8 +311,9 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
-    showVariableBlock(type, value=0) {
-        let block = this.workspace.newBlock(type);
+    addVariableBlock(block_type, value=0, field_type=FIELD_TYPES.STRING) {
+        let block = this.workspace.newBlock(block_type);
+
         block.initSvg();
         block.render();
 
@@ -316,37 +323,38 @@ class BlocklyWrapper extends Wrapper {
         try {
             variable_name = block.inputList[0].fieldRow[0].text_;
         } catch (e) {
-            console.error("Variable block of type `" + type + "` has not a dummy input at 0 index");
+            console.error("Variable block of type `" + block_type + "` has not a dummy input at 0 index");
         }
 
-        block.setFieldValue(variable_name + " = " + value);
+        this._addFieldToVariableBlock(block, field_type);
+
+        block.setFieldValue(variable_name + " = ");
+        block.setFieldValue(value, "DUMMY");
         block.moveBy(0, pos_y);
 
-        this._variable_blocks_shown[type] = {name: variable_name, element: block, pos_y: pos_y};
+        this._variable_blocks[block_type] = {name: variable_name, element: block, pos_y: pos_y};
     }
 
     clearVariableBlocks() {
-        for (let block_type in this._variable_blocks_shown) {
-            this._variable_blocks_shown[block_type].element.dispose();
+        for (let block_type in this._variable_blocks) {
+            this._variable_blocks[block_type].element.dispose();
         }
 
-        this._variable_blocks_shown = [];
+        this._variable_blocks = [];
     }
 
-    setVariableValue(type, value=0) {
-        let block = this._variable_blocks_shown[type];
+    setVariableBlockValue(type, value=0) {
+        let block = this._variable_blocks[type];
 
         if (!block) {throw new RangeError("Variable of type `" + type + "`does not exist in the base")}
 
-        block.element.setFieldValue(block.name + " = " + value);
+        block.element.setFieldValue(value, "DUMMY");
     }
 
     addBlock(type) {
         let block = this.workspace.newBlock(type);
         block.initSvg();
         block.render();
-
-
 
         // var parentBlock = workspace.newBlock('text_print');
         // parentBlock.initSvg();
@@ -363,11 +371,38 @@ class BlocklyWrapper extends Wrapper {
         // parentConnection.connect(childConnection);
     }
 
+    _addFieldToVariableBlock(block, field_type) {
+        let field = undefined;
+
+        switch (field_type) {
+            case FIELD_TYPES.NUMBER: {
+                field = new Blockly.FieldNumber(); /// no constraints
+                break;
+            }
+            case FIELD_TYPES.STRING: {
+                field = new Blockly.FieldTextInput(); /// no constraints
+                break;
+            }
+            case FIELD_TYPES.COLOUR: {
+                field = new Blockly.FieldColour();
+                break;
+            }
+            default: {
+                field = new Blockly.FieldLabel();
+                break;
+            }
+        }
+
+        block.setInputsInline(true);
+        block.appendDummyInput()
+            .appendField(field, "DUMMY");
+    }
+
     _getAllVariablesHeight() {
         let height_sum = 0;
 
-        for (let block_type in this._variable_blocks_shown) {
-            height_sum += this._variable_blocks_shown[block_type].element.height;
+        for (let block_type in this._variable_blocks) {
+            height_sum += this._variable_blocks[block_type].element.height;
         }
 
         return height_sum;

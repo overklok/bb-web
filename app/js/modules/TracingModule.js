@@ -17,15 +17,15 @@ class TracingModule extends Module {
         super(options);
 
         this._state = {
-            areas: {
-                variables: false,
+            areasDisp: {
+                variable: false,
                 codenet: false,
                 buttons: false
             },
             display: false,
         };
 
-        this._var_types = [];
+        this._vars = [];
 
         this._blockly = new BlocklyWrapper();
 
@@ -39,59 +39,59 @@ class TracingModule extends Module {
             throw new Error("Please modify this module to load Blockly block types or disable it");
         }
 
-        if (this._state.areas.codenet && this._state.areas.variables) {return true}
+        if (this._state.areasDisp.codenet && this._state.areasDisp.variable) {return true}
 
         if (dom_node) {
-            this._state.areas.codenet = true;
+            this._state.areasDisp.codenet = true;
         }
 
         if (dom_node_buttons) {
-            this._state.areas.codenet = true;
+            this._state.areasDisp.codenet = true;
         }
 
-        this._blockly.include(dom_node, false, true, 0.75);
+        this._blockly.include(dom_node, false, true, 0.6);
         this._state.display = true;
 
-        this._showVariableTypes(this._var_types);
+        this._showVariables(this._vars);
     }
 
     eject() {
-        if (!this._state.areas.codenet && !this._state.areas.variables) {return true}
+        if (!this._state.areasDisp.codenet && !this._state.areasDisp.variable) {return true}
 
         this._blockly.exclude();
         this._state.display = false;
     }
 
     resize() {
-         if (this._state.areas.codenet || this._state.areas.variables) {
+         if (this._state.areasDisp.codenet || this._state.areasDisp.variable) {
             this._blockly._onResize();
         }
     }
 
-    registerVariableTypes(variable_types) {
-        this._var_types = variable_types;
+    registerVariables(variables) {
+        this._vars = variables;
 
         if (this._state.display) {
             this._blockly.clearVariableBlocks();
 
-            this._showVariableTypes(this._var_types);
+            this._showVariables(this._vars);
         }
     }
 
     setVariableValue(variable_type, variable_value) {
-        this._blockly.setVariableValue(variable_type, variable_value);
+        this._blockly.setVariableBlockValue(variable_type, variable_value);
     }
 
     switchVariables(on) {
-        if (this._state.variables === on) {return true}
+        if (this._state.variable === on) {return true}
 
         if (on === false) {
             this._blockly.clearVariableBlocks();
         } else {
-            this._showVariableTypes(this._var_types);
+            this._showVariables(this._vars);
         }
 
-        this._state.variables = on;
+        this._state.variable = on;
     }
 
     switchCodenet(on) {
@@ -102,10 +102,10 @@ class TracingModule extends Module {
         if (this._state.buttons === on) {return true}
     }
 
-    _showVariableTypes(variable_types) {
+    _showVariables(variables) {
         if (this._state.display) {
-            for (let variable_type of variable_types) {
-                this._blockly.showVariableBlock(variable_type.name, variable_type.initial_value);
+            for (let variable of variables) {
+                this._blockly.addVariableBlock(variable.name, variable.initial_value, variable.type);
             }
         }
     }

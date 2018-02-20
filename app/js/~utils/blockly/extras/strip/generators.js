@@ -69,7 +69,7 @@ let BlocklyJSONGenerators = {
             name:       "strip_colour_set_string",
             block_id:   block.id,
             args:       getArguments(block, [
-                {name: "CLR", default: "black", datatype: DATATYPES.STRING, complex: true}
+                {name: "CLR", default: "black", datatype: DATATYPES.STRING, complex: false}
             ])
         }) + ","
     },
