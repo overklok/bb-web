@@ -76,7 +76,7 @@ class Application {
         this._subscribeToModules();
 
         this._dispatcher.only(['ls:connect']);
-        this._dispatcher.always(['ls:*', 'ws:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
+        this._dispatcher.always(['gui:*', 'ls:*', 'ws:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
     }
 
     /**
@@ -98,19 +98,21 @@ class Application {
         this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
 
-        this.gui.setButtonCodes([81, 87, 69]);
+        this.gui.setButtonCodes([81, 87, 69, 38, 40, 37, 39]);
     }
 
     _subscribeToModules() {
         this._dispatcher.subscribe(this.log);
         this._dispatcher.subscribe(this.gui);
+        this._dispatcher.subscribe(this.ins);
         this._dispatcher.subscribe(this.lay);
         this._dispatcher.subscribe(this.ws);
-        this._dispatcher.subscribe(this.ins);
         this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
 
         this.lay.compose("full");
+
+        this.ins.setValidButtonSequence([81, 87, 69]);
 
         this.trc.registerVariables([
             {name: "strip_index", initial_value: 1, type: "string"},
@@ -126,7 +128,7 @@ class Application {
             /// Запросить ссылки для прошивки
             this.gs.getUpgradeURLs()
                 /// Обновить прошивку
-                .then(urls  => this.ls.firmwareUpgrade(urls))
+                // .then(urls  => this.ls.firmwareUpgrade(urls))
                 /// Разрешить обрабатывать события платы и GUI
                 .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
         });
@@ -218,6 +220,9 @@ class Application {
 
         this._dispatcher.on('gui:keyup', button_code => {
             this.ls.registerKeyUp(button_code);
+            let valid = this.ins.validateButtonPress(button_code);
+            this.trc.displayKeyboardPress(button_code, !valid);
+
             console.log('keyup', button_code);
         });
 

@@ -1,5 +1,6 @@
 import Module from "../core/Module";
 import BlocklyWrapper from "../wrappers/BlocklyWrapper";
+import KbdPaneWrapper from "../wrappers/KbdPaneWrapper";
 
 import JSONBlocks       from '../~utils/blockly/extras/blocks';
 
@@ -28,6 +29,7 @@ class TracingModule extends Module {
         this._vars = [];
 
         this._blockly = new BlocklyWrapper();
+        this._kbdpane = new KbdPaneWrapper();
 
         this._subscribeToWrapperEvents();
     }
@@ -43,14 +45,16 @@ class TracingModule extends Module {
 
         if (dom_node) {
             this._state.areasDisp.codenet = true;
+
+            this._blockly.include(dom_node, false, true, 0.6);
+            this._state.display = true;
         }
 
         if (dom_node_buttons) {
-            this._state.areasDisp.codenet = true;
-        }
+            this._state.areasDisp.buttons = true;
 
-        this._blockly.include(dom_node, false, true, 0.6);
-        this._state.display = true;
+            this._kbdpane.include(dom_node_buttons, 10);
+        }
 
         this._showVariables(this._vars);
     }
@@ -59,12 +63,18 @@ class TracingModule extends Module {
         if (!this._state.areasDisp.codenet && !this._state.areasDisp.variable) {return true}
 
         this._blockly.exclude();
+        this._kbdpane.exclude();
+
         this._state.display = false;
     }
 
     resize() {
-         if (this._state.areasDisp.codenet || this._state.areasDisp.variable) {
+        if (this._state.areasDisp.codenet || this._state.areasDisp.variable) {
             this._blockly._onResize();
+        }
+
+        if (this._state.areasDisp.buttons) {
+            this._kbdpane._onResize();
         }
     }
 
@@ -80,6 +90,10 @@ class TracingModule extends Module {
 
     setVariableValue(variable_type, variable_value) {
         this._blockly.setVariableBlockValue(variable_type, variable_value);
+    }
+
+    displayKeyboardPress(keycode, fault=false) {
+        this._kbdpane.addButton(keycode, fault);
     }
 
     switchVariables(on) {

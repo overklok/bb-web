@@ -351,7 +351,7 @@ class LayoutModule extends Module {
                 slidable: false,	            // OVERRIDE the pane-default of 'slidable=true'
                 closable: false,
                 spacing_closed: 20,		        // big resizer-bar when open (zero height)
-                size: .1,
+                size: .08,
                 maxSize: 100
             },
 
@@ -369,14 +369,22 @@ class LayoutModule extends Module {
                         onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
                     south: {
-                        size: .4,
+                        size: .3,
                         fxSpeed: this._options.animSpeedSub,
                         onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
                     center: {
                         childOptions: {
+                            center: {
+                                spacing_open: 0,
+                                spacing_closed: 0,
+                            },
                             south: {
-                              size: .2,
+                                size: .2,
+                                minSize: 35,
+                                maxSize: 45,
+                                spacing_open: 0,
+                                spacing_closed: 0,
                                 slidable: false,
                                 closable: false,
                                 onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},

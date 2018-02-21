@@ -44,10 +44,10 @@
         app.configure({
             isInternal: false,  // на другом хосте
             allBlocks: true,    // все блоки
-            offline: false,     // без сервера
+            offline: true,     // без сервера
             isolated: true,     // без платы
             noRemoteLogs: false, // без удалённого логирования
-            anyKey: false,       // обрабатывать нажатия всех клавиш
+            anyKey: true,       // обрабатывать нажатия всех клавиш
         });
 
         app.run();

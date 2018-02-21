@@ -82,7 +82,7 @@ class GUIModule extends Module {
      * @private
      */
     _filterKeyEvent(keycode) {
-        if (keycode in this._button_codes || this._options.anyKey) {
+        if (this._button_codes.indexOf(keycode) >= 0 || this._options.anyKey) {
             return keycode;
         }
 

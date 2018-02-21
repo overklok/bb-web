@@ -1,0 +1,11 @@
+{
+  "name": "js-buttons",
+  "version": "1.0.0",
+  "description": "A tool for display keyboard buttons and programmatically control of it",
+  "main": "ButtonPane.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexander Molodykh",
+  "license": "ISC"
+}
