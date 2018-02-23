@@ -51,10 +51,8 @@ class LocalServiceModule extends Module {
      *
      * @param {Object} handlers обработчики, формат:
      *                          {
-     *                              "<ID обработчика>": {
-     *                                  commands: "<код обработчика>",
-     *                                  key: "<код клавиши обработчика>"
-     *                              }
+     *                              commands: "<код обработчика>",
+     *                              launch: "<флаг запуска>"
      *                           }
      *
      *                           Для главного обработчика ID = main, key = "None"
@@ -63,6 +61,8 @@ class LocalServiceModule extends Module {
         if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
         return new Promise(resolve => {
+            console.log(handlers);
+
             this._ipc.send('code-update', handlers);
 
             this._ipc.once('code-update-result', (event, error) => {
@@ -80,6 +80,7 @@ class LocalServiceModule extends Module {
      * Зарегистрировать нажатие клавиши
      *
      * @param button_code   код клавиши
+     * @deprecated
      * @returns {boolean}   true, если модуль в холостом режиме
      */
     registerKeyUp(button_code) {

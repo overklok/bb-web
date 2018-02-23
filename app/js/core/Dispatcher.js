@@ -21,6 +21,9 @@ class Dispatcher {
             current: new Set()
         };
 
+        this._denied = false;
+        this._deny_excepts = [];
+
         this._event_types = new Set();
     }
 
@@ -138,11 +141,29 @@ class Dispatcher {
     }
 
     /**
-     * Запрет на прослушивание любого типа событий, за исключением заданных
-     * в always()
+     * TODO NEEDS TEST
+     *
+     * @deprecated
      */
-    taboo() {
-        this._event_types_listening.current.clear();
+    allowAll() {
+        this._denied = false;
+
+        this._deny_excepts = new Set();
+    }
+
+    /**
+     * Запрет на прослушивание любого типа событий
+     *
+     * TODO NEEDS TEST
+     *
+     * @deprecated
+     */
+    denyAll(eventspace_excepts) {
+        this._deny_excepts = new Set(
+            [...this._event_types].filter(Dispatcher.getFilterByEventspace(eventspace_excepts))
+        );
+
+        this._denied = true;
     }
 
     /**
@@ -178,7 +199,22 @@ class Dispatcher {
         if (typeof name !== "string")
             return function() {throw new TypeError("Dispatcher._getHandler(): Name is not a string!")};
 
-        if (this._event_types_listening.always.has(name) || this._event_types_listening.current.has(name)) {
+        let allow = false;
+
+        if (this._denied) {
+            /// если включён запрет
+            if (this._deny_excepts.has(name)) {
+                /// если есть исключения
+                allow = true;
+            }
+        } else {
+            /// если выключен запрет
+            if (this._event_types_listening.always.has(name) || this._event_types_listening.current.has(name)) {
+                allow = true;
+            }
+        }
+
+        if (allow) {
             if (name in this._handlers) {
                 return this._handlers[name];
             } else {

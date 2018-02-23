@@ -13,7 +13,7 @@ import JSONGenerators   from '../~utils/blockly/extras/generators';
  */
 class WorkspaceModule extends Module {
     static get eventspace_name() {return "ws"}
-    static get event_types() {return ["change"]}
+    static get event_types() {return ["ready", "change"]}
 
     static defaults() {
         return {
@@ -26,6 +26,8 @@ class WorkspaceModule extends Module {
         super(options);
 
         this._blockly  = new BlocklyWrapper();
+
+        this.shutUp();
 
         this._state = {
             display: false,
@@ -46,16 +48,20 @@ class WorkspaceModule extends Module {
      * @param {Element} dom_node DOM-узел, в который будет встроена рабочая область
      */
     inject(dom_node) {
-        if (!dom_node) {return false}
+        return new Promise(resolve => {
+            if (!dom_node) {resolve(false)}
 
-        this._blockly.include(dom_node, this._options.useScrollbars);
-        this._state.display = true;
+            this._blockly.include(dom_node, this._options.useScrollbars);
+            this._state.display = true;
 
-        if (this._options.allBlocks) {
-            this._blockly.updateBlockTypes(Object.keys(JSONGenerators));
-        } else {
-            this._blockly.setBlockTypes(this._state.block_types);
-        }
+            if (this._options.allBlocks) {
+                this._blockly.updateBlockTypes(Object.keys(JSONGenerators));
+            } else {
+                this._blockly.setBlockTypes(this._state.block_types);
+            }
+
+            resolve();
+        });
     }
 
     /**
@@ -108,9 +114,7 @@ class WorkspaceModule extends Module {
     /**
      * Получить список обработчиков в формате объекта
      *
-     * @returns {{main, sub}}, где main - главный обработчик, sub - обработчик нажатий клавиши
-     *                         main и sub имеют следующий формат:
-     *                         TODO: определить формат для обработчика
+     * @returns {{commands, button}} - {object} commands - JSON-код программы, {number} button - код клавиши
      */
     getMainHandler() {
         let handlers = this._blockly.getJSONHandlers();
@@ -118,6 +122,30 @@ class WorkspaceModule extends Module {
         let code = WorkspaceModule._preprocessCode(handlers.main);
 
         return {commands: code, button: "None"};
+    }
+
+    /**
+     * Получить обработчик нажатия клавиши
+     *
+     * @param {number} btn_code код клавиши
+     * @returns {object} обработчик, включающий код клавиши и код программы
+     */
+    getButtonHandler(btn_code) {
+        let handlers = this._blockly.getJSONHandlers().sub;
+
+        console.log(handlers);
+
+        for (let id of Object.keys(handlers)) {
+            let handler = handlers[id];
+
+            if (handler.btn === btn_code) {
+                handler.code = WorkspaceModule._preprocessCode(handler.code);
+
+                return handler;
+            }
+        }
+
+        return null;
     }
 
     getAllHandlers() {

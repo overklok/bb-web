@@ -76,7 +76,7 @@ class Application {
         this._subscribeToModules();
 
         this._dispatcher.only(['ls:connect']);
-        this._dispatcher.always(['gui:*', 'ls:*', 'ws:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
+        this._dispatcher.always(['lay:resize', 'gui:*', 'ls:*', 'ws:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
     }
 
     /**
@@ -99,8 +99,23 @@ class Application {
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
 
         this.gui.setButtonCodes([81, 87, 69, 38, 40, 37, 39]);
+
+        this.lay.compose("full");
+
+        this.ins.setValidButtonSequence([81, 87, 69]);
+
+        this.trc.registerVariables([
+            {name: "strip_index", initial_value: 1, type: "string"},
+            {name: "strip_colour", initial_value: "000000", type: "colour"},
+            {name: "strip_brightness", initial_value: 0, type: "number"},
+        ]);
     }
 
+    /**
+     * Подписать диспетчер на события модулей
+     *
+     * @private
+     */
     _subscribeToModules() {
         this._dispatcher.subscribe(this.log);
         this._dispatcher.subscribe(this.gui);
@@ -109,20 +124,16 @@ class Application {
         this._dispatcher.subscribe(this.ws);
         this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
-
-        this.lay.compose("full");
-
-        this.ins.setValidButtonSequence([81, 87, 69]);
-
-        this.trc.registerVariables([
-            {name: "strip_index", initial_value: 1, type: "string"},
-            {name: "strip_colour", initial_value: "00FF00", type: "colour"},
-        ]);
     }
 
+    /**
+     * Определить цепочки-обработчики
+     *
+     * @private
+     */
     _defineChains() {
         /**
-         * Когда плата готова к работе
+         * Готовность платы к работе
          */
         this._dispatcher.on('ls:connect', () => {
             /// Запросить ссылки для прошивки
@@ -133,22 +144,31 @@ class Application {
                 .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
         });
 
+        /**
+         * Выполнена команда
+         */
         this._dispatcher.on('ls:command', data => {
             console.log(data);
             this.ws.highlightBlock(data.block_id);
         });
 
+        /**
+         * Изменено значение переменной
+         */
         this._dispatcher.on('ls:variable', data => {
             console.log(data);
             this.trc.setVariableValue(data.id, data.value);
         });
 
+        /**
+         * Когда
+         */
         this._dispatcher.on('ls:finish', () => {
             this.ws.highlightBlock(null);
         });
 
         /**
-         * Когда разметка скомпонована
+         * Начало компоновки разметки
          */
         this._dispatcher.on('lay:compose-begin', data => {
             this.ws.eject();
@@ -156,56 +176,66 @@ class Application {
             this.trc.eject();
         });
 
+        /**
+         * Окончание компоновки разметки
+         */
         this._dispatcher.on('lay:compose-end', data => {
-            this.ws.inject(data.workspace);
-            this.bb.inject(data.breadboard);
-            this.trc.inject(data.tracing, data.buttons);
+            Promise.all([
+                this.ws.inject(data.workspace),
+                this.bb.inject(data.breadboard),
+                this.trc.inject(data.tracing, data.buttons)
+            ])
+                .then(() => this.lay.showPanes())
         });
 
-        this._dispatcher.on('gui:launch', () => {
+        /**
+         * Нажата кнопка "Запустить"
+         */
+        this._dispatcher.on('gui:launch-main', () => {
             let handler = this.ws.getMainHandler();
 
-            this.ls.updateHandlers({main: handler});
-            console.log({main: handler});
+            this.ls.updateHandlers({commands: handler.commands, launch: true});
+
+            console.log({commands: handler.commands, launch: true});
 
             // this._dispatcher.only(['gui:stop', 'ls:command']);
         });
 
+        /**
+         * Нажата кнопка "Остановить"
+         */
         this._dispatcher.on('gui:stop', data => {
             this.ls.stopExecution();
             this.ws.highlightBlock(null);
         });
 
         /**
-         * Когда нажата кнопка переключения разметки
+         * Нажата кнопка "Переключить разметку"
          */
         this._dispatcher.on('gui:switch', on => {
-            if (on === true) {
-                this._dispatcher.taboo();
-
-                this.lay.compose("simple")
-                    .then(() => this.lay.compose("full"))
-                    .then(() => this._dispatcher.only(["gui:*"]))
-            }
-
-            if (on === false) {
-                this._dispatcher.taboo();
-
-                this.lay.compose("simple")
-                    .then(() => this.lay.compose("full"))
-                    .then(() => this._dispatcher.only(["gui:*"]))
-            }
+            this.lay.compose("simple")
+                .then(() => this.lay.compose("full"))
+                .then(() => this._dispatcher.only(["gui:*"]))
         });
 
+        /**
+         * Нажата кнопка "Выгрузить в файл"
+         */
         this._dispatcher.on('gui:unload-file', () => {
             let tree = this.ws.getTree();
             this.gui.saveToFile(tree);
         });
 
+        /**
+         * Нажата кнопка "Загрузить из файла"
+         */
         this._dispatcher.on('gui:load-file', tree => {
             this.ws.loadTree(tree);
         });
 
+        /**
+         * Нажата кнопка "Проверить"
+         */
         this._dispatcher.on('gui:check', () => {
             this.ws.clearErrorBlocks();
 
@@ -218,31 +248,46 @@ class Application {
                 .then(verdict => this.ins.applyVerdict(verdict));
         });
 
+        /**
+         * Нажата клавиша
+         */
         this._dispatcher.on('gui:keyup', button_code => {
-            this.ls.registerKeyUp(button_code);
+            /// найти первый обработчик нажатия клавиши
+            let handler = this.ws.getButtonHandler(button_code);
+
+            if (handler) {
+                /// обновить код на плате
+                this.ls.updateHandlers({commands: handler.code, launch: false});
+            }
+
+            /// проверить правильность нажатия клавиши
             let valid = this.ins.validateButtonPress(button_code);
+            /// вывести нажатие клавиши
             this.trc.displayKeyboardPress(button_code, !valid);
 
             console.log('keyup', button_code);
         });
 
-        this._dispatcher.on('ws:change', handlers => {
-            // console.log(handlers);
-            this.ls.updateHandlers(handlers);
-            // console.log("WS HDLR", handlers);
-        });
-
+        /**
+         * Задание пройдено
+         */
         this._dispatcher.on('ins:pass', verdict => {
             alert(verdict.message);
             this._dispatcher.only(['gui:*']);
         });
 
+        /**
+         * Задание провалено
+         */
         this._dispatcher.on('ins:fault', verdict => {
             alert(verdict.message);
             this.ws.highlightErrorBlocks(verdict.blocks);
             this._dispatcher.only(['gui:*']);
         });
 
+        /**
+         * Тик сборки логов
+         */
         this._dispatcher.on('log:tick', () => {
             this._dispatcher.dumpLogs(true)
                 .then(logs      => this.log.collectLogs(logs))
@@ -251,7 +296,7 @@ class Application {
         });
 
         /**
-         * Когда размер разметки изменён
+         * Размер разметки изменён
          */
         this._dispatcher.on('lay:resize', () => {
             this.ws.resize();

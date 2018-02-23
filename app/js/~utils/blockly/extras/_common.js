@@ -75,11 +75,18 @@ let getArguments = (block, fields) => {
     return args;
 };
 
-let appendShadowBlock = (block_svg, input_name, block_name) => {
+let appendShadowBlock = (block_svg, input_name, block_name, block_value) => {
     let numberShadowBlock = block_svg.workspace.newBlock(block_name);
+
+    if (typeof block_value !== "undefined") {
+        numberShadowBlock.setFieldValue(block_value, 'NUM');
+    }
+
     numberShadowBlock.setShadow(true);
     numberShadowBlock.initSvg();
+
     numberShadowBlock.render();
+
     let ob = numberShadowBlock.outputConnection;
 
     let cc = block_svg.getInput(input_name).connection;

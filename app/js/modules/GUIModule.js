@@ -12,7 +12,7 @@ import FileWrapper from '../wrappers/FileWrapper';
  */
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["switch", "check", "launch", "stop", "keyup", "load-file", "unload-file"]}
+    static get event_types() {return ["switch", "check", "launch-main", "stop", "keyup", "load-file", "unload-file"]}
 
     static defaults() {
         return {
@@ -105,7 +105,7 @@ class GUIModule extends Module {
 
         /* Как только нажата кнопка запуска кода */
         $("#launch-btn").click(() => {
-            this.emitEvent("launch");
+            this.emitEvent("launch-main");
         });
 
         /* Как только нажата кнопка останова кода */

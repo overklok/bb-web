@@ -8,6 +8,8 @@ import styles from "../../css/layout.css";
 /// jQuery Layout conflict fix
 (function ($){$.fn.selector = { split: function() { return ""; }};})(jQuery);
 
+const ROOT_CLASS = "ui-layout-container";
+
 /**
  * DOM-идентификаторы панелей
  *
@@ -94,7 +96,7 @@ const DURATION_INITIAL = 100;
  * и задаёт параметры их отображения
  *
  * @class
- * @classdesc APPROVED, STRESS-TESTED, NEEDS MORE TESTS
+ * @classdesc APPROVED, STRESS-TESTED ON THROTTLED CPU
  */
 class LayoutModule extends Module {
     static get eventspace_name() {return "lay"}
@@ -123,15 +125,13 @@ class LayoutModule extends Module {
             buttons_pane_visible: true,
         };
 
-        this._callbacks = {
-            on_transition_end: function() {}
-        };
-
         this._layout_options = this._getFullLayout();
 
-        this._layout = $('body').layout(this._layout_options);
+        this._layout = $("." + ROOT_CLASS).layout(this._layout_options);
 
         this._panes = this._getPanes();
+
+        this._busy = false;
 
         if (!this._options.animSpeedFade) {
             this._options.delayBeforeEnd = 0;
@@ -149,28 +149,53 @@ class LayoutModule extends Module {
         }
 
         return new Promise(resolve => {
+            /// определить DOM-узлы компоновки
             let nodes = this._transformMappingToNodes(MAPPINGS[mode]);
 
+            /// начальная продолжительность
             let duration = DURATION_INITIAL;
 
+            /// если в данный момент идёт работа, отклонить
+            if (this._busy) {
+                return;
+            }
+
+            /// если уже в нужном режиме
             if (this._state.mode === mode) {
+                /// занято
+                this._busy = true;
                 setTimeout(() => {
+                    /// разрешить вызов функции
+                    this._busy = false;
+                    /// разрешить выполнение следующей инструкции вызывающей программы
                     resolve();
+                    /// сообщить о готовности компоновки
                     this.emitEvent("compose-end", nodes);
                 }, duration);
 
                 return;
             }
 
+            /// если режим нужно сменить, занято
+            this._busy = true;
+
+            /// если задана скорость анимации появления/исчезновения содержимого панелей
             if (this._options.animSpeedFade) {
+                /// увеличить задержку
                 duration += this._options.animSpeedFade;
-                this._hidePanes(this._state.mode, this._options.animSpeedFade);
+                /// скрыть содержимое панелей
+                this.hidePanes(this._state.mode);
             }
 
+            /// сообщить о готовности начать компоновку
             setTimeout(() => {
                 this.emitEvent("compose-begin", nodes);
             }, duration);
 
+            /// если западная панель не раскрыта, раскрыть
+            this._layout.open("east");
+
+            /// в зависимости от режима, в который нужно перейти
             switch (mode) {
                 case MODES.SIMPLE: {
                     this._panes.east.hide("north");
@@ -215,17 +240,15 @@ class LayoutModule extends Module {
 
             /// задержка для анимации смены разметки
             setTimeout(() => {
+                /// сообщить о готовности компоновки
                 this.emitEvent("compose-end", nodes);
-                /// задержка для прогрузки внутренностей
+                /// задержка для анимации появления панелей
                 setTimeout(() => {
-                    if (this._options.animSpeedFade) {
-                        this._showPanes(this._options.animSpeedFade);
-                    }
-                    /// задержка для анимации появления
-                    setTimeout(() => {
-                        resolve();
-                    }, this._options.animSpeedFade) // задержка для анимации появления
-                }, this._options.delayBeforeEnd) // задержка для прогрузки внутренностей
+                    /// разрешить вызов функции
+                    this._busy = false;
+                    /// разрешить выполнение следующей инструкции вызывающей программы
+                    resolve();
+                }, this._options.animSpeedFade); // задержка для анимации появления панелей
             }, duration); // задержка для анимации смены разметки
         });
     }
@@ -269,17 +292,16 @@ class LayoutModule extends Module {
      * Вызывается при смене режимов разметки
      *
      * @param {string} mode     режим разметки, из которого необходимо выйти
-     * @param {number} speed    время анимации сокрытия в миллисекундах
      * @private
      */
-    _hidePanes(mode, speed) {
+    hidePanes(mode) {
         for (let pane_id of Object.values(PANE_IDS)) {
             if (FADEBLOCKINGS[mode].indexOf(pane_id) >= 0) {
                 continue;
             }
 
             if (Object.values(MAPPINGS[mode]).indexOf(pane_id) >= 0) {
-                $("#" + pane_id).animate({opacity: 0}, speed)
+                $("#" + pane_id).animate({opacity: 0}, this._options.animSpeedFade)
             } else {
                 $("#" + pane_id).animate({opacity: 0}, 0)
             }
@@ -291,13 +313,16 @@ class LayoutModule extends Module {
      *
      * Вызывается при смене режимов разметки
      *
-     * @param {number} speed время анимации сокрытия в миллисекундах
      * @private
      */
-    _showPanes(speed) {
-        for (let pane_id of Object.values(PANE_IDS)) {
-            $("#" + pane_id).animate({opacity: 1}, speed)
-        }
+    showPanes() {
+        return new Promise(resolve => {
+            for (let pane_id of Object.values(PANE_IDS)) {
+                $("#" + pane_id).animate({opacity: 1}, this._options.animSpeedFade)
+            }
+
+            setTimeout(() => {resolve()}, this._options.animSpeedFade);
+        });
     }
 
 
@@ -405,8 +430,6 @@ class LayoutModule extends Module {
      * @private
      */
     _getPanes() {
-        console.log(this._layout);
-
         return {
             north: this._layout.north,
             center: this._layout.center,

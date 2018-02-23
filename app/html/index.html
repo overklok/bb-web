@@ -7,6 +7,16 @@
     <body class="ui-layout-container">
         <div class="ui-layout-north" id="main-north">
             North pane
+
+            <button id="switch-btn">Switch Layout</button>
+            <!--<button id="upgrade-btn">Upgrade Board</button>-->
+            <button id="check-btn">Check Code</button>
+
+            <button id="launch-btn">RUN Code</button>
+            <button id="stop-btn">STOP Code</button>
+
+            <button id="unload-btn">Unload Code</button>
+            <input type="file" id="load-btn" />
         </div>
         <div class="ui-layout-center" id="main-center">
         </div>
@@ -14,15 +24,7 @@
         <div class="ui-layout-east" id="main-east">
             <div class="ui-layout-north" id="east-north">
                 East - North
-                <button id="switch-btn">Switch Layout</button>
-                <!--<button id="upgrade-btn">Upgrade Board</button>-->
-                <button id="check-btn">Check Code</button>
 
-                <button id="launch-btn">RUN Code</button>
-                <button id="stop-btn">STOP Code</button>
-
-                <button id="unload-btn">Unload Code</button>
-                <input type="file" id="load-btn" />
             </div>
             <div class="ui-layout-center" id="east-center">
                 <div class="ui-layout-center" id="east-center-center"></div>
@@ -30,13 +32,6 @@
             </div>
             <div class="ui-layout-south" id="east-south"></div>
         </div>
-
-
-<!--         <img> -->
-<!--             <svg id="workspace" viewBox="0 0 600 680" style="width: 100%; height: 100%;"> -->
-<!--             </svg> -->
-<!--         </img> -->
-
     </body>
     <script>
         var app = new Application();
@@ -46,8 +41,8 @@
             allBlocks: true,    // все блоки
             offline: true,     // без сервера
             isolated: true,     // без платы
-            noRemoteLogs: false, // без удалённого логирования
-            anyKey: true,       // обрабатывать нажатия всех клавиш
+            noRemoteLogs: true, // без удалённого логирования
+            anyKey: false,       // обрабатывать нажатия всех клавиш
         });
 
         app.run();

@@ -87,8 +87,8 @@ let BlocklyJSONGenerators = {
             name:       "strip_colour_chn_inc",
             block_id:   block.id,
             args:       getArguments(block, [
-                {name: "BRT",       default: 0,     datatype: DATATYPES.NUMBER, complex: true},
                 {name: "CLRCHN",    default: "red", datatype: DATATYPES.STRING, complex: false},
+                {name: "BRT",       default: 0,     datatype: DATATYPES.NUMBER, complex: true},
             ])
         }) + ","
     },
@@ -98,8 +98,8 @@ let BlocklyJSONGenerators = {
             name:       "strip_colour_chn_dec",
             block_id:   block.id,
             args:       getArguments(block, [
-                {name: "BRT",       default: 0,     datatype: DATATYPES.NUMBER, complex: true},
                 {name: "CLRCHN",    default: "red", datatype: DATATYPES.STRING, complex: false},
+                {name: "BRT",       default: 0,     datatype: DATATYPES.NUMBER, complex: true},
             ])
         }) + ","
     },
@@ -125,7 +125,8 @@ let BlocklyJSONGenerators = {
             name:       "strip_colour_current_chn_inc",
             block_id:   block.id,
             args:       getArguments(block, [
-                {name: "CLRCHN", default: "red", datatype: DATATYPES.STRING, complex: false}
+                {name: "CLRCHN", default: "red", datatype: DATATYPES.STRING, complex: false},
+                {name: "BRT", default: 0, datatype: DATATYPES.STRING, complex: true}
             ])
         }) + ","
     },
@@ -135,7 +136,8 @@ let BlocklyJSONGenerators = {
             name:       "strip_colour_current_chn_dec",
             block_id:   block.id,
             args:       getArguments(block, [
-                {name: "CLRCHN", default: "red", datatype: DATATYPES.STRING, complex: false}
+                {name: "CLRCHN", default: "red", datatype: DATATYPES.STRING, complex: false},
+                {name: "BRT", default: 0, datatype: DATATYPES.STRING, complex: true}
             ])
         }) + ","
     },
@@ -162,7 +164,10 @@ let BlocklyJSONGenerators = {
         return JSON.stringify({
             name:       "strip_brightness_set_rand",
             block_id:   block.id,
-            args:       []
+            args:       getArguments(block, [
+                {name: "BRT_FROM",  default: 1, datatype: DATATYPES.NUMBER, complex: true},
+                {name: "BRT_TO",    default: 1, datatype: DATATYPES.NUMBER, complex: true},
+            ])
         }) + ","
     },
 

@@ -1,5 +1,7 @@
 import Module from "../core/Module";
 
+import TourWrapper from "../wrappers/TourWrapper";
+
 const API = {
     STATUS_CODES: {
         PASS: "OK",
@@ -18,6 +20,8 @@ class InstructorModule extends Module {
 
     constructor(options) {
         super(options);
+
+        this._tour = new TourWrapper();
 
         this._valid_button_seq = [];
         this._seq_pointer_pos = undefined;

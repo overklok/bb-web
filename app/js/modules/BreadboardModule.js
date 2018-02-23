@@ -17,13 +17,17 @@ class BreadboardModule extends Module {
     }
 
     inject(dom_node) {
-        if (this._state.display) {return true}
+        return new Promise(resolve => {
+            if (this._state.display) {resolve(true)}
 
-        if (dom_node !== undefined) {
-            this._board.inject(dom_node);
+            if (dom_node !== undefined) {
+                this._board.inject(dom_node);
 
-            this._state.display = true;
-        }
+                this._state.display = true;
+            }
+
+            return resolve();
+        });
     }
 
     eject() {

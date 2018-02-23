@@ -6,6 +6,7 @@
   "dependencies": {
     "blockly": "^1.0.0",
     "clientjs": "^0.1.11",
+    "intro.js": "^2.8.0-alpha.1",
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "jquery-ui-bundle": "^1.12.1",
@@ -43,6 +44,8 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.7",
+    "less": "^3.0.1",
+    "less-loader": "^4.0.5",
     "mocha": "^4.0.1",
     "phantomjs-prebuilt": "^2.1.16",
     "style-loader": "^0.19.1"

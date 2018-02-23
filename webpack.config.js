@@ -36,7 +36,10 @@ module.exports = {
             {
                 loaders: ['style-loader', 'css-loader'],
                 test: /\.css/,
-                exclude: /node_modules/
+                include: [
+                    path.resolve(__dirname, "node_modules/intro.js/"),
+                    path.resolve(__dirname, "app"),
+                ]
             },
             {
                 test: require.resolve('jquery'),

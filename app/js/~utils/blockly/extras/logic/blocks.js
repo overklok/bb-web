@@ -11,7 +11,7 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "BOOL",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -19,7 +19,7 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Отрицание"
             });
-            appendShadowBlock(this, "BOOL", "logic_boolean");
+            // appendShadowBlock(this, "BOOL", "logic_boolean");
         }
     },
     logic_eq: {
@@ -31,12 +31,12 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "A",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     },
                     {
                         type:   "input_value",
                         name:   "B",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -44,8 +44,8 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Равенство"
             });
-            appendShadowBlock(this, "A", "logic_boolean");
-            appendShadowBlock(this, "B", "logic_boolean");
+            // appendShadowBlock(this, "A", "logic_boolean");
+            // appendShadowBlock(this, "B", "logic_boolean");
         }
     },
     logic_lt: {
@@ -57,12 +57,12 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "A",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     },
                     {
                         type:   "input_value",
                         name:   "B",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -70,8 +70,8 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Меньше"
             });
-            appendShadowBlock(this, "A", "logic_boolean");
-            appendShadowBlock(this, "B", "logic_boolean");
+            // appendShadowBlock(this, "A", "logic_boolean");
+            // appendShadowBlock(this, "B", "logic_boolean");
         }
     },
     logic_gt: {
@@ -83,12 +83,12 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "A",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     },
                     {
                         type:   "input_value",
                         name:   "B",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -96,8 +96,8 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Больше"
             });
-            appendShadowBlock(this, "A", "logic_boolean");
-            appendShadowBlock(this, "B", "logic_boolean");
+            // appendShadowBlock(this, "A", "logic_boolean");
+            // appendShadowBlock(this, "B", "logic_boolean");
         }
     },
     logic_ge: {
@@ -109,12 +109,12 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "A",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     },
                     {
                         type:   "input_value",
                         name:   "B",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -122,8 +122,8 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Больше либо равно"
             });
-            appendShadowBlock(this, "A", "logic_boolean");
-            appendShadowBlock(this, "B", "logic_boolean");
+            // appendShadowBlock(this, "A", "logic_boolean");
+            // appendShadowBlock(this, "B", "logic_boolean");
         }
     },
     logic_le: {
@@ -135,12 +135,12 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "A",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     },
                     {
                         type:   "input_value",
                         name:   "B",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -148,8 +148,8 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Меньше либо равно"
             });
-            appendShadowBlock(this, "A", "logic_boolean");
-            appendShadowBlock(this, "B", "logic_boolean");
+            // appendShadowBlock(this, "A", "logic_boolean");
+            // appendShadowBlock(this, "B", "logic_boolean");
         }
     },
     logic_and: {
@@ -161,12 +161,12 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "A",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     },
                     {
                         type:   "input_value",
                         name:   "B",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -174,8 +174,8 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Оба значения истинны"
             });
-            appendShadowBlock(this, "A", "logic_boolean");
-            appendShadowBlock(this, "B", "logic_boolean");
+            // appendShadowBlock(this, "A", "logic_boolean");
+            // appendShadowBlock(this, "B", "logic_boolean");
         }
     },
     logic_or: {
@@ -187,12 +187,12 @@ let JSONBlocks = {
                     {
                         type:   "input_value",
                         name:   "A",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     },
                     {
                         type:   "input_value",
                         name:   "B",
-                        check:  FIELDTYPES.BOOL
+                        check:  [FIELDTYPES.BOOL, FIELDTYPES.NUMBER]
                     }
                 ],
                 inputsInline:   true,
@@ -200,8 +200,8 @@ let JSONBlocks = {
                 colour:         CATEGORIES.LOGIC.colour,
                 tooltip:        "Одно из значений истинно"
             });
-            appendShadowBlock(this, "A", "logic_boolean");
-            appendShadowBlock(this, "B", "logic_boolean");
+            // appendShadowBlock(this, "A", "logic_boolean");
+            // appendShadowBlock(this, "B", "logic_boolean");
         }
     },
 };

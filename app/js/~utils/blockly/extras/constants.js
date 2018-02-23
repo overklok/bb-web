@@ -73,13 +73,13 @@ const BUTTON_CODES = {
 
 // Ограничения ввода в блоках
 const BLOCK_INPUTS_CONSTRAINTS = {
-    MAX_INDEX_VALUE: 110,
+    MAX_INDEX_VALUE: 30,
     // Максимальное число итераций в циклах
     MAX_REPEAT_TIMES: 500,
     // Максимальное время в команде "ждать"
     MAX_WAIT_SECONDS: 30,
     // Максимальное значение цветового компонента
-    MAX_COMPONENT_VALUE: 250,
+    MAX_COMPONENT_VALUE: 60,
     // Список цветов
     COLOURS: [
         ["синий", "blue"],

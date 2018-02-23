@@ -35,35 +35,46 @@ class TracingModule extends Module {
     }
 
     inject(dom_node, dom_node_buttons) {
-        if (!dom_node) {return false}
+        return new Promise(resolve => {
+            if (!dom_node) {resolve(false)}
 
-        if (BlocklyWrapper.BLOCKLY_BLOCK_TYPES_REGISTERED === false) {
-            throw new Error("Please modify this module to load Blockly block types or disable it");
-        }
+            if (BlocklyWrapper.BLOCKLY_BLOCK_TYPES_REGISTERED === false) {
+                throw new Error("Please modify this module to load Blockly block types or disable it");
+            }
 
-        if (this._state.areasDisp.codenet && this._state.areasDisp.variable) {return true}
+            if (this._state.areasDisp.codenet && this._state.areasDisp.variable) {return true}
 
-        if (dom_node) {
-            this._state.areasDisp.codenet = true;
+            if (dom_node) {
+                this._state.areasDisp.codenet = true;
 
-            this._blockly.include(dom_node, false, true, 0.6);
-            this._state.display = true;
-        }
+                this._blockly.include(dom_node, false, true, 0.8);
+                this._state.display = true;
+            }
 
-        if (dom_node_buttons) {
-            this._state.areasDisp.buttons = true;
+            if (dom_node_buttons) {
+                this._state.areasDisp.buttons = true;
 
-            this._kbdpane.include(dom_node_buttons, 10);
-        }
+                this._kbdpane.include(dom_node_buttons, 10);
+            }
 
-        this._showVariables(this._vars);
+            this._showVariables(this._vars);
+
+            resolve();
+        });
     }
 
     eject() {
         if (!this._state.areasDisp.codenet && !this._state.areasDisp.variable) {return true}
 
         this._blockly.exclude();
+
+        this._state.areasDisp.codenet = false;
+        this._state.areasDisp.variable = false;
+
+        if (!this._state.areasDisp.buttons) {return true}
+
         this._kbdpane.exclude();
+        this._state.areasDisp.buttons = false;
 
         this._state.display = false;
     }

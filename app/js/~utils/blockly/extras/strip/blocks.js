@@ -1,6 +1,6 @@
 // const colour_circles_b64 = require('./colour-circles.json');
 
-import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS, STRIP_LENGTH} from '../constants'
+import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS} from '../constants'
 import {appendShadowBlock} from '../_common'
 
 let JSONBlocks = {
@@ -145,16 +145,16 @@ let JSONBlocks = {
                         check: FIELDTYPES.NUMBER,
                         value: 1,
                         min: 1,
-                        max: STRIP_LENGTH,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_INDEX_VALUE,
                         precision: 1
                     },
                     {
                         type: "input_value",
                         name: "IDX_TO",
                         check: FIELDTYPES.NUMBER,
-                        value: 1,
+                        value: BLOCK_INPUTS_CONSTRAINTS.MAX_INDEX_VALUE,
                         min: 1,
-                        max: STRIP_LENGTH,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_INDEX_VALUE,
                         precision: 1
                     }
                 ],
@@ -166,7 +166,7 @@ let JSONBlocks = {
                             "Встроенная переменная \"Номер лампочки\" получает сгененрированное значение."
             });
             appendShadowBlock(this, "IDX_FROM", "math_number_index");
-            appendShadowBlock(this, "IDX_TO", "math_number_index");
+            appendShadowBlock(this, "IDX_TO", "math_number_index", BLOCK_INPUTS_CONSTRAINTS.MAX_INDEX_VALUE);
         },
     },
 
@@ -236,7 +236,7 @@ let JSONBlocks = {
         }
     },
 
-    strip_colour_chn_inc: {
+    strip_colour_chn_dec: {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
@@ -295,20 +295,26 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "увеличить яркость %1 у лампочки",
+                message0:           "увеличить яркость %1 у лампочки на %2",
                 args0: [
                     {
-                        "type":     "field_dropdown",
-                        "name":     "CLRCHN",
-                        "options":  BLOCK_INPUTS_CONSTRAINTS.CHANNELS.GENITIVE
-                    }
+                        type:     "field_dropdown",
+                        name:     "CLRCHN",
+                        options:  BLOCK_INPUTS_CONSTRAINTS.CHANNELS.GENITIVE
+                    },
+                    {
+                        type:     "input_value",
+                        name:     "BRT",
+                        check:     FIELDTYPES.NUMBER,
+                    },
                 ],
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       true,
                 colour:             CATEGORIES.COLOUR.colour,
-                tooltip:            "У текущей лампочки выбранный компонент будет гореть ярче"
-            })
+                tooltip:            "У текущей лампочки выбранный компонент будет гореть ярче на заданное число"
+            });
+            appendShadowBlock(this, "BRT", "math_number_brightness");
         }
     },
 
@@ -316,20 +322,26 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "уменьшить яркость %1 у лампочки",
+                message0:           "уменьшить яркость %1 у лампочки на %2",
                 args0: [
                     {
-                        "type":     "field_dropdown",
-                        "name":     "CLRCHN",
-                        "options":  BLOCK_INPUTS_CONSTRAINTS.CHANNELS.GENITIVE
-                    }
+                        type:     "field_dropdown",
+                        name:     "CLRCHN",
+                        options:  BLOCK_INPUTS_CONSTRAINTS.CHANNELS.GENITIVE
+                    },
+                    {
+                        type:     "input_value",
+                        name:     "BRT",
+                        check:     FIELDTYPES.NUMBER,
+                    },
                 ],
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       true,
                 colour:             CATEGORIES.COLOUR.colour,
-                tooltip:            "У текущей лампочки выбранный компонент будет гореть тусклее"
-            })
+                tooltip:            "У текущей лампочки выбранный компонент будет гореть тусклее на заданное число"
+            });
+            appendShadowBlock(this, "BRT", "math_number_brightness");
         }
     },
 
@@ -377,14 +389,36 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "задать случайную яркость",
+                message0:           "задать случайную яркость от %1 до %2",
+                args0: [
+                    {
+                        type: "input_value",
+                        name: "BRT_FROM",
+                        check: FIELDTYPES.NUMBER,
+                        value: 1,
+                        min: 0,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_COMPONENT_VALUE,
+                        precision: 1
+                    },
+                    {
+                        type: "input_value",
+                        name: "BRT_TO",
+                        check: FIELDTYPES.NUMBER,
+                        value: BLOCK_INPUTS_CONSTRAINTS.MAX_COMPONENT_VALUE,
+                        min: 0,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_COMPONENT_VALUE,
+                        precision: 1
+                    }
+                ],
                 previousStatement:  null,
                 nextStatement:      null,
-                inputsInline:       false,
+                inputsInline:       true,
                 colour:             CATEGORIES.BRIGHTNESS.colour,
                 tooltip:            "Генерирует случайное число в пределах от 1-го заданного номера до 2-го. " +
                                     "Встроенная переменная \"Яркость\" получает сгененрированное значение."
-            })
+            });
+            appendShadowBlock(this, "BRT_FROM", "math_number_brightness", 0);
+            appendShadowBlock(this, "BRT_TO", "math_number_brightness", BLOCK_INPUTS_CONSTRAINTS.MAX_COMPONENT_VALUE);
         }
     },
 

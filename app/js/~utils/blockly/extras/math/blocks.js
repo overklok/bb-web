@@ -1,4 +1,4 @@
-import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS, STRIP_LENGTH} from '../constants'
+import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS} from '../constants'
 import {appendShadowBlock} from '../_common'
 
 let JSONBlocks = {
