@@ -1,4 +1,4 @@
-import Wrapper from "../core/wrapper";
+import Wrapper from "../core/Wrapper"
 
 import base from "intro.js/introjs.css";
 // import thm from "intro.js/themes/introjs-flattener.css";
