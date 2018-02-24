@@ -15,9 +15,10 @@ class GlobalServiceModule extends Module {
         return {
             origin: 'http://127.0.0.1:8000',
             api: {
-                firmware: '/fwsvc/geturls/last',
-                log_bunch: '/logsvc/logbunch',
-                check_handlers: '/coursesvc/check',
+                lesson: '/coursesvc/lesson/',
+                firmware: '/fwsvc/geturls/last/',
+                log_bunch: '/logsvc/logbunch/',
+                check_handlers: '/coursesvc/check/',
             },
             csrfRequired: true,
             modeDummy: false
@@ -34,6 +35,18 @@ class GlobalServiceModule extends Module {
         }
 
         this._subscribeToWrapperEvents();
+    }
+
+    getLessonData(lesson_id) {
+        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
+
+        return fetch(this._options.origin + this._options.api.lesson + lesson_id)
+            .then(response => {
+                return response.json();
+            }).catch(err => {
+                this._debug.error(err);
+                this.emitEvent('error', err);
+            });
     }
 
     /**

@@ -71,6 +71,8 @@ class WorkspaceModule extends Module {
      * и не изменяет его текущее состояние
      */
     eject() {
+        if (!this._state.display) {return true}
+
         this._blockly.exclude();
         this._state.display = false;
     }

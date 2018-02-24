@@ -22,18 +22,22 @@ class BreadboardModule extends Module {
 
             if (dom_node !== undefined) {
                 this._board.inject(dom_node);
+                console.log("INJECT BB");
 
                 this._state.display = true;
             }
 
-            return resolve();
+            resolve();
         });
     }
 
     eject() {
         // if (strict && !dom_node) {return false}
+        console.log("EJECT BB");
 
         if (!this._state.display) {return true}
+
+        console.log("EJECT BB GO");
 
         this._board.eject();
 

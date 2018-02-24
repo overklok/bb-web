@@ -15,6 +15,8 @@ class Dispatcher {
     constructor() {
         this._modules = [];
 
+        this._handler_ready = undefined;
+
         this._handlers = {};
         this._event_types_listening = {
             always: new Set(),
@@ -62,6 +64,16 @@ class Dispatcher {
         });
 
         this._modules.push(module);
+    }
+
+    ready(data) {
+        if (this._handler_ready) {
+            this._handler_ready(data);
+        }
+    }
+
+    onReady(handler) {
+        this._handler_ready = handler;
     }
 
     /**
@@ -121,13 +133,17 @@ class Dispatcher {
      * @param eventspace
      */
     only(eventspace) {
-        if (eventspace && !Array.isArray(eventspace))    {throw new TypeError ('Eventspace should be an array!')}
+        return new Promise(resolve => {
+            if (eventspace && !Array.isArray(eventspace))    {throw new TypeError ('Eventspace should be an array!')}
 
-        this._event_types_listening.current.clear();
+            this._event_types_listening.current.clear();
 
-        this._event_types_listening.current = new Set(
-            [...this._event_types].filter(Dispatcher.getFilterByEventspace(eventspace))
-        );
+            this._event_types_listening.current = new Set(
+                [...this._event_types].filter(Dispatcher.getFilterByEventspace(eventspace))
+            );
+
+            resolve();
+        });
     }
 
     /**

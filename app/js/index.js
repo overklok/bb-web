@@ -38,6 +38,9 @@ class Application {
             lay: {
 
             },
+            ins: {
+                lessonID: config.lessonID
+            },
             trc: {
 
             },
@@ -76,7 +79,7 @@ class Application {
         this._subscribeToModules();
 
         this._dispatcher.only(['ls:connect']);
-        this._dispatcher.always(['lay:resize', 'gui:*', 'ls:*', 'ws:*', '*:error', 'lay:*', 'log:*', 'ls:disconnect']);
+        this._dispatcher.always(['ins:start', '*:resize', 'ls:*', '*:error', 'lay:*', 'log:*']);
     }
 
     /**
@@ -98,18 +101,20 @@ class Application {
         this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
 
-        this.gui.setButtonCodes([81, 87, 69, 38, 40, 37, 39]);
+        // this.gui.setButtonCodes([81, 87, 69, 38, 40, 37, 39]);
 
-        this.lay.compose("full")
-            .then(() => this.gui.hideSpinner());
 
-        this.ins.setValidButtonSequence([81, 87, 69]);
 
-        this.trc.registerVariables([
-            {name: "strip_index", initial_value: 1, type: "string"},
-            {name: "strip_colour", initial_value: "000000", type: "colour"},
-            {name: "strip_brightness", initial_value: 0, type: "number"},
-        ]);
+        // this.lay.compose("full")
+        //     .then(() => this.gui.hideSpinner());
+
+        // this.ins.setValidButtonSequence([81, 87, 69]);
+
+        // this.trc.registerVariables([
+        //     {name: "strip_index", initial_value: 1, type: "string"},
+        //     {name: "strip_colour", initial_value: "000000", type: "colour"},
+        //     {name: "strip_brightness", initial_value: 0, type: "number"},
+        // ]);
     }
 
     /**
@@ -125,6 +130,8 @@ class Application {
         this._dispatcher.subscribe(this.ws);
         this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
+
+        this._dispatcher.ready();
     }
 
     /**
@@ -133,16 +140,28 @@ class Application {
      * @private
      */
     _defineChains() {
+        this._dispatcher.onReady(() => {
+            this.ins.getInitialLessonID()
+            .then(lesson_id => this.gs.getLessonData(lesson_id))
+            .then(lesson_data => this.ins.launchLesson(lesson_data));
+        });
+
+        this._dispatcher.on('ins:start', (exer_data) => {
+            this.lay.compose('simple')
+                .then(() => this.gui.hideSpinner())
+                .then(() => this._dispatcher.only(['gui:*']))
+        });
+
         /**
          * Готовность платы к работе
          */
         this._dispatcher.on('ls:connect', () => {
             /// Запросить ссылки для прошивки
-            this.gs.getUpgradeURLs()
+            // this.gs.getUpgradeURLs()
                 /// Обновить прошивку
                 // .then(urls  => this.ls.firmwareUpgrade(urls))
                 /// Разрешить обрабатывать события платы и GUI
-                .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
+                // .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))
         });
 
         /**
@@ -181,6 +200,8 @@ class Application {
          * Окончание компоновки разметки
          */
         this._dispatcher.on('lay:compose-end', data => {
+            console.log(data);
+
             this.ws.inject(data.workspace),
             this.bb.inject(data.breadboard),
             this.trc.inject(data.tracing, data.buttons)

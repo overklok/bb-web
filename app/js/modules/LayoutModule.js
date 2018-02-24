@@ -167,7 +167,7 @@ class LayoutModule extends Module {
                 this._busy = true;
                 setTimeout(() => {
                     /// сообщить о готовности компоновки
-                    this.emitEvent("compose-end", nodes);
+                    // this.emitEvent("compose-end", nodes);
                     /// разрешить вызов функции
                     this._busy = false;
                     /// разрешить выполнение следующей инструкции вызывающей программы
