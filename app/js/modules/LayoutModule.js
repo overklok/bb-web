@@ -132,6 +132,7 @@ class LayoutModule extends Module {
         this._panes = this._getPanes();
 
         this._busy = false;
+        this._first = true;
 
         if (!this._options.animSpeedFade) {
             this._options.delayBeforeEnd = 0;
@@ -165,12 +166,14 @@ class LayoutModule extends Module {
                 /// занято
                 this._busy = true;
                 setTimeout(() => {
+                    /// сообщить о готовности компоновки
+                    this.emitEvent("compose-end", nodes);
                     /// разрешить вызов функции
                     this._busy = false;
                     /// разрешить выполнение следующей инструкции вызывающей программы
                     resolve();
-                    /// сообщить о готовности компоновки
-                    this.emitEvent("compose-end", nodes);
+
+                    if(this._first) {this._hideLoaderScreen()}
                 }, duration);
 
                 return;
@@ -248,6 +251,7 @@ class LayoutModule extends Module {
                     this._busy = false;
                     /// разрешить выполнение следующей инструкции вызывающей программы
                     resolve();
+                    this.showPanes();
                 }, this._options.animSpeedFade); // задержка для анимации появления панелей
             }, duration); // задержка для анимации смены разметки
         });
@@ -446,6 +450,10 @@ class LayoutModule extends Module {
                 }
             }
         }
+    }
+
+    _hideLoaderScreen() {
+
     }
 
     _subscribeToWrapperEvents() {

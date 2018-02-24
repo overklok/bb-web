@@ -100,7 +100,8 @@ class Application {
 
         this.gui.setButtonCodes([81, 87, 69, 38, 40, 37, 39]);
 
-        this.lay.compose("full");
+        this.lay.compose("full")
+            .then(() => this.gui.hideSpinner());
 
         this.ins.setValidButtonSequence([81, 87, 69]);
 
@@ -180,12 +181,9 @@ class Application {
          * Окончание компоновки разметки
          */
         this._dispatcher.on('lay:compose-end', data => {
-            Promise.all([
-                this.ws.inject(data.workspace),
-                this.bb.inject(data.breadboard),
-                this.trc.inject(data.tracing, data.buttons)
-            ])
-                .then(() => this.lay.showPanes())
+            this.ws.inject(data.workspace),
+            this.bb.inject(data.breadboard),
+            this.trc.inject(data.tracing, data.buttons)
         });
 
         /**

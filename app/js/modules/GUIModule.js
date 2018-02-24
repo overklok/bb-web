@@ -1,6 +1,7 @@
 import Module from "../core/Module";
 
-import FileWrapper from '../wrappers/FileWrapper';
+import SpinnerWrapper from "../wrappers/SpinnerWrapper";
+import FileWrapper from "../wrappers/FileWrapper";
 
 /**
  * Модуль, управляющий базовым функциями графического интерфейса
@@ -23,15 +24,20 @@ class GUIModule extends Module {
     constructor(options) {
         super(options);
 
-        this._filer = new FileWrapper();
-
         this._button_codes = {};
 
         this._state = {
             switched: true // debug only
         };
 
+        this._filer = new FileWrapper();
+        this._spinner = new SpinnerWrapper();
+
         this._subscribeToWrapperEvents();
+    }
+
+    hideSpinner() {
+        this._spinner.hide();
     }
 
     /**
