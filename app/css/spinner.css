@@ -9,6 +9,8 @@
     transition-duration: 500ms;
     transition-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
     transition-property: opacity, transform;
+
+    opacity: 1;
 }
 
 .spinner > .bounce {
