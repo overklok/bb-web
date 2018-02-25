@@ -161,7 +161,6 @@ class Module extends Loggable {
         throw new TypeError("_subscribeToWrapperEvents() should be overridden by inherited classes");
     }
 
-
     /**
      * Наложить заданные опции поверх опций по умолчанию и сохранить в объект
      * в соответствии с настройками, заданными в defaults()

@@ -52,10 +52,11 @@
         app.configure({
             isInternal: false,  // на другом хосте
             allBlocks: true,    // все блоки
-            offline: true,     // без сервера
-            isolated: false,     // без платы
+            offline: false,     // без сервера
+            isolated: true,     // без платы
             noRemoteLogs: true, // без удалённого логирования
             anyKey: false,       // обрабатывать нажатия всех клавиш
+            lessonID: 1,       // идентификатор урока
         });
 
         app.run();

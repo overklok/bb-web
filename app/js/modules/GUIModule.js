@@ -24,7 +24,7 @@ class GUIModule extends Module {
     constructor(options) {
         super(options);
 
-        this._button_codes = {};
+        this._button_codes = [];
 
         this._state = {
             switched: true // debug only

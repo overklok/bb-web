@@ -26,13 +26,12 @@ class BreadboardModule extends Module {
                 this._state.display = true;
             }
 
-            return resolve();
+            resolve();
         });
     }
 
     eject() {
         // if (strict && !dom_node) {return false}
-
         if (!this._state.display) {return true}
 
         this._board.eject();
