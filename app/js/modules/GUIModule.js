@@ -1,6 +1,7 @@
 import Module from "../core/Module";
 
 import SpinnerWrapper from "../wrappers/SpinnerWrapper";
+import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
 
 /**
@@ -13,7 +14,7 @@ import FileWrapper from "../wrappers/FileWrapper";
  */
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["switch", "check", "launch-main", "stop", "keyup", "load-file", "unload-file"]}
+    static get event_types() {return ["mission", "switch", "check", "execute", "stop", "keyup", "load-file", "unload-file"]}
 
     static defaults() {
         return {
@@ -27,11 +28,13 @@ class GUIModule extends Module {
         this._button_codes = [];
 
         this._state = {
-            switched: true // debug only
+            switched: true, // debug only
+            listen_buttons: false,
         };
 
         this._filer = new FileWrapper();
         this._spinner = new SpinnerWrapper();
+        this._lesson_pane = new LessonPaneWrapper();
 
         this._subscribeToWrapperEvents();
     }
@@ -40,17 +43,32 @@ class GUIModule extends Module {
         this._spinner.hide();
     }
 
+    displayMissions(missions) {
+        if (!missions) {return Promise.resolve(false)}
+
+        this._lesson_pane.registerMissions(missions, $("#missions"));
+    }
+
     /**
      * Назначить допустимые коды клавиш для фильтрации
      *
      * @param {Array} button_codes массив кодов клавиш
      */
-    setButtonCodes(button_codes) {
+    registerButtonCodes(button_codes) {
         if (!Array.isArray(button_codes)) {
             throw new TypeError("setButtonCodes(): button codes should be an Array instance");
         }
 
         this._button_codes = button_codes;
+    }
+
+    /**
+     * Прослушивать ли нажатия клавиш
+     *
+     * @param {boolean} on true - включить прослушивание, иначе - выключить
+     */
+    listenButtons(on) {
+        this._state.listen_buttons = on;
     }
 
     /**
@@ -104,6 +122,10 @@ class GUIModule extends Module {
             this._debug.log('Switch clicked: ', this._state.switched);
         });
 
+        this._lesson_pane.onButtonClick(idx => {
+            this.emitEvent("mission", idx);
+        });
+
         /* Как только нажата кнопка проверки */
         $("#check-btn").click(() => {
             this.emitEvent("check");
@@ -111,7 +133,7 @@ class GUIModule extends Module {
 
         /* Как только нажата кнопка запуска кода */
         $("#launch-btn").click(() => {
-            this.emitEvent("launch-main");
+            this.emitEvent("execute");
         });
 
         /* Как только нажата кнопка останова кода */
@@ -131,8 +153,10 @@ class GUIModule extends Module {
 
         /* Как только нажата клавиша */
         $(document).keyup(event => {
-            if (this._filterKeyEvent(event.which)) {
-                this.emitEvent("keyup", event.which);
+            if (this._state.listen_buttons) {
+                if (this._filterKeyEvent(event.which)) {
+                    this.emitEvent("keyup", event.which);
+                }
             }
         });
     }

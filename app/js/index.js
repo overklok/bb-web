@@ -108,7 +108,7 @@ class Application {
         // this.lay.compose("full")
         //     .then(() => this.gui.hideSpinner());
 
-        // this.ins.setValidButtonSequence([81, 87, 69]);
+        // this.ins._setModelButtonSequence([81, 87, 69]);
 
         // this.trc.registerVariables([
         //     {name: "strip_index", initial_value: 1, type: "string"},
@@ -141,15 +141,31 @@ class Application {
      */
     _defineChains() {
         this._dispatcher.onReady(() => {
-            this.ins.getInitialLessonID()
-            .then(lesson_id => this.gs.getLessonData(lesson_id))
-            .then(lesson_data => this.ins.launchLesson(lesson_data));
+            this.ins.getInitialLessonID(1)
+                .then(lesson_id => this.gs.getLessonData(lesson_id))
+                .then(lesson_data => this.ins.loadLesson(lesson_data))
+                .then(missions => this.gui.displayMissions(missions))
+                .then(() => this.ins.launchExerciseNext())
+                // .then(() => console.log('RDY'));
         });
 
-        this._dispatcher.on('ins:start', (exer_data) => {
-            this.lay.compose('simple')
+        this._dispatcher.on('ins:start', exercise_data => {
+            this._dispatcher.only([]);
+
+            let layout_mode = 'simple';
+
+            console.log(exercise_data.type);
+
+            if (exercise_data.type > 0) layout_mode = 'full';
+
+
+            this.lay.compose(layout_mode)
                 .then(() => this.gui.hideSpinner())
                 .then(() => this._dispatcher.only(['gui:*']))
+        });
+
+        this._dispatcher.on('gui:mission', mission_idx => {
+            this.ins.launchMission(mission_idx);
         });
 
         /**
@@ -200,15 +216,15 @@ class Application {
          * Окончание компоновки разметки
          */
         this._dispatcher.on('lay:compose-end', data => {
-            this.ws.inject(data.workspace),
-            this.bb.inject(data.breadboard),
-            this.trc.inject(data.tracing, data.buttons)
+            this.ws.inject(data.workspace);
+            this.bb.inject(data.breadboard);
+            this.trc.inject(data.tracing, data.buttons);
         });
 
         /**
          * Нажата кнопка "Запустить"
          */
-        this._dispatcher.on('gui:launch-main', () => {
+        this._dispatcher.on('gui:execute', () => {
             let handler = this.ws.getMainHandler();
 
             this.ls.updateHandlers({commands: handler.commands, launch: true});

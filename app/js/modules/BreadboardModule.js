@@ -18,7 +18,10 @@ class BreadboardModule extends Module {
 
     inject(dom_node) {
         return new Promise(resolve => {
-            if (this._state.display) {resolve(true)}
+            if (this._state.display) {
+                resolve(true);
+                return;
+            }
 
             if (dom_node !== undefined) {
                 this._board.inject(dom_node);

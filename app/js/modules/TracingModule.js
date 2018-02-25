@@ -64,7 +64,7 @@ class TracingModule extends Module {
     }
 
     eject() {
-        if (this._state.display) {return true}
+        if (!this._state.display) {return true}
 
         if (!this._state.areasDisp.codenet && !this._state.areasDisp.variable) {return true}
 

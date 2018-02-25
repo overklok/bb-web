@@ -42,10 +42,17 @@ class GlobalServiceModule extends Module {
 
         return fetch(this._options.origin + this._options.api.lesson + lesson_id)
             .then(response => {
-                return response.json();
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json();
+                } else {
+                    let error = new Error(response.statusText || response.status);
+                    error.response = response;
+
+                    throw error;
+                }
             }).catch(err => {
                 this._debug.error(err);
-                this.emitEvent('error', err);
+                // this.emitEvent('error', err);
             });
     }
 
