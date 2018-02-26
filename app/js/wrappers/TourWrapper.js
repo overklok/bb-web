@@ -9,9 +9,12 @@ let introJS = require('intro.js').introJs;
 
 const MODES = {
     INTRO: "intro",
+    DIALOG: "dialog",
     SUCCESS: "success",
-    ERROR: "error"
+    FAULT: "fault"
 };
+
+const DIALOG_DEFAULT = "Вы уверены?";
 
 class TourWrapper extends Wrapper {
     constructor(mode, steps) {
@@ -22,21 +25,19 @@ class TourWrapper extends Wrapper {
 
         let options = this._getOptions(mode);
 
-        if (steps) {
-            options.steps = steps;
+        if (this._mode === MODES.DIALOG) {
+            options.steps = [{intro: steps || DIALOG_DEFAULT}]
         } else {
-            options.steps = [
-                {
-                    intro: "Step #1"
-                }
-            ]
+            if (steps) {
+                options.steps = steps;
+            }
         }
 
         this._introJS.setOptions(options);
     }
 
     start() {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             this._introJS.start();
 
             if (this._introJS._introItems.length > 1) {
@@ -51,7 +52,12 @@ class TourWrapper extends Wrapper {
                 }
             });
 
-            this._introJS.onexit(() => {resolve()});
+            this._introJS.onexit(() => {
+                this._mode === MODES.DIALOG ? reject() : resolve(false);
+            });
+            this._introJS.oncomplete(() => {
+                resolve(true)
+            });
         });
     }
 
@@ -67,7 +73,14 @@ class TourWrapper extends Wrapper {
             case MODES.SUCCESS: {
                 break;
             }
-            case MODES.ERROR: {
+            case MODES.FAULT: {
+                break;
+            }
+            case MODES.DIALOG: {
+                options.doneLabel = "Да";
+                options.skipLabel = "Нет";
+                options.showBullets = false;
+                options.showButtons = true;
                 break;
             }
             case MODES.INTRO:

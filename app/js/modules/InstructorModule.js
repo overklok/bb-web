@@ -84,26 +84,31 @@ class InstructorModule extends Module {
      * @returns {boolean}
      */
     launchMission(mission_idx) {
+        let chain = new Promise(resolve => {resolve(true)});
+
         if (mission_idx === this._state.missionID) {
-            if (this._state.exerciseID === 0) {
-                return false;
-            } else {
-                /// reset mission
-            }
+            /// спросить подтвержение пользователя
+            chain.then(() => {this.askToConfirm("вы хотите кушоц?")})
+            /// reset mission
         }
 
-        this._state.missionID = mission_idx;
-        this._state.exerciseID = -1;
+        chain.then(() => {
+            // this._state.missionID = mission_idx;
+            // this._state.exerciseID = -1;
+            // this.launchExerciseNext();
+        }, (reason) => {
 
-        this.launchExerciseNext();
+        });
+
+        return chain;
     }
 
     /**
      * Запустить следующее упражнение
      */
     launchExerciseNext() {
-        let mid = this._state.missionID;
-        let eid = this._state.exerciseID;
+        let mid = this._state.missionID,
+            eid = this._state.exerciseID;
 
         if (mid in this._lesson.missions) {
             /// если миссия существует
@@ -142,6 +147,14 @@ class InstructorModule extends Module {
         let intro = new TourWrapper("intro", this._popovers);
         /// Запустить интро
         return intro.start();
+    }
+
+    askToConfirm(question_text) {
+        let intro = new TourWrapper("dialog", question_text);
+
+        console.log(intro);
+
+        return intro.start(true);
     }
 
     /**

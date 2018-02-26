@@ -311,7 +311,7 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
-    addVariableBlock(block_type, value=0, field_type=FIELD_TYPES.STRING) {
+    addVariableBlock(block_type, field_type=FIELD_TYPES.STRING, value=0) {
         let block = this.workspace.newBlock(block_type);
 
         block.initSvg();

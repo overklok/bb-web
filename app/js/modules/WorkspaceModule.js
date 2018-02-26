@@ -57,7 +57,7 @@ class WorkspaceModule extends Module {
             if (this._options.allBlocks) {
                 this._blockly.updateBlockTypes(Object.keys(JSONGenerators));
             } else {
-                this._blockly.setBlockTypes(this._state.block_types);
+                this._blockly.updateBlockTypes(this._state.block_types);
             }
 
             resolve();
@@ -84,6 +84,9 @@ class WorkspaceModule extends Module {
      */
     setBlockTypes(block_types) {
         this._state.block_types = block_types;
+
+        if (!this._state.display) {return true}
+
         this._blockly.updateBlockTypes(block_types);
     }
 

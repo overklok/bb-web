@@ -162,10 +162,12 @@ class Application {
             /// Заблокировать все события
             this._dispatcher.only([]);
             /// Определить режим разметки
-            let layout_mode = exercise_data.type === 0 ? 'full' : 'simple';
+            let layout_mode = exercise_data.type === 0 ? 'simple' : 'full';
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
                 .then(() => this.gui.showTask(exercise_data.task_description))
+                .then(() => this.ws.setBlockTypes(exercise_data.block_types))
+                .then(() => this.trc.registerVariables(exercise_data.variables))
                 .then(() => this.gui.hideSpinner())
                 .then(() => this.ins.showIntro())
                 .then(() => this._dispatcher.only(['gui:*']))
