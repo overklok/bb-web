@@ -32,6 +32,8 @@ class InstructorModule extends Module {
             buttonID: undefined,
         };
 
+        this._popovers = undefined;
+
         this._subscribeToWrapperEvents();
     }
 
@@ -128,6 +130,21 @@ class InstructorModule extends Module {
     }
 
     /**
+     * Показать поповеры
+     *
+     * @returns {*}
+     */
+    showIntro() {
+        /// Если нет поповеров, выйти
+        if (!this._popovers) {return Promise.resolve()}
+
+        /// Подключить поповер-обёртку
+        let intro = new TourWrapper("intro", this._popovers);
+        /// Запустить интро
+        return intro.start();
+    }
+
+    /**
      * Обработать результат проверки упражнения
      *
      * @param verdict
@@ -214,16 +231,13 @@ class InstructorModule extends Module {
         if (exercise_data.popovers && exercise_data.popovers.length > 0) {
             /// Если поповеры существуют
             console.log("popovers EXIST");
-            let popovers = this._parsePopovers(exercise_data.popovers);
-
-            console.log(popovers);
-            let intro = new TourWrapper("intro", popovers);
-            return intro.start();
+            this._popovers = this._parsePopovers(exercise_data.popovers);
         } else {
             /// Если поповеров нет
             console.log("popovers NOT EXIST")
-            return Promise.resolve();
         }
+
+        return Promise.resolve();
     }
 
     _parsePopovers(popovers) {

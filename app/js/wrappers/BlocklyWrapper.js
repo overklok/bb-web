@@ -87,7 +87,7 @@ class BlocklyWrapper extends Wrapper {
      * @param {number}  zoom_initial    исходный зум-фактор
      * @param {boolean} read_only       режим только чтения
      */
-    include(dom_node, use_scrollbars=false, read_only=false, zoom_initial=0.7) {
+    inject(dom_node, use_scrollbars=false, read_only=false, zoom_initial=0.7) {
         /// Определить узел вставки контейнера
         this.area        = dom_node;
         /// Сгенерировать контейнеры для Blockly и для типов блоков
@@ -143,7 +143,7 @@ class BlocklyWrapper extends Wrapper {
      *
      * Сам экземпляр Blockly, его содержимое и параметры отображения сохраняются
      */
-    exclude() {
+    eject() {
         this._state.code_buffer = Blockly.Xml.workspaceToDom(this.workspace);
 
         /// Отключить отображение Blockly

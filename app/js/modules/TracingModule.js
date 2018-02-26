@@ -47,7 +47,7 @@ class TracingModule extends Module {
             if (dom_node) {
                 this._state.areasDisp.codenet = true;
 
-                this._blockly.include(dom_node, false, true, 0.8);
+                this._blockly.inject(dom_node, false, true, 0.8);
                 this._state.display = true;
             }
 
@@ -68,7 +68,7 @@ class TracingModule extends Module {
 
         if (!this._state.areasDisp.codenet && !this._state.areasDisp.variable) {return true}
 
-        this._blockly.exclude();
+        this._blockly.eject();
 
         this._state.areasDisp.codenet = false;
         this._state.areasDisp.variable = false;

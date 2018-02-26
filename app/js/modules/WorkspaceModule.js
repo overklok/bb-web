@@ -51,7 +51,7 @@ class WorkspaceModule extends Module {
         return new Promise(resolve => {
             if (!dom_node) {resolve(false)}
 
-            this._blockly.include(dom_node, this._options.useScrollbars);
+            this._blockly.inject(dom_node, this._options.useScrollbars);
             this._state.display = true;
 
             if (this._options.allBlocks) {
@@ -73,7 +73,7 @@ class WorkspaceModule extends Module {
     eject() {
         if (!this._state.display) {return true}
 
-        this._blockly.exclude();
+        this._blockly.eject();
         this._state.display = false;
     }
 

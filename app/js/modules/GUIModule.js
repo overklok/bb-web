@@ -2,6 +2,7 @@ import Module from "../core/Module";
 
 import SpinnerWrapper from "../wrappers/SpinnerWrapper";
 import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
+import TextPaneWrapper from "../wrappers/TextPaneWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
 
 /**
@@ -30,11 +31,19 @@ class GUIModule extends Module {
         this._state = {
             switched: true, // debug only
             listen_buttons: false,
+
+            areasDisp: {
+                text: false,
+                lesson: false
+            }
         };
+
+        this._task_description = undefined;
 
         this._filer = new FileWrapper();
         this._spinner = new SpinnerWrapper();
         this._lesson_pane = new LessonPaneWrapper();
+        this._text_pane = new TextPaneWrapper();
 
         this._subscribeToWrapperEvents();
     }
@@ -43,10 +52,44 @@ class GUIModule extends Module {
         this._spinner.hide();
     }
 
-    displayMissions(missions) {
-        if (!missions) {return Promise.resolve(false)}
+    showSpinnerError(message) {
+        this._spinner.setTextError(message);
+    }
 
-        this._lesson_pane.registerMissions(missions, $("#missions"));
+    showMissionButtons(missions) {
+        return new Promise((resolve, reject) => {
+            if (!missions) {return resolve(false)}
+
+            this._state.areasDisp.lesson = true;
+
+            this._lesson_pane.registerMissions(missions);
+            this._lesson_pane.displayMissionButtons($("#missions"));
+
+            resolve(true);
+        });
+    }
+
+    showTask(html) {
+        this._text_pane.setText(html);
+
+        return Promise.resolve();
+    }
+
+    injectTextPane(dom_node) {
+        if (!dom_node)                  {return Promise.resolve(false)}
+        if (this._state.areasDisp.text) {return Promise.resolve(true)}
+
+        this._state.areasDisp.text = true;
+
+        return this._text_pane.inject(dom_node);
+    }
+
+    ejectTextPane() {
+        if (!this._state.areasDisp.text) {return Promise.resolve(true)}
+
+        this._state.areasDisp.text = false;
+
+        return this._text_pane.eject();
     }
 
     /**
