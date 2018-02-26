@@ -45,7 +45,7 @@ class Application {
 
             },
             ws: {
-                allBlocks: config.allBlocks
+                allBlocks: config.allBlocks,
             },
             bb: {
 

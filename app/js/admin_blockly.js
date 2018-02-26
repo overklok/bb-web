@@ -84,6 +84,8 @@ class Application {
     _initModules() {
         /// Модули
         this.ws = new WorkspaceModule(this._config.ws); // Blockly
+
+        this.ws.wakeUp();
     }
 
     _subscribeToModules() {
