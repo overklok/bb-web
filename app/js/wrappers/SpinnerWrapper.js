@@ -2,7 +2,8 @@ import Wrapper from "../core/Wrapper";
 
 const SELECTORS = {
     MAIN: ".spinner",
-    TEXT: ".spinner__text"
+    TEXT: ".spinner__text",
+    BOUNCE: ".bounce"
 };
 
 const CLASSES = {
@@ -25,10 +26,18 @@ class SpinnerWrapper extends Wrapper {
         }
     }
 
-    setTextError(text) {
+    setTextError(text, code) {
         if (!this._removed) {
-            $(SELECTORS.TEXT).addClass("spinner__text_error");
-            $(SELECTORS.TEXT).html(text);
+            $(SELECTORS.MAIN).addClass("spinner_error");
+            $(SELECTORS.BOUNCE).hide(500);
+
+            let errorText = "<p>Opps! " + text + "</p>";
+
+            if (code) {
+                errorText += "<p>[" + code + "]</p>"
+            }
+
+            $(SELECTORS.TEXT).html(errorText);
         }
     }
 

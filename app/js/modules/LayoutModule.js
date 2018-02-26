@@ -51,10 +51,12 @@ const MAPPINGS = {
         workspace: PANE_IDS.MAIN_CENTER,
         breadboard: PANE_IDS.EAST_SOUTH,
         tracing: PANE_IDS.EAST_CENTER_CENTER,
-        buttons: PANE_IDS.EAST_CENTER_SOUTH
+        buttons: PANE_IDS.EAST_CENTER_SOUTH,
+        task: PANE_IDS.EAST_NORTH
     },
     simple: {
-        breadboard: PANE_IDS.MAIN_CENTER
+        breadboard: PANE_IDS.MAIN_CENTER,
+        task: PANE_IDS.EAST_CENTER_CENTER
     }
 };
 

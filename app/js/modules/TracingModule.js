@@ -47,7 +47,7 @@ class TracingModule extends Module {
             if (dom_node) {
                 this._state.areasDisp.codenet = true;
 
-                this._blockly.include(dom_node, false, true, 0.8);
+                this._blockly.inject(dom_node, false, true, 0.8);
                 this._state.display = true;
             }
 
@@ -68,7 +68,7 @@ class TracingModule extends Module {
 
         if (!this._state.areasDisp.codenet && !this._state.areasDisp.variable) {return true}
 
-        this._blockly.exclude();
+        this._blockly.eject();
 
         this._state.areasDisp.codenet = false;
         this._state.areasDisp.variable = false;
@@ -92,11 +92,15 @@ class TracingModule extends Module {
     }
 
     registerVariables(variables) {
+        if (typeof variables === "undefined") {return false}
+
         this._vars = variables;
 
-        if (this._state.display) {
-            this._blockly.clearVariableBlocks();
+        if (!this._state.display) {return true}
 
+        this._blockly.clearVariableBlocks();
+
+        if (this._vars.length > 0) {
             this._showVariables(this._vars);
         }
     }
@@ -132,7 +136,7 @@ class TracingModule extends Module {
     _showVariables(variables) {
         if (this._state.display) {
             for (let variable of variables) {
-                this._blockly.addVariableBlock(variable.name, variable.initial_value, variable.type);
+                this._blockly.addVariableBlock(variable.name, variable.type, variable.initial_value);
             }
         }
     }

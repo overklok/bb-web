@@ -140,30 +140,42 @@ class Application {
      * @private
      */
     _defineChains() {
+        /**
+         * Готовность диспетчера к работе
+         */
         this._dispatcher.onReady(() => {
             this.ins.getInitialLessonID(1)
                 .then(lesson_id => this.gs.getLessonData(lesson_id))
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
-                .then(missions => this.gui.displayMissions(missions))
+                .then(missions => this.gui.showMissionButtons(missions))
                 .then(() => this.ins.launchExerciseNext())
-                // .then(() => console.log('RDY'));
+                .catch(error => {
+                    this.gui.showSpinnerError(error.message);
+                });
         });
 
+        /**
+         * Запущено упражнение
+         */
         this._dispatcher.on('ins:start', exercise_data => {
+            console.log(exercise_data);
+            /// Заблокировать все события
             this._dispatcher.only([]);
-
-            let layout_mode = 'simple';
-
-            console.log(exercise_data.type);
-
-            if (exercise_data.type > 0) layout_mode = 'full';
-
-
+            /// Определить режим разметки
+            let layout_mode = exercise_data.type === 0 ? 'simple' : 'full';
+            /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
+                .then(() => this.gui.showTask(exercise_data.task_description))
+                .then(() => this.ws.setBlockTypes(exercise_data.block_types))
+                .then(() => this.trc.registerVariables(exercise_data.variables))
                 .then(() => this.gui.hideSpinner())
+                .then(() => this.ins.showIntro())
                 .then(() => this._dispatcher.only(['gui:*']))
         });
 
+        /**
+         * Нажата кнопка "Задание №"
+         */
         this._dispatcher.on('gui:mission', mission_idx => {
             this.ins.launchMission(mission_idx);
         });
@@ -210,6 +222,7 @@ class Application {
             this.ws.eject();
             this.bb.eject();
             this.trc.eject();
+            this.gui.ejectTextPane();
         });
 
         /**
@@ -219,6 +232,7 @@ class Application {
             this.ws.inject(data.workspace);
             this.bb.inject(data.breadboard);
             this.trc.inject(data.tracing, data.buttons);
+            this.gui.injectTextPane(data.task);
         });
 
         /**

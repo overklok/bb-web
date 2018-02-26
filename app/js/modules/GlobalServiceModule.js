@@ -40,20 +40,22 @@ class GlobalServiceModule extends Module {
     getLessonData(lesson_id) {
         if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
-        return fetch(this._options.origin + this._options.api.lesson + lesson_id)
-            .then(response => {
-                if (response.status >= 200 && response.status < 300) {
-                    return response.json();
-                } else {
-                    let error = new Error(response.statusText || response.status);
-                    error.response = response;
+        return new Promise((resolve, reject) => {
+            fetch(this._options.origin + this._options.api.lesson + lesson_id)
+                .then(response => {
+                    if (response.status >= 200 && response.status < 300) {
+                        resolve(response.json());
+                    } else {
+                        let error = new Error(response.statusText || response.status);
+                        error.response = response;
 
-                    throw error;
-                }
-            }).catch(err => {
-                this._debug.error(err);
-                // this.emitEvent('error', err);
-            });
+                        reject(error);
+                    }
+                }).catch(err => {
+                    this._debug.error(err);
+                    reject(err);
+                });
+        });
     }
 
     /**

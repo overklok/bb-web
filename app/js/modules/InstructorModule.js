@@ -32,6 +32,8 @@ class InstructorModule extends Module {
             buttonID: undefined,
         };
 
+        this._popovers = undefined;
+
         this._subscribeToWrapperEvents();
     }
 
@@ -82,26 +84,31 @@ class InstructorModule extends Module {
      * @returns {boolean}
      */
     launchMission(mission_idx) {
+        let chain = new Promise(resolve => {resolve(true)});
+
         if (mission_idx === this._state.missionID) {
-            if (this._state.exerciseID === 0) {
-                return false;
-            } else {
-                /// reset mission
-            }
+            /// спросить подтвержение пользователя
+            chain.then(() => {this.askToConfirm("вы хотите кушоц?")})
+            /// reset mission
         }
 
-        this._state.missionID = mission_idx;
-        this._state.exerciseID = -1;
+        chain.then(() => {
+            // this._state.missionID = mission_idx;
+            // this._state.exerciseID = -1;
+            // this.launchExerciseNext();
+        }, (reason) => {
 
-        this.launchExerciseNext();
+        });
+
+        return chain;
     }
 
     /**
      * Запустить следующее упражнение
      */
     launchExerciseNext() {
-        let mid = this._state.missionID;
-        let eid = this._state.exerciseID;
+        let mid = this._state.missionID,
+            eid = this._state.exerciseID;
 
         if (mid in this._lesson.missions) {
             /// если миссия существует
@@ -125,6 +132,29 @@ class InstructorModule extends Module {
             /// finish lesson
             return Promise.resolve();
         }
+    }
+
+    /**
+     * Показать поповеры
+     *
+     * @returns {*}
+     */
+    showIntro() {
+        /// Если нет поповеров, выйти
+        if (!this._popovers) {return Promise.resolve()}
+
+        /// Подключить поповер-обёртку
+        let intro = new TourWrapper("intro", this._popovers);
+        /// Запустить интро
+        return intro.start();
+    }
+
+    askToConfirm(question_text) {
+        let intro = new TourWrapper("dialog", question_text);
+
+        console.log(intro);
+
+        return intro.start(true);
     }
 
     /**
@@ -214,16 +244,13 @@ class InstructorModule extends Module {
         if (exercise_data.popovers && exercise_data.popovers.length > 0) {
             /// Если поповеры существуют
             console.log("popovers EXIST");
-            let popovers = this._parsePopovers(exercise_data.popovers);
-
-            console.log(popovers);
-            let intro = new TourWrapper("intro", popovers);
-            return intro.start();
+            this._popovers = this._parsePopovers(exercise_data.popovers);
         } else {
             /// Если поповеров нет
             console.log("popovers NOT EXIST")
-            return Promise.resolve();
         }
+
+        return Promise.resolve();
     }
 
     _parsePopovers(popovers) {

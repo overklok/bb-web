@@ -13,24 +13,16 @@ class LessonPaneWrapper extends Wrapper {
         this._missions = [];
     }
 
-    registerMissions(missions, container) {
+    registerMissions(missions) {
         for (let mission of missions) {
             this._missions.push({
                 exercisesPassed: null,
                 exercisesAll: null
             })
         }
-
-        this._displayMissionButtons(container);
     }
 
-    onButtonClick(cb) {
-        if (cb) {
-            this._callbacks.buttonClick = cb;
-        }
-    }
-
-    _displayMissionButtons(container) {
+    displayMissionButtons(container) {
         let idx = 0;
 
         for (let mission of this._missions) {
@@ -44,6 +36,12 @@ class LessonPaneWrapper extends Wrapper {
 
            this._callbacks.buttonClick(idx);
         });
+    }
+
+    onButtonClick(cb) {
+        if (cb) {
+            this._callbacks.buttonClick = cb;
+        }
     }
 }
 

@@ -51,13 +51,13 @@ class WorkspaceModule extends Module {
         return new Promise(resolve => {
             if (!dom_node) {resolve(false)}
 
-            this._blockly.include(dom_node, this._options.useScrollbars);
+            this._blockly.inject(dom_node, this._options.useScrollbars);
             this._state.display = true;
 
             if (this._options.allBlocks) {
                 this._blockly.updateBlockTypes(Object.keys(JSONGenerators));
             } else {
-                this._blockly.setBlockTypes(this._state.block_types);
+                this._blockly.updateBlockTypes(this._state.block_types);
             }
 
             resolve();
@@ -73,7 +73,7 @@ class WorkspaceModule extends Module {
     eject() {
         if (!this._state.display) {return true}
 
-        this._blockly.exclude();
+        this._blockly.eject();
         this._state.display = false;
     }
 
@@ -84,6 +84,9 @@ class WorkspaceModule extends Module {
      */
     setBlockTypes(block_types) {
         this._state.block_types = block_types;
+
+        if (!this._state.display) {return true}
+
         this._blockly.updateBlockTypes(block_types);
     }
 

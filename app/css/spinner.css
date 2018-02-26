@@ -8,7 +8,7 @@
     /* padding-top: calc(50vh - 9px); */
     transition-duration: 500ms;
     transition-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
-    transition-property: opacity, transform;
+    transition-property: opacity, transform, background-color;
 
     opacity: 1;
 }
@@ -56,6 +56,6 @@
     color: #fff;
 }
 
-.spinner__text_error {
-    color: #980e22;
+.spinner_error {
+    background-color: #980e22;
 }
