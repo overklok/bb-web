@@ -10,6 +10,13 @@ import InstructorModule     from './modules/InstructorModule';
 import LocalServiceModule   from "./modules/LocalServiceModule";
 import GlobalServiceModule  from "./modules/GlobalServiceModule";
 
+const BUTTON_CODES = [
+    48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // 0-9
+    81, 87, 69, 82, 84, 89,                 // QWERTY
+    65, 83, 68, 70, 71, 72,                 // ASDFGH
+    38, 40, 37, 39                          // arrows
+];
+
 class Application {
     constructor() {
         /// Диспетчер событий
@@ -101,9 +108,7 @@ class Application {
         this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
 
-        // this.gui.setButtonCodes([81, 87, 69, 38, 40, 37, 39]);
-
-
+        this.gui.registerButtonCodes(BUTTON_CODES);
 
         // this.lay.compose("full")
         //     .then(() => this.gui.hideSpinner());
@@ -161,23 +166,31 @@ class Application {
         this._dispatcher.on('ins:start', exercise_data => {
             console.log(exercise_data);
 
+            let ex_type = exercise_data.type;
+
             /// показывать кнопку ?
-            let show_btn = (exercise_data.type !== 2);
+            let show_btn = (ex_type !== 2);
             /// проверять (не запускать) ?
-            let is_check = !(exercise_data.type === 1 && exercise_data.listeners_only === false);
+            let is_check = !(ex_type === 1 && exercise_data.listeners_only === false);
+            /// определить режим разметки
+            let layout_mode = ex_type === 0 ? 'simple' : 'full';
+            /// показывать панель с кнопками ?
+            let show_kbd_pane = (ex_type >= 1 && ex_type <= 3) && exercise_data.display_buttons;
 
             /// Заблокировать все события
             this._dispatcher.only([]);
-            /// Определить режим разметки
-            let layout_mode = exercise_data.type === 0 ? 'simple' : 'full';
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
                 .then(() => this.gui.switchLaunchButton(show_btn, is_check))
                 .then(() => this.gui.showTask(exercise_data.task_description))
                 .then(() => this.ws.setBlockTypes(exercise_data.block_types))
                 .then(() => this.trc.registerVariables(exercise_data.variables))
+                .then(() => this.lay.switchButtonsPane(show_kbd_pane))
                 .then(() => this.gui.hideSpinner())
                 .then(() => this.ins.tourIntro(exercise_data.popovers))
+                .then(() => this.trc.clearButtons())
+                .then(() => this.gui.listenButtons(show_kbd_pane))
+                .then(() => this.ins.setButtonsModel(exercise_data.buttons_model))
                 .then(() => this._dispatcher.only(['gui:*']))
         });
 
@@ -229,7 +242,8 @@ class Application {
         this._dispatcher.on('lay:compose-begin', data => {
             this.ws.eject();
             this.bb.eject();
-            this.trc.eject();
+            this.trc.ejectBlocks();
+            this.trc.ejectButtons();
             this.gui.ejectTextPane();
         });
 
@@ -242,7 +256,8 @@ class Application {
             if (data) {
                 this.ws.inject(data.workspace);
                 this.bb.inject(data.breadboard);
-                this.trc.inject(data.tracing, data.buttons);
+                this.trc.injectBlocks(data.tracing);
+                this.trc.injectButtons(data.buttons);
                 this.gui.injectTextPane(data.task);
             }
         });

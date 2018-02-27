@@ -130,7 +130,7 @@ class InstructorModule extends Module {
      * @returns {boolean}
      */
     launchMission(mission_idx) {
-        let chain = new Promise(resolve => {resolve(true)});
+        let chain = new Promise(resolve => {resolve(false)});
 
         if (mission_idx === this._state.missionIDX) {
             /// спросить подтвержение пользователя
@@ -138,17 +138,17 @@ class InstructorModule extends Module {
         }
 
         chain.then(
-            onAccept => {
+            reset => {
                 if (mission_idx in this._state.missions) {
                     /// обновить индекс миссии
                     this._state.missionIDX = mission_idx;
                     /// определить индекс упражнения в миссии
-                    let exercise_idx = this._state.missions[mission_idx].exerciseIDX;
+                    let exercise_idx = reset ? 0 : this._state.missions[mission_idx].exerciseIDX;
 
                     return this.launchExercise(exercise_idx);
                 }
             },
-            onDecline => {
+            skip => {
                 return false;
             }
 
@@ -306,8 +306,12 @@ class InstructorModule extends Module {
      * @private
      */
     setButtonsModel(seq) {
+        if (!seq) return Promise.resolve(false);
+
         this._buttons_model = seq;
         this._state.buttonIDX = 0;
+
+        return Promise.resolve(true);
     }
 
     /**

@@ -413,6 +413,7 @@ class LayoutModule extends Module {
                             center: {
                                 spacing_open: 0,
                                 spacing_closed: 0,
+                                onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                             },
                             south: {
                                 size: .2,

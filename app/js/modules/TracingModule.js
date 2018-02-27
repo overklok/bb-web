@@ -19,11 +19,9 @@ class TracingModule extends Module {
 
         this._state = {
             areasDisp: {
-                variable: false,
-                codenet: false,
+                blocks: false,
                 buttons: false
             },
-            display: false,
         };
 
         this._vars = [];
@@ -34,55 +32,81 @@ class TracingModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
-    inject(dom_node, dom_node_buttons) {
+    injectBlocks(dom_node) {
         return new Promise(resolve => {
-            if (!dom_node) {resolve(false)}
+            if (!dom_node) {
+                resolve(false);
+                return
+            }
 
             if (BlocklyWrapper.BLOCKLY_BLOCK_TYPES_REGISTERED === false) {
                 throw new Error("Please modify this module to load Blockly block types or disable it");
             }
 
-            if (this._state.areasDisp.codenet && this._state.areasDisp.variable) {return true}
-
-            if (dom_node) {
-                this._state.areasDisp.codenet = true;
-
-                this._blockly.inject(dom_node, false, true, 0.8);
-                this._state.display = true;
+            if (this._state.areasDisp.blocks) {
+                resolve(true);
+                return;
             }
 
-            if (dom_node_buttons) {
-                this._state.areasDisp.buttons = true;
-
-                this._kbdpane.include(dom_node_buttons, 10);
-            }
-
+            this._blockly.inject(dom_node, false, true, 0.8);
             this._showVariables(this._vars);
 
-            resolve();
+            this._state.areasDisp.blocks = true;
+            resolve(true);
         });
     }
 
-    eject() {
-        if (!this._state.display) {return true}
+    ejectBlocks() {
+        return new Promise(resolve => {
+            if (!this._state.areasDisp.blocks) {
+                resolve(true);
+                return;
+            }
 
-        if (!this._state.areasDisp.codenet && !this._state.areasDisp.variable) {return true}
+            this._blockly.eject();
 
-        this._blockly.eject();
+            this._state.areasDisp.blocks = false;
 
-        this._state.areasDisp.codenet = false;
-        this._state.areasDisp.variable = false;
+            resolve(true);
+        })
+    }
 
-        if (!this._state.areasDisp.buttons) {return true}
+    injectButtons(dom_node_buttons) {
+        return new Promise(resolve => {
+            if (!dom_node_buttons) {
+                resolve(true);
+                return;
+            }
 
-        this._kbdpane.exclude();
-        this._state.areasDisp.buttons = false;
+            if (this._state.areasDisp.buttons) {
+                resolve(true);
+                return;
+            }
 
-        this._state.display = false;
+            this._state.areasDisp.buttons = true;
+
+            this._kbdpane.include(dom_node_buttons, 10);
+
+            resolve(true);
+        });
+    }
+
+    ejectButtons() {
+        return new Promise(resolve => {
+            if (!this._state.areasDisp.buttons) {
+                resolve(true);
+                return;
+            }
+
+            this._kbdpane.exclude();
+            this._state.areasDisp.buttons = false;
+
+            resolve(true);
+        });
     }
 
     resize() {
-        if (this._state.areasDisp.codenet || this._state.areasDisp.variable) {
+        if (this._state.areasDisp.blocks) {
             this._blockly._onResize();
         }
 
@@ -114,7 +138,7 @@ class TracingModule extends Module {
     }
 
     switchVariables(on) {
-        if (this._state.variable === on) {return true}
+        if (this._state.areasDisp.blocks === on) {return true}
 
         if (on === false) {
             this._blockly.clearVariableBlocks();
@@ -126,11 +150,21 @@ class TracingModule extends Module {
     }
 
     switchCodenet(on) {
-        if (this._state.codenet === on) {return true}
+        if (this._state.areasDisp.blocks === on) {return true}
     }
 
     switchButtons(on) {
-        if (this._state.buttons === on) {return true}
+        if (this._state.areasDisp.buttons === on) {return true}
+    }
+
+    clearButtons() {
+        if (!this._state.areasDisp.buttons) {
+            return Promise.resolve(false)
+        }
+
+        this._kbdpane.clear();
+
+        return Promise.resolve(true);
     }
 
     _showVariables(variables) {

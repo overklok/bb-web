@@ -21,9 +21,7 @@ class LaunchBtnWrapper extends Wrapper {
     }
 
     show(check) {
-        if (!this._button) {
-            this._button = document.getElementById(BUTTON_ID);
-        }
+        this._ensureButton();
 
         this._button.style.display = "block";
 
@@ -43,21 +41,33 @@ class LaunchBtnWrapper extends Wrapper {
     }
 
     hide() {
+        this._ensureButton();
+
         this._button.style.display = "none";
     }
 
     setStart() {
+        this._ensureButton();
+
         this._button.innerText = this._caption_start;
         this._started = true;
     }
 
     setStop() {
+        this._ensureButton();
+
         this._button.innerText = this._caption_stop;
         this._started = false;
     }
 
     onButtonClick(cb) {
         this._callbacks.button_click = cb;
+    }
+
+    _ensureButton() {
+        if (!this._button) {
+            this._button = document.getElementById(BUTTON_ID);
+        }
     }
 }
 
