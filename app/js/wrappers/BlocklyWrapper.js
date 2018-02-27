@@ -267,7 +267,7 @@ class BlocklyWrapper extends Wrapper {
      *
      * @param {function} callback функция, вызывающаяся при изменении основного кода
      */
-    onChangeMain(callback) {
+    onChange(callback) {
         this._callbacks.onChange = callback;
     }
 
@@ -430,68 +430,71 @@ class BlocklyWrapper extends Wrapper {
      */
     _filterEvent(event) {
         if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
-            let is_deep_change = false;
-
-            let block = undefined;
-            let is_orphan = false;
-
-            if (event.oldParentId) {
-                block = this.workspace.getBlockById(event.oldParentId);
-                is_orphan = true;
-            } else {
-                block = this.workspace.getBlockById(event.blockId);
-            }
-
-            if (block) {
-                /// Корневой блок (не имеющий родителей)
-                let root = block.getRootBlock();
-
-                /// Если этот блок нужно глубоко прослушивать (напр., это обработчик)
-                if (this._audibles.indexOf(root.type) >= 0) {
-                    /// Если изменение не является результатом перемещения родительского блока
-                    if (!(event.type === Blockly.Events.MOVE && block === root && !is_orphan)) {
-                        /// отметить, что изменение - глубокое
-                        is_deep_change = true;
-
-                        /// если нет объекта с данными обработчиков, создать пустой
-                        if (typeof Blockly.JSON.audible_args === "undefined") {
-                            Blockly.JSON.audible_args = {};
-                        }
-
-                        /// зафиксировать обработчик "до"
-                        let audible_args_before = Blockly.JSON.audible_args[root.id];
-                        /// обновить информацию об обработчике
-                        Blockly.JSON.blockToCode(root);
-                        /// зафиксировать обработчик "после"
-                        let audible_args_after = Blockly.JSON.audible_args[root.id];
-
-                        /// по умолчанию
-                        let audible_args = {
-                            btn: audible_args_after.btn
-                        };
-
-                        /// если код обработчика изменился
-                        if (!audible_args_before || (audible_args_before.code !== audible_args_after.code)) {
-                            audible_args["code"] = audible_args_after.code;
-                        }
-
-                        this._callbacks.onChangeAudible(root.id, audible_args);
-
-                    } // <если изменение не является результатом перемещения родительского блока>
-                } // <если блок в списке _audibles>
-            } // <если событие для блока>
-
-            /// Если изменение - не глубокое, учесть этот случай
-            if (!is_deep_change) {
-                // let code_after = Blockly.JSON.workspaceToCode(this.workspace);
-                //
-                // if (this._lastCodeMain !== code_after) {
-                //     this._callbacks.onChange(code_after);
-                //
-                //     this._lastCodeMain = code_after;
-                // }
-            }
+            this._callbacks.onChange();
         }
+        // if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
+        //     let is_deep_change = false;
+        //
+        //     let block = undefined;
+        //     let is_orphan = false;
+        //
+        //     if (event.oldParentId) {
+        //         block = this.workspace.getBlockById(event.oldParentId);
+        //         is_orphan = true;
+        //     } else {
+        //         block = this.workspace.getBlockById(event.blockId);
+        //     }
+        //
+        //     if (block) {
+        //         /// Корневой блок (не имеющий родителей)
+        //         let root = block.getRootBlock();
+        //
+        //         /// Если этот блок нужно глубоко прослушивать (напр., это обработчик)
+        //         if (this._audibles.indexOf(root.type) >= 0) {
+        //             /// Если изменение не является результатом перемещения родительского блока
+        //             if (!(event.type === Blockly.Events.MOVE && block === root && !is_orphan)) {
+        //                 /// отметить, что изменение - глубокое
+        //                 is_deep_change = true;
+        //
+        //                 /// если нет объекта с данными обработчиков, создать пустой
+        //                 if (typeof Blockly.JSON.audible_args === "undefined") {
+        //                     Blockly.JSON.audible_args = {};
+        //                 }
+        //
+        //                 /// зафиксировать обработчик "до"
+        //                 let audible_args_before = Blockly.JSON.audible_args[root.id];
+        //                 /// обновить информацию об обработчике
+        //                 Blockly.JSON.blockToCode(root);
+        //                 /// зафиксировать обработчик "после"
+        //                 let audible_args_after = Blockly.JSON.audible_args[root.id];
+        //
+        //                 /// по умолчанию
+        //                 let audible_args = {
+        //                     btn: audible_args_after.btn
+        //                 };
+        //
+        //                 /// если код обработчика изменился
+        //                 if (!audible_args_before || (audible_args_before.code !== audible_args_after.code)) {
+        //                     audible_args["code"] = audible_args_after.code;
+        //                 }
+        //
+        //                 this._callbacks.onChangeAudible(root.id, audible_args);
+        //
+        //             } // <если изменение не является результатом перемещения родительского блока>
+        //         } // <если блок в списке _audibles>
+        //     } // <если событие для блока>
+        //
+        //     /// Если изменение - не глубокое, учесть этот случай
+        //     if (!is_deep_change) {
+        //         let code_after = Blockly.JSON.workspaceToCode(this.workspace);
+        //
+        //         if (this._lastCodeMain !== code_after) {
+        //             this._callbacks.onChange(code_after);
+        //
+        //             this._lastCodeMain = code_after;
+        //         }
+        //     }
+        // }
     }
 }
 

@@ -37,7 +37,7 @@ class WorkspaceModule extends Module {
         this._blockly.registerBlockTypes(JSONBlocks);
         this._blockly.registerGenerators(JSONGenerators);
 
-        this._blockly.setAudibles(['event_key_onpush_letter', 'event_key_onpush_number']);
+        this._blockly.setAudibles(['event_key_onpush_letter', 'event_key_onpush_number', 'event_key_onpush_any', 'event_key_onpush_any_number']);
 
         this._subscribeToWrapperEvents();
     }
@@ -152,12 +152,16 @@ class WorkspaceModule extends Module {
     }
 
     getAllHandlers() {
+        if (!this._state.display) {return null}
+
+        let handlers_result = null;
+
         try {
             let _handlers = this._blockly.getJSONHandlers();
 
             let code_main = WorkspaceModule._preprocessCode(_handlers.main);
 
-            let handlers_result = {main: {commands: code_main, btn: "None"}};
+            handlers_result = {main: {commands: code_main, btn: "None"}};
 
             for (let block_id of Object.keys(_handlers.sub)) {
                 handlers_result[block_id] = {
@@ -166,8 +170,8 @@ class WorkspaceModule extends Module {
                 }
             }
         } catch (err) {
-            console.error(err);
-            return {};
+            this._debug.error(err);
+            return handlers_result;
         }
 
         return handlers_result;
@@ -226,6 +230,9 @@ class WorkspaceModule extends Module {
     }
 
     _subscribeToWrapperEvents() {
+        this._blockly.onChange(() => {
+            this.emitEvent("change");
+        });
         /**
          * При изменении главного кода
          */
@@ -239,21 +246,21 @@ class WorkspaceModule extends Module {
         // });
 
         /* В момент изменения кода обработчиков Blockly */
-        this._blockly.onChangeAudible((audible_id, audible_args) => {
-            audible_args.code = WorkspaceModule._preprocessCode(audible_args.code);
-
-            let data_to_send = {};
-
-            data_to_send[audible_id] = {
-                btn:        audible_args.btn
-            };
-
-            if (audible_args.code.length > 0) {
-                data_to_send[audible_id].commands = audible_args.code;
-            }
-
-            this.emitEvent("change", data_to_send);
-        });
+        // this._blockly.onChangeAudible((audible_id, audible_args) => {
+        //     audible_args.code = WorkspaceModule._preprocessCode(audible_args.code);
+        //
+        //     let data_to_send = {};
+        //
+        //     data_to_send[audible_id] = {
+        //         btn:        audible_args.btn
+        //     };
+        //
+        //     if (audible_args.code.length > 0) {
+        //         data_to_send[audible_id].commands = audible_args.code;
+        //     }
+        //
+        //     this.emitEvent("change", data_to_send);
+        // });
     }
 
     /**

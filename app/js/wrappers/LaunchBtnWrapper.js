@@ -50,14 +50,14 @@ class LaunchBtnWrapper extends Wrapper {
         this._ensureButton();
 
         this._button.innerText = this._caption_start;
-        this._started = true;
+        this._started = false;
     }
 
     setStop() {
         this._ensureButton();
 
         this._button.innerText = this._caption_stop;
-        this._started = false;
+        this._started = true;
     }
 
     onButtonClick(cb) {

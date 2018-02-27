@@ -7,14 +7,21 @@ import thm from "../../css/intro.css";
 let introJS = require('intro.js').introJs;
 // window.introJS = introJS;
 
-const MODES = {
-    INTRO: "intro",
-    DIALOG: "dialog",
-    SUCCESS: "success",
-    ERROR: "error"
+const CLASS_NAMES = {
+    SUCCESS: "introjs-tooltip-success",
+    ERROR: "introjs-tooltip-error"
 };
 
-const DIALOG_DEFAULT = "Вы уверены?";
+const MODES = {
+    INTRO: "intro",
+    ERROR: "error",
+    DIALOG: "dialog",
+    SUCCESS: "success"
+};
+
+const DIALOG_MODES = ["dialog", "success"];
+
+const DIALOG_DEFAULT = "DIALOG_MESSAGE";
 
 class TourWrapper extends Wrapper {
     constructor(mode, steps) {
@@ -25,13 +32,15 @@ class TourWrapper extends Wrapper {
 
         let options = this._getOptions(mode);
 
-        if (this._mode === MODES.DIALOG) {
+        if (DIALOG_MODES.indexOf(this._mode) >= 0) {
             options.steps = [{intro: steps || DIALOG_DEFAULT}, {}]
         } else {
             if (steps) {
                 options.steps = steps;
             }
         }
+
+        console.log(options);
 
         this._introJS.setOptions(options);
     }
@@ -43,12 +52,14 @@ class TourWrapper extends Wrapper {
 
             this._introJS.start();
 
-            if (this._mode !== MODES.DIALOG && this._introJS._introItems.length > 1) {
+            if (DIALOG_MODES.indexOf(this._mode) === -1 && this._introJS._introItems.length > 1) {
                 $('.introjs-skipbutton').hide();
             }
 
+            this._setStyles();
+
             this._introJS.onafterchange(function(){
-                if (self._mode === MODES.DIALOG) {
+                if (DIALOG_MODES.indexOf(self._mode) >= 0) {
                     reject(); rejected = true;
                     this.exit(true);
                 }
@@ -62,7 +73,7 @@ class TourWrapper extends Wrapper {
 
             this._introJS.onexit(() => {
                 if (!rejected) {
-                    this._mode === MODES.DIALOG ? resolve(true) : resolve(false);
+                    DIALOG_MODES.indexOf(this._mode) >= 0 ? resolve(true) : resolve(false);
                 }
             });
 
@@ -74,6 +85,24 @@ class TourWrapper extends Wrapper {
         });
     }
 
+    _setStyles() {
+        switch (this._mode) {
+            case MODES.SUCCESS: {
+                $('.introjs-tooltip').addClass(CLASS_NAMES.SUCCESS);
+                break;
+            }
+            case MODES.ERROR: {
+                $('.introjs-tooltip').addClass(CLASS_NAMES.ERROR);
+                break;
+            }
+            default: {
+
+                break;
+            }
+        }
+
+    }
+
     _getOptions(mode) {
         let options = {
             doneLabel: "ОК",
@@ -83,18 +112,28 @@ class TourWrapper extends Wrapper {
         };
 
         switch (mode) {
-            case MODES.SUCCESS: {
-                break;
-            }
-            case MODES.ERROR: {
-                break;
-            }
             case MODES.DIALOG: {
                 options.skipLabel = "Да";
                 options.nextLabel = "Нет";
                 options.showBullets = false;
                 options.hidePrev = true;
                 options.exitOnOverlayClick = false;
+                options.showStepNumbers = false;
+                break;
+            }
+            case MODES.SUCCESS: {
+                options.skipLabel = "Перейти";
+                options.nextLabel = "Остаться";
+                options.showBullets = false;
+                options.hidePrev = true;
+                options.exitOnOverlayClick = false;
+                options.showStepNumbers = false;
+                break;
+            }
+            case MODES.ERROR: {
+                options.doneLabel = "ОК";
+                options.hidePrev = true;
+                options.showBullets = false;
                 options.showStepNumbers = false;
                 break;
             }

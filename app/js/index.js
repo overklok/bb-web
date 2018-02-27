@@ -109,17 +109,6 @@ class Application {
         this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
 
         this.gui.registerButtonCodes(BUTTON_CODES);
-
-        // this.lay.compose("full")
-        //     .then(() => this.gui.hideSpinner());
-
-        // this.ins._setModelButtonSequence([81, 87, 69]);
-
-        // this.trc.registerVariables([
-        //     {name: "strip_index", initial_value: 1, type: "string"},
-        //     {name: "strip_colour", initial_value: "000000", type: "colour"},
-        //     {name: "strip_brightness", initial_value: 0, type: "number"},
-        // ]);
     }
 
     /**
@@ -202,6 +191,111 @@ class Application {
         });
 
         /**
+         * Нажата кнопка "Проверить"
+         */
+        this._dispatcher.on('gui:check', () => {
+            /// прослушивать только события прохождения или провала
+            this._dispatcher.only(["ins:pass", "ins:fault"]);
+
+            /// определить ИД упражнения
+            let exID = this.ins.getExerciseID();
+            /// зажать кнопку
+            this.gui.affirmLaunchButtonState(false);
+            /// очистить ошибочные блоки
+            this.ws.clearErrorBlocks();
+
+            /// получить обработчики
+            Promise.all([
+                this.ws.getAllHandlers(),
+                this.bb.getData()
+            ])
+                .then(results   => {return {handlers: results[0], board: results[1]}})
+                .then(data      => this.gs.commitSolution(exID, data))
+                .then(verdict   => this.ins.applyVerdict(verdict))
+                .then(()        => this.gui.affirmLaunchButtonState(true))
+                .then(()        => {
+                    this.gui.affirmLaunchButtonState(true);
+                    this._dispatcher.only(['gui:*', 'ins:*']);
+                })
+                .catch((err)    => {
+                    console.error(err);
+                    this.gui.affirmLaunchButtonState(true);
+                    this._dispatcher.only(['gui:*', 'ins:*'])
+                });
+        });
+
+        /**
+         * Нажата кнопка "Запустить"
+         */
+        this._dispatcher.on('gui:execute', () => {
+            console.log("EXECUTE")
+
+            this._dispatcher.only(["gui:terminate"]);
+
+            this.gui.affirmLaunchButtonState(false);
+
+            let handler = this.ws.getMainHandler();
+            this.ls.updateHandlers({commands: handler.commands, launch: true});
+            console.log({commands: handler.commands, launch: true});
+        });
+
+        /**
+         * Нажата кнопка "Остановить"
+         */
+        this._dispatcher.on('gui:terminate', () => {
+            this.ls.stopExecution();
+            this.ws.highlightBlock(null);
+
+            this.gui.affirmLaunchButtonState(true);
+
+            this._dispatcher.only(["gui:*"]);
+        });
+
+        /**
+         * Нажата клавиша
+         */
+        this._dispatcher.on('gui:keyup', button_code => {
+            /// найти первый обработчик нажатия клавиши
+            let handler = this.ws.getButtonHandler(button_code);
+
+            if (handler) {
+                /// обновить код на плате
+                this.ls.updateHandlers({commands: handler.code, launch: false});
+            }
+
+            /// проверить правильность нажатия клавиши
+            let valid = this.ins.validateButtonPress(button_code);
+            /// вывести нажатие клавиши
+            this.trc.displayKeyboardPress(button_code, !valid);
+
+            console.log('keyup', button_code);
+        });
+
+        /**
+         * Задание пройдено
+         */
+        this._dispatcher.on('ins:pass', verdict => {
+            this._dispatcher.only([]);
+            this.ins.tourPass(verdict.message)
+                .then(
+                    onResolve => this.ins.launchExerciseNext(),
+                    onReject => {return true}
+                )
+                .then(() => this._dispatcher.only(['gui:*']))
+        });
+
+        /**
+         * Задание провалено
+         */
+        this._dispatcher.on('ins:fault', verdict => {
+            console.log("fault", verdict);
+            this._dispatcher.only([]);
+            this.ws.highlightErrorBlocks(verdict.blocks);
+            this.ins.tourFault(verdict.message)
+                .then(() => this._dispatcher.only(['gui:*']))
+        });
+
+        /**
          * Готовность платы к работе
          */
         this._dispatcher.on('ls:connect', () => {
@@ -263,81 +357,6 @@ class Application {
         });
 
         /**
-         * Нажата кнопка "Проверить"
-         */
-        this._dispatcher.on('gui:check', () => {
-            /// прослушивать только события прохождения или провала
-            this._dispatcher.only(["ins:pass", "ins:fault"]);
-
-            console.log("GUI CHECK");
-
-            let exID = this.ins.getExerciseID();
-
-            console.log("EXID", exID);
-
-            this.gui.switchLaunchButtonState(false);
-
-            console.log("GUI SWITCHED");
-
-            /// очистить ошибочные блоки
-            this.ws.clearErrorBlocks();
-
-            console.log("ERROR BLOCK CLEARED");
-
-            /// получить обработчики
-            Promise.resolve()
-                .then(() => {return {handlers: this.ws.getAllHandlers(), board: this.bb.getData()}})
-                .then(data => this.gs.commitRealization(exID, data.handlers))
-                /// обработать результат обработки
-                .then(verdict => this.ins.applyVerdict(verdict))
-                /// отжать кнопку
-                .then(() => this.gui.switchLaunchButtonState(true))
-                /// разрешить слушать кнопки
-                .then(() => {
-                    this.gui.switchLaunchButtonState(true);
-                    this._dispatcher.only(['gui:*']);
-                })
-                .catch((err) => {
-                    this.gui.switchLaunchButtonState(true);
-                    this._dispatcher.only(['gui:*'])
-                });
-        });
-
-        /**
-         * Нажата кнопка "Запустить"
-         */
-        this._dispatcher.on('gui:execute', () => {
-            this._dispatcher.only(["gui:terminate"]);
-
-            this.gui.switchLaunchButtonState(false);
-
-            let handler = this.ws.getMainHandler();
-            this.ls.updateHandlers({commands: handler.commands, launch: true});
-            console.log({commands: handler.commands, launch: true});
-        });
-
-        /**
-         * Нажата кнопка "Остановить"
-         */
-        this._dispatcher.on('gui:terminate', () => {
-            this.ls.stopExecution();
-            this.ws.highlightBlock(null);
-
-            this.gui.switchLaunchButtonState(true);
-
-            this._dispatcher.only(["gui:*"]);
-        });
-
-        /**
-         * Нажата кнопка "Переключить разметку"
-         */
-        this._dispatcher.on('gui:switch', on => {
-            this.lay.compose("simple")
-                .then(() => this.lay.compose("full"))
-                .then(() => this._dispatcher.only(["gui:*"]))
-        });
-
-        /**
          * Нажата кнопка "Выгрузить в файл"
          */
         this._dispatcher.on('gui:unload-file', () => {
@@ -350,43 +369,6 @@ class Application {
          */
         this._dispatcher.on('gui:load-file', tree => {
             this.ws.loadTree(tree);
-        });
-
-        /**
-         * Нажата клавиша
-         */
-        this._dispatcher.on('gui:keyup', button_code => {
-            /// найти первый обработчик нажатия клавиши
-            let handler = this.ws.getButtonHandler(button_code);
-
-            if (handler) {
-                /// обновить код на плате
-                this.ls.updateHandlers({commands: handler.code, launch: false});
-            }
-
-            /// проверить правильность нажатия клавиши
-            let valid = this.ins.validateButtonPress(button_code);
-            /// вывести нажатие клавиши
-            this.trc.displayKeyboardPress(button_code, !valid);
-
-            console.log('keyup', button_code);
-        });
-
-        /**
-         * Задание пройдено
-         */
-        this._dispatcher.on('ins:pass', verdict => {
-            alert(verdict.message);
-            this._dispatcher.only(['gui:*']);
-        });
-
-        /**
-         * Задание провалено
-         */
-        this._dispatcher.on('ins:fault', verdict => {
-            alert(verdict.message);
-            this.ws.highlightErrorBlocks(verdict.blocks);
-            this._dispatcher.only(['gui:*']);
         });
 
         /**
@@ -405,20 +387,6 @@ class Application {
         this._dispatcher.on('lay:resize', () => {
             this.ws.resize();
             this.trc.resize();
-        });
-
-        /**
-         * Ошибки локального сервиса
-         */
-        this._dispatcher.on('ls:error', (err) => {
-            console.error('[LSERR]', err);
-        });
-
-        /**
-         * Ошибки глобального сервиса
-         */
-        this._dispatcher.on('gs:error', (err) => {
-            console.error('[GSERR]', err);
         });
     }
 }

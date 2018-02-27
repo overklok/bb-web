@@ -70,7 +70,6 @@ class InstructorModule extends Module {
                 throw new TypeError("No lesson data were provided");
             }
 
-
             console.log(lesson_data);
 
             this._parseLesson(lesson_data);
@@ -208,7 +207,11 @@ class InstructorModule extends Module {
      * @param message
      */
     tourPass(message) {
-
+        message = message || "Упражнение пройдено!";
+        /// Подключить поповер-обёртку
+        let intro = new TourWrapper("success", message);
+        /// Запустить интро
+        return intro.start();
     }
 
     /**
@@ -220,7 +223,13 @@ class InstructorModule extends Module {
      * @param message
      */
     tourFault(message) {
-
+        message = message || "Упражнение не пройдено";
+        /// Подключить поповер-обёртку
+        let intro = new TourWrapper("error", [{
+            intro: message
+        }]);
+        /// Запустить интро
+        return intro.start();
     }
 
     /**
@@ -254,7 +263,7 @@ class InstructorModule extends Module {
             });
         }
 
-        if (verdict.status === API.STATUS_CODES.ERROR) {
+        if (verdict.status === API.STATUS_CODES.FAULT) {
             this.emitEvent("fault", {
                 message: verdict.html,
                 blocks: verdict.blocks

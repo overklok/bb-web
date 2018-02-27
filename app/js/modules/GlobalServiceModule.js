@@ -3,7 +3,7 @@ import Module from '../core/Module';
 import Cookies from 'js-cookie';
 
 /**
- * Модулья для работы с глобальным сервером
+ * Модуль для работы с глобальным сервером
  */
 class GlobalServiceModule extends Module {
 // public:
@@ -37,6 +37,13 @@ class GlobalServiceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    /**
+     * Получить данные урока
+     *
+     * @param   {number|string} lesson_id  ИД урока
+     *
+     * @returns {Promise<any>}  данные урока
+     */
     getLessonData(lesson_id) {
         if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
@@ -59,47 +66,52 @@ class GlobalServiceModule extends Module {
     }
 
     /**
-     * Отправить код на проверку
+     * Отправить решение на проверку
      *
-     * @param {number} exercise_id  ИД текущего задания
-     * @param {object} realization  {handlers: Коды (основной и обработчики), board: Плата}
+     * @param   {number}    exercise_id ИД текущего задания
+     * @param   {object}    solution    Решение задания
+     *                                  {handlers: Коды (основной и обработчики), board: Данные состояния платы}
+     *
      * @returns {Promise}   JSON-ответ с результатом проверки / undefined, если в холостом режиме
      */
-    commitRealization(exercise_id, realization) {
-        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
+    commitSolution(exercise_id, solution) {
+        if (this._options.modeDummy) {return Promise.resolve()}
 
-        if (typeof exercise_id !== "number") {throw new TypeError("Exercise ID is not a number")}
+        if (typeof exercise_id !== "number") {return Promise.reject(new TypeError("Exercise ID is not a number"))}
 
-        let packet = {handlers: realization.handlers, board: realization.board};
+        return new Promise((resolve, reject) => {
+            let packet = {handlers: solution.handlers, board: solution.board};
 
-        // let data = new FormData();
-        // data.append("json", JSON.stringify(packet));
+            // let data = new FormData();
+            // data.append("json", JSON.stringify(packet));
 
-        let request = {
-            // mode: 'no-cors',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                // 'Access-Control-Allow-Origin': this._options.origin,
-                // 'Access-Control-Allow-Credentials': true,
-                // 'Access-Control-Allow-Methods': 'POST',
-                // 'X-CSRFToken': undefined
-            },
-            method: "POST",
-            body: JSON.stringify(packet)
-        };
+            let request = {
+                // mode: 'no-cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    // 'Access-Control-Allow-Origin': this._options.origin,
+                    // 'Access-Control-Allow-Credentials': true,
+                    // 'Access-Control-Allow-Methods': 'POST',
+                    // 'X-CSRFToken': undefined
+                },
+                method: "POST",
+                body: JSON.stringify(packet)
+            };
 
-        return fetch(this._options.origin + this._options.api.check_handlers + exercise_id + '/', request)
-            .then(response => {
-                if (response.error) {
-                    throw response.error();
-                }
 
-                return response.json();
-            }).catch(err => {
-                this._debug.error(err);
-                this.emitEvent('error', err);
-            });
+            return fetch(this._options.origin + this._options.api.check_handlers + exercise_id + '/', request)
+                .then(response => {
+                    if (response.error) {
+                        reject(response.error())
+                    }
+
+                    resolve(response.json());
+                }).catch(err => {
+                    this._debug.error(err);
+                    reject(err);
+                });
+        });
     }
 
     /**

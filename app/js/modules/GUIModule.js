@@ -92,7 +92,7 @@ class GUIModule extends Module {
         return Promise.resolve(true);
     }
 
-    switchLaunchButtonState(start=true) {
+    affirmLaunchButtonState(start=true) {
         if (!this._launch_btn) {return false}
 
         if (!this._state.launchButton) {return false}
