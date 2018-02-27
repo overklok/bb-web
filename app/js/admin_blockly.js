@@ -54,6 +54,10 @@ class Application {
         this._dispatcher.always(['ws:*']);
     }
 
+    getBlockCount() {
+        return this.ws.getBlockCount();
+    }
+
     getHandlers() {
         return this.ws.getAllHandlers();
     }

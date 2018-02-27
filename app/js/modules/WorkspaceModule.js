@@ -116,6 +116,18 @@ class WorkspaceModule extends Module {
 
     }
 
+    setMaxBlockLimit(max_block_count=0) {
+        if (!this._state.display) {return false}
+
+        this._blockly.setMaxBlockLimitCount();
+    }
+
+    getBlockCount() {
+        if (!this._state.display) {return false}
+
+        return this._blockly.getBlockCount();
+    }
+
     /**
      * Получить список обработчиков в формате объекта
      *

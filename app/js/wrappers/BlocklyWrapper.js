@@ -198,6 +198,18 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
+    setMaxBlockLimit() {
+        if (!this.workspace) {return false}
+
+
+    }
+
+    getBlockCount() {
+        if (!this.workspace) {return false}
+
+        return this.workspace.getAllBlocks().length;
+    }
+
     /**
      * Получить текущий код программы Blockly в нотации XML
      *
