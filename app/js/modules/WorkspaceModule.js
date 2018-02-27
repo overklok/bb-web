@@ -138,8 +138,6 @@ class WorkspaceModule extends Module {
     getButtonHandler(btn_code) {
         let handlers = this._blockly.getJSONHandlers().sub;
 
-        console.log(handlers);
-
         for (let id of Object.keys(handlers)) {
             let handler = handlers[id];
 
@@ -154,17 +152,22 @@ class WorkspaceModule extends Module {
     }
 
     getAllHandlers() {
-        let _handlers = this._blockly.getJSONHandlers();
+        try {
+            let _handlers = this._blockly.getJSONHandlers();
 
-        let code_main = WorkspaceModule._preprocessCode(_handlers.main);
+            let code_main = WorkspaceModule._preprocessCode(_handlers.main);
 
-        let handlers_result = {main: {commands: code_main, btn: "None"}};
+            let handlers_result = {main: {commands: code_main, btn: "None"}};
 
-        for (let block_id of Object.keys(_handlers.sub)) {
-            handlers_result[block_id] = {
-                commands: WorkspaceModule._preprocessCode(_handlers.sub[block_id].code),
-                btn: _handlers.sub[block_id].btn
+            for (let block_id of Object.keys(_handlers.sub)) {
+                handlers_result[block_id] = {
+                    commands: WorkspaceModule._preprocessCode(_handlers.sub[block_id].code),
+                    btn: _handlers.sub[block_id].btn
+                }
             }
+        } catch (err) {
+            console.error(err);
+            return {};
         }
 
         return handlers_result;

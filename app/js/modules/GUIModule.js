@@ -3,6 +3,7 @@ import Module from "../core/Module";
 import SpinnerWrapper from "../wrappers/SpinnerWrapper";
 import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
 import TextPaneWrapper from "../wrappers/TextPaneWrapper";
+import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
 
 /**
@@ -15,7 +16,7 @@ import FileWrapper from "../wrappers/FileWrapper";
  */
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["mission", "switch", "check", "execute", "stop", "keyup", "load-file", "unload-file"]}
+    static get event_types() {return ["mission", "execute", "terminate", "check", "keyup", "load-file", "unload-file"]}
 
     static defaults() {
         return {
@@ -30,7 +31,8 @@ class GUIModule extends Module {
 
         this._state = {
             switched: true, // debug only
-            listen_buttons: false,
+            listenButtons: false,
+            launchButton: false,
 
             areasDisp: {
                 text: false,
@@ -44,6 +46,7 @@ class GUIModule extends Module {
         this._spinner = new SpinnerWrapper();
         this._lesson_pane = new LessonPaneWrapper();
         this._text_pane = new TextPaneWrapper();
+        this._launch_btn = new LaunchBtnWrapper();
 
         this._subscribeToWrapperEvents();
     }
@@ -73,6 +76,32 @@ class GUIModule extends Module {
         this._text_pane.setText(html);
 
         return Promise.resolve();
+    }
+
+    switchLaunchButton(on=false, check=false) {
+        if (!this._launch_btn) {return Promise.resolve(false)}
+
+        if (on) {
+            this._launch_btn.show(check);
+        } else {
+            this._launch_btn.hide();
+        }
+
+        this._state.launchButton = !this._state.launchButton;
+
+        return Promise.resolve(true);
+    }
+
+    switchLaunchButtonState(start=true) {
+        if (!this._launch_btn) {return false}
+
+        if (!this._state.launchButton) {return false}
+
+        if (start) {
+            this._launch_btn.setStart();
+        } else {
+            this._launch_btn.setStop();
+        }
     }
 
     injectTextPane(dom_node) {
@@ -111,7 +140,7 @@ class GUIModule extends Module {
      * @param {boolean} on true - включить прослушивание, иначе - выключить
      */
     listenButtons(on) {
-        this._state.listen_buttons = on;
+        this._state.listenButtons = on;
     }
 
     /**
@@ -158,25 +187,33 @@ class GUIModule extends Module {
 
     _subscribeToWrapperEvents() {
         /* Как только нажата кнопка переключения разметки */
-        $("#switch-btn").click(() => {
-            this._state.switched = !this._state.switched;
-            this.emitEvent("switch", this._state.switched);
+        // $("#switch-btn").click(() => {
+        //     this._state.switched = !this._state.switched;
+        //     this.emitEvent("switch", this._state.switched);
+        //
+        //     this._debug.log('Switch clicked: ', this._state.switched);
+        // });
 
-            this._debug.log('Switch clicked: ', this._state.switched);
-        });
-
+        /* Как только нажата кнопка запуса миссии */
         this._lesson_pane.onButtonClick(idx => {
             this.emitEvent("mission", idx);
         });
 
-        /* Как только нажата кнопка проверки */
-        $("#check-btn").click(() => {
-            this.emitEvent("check");
-        });
+        /* Как только нажата кнопка запуска/проверки */
+        this._launch_btn.onButtonClick((check, start) => {
+            console.log(check, start);
 
-        /* Как только нажата кнопка запуска кода */
-        $("#launch-btn").click(() => {
-            this.emitEvent("execute");
+            if (check) {
+                console.log("emitting check...");
+
+                this.emitEvent("check");
+            } else {
+                if (start) {
+                    this.emitEvent("execute");
+                } else {
+                    this.emitEvent("terminate");
+                }
+            }
         });
 
         /* Как только нажата кнопка останова кода */
@@ -196,7 +233,7 @@ class GUIModule extends Module {
 
         /* Как только нажата клавиша */
         $(document).keyup(event => {
-            if (this._state.listen_buttons) {
+            if (this._state.listenButtons) {
                 if (this._filterKeyEvent(event.which)) {
                     this.emitEvent("keyup", event.which);
                 }

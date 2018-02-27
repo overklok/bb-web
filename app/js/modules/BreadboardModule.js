@@ -42,6 +42,10 @@ class BreadboardModule extends Module {
         this._state.display = false;
     }
 
+    getData() {
+        return {};
+    }
+
     _subscribeToWrapperEvents() {
         // No events
     }

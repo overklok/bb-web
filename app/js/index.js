@@ -144,9 +144,8 @@ class Application {
          * Готовность диспетчера к работе
          */
         this._dispatcher.onReady(() => {
-            this.ins.getInitialLessonID(1)
+            this.ins.getInitialLessonID()
                 .then(lesson_id => this.gs.getLessonData(lesson_id))
-                // .then(lesson_data => console.log(lesson_data))
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
                 .then(missions => this.gui.showMissionButtons(missions))
                 .then(() => this.ins.launchLesson())
@@ -161,12 +160,19 @@ class Application {
          */
         this._dispatcher.on('ins:start', exercise_data => {
             console.log(exercise_data);
+
+            /// показывать кнопку ?
+            let show_btn = (exercise_data.type !== 2);
+            /// проверять (не запускать) ?
+            let is_check = !(exercise_data.type === 1 && exercise_data.listeners_only === false);
+
             /// Заблокировать все события
             this._dispatcher.only([]);
             /// Определить режим разметки
             let layout_mode = exercise_data.type === 0 ? 'simple' : 'full';
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
+                .then(() => this.gui.switchLaunchButton(show_btn, is_check))
                 .then(() => this.gui.showTask(exercise_data.task_description))
                 .then(() => this.ws.setBlockTypes(exercise_data.block_types))
                 .then(() => this.trc.registerVariables(exercise_data.variables))
@@ -242,24 +248,60 @@ class Application {
         });
 
         /**
+         * Нажата кнопка "Проверить"
+         */
+        this._dispatcher.on('gui:check', () => {
+            /// прослушивать только события прохождения или провала
+            this._dispatcher.only(["ins:pass", "ins:fault"]);
+
+            let exID = this.ins.getExerciseID();
+
+            this.gui.switchLaunchButtonState(false);
+
+            /// очистить ошибочные блоки
+            this.ws.clearErrorBlocks();
+            /// получить обработчики
+            Promise.resolve()
+                .then(() => {return {handlers: this.ws.getAllHandlers(), board: this.bb.getData()}})
+                .then(data => this.gs.commitRealization(exID, data.handlers))
+                /// обработать результат обработки
+                .then(verdict => this.ins.applyVerdict(verdict))
+                /// отжать кнопку
+                .then(() => this.gui.switchLaunchButtonState(true))
+                /// разрешить слушать кнопки
+                .then(() => {
+                    this.gui.switchLaunchButtonState(true);
+                    this._dispatcher.only(['gui:*']);
+                })
+                .catch((err) => {
+                    this.gui.switchLaunchButtonState(true);
+                    this._dispatcher.only(['gui:*'])
+                });
+        });
+
+        /**
          * Нажата кнопка "Запустить"
          */
         this._dispatcher.on('gui:execute', () => {
+            this._dispatcher.only(["gui:terminate"]);
+
+            this.gui.switchLaunchButtonState(false);
+
             let handler = this.ws.getMainHandler();
-
             this.ls.updateHandlers({commands: handler.commands, launch: true});
-
             console.log({commands: handler.commands, launch: true});
-
-            // this._dispatcher.only(['gui:stop', 'ls:command']);
         });
 
         /**
          * Нажата кнопка "Остановить"
          */
-        this._dispatcher.on('gui:stop', data => {
+        this._dispatcher.on('gui:terminate', () => {
             this.ls.stopExecution();
             this.ws.highlightBlock(null);
+
+            this.gui.switchLaunchButtonState(true);
+
+            this._dispatcher.only(["gui:*"]);
         });
 
         /**
@@ -284,21 +326,6 @@ class Application {
          */
         this._dispatcher.on('gui:load-file', tree => {
             this.ws.loadTree(tree);
-        });
-
-        /**
-         * Нажата кнопка "Проверить"
-         */
-        this._dispatcher.on('gui:check', () => {
-            this.ws.clearErrorBlocks();
-
-            let handlers = this.ws.getAllHandlers();
-            this.gs.commitHandlers({}, handlers)
-                .then(verdict => {
-                    this._dispatcher.only(['ins:*']);
-                    return verdict;
-                })
-                .then(verdict => this.ins.applyVerdict(verdict));
         });
 
         /**

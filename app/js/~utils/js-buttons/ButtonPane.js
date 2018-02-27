@@ -10,7 +10,7 @@ class ButtonPane {
     constructor(options) {
         if (!options) {throw new TypeError("Some config should be provided for launch")}
 
-        this._container     = options.container;
+        this._button     = options.container;
         this._amount_max    = 30;
 
         this._style        = undefined;
@@ -41,10 +41,10 @@ class ButtonPane {
     }
 
     resize() {
-        let w = this._container.parentNode.offsetWidth;
-        let h = this._container.parentNode.offsetHeight;
-        let px = parseInt(getStyle(this._container.parentNode, "padding-left").slice(0, -2));
-        let py = parseInt(getStyle(this._container.parentNode, "padding-top").slice(0, -2));
+        let w = this._button.parentNode.offsetWidth;
+        let h = this._button.parentNode.offsetHeight;
+        let px = parseInt(getStyle(this._button.parentNode, "padding-left").slice(0, -2));
+        let py = parseInt(getStyle(this._button.parentNode, "padding-top").slice(0, -2));
         let mx = 5;
         let my = 5;
 
@@ -89,19 +89,19 @@ class ButtonPane {
     }
 
     dispose() {
-        if (this._container) {
-            let parent = this._container.parentNode;
-            parent.removeChild(this._container);
+        if (this._button) {
+            let parent = this._button.parentNode;
+            parent.removeChild(this._button);
         }
     }
 
     _launch() {
-        this._container.classList.add(CLASS_NAMES.MAIN);
+        this._button.classList.add(CLASS_NAMES.MAIN);
 
         this._list = document.createElement("ul");
         this._list.id = "qwerty";
 
-        this._container.appendChild(this._list);
+        this._button.appendChild(this._list);
 
         // this._initDynamicStyles();
     }

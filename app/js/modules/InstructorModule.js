@@ -2,6 +2,8 @@ import Module from "../core/Module";
 
 import TourWrapper from "../wrappers/TourWrapper";
 
+import processLesson from  "../~utils/lesson-processor/processor";
+
 const API = {
     STATUS_CODES: {
         PASS: "OK",
@@ -64,9 +66,12 @@ class InstructorModule extends Module {
      */
     loadLesson(lesson_data) {
         return new Promise(resolve => {
-            if (typeof lesson_data === "undefined") {
-                throw new TypeError("Lesson data is undefined!");
+            if (!lesson_data) {
+                throw new TypeError("No lesson data were provided");
             }
+
+
+            console.log(lesson_data);
 
             this._parseLesson(lesson_data);
 
@@ -230,6 +235,13 @@ class InstructorModule extends Module {
         return intro.start();
     }
 
+    getExerciseID() {
+        let missionIDX = this._state.missionIDX;
+        let exerciseIDX = this._state.missions[missionIDX].exerciseIDX;
+
+        return this._lesson.missions[missionIDX].exercises[exerciseIDX].pk;
+    }
+
     /**
      * Обработать результат проверки упражнения
      *
@@ -307,54 +319,14 @@ class InstructorModule extends Module {
      * @private
      */
     _parseLesson(lesson_data) {
-        if (lesson_data && lesson_data.missions.length === 0) {
-            throw new Error("Lesson has not any missions");
-        } else {
-            let missions = [];
+        this._lesson = processLesson(lesson_data);
 
-            for (let mission_idx in lesson_data.missions) {
-                let mission = lesson_data.missions[mission_idx];
-
-                if (mission.exercises.length === 0) {continue}
-
-                /// заполнить данные прогресса
-                this._state.missions.push({
-                    exerciseIDX: 0,
-                    exerciseCount: mission.exercises.length
-                });
-
-                let exercises = [];
-
-                for (let exercise_idx in mission.exercises) {
-                    let exercise = mission.exercises[exercise_idx];
-
-                    let popovers = [];
-
-                    for (let popover_idx in exercise.popovers) {
-                        let popover = exercise.popovers[popover_idx];
-
-                        popovers.push({
-                            intro: `<h1>${popover.title}</h1>${popover.content}`,
-                            position: popover.placement,
-                            element: popover.element
-                        });
-                    }
-
-                    exercise.popovers = popovers;
-                    exercises.push(exercise);
-                }
-                missions.push({
-                    name:       mission.name,
-                    category:   mission.category,
-                    exercises:  exercises
-                });
-            }
-
-            this._lesson = {
-                name:           lesson_data.name,
-                description:    lesson_data.description,
-                missions:       missions
-            };
+        for (let mission of this._lesson.missions) {
+            /// заполнить данные прогресса
+            this._state.missions.push({
+                exerciseIDX: 0,
+                exerciseCount: mission.exercises.length
+            });
         }
 
         console.log(this._lesson);

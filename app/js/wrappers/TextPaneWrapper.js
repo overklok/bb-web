@@ -11,36 +11,36 @@ class TextPaneWrapper extends Wrapper {
         super();
 
         this._text = undefined;
-        this._container = undefined;
+        this._button = undefined;
     }
 
     setText(html) {
         this._text = html;
 
-        if (this._container) {
-            this._container.innerHTML = this._text;
+        if (this._button) {
+            this._button.innerHTML = this._text;
         }
     }
 
     inject(dom_node) {
         if (!dom_node) {return Promise.resolve(false)}
 
-        this._container = document.createElement('div');
-        this._container.classList.add(CLASSES.TEXT_PANE);
+        this._button = document.createElement('div');
+        this._button.classList.add(CLASSES.TEXT_PANE);
 
-        dom_node.appendChild(this._container);
+        dom_node.appendChild(this._button);
 
         if (this._text) {
-            this._container.innerHTML = this._text;
+            this._button.innerHTML = this._text;
         }
 
         return Promise.resolve(true);
     }
 
     eject() {
-        if (!this._container) {return false}
+        if (!this._button) {return false}
 
-        this._container.remove();
+        this._button.remove();
 
         return Promise.resolve(true);
     }

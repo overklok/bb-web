@@ -61,14 +61,16 @@ class GlobalServiceModule extends Module {
     /**
      * Отправить код на проверку
      *
-     * @param meta      Информация о текущем задании
-     * @param handlers  Коды (основной и обработчики)
+     * @param {number} exercise_id  ИД текущего задания
+     * @param {object} realization  {handlers: Коды (основной и обработчики), board: Плата}
      * @returns {Promise}   JSON-ответ с результатом проверки / undefined, если в холостом режиме
      */
-    commitHandlers(meta, handlers) {
+    commitRealization(exercise_id, realization) {
         if (this._options.modeDummy) {return new Promise(resolve => resolve())}
 
-        let packet = {meta: meta, handlers: handlers};
+        if (typeof exercise_id !== "number") {throw new TypeError("Exercise ID is not a number")}
+
+        let packet = {handlers: realization.handlers, board: realization.board};
 
         // let data = new FormData();
         // data.append("json", JSON.stringify(packet));
@@ -87,7 +89,7 @@ class GlobalServiceModule extends Module {
             body: JSON.stringify(packet)
         };
 
-        return fetch(this._options.origin + this._options.api.check_handlers, request)
+        return fetch(this._options.origin + this._options.api.check_handlers + exercise_id + '/', request)
             .then(response => {
                 if (response.error) {
                     throw response.error();
