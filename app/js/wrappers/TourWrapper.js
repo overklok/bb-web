@@ -21,7 +21,7 @@ const MODES = {
 
 const DIALOG_MODES = ["dialog", "success"];
 
-const DIALOG_DEFAULT = "DIALOG_MESSAGE";
+const DIALOG_DEFAULT = "Задание пройдено!";
 
 class TourWrapper extends Wrapper {
     constructor(mode, steps) {
@@ -39,8 +39,6 @@ class TourWrapper extends Wrapper {
                 options.steps = steps;
             }
         }
-
-        console.log(options);
 
         this._introJS.setOptions(options);
     }

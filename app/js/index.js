@@ -276,7 +276,7 @@ class Application {
          */
         this._dispatcher.on('ins:pass', verdict => {
             this._dispatcher.only([]);
-            this.ins.tourPass(verdict.message)
+            this.ins.tourPass()
                 .then(
                     onResolve => this.ins.launchExerciseNext(),
                     onReject => {return true}

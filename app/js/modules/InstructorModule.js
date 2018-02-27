@@ -203,11 +203,13 @@ class InstructorModule extends Module {
      *
      * TODO
      * @stub
-     *
-     * @param message
      */
-    tourPass(message) {
-        message = message || "Упражнение пройдено!";
+    tourPass() {
+        let missionIDX = this._state.missionIDX;
+        let exerciseIDX = this._state.missions[missionIDX].exerciseIDX;
+
+        let message = this._lesson.missions[missionIDX].exercises[exerciseIDX].message_success;
+
         /// Подключить поповер-обёртку
         let intro = new TourWrapper("success", message);
         /// Запустить интро
@@ -226,7 +228,7 @@ class InstructorModule extends Module {
         message = message || "Упражнение не пройдено";
         /// Подключить поповер-обёртку
         let intro = new TourWrapper("error", [{
-            intro: message
+            intro: `<p>${message}`
         }]);
         /// Запустить интро
         return intro.start();
