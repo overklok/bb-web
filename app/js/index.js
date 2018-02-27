@@ -146,11 +146,13 @@ class Application {
         this._dispatcher.onReady(() => {
             this.ins.getInitialLessonID(1)
                 .then(lesson_id => this.gs.getLessonData(lesson_id))
+                // .then(lesson_data => console.log(lesson_data))
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
                 .then(missions => this.gui.showMissionButtons(missions))
-                .then(() => this.ins.launchExerciseNext())
+                .then(() => this.ins.launchLesson())
                 .catch(error => {
                     this.gui.showSpinnerError(error.message);
+                    console.error(error);
                 });
         });
 
@@ -169,7 +171,7 @@ class Application {
                 .then(() => this.ws.setBlockTypes(exercise_data.block_types))
                 .then(() => this.trc.registerVariables(exercise_data.variables))
                 .then(() => this.gui.hideSpinner())
-                .then(() => this.ins.showIntro())
+                .then(() => this.ins.tourIntro(exercise_data.popovers))
                 .then(() => this._dispatcher.only(['gui:*']))
         });
 
@@ -229,10 +231,14 @@ class Application {
          * Окончание компоновки разметки
          */
         this._dispatcher.on('lay:compose-end', data => {
-            this.ws.inject(data.workspace);
-            this.bb.inject(data.breadboard);
-            this.trc.inject(data.tracing, data.buttons);
-            this.gui.injectTextPane(data.task);
+            console.log(data);
+
+            if (data) {
+                this.ws.inject(data.workspace);
+                this.bb.inject(data.breadboard);
+                this.trc.inject(data.tracing, data.buttons);
+                this.gui.injectTextPane(data.task);
+            }
         });
 
         /**

@@ -11,7 +11,7 @@ const API = {
 
 class InstructorModule extends Module {
     static get eventspace_name() {return "ins"}
-    static get event_types() {return ["start", "pass", "fault", "error"]}
+    static get event_types() {return ["start", "pass", "fault", "finish", "error"]}
 
     static defaults() {
         return {
@@ -26,13 +26,11 @@ class InstructorModule extends Module {
         this._buttons_model = [];
 
         this._state = {
-            missionID: 0,
-            exerciseID: -1,
+            missionIDX: undefined,
+            missions: [],
 
-            buttonID: undefined,
+            buttonIDX: undefined,
         };
-
-        this._popovers = undefined;
 
         this._subscribeToWrapperEvents();
     }
@@ -70,15 +68,58 @@ class InstructorModule extends Module {
                 throw new TypeError("Lesson data is undefined!");
             }
 
-            this._resetPointers();
             this._parseLesson(lesson_data);
 
             resolve(this._lesson.missions);
         });
     }
 
+    launchLesson() {
+        return this.launchMission(0);
+    }
+
     /**
-     * TODO
+     * Запустить следующую миссию
+     *
+     * @returns {Promise<object>|Promise<void>}
+     */
+    launchMissionNext() {
+        /// определить индекс следующей миссии
+        let mission_idx = this._state.missionIDX + 1;
+
+        /// если следующей миссии не существует
+        if (mission_idx === this._state.missions.length) {
+            /// сообщить диспетчеру о завершении
+            this.emitEvent("finish");
+
+            return Promise.resolve();
+        } else {
+            /// запустить следующую миссию
+            return this.launchMission(mission_idx);
+        }
+    }
+
+    /**
+     * Запустить следующее упражнение
+     *
+     * @returns {Promise<object>|Promise<void>}
+     */
+    launchExerciseNext() {
+        /// определить индекс следующего упражнения
+        let exercise_idx = this._state.missions[this._state.missionIDX].exerciseIDX + 1;
+
+        /// если следующего упражнения не существует
+        if (exercise_idx === this._state.missions[this._state.missionIDX].exerciseCount) {
+            /// запустить следующую миссию
+            return this.launchMissionNext();
+        } else if (exercise_idx > 0) {
+            /// запустить следующее упражнение
+            return this.launchExercise(exercise_idx);
+        }
+    }
+
+    /**
+     * Запустить миссию
      *
      * @param mission_idx
      * @returns {boolean}
@@ -86,75 +127,107 @@ class InstructorModule extends Module {
     launchMission(mission_idx) {
         let chain = new Promise(resolve => {resolve(true)});
 
-        if (mission_idx === this._state.missionID) {
+        if (mission_idx === this._state.missionIDX) {
             /// спросить подтвержение пользователя
-            chain.then(() => {this.askToConfirm("вы хотите кушоц?")})
-            /// reset mission
+            chain = chain.then(() => this.tourConfirm("Начать задание снова?"))
         }
 
-        chain.then(() => {
-            // this._state.missionID = mission_idx;
-            // this._state.exerciseID = -1;
-            // this.launchExerciseNext();
-        }, (reason) => {
+        chain.then(
+            onAccept => {
+                if (mission_idx in this._state.missions) {
+                    /// обновить индекс миссии
+                    this._state.missionIDX = mission_idx;
+                    /// определить индекс упражнения в миссии
+                    let exercise_idx = this._state.missions[mission_idx].exerciseIDX;
 
-        });
+                    return this.launchExercise(exercise_idx);
+                }
+            },
+            onDecline => {
+                return false;
+            }
+
+        );
 
         return chain;
     }
 
     /**
-     * Запустить следующее упражнение
+     * Запустить упражнение
+     *
+     * @param exercise_idx
+     * @returns {Promise<object>}
      */
-    launchExerciseNext() {
-        let mid = this._state.missionID,
-            eid = this._state.exerciseID;
+    launchExercise(exercise_idx) {
+        let mission_idx = this._state.missionIDX;
 
-        if (mid in this._lesson.missions) {
-            /// если миссия существует
-            if (++eid in this._lesson.missions[mid].exercises) {
-                /// если следующее упражнение существует
-                let exer_data = this._lesson.missions[mid].exercises[eid].fields;
+        /// если индекс упражнения находится в допустимых пределах
+        if (0 <= exercise_idx && exercise_idx < this._state.missions[mission_idx].exerciseCount) {
+            /// обновить заданный индекс упражнения в текущей миссии
+            this._state.missions[mission_idx].exerciseIDX = exercise_idx;
 
-                console.log("NEXT EXER EXISTS");
-                this._state.exerciseID++;
+            /// извлечь данные упражнения
+            let exercise_data = this._lesson.missions[mission_idx].exercises[exercise_idx];
 
-                this.emitEvent("start", exer_data);
-                return this._parseExercise(exer_data);
-            } else {
-                console.log("NEXT EXER NOT EXISTS");
-                /// если следующее упражнение - последнее
-                return this._goToNextMission();
-            }
+            /// сообщить диспетчеру о запуске упражнения
+            this.emitEvent("start", exercise_data);
+
+            /// сообщить вызывающей программе о запуске упражнения
+            return Promise.resolve(exercise_data);
         } else {
-            /// завершена последняя миссия
-            console.log("GOT LAST MISSION");
-            /// finish lesson
-            return Promise.resolve();
+            throw new Error(`Exercise ${exercise_idx} in mission ${mission_idx} not found`);
         }
     }
 
     /**
-     * Показать поповеры
+     * Показать введение в упражнение
      *
-     * @returns {*}
+     * @returns {Promise<any>}
      */
-    showIntro() {
+    tourIntro(popovers) {
         /// Если нет поповеров, выйти
-        if (!this._popovers) {return Promise.resolve()}
+        if (!popovers) {return Promise.resolve()}
 
         /// Подключить поповер-обёртку
-        let intro = new TourWrapper("intro", this._popovers);
+        let intro = new TourWrapper("intro", popovers);
         /// Запустить интро
         return intro.start();
     }
 
-    askToConfirm(question_text) {
+    /**
+     * Показать сообщение о прохождении упражнения
+     *
+     * TODO
+     * @stub
+     *
+     * @param message
+     */
+    tourPass(message) {
+
+    }
+
+    /**
+     * Показать сообщение о провале упражнения
+     *
+     * TODO
+     * @stub
+     *
+     * @param message
+     */
+    tourFault(message) {
+
+    }
+
+    /**
+     * Вывести диалоговое сообщение о подтверждении
+     *
+     * @param question_text
+     * @returns {Promise<any>} resolve, если ответ "Да", reject - если "Нет"
+     */
+    tourConfirm(question_text) {
         let intro = new TourWrapper("dialog", question_text);
 
-        console.log(intro);
-
-        return intro.start(true);
+        return intro.start();
     }
 
     /**
@@ -169,7 +242,7 @@ class InstructorModule extends Module {
             });
         }
 
-        if (verdict.status === API.STATUS_CODES.FAULT) {
+        if (verdict.status === API.STATUS_CODES.ERROR) {
             this.emitEvent("fault", {
                 message: verdict.html,
                 blocks: verdict.blocks
@@ -194,22 +267,22 @@ class InstructorModule extends Module {
         }
 
         /// если код нажатой клавиши совпал с ожидаемым
-        if (code === this._buttons_model[this._state.buttonID]) {
+        if (code === this._buttons_model[this._state.buttonIDX]) {
             /// если ожидаемый код - последний
-            if ((this._state.buttonID + 1) === this._buttons_model.length) {
+            if ((this._state.buttonIDX + 1) === this._buttons_model.length) {
                 /// сбросить позицию указателя
-                this._state.buttonID = 0;
+                this._state.buttonIDX = 0;
                 /// задание пройдено
             } else {
                 /// увеличить позицию указателя
-                this._state.buttonID += 1;
+                this._state.buttonIDX += 1;
             }
 
             return true;
         }
 
         /// сбросить позицию указателя, если код не совпал
-        this._state.buttonID = 0;
+        this._state.buttonIDX = 0;
 
         return false;
     }
@@ -220,13 +293,15 @@ class InstructorModule extends Module {
      * @param {Array<number>} seq эталонная последовательность нажатий клавиш
      * @private
      */
-    _setModelButtonSequence(seq) {
+    setButtonsModel(seq) {
         this._buttons_model = seq;
-        this._state.buttonID = 0;
+        this._state.buttonIDX = 0;
     }
 
     /**
      * Обработать данные урока и установить их в объект
+     *
+     * Происходит сброс данных прогресса
      *
      * @param lesson_data
      * @private
@@ -235,60 +310,54 @@ class InstructorModule extends Module {
         if (lesson_data && lesson_data.missions.length === 0) {
             throw new Error("Lesson has not any missions");
         } else {
-            this._lesson = lesson_data;
+            let missions = [];
+
+            for (let mission_idx in lesson_data.missions) {
+                let mission = lesson_data.missions[mission_idx];
+
+                if (mission.exercises.length === 0) {continue}
+
+                /// заполнить данные прогресса
+                this._state.missions.push({
+                    exerciseIDX: 0,
+                    exerciseCount: mission.exercises.length
+                });
+
+                let exercises = [];
+
+                for (let exercise_idx in mission.exercises) {
+                    let exercise = mission.exercises[exercise_idx];
+
+                    let popovers = [];
+
+                    for (let popover_idx in exercise.popovers) {
+                        let popover = exercise.popovers[popover_idx];
+
+                        popovers.push({
+                            intro: `<h1>${popover.title}</h1>${popover.content}`,
+                            position: popover.placement,
+                            element: popover.element
+                        });
+                    }
+
+                    exercise.popovers = popovers;
+                    exercises.push(exercise);
+                }
+                missions.push({
+                    name:       mission.name,
+                    category:   mission.category,
+                    exercises:  exercises
+                });
+            }
+
+            this._lesson = {
+                name:           lesson_data.name,
+                description:    lesson_data.description,
+                missions:       missions
+            };
         }
-    }
 
-    _parseExercise(exercise_data) {
-        console.log("Parse EXER", exercise_data);
-        if (exercise_data.popovers && exercise_data.popovers.length > 0) {
-            /// Если поповеры существуют
-            console.log("popovers EXIST");
-            this._popovers = this._parsePopovers(exercise_data.popovers);
-        } else {
-            /// Если поповеров нет
-            console.log("popovers NOT EXIST")
-        }
-
-        return Promise.resolve();
-    }
-
-    _parsePopovers(popovers) {
-        let pops = [];
-
-        for (let popover of popovers) {
-            let html = popover.fields.title ? '<h1>' + popover.fields.title + '</h1>' : "";
-            html += popover.fields.content;
-
-            pops.push({
-                intro: html,
-                position: popover.fields.placement
-            });
-        }
-
-        return pops;
-    }
-
-    /**
-     * Сбросить указатели прогресса в исходное состояние
-     *
-     * @private
-     */
-    _resetPointers() {
-        this._state.missionID   = 0;
-        this._state.exerciseID  = -1;
-    }
-
-    /**
-     * Перейти к следующей миссии
-     *
-     * @private
-     */
-    _goToNextMission() {
-        this._state.missionID++;
-        this._state.exerciseID = -1;
-
-        return this.launchExerciseNext();
+        console.log(this._lesson);
     }
 
     _subscribeToWrapperEvents() {

@@ -122,9 +122,10 @@ class LayoutModule extends Module {
 
         this._state = {
             mode: MODES.FULL,
-            transition_active: false,
-            transition_dummy: false,
-            buttons_pane_visible: true,
+            transitionActive: false,
+            transitionDummy: false,
+            buttonsPaneVisible: true,
+            firstLaunch: true
         };
 
         this._layout_options = this._getFullLayout();
@@ -134,7 +135,6 @@ class LayoutModule extends Module {
         this._panes = this._getPanes();
 
         this._busy = false;
-        this._first = true;
 
         if (!this._options.animSpeedFade) {
             this._options.delayBeforeEnd = 0;
@@ -169,13 +169,13 @@ class LayoutModule extends Module {
                 this._busy = true;
                 setTimeout(() => {
                     /// сообщить о готовности компоновки
-                    this.emitEvent("compose-end", nodes);
+                    this.emitEvent("compose-end", (this._state.firstLaunch && this._state.mode === MODES.FULL) ? nodes : null);
                     /// разрешить вызов функции
                     this._busy = false;
                     /// разрешить выполнение следующей инструкции вызывающей программы
                     resolve();
 
-                    if(this._first) {this._hideLoaderScreen()}
+                    this._state.firstLaunch = false;
                 }, duration);
 
                 return;
@@ -212,7 +212,7 @@ class LayoutModule extends Module {
                     this._layout.sizePane("east", .4);
                     duration += this._options.animSpeedMain;
 
-                    if (this._state.buttons_pane_visible) {
+                    if (this._state.buttonsPaneVisible) {
                         this._panes._east.center.hide("south");
                         duration += this._options.animSpeedSub;
                     }
@@ -229,7 +229,7 @@ class LayoutModule extends Module {
                     this._layout.sizePane("east", .3);
                     duration += this._options.animSpeedMain;
 
-                    if (this._state.buttons_pane_visible) {
+                    if (this._state.buttonsPaneVisible) {
                         this._panes._east.center.show("south");
                         duration += this._options.animSpeedSub;
                     }
@@ -267,7 +267,7 @@ class LayoutModule extends Module {
      */
     switchButtonsPane(on) {
         return new Promise(resolve => {
-            if (on === this._state.buttons_pane_visible || this._state.mode === MODES.SIMPLE) {
+            if (on === this._state.buttonsPaneVisible || this._state.mode === MODES.SIMPLE) {
                 resolve();
                 return;
             }
@@ -275,12 +275,12 @@ class LayoutModule extends Module {
             let duration = DURATION_INITIAL;
 
             if (on) {
-                this._state.buttons_pane_visible = true;
+                this._state.buttonsPaneVisible = true;
 
                 this._panes._east.center.show("south");
                 duration += this._options.animSpeedSub;
             } else {
-                this._state.buttons_pane_visible = false;
+                this._state.buttonsPaneVisible = false;
 
                 this._panes._east.center.hide("south");
                 duration += this._options.animSpeedSub;
@@ -454,9 +454,6 @@ class LayoutModule extends Module {
         }
     }
 
-    _hideLoaderScreen() {
-
-    }
 
     _subscribeToWrapperEvents() {
         // No events

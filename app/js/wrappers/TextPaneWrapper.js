@@ -23,8 +23,6 @@ class TextPaneWrapper extends Wrapper {
     }
 
     inject(dom_node) {
-        console.log("INJ", dom_node);
-
         if (!dom_node) {return Promise.resolve(false)}
 
         this._container = document.createElement('div');

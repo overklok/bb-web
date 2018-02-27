@@ -11,7 +11,7 @@ const MODES = {
     INTRO: "intro",
     DIALOG: "dialog",
     SUCCESS: "success",
-    FAULT: "fault"
+    ERROR: "error"
 };
 
 const DIALOG_DEFAULT = "Вы уверены?";
@@ -26,7 +26,7 @@ class TourWrapper extends Wrapper {
         let options = this._getOptions(mode);
 
         if (this._mode === MODES.DIALOG) {
-            options.steps = [{intro: steps || DIALOG_DEFAULT}]
+            options.steps = [{intro: steps || DIALOG_DEFAULT}, {}]
         } else {
             if (steps) {
                 options.steps = steps;
@@ -38,13 +38,21 @@ class TourWrapper extends Wrapper {
 
     start() {
         return new Promise((resolve, reject) => {
+            let self = this;
+            let rejected = false;
+
             this._introJS.start();
 
-            if (this._introJS._introItems.length > 1) {
+            if (this._mode !== MODES.DIALOG && this._introJS._introItems.length > 1) {
                 $('.introjs-skipbutton').hide();
             }
 
             this._introJS.onafterchange(function(){
+                if (self._mode === MODES.DIALOG) {
+                    reject(); rejected = true;
+                    this.exit(true);
+                }
+
                 if (this._introItems.length - 1 === this._currentStep || this._introItems.length === 1) {
                     $('.introjs-skipbutton').show();
                 } else {
@@ -53,11 +61,16 @@ class TourWrapper extends Wrapper {
             });
 
             this._introJS.onexit(() => {
-                this._mode === MODES.DIALOG ? reject() : resolve(false);
+                if (!rejected) {
+                    this._mode === MODES.DIALOG ? resolve(true) : resolve(false);
+                }
             });
+
             this._introJS.oncomplete(() => {
-                resolve(true)
-            });
+                if (!rejected) {
+                    resolve(true);
+                }
+            })
         });
     }
 
@@ -73,14 +86,16 @@ class TourWrapper extends Wrapper {
             case MODES.SUCCESS: {
                 break;
             }
-            case MODES.FAULT: {
+            case MODES.ERROR: {
                 break;
             }
             case MODES.DIALOG: {
-                options.doneLabel = "Да";
-                options.skipLabel = "Нет";
+                options.skipLabel = "Да";
+                options.nextLabel = "Нет";
                 options.showBullets = false;
-                options.showButtons = true;
+                options.hidePrev = true;
+                options.exitOnOverlayClick = false;
+                options.showStepNumbers = false;
                 break;
             }
             case MODES.INTRO:

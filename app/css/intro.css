@@ -3,6 +3,7 @@
 }
 
 .introjs-skipbutton {
+    float: right;
     color: #ffffff;
     background: #61c419;
     text-shadow: none;
