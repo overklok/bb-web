@@ -254,12 +254,21 @@ class Application {
             /// прослушивать только события прохождения или провала
             this._dispatcher.only(["ins:pass", "ins:fault"]);
 
+            console.log("GUI CHECK");
+
             let exID = this.ins.getExerciseID();
+
+            console.log("EXID", exID);
 
             this.gui.switchLaunchButtonState(false);
 
+            console.log("GUI SWITCHED");
+
             /// очистить ошибочные блоки
             this.ws.clearErrorBlocks();
+
+            console.log("ERROR BLOCK CLEARED");
+
             /// получить обработчики
             Promise.resolve()
                 .then(() => {return {handlers: this.ws.getAllHandlers(), board: this.bb.getData()}})

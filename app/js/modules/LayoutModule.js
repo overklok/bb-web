@@ -169,7 +169,9 @@ class LayoutModule extends Module {
                 this._busy = true;
                 setTimeout(() => {
                     /// сообщить о готовности компоновки
-                    this.emitEvent("compose-end", (this._state.firstLaunch && this._state.mode === MODES.FULL) ? nodes : null);
+                    if (this._state.firstLaunch && mode === MODES.FULL) {
+                        this.emitEvent("compose-end", nodes);
+                    }
                     /// разрешить вызов функции
                     this._busy = false;
                     /// разрешить выполнение следующей инструкции вызывающей программы
@@ -256,6 +258,8 @@ class LayoutModule extends Module {
                     this.showPanes();
                 }, this._options.animSpeedFade); // задержка для анимации появления панелей
             }, duration); // задержка для анимации смены разметки
+
+            this._state.firstLaunch = false;
         });
     }
 
