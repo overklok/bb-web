@@ -38,6 +38,7 @@ class BlocklyWrapper extends Wrapper {
         this._audibles          = undefined;     // Прослушиваемые типы блоков
 
         this.silent             = false;          // "тихий" режим, не обрабатывать события
+        this.extra_fields       = false;          // режим доп. полей, для админки
 
         this._error_blocks = {};
 
@@ -155,17 +156,26 @@ class BlocklyWrapper extends Wrapper {
         // window.removeEventListener('resize', this._onResize, false);
     }
 
+    updateBlockLimit(block_limit) {
+        if (!this.workspace) {return false}
+
+        this.workspace.options.maxBlocks = block_limit;
+        this.workspace.flyout_.filterForCapacity_();
+
+        return true;
+    }
+
     /**
      * Использовать типы блоков
      *
      * Обновляется содержимое тулбокса
      *
-     * @param block_types {Array} массив типов блоков
+     * @param block_types {object} объект типов блоков типа: {тип_блока: макс. кол-во}
      */
     updateBlockTypes(block_types) {
         let toolbox_content = "";
 
-        for (let block_type of block_types) {
+        for (let block_type of Object.keys(block_types)) {
             toolbox_content += "<block type='" + block_type + "'></block>";
         }
 
@@ -198,16 +208,68 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
+
+
     setMaxBlockLimit() {
         if (!this.workspace) {return false}
+    }
 
+    getBlockTypes() {
+        if (!this.workspace) {return false}
 
+        let block_types = [];
+
+        for (let block of this.workspace.getAllBlocks()) {
+            if (!block.isShadow()) {
+                block_types.push(block.type);
+            }
+        }
+
+        return block_types;
     }
 
     getBlockCount() {
         if (!this.workspace) {return false}
 
         return this.workspace.getAllBlocks().length;
+    }
+
+    getBlockCountByType() {
+        if (!this.workspace) {return false}
+
+        let block_counts = {};
+
+        for (let block of this.workspace.getAllBlocks()) {
+            for (let input of block.inputList) {
+                for (let field of input.fieldRow) {
+                    if (field.name === "MAX_COUNT") {
+                        block_counts[block.type] = parseInt(field.text_);
+                    }
+                }
+            }
+        }
+
+        return block_counts;
+    }
+
+    setBlockCountByType(block_counts) {
+        if (!this.workspace) {return false}
+
+        if (!block_counts) {return false}
+
+        for (let block of this.workspace.getAllBlocks()) {
+            for (let input of block.inputList) {
+                for (let field of input.fieldRow) {
+                    if (field.name === "MAX_COUNT") {
+                        console.log(field);
+                        let value = block_counts[block.type] || 0;
+
+                        field.setValue(value);
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -441,6 +503,18 @@ class BlocklyWrapper extends Wrapper {
      * @private
      */
     _filterEvent(event) {
+        if (this.extra_fields) {
+            if (event.type === Blockly.Events.CREATE) {
+                let block = this.workspace.getBlockById(event.blockId);
+
+                block.appendDummyInput()
+                    .appendField(new Blockly.FieldLabel("[МАКС. КОЛ-ВО]"), "LABEL")
+                    .appendField(new Blockly.FieldNumber(), "MAX_COUNT");
+
+                this._callbacks.onChange();
+            }
+        }
+
         if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
             this._callbacks.onChange();
         }

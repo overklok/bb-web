@@ -47,8 +47,8 @@ class Application {
      *
      * Инициализируются модули, производится
      */
-    run() {
-        this._initModules();
+    run(types=false) {
+        this._initModules(types);
         this._subscribeToModules();
 
         this._dispatcher.always(['ws:*']);
@@ -78,6 +78,14 @@ class Application {
         this.ws.resize();
     }
 
+    getBlockCounts() {
+        return this.ws.getBlockCountByType();
+    }
+    
+    setBlockCounts(block_counts) {
+        this.ws.setBlockCountByType(block_counts);
+    }
+
     /**
      * Инициализировать модули
      *
@@ -85,11 +93,15 @@ class Application {
      *
      * @private
      */
-    _initModules() {
+    _initModules(types=false) {
         /// Модули
         this.ws = new WorkspaceModule(this._config.ws); // Blockly
 
         this.ws.wakeUp();
+
+        if (types) {
+            this.ws.generateExtraFields(true);
+        }
     }
 
     _subscribeToModules() {

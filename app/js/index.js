@@ -160,6 +160,8 @@ class Application {
             let check_buttons = (!exercise.is_sandbox && (ex_type === 2 || ex_type === 3));
             let buttons_model = check_buttons ? exercise.buttons_model : null;
 
+            let max_blocks = exercise.is_sandbox ? 0 : exercise.max_blocks;
+
             /// показывать кнопку ?
             let show_btn = (ex_type !== 2);
             /// проверять (не запускать) ?
@@ -173,6 +175,7 @@ class Application {
             this._dispatcher.only([]);
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
+                .then(() => this.ws.setMaxBlockLimit(max_blocks))
                 .then(() => this.gui.switchLaunchButton(show_btn, is_check))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))

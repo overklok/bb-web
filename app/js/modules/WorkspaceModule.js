@@ -90,6 +90,12 @@ class WorkspaceModule extends Module {
         this._blockly.updateBlockTypes(block_types);
     }
 
+    getBlockTypes() {
+        if (!this._state.display) {return false}
+
+        return this._blockly.getBlockTypes();
+    }
+
     /**
      * Подсветить блок
      *
@@ -119,7 +125,19 @@ class WorkspaceModule extends Module {
     setMaxBlockLimit(max_block_count=0) {
         if (!this._state.display) {return false}
 
-        this._blockly.setMaxBlockLimitCount();
+        this._blockly.updateBlockLimit(max_block_count)
+    }
+
+    getBlockCountByType() {
+        if (!this._state.display) {return false}
+
+        return this._blockly.getBlockCountByType();
+    }
+
+    setBlockCountByType(block_counts) {
+        if (!this._state.display) {return false}
+
+        this._blockly.setBlockCountByType(block_counts);
     }
 
     getBlockCount() {
@@ -127,6 +145,8 @@ class WorkspaceModule extends Module {
 
         return this._blockly.getBlockCount();
     }
+
+
 
     /**
      * Получить список обработчиков в формате объекта
@@ -227,6 +247,20 @@ class WorkspaceModule extends Module {
      */
     shutUp() {
         this._blockly.silent = true;
+    }
+
+    /**
+     * Заставить Blockly генерировать дополнительные поля (для админки)
+     * Работает только с wakeUp()
+     *
+     * @param on
+     */
+    generateExtraFields(on) {
+        if (this._blockly.silent) {return false}
+
+        this._blockly.extra_fields = !!on;
+
+        return true;
     }
 
     /**
