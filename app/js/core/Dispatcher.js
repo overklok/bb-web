@@ -200,6 +200,16 @@ class Dispatcher {
     }
 
     /**
+     * Вызвать событие вручную
+     *
+     * @param name
+     * @param data
+     */
+    call(name, data) {
+        this._getHandler(name)(data);
+    }
+
+    /**
      * Возвратить функцию-обработчик суррогатного события типа name
      *
      * Тестируемое поведение:

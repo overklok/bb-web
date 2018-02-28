@@ -58,7 +58,10 @@ class LocalServiceModule extends Module {
      *                           Для главного обработчика ID = main, key = "None"
      */
     updateHandlers(handlers) {
-        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
+        if (this._options.modeDummy) {
+            this.emitEvent("terminate");
+            return new Promise(resolve => resolve())
+        }
 
         return new Promise(resolve => {
             console.log(handlers);

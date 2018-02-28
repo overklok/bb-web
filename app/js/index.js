@@ -152,35 +152,44 @@ class Application {
         /**
          * Запущено упражнение
          */
-        this._dispatcher.on('ins:start', exercise_data => {
-            console.log(exercise_data);
+        this._dispatcher.on('ins:start', exercise => {
+            console.log(exercise);
 
-            let ex_type = exercise_data.type;
+            let ex_type = exercise.type;
+
+            let check_buttons = (!exercise.is_sandbox && (ex_type === 2 || ex_type === 3));
+            let buttons_model = check_buttons ? exercise.buttons_model : null;
 
             /// показывать кнопку ?
             let show_btn = (ex_type !== 2);
             /// проверять (не запускать) ?
-            let is_check = !(ex_type === 1 && exercise_data.listeners_only === false);
+            let is_check = !(ex_type === 1 && exercise.listeners_only === false);
             /// определить режим разметки
             let layout_mode = ex_type === 0 ? 'simple' : 'full';
             /// показывать панель с кнопками ?
-            let show_kbd_pane = (ex_type >= 1 && ex_type <= 3) && exercise_data.display_buttons;
+            let show_kbd_pane = (ex_type >= 1 && ex_type <= 3) && exercise.display_buttons;
 
             /// Заблокировать все события
             this._dispatcher.only([]);
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
                 .then(() => this.gui.switchLaunchButton(show_btn, is_check))
-                .then(() => this.gui.showTask(exercise_data.task_description))
-                .then(() => this.ws.setBlockTypes(exercise_data.block_types))
-                .then(() => this.trc.registerVariables(exercise_data.variables))
+                .then(() => this.gui.showTask(exercise.task_description))
+                .then(() => this.ws.setBlockTypes(exercise.block_types))
+                .then(() => this.trc.registerVariables(exercise.variables))
                 .then(() => this.lay.switchButtonsPane(show_kbd_pane))
                 .then(() => this.gui.hideSpinner())
-                .then(() => this.ins.tourIntro(exercise_data.popovers))
+                .then(() => this.ins.tourIntro(exercise.popovers))
                 .then(() => this.trc.clearButtons())
                 .then(() => this.gui.listenButtons(show_kbd_pane))
-                .then(() => this.ins.setButtonsModel(exercise_data.buttons_model))
-                .then(() => this._dispatcher.only(['gui:*']))
+                .then(() => this.ins.setButtonsModel(buttons_model))
+                .then(() => {
+                    if (check_buttons) {
+                        this._dispatcher.only(['gui:*', 'ins:pass']);
+                    } else {
+                        this._dispatcher.only(['gui:*']);
+                    }
+                })
         });
 
         /**
@@ -227,10 +236,8 @@ class Application {
         /**
          * Нажата кнопка "Запустить"
          */
-        this._dispatcher.on('gui:execute', () => {
-            console.log("EXECUTE")
-
-            this._dispatcher.only(["gui:terminate"]);
+        this._dispatcher.on('gui:run', () => {
+            this._dispatcher.only(["gui:stop"]);
 
             this.gui.affirmLaunchButtonState(false);
 
@@ -242,7 +249,7 @@ class Application {
         /**
          * Нажата кнопка "Остановить"
          */
-        this._dispatcher.on('gui:terminate', () => {
+        this._dispatcher.on('gui:stop', () => {
             this.ls.stopExecution();
             this.ws.highlightBlock(null);
 
@@ -279,9 +286,9 @@ class Application {
             this.ins.tourPass()
                 .then(
                     onResolve => this.ins.launchExerciseNext(),
-                    onReject => {return true}
+                    onReject => {this.ins.launchExerciseNext(true)}
                 )
-                .then(() => this._dispatcher.only(['gui:*']))
+                .then(() => this._dispatcher.only(['gui:*', 'ins:pass']))
         });
 
         /**
@@ -326,8 +333,17 @@ class Application {
         /**
          * Когда
          */
-        this._dispatcher.on('ls:finish', () => {
+        this._dispatcher.on('ls:terminate', () => {
+            let exercise = this.ins.getExerciseCurrent();
+            let is_sandbox = exercise.is_sandbox;
+
             this.ws.highlightBlock(null);
+            this.gui.affirmLaunchButtonState(true);
+            this._dispatcher.only(["gui:*"]);
+
+            if (!is_sandbox) {
+                this._dispatcher.call("gui:check");
+            }
         });
 
         /**

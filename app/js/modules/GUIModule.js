@@ -16,7 +16,7 @@ import FileWrapper from "../wrappers/FileWrapper";
  */
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["mission", "execute", "terminate", "check", "keyup", "load-file", "unload-file"]}
+    static get event_types() {return ["mission", "run", "stop", "check", "keyup", "load-file", "unload-file"]}
 
     static defaults() {
         return {
@@ -209,16 +209,11 @@ class GUIModule extends Module {
                 this.emitEvent("check");
             } else {
                 if (start) {
-                    this.emitEvent("execute");
+                    this.emitEvent("run");
                 } else {
-                    this.emitEvent("terminate");
+                    this.emitEvent("stop");
                 }
             }
-        });
-
-        /* Как только нажата кнопка останова кода */
-        $("#stop-btn").click(() => {
-            this.emitEvent("stop");
         });
 
         /* Когда нажата кнопка загрузки файла */

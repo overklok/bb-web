@@ -49,6 +49,7 @@ class TracingModule extends Module {
             }
 
             this._blockly.inject(dom_node, false, true, 0.8);
+
             this._showVariables(this._vars);
 
             this._state.areasDisp.blocks = true;
@@ -63,6 +64,7 @@ class TracingModule extends Module {
                 return;
             }
 
+            this._blockly.clearVariableBlocks();
             this._blockly.eject();
 
             this._state.areasDisp.blocks = false;
@@ -120,7 +122,7 @@ class TracingModule extends Module {
 
         this._vars = variables;
 
-        if (!this._state.display) {return true}
+        if (!this._state.areasDisp.blocks) {return true}
 
         this._blockly.clearVariableBlocks();
 
@@ -168,10 +170,8 @@ class TracingModule extends Module {
     }
 
     _showVariables(variables) {
-        if (this._state.display) {
-            for (let variable of variables) {
-                this._blockly.addVariableBlock(variable.name, variable.type, variable.initial_value);
-            }
+        for (let variable of variables) {
+            this._blockly.addVariableBlock(variable.name, variable.type, variable.initial_value);
         }
     }
 

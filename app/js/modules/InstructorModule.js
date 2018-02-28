@@ -31,7 +31,7 @@ class InstructorModule extends Module {
             missionIDX: undefined,
             missions: [],
 
-            buttonIDX: undefined,
+            buttonIDX: undefined
         };
 
         this._subscribeToWrapperEvents();
@@ -62,6 +62,7 @@ class InstructorModule extends Module {
      * Происходит первичная обработка данных и установка указателей
      *
      * @param lesson_data {object} JSON-пакет с данными урока
+     *
      * @returns {Promise<any>}
      */
     loadLesson(lesson_data) {
@@ -78,6 +79,13 @@ class InstructorModule extends Module {
         });
     }
 
+    /**
+     * Запустить урок
+     *
+     * Запускает урок с первго упражнения первой миссии
+     *
+     * @returns {boolean}
+     */
     launchLesson() {
         return this.launchMission(0);
     }
@@ -90,6 +98,10 @@ class InstructorModule extends Module {
     launchMissionNext() {
         /// определить индекс следующей миссии
         let mission_idx = this._state.missionIDX + 1;
+
+        if (this._state.missions[this._state.missionIDX].skidding) {
+            return Promise.resolve();
+        }
 
         /// если следующей миссии не существует
         if (mission_idx === this._state.missions.length) {
@@ -106,11 +118,16 @@ class InstructorModule extends Module {
     /**
      * Запустить следующее упражнение
      *
+     * @param {boolean} skid    режим "буксовки" - только переключить указатели
+     *
      * @returns {Promise<object>|Promise<void>}
      */
-    launchExerciseNext() {
+    launchExerciseNext(skid=false) {
         /// определить индекс следующего упражнения
-        let exercise_idx = this._state.missions[this._state.missionIDX].exerciseIDX + 1;
+        let exercise_idx = this._getExerciseIDX(this._state.missionIDX) + 1;
+
+        this._state.missions[this._state.missionIDX].skidding = skid;
+        this._state.missions[this._state.missionIDX].exerciseSkiddingIDX = exercise_idx - 1;
 
         /// если следующего упражнения не существует
         if (exercise_idx === this._state.missions[this._state.missionIDX].exerciseCount) {
@@ -118,31 +135,48 @@ class InstructorModule extends Module {
             return this.launchMissionNext();
         } else if (exercise_idx > 0) {
             /// запустить следующее упражнение
-            return this.launchExercise(exercise_idx);
+            return this.launchExercise(exercise_idx, skid);
         }
     }
 
     /**
      * Запустить миссию
      *
-     * @param mission_idx
+     * @param {number}  mission_idx     индекс миссии
+     *
      * @returns {boolean}
      */
     launchMission(mission_idx) {
         let chain = new Promise(resolve => {resolve(false)});
 
+        /// если миссии совпали
         if (mission_idx === this._state.missionIDX) {
-            /// спросить подтвержение пользователя
-            chain = chain.then(() => this.tourConfirm("Начать задание снова?"))
+            /// если текущая миссия в режиме пробуксовки
+            if (this._state.missions[mission_idx].skidding) {
+                /// необходим сброс (см. далее)
+                chain = new Promise(resolve => {resolve(true)});
+            } else {
+                /// если режим пробуксовки, то спросить подтвержение пользователя
+                chain = chain.then(() => this.tourConfirm("Начать задание снова?"))
+            }
         }
 
         chain.then(
             reset => {
+                /// определить индекс упражнения в миссии
+                let exercise_idx = this._state.missions[mission_idx].exerciseIDX;
+
+                /// если сброс включён и нет пробуксовки
+                if (reset && !this._state.missions[this._state.missionIDX].skidding) {
+                    exercise_idx = 0;
+                }
+
+                /// выключить режим пробуксовки
+                this._state.missions[mission_idx].skidding = false;
+
                 if (mission_idx in this._state.missions) {
                     /// обновить индекс миссии
                     this._state.missionIDX = mission_idx;
-                    /// определить индекс упражнения в миссии
-                    let exercise_idx = reset ? 0 : this._state.missions[mission_idx].exerciseIDX;
 
                     return this.launchExercise(exercise_idx);
                 }
@@ -159,7 +193,8 @@ class InstructorModule extends Module {
     /**
      * Запустить упражнение
      *
-     * @param exercise_idx
+     * @param {number}  exercise_idx    индекс упражнения в текущей миссии
+     *
      * @returns {Promise<object>}
      */
     launchExercise(exercise_idx) {
@@ -173,8 +208,11 @@ class InstructorModule extends Module {
             /// извлечь данные упражнения
             let exercise_data = this._lesson.missions[mission_idx].exercises[exercise_idx];
 
-            /// сообщить диспетчеру о запуске упражнения
-            this.emitEvent("start", exercise_data);
+            /// если не режим буксовки
+            if (!this._state.missions[mission_idx].skidding) {
+                /// сообщить диспетчеру о запуске упражнения
+                this.emitEvent("start", exercise_data);
+            }
 
             /// сообщить вызывающей программе о запуске упражнения
             return Promise.resolve(exercise_data);
@@ -206,7 +244,7 @@ class InstructorModule extends Module {
      */
     tourPass() {
         let missionIDX = this._state.missionIDX;
-        let exerciseIDX = this._state.missions[missionIDX].exerciseIDX;
+        let exerciseIDX = this._getExerciseIDX(missionIDX);
 
         let message = this._lesson.missions[missionIDX].exercises[exerciseIDX].message_success;
 
@@ -246,9 +284,16 @@ class InstructorModule extends Module {
         return intro.start();
     }
 
+    getExerciseCurrent() {
+        let missionIDX = this._state.missionIDX;
+        let exerciseIDX = this._getExerciseIDX(missionIDX);
+
+        return this._lesson.missions[missionIDX].exercises[exerciseIDX];
+    }
+
     getExerciseID() {
         let missionIDX = this._state.missionIDX;
-        let exerciseIDX = this._state.missions[missionIDX].exerciseIDX;
+        let exerciseIDX = this._getExerciseIDX(missionIDX);
 
         return this._lesson.missions[missionIDX].exercises[exerciseIDX].pk;
     }
@@ -296,6 +341,7 @@ class InstructorModule extends Module {
                 /// сбросить позицию указателя
                 this._state.buttonIDX = 0;
                 /// задание пройдено
+                this.emitEvent("pass");
             } else {
                 /// увеличить позицию указателя
                 this._state.buttonIDX += 1;
@@ -317,12 +363,26 @@ class InstructorModule extends Module {
      * @private
      */
     setButtonsModel(seq) {
-        if (!seq) return Promise.resolve(false);
+        if (seq === null) {
+            seq = undefined;
+        }
 
         this._buttons_model = seq;
         this._state.buttonIDX = 0;
 
         return Promise.resolve(true);
+    }
+
+    _getExerciseIDX(mission_idx) {
+        let exerciseIDX = this._state.missions[mission_idx].exerciseIDX;
+
+        /// если включён режим буксовки
+        if (this._state.missions[mission_idx].skidding) {
+            /// извлечь букосовчный индекс
+            exerciseIDX = this._state.missions[mission_idx].exerciseSkiddingIDX
+        }
+
+        return exerciseIDX;
     }
 
     /**
@@ -340,7 +400,9 @@ class InstructorModule extends Module {
             /// заполнить данные прогресса
             this._state.missions.push({
                 exerciseIDX: 0,
-                exerciseCount: mission.exercises.length
+                exerciseCount: mission.exercises.length,
+                skidding: false,
+                exerciseSkiddingIDX: undefined
             });
         }
 
