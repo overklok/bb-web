@@ -176,6 +176,7 @@ class Application {
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
                 .then(() => this.ws.setMaxBlockLimit(max_blocks))
+                .then(() => this.ws.setEditable(show_btn))
                 .then(() => this.gui.switchLaunchButton(show_btn, is_check))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))

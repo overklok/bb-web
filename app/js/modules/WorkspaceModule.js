@@ -128,6 +128,16 @@ class WorkspaceModule extends Module {
         this._blockly.updateBlockLimit(max_block_count)
     }
 
+    setEditable(on=false) {
+        if (!this._state.display) {return false}
+
+        if (on) {
+            this._blockly.unlock();
+        } else {
+            this._blockly.lock();
+        }
+    }
+
     getBlockCountByType() {
         if (!this._state.display) {return false}
 
@@ -145,8 +155,6 @@ class WorkspaceModule extends Module {
 
         return this._blockly.getBlockCount();
     }
-
-
 
     /**
      * Получить список обработчиков в формате объекта

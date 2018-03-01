@@ -3,13 +3,20 @@ import Wrapper from '../core/Wrapper'
 import Blockly  from 'node-blockly/browser'
 import Ru       from 'node-blockly/lib/i18n/ru';
 
+import thm      from '../../css/blockly-overlay.css';
+
 Blockly.setLocale(Ru);
 
 const ERROR_COLOUR = "#920000";
 
 const DIV_IDS = {
     BLOCKLY: "blockly-div",
-    TOOLBOX: "blockly-toolbox"
+    TOOLBOX: "blockly-toolbox",
+    OVERLAY: "blockly-overlay"
+};
+
+const DIV_CLASSES = {
+    OVERLAY_HIDDEN: "blockly-overlay-hidden",
 };
 
 const FIELD_TYPES = {
@@ -32,6 +39,8 @@ class BlocklyWrapper extends Wrapper {
         this.area               = undefined;     // узел вставки контейнера
         this.container          = undefined;     // контейнер Blockly
         this.toolbox            = undefined;     // узел с описанием типов блоков
+        this.overlay            = undefined;
+
         this.workspace          = undefined;     // SVG-контейнер с графикой Blockly
         this._block_types       = undefined;     // JSON-типы блоков
         this._generators        = undefined;     // JS-генератор кода
@@ -94,13 +103,21 @@ class BlocklyWrapper extends Wrapper {
         /// Сгенерировать контейнеры для Blockly и для типов блоков
         this.container   = document.createElement('div');
         this.toolbox     = document.createElement('xml');
+        this.overlay     = document.createElement('div');
         /// Задать контейнерам соответствующие идентификаторы
         this.container.setAttribute("id", DIV_IDS.BLOCKLY);
         this.toolbox.setAttribute("id", DIV_IDS.TOOLBOX);
 
+        if (!read_only) {
+            this.overlay.setAttribute("id", DIV_IDS.OVERLAY);
+            this.overlay.setAttribute("style", this._getOverlayStyle());
+            this.unlock();
+        }
+
         this.toolbox.style.display = 'none';
 
         /// Разместить контейнеры в DOM-дереве
+        dom_node.appendChild(this.overlay);
         dom_node.appendChild(this.container);
         dom_node.appendChild(this.toolbox);
 
@@ -150,10 +167,26 @@ class BlocklyWrapper extends Wrapper {
         /// Отключить отображение Blockly
         this.workspace.dispose();
         /// Удалить контейнеры
+        this.overlay.remove();
         this.container.remove();
         this.toolbox.remove();
 
         // window.removeEventListener('resize', this._onResize, false);
+    }
+
+    lock() {
+        if (!this.overlay) {return false}
+
+        this.overlay.className = this.overlay.className.replace(new RegExp(`(?:^|\\s)${DIV_CLASSES.OVERLAY_HIDDEN}(?!\\S)`) ,'');
+    }
+
+    unlock() {
+        if (!this.overlay) {return false}
+
+        let classes = this.overlay.className.split(" ");
+        if (classes.indexOf(DIV_CLASSES.OVERLAY_HIDDEN) === -1) {
+            this.overlay.className += " " + DIV_CLASSES.OVERLAY_HIDDEN;
+        }
     }
 
     updateBlockLimit(block_limit) {
@@ -480,6 +513,15 @@ class BlocklyWrapper extends Wrapper {
         }
 
         return height_sum;
+    }
+
+    /**
+     * Определить стиль оверлея
+     *
+     * @private
+     */
+    _getOverlayStyle() {
+        return "position: absolute; width: 98%; height: 98%; z-index: 21;";
     }
 
     /**

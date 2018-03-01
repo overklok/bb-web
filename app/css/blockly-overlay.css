@@ -1,0 +1,15 @@
+#blockly-overlay {
+    box-shadow: 0 0 200px rgba(0,0,0,0.9) inset;
+    background-color: #BBBBBB;
+    opacity: 0.3;
+    visibility: visible;
+
+    transition-duration: 200ms;
+    transition-timing-function: linear;
+    transition-property: visibility, opacity;
+}
+
+.blockly-overlay-hidden {
+    opacity: 0          !important;
+    visibility: hidden  !important;
+}
