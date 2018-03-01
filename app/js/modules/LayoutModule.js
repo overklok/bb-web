@@ -2,6 +2,9 @@ import Module from "../core/Module";
 
 import layout   from "../../vendor/js/jquery.layout.js";
 require("jquery-ui-bundle");
+// require("jquery-ui/ui/effect");
+
+// console.log("JQR", jQuery.easing);
 
 import styles from "../../css/layout.css";
 
@@ -17,6 +20,7 @@ const ROOT_CLASS = "ui-layout-container";
  * @type {object}
  */
 const PANE_IDS = {
+    MAIN_NORTH:     "main-north",
     MAIN_CENTER:    "main-center",
     MAIN_EAST:      "main-east",
 
@@ -52,7 +56,8 @@ const MAPPINGS = {
         breadboard: PANE_IDS.EAST_SOUTH,
         tracing: PANE_IDS.EAST_CENTER_CENTER,
         buttons: PANE_IDS.EAST_CENTER_SOUTH,
-        task: PANE_IDS.EAST_NORTH
+        task: PANE_IDS.EAST_NORTH,
+        lesson: PANE_IDS.MAIN_NORTH
     },
     simple: {
         breadboard: PANE_IDS.MAIN_CENTER,
@@ -89,7 +94,7 @@ const FADEBLOCKINGS = {
  * @const
  * @type {number}
  */
-const DURATION_INITIAL = 100;
+const DURATION_INITIAL = 0;
 
 /**
  * Модуль автоматической разметки страницы
@@ -378,6 +383,14 @@ class LayoutModule extends Module {
             slidable: true,	    // when closed, pane can 'slide' open over other panes - closes on mouse-out
             livePaneResizing: true,
             fxSpeed: this._options.animSpeedMain,
+
+            fxName:     "slide",
+            fxSettings: { duration: this._options.animSpeedMain, easing: "easeInOutCirc" },
+            fxSettings_open: { duration: this._options.animSpeedMain, easing: "easeOutCirc" },
+            fxSettings_close: { duration: this._options.animSpeedMain, easing: "easeOutCirc" },
+
+            // fxSpeed_size: 1000,
+
             animatePaneSizing: true,
             onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
 
@@ -396,15 +409,18 @@ class LayoutModule extends Module {
             east: {
                 size: .3,
                 fxSpeed: this._options.animSpeedMain,
+
                 onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                 childOptions: {
                     north: {
                         size: .3,
+
                         fxSpeed: this._options.animSpeedSub,
                         onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
                     south: {
                         size: .3,
+
                         fxSpeed: this._options.animSpeedSub,
                         onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },

@@ -1,0 +1,49 @@
+@import "../pager";
+
+@button_border_radius: 5px;
+@button_font_size: 23px;
+
+.pager__link {
+  display: block;
+  position: absolute;
+
+  width: @button_size;
+  height: @button_size;
+
+  text-align: center;
+  line-height: @button_size;
+
+  opacity: 1;
+
+  background-color: #ffffff;
+
+  //border-style: solid;
+
+  border-radius: @button_border_radius;
+
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+
+  //transition: all .5s ease-in-out 400ms;
+  transition: all 500ms cubic-bezier(0.77, 0, 0.175, 1) 00ms;
+
+  div {
+    color: black;
+    position: absolute;
+    width: 100%;
+    font-size: @button_font_size;
+  }
+
+  &:before {
+    content: '\A';
+    position: absolute;
+    background: #49ff00;
+    opacity: 0.8;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 0 0 @button_border_radius @button_border_radius;
+    height: 50%;
+
+    transition: all 0ms cubic-bezier(0.77, 0, 0.175, 1) 00ms;
+  }
+}

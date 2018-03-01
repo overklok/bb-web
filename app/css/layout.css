@@ -24,12 +24,31 @@ body {
 	*font-size:  80%;
 }
 
+#east-center-center {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+
+	box-shadow: none;
+}
+
+#east-center-south {
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
+
+	/*border: 1px solid #BBB;*/
+
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+}
+
 /*
  *	PANES & CONTENT-DIVs
  */
 .ui-layout-pane { /* all 'panes' */
 	background:	#FFF; 
-	border:		1px solid #BBB;
+	/*border:		1px solid #BBB;*/
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+	border-radius: 5px;
+
 	padding:	10px; 
 	overflow:	auto;
 	/* DO NOT add scrolling (or padding) to 'panes' that have a content-div,
@@ -69,9 +88,13 @@ body {
  *	RESIZER-BARS
  */
 .ui-layout-resizer	{ /* all 'resizer-bars' */
-	background:		#DDD;
-	border:			1px solid #BBB;
-	border-width:	0;
+	transition-duration: 200ms;
+    transition-timing-function: linear;
+    transition-property: background, border, opacity;
+
+	/*background:		#DDD;*/
+	/*border:			1px solid #BBB;*/
+	/*border-width:	0;*/
 	}
 	.ui-layout-resizer-drag {		/* REAL resizer while resize in progress */
 	}
@@ -121,6 +144,10 @@ body {
  *	TOGGLER-BUTTONS
  */
 .ui-layout-toggler {
+	transition-duration: 200ms;
+    transition-timing-function: linear;
+    transition-property: background, border, opacity;
+
 	border: 1px solid #BBB; /* match pane-border */
 	background-color: #BBB;
 	}

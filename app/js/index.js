@@ -373,6 +373,7 @@ class Application {
                 this.trc.injectBlocks(data.tracing);
                 this.trc.injectButtons(data.buttons);
                 this.gui.injectTextPane(data.task);
+                this.gui.injectLessonPane(data.lesson);
             }
         });
 

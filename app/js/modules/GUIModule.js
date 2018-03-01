@@ -63,8 +63,6 @@ class GUIModule extends Module {
         return new Promise((resolve, reject) => {
             if (!missions) {return resolve(false)}
 
-            this._state.areasDisp.lesson = true;
-
             this._lesson_pane.registerMissions(missions);
             this._lesson_pane.displayMissionButtons($("#missions"));
 
@@ -119,6 +117,15 @@ class GUIModule extends Module {
         this._state.areasDisp.text = false;
 
         return this._text_pane.eject();
+    }
+
+    injectLessonPane(dom_node) {
+        if (!dom_node)                  {return Promise.resolve(false)}
+        if (this._state.areasDisp.lesson) {return Promise.resolve(true)}
+
+        this._state.areasDisp.lesson = true;
+
+        return this._lesson_pane.inject(dom_node);
     }
 
     /**

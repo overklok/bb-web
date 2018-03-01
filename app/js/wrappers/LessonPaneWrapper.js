@@ -1,5 +1,12 @@
 import Wrapper from "../core/Wrapper";
 
+import js from "../~utils/js-pager/pager/pager.js";
+import thm from "../~utils/js-pager/pager/pager.css";
+
+const CLASSES = {
+    PAGER: "pager"
+};
+
 class LessonPaneWrapper extends Wrapper {
     constructor(button_class) {
         super();
@@ -10,7 +17,26 @@ class LessonPaneWrapper extends Wrapper {
             buttonClick: idx => {console.warn("buttonClick dummy callback fired, idx", idx)}
         };
 
+        this._state = {
+            display: false
+        };
+
         this._missions = [];
+
+        this._container = undefined;
+    }
+
+    inject(dom_node) {
+        if (!dom_node) {return false}
+
+        console.log("INJINJ", dom_node)
+
+        this._container = document.createElement('div');
+        this._container.setAttribute("class", CLASSES.PAGER);
+
+        dom_node.appendChild(this._container);
+
+        this._state.display = true;
     }
 
     registerMissions(missions) {

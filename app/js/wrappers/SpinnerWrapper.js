@@ -3,11 +3,13 @@ import Wrapper from "../core/Wrapper";
 const SELECTORS = {
     MAIN: ".spinner",
     TEXT: ".spinner__text",
-    BOUNCE: ".bounce"
+    BOUNCE: ".bounce",
+    UI_SCALABLE: ".ui-scalable"
 };
 
 const CLASSES = {
-    TEXT_ERROR: "spinner__text_error"
+    TEXT_ERROR: "spinner__text_error",
+    UI_SCALABLE_ON: "ui-scalable-on"
 };
 
 const SPINNER_HIDE_DURATION = 500;
@@ -51,6 +53,7 @@ class SpinnerWrapper extends Wrapper {
 
             /// Эффект исчезновения
             $(SELECTORS.MAIN).css({opacity: 0, transform: "scale(0.8)"});
+            $(SELECTORS.UI_SCALABLE).removeClass(CLASSES.UI_SCALABLE_ON);
 
             /// Задержка для отображения анимации исчезновения
             setTimeout(() => {
