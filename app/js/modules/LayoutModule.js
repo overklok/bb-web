@@ -399,8 +399,8 @@ class LayoutModule extends Module {
                 slidable: false,	            // OVERRIDE the pane-default of 'slidable=true'
                 closable: false,
                 spacing_closed: 20,		        // big resizer-bar when open (zero height)
-                size: .08,
-                maxSize: 100
+                size: 70,
+                // maxSize: 100
             },
 
             center: {},

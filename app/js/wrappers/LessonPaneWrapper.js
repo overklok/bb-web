@@ -1,6 +1,6 @@
 import Wrapper from "../core/Wrapper";
 
-import js from "../~utils/js-pager/pager/pager.js";
+import pager from "../~utils/js-pager/pager/pager.js";
 import thm from "../~utils/js-pager/pager/pager.css";
 
 const CLASSES = {
@@ -11,7 +11,7 @@ class LessonPaneWrapper extends Wrapper {
     constructor(button_class) {
         super();
 
-        this._button_class = button_class || "mission-btn";
+        this._button_class = button_class || "pager__item";
 
         this._callbacks = {
             buttonClick: idx => {console.warn("buttonClick dummy callback fired, idx", idx)}
@@ -29,12 +29,13 @@ class LessonPaneWrapper extends Wrapper {
     inject(dom_node) {
         if (!dom_node) {return false}
 
-        console.log("INJINJ", dom_node)
-
         this._container = document.createElement('div');
         this._container.setAttribute("class", CLASSES.PAGER);
 
         dom_node.appendChild(this._container);
+
+        this.displayMissionButtons();
+        pager();
 
         this._state.display = true;
     }
@@ -42,19 +43,30 @@ class LessonPaneWrapper extends Wrapper {
     registerMissions(missions) {
         for (let mission of missions) {
             this._missions.push({
-                exercisesPassed: null,
-                exercisesAll: null
+                exercisesPassed: mission.exerciseIDX,
+                exercisesAll: mission.exerciseCount
             })
         }
     }
 
-    displayMissionButtons(container) {
+    displayMissionButtons() {
+        if (!this._container) {return false}
+
         let idx = 0;
 
         for (let mission of this._missions) {
-            $(container).append(
-                "<a href='#' class='" + this._button_class + "' data-mission-idx='" + idx + "'>MSN #" + (idx++) + "</a>"
+            $(this._container).append(
+                `<div class="pager__item" data-mission-idx=${idx}>
+                    <div class="pager__link">
+                        <div class="pager__link_progressor"></div>
+                        <div class="num">${idx+1}</div>
+                    </div>
+                </div>`
             );
+
+            $(`.pager__item[data-mission-idx=${idx}]`);
+
+            idx++;
         }
 
         $("." + this._button_class).click((evt) => {
@@ -62,6 +74,10 @@ class LessonPaneWrapper extends Wrapper {
 
            this._callbacks.buttonClick(idx);
         });
+    }
+
+    setMissionProgress(mission_idx, new_exercise_idx) {
+        $(`.pager__item[data-mission-idx=${idx}] .pager__link .pager__link_progressor`).animate({height: "20%"})
     }
 
     onButtonClick(cb) {

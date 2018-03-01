@@ -64,7 +64,7 @@ class GUIModule extends Module {
             if (!missions) {return resolve(false)}
 
             this._lesson_pane.registerMissions(missions);
-            this._lesson_pane.displayMissionButtons($("#missions"));
+            this._lesson_pane.displayMissionButtons();
 
             resolve(true);
         });

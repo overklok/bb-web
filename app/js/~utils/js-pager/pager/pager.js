@@ -6,15 +6,16 @@ import {
     __item as pager__item
 } from "./__item/pager__item";
 
-$(document).ready(() => {
+// $(document).ready(() => {
+let pager = () => {
     let pagers = $(".pager");
 
-    let get_offset = function(pager) {
+    let get_offset = function (pager) {
         let items = $(pager).find(pager__item);
 
         if (items.length >= 2) {
-            let first_offset    = $(items[0]).offset().left;
-            let second_offset   = $(items[1]).offset().left;
+            let first_offset = $(items[0]).offset().left;
+            let second_offset = $(items[1]).offset().left;
 
             return Math.abs(first_offset - second_offset);
         } else {
@@ -22,14 +23,16 @@ $(document).ready(() => {
         }
     };
 
-    let get_leading = function(pager) {
+    let get_leading = function (pager) {
         let leadings = $(pager).find(pager__item_leading);
-        if (leadings.length === 0) {return null}
+        if (leadings.length === 0) {
+            return null
+        }
 
         return leadings[0];
     };
 
-    let impose_items = function(pager, leading) {
+    let impose_items = function (pager, leading) {
         let prevs = $(leading).prevAll();
         let nexts = $(leading).nextAll();
 
@@ -52,7 +55,7 @@ $(document).ready(() => {
         }
     };
 
-    let displace_items = function(items) {
+    let displace_items = function (items) {
         let items_count = items.length;
 
         let idx = 0;
@@ -66,7 +69,7 @@ $(document).ready(() => {
         }
     };
 
-    let displace_links = function(items) {
+    let displace_links = function (items) {
         for (let item of items) {
             let link = $(item).find(pager__link)[0];
 
@@ -79,9 +82,15 @@ $(document).ready(() => {
         }
     };
 
-    let on_resize = function(pager) {
+    let shrink = function(pager) {
+        console.log($(pager).css('width'));
+    };
+
+    let on_resize = function (pager) {
         let items = $(pager).find(pager__item);
         let leading = get_leading(pager);
+
+        shrink(pager);
 
         if (leading) {
             impose_items(pager, leading);
@@ -122,4 +131,7 @@ $(document).ready(() => {
     onHover(on_hover_in, on_hover_out);
     pagerItem();
     $(window).resize();
-});
+// });
+};
+
+export default pager;
