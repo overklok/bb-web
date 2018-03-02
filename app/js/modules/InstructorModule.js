@@ -336,13 +336,13 @@ class InstructorModule extends Module {
             return true;
         }
 
-        /// если последовательность пустая, пройдено автоматически
+        /// если последовательность пустая, игнорировать
         if (this._buttons_model.length === 0) {
             /// задание пройдено
-            this.emitEvent("pass", {
-                missionIDX: this._state.missionIDX,
-                exerciseIDX: this._state.missions[this._state.missionIDX].exerciseIDX
-            });
+            // this.emitEvent("pass", {
+            //     missionIDX: this._state.missionIDX,
+            //     exerciseIDX: this._state.missions[this._state.missionIDX].exerciseIDX
+            // });
             return true;
         }
 
