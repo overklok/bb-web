@@ -13,7 +13,7 @@ const API = {
 
 class InstructorModule extends Module {
     static get eventspace_name() {return "ins"}
-    static get event_types() {return ["start", "pass", "fault", "finish", "error"]}
+    static get event_types() {return ["start", "pass", "fault", "progress", "mission", "finish", "error"]}
 
     static defaults() {
         return {
@@ -156,13 +156,15 @@ class InstructorModule extends Module {
                 /// необходим сброс (см. далее)
                 chain = new Promise(resolve => {resolve(true)});
             } else {
-                /// если режим пробуксовки, то спросить подтвержение пользователя
+                /// если не режим пробуксовки, то спросить подтвержение пользователя
                 chain = chain.then(() => this.tourConfirm("Начать задание снова?"))
             }
         }
 
         chain.then(
             reset => {
+                this.emitEvent("mission", mission_idx);
+
                 /// определить индекс упражнения в миссии
                 let exercise_idx = this._state.missions[mission_idx].exerciseIDX;
 
@@ -247,6 +249,8 @@ class InstructorModule extends Module {
         let exerciseIDX = this._getExerciseIDX(missionIDX);
 
         let message = this._lesson.missions[missionIDX].exercises[exerciseIDX].message_success;
+
+        this._checkLessonProgress(missionIDX);
 
         /// Подключить поповер-обёртку
         let intro = new TourWrapper("success", message);
@@ -373,6 +377,20 @@ class InstructorModule extends Module {
         return Promise.resolve(true);
     }
 
+    _checkLessonProgress(mission_idx) {
+        if (typeof mission_idx === "undefined") {return false}
+
+        if (this._state.missions[mission_idx].exerciseIDXLast < this._state.missions[mission_idx].exerciseIDX) {
+            this.emitEvent("progress", {
+                missionIDX: mission_idx,
+                exerciseIDX: this._state.missions[mission_idx].exerciseIDX,
+                exerciseCount: this._state.missions[mission_idx].exerciseCount
+            });
+
+            this._state.missions[mission_idx].exerciseIDXLast = this._state.missions[mission_idx].exerciseIDX;
+        }
+    }
+
     _getExerciseIDX(mission_idx) {
         let exerciseIDX = this._state.missions[mission_idx].exerciseIDX;
 
@@ -401,6 +419,7 @@ class InstructorModule extends Module {
             this._state.missions.push({
                 exerciseIDX: 0,
                 exerciseCount: mission.exercises.length,
+                exerciseIDXLast: -1,
                 skidding: false,
                 exerciseSkiddingIDX: undefined
             });

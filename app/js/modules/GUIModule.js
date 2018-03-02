@@ -70,6 +70,24 @@ class GUIModule extends Module {
         });
     }
 
+    setMissionCurrent(mission_idx) {
+        return new Promise((resolve, reject) => {
+            this._lesson_pane.setMissionCurrent(mission_idx);
+
+            resolve(true);
+        });
+    }
+
+    setMissionProgress(mission) {
+        return new Promise((resolve, reject) => {
+            if (!mission) {return resolve(false)}
+
+            this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX, mission.exerciseCount);
+
+            resolve(true);
+        });
+    }
+
     showTask(html) {
         this._text_pane.setText(html);
 

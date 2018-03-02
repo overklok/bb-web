@@ -75,11 +75,13 @@ const MAPPINGS = {
 const FADEBLOCKINGS = {
     full: [
         PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_NORTH,
         PANE_IDS.EAST_NORTH,
         PANE_IDS.EAST_CENTER_SOUTH,
     ],
     simple: [
         PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_NORTH,
         PANE_IDS.EAST_NORTH,
         PANE_IDS.EAST_CENTER_SOUTH,
     ]

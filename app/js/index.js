@@ -86,7 +86,11 @@ class Application {
         this._subscribeToModules();
 
         this._dispatcher.only(['ls:connect']);
-        this._dispatcher.always(['ins:start', '*:resize', 'ls:*', '*:error', 'lay:*', 'log:*']);
+        this._dispatcher.always([
+            '*:resize', '*:error',
+            'ins:start', 'ins:progress', 'ins:mission',
+            'ls:*', 'lay:*', 'log:*'
+        ]);
     }
 
     /**
@@ -203,6 +207,10 @@ class Application {
             this.ins.launchMission(mission_idx);
         });
 
+        this._dispatcher.on('ins:mission', mission_idx => {
+            this.gui.setMissionCurrent(mission_idx);
+        });
+
         /**
          * Нажата кнопка "Проверить"
          */
@@ -304,6 +312,10 @@ class Application {
             this.ws.highlightErrorBlocks(verdict.blocks);
             this.ins.tourFault(verdict.message)
                 .then(() => this._dispatcher.only(['gui:*']))
+        });
+
+        this._dispatcher.on('ins:progress', mission => {
+           this.gui.setMissionProgress(mission);
         });
 
         /**
