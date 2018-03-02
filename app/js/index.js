@@ -58,6 +58,7 @@ class Application {
 
             },
             gs: {
+                origin: config.origin,
                 csrfRequired: config.isInternal,
                 modeDummy:  config.offline
             },
@@ -179,6 +180,7 @@ class Application {
             this._dispatcher.only([]);
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
+                .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
                 .then(() => this.ws.setMaxBlockLimit(max_blocks))
                 .then(() => this.ws.setEditable(show_btn))
                 .then(() => this.gui.switchLaunchButton(show_btn, is_check))
@@ -295,6 +297,7 @@ class Application {
          */
         this._dispatcher.on('ins:pass', verdict => {
             this._dispatcher.only([]);
+            this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX);
             this.ins.tourPass()
                 .then(
                     onResolve => this.ins.launchExerciseNext(),

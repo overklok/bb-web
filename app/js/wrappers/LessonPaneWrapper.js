@@ -1,7 +1,7 @@
 import Wrapper from "../core/Wrapper";
 
-import pager from "../~utils/js-pager/pager/pager.js";
-import thm from "../~utils/js-pager/pager/pager.css";
+import pager from "../~utils/js-lesson/pager/pager.js";
+import thm from "../~utils/js-lesson/pager/pager.css";
 
 const CLASSES = {
     PAGER: "pager",

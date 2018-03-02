@@ -34,6 +34,8 @@ class WorkspaceModule extends Module {
             block_types: [],
         };
 
+        this._code_storage = [];
+
         this._blockly.registerBlockTypes(JSONBlocks);
         this._blockly.registerGenerators(JSONGenerators);
 
@@ -116,6 +118,35 @@ class WorkspaceModule extends Module {
 
     clearErrorBlocks() {
         this._blockly.clearErrorBlocks();
+    }
+
+    saveProgram(mission_id, exercise_id) {
+        if (!this._state.display) {return false}
+
+        if (!(mission_id in this._code_storage)) {
+            this._code_storage[mission_id] = [];
+        }
+
+        this._code_storage[mission_id][exercise_id] = this._blockly.getXMLText();
+
+        return true;
+    }
+
+    loadProgram(mission_id, exercise_id) {
+        if (!this._state.display) {return false}
+
+        if (!(mission_id in this._code_storage)) {
+            return false;
+        }
+
+        if (!(exercise_id in this._code_storage[mission_id])) {
+            return false;
+        }
+
+        this._blockly.clear();
+        this._blockly.setXMLText(this._code_storage[mission_id][exercise_id]);
+
+        return true;
     }
 
     getBlockMultiplet(neighbours_amount=3) {

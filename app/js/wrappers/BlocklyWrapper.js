@@ -189,6 +189,12 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
+    clear() {
+        if (!this.workspace) {return false}
+
+        this.workspace.clear();
+    }
+
     updateBlockLimit(block_limit) {
         if (!this.workspace) {return false}
 
@@ -350,8 +356,6 @@ class BlocklyWrapper extends Wrapper {
      * @param text строка, содержащая XML-представление кода Blockly
      */
     setXMLText(text) {
-        console.log(this.workspace);
-
         let dom = Blockly.Xml.textToDom(text);
         Blockly.Xml.domToWorkspace(dom, this.workspace);
     }

@@ -93,10 +93,11 @@ class GlobalServiceModule extends Module {
                     // 'Access-Control-Allow-Origin': this._options.origin,
                     // 'Access-Control-Allow-Credentials': true,
                     // 'Access-Control-Allow-Methods': 'POST',
-                    // 'X-CSRFToken': undefined
+                    'X-CSRFToken': this._csrfToken
                 },
                 method: "POST",
-                body: JSON.stringify(packet)
+                body: JSON.stringify(packet),
+                credentials: 'same-origin',
             };
 
 
@@ -136,10 +137,11 @@ class GlobalServiceModule extends Module {
                 // 'Access-Control-Allow-Origin': this._options.origin,
                 // 'Access-Control-Allow-Credentials': true,
                 // 'Access-Control-Allow-Methods': 'POST',
-                // 'X-CSRFToken': undefined
+                'X-CSRFToken': this._csrfToken
             },
             method: "POST",
-            body: JSON.stringify(log_bunch)
+            body: JSON.stringify(log_bunch),
+            credentials: 'same-origin'
         };
 
         return fetch(this._options.origin + this._options.api.log_bunch, request)

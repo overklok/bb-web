@@ -61,7 +61,8 @@ const MAPPINGS = {
     },
     simple: {
         breadboard: PANE_IDS.MAIN_CENTER,
-        task: PANE_IDS.EAST_CENTER_CENTER
+        task: PANE_IDS.EAST_CENTER_CENTER,
+        lesson: PANE_IDS.MAIN_NORTH
     }
 };
 
@@ -401,7 +402,7 @@ class LayoutModule extends Module {
                 slidable: false,	            // OVERRIDE the pane-default of 'slidable=true'
                 closable: false,
                 spacing_closed: 20,		        // big resizer-bar when open (zero height)
-                size: 70,
+                size: 80,
                 // maxSize: 100
             },
 

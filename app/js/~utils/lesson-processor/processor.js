@@ -85,9 +85,10 @@ let processExercise = (_exercise) => {
     }
 
     exercise.popovers = popovers;
-
     if (exercise.buttons_model) {
         exercise.buttons_model = JSON.parse(exercise.buttons_model);
+    } else {
+        exercise.buttons_model = [];
     }
 
     return exercise;

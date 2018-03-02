@@ -209,6 +209,8 @@ class InstructorModule extends Module {
 
             /// извлечь данные упражнения
             let exercise_data = this._lesson.missions[mission_idx].exercises[exercise_idx];
+            exercise_data.missionIDX = mission_idx;
+            exercise_data.exerciseIDX = exercise_idx;
 
             /// если не режим буксовки
             if (!this._state.missions[mission_idx].skidding) {
@@ -308,10 +310,11 @@ class InstructorModule extends Module {
      * @param verdict
      */
     applyVerdict(verdict) {
+        verdict.missionIDX = this._state.missionIDX;
+        verdict.exerciseIDX = this._state.missions[this._state.missionIDX].exerciseIDX;
+
         if (verdict.status === API.STATUS_CODES.PASS) {
-            this.emitEvent("pass", {
-                message: "молодец продолжай дальше"
-            });
+            this.emitEvent("pass", verdict);
         }
 
         if (verdict.status === API.STATUS_CODES.FAULT) {
@@ -336,6 +339,11 @@ class InstructorModule extends Module {
         /// если последовательность пустая, пройдено автоматически
         if (this._buttons_model.length === 0) {
             /// задание пройдено
+            this.emitEvent("pass", {
+                missionIDX: this._state.missionIDX,
+                exerciseIDX: this._state.missions[this._state.missionIDX].exerciseIDX
+            });
+            return true;
         }
 
         /// если код нажатой клавиши совпал с ожидаемым
@@ -345,7 +353,10 @@ class InstructorModule extends Module {
                 /// сбросить позицию указателя
                 this._state.buttonIDX = 0;
                 /// задание пройдено
-                this.emitEvent("pass");
+                this.emitEvent("pass", {
+                    missionIDX: this._state.missionIDX,
+                    exerciseIDX: this._state.missions[this._state.missionIDX].exerciseIDX
+                });
             } else {
                 /// увеличить позицию указателя
                 this._state.buttonIDX += 1;

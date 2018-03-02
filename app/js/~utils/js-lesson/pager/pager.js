@@ -82,15 +82,9 @@ let pager = () => {
         }
     };
 
-    let shrink = function(pager) {
-        console.log($(pager).css('width'));
-    };
-
     let on_resize = function (pager) {
         let items = $(pager).find(pager__item);
         let leading = get_leading(pager);
-
-        shrink(pager);
 
         if (leading) {
             impose_items(pager, leading);
