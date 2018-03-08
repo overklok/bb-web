@@ -277,12 +277,12 @@ class Application {
          */
         this._dispatcher.on('gui:keyup', button_code => {
             /// найти первый обработчик нажатия клавиши
-            let handler = this.ws.getButtonHandler(button_code);
+            // let handler = this.ws.getButtonHandler(button_code);
 
-            if (handler) {
+            // if (handler) {
                 /// обновить код на плате
-                this.ls.updateHandlers({commands: handler.code, launch: false});
-            }
+                // this.ls.updateHandlers({commands: handler.code, launch: false});
+            // }
 
             /// проверить правильность нажатия клавиши
             let valid = this.ins.validateButtonPress(button_code);

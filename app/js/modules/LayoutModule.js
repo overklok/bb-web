@@ -411,6 +411,9 @@ class LayoutModule extends Module {
             //	some pane-size settings
             east: {
                 size: .3,
+
+                maxSize: 500,
+
                 fxSpeed: this._options.animSpeedMain,
 
                 onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},

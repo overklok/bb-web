@@ -62,13 +62,13 @@ let pagerItem = () => {
 
     let on_hover_in = function() {
         hover_cb_in(this);
-        wide_item(this, true);
+        wide_item(this, true, 2);
         // wide_item($(this).prev(), true, 2);
     };
 
     let on_hover_out = function() {
         hover_cb_out(this);
-        wide_item(this, false);
+        wide_item(this, false, 2);
         // wide_item($(this).prev(), false, 2);
     };
 
