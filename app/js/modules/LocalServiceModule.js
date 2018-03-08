@@ -14,7 +14,10 @@ class LocalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "ls"}
-    static get event_types()        {return ["connect", "disconnect", "command", "variable", "terminate", "error"]};
+    static get event_types()        {return [
+        "connect", "disconnect", "command", "variable",
+        "terminate", "plates", "currents", "error"
+    ]};
 
     static defaults() {
         return {
@@ -193,6 +196,14 @@ class LocalServiceModule extends Module {
         /* Как только сервис сообщил о завершении исполнения кода */
         this._ipc.on('terminate', (evt) => {
             this.emitEvent('terminate');
+        });
+
+        this._ipc.on('draw_plates', (evt, data) => {
+           this.emitEvent('plates', data);
+        });
+
+        this._ipc.on('draw_currents', (evt, data) => {
+           this.emitEvent('currents', data);
         });
 
         /* Как только сервис сообщил об ошибке- */

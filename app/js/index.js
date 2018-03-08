@@ -350,7 +350,7 @@ class Application {
         });
 
         /**
-         * Когда
+         * Когда программа завершится
          */
         this._dispatcher.on('ls:terminate', () => {
             let exercise = this.ins.getExerciseCurrent();
@@ -363,6 +363,14 @@ class Application {
             if (!is_sandbox) {
                 this._dispatcher.call("gui:check");
             }
+        });
+
+        this._dispatcher.on('ls:plates', data => {
+            this.bb.updatePlates(data);
+        });
+
+        this._dispatcher.on('ls:currents', data => {
+            this.bb.updateCurrents(data);
         });
 
         /**

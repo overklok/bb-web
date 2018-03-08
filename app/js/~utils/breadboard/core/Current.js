@@ -19,13 +19,14 @@ const CURRENT_ANIM_DELTA    = 20;           // Расстояние между �
  * @constructor
  */
 class Current {
-    constructor(container, style, speed) {
+    constructor(container, style) {
         this.container = container;
         this.style = style;
-        this.speed = speed;
         this.path = null;
 
         this.container_anim = this.container.nested();
+
+        this._visible = false;
     }
 
     /**
@@ -46,6 +47,8 @@ class Current {
         this.container_anim.opacity(0);
 
         this.addGlow();
+
+        this._visible = true;
     };
 
     /**
@@ -59,6 +62,8 @@ class Current {
 
         this.path.remove();
         this.container_anim.remove();
+
+        this._visible = false;
     };
 
     /**
@@ -74,6 +79,10 @@ class Current {
      *
      */
     activate(speed, arrow_color) {
+        if (!this._visible) {
+            throw new Error("Cannot activate invisible current!");
+        }
+
         // Рассчитаем длину контура
         let length = this.path.length();
 

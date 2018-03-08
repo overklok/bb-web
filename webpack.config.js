@@ -8,6 +8,7 @@ const lib_dir = __dirname + '/vendor/js';
 module.exports = {
     entry: {
         bundle:             './app/js/index.js',
+        admin_board:             './app/js/admin_board.js',
         // admin_blockly:      './app/js/admin_blockly.js',
     },
     devtool: 'eval-source-map', // 'source-map' for production
@@ -73,6 +74,11 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './app/html/index.html',
             inject: 'body'
+        }),
+        new HtmlWebpackPlugin({
+            template: './app/html/board.html',
+            inject: 'body',
+            filename: 'board.html'
         }),
         // new HtmlWebpackPlugin({
         //     template: './app/html/admin.html',

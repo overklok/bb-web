@@ -42,6 +42,20 @@ class BreadboardModule extends Module {
         this._state.display = false;
     }
 
+    updatePlates(plates) {
+        this._board.setPlates(plates);
+    }
+
+    updateCurrents(data) {
+        let points = [];
+
+        for (let thread of data.threads) {
+            points.push({from: thread.begin, to: thread.end})
+        }
+
+        this._board.setCurrent(points);
+    }
+
     getData() {
         return {};
     }
