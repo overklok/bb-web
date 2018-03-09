@@ -24,16 +24,6 @@ class Application {
         if (!config) {return true}
 
         this._container_id = config.containerId || "";
-
-        this._config = {
-
-        };
-
-        for (let conf_item in this._config) {
-            this._config[conf_item].logging = {
-                local: config.noRemoteLogs
-            }
-        }
     }
 
     /**
@@ -57,7 +47,7 @@ class Application {
      */
     _initModules() {
         /// Модули
-        this.bb = new BreadboardModule(this._config.bb); // Breadboard
+        this.bb = new BreadboardModule({modeAdmin: true}); // Breadboard
     }
 
     _subscribeToModules() {
@@ -69,8 +59,14 @@ class Application {
             this.bb.inject(document.getElementById(this._container_id));
 
             this.bb.updatePlates([
-                {type: 'resistor', x: 4, y: 4, orientation: 'north', id: null, number: 200}
-            ])
+                {type: 'resistor',  x: 4, y: 4, orientation: 'north', id: null, number: 200},
+                {type: 'resistor',  x: 2, y: 2, orientation: 'north', id: null, number: 200},
+                {type: 'bridge',    x: 0, y: 0, orientation: 'north', id: null, number: 5},
+                {type: 'capacitor', x: 0, y: 0, orientation: 'north', id: null},
+                {type: 'strip',     x: 0, y: 7, orientation: 'west', id: null, number: 4},
+            ]);
+
+            this.bb.updatePlateState(-1, {highlighted: true});
         });
     }
 }

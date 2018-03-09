@@ -2,21 +2,35 @@ import Cell from "./Cell";
 
 let lastId = 0;
 
+const ORIENTATIONS = {
+    West:   'west',
+    North:  'north',
+    East:   'east',
+    South:  'south'
+};
+
 /**
  * Класс плашки доски
  */
 class Plate {
-    constructor(container_parent, grid, id=null) {
+    static get Orientations() {return ORIENTATIONS}
+    static get Class() {return "bb-plate"}
+    static get Alias() {return "default"}
+
+    constructor(container_parent, grid, id=null, extra) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
+
+        this._alias = this.constructor.Alias;
 
         /// Идентификатор - по умолчанию, отрицательное число
         this._id = (id === null) ? (--lastId) : (id);
 
         /// Контейнер, группа и ссылка на сетку
-        this._container = container_parent.nested();    // для масштабирования
-        this._group     = this._container.group();      // для поворота
+        this._container = container_parent.nested();        // для масштабирования
+        this._group     = this._container.group();          // для поворота
+        this._bezel     = this._group.rect("100%", "100%"); // для окантовки
         this.__grid     = grid;
 
         /// Размер плашки и её опорная точка
@@ -25,18 +39,27 @@ class Plate {
 
         /// Параметры - постоянные свойства плашки
         this._params = {
-            cell:           undefined,  // ячейка, задающая положение опорной точки
-            orientation:    undefined,  // ориентация плашки
+            cell:           undefined,                  // ячейка, задающая положение опорной точки
+            orientation:    Plate.Orientations.West,    // ориентация плашки
         };
+
+        /// Дополнительный параметр
+        this._extra = extra;
 
         /// Состояние - изменяемые свойства плашки
         this._state = {
             highlighted: false,
         };
 
-        this._dragging = false;
+        /// Присвоить класс контейнеру
+        this._container.addClass(Plate.Class);
 
-        this._connectEvents();
+        this._editable = false;
+        this._dragging = false;
+    }
+
+    get alias() {
+        return this.constructor.Alias;
     }
 
     /**
@@ -66,6 +89,10 @@ class Plate {
         return this._params.orientation;
     }
 
+    get extra() {
+        return this._extra;
+    }
+
     /**
      * Возвратить текущее состояние плашки
      *
@@ -73,6 +100,10 @@ class Plate {
      */
     get state() {
         return this._state;
+    }
+
+    get container() {
+        return this._container;
     }
 
     /**
@@ -89,7 +120,7 @@ class Plate {
 
         this._container.size(width, height);
 
-        this._group.rect("100%", "100%").fill({color: "#ff0"});
+        this._bezel.fill({color: "#ff0"});
 
         this.move(cell);
         this.rotate(orientation);
@@ -118,17 +149,13 @@ class Plate {
      * Переместить плашку в новую клетку
      *
      * @param {Cell} cell положение плашки относительно опорной точки
-     *
-     * @abstract
      */
     move(cell) {
         /// TODO check position validity
-        let pos_x = cell.pos.x;
-        let pos_y = cell.pos.y;
-
-        this._group.move(pos_x, pos_y);
-
         this._params.cell = cell;
+
+        this._container.x(this.cell.pos.x);
+        this._container.y(this.cell.pos.y);
     }
 
     /**
@@ -145,15 +172,37 @@ class Plate {
      * Повернуть плашку
      *
      * @param {string} orientation ориентация плашки относительно опорной точки
-     *
-     * @abstract
      */
     rotate(orientation) {
         /// TODO check orientation validity
+        let angle = Plate._orientationToAngle(orientation);
 
-        let angle_diff = Plate._orientationToAngle(orientation) - Plate._orientationToAngle(this._orientation);
+        this._group.transform({rotation: angle, cx: this.cell.size.x / 2, cy: this.cell.size.y / 2});
 
-        this._group.transform({rotation: angle_diff, cx: this.cell.size.x / 2, cy: this.cell.size.y / 2});
+        this._params.orientation = orientation;
+    }
+
+    rotateClockwise() {
+        let orientation;
+
+        switch (this.orientation) {
+            case Plate.Orientations.West: {orientation = Plate.Orientations.North; break}
+            case Plate.Orientations.North: {orientation = Plate.Orientations.East; break}
+            case Plate.Orientations.East: {orientation = Plate.Orientations.South; break}
+            case Plate.Orientations.South: {orientation = Plate.Orientations.West; break}
+
+            default: {throw new TypeError("Current orientation is invalid")}
+        }
+
+        this.rotate(orientation);
+    }
+
+    select() {
+        this._bezel.stroke({color: "#0900fa", width: 2});
+    }
+
+    deselect() {
+        this._bezel.stroke({width: 0});
     }
 
     /**
@@ -163,23 +212,85 @@ class Plate {
         this._container.node.remove();
     }
 
-    _connectEvents() {
-        this._container.mousedown((evt) => {
+    setEditable(svg_main) {
+        /// если svg не задан, отключить и выйти
+        if (!svg_main) {
+            this._container.style({cursor: 'default'});
+            this._group.off();      // отключить все обработчики
+            this._editable = false;
+            return true;
+        }
+
+        /// если svg задан, но уже включено, выйти
+        if (this._editable) {
+            return true;
+        }
+
+        /// если svg задан, но не включено, включить
+        this._editable = true;
+
+        let svg_point = svg_main.createSVGPoint();
+
+        this._container.style({cursor: 'move'});
+
+        let cursor_point_last = undefined;
+
+        let onmove = (evt) => {
+            let cursor_point = Plate._getCursorPoint(svg_main, svg_point, evt);
+
+            let dx = cursor_point.x - cursor_point_last.x;
+            let dy = cursor_point.y - cursor_point_last.y;
+
+            this._container.dmove(dx, dy);
+
+            cursor_point_last = cursor_point;
+
             this._dragging = true;
-            console.info("DRG TRUE");
+        };
+
+        this._group.mousedown((evt) => {
+            document.body.addEventListener('mousemove', onmove, false);
+            cursor_point_last = Plate._getCursorPoint(svg_main, svg_point, evt);
         });
 
-        this._container.mouseup((evt) => {
-            this._dragging = false;
-            console.info("DRG FALSE");
-            this._container.move(evt.offsetX, evt.offsetY);
-        });
+        this._group.mouseup((evt) => {
+            document.body.removeEventListener('mousemove', onmove, false);
 
-        this._container.mousemove((evt) => {
-            if (this._dragging) {
-                console.log(evt);
+            if (!this._dragging) {
+                this.rotateClockwise();
             }
+
+            this._dragging = false;
+
+            this._snapToNearestCell();
         });
+
+        this._editable = true;
+        return true;
+    }
+
+    _snapToNearestCell() {
+        let x = this._container.x();
+        let y = this._container.y();
+
+        for (let col of this.__grid.cells) {
+            let cell0 = col[0];
+
+            if (cell0.pos.x >= x) {
+                for (let cell of col) {
+                    if (cell.pos.y >= y) {
+                        this.move(cell); return;
+                    }
+                }
+            }
+        }
+    }
+
+    static _getCursorPoint(svg_main, svg_point, evt) {
+        svg_point.x = evt.clientX;
+        svg_point.y = evt.clientY;
+
+        return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
     }
 
     /**
@@ -192,10 +303,11 @@ class Plate {
      */
     static _orientationToAngle(orientation) {
         switch (orientation) {
-            case 'west': default:   {return 0;}
-            case 'north':           {return 90;}
-            case 'east':            {return 180;}
-            case 'south':           {return 270;}
+            case Plate.Orientations.West:            {return 0}
+            case Plate.Orientations.North:           {return 90}
+            case Plate.Orientations.East:            {return 180}
+            case Plate.Orientations.South:           {return 270}
+            default: {throw new TypeError(`Invalid 'orientation' argument: ${orientation}`)}
         }
     }
 }

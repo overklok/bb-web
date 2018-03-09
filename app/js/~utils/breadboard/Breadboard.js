@@ -6,8 +6,8 @@ import LabelLayer from "./layers/LabelLayer";
 import CurrentLayer from "./layers/CurrentLayer";
 import PlateLayer from "./layers/PlateLayer";
 
-const WRAP_WIDTH = 1500;              // Ширина рабочей области
-const WRAP_HEIGHT = 1500;             // Высота рабочей области
+const WRAP_WIDTH = 1200;              // Ширина рабочей области
+const WRAP_HEIGHT = 1400;             // Высота рабочей области
 
 const GRID_WIDTH = 1000;
 const GRID_HEIGHT = 1100;
@@ -18,26 +18,11 @@ const GRID_GAP_Y = 10;
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
-/**
- * Класс, отвечающий за разметку рабочей среды
- *
- * Управляет контейнерами и их содержимым.
- * SVG-контейнеры хранятся в this._containers:
- *
- *  -wrap               Основная обёртка. За её пределы ничего не может выходить
- *  -grid               Сетка точек
- *  -label_panes.left   Левая панель подписей для сетки точек
- *  -label_panes.right  Правая панель подписей для сетки точек
- *
- * @constructor
- * @class
- */
+
 class Breadboard {
-    constructor() {
-        // Контейнеры, перечисленные выше
-        // Объект заполняется функцией _initContainers()
+    constructor(options) {
         if (!SVG.supported) {
-            alert("SVG in not supported. Please use any modern browser.");
+            alert("SVG is not supported. Please use any modern browser.");
         }
 
         this._brush = undefined;
@@ -51,8 +36,16 @@ class Breadboard {
         };
     }
 
+    getPlates() {
+        this._layers.plate.getCurrentPlatesData();
+    }
+
     addPlate(type, x, y, orientation, id=null, extra=null) {
         return this._layers.plate.addPlate(type, x, y, orientation, id, extra);
+    }
+
+    setPlateState(plate_id, state) {
+        this._layers.plate.setPlateState(plate_id, state);
     }
 
     clearPlates() {
@@ -66,11 +59,14 @@ class Breadboard {
      * Запускать в $(document).ready()
      *
      * @param {object} dom_node DOM-элемент
+     * @param {object} options  Опции платы
      */
-    inject(dom_node) {
+    inject(dom_node, options) {
         if (dom_node === undefined) {
             throw new TypeError("Breadboard::inject(): DOM node is undefined");
         }
+
+        this._setOptions(options);
 
         // Базовая кисть
         this._brush = SVG(dom_node).size(WRAP_WIDTH, WRAP_HEIGHT);
@@ -112,6 +108,20 @@ class Breadboard {
         this._layers.label.compose();
         this._layers.current.compose();
         this._layers.plate.compose();
+
+        if (this._options.readOnly) {
+            this._layers.plate.setEditable(false);
+        } else {
+            this._layers.plate.setEditable(true);
+        }
+    }
+
+    _setOptions(options) {
+        options = options || {};
+
+        this._options = {
+            readOnly: (options.readOnly === undefined) ? true : options.readOnly,
+        }
     }
 
     static _defineFilters() {
@@ -119,7 +129,7 @@ class Breadboard {
 
         // Свечение чёрным (тень)
         filters.push(
-            '<filter id="black-glow" filterUnits="userSpaceOnUse">\
+            '<filter id="glow-black" filterUnits="userSpaceOnUse">\
                 <feColorMatrix type="matrix" values=\
                         "0 0 0 0   0\
                          0 0 0 0   0\

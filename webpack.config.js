@@ -7,7 +7,7 @@ const lib_dir = __dirname + '/vendor/js';
 
 module.exports = {
     entry: {
-        bundle:             './app/js/index.js',
+        // bundle:             './app/js/index.js',
         admin_board:             './app/js/admin_board.js',
         // admin_blockly:      './app/js/admin_blockly.js',
     },
@@ -71,10 +71,10 @@ module.exports = {
             $: 'jquery',
             jQuery: 'jquery'
         }),
-        new HtmlWebpackPlugin({
-            template: './app/html/index.html',
-            inject: 'body'
-        }),
+        // new HtmlWebpackPlugin({
+        //     template: './app/html/index.html',
+        //     inject: 'body'
+        // }),
         new HtmlWebpackPlugin({
             template: './app/html/board.html',
             inject: 'body',
@@ -86,13 +86,13 @@ module.exports = {
         //     filename: 'admin.html'
         // }),
         new CopyWebpackPlugin([
-            {from: './app/css/spinner.css', to: './spinner.css'},
-            {from: './app/css/spinner.css', to: '../../codehour-breadboard-client/web/spinner.css'},
-            {from: './app/css/spinner.css', to: '../../codehour-breadboard-server/frontend/static/frontend/app/css/spinner.css'},
+            // {from: './app/css/spinner.css', to: './spinner.css'},
+            // {from: './app/css/spinner.css', to: '../../codehour-breadboard-client/web/spinner.css'},
+            // {from: './app/css/spinner.css', to: '../../codehour-breadboard-server/frontend/static/frontend/app/css/spinner.css'},
 
-            {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
-            {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},
-            {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
+            // {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
+            // {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},
+            // {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
             // {from: './dist/admin_blockly.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js'}
         ]),
         new webpack.WatchIgnorePlugin([

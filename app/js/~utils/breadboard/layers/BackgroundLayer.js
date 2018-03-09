@@ -1,10 +1,12 @@
 import Layer from "../core/Layer";
 
 class BackgroundLayer extends Layer {
+    static get Class() {return "bb-layer-background"}
+
     constructor(container, grid) {
         super(container, grid);
 
-        this._container.id("background");
+        this._container.addClass(BackgroundLayer.Class);
 
         this._cellgroup = undefined;
     }
@@ -26,11 +28,12 @@ class BackgroundLayer extends Layer {
                 this._cellgroup
                     .rect(cell.size.x, cell.size.y)
                     .move(cell.pos.x, cell.pos.y)
-                    .fill({color: "#000", opacity: 1});
+                    .fill({color: "#000", opacity: 1})
+                    .radius(10);
             }
         }
 
-        this._cellgroup.move(200, 200);
+        this._cellgroup.move(100, 200);
     }
 }
 

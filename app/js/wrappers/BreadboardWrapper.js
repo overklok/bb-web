@@ -6,7 +6,10 @@ import Point from "../~utils/breadboard/core/Cell";
 
 const PLATE_TYPES = {
     'resistor': 'resistor',
-    'res': 'resistor'
+    'res': 'resistor',
+    'bridge': 'bridge',
+    'capacitor': 'capacitor',
+    'strip': 'strip'
 };
 
 /**
@@ -22,19 +25,13 @@ class BreadboardWrapper extends Wrapper {
     /**
      * Встроить Breadboard в DOM-дерево
      *
-     * @param {Object} dom_node DOM-узел, в который нужно вставить Breadboard
+     * @param {object}  dom_node    DOM-узел, в который нужно вставить Breadboard
+     * @param {boolean} read_only   Режим только чтения
      */
-    inject(dom_node) {
-        this._bb.inject(dom_node);
-
-        // setInterval(() => {
-        //     this._bb.dispose();
-        //     setTimeout(() => {
-        //         this._bb.inject(dom_node);
-        //     }, 500);
-        // }, 5000)
-
-        // this._bb.grid.addPlate(ResistorPlate, new Cell(0, 0, this._bb.grid), 'north');
+    inject(dom_node, read_only) {
+        this._bb.inject(dom_node, {
+            readOnly: read_only,
+        });
     }
 
     /**
@@ -52,6 +49,10 @@ class BreadboardWrapper extends Wrapper {
         for (let plate of plates) {
             this._bb.addPlate(PLATE_TYPES[plate.type], plate.x, plate.y, plate.orientation, plate.id, plate.number);
         }
+    }
+
+    setPlateState(plate_id, state) {
+        this._bb.setPlateState(plate_id, state);
     }
 
     setCurrent(points) {

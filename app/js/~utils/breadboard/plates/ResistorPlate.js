@@ -1,13 +1,15 @@
 import Plate from "../core/Plate";
-import Point from "../core/Cell";
+import Cell from "../core/Cell";
 
 class ResistorPlate extends Plate {
+    static get Alias() {return "resistor"}
+
     constructor(container, grid, id, resistance="200") {
         super(container, grid, id);
 
-        this._resistance = resistance;
+        this._params.resistance = resistance;
 
-        this._cell = new Point(0, 0, this.__grid);
+        this._cell = new Cell(0, 0, this.__grid);
         this._size = {x: 2, y: 1};
 
         this._state = {
@@ -24,7 +26,9 @@ class ResistorPlate extends Plate {
     draw(position, orientation) {
         super.draw(position, orientation);
 
-        this._group.text(`Resistor ${this._resistance} Ohm`).font({size: 20});
+        this._bezel.fill({color: "#ffffff"}).radius(10);
+
+        this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
 
     /**

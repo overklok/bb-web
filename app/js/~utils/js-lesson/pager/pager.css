@@ -10,7 +10,7 @@
 }
 .pager__item:hover .pager__link {
   transform: scale(1.5);
-  left: calc(50% - 35px/2) !important;
+  left: calc(32.5%) !important;
 }
 .pager__item.pager__item_leading .pager__link {
   background-color: #fff6af;

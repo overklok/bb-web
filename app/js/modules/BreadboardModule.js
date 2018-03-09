@@ -6,6 +6,12 @@ class BreadboardModule extends Module {
     static get eventspace_name() {return "bb"}
     static get event_types() {return []}
 
+    static defaults() {
+        return {
+            modeAdmin: false,
+        }
+    }
+
     constructor(options) {
         super(options);
 
@@ -24,7 +30,7 @@ class BreadboardModule extends Module {
             }
 
             if (dom_node !== undefined) {
-                this._board.inject(dom_node);
+                this._board.inject(dom_node, !this._options.modeAdmin);
 
                 this._state.display = true;
             }
@@ -44,6 +50,10 @@ class BreadboardModule extends Module {
 
     updatePlates(plates) {
         this._board.setPlates(plates);
+    }
+
+    updatePlateState(plate_id, state) {
+        this._board.setPlateState(plate_id, state);
     }
 
     updateCurrents(data) {

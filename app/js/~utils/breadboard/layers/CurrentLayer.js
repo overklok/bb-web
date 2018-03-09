@@ -9,10 +9,12 @@ const CURRENT_ARROW_COLOR   = '#00f';       // Цвет стрелок тока
 const CURRENT_ANIM_SPEED     = 0.5;            // Скорость анимации стрелок, arrows/sec
 
 class CurrentLayer extends Layer {
+    static get Class() {return "bb-layer-current"}
+
     constructor(container, grid) {
         super(container, grid);
 
-        this._container.id("current");
+        this._container.addClass(CurrentLayer.Class);
 
         this._currents = [];
 
@@ -21,7 +23,7 @@ class CurrentLayer extends Layer {
 
     compose() {
         this._cellgroup = this._container.group();
-        this._cellgroup.move(200, 200);
+        this._cellgroup.move(100, 200);
 
         this.addCurrentGood([
             {from: {x: 0, y: 0}, to: {x: 0, y: 1}},
