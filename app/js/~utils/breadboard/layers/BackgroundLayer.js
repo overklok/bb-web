@@ -15,7 +15,7 @@ class BackgroundLayer extends Layer {
         this._container
             .rect('100%', '100%')
             .radius(10)
-            .fill({color: "#ff00c0"});
+            .fill({color: "#c0c0c0"});
 
         this._drawCells();
     }
