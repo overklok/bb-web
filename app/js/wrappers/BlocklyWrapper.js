@@ -249,8 +249,6 @@ class BlocklyWrapper extends Wrapper {
         }
     }
 
-
-
     setMaxBlockLimit() {
         if (!this.workspace) {return false}
     }
@@ -269,12 +267,57 @@ class BlocklyWrapper extends Wrapper {
         return block_types;
     }
 
+    /**
+     * Определить достаточное (но не всегда необходимое) число блоков
+     * для сборки текущей последовательности блоков
+     *
+     * @returns {int} число блоков
+     */
     getBlockCount() {
         if (!this.workspace) {return false}
 
-        return this.workspace.getAllBlocks().length;
+        let block_count = 0;
+
+        let blocks = this.workspace.getAllBlocks();
+
+        let block_taken_ids = new Set();
+
+        for (let block of blocks) {
+            if (!block_taken_ids.has(block.id)) {
+                block_count += 1;
+            }
+
+            block_taken_ids.add(block.id);
+
+            for (let subblock of block.childBlocks_) {
+                /// Блок не должен быть вложенной цепочкой
+                if (subblock.nextConnection || subblock.previousConnection) {
+                    continue;
+                }
+
+                if (block_taken_ids.has(subblock.id)) {
+                    if (!subblock.isShadow_) {
+                        block_count += 1;
+                    }
+                } else  {
+                    if (!subblock.isShadow_) {
+                        block_count += 2;
+                    } else {
+                        block_count += 1;
+                    }
+                }
+
+                block_taken_ids.add(subblock.id);
+            }
+        }
+
+        return block_count;
     }
 
+    /**
+     * TODO Refactor -> getBlockLimitInputsByType
+     * @returns {*}
+     */
     getBlockCountByType() {
         if (!this.workspace) {return false}
 
@@ -293,6 +336,10 @@ class BlocklyWrapper extends Wrapper {
         return block_counts;
     }
 
+    /**
+     * TODO Refactor -> setBlockLimitInputsByType
+     * @returns {*}
+     */
     setBlockCountByType(block_counts) {
         if (!this.workspace) {return false}
 

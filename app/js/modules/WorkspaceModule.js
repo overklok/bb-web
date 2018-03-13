@@ -175,18 +175,32 @@ class WorkspaceModule extends Module {
         }
     }
 
+    /**
+     * TODO Refactor -> getBlockLimitInputsByType
+     * @returns {*}
+     */
     getBlockCountByType() {
         if (!this._state.display) {return false}
 
         return this._blockly.getBlockCountByType();
     }
 
+    /**
+     * TODO Refactor -> setBlockLimitInputsByType
+     * @returns {*}
+     */
     setBlockCountByType(block_counts) {
         if (!this._state.display) {return false}
 
         this._blockly.setBlockCountByType(block_counts);
     }
 
+    /**
+     * Определить число блоков, необходимое для сборки
+     * текущей последовательности блоков
+     *
+     * @returns {bool|int}
+     */
     getBlockCount() {
         if (!this._state.display) {return false}
 

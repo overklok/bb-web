@@ -7,9 +7,9 @@ const lib_dir = __dirname + '/vendor/js';
 
 module.exports = {
     entry: {
-        bundle:             './app/js/index.js',
-        // admin_board:        './app/js/admin_board.js',
-        // admin_blockly:      './app/js/admin_blockly.js',
+        // bundle:             './app/js/index.js',
+        admin_board:        './app/js/admin_board.js',
+        admin_blockly:      './app/js/admin_blockly.js',
     },
     devtool: 'eval-source-map', // 'source-map' for production
     output: {

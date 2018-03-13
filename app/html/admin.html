@@ -26,6 +26,10 @@
             workspaceZoomInitial: 0.5
         });
 
+        window.addEventListener('resize', function() {
+            app.resize();
+        });
+
         app.run();
     </script>
 </html>

@@ -102,8 +102,6 @@ class ButtonPane {
         this._list.id = "qwerty";
 
         this._button.appendChild(this._list);
-
-        // this._initDynamicStyles();
     }
 
     /**
