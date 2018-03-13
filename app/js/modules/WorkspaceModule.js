@@ -175,24 +175,16 @@ class WorkspaceModule extends Module {
         }
     }
 
-    /**
-     * TODO Refactor -> getBlockLimitInputsByType
-     * @returns {*}
-     */
-    getBlockCountByType() {
+    getBlockLimitInputsByType() {
         if (!this._state.display) {return false}
 
-        return this._blockly.getBlockCountByType();
+        return this._blockly.getBlockLimitInputsByType();
     }
 
-    /**
-     * TODO Refactor -> setBlockLimitInputsByType
-     * @returns {*}
-     */
-    setBlockCountByType(block_counts) {
+    setBlockLimitInputsByType(block_counts) {
         if (!this._state.display) {return false}
 
-        this._blockly.setBlockCountByType(block_counts);
+        this._blockly.setBlockLimitInputsByType(block_counts);
     }
 
     /**
@@ -201,10 +193,10 @@ class WorkspaceModule extends Module {
      *
      * @returns {bool|int}
      */
-    getBlockCount() {
+    getBlockLimit() {
         if (!this._state.display) {return false}
 
-        return this._blockly.getBlockCount();
+        return this._blockly.getBlockLimit();
     }
 
     /**

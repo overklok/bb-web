@@ -55,8 +55,8 @@ class AdminBlocklyApplication {
         this._dispatcher.always(['ws:*']);
     }
 
-    getBlockCount() {
-        return this.ws.getBlockCount();
+    getBlockLimit() {
+        return this.ws.getBlockLimit();
     }
 
     getHandlers() {
@@ -79,12 +79,12 @@ class AdminBlocklyApplication {
         this.ws.resize();
     }
 
-    getBlockCounts() {
-        return this.ws.getBlockCountByType();
+    getBlockTypeLimits() {
+        return this.ws.getBlockLimitInputsByType();
     }
     
-    setBlockCounts(block_counts) {
-        this.ws.setBlockCountByType(block_counts);
+    setBlockTypeLimits(block_type_limits) {
+        this.ws.setBlockLimitInputsByType(block_type_limits);
     }
 
     /**

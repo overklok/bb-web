@@ -273,7 +273,7 @@ class BlocklyWrapper extends Wrapper {
      *
      * @returns {int} число блоков
      */
-    getBlockCount() {
+    getBlockLimit() {
         if (!this.workspace) {return false}
 
         let block_count = 0;
@@ -318,7 +318,7 @@ class BlocklyWrapper extends Wrapper {
      * TODO Refactor -> getBlockLimitInputsByType
      * @returns {*}
      */
-    getBlockCountByType() {
+    getBlockLimitInputsByType() {
         if (!this.workspace) {return false}
 
         let block_counts = {};
@@ -336,11 +336,7 @@ class BlocklyWrapper extends Wrapper {
         return block_counts;
     }
 
-    /**
-     * TODO Refactor -> setBlockLimitInputsByType
-     * @returns {*}
-     */
-    setBlockCountByType(block_counts) {
+    setBlockLimitInputsByType(block_counts) {
         if (!this.workspace) {return false}
 
         if (!block_counts) {return false}
