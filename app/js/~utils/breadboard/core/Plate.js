@@ -1,7 +1,5 @@
 import Cell from "./Cell";
 
-let lastId = 0;
-
 const ORIENTATIONS = {
     West:   'west',
     North:  'north',
@@ -24,8 +22,8 @@ class Plate {
 
         this._alias = this.constructor.Alias;
 
-        /// Идентификатор - по умолчанию, отрицательное число
-        this._id = (id === null) ? (--lastId) : (id);
+        /// Идентификатор - по умолчанию случайная строка
+        this._id = (id === null) ? (Math.random().toString(36).substring(7)) : (id);
 
         /// Контейнер, группа и ссылка на сетку
         this._container = container_parent.nested();        // для масштабирования
@@ -54,10 +52,19 @@ class Plate {
         /// Присвоить класс контейнеру
         this._container.addClass(Plate.Class);
 
+        this._callbacks = {
+            change: () => {}
+        };
+
         this._editable = false;
         this._dragging = false;
     }
 
+    /**
+     * Возвратить строку, определяющую тип плашки
+     *
+     * @returns {string}
+     */
     get alias() {
         return this.constructor.Alias;
     }
@@ -102,6 +109,11 @@ class Plate {
         return this._state;
     }
 
+    /**
+     * Возвратить HTML-элемент, содержащий плашку
+     *
+     * @returns {HTMLElement}
+     */
     get container() {
         return this._container;
     }
@@ -122,8 +134,8 @@ class Plate {
 
         this._bezel.fill({color: "#ff0"});
 
-        this.move(cell);
-        this.rotate(orientation);
+        this.move(cell, true);
+        this.rotate(orientation, true);
     };
 
     /**
@@ -148,14 +160,20 @@ class Plate {
     /**
      * Переместить плашку в новую клетку
      *
-     * @param {Cell} cell положение плашки относительно опорной точки
+     * @param {Cell}    cell            положение плашки относительно опорной точки
+     * @param {boolean} suppress_events подавить инициацию событий
      */
-    move(cell) {
+    move(cell, suppress_events=false) {
         /// TODO check position validity
         this._params.cell = cell;
 
         this._container.x(this.cell.pos.x);
         this._container.y(this.cell.pos.y);
+
+        if (!suppress_events) {this._callbacks.change({
+            id: this._id,
+            action: 'move'
+        })}
     }
 
     /**
@@ -172,16 +190,25 @@ class Plate {
      * Повернуть плашку
      *
      * @param {string} orientation ориентация плашки относительно опорной точки
+     * @param {boolean} suppress_events подавить инициацию событий
      */
-    rotate(orientation) {
+    rotate(orientation, suppress_events=false) {
         /// TODO check orientation validity
         let angle = Plate._orientationToAngle(orientation);
 
         this._group.transform({rotation: angle, cx: this.cell.size.x / 2, cy: this.cell.size.y / 2});
 
         this._params.orientation = orientation;
+
+        if (!suppress_events) {this._callbacks.change({
+            id: this._id,
+            action: 'rotate'
+        })}
     }
 
+    /**
+     * Повернуть плашку по часовой стрелке
+     */
     rotateClockwise() {
         let orientation;
 
@@ -197,10 +224,16 @@ class Plate {
         this.rotate(orientation);
     }
 
+    /**
+     * Выделить плашку
+     */
     select() {
         this._bezel.stroke({color: "#0900fa", width: 2});
     }
 
+    /**
+     * Снять выделение плашки
+     */
     deselect() {
         this._bezel.stroke({width: 0});
     }
@@ -212,6 +245,13 @@ class Plate {
         this._container.node.remove();
     }
 
+    /**
+     * Сделать плашку редактируемой
+     *
+     * @param   {HTMLElement}   svg_main SVG-элемент в DOM, содержащий плашку
+     *
+     * @returns {boolean} принято ли изменение
+     */
     setEditable(svg_main) {
         /// если svg не задан, отключить и выйти
         if (!svg_main) {
@@ -228,10 +268,11 @@ class Plate {
 
         /// если svg задан, но не включено, включить
         this._editable = true;
-
-        let svg_point = svg_main.createSVGPoint();
+        this.firstclickmade = false;
 
         this._container.style({cursor: 'move'});
+
+        let svg_point = svg_main.createSVGPoint();
 
         let cursor_point_last = undefined;
 
@@ -249,26 +290,48 @@ class Plate {
         };
 
         this._group.mousedown((evt) => {
-            document.body.addEventListener('mousemove', onmove, false);
-            cursor_point_last = Plate._getCursorPoint(svg_main, svg_point, evt);
+            if (!this._dragging) {
+                document.body.addEventListener('mousemove', onmove, false);
+                cursor_point_last = Plate._getCursorPoint(svg_main, svg_point, evt);
+            }
         });
 
         this._group.mouseup((evt) => {
             document.body.removeEventListener('mousemove', onmove, false);
 
             if (!this._dragging) {
-                this.rotateClockwise();
+                if (this.firstclickmade) {
+                    this.rotateClockwise();
+                } else {
+                    this.firstclickmade = true;
+                }
+            } else {
+                this._snapToNearestCell();
             }
 
             this._dragging = false;
-
-            this._snapToNearestCell();
         });
 
         this._editable = true;
         return true;
     }
 
+    /**
+     * Установить обработчик события изменения плашки
+     *
+     * @param {function} cb обработчик события изменения плашки
+     */
+    onChange(cb) {
+        if (!cb) {this._callbacks.change = () => {}}
+
+        this._callbacks.change = cb;
+    }
+
+    /**
+     * Прикрепить плашку к ближайшей ячейке
+     *
+     * @private
+     */
     _snapToNearestCell() {
         let x = this._container.x();
         let y = this._container.y();
@@ -286,6 +349,16 @@ class Plate {
         }
     }
 
+    /**
+     * Получить положение курсора в системе координат SVG
+     *
+     * @param {HTMLElement} svg_main    SVG-узел, в системе координат которого нужна точка
+     * @param {MouseEvent}  evt         событие действия мышки
+     *
+     * @returns {SVGPoint}  Точка, координаты которой определяют положение курсора
+     *                      в системе координат заданного SVG-узла
+     * @private
+     */
     static _getCursorPoint(svg_main, svg_point, evt) {
         svg_point.x = evt.clientX;
         svg_point.y = evt.clientY;

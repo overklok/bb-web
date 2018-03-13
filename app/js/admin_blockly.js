@@ -2,7 +2,7 @@ import Dispatcher from "./core/Dispatcher";
 
 import WorkspaceModule      from "./modules/WorkspaceModule";
 
-class Application {
+class AdminBlocklyApplication {
     constructor() {
         /// Диспетчер событий
         this._dispatcher = new Dispatcher();
@@ -31,7 +31,8 @@ class Application {
         this._config = {
             ws: {
                 allBlocks: config.allBlocks,
-                useScrollbars: true
+                useScrollbars: true,
+                zoomInitial: config.workspaceZoomInitial,
             },
         };
 
@@ -119,6 +120,6 @@ class Application {
     }
 }
 
-window.Application = Application;
+window.AdminBlocklyApplication = AdminBlocklyApplication;
 
-export default Application;
+export default AdminBlocklyApplication;

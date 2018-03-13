@@ -7,14 +7,11 @@ class StripPlate extends Plate {
     constructor(container, grid, id, length=1) {
         super(container, grid, id, length);
 
-        if (length < 1) {
-            throw new RangeError("StripPlate's length cannot be less than 1");
-        }
-
-        this._params.length = length;
+        this._params.len = (length <= 0) ? 1 : length;
+        this._extra = this._params.len;
 
         this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: length, y: 1};
+        this._size = {x: this._params.len, y: 1};
 
         this._state = {
             highlighted: false,
@@ -34,7 +31,7 @@ class StripPlate extends Plate {
         this._bezel.width(this._container.width() + this._cell.size.x / 4);
         this._bezel.dx(-this._cell.size.x / 4);
 
-        this._group.text(`Strip ${this._params.length} cells`).font({size: 26});
+        this._group.text(`Strip ${this._params.len} cells`).font({size: 26});
     };
 
     /**

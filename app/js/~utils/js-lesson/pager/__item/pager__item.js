@@ -15,9 +15,6 @@ let pagerItem = () => {
     };
 
     let wide_item = function (elem, on=true, factor=1) {
-        let prev = $(elem).prev();
-        let next = $(elem).next();
-
         if (on) {
             let pager = $(elem).closest(".pager");
             let diff = parseFloat($(pager).data("offset")) / factor;
@@ -26,33 +23,7 @@ let pagerItem = () => {
                 "padding-left": diff,
                 "padding-right": diff,
             });
-
-            if (prev.length > 0) {
-                $(prev).css({
-                    // "padding-right": diff,
-                    // "padding-left": diff
-                });
-            }
-
-            if (next.length > 0) {
-                $(next).css({
-                    // "padding-right": diff,
-                    // "padding-left": -diff
-                });
-            }
         } else {
-            if (prev.length > 0) {
-                $(prev).css({
-                    "padding": 0
-                });
-            }
-
-            if (next.length > 0) {
-                $(next).css({
-                    "padding-right": 0
-                });
-            }
-
             $(elem).css({
                 "padding-left": 0,
                 "padding-right": 0,
@@ -62,13 +33,13 @@ let pagerItem = () => {
 
     let on_hover_in = function() {
         hover_cb_in(this);
-        wide_item(this, true, 2);
+        wide_item(this, true, 4);
         // wide_item($(this).prev(), true, 2);
     };
 
     let on_hover_out = function() {
         hover_cb_out(this);
-        wide_item(this, false, 2);
+        wide_item(this, false, 4);
         // wide_item($(this).prev(), false, 2);
     };
 

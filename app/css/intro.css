@@ -1,3 +1,7 @@
+.introjs-tooltip {
+    min-width: 380px;
+}
+
 .introjs-tooltip-success {
     background-color: #e1f5dc;
 }

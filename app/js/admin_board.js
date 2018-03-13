@@ -2,12 +2,14 @@ import Dispatcher from "./core/Dispatcher";
 
 import BreadboardModule      from "./modules/BreadboardModule";
 
-class Application {
+class AdminBoardApplication {
     constructor() {
         /// Диспетчер событий
         this._dispatcher = new Dispatcher();
         /// Конфигурация
         this._config = {};
+
+        this._on_change_callback = function() {};
 
         this._defineChains();
     }
@@ -38,6 +40,18 @@ class Application {
         this._dispatcher.always(['bb:*']);
     }
 
+    setData(plates) {
+        this.bb.updatePlates(plates);
+    }
+
+    getData() {
+        return this.bb.getData();
+    }
+
+    onChange(callback) {
+        this._on_change_callback = callback;
+    }
+
     /**
      * Инициализировать модули
      *
@@ -57,20 +71,14 @@ class Application {
     _defineChains() {
         $(document).ready(() => {
             this.bb.inject(document.getElementById(this._container_id));
-
-            this.bb.updatePlates([
-                {type: 'resistor',  x: 4, y: 4, orientation: 'north', id: null, number: 200},
-                {type: 'resistor',  x: 2, y: 2, orientation: 'north', id: null, number: 200},
-                {type: 'bridge',    x: 0, y: 0, orientation: 'north', id: null, number: 5},
-                {type: 'capacitor', x: 0, y: 0, orientation: 'north', id: null},
-                {type: 'strip',     x: 0, y: 7, orientation: 'west', id: null, number: 4},
-            ]);
-
-            this.bb.updatePlateState(-1, {highlighted: true});
         });
+
+        this._dispatcher.on("bb:change", data => {
+            this._on_change_callback(data);
+        })
     }
 }
 
-window.Application = Application;
+window.AdminBoardApplication = AdminBoardApplication;
 
-export default Application;
+export default AdminBoardApplication;

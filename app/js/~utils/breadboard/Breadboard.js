@@ -7,7 +7,7 @@ import CurrentLayer from "./layers/CurrentLayer";
 import PlateLayer from "./layers/PlateLayer";
 
 const WRAP_WIDTH = 1200;              // Ширина рабочей области
-const WRAP_HEIGHT = 1400;             // Высота рабочей области
+const WRAP_HEIGHT = 1350;             // Высота рабочей области
 
 const GRID_WIDTH = 1000;
 const GRID_HEIGHT = 1100;
@@ -34,13 +34,17 @@ class Breadboard {
             plate:      undefined,
             current:    undefined,
         };
+
+        this._callbacks = {
+            change: () => {},
+        }
     }
 
     getPlates() {
-        this._layers.plate.getCurrentPlatesData();
+        return this._layers.plate.getCurrentPlatesData();
     }
 
-    addPlate(type, x, y, orientation, id=null, extra=null) {
+    addPlate(type, x=0, y=0, orientation='west', id=null, extra) {
         return this._layers.plate.addPlate(type, x, y, orientation, id, extra);
     }
 
@@ -74,6 +78,8 @@ class Breadboard {
         this._brush.node.style.width = "100%";
         this._brush.node.style.height = "100%";
 
+        this._brush.style({"user-select": "none"});
+
         this._grid = new Grid(GRID_ROWS, GRID_COLS, GRID_WIDTH, GRID_HEIGHT, GRID_GAP_X, GRID_GAP_Y);
 
         /// Создать фильтры
@@ -85,6 +91,12 @@ class Breadboard {
     dispose() {
         this._brush.node.remove();
         this._layers = {};
+    }
+
+    onChange(cb) {
+        if (!cb) {this._callbacks.change = () => {}}
+
+        this._callbacks.change = cb;
     }
 
     /**
@@ -109,6 +121,10 @@ class Breadboard {
         this._layers.current.compose();
         this._layers.plate.compose();
 
+        if (!this._options.readOnly) {
+            this._layers.plate.onChange((data) => {this._callbacks.change(data)});
+        }
+
         if (this._options.readOnly) {
             this._layers.plate.setEditable(false);
         } else {
@@ -122,6 +138,10 @@ class Breadboard {
         this._options = {
             readOnly: (options.readOnly === undefined) ? true : options.readOnly,
         }
+    }
+
+    static getAllPlateTypes() {
+        return PlateLayer._getAllPlateTypes();
     }
 
     static _defineFilters() {

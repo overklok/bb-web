@@ -1,8 +1,8 @@
 import Module from "../core/Module";
 
-import layout   from "../../vendor/js/jquery.layout.js";
+require("jquery-ui/ui/widgets/resizable");
 require("jquery-ui-bundle");
-// require("jquery-ui/ui/effect");
+import layout   from "../../vendor/js/jquery.layout.js";
 
 // console.log("JQR", jQuery.easing);
 
@@ -386,6 +386,7 @@ class LayoutModule extends Module {
             slidable: true,	    // when closed, pane can 'slide' open over other panes - closes on mouse-out
             livePaneResizing: true,
             fxSpeed: this._options.animSpeedMain,
+            resizeWhileDragging: true,
 
             fxName:     "slide",
             fxSettings: { duration: this._options.animSpeedMain, easing: "easeInOutCirc" },
@@ -410,10 +411,10 @@ class LayoutModule extends Module {
 
             //	some pane-size settings
             east: {
-                size: .3,
+                size: .2,
+                maxSize: 300,
 
-                maxSize: 500,
-
+                resizable: true,
                 fxSpeed: this._options.animSpeedMain,
 
                 onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
@@ -421,12 +422,14 @@ class LayoutModule extends Module {
                     north: {
                         size: .3,
 
+                        resizable: true,
                         fxSpeed: this._options.animSpeedSub,
                         onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
                     south: {
                         size: .3,
 
+                        resizable: true,
                         fxSpeed: this._options.animSpeedSub,
                         onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
@@ -435,6 +438,8 @@ class LayoutModule extends Module {
                             center: {
                                 spacing_open: 0,
                                 spacing_closed: 0,
+
+                                resizable: true,
                                 onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                             },
                             south: {

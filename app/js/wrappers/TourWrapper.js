@@ -21,7 +21,7 @@ const MODES = {
 
 const DIALOG_MODES = ["dialog", "success"];
 
-const DIALOG_DEFAULT = "Задание пройдено!";
+const DIALOG_DEFAULT = "Упражнение пройдено!";
 
 class TourWrapper extends Wrapper {
     constructor(mode, steps) {
@@ -107,6 +107,7 @@ class TourWrapper extends Wrapper {
             nextLabel: "Дальше",
             prevLabel: "Назад",
             skipLabel: "Пропустить",
+            showStepNumbers: false,
         };
 
         switch (mode) {
@@ -116,7 +117,6 @@ class TourWrapper extends Wrapper {
                 options.showBullets = false;
                 options.hidePrev = true;
                 options.exitOnOverlayClick = false;
-                options.showStepNumbers = false;
                 break;
             }
             case MODES.SUCCESS: {
@@ -125,14 +125,12 @@ class TourWrapper extends Wrapper {
                 options.showBullets = false;
                 options.hidePrev = true;
                 options.exitOnOverlayClick = false;
-                options.showStepNumbers = false;
                 break;
             }
             case MODES.ERROR: {
                 options.doneLabel = "ОК";
                 options.hidePrev = true;
                 options.showBullets = false;
-                options.showStepNumbers = false;
                 break;
             }
             case MODES.INTRO:

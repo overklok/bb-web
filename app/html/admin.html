@@ -17,12 +17,13 @@
 
     </body>
     <script>
-        var app = new Application();
+        var app = new AdminBlocklyApplication();
 
         app.configure({
             containerId: "block-editor",
             allBlocks: true,    // все блоки
-            noRemoteLogs: true  // без удалённого логирования
+            noRemoteLogs: true,  // без удалённого логирования,
+            workspaceZoomInitial: 0.5
         });
 
         app.run();

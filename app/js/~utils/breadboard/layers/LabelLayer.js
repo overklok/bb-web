@@ -13,7 +13,7 @@ class LabelLayer extends Layer {
             width: this.__grid.size.x,
             height: this.__grid.size.y,
             x: 100,
-            y: 200-30,
+            y: 160,
         };
 
         this._panes = {
@@ -26,12 +26,12 @@ class LabelLayer extends Layer {
         this._panes.top
             .rect(this._params.width, this._params.thickness)
             .move(this._params.x, this._params.y - this._params.thickness)
-            .fill({color: "#ff0001"})
+            .fill({color: "#77ff1b"})
             .opacity(0);
 
         this._panes.left
             .rect(this._params.thickness, this._params.height)
-            .move(this._params.y - this._params.thickness, this._params.x)
+            .move(this._params.x - this._params.thickness, this._params.y)
             .fill({color: "#ff0001"})
             .opacity(0);
 
@@ -47,10 +47,10 @@ class LabelLayer extends Layer {
             let size = this._params.thickness;
 
             let pos_x = this._params.x + cell.center.x;
-            let pos_y = this._params.y - size / 2;
+            let pos_y = this._params.y - size / 4;
 
             if (i >=1) {
-                this._drawLabelText("top", pos_x, pos_y, "A" + (i - 1), this._params.thickness - 20);
+                this._drawLabelText("top", pos_x, pos_y, "A" + (i - 1), this._params.thickness / 2);
             } else {
                 this._drawLabelArrows("top", pos_x, pos_y);
             }
@@ -66,8 +66,8 @@ class LabelLayer extends Layer {
         for (let cell of this.__grid.cells[0]) {
             let size = this._params.thickness;
 
-            let pos_x = this._params.y - size;
-            let pos_y = this._params.x + cell.center.y + size;
+            let pos_x = this._params.x - size / 2;
+            let pos_y = this._params.y + cell.center.y;
 
             if (i === cell_cols) {
                 this._drawLabelText("left", pos_x, pos_y, "-", this._params.thickness);
@@ -84,15 +84,29 @@ class LabelLayer extends Layer {
     _drawLabelText(pane_name, pos_x, pos_y, text, size) {
         this._panes[pane_name]
             .text(text)
-            .font({size: size})
+            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
             .center(pos_x, pos_y);
     }
 
     _drawLabelArrows(pane_name, pos_x, pos_y) {
-        this._panes[pane_name]
-            .text("U")
-            .font({size: this._params.thickness - 20})
-            .center(pos_x, pos_y);
+        let wrap = this._panes[pane_name].nested();
+
+        let cell = this.__grid.cell(0,0);
+
+        let w = cell.size.x / 2.8,        // width
+            h = cell.size.y / 7;      // height
+
+        let p = cell.size.y / 7;      // padding
+
+        wrap.path([
+            ['M', 0, 0],    ['l', w/2, h], ['l', w/2, -h],
+            ['m', -w, p],   ['l', w/2, h], ['l', w/2, -h],
+            ['m', -w, p],   ['l', w/2, h], ['l', w/2, -h],
+        ])
+            .fill({opacity: 0})
+            .stroke({color: "#000", width: 5})
+            .center(pos_x, pos_y)
+            .y(pos_y - p * 2);
     }
 }
 

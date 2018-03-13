@@ -39,7 +39,7 @@ let JSONBlocks = {
                 type:           "block_type",
                 message0:       "яркость",
                 inputsInline:   false,
-                output:         FIELDTYPES.BRIGHTNESS,
+                output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.BRIGHTNESS.colour,
                 tooltip:        "Хранит значение яркости"
             })

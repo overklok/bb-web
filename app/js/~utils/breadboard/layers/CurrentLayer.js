@@ -1,7 +1,7 @@
 import Layer from "../core/Layer";
 import Current from "../core/Current";
 
-const CURRENT_WIDTH = 10;
+const CURRENT_WIDTH = 20;
 const CURRENT_COLOR_GOOD = "#26d0ff";
 const CURRENT_COLOR_BAD = "#ff0003";
 
@@ -23,12 +23,7 @@ class CurrentLayer extends Layer {
 
     compose() {
         this._cellgroup = this._container.group();
-        this._cellgroup.move(100, 200);
-
-        this.addCurrentGood([
-            {from: {x: 0, y: 0}, to: {x: 0, y: 1}},
-            {from: {x: 0, y: 1}, to: {x: 1, y: 1}},
-        ]);
+        this._cellgroup.move(100, 170);
     }
 
     addCurrentGood(points) {

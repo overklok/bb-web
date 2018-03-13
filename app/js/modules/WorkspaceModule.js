@@ -18,7 +18,8 @@ class WorkspaceModule extends Module {
     static defaults() {
         return {
             allBlocks: false,
-            useScrollbars: false
+            useScrollbars: false,
+            zoomInitial: 0.7
         }
     }
 
@@ -39,7 +40,12 @@ class WorkspaceModule extends Module {
         this._blockly.registerBlockTypes(JSONBlocks);
         this._blockly.registerGenerators(JSONGenerators);
 
-        this._blockly.setAudibles(['event_key_onpush_letter', 'event_key_onpush_number', 'event_key_onpush_any', 'event_key_onpush_any_number']);
+        this._blockly.setAudibles([
+            'event_key_onpush_letter',
+            'event_key_onpush_number',
+            'event_key_onpush_any',
+            'event_key_onpush_any_number'
+        ]);
 
         this._subscribeToWrapperEvents();
     }
@@ -53,11 +59,11 @@ class WorkspaceModule extends Module {
         return new Promise(resolve => {
             if (!dom_node) {resolve(false)}
 
-            this._blockly.inject(dom_node, this._options.useScrollbars);
+            this._blockly.inject(dom_node, this._options.useScrollbars, false, this._options.zoomInitial);
             this._state.display = true;
 
             if (this._options.allBlocks) {
-                this._blockly.updateBlockTypes(Object.keys(JSONGenerators));
+                this._blockly.updateBlockTypes(JSONGenerators);
             } else {
                 this._blockly.updateBlockTypes(this._state.block_types);
             }

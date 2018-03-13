@@ -55,7 +55,7 @@ class BlocklyWrapper extends Wrapper {
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
-            change_listener_registered: false,  // зарегистрирован ли обработчик событий изменения
+            changeListenerRegistered: false,    // зарегистрирован ли обработчик событий изменения
         };
 
         this._callbacks = {
@@ -140,7 +140,7 @@ class BlocklyWrapper extends Wrapper {
         }
 
         /// если не включён режим только чтения и обработчик событий изменения не был зарегистрирован ранее
-        if (!read_only && !this._state.change_listener_registered) {
+        if (!read_only && !this._state.changeListenerRegistered) {
             this.workspace.addChangeListener(event => {
                 if (!this.silent) {
                     this._filterEvent(event)
@@ -214,7 +214,9 @@ class BlocklyWrapper extends Wrapper {
     updateBlockTypes(block_types) {
         let toolbox_content = "";
 
-        for (let block_type of Object.keys(block_types)) {
+        let block_type_array = Array.isArray(block_types) ? block_types : Object.keys(block_types);
+
+        for (let block_type of block_type_array) {
             toolbox_content += "<block type='" + block_type + "'></block>";
         }
 

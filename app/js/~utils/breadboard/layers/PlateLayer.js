@@ -17,6 +17,10 @@ class PlateLayer extends Layer {
 
         this._container.addClass(PlateLayer.Class);
 
+        this._callbacks = {
+            change: () => {}
+        };
+
         this._plates = {};
         this._cellgroup = undefined;
 
@@ -26,7 +30,7 @@ class PlateLayer extends Layer {
 
     compose() {
         this._cellgroup = this._container.group();
-        this._cellgroup.move(100, 200);
+        this._cellgroup.move(100, 170);
     }
 
     getCurrentPlatesData() {
@@ -37,8 +41,8 @@ class PlateLayer extends Layer {
 
             data.push({
                 type: plate.alias,
-                x: plate.x,
-                y: plate.y,
+                x: plate._params.cell.idx.x,
+                y: plate._params.cell.idx.y,
                 orientation: plate.orientation,
                 id: plate.id,
                 extra: plate.extra
@@ -68,12 +72,12 @@ class PlateLayer extends Layer {
         }
 
         if (editable) {
+            // this._setCurrentPlatesEditable(true);
             this._setCurrentPlatesEditable(true);
-            this._setCurrentPlatesRemovable(true);
             this._editable = true;
         } else {
+            // this._setCurrentPlatesEditable(false);
             this._setCurrentPlatesEditable(false);
-            this._setCurrentPlatesRemovable(false);
             this._editable = false;
         }
     }
@@ -96,11 +100,11 @@ class PlateLayer extends Layer {
         }
 
         let plate_class = PlateLayer._typeToPlateClass(type);
+
         let plate = new plate_class(this._cellgroup, this.__grid, id, extra);
 
         if (this._editable) {
-            plate.setEditable(this._container.node);
-            this._attachEventsRemovable(plate);
+            this._attachEventsEditable(plate);
         }
 
         plate.draw(this.__grid.cell(x, y), orientation);
@@ -110,6 +114,11 @@ class PlateLayer extends Layer {
         return plate.id;
     }
 
+    /**
+     * Удалить плашку
+     *
+     * @param {int} id идентификатор плашки
+     */
     removePlate(id) {
         if (typeof id === "undefined") {
             throw new TypeError("Argument 'id' must be defined");
@@ -124,8 +133,19 @@ class PlateLayer extends Layer {
         plate.dispose();
 
         delete this._plates[plate.id];
+
+        this._callbacks.change({
+            id: plate.id,
+            action: 'remove'
+        })
     }
 
+    /**
+     * Установить состояние плашки
+     *
+     * @param {int}     plate_id    идентифиактор плашки
+     * @param {object}  state       состояние плашки
+     */
     setPlateState(plate_id, state) {
         if (!plate_id in this._plates) {
             throw new RangeError("This plate does not exist");
@@ -141,23 +161,30 @@ class PlateLayer extends Layer {
      */
     removeAllPlates() {
         for (let plate_id in this._plates) {
-            let plate = this._plates[plate_id];
-
-            plate.dispose();
+            removePlate(plate_id);
         }
-
-        this._plates = {};
     }
 
+    /**
+     * Установить обработчик изменения слоя
+     *
+     * @param {function} cb фукнция, вызывающаяся при изменении содержимого слоя
+     */
+    onChange(cb) {
+        if (!cb) {this._callbacks.change = () => {}}
+
+        this._callbacks.change = cb;
+    }
+
+    /**
+     * Сделать текущие плашки редактируемыми
+     *
+     * @param   {boolean} editable флаг, сделать редактируемыми?
+     * @returns {boolean} принято ли значение флага
+     *
+     * @private
+     */
     _setCurrentPlatesEditable(editable=false) {
-        for (let plate_id in this._plates) {
-            let plate = this._plates[plate_id];
-
-            plate.setEditable(editable && this._container.node);
-        }
-    }
-
-    _setCurrentPlatesRemovable(editable=false) {
         if (editable === this._editable) {
             return true;
         }
@@ -167,43 +194,65 @@ class PlateLayer extends Layer {
             this._plate_selected = null;     // удалить ссылку на выделенный элемент
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
             document.removeEventListener('click', this._onClick(), false);
+            document.removeEventListener('keyup', this._onKey(), false);
             return true;
         }
 
         for (let plate_id in this._plates) {
             let plate = this._plates[plate_id];
 
-            this._attachEventsRemovable(plate);
+            this._attachEventsEditable(plate);
         }
 
         document.addEventListener('click', this._onClick(), false);
+        document.addEventListener('keyup', this._onKey(), false);
 
         return true;
     }
 
-    _attachEventsRemovable(plate) {
+    /**
+     * Назначить внутренние обработчики событий плашки
+     *
+     * @param {Plate} plate плашка, события которыой необходимо будет обрабатывать
+     *
+     * @private
+     */
+    _attachEventsEditable(plate) {
         if (!plate) {
             throw new TypeError("A `plate` argument must be defined");
         }
 
+        /// Когда на плашку нажали кнопкой мыши
         plate.container.mousedown(evt => {
-            if (this._plate_selected) {
+            /// Если плашка не была выделена ранее
+            if (this._plate_selected && plate !== this._plate_selected) {
+                /// Снять её выделение
                 this._plate_selected.deselect();
+                /// Отключить её события
+                this._plate_selected.setEditable(false);
+                this._plate_selected.onChange(null);
             }
 
+            /// Обрабатывать её события
+            plate.setEditable(this._container.node);
+            plate.onChange(this._callbacks.change);
+
+            /// выделить данную плашку
             this._plate_selected = plate;
             this._plate_selected.select();
         });
-
-        plate.container.dblclick(evt => {
-            if (plate === this._plate_selected) {
-                this._plate_selected = null;
-            }
-
-            this.removePlate(plate.id);
-        });
     }
 
+    /**
+     * Сгенерировать обработчик события нажатия кнопкой мыши по слою
+     *
+     * Если обработчик события был сгенерирован ранее, возвращается точно тот же обработчик.
+     * Это можно использовать для открепления обработчика с помощью функции removeEventListener.
+     *
+     * @returns {(function(*))|*} обработчик события нажатия кнопкой мыши по слою
+     *
+     * @private
+     */
     _onClick() {
         if (this._onclick) {
             return this._onclick;
@@ -212,15 +261,67 @@ class PlateLayer extends Layer {
         this._onclick = (evt) => {
             let el = evt.target;
 
+            /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
             while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
 
+            /// Если нет выделенной плашки
             if (!el && this._plate_selected) {
+                /// Снять выделение
                 this._plate_selected.deselect();
+                /// Отключить её события
+                this._plate_selected.setEditable(false);
+                this._plate_selected.onChange(null);
+
                 this._plate_selected = null;
             }
         };
 
         return this._onclick;
+    }
+
+    /**
+     * Сгенерировать обработчик события нажатия клавиши
+     *
+     * Если обработчик события был сгенерирован ранее, возвращается точно тот же обработчик.
+     * Это можно использовать для открепления обработчика с помощью функции removeEventListener.
+     *
+     * @returns {(function(*))|*} обработчик события нажатия клавиши
+     *
+     * @private
+     */
+    _onKey() {
+        if (this._onkey) {
+            return this._onkey;
+        }
+
+        /// Когда нажата кнопка клавиатуры
+        this._onkey = (evt) => {
+            if (evt.key === "Backspace") {
+                /// Если есть выденленная плашка
+                if (this._plate_selected) {
+                    /// Удалить её
+                    this.removePlate(this._plate_selected.id);
+                    this._plate_selected = null;
+                }
+            }
+        };
+
+        return this._onkey;
+    }
+
+    /**
+     * Возвратить массив всех типов плашек
+     *
+     * @returns {[string]}
+     * @private
+     */
+    static _getAllPlateTypes() {
+        return [
+            ResistorPlate.Alias,
+            BridgePlate.Alias,
+            CapacitorPlate.Alias,
+            StripPlate.Alias,
+        ]
     }
 
     /**

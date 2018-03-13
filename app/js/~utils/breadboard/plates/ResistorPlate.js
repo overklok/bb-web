@@ -4,10 +4,11 @@ import Cell from "../core/Cell";
 class ResistorPlate extends Plate {
     static get Alias() {return "resistor"}
 
-    constructor(container, grid, id, resistance="200") {
-        super(container, grid, id);
+    constructor(container, grid, id, resistance) {
+        super(container, grid, id, resistance);
 
-        this._params.resistance = resistance;
+        this._params.resistance = (resistance <= 0) ? "200" : resistance;
+        this._extra = this._params.resistance;
 
         this._cell = new Cell(0, 0, this.__grid);
         this._size = {x: 2, y: 1};

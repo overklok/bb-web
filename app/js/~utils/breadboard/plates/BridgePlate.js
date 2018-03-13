@@ -7,14 +7,14 @@ class BridgePlate extends Plate {
     constructor(container, grid, id, length=2) {
         super(container, grid, id, length);
 
-        if (length < 2) {
-            throw new RangeError("BridgePlate's length cannot be less than 2");
-        }
+        length = Number(length);
+        length = Number.isInteger(length) ? length : 2;
 
-        this._params.length = length;
+        this._params.len = (length < 2) ? 2 : length;
+        this._extra = this._params.len;
 
         this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: length, y: 1};
+        this._size = {x: this._params.len, y: 1};
 
         this._state = {
             highlighted: false,
@@ -32,7 +32,7 @@ class BridgePlate extends Plate {
 
         this._bezel.fill({color: "#ff9205"}).radius(10);
 
-        this._group.text(`Bridge ${this._params.length} cells`).font({size: 20});
+        this._group.text(`Bridge ${this._params.len} cells`).font({size: 20});
     };
 
     /**

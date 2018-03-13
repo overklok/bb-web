@@ -95,8 +95,16 @@ let processExercise = (_exercise) => {
 };
 
 let processPopover = (_popover) => {
+    let intro_text = "";
+
+    if (_popover.title) {
+        intro_text += `<h1>${_popover.title}</h1>`;
+    }
+
+    intro_text += _popover.content;
+
     return {
-        intro: `<h1>${_popover.title}</h1>${_popover.content}`,
+        intro: intro_text,
         position: _popover.placement,
         element: _popover.element
     };

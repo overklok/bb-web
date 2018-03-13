@@ -4,7 +4,7 @@ import BreadboardWrapper from '../wrappers/BreadboardWrapper';
 
 class BreadboardModule extends Module {
     static get eventspace_name() {return "bb"}
-    static get event_types() {return []}
+    static get event_types() {return ["change"]}
 
     static defaults() {
         return {
@@ -20,6 +20,8 @@ class BreadboardModule extends Module {
         };
 
         this._board = new BreadboardWrapper();
+
+        this._subscribeToWrapperEvents();
     }
 
     inject(dom_node) {
@@ -40,7 +42,6 @@ class BreadboardModule extends Module {
     }
 
     eject() {
-        // if (strict && !dom_node) {return false}
         if (!this._state.display) {return true}
 
         this._board.eject();
@@ -67,11 +68,15 @@ class BreadboardModule extends Module {
     }
 
     getData() {
-        return {};
+        if (!this._state.display) {return false}
+
+        return this._board.getPlates();
     }
 
     _subscribeToWrapperEvents() {
-        // No events
+        this._board.onChange((data) => {
+            this.emitEvent("change", data);
+        })
     }
 }
 
