@@ -1,7 +1,7 @@
 import Module from "../core/Module";
 
 import SpinnerWrapper from "../wrappers/SpinnerWrapper";
-import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
+// import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
 import TextPaneWrapper from "../wrappers/TextPaneWrapper";
 import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
@@ -44,7 +44,7 @@ class GUIModule extends Module {
 
         this._filer = new FileWrapper();
         this._spinner = new SpinnerWrapper();
-        this._lesson_pane = new LessonPaneWrapper();
+        // this._lesson_pane = new LessonPaneWrapper();
         this._text_pane = new TextPaneWrapper();
         this._launch_btn = new LaunchBtnWrapper();
 
@@ -63,8 +63,8 @@ class GUIModule extends Module {
         return new Promise((resolve, reject) => {
             if (!missions) {return resolve(false)}
 
-            this._lesson_pane.registerMissions(missions);
-            this._lesson_pane.displayMissionButtons();
+            // this._lesson_pane.registerMissions(missions);
+            // this._lesson_pane.displayMissionButtons();
 
             resolve(true);
         });
@@ -72,7 +72,7 @@ class GUIModule extends Module {
 
     setMissionCurrent(mission_idx) {
         return new Promise((resolve, reject) => {
-            this._lesson_pane.setMissionCurrent(mission_idx);
+            // this._lesson_pane.setMissionCurrent(mission_idx);
 
             resolve(true);
         });
@@ -82,7 +82,7 @@ class GUIModule extends Module {
         return new Promise((resolve, reject) => {
             if (!mission) {return resolve(false)}
 
-            this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX, mission.exerciseCount);
+            // this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX, mission.exerciseCount);
 
             resolve(true);
         });
@@ -143,7 +143,7 @@ class GUIModule extends Module {
 
         this._state.areasDisp.lesson = true;
 
-        return this._lesson_pane.inject(dom_node);
+        // return this._lesson_pane.inject(dom_node);
     }
 
     /**
@@ -220,9 +220,9 @@ class GUIModule extends Module {
         // });
 
         /* Как только нажата кнопка запуса миссии */
-        this._lesson_pane.onButtonClick(idx => {
-            this.emitEvent("mission", idx);
-        });
+        // this._lesson_pane.onButtonClick(idx => {
+        //     this.emitEvent("mission", idx);
+        // });
 
         /* Как только нажата кнопка запуска/проверки */
         this._launch_btn.onButtonClick((check, start) => {

@@ -1,11 +1,14 @@
 import Wrapper from "../core/Wrapper";
 
-import pager from "../~utils/js-lesson/pager/pager.js";
-import thm from "../~utils/js-lesson/pager/pager.css";
+import pager from "../~utils/js-lesson/lesson-bar/lesson-bar.js";
+import thm_pager from "../~utils/js-lesson/lesson-bar/lesson-bar.css";
+import thm_bar from "../~utils/js-lesson/mission-bar/mission-bar.css";
 
 const CLASSES = {
     PAGER: "pager",
-    ITEM_LEADING: "pager__item_leading"
+    ITEM_LEADING: "pager__item_leading",
+    BAR: "bar",
+    BAR_LEADING: "bar__item_leading"
 };
 
 class LessonPaneWrapper extends Wrapper {
@@ -26,19 +29,23 @@ class LessonPaneWrapper extends Wrapper {
         this._missions = [];
 
         this._container = undefined;
+        this._containerX = undefined;
     }
 
     inject(dom_node) {
         if (!dom_node) {return false}
 
         this._container = document.createElement('div');
+        this._containerX = document.createElement('div');
         this._container.setAttribute("class", CLASSES.PAGER);
+        this._containerX.setAttribute("class", CLASSES.BAR);
 
         dom_node.appendChild(this._container);
+        dom_node.appendChild(this._containerX);
 
         this.displayMissionButtons();
 
-        pager();
+        this.unnamed();
 
         this._state.display = true;
     }
@@ -86,6 +93,8 @@ class LessonPaneWrapper extends Wrapper {
 
            this._callbacks.buttonClick(idx);
         });
+
+        pager();
     }
 
     setMissionCurrent(mission_idx) {
@@ -118,6 +127,15 @@ class LessonPaneWrapper extends Wrapper {
             {height: `${percent}%`},
             400,
             "easeInOutCirc"
+        )
+    }
+
+    unnamed() {
+        $(this._containerX).append(
+            `<div class="lesson-bar__item">Сборка схемы</div>
+            <div class="lesson-bar__item">Программирование</div>
+            <div class="lesson-bar__item">(тут прогресс выполнения задания)</div>
+            <div class="lesson-bar__item">Программирование 2</div>`
         )
     }
 

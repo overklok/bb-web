@@ -1,0 +1,11 @@
+.lesson-pane {
+  background-color: #00fcff;
+}
+.lesson-pane .lesson-pane-north {
+  width: 100%;
+  height: 50px;
+}
+.lesson-pane .lesson-pane-south {
+  width: 100%;
+  height: 50px;
+}

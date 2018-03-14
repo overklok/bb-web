@@ -1,9 +1,9 @@
-@import "../pager";
+@import "../lesson-bar";
 
 @button_border_radius: 5px;
 @button_font_size: 16px;
 
-.pager__link {
+.lesson-bar__link {
   display: block;
   position: absolute;
   overflow: hidden;
@@ -26,14 +26,14 @@
   //transition: all .5s ease-in-out 400ms;
   transition: all 500ms cubic-bezier(0.77, 0, 0.175, 1) 00ms;
 
-  .pager__link_num {
+  .lesson-bar__link_num {
     color: black;
     position: absolute;
     width: 100%;
     font-size: @button_font_size;
   }
 
-  .pager__link_progressor {
+  .lesson-bar__link_progressor {
     content: '\A';
     position: absolute;
     background: #98ff79;
