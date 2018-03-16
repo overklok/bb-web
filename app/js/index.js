@@ -146,7 +146,10 @@ class Application {
             this.ins.getInitialLessonID()
                 .then(lesson_id => this.gs.getLessonData(lesson_id))
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
-                .then(missions => this.gui.showMissionButtons(missions))
+                .then(lesson => {
+                    this.gui.showMissionButtons(lesson.missions);
+                    this.gui.setCourseText(lesson.name)
+                })
                 .then(() => this.ins.launchLesson())
                 .catch(error => {
                     this.gui.showSpinnerError(error.message);
@@ -178,11 +181,13 @@ class Application {
 
             /// Заблокировать все события
             this._dispatcher.only([]);
+
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
                 .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
                 .then(() => this.ws.setMaxBlockLimit(max_blocks))
                 .then(() => this.ws.setEditable(show_btn))
+                .then(() => this.gui.setExerciseCurrent(exercise.exerciseIDX))
                 .then(() => this.gui.switchLaunchButton(show_btn, is_check))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))
@@ -303,6 +308,7 @@ class Application {
                     onResolve => this.ins.launchExerciseNext(),
                     onReject => {this.ins.launchExerciseNext(true)}
                 )
+                .then(() => this.gui.setExerciseCurrent(false))
                 .then(() => this._dispatcher.only(['gui:*', 'ins:pass']))
         });
 

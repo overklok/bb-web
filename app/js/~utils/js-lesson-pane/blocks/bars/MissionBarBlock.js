@@ -18,6 +18,14 @@ class MissionBarBlock extends BarBlock {
     }
 
     setExerciseActive(exercise_idx) {
+        if (exercise_idx === false) {
+            if (this._state.exerciseActiveIDX !== undefined) {
+               this._items[this._state.exerciseActiveIDX].setLeading(false);
+            }
+
+            return;
+        }
+
         if (!(exercise_idx in this._items)) {
             throw new RangeError(`Mission bar doesn't have an item with number ${exercise_idx}`)
         }
@@ -32,6 +40,8 @@ class MissionBarBlock extends BarBlock {
 
     setExercises(exercises_data) {
         this.clearItems();
+
+        this._state.exerciseActiveIDX = undefined;
 
         for (let exercise_data of exercises_data) {
             this.addExercise(exercise_data);

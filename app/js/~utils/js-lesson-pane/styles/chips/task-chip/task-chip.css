@@ -1,0 +1,7 @@
+.task-chip p {
+  margin: 0;
+  padding: 0 5px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+}

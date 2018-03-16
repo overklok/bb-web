@@ -75,7 +75,7 @@ class InstructorModule extends Module {
 
             this._parseLesson(lesson_data);
 
-            resolve(this._lesson.missions);
+            resolve(this._lesson);
         });
     }
 

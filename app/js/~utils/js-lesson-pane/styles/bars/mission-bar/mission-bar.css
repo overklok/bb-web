@@ -9,8 +9,8 @@
   padding: 0 2px 0 2px;
   width: 100%;
   min-width: 0;
-  height: 50px;
-  line-height: 50px;
+  height: 30px;
+  line-height: 30px;
   font-weight: normal;
   font-size: 14px;
   white-space: nowrap;
@@ -28,5 +28,5 @@
   display: flex;
   justify-content: space-around;
   float: right;
-  height: 50px;
+  height: 30px;
 }

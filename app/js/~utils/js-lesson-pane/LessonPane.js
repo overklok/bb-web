@@ -2,7 +2,6 @@ import MissionBarBlock from "./blocks/bars/MissionBarBlock";
 import LessonBarBlock from "./blocks/bars/LessonBarBlock";
 import MenuBarBlock from "./blocks/bars/MenuBarBlock";
 import CourseChipBlock from "./blocks/chips/CourseChipBlock";
-import LogoChipBlock from "./blocks/chips/LogoChipBlock";
 import MenuChipBlock from "./blocks/chips/MenuChipBlock";
 import TaskChipBlock from "./blocks/chips/TaskChipBlock";
 import FlipperBlock from "./blocks/FlipperBlock";
@@ -45,12 +44,15 @@ class LessonPane {
 
             chips: {
                 course: new CourseChipBlock(),
-                logo: new LogoChipBlock(),
                 menu: new MenuChipBlock(),
                 task: new TaskChipBlock()
             },
 
             flipper: new FlipperBlock()
+        };
+
+        this._callbacks = {
+            onmissionclick: (idx) => {},
         };
 
         this._state = {
@@ -74,51 +76,61 @@ class LessonPane {
         this._includeBlocks();
 
         this._state.included = true;
+
+        this._attachHandlers();
     }
 
-    setExercises() {
-        if (!this._state.included) {throw new Error("Cannot set any exercises, include first")}
-
-        this._blocks.bars.mission.setExercises(["text1", "text2", "text3", "text4"]);
-        this._blocks.bars.mission.setExerciseActive(1);
-        this._blocks.bars.mission.setExerciseActive(2);
+    setMissions(missions) {
+        if (!this._state.included) {throw new Error("Cannot set any missions, include first")}
 
         this._blocks.bars.lesson.setMissions([
             {exerciseCount: 2},
             {exerciseCount: 3},
-            {exerciseCount: 4},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
         ]);
 
         LessonBarBlock.runStyle();
+    }
 
-        this._blocks.bars.lesson.onClick(data => {
-            console.log('ONCLICK', data);
-        });
+    setExercises(exercises) {
+        if (!this._state.included) {throw new Error("Cannot set any exercises, include first")}
 
-        this._blocks.bars.lesson.setMissionActive(2);
-        this._blocks.bars.lesson.setMissionActive(3);
-        this._blocks.bars.lesson.setMissionActive(4);
-        this._blocks.bars.lesson.setMissionActive(5);
+        this._blocks.bars.mission.setExercises(exercises);
+    }
 
-        this._blocks.bars.lesson.setMissionProgress(0, 1);
-        this._blocks.bars.lesson.setMissionProgress(1, 1);
-        this._blocks.bars.lesson.setMissionProgress(2, 1);
-        this._blocks.bars.lesson.setMissionProgress(3, 1);
-        this._blocks.bars.lesson.setMissionProgress(4, 1);
-        this._blocks.bars.lesson.setMissionProgress(5, 1);
-        this._blocks.bars.lesson.setMissionProgress(6, 1);
-        this._blocks.bars.lesson.setMissionProgress(7, 1);
-        this._blocks.bars.lesson.setMissionProgress(8, 1);
-        this._blocks.bars.lesson.setMissionProgress(9, 2);
+    setLogoText(text) {
+        if (!this._state.included) {throw new Error("Cannot set logo text, include first")}
+
+        this._blocks.chips.course.setTextLogo(text);
+    }
+
+    setCourseText(text) {
+        if (!this._state.included) {throw new Error("Cannot set course text, include first")}
+
+        this._blocks.chips.course.setTextMeta(text);
+    }
+
+    setTaskText(text) {
+        if (!this._state.included) {throw new Error("Cannot set task text, include first")}
+
+        this._blocks.chips.task.setText(text);
+    }
+
+    setExerciseActive(exercise_idx) {
+        if (!this._state.included) {throw new Error("Cannot set active exercise, include first")}
+
+        this._blocks.bars.mission.setExerciseActive(exercise_idx);
+    }
+
+    setMissionActive(mission_idx) {
+        if (!this._state.included) {throw new Error("Cannot set active mission, include first")}
+
+        this._blocks.bars.lesson.setMissionActive(mission_idx);
+    }
+
+    setMissionProgress(mission_idx, exercises_passed_count) {
+        if (!this._state.included) {throw new Error("Cannot set mission progress, include first")}
+
+        this._blocks.bars.lesson.setMissionProgress(mission_idx, exercises_passed_count);
     }
 
     /**
@@ -148,6 +160,10 @@ class LessonPane {
         }
     }
 
+    onMissionClick(cb) {
+        this._callbacks.onmissionclick = cb;
+    }
+
     /**
      * Встроить блоки в контейнеры
      *
@@ -164,6 +180,20 @@ class LessonPane {
             this._containers.north.center.front.self,
             this._containers.north.center.top.self,
         );
+
+        this._blocks.chips.course.include(this._containers.north.center.front.west);
+        this._blocks.chips.task.include(this._containers.south.west);
+        this._blocks.chips.menu.include(this._containers.north.west);
+    }
+
+    _attachHandlers() {
+        this._blocks.chips.menu.onClick((pressed) => {
+            this._blocks.flipper.showSide(pressed ? 'top' : 'front');
+        });
+
+        this._blocks.bars.lesson.onClick(data => {
+            this._callbacks.onmissionclick(data);
+        });
     }
 }
 

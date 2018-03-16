@@ -1,7 +1,7 @@
 import Module from "../core/Module";
 
 import SpinnerWrapper from "../wrappers/SpinnerWrapper";
-// import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
+import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
 import TextPaneWrapper from "../wrappers/TextPaneWrapper";
 import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
@@ -21,6 +21,7 @@ class GUIModule extends Module {
     static defaults() {
         return {
             anyKey: false,  // отключить фильтрацию клавиш
+            logoText: "Tapanda"
         }
     }
 
@@ -44,9 +45,11 @@ class GUIModule extends Module {
 
         this._filer = new FileWrapper();
         this._spinner = new SpinnerWrapper();
-        // this._lesson_pane = new LessonPaneWrapper();
+        this._lesson_pane = new LessonPaneWrapper();
         this._text_pane = new TextPaneWrapper();
         this._launch_btn = new LaunchBtnWrapper();
+
+        this._lesson_pane.registerLogoText(this._options.logoText);
 
         this._subscribeToWrapperEvents();
     }
@@ -63,8 +66,9 @@ class GUIModule extends Module {
         return new Promise((resolve, reject) => {
             if (!missions) {return resolve(false)}
 
-            // this._lesson_pane.registerMissions(missions);
-            // this._lesson_pane.displayMissionButtons();
+            console.log(missions);
+
+            this._lesson_pane.registerMissions(missions);
 
             resolve(true);
         });
@@ -72,7 +76,7 @@ class GUIModule extends Module {
 
     setMissionCurrent(mission_idx) {
         return new Promise((resolve, reject) => {
-            // this._lesson_pane.setMissionCurrent(mission_idx);
+            this._lesson_pane.setMissionActive(mission_idx);
 
             resolve(true);
         });
@@ -82,7 +86,31 @@ class GUIModule extends Module {
         return new Promise((resolve, reject) => {
             if (!mission) {return resolve(false)}
 
-            // this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX, mission.exerciseCount);
+            this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX);
+
+            resolve(true);
+        });
+    }
+
+    setExerciseCurrent(exercise_idx) {
+        return new Promise((resolve, reject) => {
+            console.log(exercise_idx);
+
+            this._lesson_pane.setExerciseActive(exercise_idx);
+
+            resolve(true);
+        });
+    }
+
+    setCourseText(lesson_name) {
+        return new Promise((resolve, reject) => {
+            let text = "Урок: " + lesson_name;
+
+            if (!this._state.areasDisp.lesson) {
+                this._lesson_pane.registerCourseText(text);
+            } else {
+                this._lesson_pane.setCourseText(text);
+            }
 
             resolve(true);
         });
@@ -143,7 +171,7 @@ class GUIModule extends Module {
 
         this._state.areasDisp.lesson = true;
 
-        // return this._lesson_pane.inject(dom_node);
+        return this._lesson_pane.inject(dom_node);
     }
 
     /**
@@ -220,9 +248,9 @@ class GUIModule extends Module {
         // });
 
         /* Как только нажата кнопка запуса миссии */
-        // this._lesson_pane.onButtonClick(idx => {
-        //     this.emitEvent("mission", idx);
-        // });
+        this._lesson_pane.onMissionClick(idx => {
+            this.emitEvent("mission", idx);
+        });
 
         /* Как только нажата кнопка запуска/проверки */
         this._launch_btn.onButtonClick((check, start) => {
