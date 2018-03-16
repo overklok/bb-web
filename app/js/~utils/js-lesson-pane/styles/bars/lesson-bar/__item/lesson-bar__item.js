@@ -7,7 +7,7 @@ const __item_leading = ".lesson-bar__item_leading";
 let hover_cb_in = function() {console.warn("hover_cb_in is orphan")};
 let hover_cb_out = function() {console.warn("hover_cb_out is orphan")};
 
-let barItem = () => {
+let barItemStyle = () => {
     let bar__item = $(__item);
 
     let set_opacity = function(elem, value) {
@@ -51,4 +51,4 @@ let onHover = (fn_in, fn_out) => {
     hover_cb_out = fn_out;
 };
 
-export {barItem, onHover, __link, __item_leading, __item}
+export {barItemStyle, onHover, __link, __item_leading, __item}

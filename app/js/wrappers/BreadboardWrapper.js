@@ -3,11 +3,10 @@ import Wrapper from "../core/Wrapper";
 import Breadboard from "../~utils/breadboard/Breadboard";
 
 const PLATE_TYPES = {
-    'resistor':     ['resistor', 'резистор'],
-    'res':          ['resistor', 'резистор'],
-    'bridge':       ['bridge', 'перемычка'],
-    'capacitor':    ['capacitor', 'конденсатор'],
-    'strip':        ['strip', 'лента']
+    'resistor':     'резистор',
+    'bridge':       'перемычка',
+    'capacitor':    'конденсатор',
+    'strip':        'лента'
 };
 
 /**
@@ -61,7 +60,7 @@ class BreadboardWrapper extends Wrapper {
 
         for (let plate of plates) {
             plate.extra = plate.extra || plate.number;
-            this._plugin.addPlate(PLATE_TYPES[plate.type][0], plate.x, plate.y, plate.orientation, plate.id, plate.extra);
+            this._plugin.addPlate(plate.type, plate.x, plate.y, plate.orientation, plate.id, plate.extra);
         }
     }
 

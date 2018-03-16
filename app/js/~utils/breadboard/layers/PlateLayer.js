@@ -161,7 +161,7 @@ class PlateLayer extends Layer {
      */
     removeAllPlates() {
         for (let plate_id in this._plates) {
-            removePlate(plate_id);
+            this.removePlate(plate_id);
         }
     }
 

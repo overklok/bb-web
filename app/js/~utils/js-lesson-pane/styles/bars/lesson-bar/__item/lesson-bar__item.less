@@ -6,7 +6,7 @@
   float: left;
   position: relative;
 
-  //margin: @button_margin;
+  margin-top: 8px;
   margin-left: 5px;
   margin-right: 5px;
 
@@ -19,6 +19,14 @@
 
   cursor: pointer;
 
+  &:first-of-type {
+    margin-left: 20px;
+  }
+
+  &:last-of-type {
+    margin-right: 20px;
+  }
+
   &:hover {
     //background-color: red;
     .lesson-bar__link {
@@ -29,7 +37,7 @@
     }
   }
 
-  &.bar__item_leading {
+  &.lesson-bar__item_leading {
     .lesson-bar__link {
       background-color: #fff6af;
     }

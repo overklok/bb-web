@@ -1,12 +1,12 @@
 import {
-    barItem,
+    barItemStyle,
     onHover,
     __link as bar__link,
     __item_leading as bar__item_leading,
     __item as bar__item
 } from "./__item/lesson-bar__item";
 
-let lessonBar = () => {
+let lessonBarStyle = () => {
     let bars = $(".lesson-bar");
 
     let get_offset = function (bar) {
@@ -100,8 +100,8 @@ let lessonBar = () => {
     };
 
     onHover(on_hover_in, on_hover_out);
-    barItem();
+    barItemStyle();
     $(window).resize();
 };
 
-export default lessonBar;
+export default lessonBarStyle;

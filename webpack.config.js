@@ -7,8 +7,8 @@ const lib_dir = __dirname + '/vendor/js';
 
 module.exports = {
     entry: {
-        bundle:             './app/js/index.js',
-        // lesson_pane:        './app/js/lesson_pane.js',
+        // bundle:             './app/js/index.js',
+        lesson_pane:        './app/js/lesson_pane.js',
         // admin_board:        './app/js/admin_board.js',
         // admin_blockly:      './app/js/admin_blockly.js',
     },
@@ -86,11 +86,11 @@ module.exports = {
         //     inject: 'body',
         //     filename: 'admin.html'
         // }),
-        // new HtmlWebpackPlugin({
-        //     template: './app/html/lesson-pane.html',
-        //     inject: 'head',
-        //     filename: 'lesson-pane.html'
-        // }),
+        new HtmlWebpackPlugin({
+            template: './app/html/lesson-pane.html',
+            inject: 'head',
+            filename: 'lesson-pane.html'
+        }),
         new CopyWebpackPlugin([
             {from: './app/css/spinner.css', to: './spinner.css'},
             {from: './app/css/spinner.css', to: '../../codehour-breadboard-client/web/spinner.css'},

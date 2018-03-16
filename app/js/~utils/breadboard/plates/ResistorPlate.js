@@ -7,7 +7,7 @@ class ResistorPlate extends Plate {
     constructor(container, grid, id, resistance) {
         super(container, grid, id, resistance);
 
-        this._params.resistance = (resistance <= 0) ? "200" : resistance;
+        this._params.resistance = (resistance <= 0) ? 200 : resistance;
         this._extra = this._params.resistance;
 
         this._cell = new Cell(0, 0, this.__grid);

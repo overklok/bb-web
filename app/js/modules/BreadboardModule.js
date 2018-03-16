@@ -70,7 +70,11 @@ class BreadboardModule extends Module {
     getData() {
         if (!this._state.display) {return false}
 
-        return this._board.getPlates();
+        let plates = this._board.getPlates();
+
+        console.log(plates);
+
+        return plates;
     }
 
     _subscribeToWrapperEvents() {
