@@ -2,32 +2,54 @@
   background-color: #00fcff;
 
   .lesson-pane-north {
+    display: flex;
+
     width: 100%;
     height: 50px;
 
-    div {
-      float: left;
-    }
-
     .lesson-pane-north-west {
-      width: 10%;
+      width: 100px;
       height: 100%;
 
       background-color: #00ff00;
     }
 
     .lesson-pane-north-center {
-      width: 40%;
+      min-width: 40%;
+      width: 100%;
       height: 100%;
 
-      background-color: brown;
-    }
+      .lesson-pane-north-center-front {
+        display: flex;
 
-    .lesson-pane-north-east {
-      width: 50%;
-      height: 100%;
+        width: 100%;
+        height: 100%;
 
-      background-color: #ff0014;
+        background-color: brown;
+
+        .lesson-pane-north-center-front-west {
+          width: 100%;
+          height: 100%;
+
+          background-color: #ff004c;
+        }
+
+        .lesson-pane-north-center-front-center {
+          min-width: 40%;
+          height: 100%;
+
+          background-color: brown;
+        }
+      }
+
+      .lesson-pane-north-center-top {
+        display: flex;
+
+        width: 100%;
+        height: 100%;
+
+        background-color: #a59900;
+      }
     }
   }
 

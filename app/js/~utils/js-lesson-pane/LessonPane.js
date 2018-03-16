@@ -5,22 +5,30 @@ import CourseChipBlock from "./blocks/chips/CourseChipBlock";
 import LogoChipBlock from "./blocks/chips/LogoChipBlock";
 import MenuChipBlock from "./blocks/chips/MenuChipBlock";
 import TaskChipBlock from "./blocks/chips/TaskChipBlock";
+import FlipperBlock from "./blocks/FlipperBlock";
 
 import thm from "./styles/containers/lesson-pane.css";
 
 const CLASEES = {
-    CONTAINER_MAIN: "lesson-pane",
-    CONTAINER_NORTH: "lesson-pane-north",
-    CONTAINER_SOUTH: "lesson-pane-south",
+    CONTAINER_MAIN: "lesson-pane"
 };
 
 class LessonPane {
     constructor() {
+        this._container = undefined;
+
         this._containers = {
             north: {
                 west: undefined,
-                center: undefined,
-                east: undefined
+                center: {
+                    front: {
+                        west: undefined,
+                        center: undefined,
+                    },
+                    top: {
+                        center: undefined,
+                    }
+                }
             },
             south: {
                 west: undefined,
@@ -40,7 +48,9 @@ class LessonPane {
                 logo: new LogoChipBlock(),
                 menu: new MenuChipBlock(),
                 task: new TaskChipBlock()
-            }
+            },
+
+            flipper: new FlipperBlock()
         };
 
         this._state = {
@@ -56,7 +66,11 @@ class LessonPane {
     include(dom_node) {
         if (!dom_node) {throw new TypeError("DOM Node is not defined")}
 
-        this._composeContainers(dom_node);
+        this._container = document.createElement("div");
+        this._container.classList = CLASEES.CONTAINER_MAIN;
+        dom_node.appendChild(this._container);
+
+        this._composeContainers(this._container, this._containers, CLASEES.CONTAINER_MAIN);
         this._includeBlocks();
 
         this._state.included = true;
@@ -73,10 +87,6 @@ class LessonPane {
             {exerciseCount: 2},
             {exerciseCount: 3},
             {exerciseCount: 4},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
-            {exerciseCount: 1},
             {exerciseCount: 1},
             {exerciseCount: 1},
             {exerciseCount: 1},
@@ -114,41 +124,28 @@ class LessonPane {
     /**
      * Скомпоновать дерево контейнеров
      *
-     * @param dom_node
+     * @param parent_node
+     * @param containers
      * @private
      */
-    _composeContainers(dom_node) {
-        if (!dom_node) {throw new TypeError("DOM Node is not defined")}
+    _composeContainers(parent_node, containers, parent_name) {
+        if (!parent_node) {throw new TypeError("Parent DOM Node is not defined")}
 
-        let containers = {
-            north: document.createElement("div"),
-            south: document.createElement("div"),
-        };
+        for (let container_id in containers) {
+            let class_name = parent_name + "-" + container_id;
 
-        /// создать верхний и нижний контейнеры
-        containers.north.classList = CLASEES.CONTAINER_NORTH;
-        containers.south.classList = CLASEES.CONTAINER_SOUTH;
+            let div = document.createElement("div");
+            div.classList = class_name;
 
-        /// создать и вставить контейнеры в верхний контейнер
-        for (let c_north_id of Object.keys(this._containers.north)) {
-            this._containers.north[c_north_id] = document.createElement("div");
-            this._containers.north[c_north_id].classList = CLASEES.CONTAINER_NORTH + '-' + c_north_id;
-            containers.north.appendChild(this._containers.north[c_north_id]);
+            if (typeof containers[container_id] === "object") {
+                this._composeContainers(div, containers[container_id], class_name);
+                containers[container_id].self = div;
+            } else {
+                containers[container_id] = div;
+            }
+
+            parent_node.appendChild(div);
         }
-
-        /// создать и вставить контейнеры в нижний контейнер
-        for (let c_south_id of Object.keys(this._containers.south)) {
-            this._containers.south[c_south_id] = document.createElement("div");
-            this._containers.south[c_south_id].classList = CLASEES.CONTAINER_SOUTH + '-' + c_south_id;
-            containers.south.appendChild(this._containers.south[c_south_id]);
-        }
-
-        /// вставить верхний и нижний контейнеры в главный узел
-        dom_node.appendChild(containers.north);
-        dom_node.appendChild(containers.south);
-
-        /// главному узлу присвоить класс
-        dom_node.classList += " " + CLASEES.CONTAINER_MAIN;
     }
 
     /**
@@ -161,7 +158,12 @@ class LessonPane {
      */
     _includeBlocks() {
         this._blocks.bars.mission.include(this._containers.south.center);
-        this._blocks.bars.lesson.include(this._containers.north.east);
+        this._blocks.bars.lesson.include(this._containers.north.center.front.center);
+        this._blocks.flipper.include(
+            this._containers.north.center.self,
+            this._containers.north.center.front.self,
+            this._containers.north.center.top.self,
+        );
     }
 }
 

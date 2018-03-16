@@ -2,26 +2,41 @@
   background-color: #00fcff;
 }
 .lesson-pane .lesson-pane-north {
+  display: flex;
   width: 100%;
   height: 50px;
 }
-.lesson-pane .lesson-pane-north div {
-  float: left;
-}
 .lesson-pane .lesson-pane-north .lesson-pane-north-west {
-  width: 10%;
+  width: 100px;
   height: 100%;
   background-color: #00ff00;
 }
 .lesson-pane .lesson-pane-north .lesson-pane-north-center {
-  width: 40%;
+  min-width: 40%;
+  width: 100%;
+  height: 100%;
+}
+.lesson-pane .lesson-pane-north .lesson-pane-north-center .lesson-pane-north-center-front {
+  display: flex;
+  width: 100%;
   height: 100%;
   background-color: brown;
 }
-.lesson-pane .lesson-pane-north .lesson-pane-north-east {
-  width: 50%;
+.lesson-pane .lesson-pane-north .lesson-pane-north-center .lesson-pane-north-center-front .lesson-pane-north-center-front-west {
+  width: 100%;
   height: 100%;
-  background-color: #ff0014;
+  background-color: #ff004c;
+}
+.lesson-pane .lesson-pane-north .lesson-pane-north-center .lesson-pane-north-center-front .lesson-pane-north-center-front-center {
+  min-width: 40%;
+  height: 100%;
+  background-color: brown;
+}
+.lesson-pane .lesson-pane-north .lesson-pane-north-center .lesson-pane-north-center-top {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: #a59900;
 }
 .lesson-pane .lesson-pane-south {
   width: 100%;

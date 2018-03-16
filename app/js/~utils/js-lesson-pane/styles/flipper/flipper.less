@@ -1,0 +1,59 @@
+@height: 50px;
+
+.flipper-parent {
+  -webkit-perspective: 1000px;
+     -moz-perspective: 1000px;
+       -o-perspective: 1000px;
+          perspective: 1000px;
+}
+
+.flipper {
+  //width: 100% !important;
+  height: @height !important;
+  position: relative;
+
+  -webkit-transform-style: preserve-3d;
+     -moz-transform-style: preserve-3d;
+       -o-transform-style: preserve-3d;
+          transform-style: preserve-3d;
+
+  -webkit-transition: -webkit-transform .5s;
+        -moz-transition: -moz-transform .5s;
+            -o-transition: -o-transform .5s;
+                  transition: transform .5s;
+}
+
+.flipper > div {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: @height;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.flipper .flipper__front  {
+  -webkit-transform: translateZ( @height / 2 );
+     -moz-transform: translateZ( @height / 2 );
+       -o-transform: translateZ( @height / 2 );
+          transform: translateZ( @height / 2 );
+}
+.flipper .flipper__top {
+  -webkit-transform: rotateX(90deg) translateZ( @height / 2 );
+     -moz-transform: rotateX(90deg) translateZ( @height / 2 );
+       -o-transform: rotateX(90deg) translateZ( @height / 2 );
+          transform: rotateX(90deg) translateZ( @height / 2 );
+}
+.flipper.flipper_show_front {
+  -webkit-transform: translateZ( -@height / 2 );
+     -moz-transform: translateZ( -@height / 2 );
+       -o-transform: translateZ( -@height / 2 );
+          transform: translateZ( -@height / 2 );
+}
+.flipper.flipper_show_top {
+  -webkit-transform: translateZ( -@height / 2 ) rotateX(  -90deg );
+     -moz-transform: translateZ( -@height / 2 ) rotateX(  -90deg );
+       -o-transform: translateZ( -@height / 2 ) rotateX(  -90deg );
+          transform: translateZ( -@height / 2 ) rotateX(  -90deg );
+}
