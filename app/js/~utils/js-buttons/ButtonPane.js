@@ -68,6 +68,8 @@ class ButtonPane {
             s -=1;
         }
 
+        s -= 1;
+
         this._checkButtonCount();
 
         this._updateStyles([

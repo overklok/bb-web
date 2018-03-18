@@ -1,6 +1,7 @@
 import Wrapper from "../core/Wrapper";
 
 const BUTTON_ID = "launch-btn";
+const BUTTON_CLASS = "launch-btn";
 
 import thm from "../../css/launch-button.css";
 
@@ -67,6 +68,7 @@ class LaunchBtnWrapper extends Wrapper {
     _ensureButton() {
         if (!this._button) {
             this._button = document.getElementById(BUTTON_ID);
+            this._button.classList.add(BUTTON_CLASS)
         }
     }
 }

@@ -4,24 +4,28 @@
   a {
     display: block;
 
-    margin: 5px;
+    margin: 8px 10px;
 
-    width: calc(~'100% - 10px');
-    height: @height - 10px;
+    width: calc(~'100% - 20px');
+    height: @height - 20px;
 
-    line-height: @height - 10px;
+    line-height: @height - 20px;
     text-align: center;
 
     border-radius: 5px;
-    background-color: #000066;
     color: #fff;
 
+    border: #ffffff solid thin;
     cursor: pointer;
+    font-weight: 400;
 
     transition: transform 200ms;
 
     &.pressed {
       transform: scale(0.95);
+
+      background-color: #ffffff;
+      color: #1DA1F2;
     }
   }
 }

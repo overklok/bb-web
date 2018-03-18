@@ -86,8 +86,11 @@ class InstructorModule extends Module {
      *
      * @returns {boolean}
      */
-    launchLesson() {
-        return this.launchMission(0);
+    launchLesson(mission_idx, exercise_idx) {
+        mission_idx = mission_idx ? mission_idx : 0;
+        exercise_idx = exercise_idx ? exercise_idx : 0;
+
+        return this.forceExercise(mission_idx, exercise_idx);
     }
 
     /**
@@ -106,7 +109,7 @@ class InstructorModule extends Module {
         /// если следующей миссии не существует
         if (mission_idx === this._state.missions.length) {
             /// сообщить диспетчеру о завершении
-            this.emitEvent("finish");
+            this.emitEvent('finish');
 
             return Promise.resolve();
         } else {
@@ -135,7 +138,7 @@ class InstructorModule extends Module {
             return this.launchMissionNext();
         } else if (exercise_idx > 0) {
             /// запустить следующее упражнение
-            return this.launchExercise(exercise_idx, skid);
+            return this.launchExercise(exercise_idx);
         }
     }
 
@@ -196,10 +199,11 @@ class InstructorModule extends Module {
      * Запустить упражнение
      *
      * @param {number}  exercise_idx    индекс упражнения в текущей миссии
+     * @param {boolean} forced
      *
      * @returns {Promise<object>}
      */
-    launchExercise(exercise_idx) {
+    launchExercise(exercise_idx, forced=false) {
         let mission_idx = this._state.missionIDX;
 
         /// если индекс упражнения находится в допустимых пределах
@@ -212,8 +216,8 @@ class InstructorModule extends Module {
             exercise_data.missionIDX = mission_idx;
             exercise_data.exerciseIDX = exercise_idx;
 
-            /// если не режим буксовки
-            if (!this._state.missions[mission_idx].skidding) {
+            /// если не режим буксовки либо форсированный режим
+            if (forced || !this._state.missions[mission_idx].skidding) {
                 /// сообщить диспетчеру о запуске упражнения
                 this.emitEvent("start", exercise_data);
             }
@@ -223,6 +227,32 @@ class InstructorModule extends Module {
         } else {
             throw new Error(`Exercise ${exercise_idx} in mission ${mission_idx} not found`);
         }
+    }
+
+    forceExercise(mission_idx, exercise_idx) {
+        if (mission_idx === undefined || Number.isNaN(mission_idx)) {
+            mission_idx = this._state.missionIDX
+        }
+
+        if (exercise_idx === undefined || Number.isNaN(exercise_idx)) {
+            exercise_idx = this._state.missions[this._state.missionIDX].exerciseIDX
+        }
+
+        if (!(mission_idx in this._state.missions)) {
+            throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
+        }
+
+        if (!(exercise_idx < this._state.missions[mission_idx].exerciseCount)) {
+            throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
+        }
+
+        /// обновить индекс миссии
+        if (this._state.missionIDX !== mission_idx) {
+            this._state.missionIDX = mission_idx;
+            this.emitEvent('mission', mission_idx);
+        }
+
+        return this.launchExercise(exercise_idx, true);
     }
 
     /**

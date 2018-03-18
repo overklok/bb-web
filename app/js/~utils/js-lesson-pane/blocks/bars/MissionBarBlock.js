@@ -17,6 +17,16 @@ class MissionBarBlock extends BarBlock {
         super.include(dom_node);
     }
 
+    displayProgress(exercise_count) {
+        if (exercise_count > this._items.length) {
+            throw new RangeError(`Mission bar doesn't contain more elements than ${exercise_count}`);
+        }
+
+        for (let i = 0; i <= exercise_count; i++) {
+            this._items[i].displayPassed(true);
+        }
+    }
+
     setExerciseActive(exercise_idx) {
         if (exercise_idx === false) {
             if (this._state.exerciseActiveIDX !== undefined) {

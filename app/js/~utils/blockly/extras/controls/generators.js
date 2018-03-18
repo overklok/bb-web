@@ -27,6 +27,7 @@ let BlocklyJSONGenerators = {
 
         let tail = JSON.stringify({
             name: "controls_repeat_ext" + "." + POSTFIXES.END,
+            block_id: block.id,
             args: []
         });
 
@@ -46,6 +47,7 @@ let BlocklyJSONGenerators = {
             if (n === 0) {
                 code += JSON.stringify({
                     name: "controls_if",
+                    block_id: block.id,
                     args: [
                         {"value": condition_code, "type": DATATYPES.EXPRSN}
                     ]
@@ -54,6 +56,7 @@ let BlocklyJSONGenerators = {
             else {
                 code += JSON.stringify({
                     name: "controls_if" + "." + POSTFIXES.ELSE_IF,
+                    block_id: block.id,
                     args: [
                         {"value": condition_code, "type": DATATYPES.EXPRSN}
                     ]
@@ -69,6 +72,7 @@ let BlocklyJSONGenerators = {
 
             code += JSON.stringify({
                 name: "controls_if" + "." + POSTFIXES.ELSE,
+                block_id: block.id,
                 args: []
             });
 
@@ -77,6 +81,7 @@ let BlocklyJSONGenerators = {
 
         code += JSON.stringify({
             name: "controls_if" + "." + POSTFIXES.END,
+            block_id: block.id,
             args: []
         });
 

@@ -6,6 +6,20 @@ import TextPaneWrapper from "../wrappers/TextPaneWrapper";
 import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
 
+const HASH_TYPES = {
+    GOTO: "goto",
+
+    NONE: "none",
+};
+
+const REGEXPS = {
+    MISSION_EXERCISE:   /^#m[0-9]+e[0-9]+$/g,
+    MISSION:            /^#m[0-9]+$/g,
+    EXERCISE:           /^#e[0-9]+$/g,
+
+    NUMBERS:            /[0-9]+/g,
+};
+
 /**
  * Модуль, управляющий базовым функциями графического интерфейса
  * и выполняющий первичную обработку его событий.
@@ -16,7 +30,7 @@ import FileWrapper from "../wrappers/FileWrapper";
  */
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["mission", "run", "stop", "check", "keyup", "load-file", "unload-file"]}
+    static get event_types() {return ["mission", "run", "stop", "check", "keyup", "hash-command", "load-file", "unload-file"]}
 
     static defaults() {
         return {
@@ -238,6 +252,46 @@ class GUIModule extends Module {
         return false;
     }
 
+    _filterURLHashCommand(hash) {
+        if (typeof hash !== "string") {throw new TypeError("URL Hash is not a string")}
+
+        let mission_idx, exercise_idx;
+
+        console.log(hash);
+
+        if (hash.match(REGEXPS.MISSION_EXERCISE)) {
+            [mission_idx, exercise_idx] = hash.match(REGEXPS.NUMBERS);
+        }
+
+        else if (hash.match(REGEXPS.MISSION)) {
+            mission_idx = hash.match(REGEXPS.NUMBERS);
+        }
+
+        else if (hash.match(REGEXPS.EXERCISE)) {
+            exercise_idx = hash.match(REGEXPS.NUMBERS);
+        }
+
+        else {
+            return {
+                type: HASH_TYPES.NONE,
+            }
+        }
+
+        return {
+            type: HASH_TYPES.GOTO,
+            data: {
+                missionIDX: Number(mission_idx),
+                exerciseIDX: Number(exercise_idx),
+            }
+        };
+    }
+
+    _checkURLHashCommand() {
+        let hash = window.location.hash;
+
+        return this._filterURLHashCommand(hash);
+    }
+
     _subscribeToWrapperEvents() {
         /* Как только нажата кнопка переключения разметки */
         // $("#switch-btn").click(() => {
@@ -287,6 +341,12 @@ class GUIModule extends Module {
                 }
             }
         });
+
+        window.onhashchange = () => {
+            let command = this._checkURLHashCommand();
+
+            this.emitEvent("hash-command", command);
+        }
     }
 }
 

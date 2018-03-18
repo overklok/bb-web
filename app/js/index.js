@@ -40,7 +40,8 @@ class Application {
 
         this._config = {
             gui: {
-                anyKey: config.anyKey
+                anyKey: config.anyKey,
+                logoText: config.logoText,
             },
             lay: {
 
@@ -90,7 +91,8 @@ class Application {
         this._dispatcher.always([
             '*:resize', '*:error',
             'ins:start', 'ins:progress', 'ins:mission',
-            'ls:*', 'lay:*', 'log:*'
+            'ls:*', 'lay:*', 'log:*',
+            'gui:hash-command',
         ]);
     }
 
@@ -143,6 +145,16 @@ class Application {
          * Готовность диспетчера к работе
          */
         this._dispatcher.onReady(() => {
+            let exercise_idx, mission_idx;
+
+            let command = this.gui._checkURLHashCommand();
+            if (command.type === "goto") {
+                exercise_idx = command.data.exerciseIDX;
+                mission_idx = command.data.missionIDX;
+            }
+
+            console.log(command);
+
             this.ins.getInitialLessonID()
                 .then(lesson_id => this.gs.getLessonData(lesson_id))
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
@@ -150,7 +162,7 @@ class Application {
                     this.gui.showMissionButtons(lesson.missions);
                     this.gui.setCourseText(lesson.name)
                 })
-                .then(() => this.ins.launchLesson())
+                .then(() => this.ins.launchLesson(mission_idx, exercise_idx))
                 .catch(error => {
                     this.gui.showSpinnerError(error.message);
                     console.error(error);
@@ -298,6 +310,29 @@ class Application {
             console.log('keyup', button_code);
         });
 
+        this._dispatcher.on('gui:hash-command', command => {
+            switch (command.type) {
+                case "goto": {
+                    if (command.data.missionIDX === undefined)  {
+                        this.ins.forceExercise(command.data.missionIDX, undefined);
+                    }
+
+                    else if (command.data.exerciseIDX === undefined) {
+                        this.ins.forceExercise(undefined, command.data.exerciseIDX);
+                    }
+
+                    else {
+                        this.ins.forceExercise(command.data.missionIDX, command.data.exerciseIDX);
+                    }
+
+                    break;
+                }
+                default: {
+                    console.warn("Unrecognised hash command");
+                }
+            }
+        });
+
         /**
          * Задание пройдено
          */
@@ -309,7 +344,6 @@ class Application {
                     onResolve => this.ins.launchExerciseNext(),
                     onReject => {this.ins.launchExerciseNext(true)}
                 )
-                .then(() => this.gui.setExerciseCurrent(false))
                 .then(() => this._dispatcher.only(['gui:*', 'ins:pass']))
         });
 

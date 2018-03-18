@@ -92,6 +92,9 @@ module.exports = {
             filename: 'lesson-pane.html'
         }),
         new CopyWebpackPlugin([
+            {from: './app/fonts/IBMPlexSans', to: './fonts'},
+            {from: './app/fonts/IBMPlexSans', to: '../../codehour-breadboard-client/web/fonts'},
+            {from: './app/fonts/IBMPlexSans', to: '../../codehour-breadboard-server/frontend/static/frontend/app/fonts'},
             {from: './app/css/spinner.css', to: './spinner.css'},
             {from: './app/css/spinner.css', to: '../../codehour-breadboard-client/web/spinner.css'},
             {from: './app/css/spinner.css', to: '../../codehour-breadboard-server/frontend/static/frontend/app/css/spinner.css'},

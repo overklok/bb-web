@@ -4,7 +4,7 @@ import thm from "../../styles/bars/mission-bar/__item/mission-bar__item.css";
 
 class MissionBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "mission-bar__item"}
-    static get ModifierClassesDOM() {return ["leading"]}
+    static get ModifierClassesDOM() {return ["leading", "passed"]}
 
     constructor(text) {
         super();
@@ -20,6 +20,10 @@ class MissionBarItemBlock extends BarItemBlock {
 
     setLeading(on=false) {
         this.setModifierBoolean('leading', on);
+    }
+
+    displayPassed(on=false) {
+        this.setModifierBoolean('passed', on);
     }
 }
 

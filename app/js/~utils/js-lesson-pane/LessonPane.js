@@ -56,7 +56,8 @@ class LessonPane {
         };
 
         this._state = {
-            included: false
+            included: false,
+            missions: undefined,
         };
     }
 
@@ -76,6 +77,7 @@ class LessonPane {
         this._includeBlocks();
 
         this._state.included = true;
+        this._state.missions = [];
 
         this._attachHandlers();
     }
@@ -84,6 +86,8 @@ class LessonPane {
         if (!this._state.included) {throw new Error("Cannot set any missions, include first")}
 
         this._blocks.bars.lesson.setMissions(missions);
+
+        this._state.missions = missions;
 
         LessonBarBlock.runStyle();
     }
@@ -116,10 +120,13 @@ class LessonPane {
         if (!this._state.included) {throw new Error("Cannot set active exercise, include first")}
 
         this._blocks.bars.mission.setExerciseActive(exercise_idx);
+        this._blocks.bars.mission.displayProgress(exercise_idx);
     }
 
     setMissionActive(mission_idx) {
         if (!this._state.included) {throw new Error("Cannot set active mission, include first")}
+
+        console.log('sMA')
 
         this._blocks.bars.lesson.setMissionActive(mission_idx);
     }

@@ -2,7 +2,7 @@
   min-width: 50% !important;
   font-weight: bolder !important;
   font-size: 18px !important;
-  background-color: #77ff6f !important;
+  background-color: #fff6af !important;
 }
 .mission-bar__item {
   display: inline;
@@ -17,12 +17,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-  background-color: #ff9378;
+  background-color: #ffffff;
   -webkit-transition: all 1000ms cubic-bezier(0.77, 0, 0.175, 1) 0ms;
   -moz-transition: all 1000ms cubic-bezier(0.77, 0, 0.175, 1) 0ms;
   -ms-transition: all 1000ms cubic-bezier(0.77, 0, 0.175, 1) 0ms;
   -o-transition: all 1000ms cubic-bezier(0.77, 0, 0.175, 1) 0ms;
   transition: all 1000ms cubic-bezier(0.77, 0, 0.175, 1) 0ms;
+}
+.mission-bar__item_passed {
+  background-color: #a6ff82;
 }
 .mission-bar {
   display: flex;

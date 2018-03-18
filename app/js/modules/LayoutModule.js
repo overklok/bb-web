@@ -411,8 +411,8 @@ class LayoutModule extends Module {
 
             //	some pane-size settings
             east: {
-                size: .2,
-                maxSize: 300,
+                size: .3,
+                maxSize: 400,
 
                 resizable: true,
                 fxSpeed: this._options.animSpeedMain,
