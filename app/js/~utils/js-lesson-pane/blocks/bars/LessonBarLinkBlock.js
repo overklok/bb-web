@@ -48,14 +48,14 @@ class LessonBarLinkBlock extends Block {
      * @private
      */
     _createElements() {
-        this._elements.num          = document.createElement("div");
         this._elements.progressor   = document.createElement("div");
+        this._elements.num          = document.createElement("div");
 
-        this._elements.num.classList        = LessonBarLinkBlock.ClassDOM + "_num";
         this._elements.progressor.classList = LessonBarLinkBlock.ClassDOM + "_progressor";
+        this._elements.num.classList        = LessonBarLinkBlock.ClassDOM + "_num";
 
-        this._container.appendChild(this._elements.num);
         this._container.appendChild(this._elements.progressor);
+        this._container.appendChild(this._elements.num);
     }
 
     _attachCallbacks() {

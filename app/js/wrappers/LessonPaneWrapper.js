@@ -13,7 +13,8 @@ class LessonPaneWrapper extends Wrapper {
         this._lesson_pane = new LessonPane();
 
         this._missions = undefined;
-        this._mission_active_deferred = undefined;
+        this._mission_active_deferred   = undefined;
+        this._exercise_active_deferred  = undefined;
         this._logo_text = undefined;
         this._course_text = undefined;
     }
@@ -31,6 +32,10 @@ class LessonPaneWrapper extends Wrapper {
             this._lesson_pane.setMissionActive(this._mission_active_deferred);
             this.setMissionText(this._missions[this._mission_active_deferred].name);
             this.setExercises(this._missions[this._mission_active_deferred].exercises);
+        }
+
+        if (!(this._exercise_active_deferred === undefined)) {
+            this._lesson_pane.setExerciseActive(this._exercise_active_deferred);
         }
 
         this._state.display = true;
@@ -77,7 +82,11 @@ class LessonPaneWrapper extends Wrapper {
     }
 
     setExerciseActive(exercise_idx) {
-        this._lesson_pane.setExerciseActive(exercise_idx);
+        try {
+            this._lesson_pane.setExerciseActive(exercise_idx);
+        } catch (err) {
+            this._exercise_active_deferred = exercise_idx;
+        }
     }
 
     setMissionActive(mission_idx) {

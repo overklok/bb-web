@@ -60,7 +60,7 @@ class LessonBarBlock extends BarBlock {
     addMission(mission_data) {
         let idx_new = this._items.length + 1;
 
-        let mission = new LessonBarItemBlock(idx_new, mission_data.exerciseCount);
+        let mission = new LessonBarItemBlock(idx_new, mission_data.exercises.length);
 
         this.addItem(mission);
     }

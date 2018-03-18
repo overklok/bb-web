@@ -83,10 +83,7 @@ class LessonPane {
     setMissions(missions) {
         if (!this._state.included) {throw new Error("Cannot set any missions, include first")}
 
-        this._blocks.bars.lesson.setMissions([
-            {exerciseCount: 2},
-            {exerciseCount: 3},
-        ]);
+        this._blocks.bars.lesson.setMissions(missions);
 
         LessonBarBlock.runStyle();
     }

@@ -182,12 +182,13 @@ class Application {
             /// Заблокировать все события
             this._dispatcher.only([]);
 
+            this.gui.setExerciseCurrent(exercise.exerciseIDX);
+
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(layout_mode)
                 .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
                 .then(() => this.ws.setMaxBlockLimit(max_blocks))
                 .then(() => this.ws.setEditable(show_btn))
-                .then(() => this.gui.setExerciseCurrent(exercise.exerciseIDX))
                 .then(() => this.gui.switchLaunchButton(show_btn, is_check))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))
