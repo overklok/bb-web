@@ -339,6 +339,7 @@ class Application {
         this._dispatcher.on('ins:pass', verdict => {
             this._dispatcher.only([]);
             this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX);
+            this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX+1);
             this.ins.tourPass()
                 .then(
                     onResolve => this.ins.launchExerciseNext(),

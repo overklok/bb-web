@@ -141,15 +141,20 @@ class WorkspaceModule extends Module {
     loadProgram(mission_id, exercise_id) {
         if (!this._state.display) {return false}
 
+        this._blockly.clear();
+
+        console.log(mission_id, exercise_id);
+
         if (!(mission_id in this._code_storage)) {
+            console.log("NO MID IN STOR");
             return false;
         }
 
         if (!(exercise_id in this._code_storage[mission_id])) {
+            console.log("NO EXEC IN STOR");
             return false;
         }
 
-        this._blockly.clear();
         this._blockly.setXMLText(this._code_storage[mission_id][exercise_id]);
 
         return true;

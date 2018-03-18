@@ -344,7 +344,7 @@ class InstructorModule extends Module {
         verdict.exerciseIDX = this._state.missions[this._state.missionIDX].exerciseIDX;
 
         if (verdict.status === API.STATUS_CODES.PASS) {
-            this.emitEvent("pass", verdict);
+            this.emitEvent('pass', verdict);
         }
 
         if (verdict.status === API.STATUS_CODES.FAULT) {
@@ -383,7 +383,7 @@ class InstructorModule extends Module {
                 /// сбросить позицию указателя
                 this._state.buttonIDX = 0;
                 /// задание пройдено
-                this.emitEvent("pass", {
+                this.emitEvent('pass', {
                     missionIDX: this._state.missionIDX,
                     exerciseIDX: this._state.missions[this._state.missionIDX].exerciseIDX
                 });
