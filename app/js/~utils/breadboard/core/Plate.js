@@ -119,12 +119,20 @@ class Plate {
     }
 
     /**
+     *
+     * @private
+     * @abstract
+     */
+    __draw__() {
+
+    }
+
+    /**
      * Нарисовать плашку
      *
      * @param {Cell}    cell        положение элемента относительно опорной точки
      * @param {string}  orientation ориентация элемента относительно опорной точки
      *
-     * @abstract
      */
     draw(cell, orientation) {
         let width   = (cell.size.x * this._size.x) + (this.__grid.gap.x * 2 * (this._size.x - 1));
@@ -135,6 +143,7 @@ class Plate {
         this._bezel.fill({color: "#ff0"});
 
         this.move(cell, true);
+        this.__draw__(cell, orientation);
         this.rotate(orientation, true);
     };
 
@@ -151,7 +160,7 @@ class Plate {
         }
 
         if (this._state.highlighted === true) {
-            this._bezel.attr('filter', 'url(#glow-plate)');
+            this._bezel.attr('filter', 'url(#glow-p)');
         } else {
             this._bezel.attr('filter', null);
         }

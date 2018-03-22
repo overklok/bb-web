@@ -24,9 +24,7 @@ class RelayPlate extends Plate {
      * @param {Cell}   position    положение резистора
      * @param {string}  orientation ориентация резистора
      */
-    draw(position, orientation) {
-        super.draw(position, orientation);
-
+    __draw__(position, orientation) {
         this._bezel.fill({color: "#fffffd"}).radius(10);
         this._bezel.stroke({color: "#fffffd", width: 2});
 

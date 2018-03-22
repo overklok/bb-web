@@ -61,14 +61,14 @@ class Breadboard {
     }
 
     setCurrent(points) {
-        if (this._cache.current) {
-            if (JSON.stringify(this._cache.current) === JSON.stringify(points)) {
-                console.log("cache equal, return");
-                return;
-            }
-        } else {
-            this._cache.current = points;
-        }
+        // if (this._cache.current) {
+        //     if (JSON.stringify(this._cache.current) === JSON.stringify(points)) {
+        //         console.log("cache equal, return");
+        //         return;
+        //     }
+        // } else {
+        //     this._cache.current = points;
+        // }
 
         this._layers.current.removeAllCurrents();
         this._layers.current.addCurrent(points);

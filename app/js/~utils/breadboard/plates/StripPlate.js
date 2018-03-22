@@ -29,9 +29,7 @@ class StripPlate extends Plate {
      * @param {Cell}    position    положение перемычки
      * @param {string}  orientation ориентация перемычки
      */
-    draw(position, orientation) {
-        super.draw(position, orientation);
-
+    __draw__(position, orientation) {
         this._bezel.fill({color: "#fffffd"});
         this._bezel.width(this._container.width() + this._cell.size.x / 4);
         this._bezel.dx(-this._cell.size.x / 4);

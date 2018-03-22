@@ -9,6 +9,7 @@ const PLATE_TYPES = {
     'rheostat':     'реостат',
     'button':       'кнопка',
     'switch':       'ключ',
+    'relay':        'реле',
     'capacitor':    'конденсатор',
     'transistor':   'транзистор',
     'inductor':     'индуктор',
@@ -101,8 +102,8 @@ class BreadboardWrapper extends Wrapper {
         wrap.style.cssText  += "position: absolute; bottom: 0;";
         input.style.cssText += "width: 40px";
         select.style.cssText += "width: 100px";
-        input.setAttribute("type", "number");
-        input.setAttribute("min", 0);
+        // input.setAttribute("type", "number");
+        // input.setAttribute("min", 0);
 
         let options = Breadboard.getAllPlateTypes();
 

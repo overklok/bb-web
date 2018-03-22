@@ -74,8 +74,6 @@ class CurrentLayer extends Layer {
     _buildCurrentPath(points) {
         let full_path = [];
 
-        console.log(points);
-
         // Для каждой пары точек
         for (let point of points) {
             let cell_from  = this.__grid.cell(point.from.x, point.from.y);

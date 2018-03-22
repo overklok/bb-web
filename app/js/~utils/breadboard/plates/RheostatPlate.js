@@ -21,9 +21,7 @@ class RheostatPlate extends Plate {
      * @param {Cell}   position    положение резистора
      * @param {string}  orientation ориентация резистора
      */
-    draw(position, orientation) {
-        super.draw(position, orientation);
-
+    __draw__(position, orientation) {
         this._bezel.fill({color: "#fffffd"}).radius(10);
         this._bezel.stroke({color: "#fffffd", width: 2});
 
@@ -127,7 +125,7 @@ class RheostatPlate extends Plate {
                 ['l', qs/2, -qs/4],
             ])
                 .fill('#000')
-                .stroke({width: 1})
+                .stroke({width: 0.5})
                 .move(-qs/4, 0);
         })
     }
