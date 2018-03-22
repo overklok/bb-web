@@ -1,8 +1,8 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 
-class CapacitorPlate extends Plate {
-    static get Alias() {return "capacitor"}
+class InductorPlate extends Plate {
+    static get Alias() {return "inductor"}
 
     constructor(container, grid, id) {
         super(container, grid, id);
@@ -16,10 +16,10 @@ class CapacitorPlate extends Plate {
     }
 
     /**
-     * Нарисовать конденсатор
+     * Нарисовать перемычку
      *
-     * @param {Cell}    position    положение конденсатора
-     * @param {string}  orientation ориентация конденсатора
+     * @param {Cell}    position    положение перемычки
+     * @param {string}  orientation ориентация перемычки
      */
     draw(position, orientation) {
         super.draw(position, orientation);
@@ -29,13 +29,13 @@ class CapacitorPlate extends Plate {
 
         this._drawPicture();
 
-        // this._group.text(`Capacitor`).font({size: 20});
+        // this._group.text(`Button`).font({size: 20});
     };
 
     /**
-     * Установить состояние конденсатора
+     * Установить состояние перемычки
      *
-     * @param {object} state новое состояние конденсатора
+     * @param {object} state новое состояние перемычки
      */
     setState(state) {
         super.setState(state);
@@ -64,21 +64,28 @@ class CapacitorPlate extends Plate {
 
         let line_len = rect2.x() - rect1.x();
 
+        let line_gap = line_len / 4;
+
         this._group.path([
             ['M', 0, 0],
-            ['l', line_len/2 - qs/4, 0],
-            ['m', qs/2, 0],
-            ['l', line_len/2 - qs*2/4, 0],
+            ['l', line_len/2 - line_gap, 0],
+            ['m', line_gap*2, 0],
+            ['l', line_len/2 - line_gap, 0],
         ])
-            .stroke({width: 1})
+            .stroke({width: 3})
             .fill('none')
-            .move(rect1.cx(), rect2.cy());
+            .move(rect1.cx(), rect1.cy());
 
-        let line1 = this._group.line(0, 0, 0, qs*2).stroke({width: 1}).x(rect1.x() + line_len/2 + qs/4).cy(rect1.cy());
-        let line2 = this._group.line(0, 0, 0, qs*2).stroke({width: 1}).x(rect2.x() - line_len/2 + qs*3/4).cy(rect2.cy());
+        let circ_base_x = rect1.cx() + line_len/2 - line_gap;
 
-        this._group.text("+").move(line2.x() + 4, line2.y() - 8);
+        for (let i = 0; i < 3; i++) {
+            this._group.circle(line_gap / 1.5)
+                .x(circ_base_x + (line_gap / 1.5 * i))
+                .cy(rect1.cy())
+                .fill('none')
+                .stroke({width: 3, dasharray: [0, line_gap, line_gap * 1.5]});
+        }
     }
 }
 
-export default CapacitorPlate;
+export default InductorPlate;

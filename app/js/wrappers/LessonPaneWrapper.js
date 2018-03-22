@@ -58,13 +58,12 @@ class LessonPaneWrapper extends Wrapper {
     setExercises(exercises) {
         let exs_arr = [];
 
-        for (let exercise_id in exercises) {
-            let exercise = exercises[exercise_id];
+        for (let exercise_idx in exercises) {
+            let exercise = exercises[exercise_idx];
 
-            exs_arr.push(exercise.name);
+            exs_arr.push(`Зад. ${exercise.mission} упр. ${exercise.pk}`);
         }
 
-        console.log(exs_arr);
 
         this._lesson_pane.setExercises(exs_arr);
     }

@@ -20,6 +20,13 @@ const REGEXPS = {
     NUMBERS:            /[0-9]+/g,
 };
 
+const LAUNCH_VARIANTS = {
+    NONE: 0,
+    CHECK: 1,
+    LAUNCH: 2,
+    CHECK_N_LAUNCH: 3,
+};
+
 /**
  * Модуль, управляющий базовым функциями графического интерфейса
  * и выполняющий первичную обработку его событий.
@@ -47,7 +54,7 @@ class GUIModule extends Module {
         this._state = {
             switched: true, // debug only
             listenButtons: false,
-            launchButton: false,
+            launchVariant: false,
 
             areasDisp: {
                 text: false,
@@ -136,16 +143,32 @@ class GUIModule extends Module {
         return Promise.resolve();
     }
 
-    switchLaunchButton(on=false, check=false) {
+    switchLaunchVariant(variant) {
         if (!this._launch_btn) {return Promise.resolve(false)}
 
-        if (on) {
-            this._launch_btn.show(check);
-        } else {
-            this._launch_btn.hide();
+        switch (variant) {
+            case LAUNCH_VARIANTS.NONE: {
+                this._launch_btn.hide();
+                break;
+            }
+            case LAUNCH_VARIANTS.CHECK: {
+                this._launch_btn.show(0);
+                break;
+            }
+            case LAUNCH_VARIANTS.LAUNCH: {
+                this._launch_btn.show(1);
+                break;
+            }
+            case LAUNCH_VARIANTS.CHECK_N_LAUNCH: {
+                this._launch_btn.show(2);
+                break;
+            }
+            default: {
+                this._state.launchVariant = variant;
+            }
         }
 
-        this._state.launchButton = !this._state.launchButton;
+        this._state.launchVariant = !this._state.launchVariant;
 
         return Promise.resolve(true);
     }
@@ -153,7 +176,7 @@ class GUIModule extends Module {
     affirmLaunchButtonState(start=true) {
         if (!this._launch_btn) {return false}
 
-        if (!this._state.launchButton) {return false}
+        if (!this._state.launchVariant) {return false}
 
         if (start) {
             this._launch_btn.setStart();

@@ -40,8 +40,9 @@ class AdminBoardApplication {
         this._dispatcher.always(['bb:*']);
     }
 
-    setData(plates) {
+    setData(plates, currents) {
         this.bb.updatePlates(plates);
+        this.bb.updateCurrents(currents);
     }
 
     getData() {

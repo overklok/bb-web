@@ -58,13 +58,28 @@ class BreadboardModule extends Module {
     }
 
     updateCurrents(data) {
-        let points = [];
+        this._board.setCurrent(data.threads);
 
-        for (let thread of data.threads) {
-            points.push({from: thread.begin, to: thread.end})
+        if (!('elements' in data)) {return true}
+
+        for (let element of data.elements) {
+            console.log(element);
+            this._board.setPlateState(element.id, {
+                highlighted: element.highlight || false,
+            })
         }
 
-        this._board.setCurrent(points);
+        return true;
+    }
+
+    clearCurrents() {
+        this._board.removeCurrents();
+
+        for (let plate of this._board.getPlates()) {
+            this._board.setPlateState(plate.id, {
+                highlighted: false,
+            });
+        }
     }
 
     getData() {

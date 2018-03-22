@@ -1,10 +1,18 @@
 import Layer from "../core/Layer";
 
 import Plate from "../core/Plate";
-import ResistorPlate    from "../plates/ResistorPlate";
-import BridgePlate      from "../plates/BridgePlate";
-import CapacitorPlate   from "../plates/CapacitorPlate";
-import StripPlate       from "../plates/StripPlate";
+import ResistorPlate        from "../plates/ResistorPlate";
+import PhotoresistorPlate   from "../plates/PhotoresistorPlate";
+import RheostatPlate        from "../plates/RheostatPlate";
+import BridgePlate          from "../plates/BridgePlate";
+import ButtonPlate          from "../plates/ButtonPlate";
+import SwitchPlate          from "../plates/SwitchPlate";
+import CapacitorPlate       from "../plates/CapacitorPlate";
+import TransistorPlate      from "../plates/TransistorPlate";
+import InductorPlate        from "../plates/InductorPlate";
+import RelayPlate           from "../plates/RelayPlate";
+import StripPlate           from "../plates/StripPlate";
+import DiodePlate           from "../plates/LEDPlate";
 
 /**
  * Слой плашек
@@ -318,8 +326,16 @@ class PlateLayer extends Layer {
     static _getAllPlateTypes() {
         return [
             ResistorPlate.Alias,
+            PhotoresistorPlate.Alias,
+            RheostatPlate.Alias,
             BridgePlate.Alias,
+            ButtonPlate.Alias,
+            SwitchPlate.Alias,
             CapacitorPlate.Alias,
+            TransistorPlate.Alias,
+            InductorPlate.Alias,
+            RelayPlate.Alias,
+            DiodePlate.Alias,
             StripPlate.Alias,
         ]
     }
@@ -338,11 +354,19 @@ class PlateLayer extends Layer {
         }
 
         switch (type) {
-            case ResistorPlate.Alias:  {return ResistorPlate}
-            case BridgePlate.Alias:    {return BridgePlate}
-            case CapacitorPlate.Alias: {return CapacitorPlate}
-            case StripPlate.Alias:     {return StripPlate}
-            default:                   {throw new RangeError(`Unknown plate type '${type}'`)}
+            case ResistorPlate.Alias:       {return ResistorPlate}
+            case PhotoresistorPlate.Alias:  {return PhotoresistorPlate}
+            case RheostatPlate.Alias:       {return RheostatPlate}
+            case BridgePlate.Alias:         {return BridgePlate}
+            case ButtonPlate.Alias:         {return ButtonPlate}
+            case SwitchPlate.Alias:         {return SwitchPlate}
+            case CapacitorPlate.Alias:      {return CapacitorPlate}
+            case TransistorPlate.Alias:     {return TransistorPlate}
+            case InductorPlate.Alias:       {return InductorPlate}
+            case RelayPlate.Alias:          {return RelayPlate}
+            case DiodePlate.Alias:          {return DiodePlate}
+            case StripPlate.Alias:          {return StripPlate}
+            default:                        {throw new RangeError(`Unknown plate type '${type}'`)}
         }
     }
 }

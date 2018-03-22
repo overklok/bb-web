@@ -1,14 +1,14 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 
-class ButtonPlate extends Plate {
-    static get Alias() {return "button"}
+class SwitchPlate extends Plate {
+    static get Alias() {return "switch"}
 
     constructor(container, grid, id) {
         super(container, grid, id);
 
         this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: 2, y: 1};
+        this._size = {x: 3, y: 1};
 
         this._state = {
             highlighted: false,
@@ -50,43 +50,47 @@ class ButtonPlate extends Plate {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._size.x-1, this._size.y-1);
 
+        let cell3 = this.__grid.cell(1, 0);
+
         let rect1 = this._group.rect(qs, qs)
-            .center(
-                cell1.center.x - qs / 2,
-                cell1.center.y - qs / 2
-            );
+            .cx(cell1.center.x - qs / 2)
+            .y(cell1.pos.y + qs * 2);
 
         let rect2 = this._group.rect(qs, qs)
-            .center(
-                cell2.center.x - qs / 2,
-                cell2.center.y - qs / 2
-            );
+            .cx(cell2.center.x - qs / 2)
+            .y(cell2.pos.y + qs * 2);
 
-        let line_len = rect2.x() - rect1.x();
+        let rect3 = this._group.rect(qs, qs)
+            .cx(cell3.center.x - qs / 2)
+            .y(cell3.pos.y);
+
+        let line_len = rect2.x() - rect1.x() - qs*2;
 
         let line_gap = line_len / 6;
 
         this._group.path([
             ['M', 0, 0],
+            ['l', qs, -qs],
             ['l', line_len/2 - line_gap, 0],
             ['m', line_gap*2, 0],
             ['l', line_len/2 - line_gap, 0],
+            ['l', qs, qs],
         ])
             .stroke({width: 3})
             .fill('none')
-            .move(rect1.cx(), rect1.cy());
+            .move(rect1.cx(), rect1.cy() - qs);
 
-        this._group.line(
-            0, 0,
-            line_gap*2, 0
-        )
-            .stroke({width: 2, color: "#000"})
-            .move(rect1.cx() + line_len/2 - line_gap, rect1.cy())
-            .rotate(-25, rect1.cx() + line_len/2 - line_gap, rect1.cy());
-
-        this._group.circle(rect1.width() / 3).center(rect1.cx() + line_len/2 - line_gap, rect1.cy());
-        this._group.circle(rect1.width() / 3).center(rect1.cx() + line_len/2 + line_gap, rect1.cy());
+        let line_connector = this._group.polyline([
+            [0, 0],
+            [0, qs/1.5],
+            [qs/2, qs],
+            [line_gap, qs]
+        ])
+            .stroke({width: 3})
+            .fill('none')
+            .move(rect3.cx(), rect3.cy())
+            // .scale(-1, 1).x(rect3.cx() + line_gap)
     }
 }
 
-export default ButtonPlate;
+export default SwitchPlate;

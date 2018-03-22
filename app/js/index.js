@@ -64,7 +64,8 @@ class Application {
                 modeDummy:  config.offline
             },
             ls: {
-                modeDummy: config.isolated
+                modeDummy: config.isolated,
+                portUrgent: config.port
             },
             log: {
                 modeDummy: config.noRemoteLogs
@@ -92,7 +93,7 @@ class Application {
             '*:resize', '*:error',
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
-            'gui:hash-command',
+            'gui:hash-command', 'gui:stop',
         ]);
     }
 
@@ -175,44 +176,29 @@ class Application {
         this._dispatcher.on('ins:start', exercise => {
             console.log(exercise);
 
-            let ex_type = exercise.type;
-
-            let check_buttons = (!exercise.is_sandbox && (ex_type === 2 || ex_type === 3));
-            let buttons_model = check_buttons ? exercise.buttons_model : null;
-
-            let max_blocks = exercise.is_sandbox ? 0 : exercise.max_blocks;
-
-            /// показывать кнопку ?
-            let show_btn = (ex_type !== 2);
-            /// проверять (не запускать) ?
-            let is_check = !(ex_type === 1 && exercise.listeners_only === false);
-            /// определить режим разметки
-            let layout_mode = ex_type === 0 ? 'simple' : 'full';
-            /// показывать панель с кнопками ?
-            let show_kbd_pane = (ex_type >= 1 && ex_type <= 3) && exercise.display_buttons;
-
             /// Заблокировать все события
             this._dispatcher.only([]);
 
             this.gui.setExerciseCurrent(exercise.exerciseIDX);
 
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
-            this.lay.compose(layout_mode)
+            this.lay.compose(exercise.layout_mode)
+                .then(() => this.ls.setMode(exercise.board_mode))
                 .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
-                .then(() => this.ws.setMaxBlockLimit(max_blocks))
-                .then(() => this.ws.setEditable(show_btn))
-                .then(() => this.gui.switchLaunchButton(show_btn, is_check))
+                .then(() => this.ws.setMaxBlockLimit(exercise.max_blocks))
+                .then(() => this.ws.setEditable(exercise.editable))
+                .then(() => this.gui.switchLaunchVariant(exercise.launch_variant))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))
                 .then(() => this.trc.registerVariables(exercise.variables))
-                .then(() => this.lay.switchButtonsPane(show_kbd_pane))
+                .then(() => this.lay.switchButtonsPane(exercise.display_buttons))
                 .then(() => this.gui.hideSpinner())
                 .then(() => this.ins.tourIntro(exercise.popovers))
                 .then(() => this.trc.clearButtons())
-                .then(() => this.gui.listenButtons(show_kbd_pane))
-                .then(() => this.ins.setButtonsModel(buttons_model))
+                .then(() => this.gui.listenButtons(exercise.check_buttons))
+                .then(() => this.ins.setButtonsModel(exercise.buttons_model))
                 .then(() => {
-                    if (check_buttons) {
+                    if (exercise.check_buttons) {
                         this._dispatcher.only(['gui:*', 'ins:pass']);
                     } else {
                         this._dispatcher.only(['gui:*']);
@@ -295,12 +281,14 @@ class Application {
          */
         this._dispatcher.on('gui:keyup', button_code => {
             /// найти первый обработчик нажатия клавиши
-            // let handler = this.ws.getButtonHandler(button_code);
+            let handler = this.ws.getButtonHandler(button_code);
 
-            // if (handler) {
+            console.log(handler);
+
+            if (handler) {
                 /// обновить код на плате
-                // this.ls.updateHandlers({commands: handler.code, launch: false});
-            // }
+                this.ls.updateHandlers({commands: handler.code, launch: false});
+            }
 
             /// проверить правильность нажатия клавиши
             let valid = this.ins.validateButtonPress(button_code);
@@ -396,18 +384,18 @@ class Application {
          */
         this._dispatcher.on('ls:terminate', () => {
             let exercise = this.ins.getExerciseCurrent();
-            let is_sandbox = exercise.is_sandbox;
 
             this.ws.highlightBlock(null);
             this.gui.affirmLaunchButtonState(true);
             this._dispatcher.only(["gui:*"]);
 
-            if (!is_sandbox) {
+            if (!exercise.is_sandbox  && !exercise.listeners_only) {
                 this._dispatcher.call("gui:check");
             }
         });
 
         this._dispatcher.on('ls:plates', data => {
+            this.bb.clearCurrents();
             this.bb.updatePlates(data);
         });
 

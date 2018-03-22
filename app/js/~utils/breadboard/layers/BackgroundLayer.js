@@ -37,7 +37,6 @@ class BackgroundLayer extends Layer {
             .font({
                 size: 80,
                 weight: "bolder",
-                stretch: "extra-condensed",
                 family: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 "letter-spacing": -2
             })

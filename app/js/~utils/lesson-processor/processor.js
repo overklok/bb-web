@@ -91,6 +91,31 @@ let processExercise = (_exercise) => {
         exercise.buttons_model = [];
     }
 
+    /// editable - true/false
+    /// check_buttons - true/false
+    /// display_buttons - true/false
+    /// layout_mode - simple/full
+    /// max_blocks - 0/max_blocks
+    /// is_sandbox - true/false
+    /// launch_variant - 0(no),1(check),2(launch),3(check'n'launch)
+
+    exercise.editable           = exercise.type !== 2;
+    exercise.check_buttons      = !exercise.is_sandbox && (exercise.type >= 1 && exercise.type <= 3);
+    exercise.display_buttons    = (exercise.type >= 1 && exercise.type <= 3) && exercise.display_buttons;
+    exercise.layout_mode        = exercise.type === 0 ? 'simple' : 'full';
+    exercise.launch_variant     = [0,4,5].indexOf(exercise.type) > -1 ? 1 : 0;
+    exercise.launch_variant     =   [1,3].indexOf(exercise.type) > -1 ? 3 : exercise.launch_variant;
+    exercise.launch_variant     = exercise.launch_variant === 3 && exercise.listeners_only ? 1 : exercise.launch_variant;
+    exercise.launch_variant     = exercise.type !== 0 && exercise.is_sandbox ? 2 : exercise.launch_variant;
+
+    exercise.max_blocks         = exercise.is_sandbox ? 0 : exercise.max_blocks;
+    exercise.buttons_model      = exercise.check_buttons ? exercise.buttons_model : null;
+
+    exercise.board_mode         = 'default';
+    exercise.board_mode         = [1,2,3].indexOf(exercise.type) > -1 ? 'programming' : exercise.board_mode;
+    exercise.board_mode         = exercise.type === 4 ? 'electronics' : exercise.board_mode;
+    // exercise.board_mode         = exercise.type === 5 ? 'logic' : exercise.board_mode;
+
     return exercise;
 };
 

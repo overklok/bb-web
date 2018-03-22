@@ -510,6 +510,34 @@ let JSONBlocks = {
                 tooltip:            "Все ламочки зажигаются цветами виртуальной гирлянды"
             })
         }
+    },
+
+    strip_swap_leds: {
+        init: function() {
+            this.jsonInit({
+                type:               "block_type",
+                message0:           "поменять цветами",
+                previousStatement:  null,
+                nextStatement:      null,
+                inputsInline:       false,
+                colour:             CATEGORIES.EMIT.colour,
+                tooltip:            "Текущая лампочка обменивается цветом со следующей лампочкой"
+            })
+        }
+    },
+
+    strip_slide_leds: {
+        init: function () {
+            this.jsonInit({
+                type:               "block_type",
+                message0:           "сдвинуть цвета →",
+                previousStatement:  null,
+                nextStatement:      null,
+                inputsInline:       false,
+                colour:             CATEGORIES.EMIT.colour,
+                tooltip:            "Все цвета гирлянды смещаются вправо на 1 позицию"
+            })
+        }
     }
 };
 

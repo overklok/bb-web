@@ -23,6 +23,7 @@ class LocalServiceModule extends Module {
         return {
             modeDummy: false,       // холостой режим
             connectTimeout: 5000,   // время в мс, через которое запустится проверка подключения сервиса
+            portUrgent: false,
         }
     }
 
@@ -44,9 +45,36 @@ class LocalServiceModule extends Module {
             }, 1000);
 
         } else {
+            if (this._options.portUrgent) {
+                this.resetPort(this._options.portUrgent);
+            }
+
             this._launchIPC();
             this._subscribeToWrapperEvents();
         }
+    }
+
+    resetPort(port) {
+        if (!port) throw new TypeError("Parameter `port` is not defined");
+
+        if (this._options.modeDummy) {
+            return new Promise(resolve => resolve())
+        }
+
+        return new Promise(resolve => {
+            this._ipc.send('reset-port', port);
+
+            this._ipc.once('reset-port.result', (event, error) => {
+                if (error) {
+                   this._debug.error(error);
+                   throw error;
+                } else {
+                    this._debug.info("Connected to", port);
+
+                    resolve();
+                }
+           });
+        });
     }
 
     /**
@@ -71,7 +99,7 @@ class LocalServiceModule extends Module {
 
             this._ipc.send('code-update', handlers);
 
-            this._ipc.once('code-update-result', (event, error) => {
+            this._ipc.once('code-update.result', (event, error) => {
                 if (error) {
                    this._debug.error(error);
                    throw error;
@@ -117,7 +145,7 @@ class LocalServiceModule extends Module {
         return new Promise(resolve => {
             this._ipc.send('upgrade', urls);
 
-            this._ipc.once('upgrade-result', (event, error) => {
+            this._ipc.once('upgrade.result', (event, error) => {
                 if (error) {
                     this._debug.error(error);
                     throw error;
@@ -127,6 +155,10 @@ class LocalServiceModule extends Module {
                 }
             });
         });
+    }
+
+    setMode(mode) {
+        this._ipc.send('set-mode', mode);
     }
 
     /**
@@ -207,8 +239,9 @@ class LocalServiceModule extends Module {
         });
 
         /* Как только сервис сообщил об ошибке- */
-        this._ipc.on('error', (evt, arg) => {
-            this.emitEvent('error', arg)
+        this._ipc.on('error', (evt, err) => {
+            this._debug.error(err);
+            // this.emitEvent('error', arg)
         });
     }
 }

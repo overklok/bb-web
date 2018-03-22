@@ -151,9 +151,9 @@ class Plate {
         }
 
         if (this._state.highlighted === true) {
-            this._group.attr('filter', 'url(#glow)');
+            this._bezel.attr('filter', 'url(#glow-plate)');
         } else {
-            this._group.attr('filter', null);
+            this._bezel.attr('filter', null);
         }
     }
 

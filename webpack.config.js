@@ -86,21 +86,21 @@ module.exports = {
         //     inject: 'body',
         //     filename: 'admin.html'
         // }),
-        new HtmlWebpackPlugin({
-            template: './app/html/lesson-pane.html',
-            inject: 'head',
-            filename: 'lesson-pane.html'
-        }),
+        // new HtmlWebpackPlugin({
+        //     template: './app/html/lesson-pane.html',
+        //     inject: 'head',
+        //     filename: 'lesson-pane.html'
+        // }),
         new CopyWebpackPlugin([
             {from: './app/fonts/IBMPlexSans', to: './fonts'},
-            {from: './app/fonts/IBMPlexSans', to: '../../codehour-breadboard-client/web/fonts'},
+            // {from: './app/fonts/IBMPlexSans', to: '../../codehour-breadboard-client/web/fonts'},
             {from: './app/fonts/IBMPlexSans', to: '../../codehour-breadboard-server/frontend/static/frontend/app/fonts'},
             {from: './app/css/spinner.css', to: './spinner.css'},
-            {from: './app/css/spinner.css', to: '../../codehour-breadboard-client/web/spinner.css'},
+            // {from: './app/css/spinner.css', to: '../../codehour-breadboard-client/web/spinner.css'},
             {from: './app/css/spinner.css', to: '../../codehour-breadboard-server/frontend/static/frontend/app/css/spinner.css'},
 
-            {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
-            {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},
+            // {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
+            // {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},
             {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
             // {from: './dist/admin_blockly.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js'},
             // {from: './dist/admin_board.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-board/js/admin_board.js'}

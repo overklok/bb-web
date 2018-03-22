@@ -39,6 +39,7 @@ class Current {
     draw(path) {
         this.path = this.container
             .path(path)
+            .addClass('current-path')
             .fill('none')
             .stroke(this.style)
             .data('key', 'value');
@@ -109,7 +110,7 @@ class Current {
             // Векторное представление стрелки
             let arrow = this.container_anim.polygon(
                 "0,0 0," + GRID_DOT_SIZE/2 +  " " + GRID_DOT_SIZE / 4 + "," + GRID_DOT_SIZE / 4
-            ).center(0,0);
+            ).center(0,0).addClass('current-arrow');
 
             // Заливка и центрирование
             arrow.fill(arrow_color);
@@ -117,7 +118,7 @@ class Current {
             // SVG-анимация стрелки:
             let aniMove = document.createElementNS("http://www.w3.org/2000/svg","animateMotion"); // тип: перемещение
                 aniMove.setAttribute("start", "0s");                                              // задержка
-                aniMove.setAttribute("dur", time + "s");                                          // длительность
+                aniMove.setAttribute("dur", time + "ms");                                          // длительность
                 aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
                 aniMove.setAttribute("rotate", "auto");                                           // автоповорот
                 aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);           // нач. и кон. позиции в %
@@ -154,7 +155,7 @@ class Current {
      * Добавить фильтр свечения к току
      */
     addGlow() {
-        this.path.attr('filter', 'url(#glow)');
+        this.path.attr('filter', 'url(#glow-current)');
     };
 }
 

@@ -6,7 +6,7 @@ const CURRENT_COLOR_GOOD = "#26d0ff";
 const CURRENT_COLOR_BAD = "#ff0003";
 
 const CURRENT_ARROW_COLOR   = '#00f';       // Цвет стрелок тока
-const CURRENT_ANIM_SPEED     = 0.5;            // Скорость анимации стрелок, arrows/sec
+const CURRENT_ANIM_SPEED     = 300;            // Скорость анимации стрелок, arrows/sec
 
 class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
@@ -17,6 +17,7 @@ class CurrentLayer extends Layer {
         this._container.addClass(CurrentLayer.Class);
 
         this._currents = [];
+        this._point_arr = [];
 
         this._cellgroup = undefined;
     }
@@ -26,13 +27,9 @@ class CurrentLayer extends Layer {
         this._cellgroup.move(100, 170);
     }
 
-    addCurrentGood(points) {
-        this._addCurrent(points, CURRENT_COLOR_GOOD);
-    };
-
-    addCurrentBad(points) {
-        this._addCurrent(points, CURRENT_COLOR_BAD);
-    };
+    getAllCurrentData() {
+        return this._point_arr;
+    }
 
     removeAllCurrents() {
         for (let current of this._currents) {
@@ -40,6 +37,7 @@ class CurrentLayer extends Layer {
         }
 
         this._currents = [];
+        this._point_arr = [];
     };
 
     activateAllCurrents() {
@@ -54,7 +52,9 @@ class CurrentLayer extends Layer {
         }
     }
 
-    _addCurrent(points, c_color) {
+    addCurrent(points, c_color=CURRENT_COLOR_GOOD) {
+        if (!points || points.length === 0) {}
+
         let path_data = this._buildCurrentPath(points);
 
         let current = new Current(this._cellgroup, {
@@ -67,10 +67,14 @@ class CurrentLayer extends Layer {
 
         current.draw(path_data);
         current.activate(CURRENT_ANIM_SPEED, CURRENT_ARROW_COLOR);
+
+        this._point_arr.push(points);
     };
 
     _buildCurrentPath(points) {
         let full_path = [];
+
+        console.log(points);
 
         // Для каждой пары точек
         for (let point of points) {

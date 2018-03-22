@@ -217,7 +217,23 @@ let BlocklyJSONGenerators = {
             block_id:   block.id,
             args:       []
         }) + ","
-    }
+    },
+
+    strip_swap_leds: block => {
+        return JSON.stringify({
+            name:       "strip_swap_leds",
+            block_id:   block.id,
+            args:       []
+        }) + ","
+    },
+
+    strip_slide_leds: block => {
+        return JSON.stringify({
+            name:       "strip_slide_leds",
+            block_id:   block.id,
+            args:       []
+        }) + ","
+    },
 };
 
 export default BlocklyJSONGenerators;

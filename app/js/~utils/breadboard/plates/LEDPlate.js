@@ -1,14 +1,13 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 
-class ResistorPlate extends Plate {
-    static get Alias() {return "resistor"}
+class LEDPlate extends Plate {
+    static get Alias() {return "LED"}
 
-    constructor(container, grid, id, resistance) {
-        super(container, grid, id, resistance);
+    constructor(container, grid, id, colour='R') {
+        super(container, grid, id, colour);
 
-        this._params.resistance = (resistance <= 0) ? 200 : resistance;
-        this._extra = this._params.resistance;
+        this._extra = this._params.colour = colour;
 
         this._cell = new Cell(0, 0, this.__grid);
         this._size = {x: 2, y: 1};
@@ -31,9 +30,9 @@ class ResistorPlate extends Plate {
         this._bezel.stroke({color: "#fffffd", width: 2});
 
         this._drawPicture();
-        this._drawLabel(this._params.resistance);
+        this._drawLabel(this._params.colour);
 
-        // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
+        // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };
 
     /**
@@ -104,25 +103,39 @@ class ResistorPlate extends Plate {
             .fill('none')
             .move(rect1.cx(), rect2.cy());
 
-        this._group.rect(line_len / 2.5, qs / 1.5)
+        let trng = this._group.polyline([
+            [0, 0],
+            [0, qs*3/2],
+            [qs, qs*3/4],
+            [0, 0],
+        ])
             .stroke({width: 1})
             .fill("#fffffd")
             .cx(rect1.cx() + line_len / 2)
-            .cy(rect1.cy())
+            .cy(rect1.cy());
+
+        let ptrpath = [
+            [0, 0],
+            [qs/2, -qs/2],
+            [qs/2-7, -qs/2+4],
+            [qs/2-4, -qs/2+7],
+            [qs/2, -qs/2],
+        ];
+
+        let ptr1 = this._group.polyline(ptrpath).stroke({width: 1}).fill("#000");
+        let ptr2 = this._group.polyline(ptrpath).stroke({width: 1}).fill("#000");
+
+        ptr1.move(trng.x() + trng.width() / 2, trng.y() - trng.height() / 4);
+        ptr2.move(trng.x() + trng.width() / 2 + 5, trng.y() - trng.height() / 4 + 5);
     }
 
     _drawLabel(text="", size=16) {
-        let num = Number(text);
-
-        if (num / 1000 >= 1)    {text = num / 1000      + 'k'}
-        if (num / 1000000 >= 1) {text = num / 1000000   + 'M'}
-
         this._group.text(String(text))
             .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
-            .cx(this._container.width() / 2)
-            .cy(this._container.height() / 4)
+            .cx(this._container.width() - size)
+            .cy(this._container.height() - size)
             .stroke({width: 0.5})
     }
 }
 
-export default ResistorPlate;
+export default LEDPlate;

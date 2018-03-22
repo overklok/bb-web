@@ -3,10 +3,17 @@ import Wrapper from "../core/Wrapper";
 import Breadboard from "../~utils/breadboard/Breadboard";
 
 const PLATE_TYPES = {
-    'resistor':     'резистор',
     'bridge':       'перемычка',
+    'resistor':     'резистор',
+    'photoresistor':'фоторезистор',
+    'rheostat':     'реостат',
+    'button':       'кнопка',
+    'switch':       'ключ',
     'capacitor':    'конденсатор',
-    'strip':        'лента'
+    'transistor':   'транзистор',
+    'inductor':     'индуктор',
+    'LED':          'диод',
+    'strip':        'лента',
 };
 
 /**
@@ -69,9 +76,11 @@ class BreadboardWrapper extends Wrapper {
     }
 
     setCurrent(points) {
-        this._plugin._layers.current.removeAllCurrents();
+        this._plugin.setCurrent(points);
+    }
 
-        this._plugin._layers.current.addCurrentGood(points);
+    removeCurrents() {
+        this._plugin._layers.current.removeAllCurrents();
     }
 
     onChange(cb) {
@@ -100,7 +109,7 @@ class BreadboardWrapper extends Wrapper {
         for (let i = 0; i < options.length; i++) {
             let opt = options[i];
             let el = document.createElement("option");
-            el.textContent = PLATE_TYPES[opt][1];
+            el.textContent = PLATE_TYPES[opt];
             el.value = opt;
 
             select.appendChild(el);

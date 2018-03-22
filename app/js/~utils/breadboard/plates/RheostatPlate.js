@@ -1,17 +1,14 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 
-class ResistorPlate extends Plate {
-    static get Alias() {return "resistor"}
+class RheostatPlate extends Plate {
+    static get Alias() {return "rheostat"}
 
-    constructor(container, grid, id, resistance) {
-        super(container, grid, id, resistance);
-
-        this._params.resistance = (resistance <= 0) ? 200 : resistance;
-        this._extra = this._params.resistance;
+    constructor(container, grid, id) {
+        super(container, grid, id);
 
         this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: 2, y: 1};
+        this._size = {x: 3, y: 1};
 
         this._state = {
             highlighted: false,
@@ -31,7 +28,6 @@ class ResistorPlate extends Plate {
         this._bezel.stroke({color: "#fffffd", width: 2});
 
         this._drawPicture();
-        this._drawLabel(this._params.resistance);
 
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
@@ -104,25 +100,37 @@ class ResistorPlate extends Plate {
             .fill('none')
             .move(rect1.cx(), rect2.cy());
 
-        this._group.rect(line_len / 2.5, qs / 1.5)
+        let body = this._group.rect(qs * 2, qs / 1.5)
             .stroke({width: 1})
             .fill("#fffffd")
             .cx(rect1.cx() + line_len / 2)
-            .cy(rect1.cy())
-    }
+            .cy(rect1.cy());
 
-    _drawLabel(text="", size=16) {
-        let num = Number(text);
+        let arrow_height = qs;
+        let arrow_width = qs * 2;
 
-        if (num / 1000 >= 1)    {text = num / 1000      + 'k'}
-        if (num / 1000000 >= 1) {text = num / 1000000   + 'M'}
+        let arrow = this._group.polyline([
+            [arrow_width, -arrow_height],
+            [0, -arrow_height],
+            [0, 0],
+        ])
+            .stroke({width: 2})
+            .fill("none")
+            .x(body.cx())
+            .y(body.y() - arrow_height);
 
-        this._group.text(String(text))
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
-            .cx(this._container.width() / 2)
-            .cy(this._container.height() / 4)
-            .stroke({width: 0.5})
+        arrow.marker('end', qs/2, qs/2, function(add) {
+            add.path([
+                ['M', 0, 0],
+                ['l', -qs/2, -qs/4],
+                ['l', 0, qs/2],
+                ['l', qs/2, -qs/4],
+            ])
+                .fill('#000')
+                .stroke({width: 1})
+                .move(-qs/4, 0);
+        })
     }
 }
 
-export default ResistorPlate;
+export default RheostatPlate;

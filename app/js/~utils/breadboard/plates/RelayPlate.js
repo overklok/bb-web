@@ -1,8 +1,8 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 
-class ResistorPlate extends Plate {
-    static get Alias() {return "resistor"}
+class RelayPlate extends Plate {
+    static get Alias() {return "relay"}
 
     constructor(container, grid, id, resistance) {
         super(container, grid, id, resistance);
@@ -11,7 +11,7 @@ class ResistorPlate extends Plate {
         this._extra = this._params.resistance;
 
         this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: 2, y: 1};
+        this._size = {x: 5, y: 1};
 
         this._state = {
             highlighted: false,
@@ -31,7 +31,6 @@ class ResistorPlate extends Plate {
         this._bezel.stroke({color: "#fffffd", width: 2});
 
         this._drawPicture();
-        this._drawLabel(this._params.resistance);
 
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
@@ -79,50 +78,58 @@ class ResistorPlate extends Plate {
      * @private
      */
     _drawPicture(qs=20) {
-        let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._size.x-1, this._size.y-1);
+        let cells = [];
+        let rects = [];
+        let paths = [];
 
-        let rect1 = this._group.rect(qs, qs)
-            .center(
-                cell1.center.x - qs / 2,
-                cell1.center.y - qs / 2
-            );
+        for (let i = 0; i < 5; i++) {
+            let cell = this.__grid.cell(i, 0);
 
-        let rect2 = this._group.rect(qs, qs)
-            .center(
-                cell2.center.x - qs / 2,
-                cell2.center.y - qs / 2
-            );
+            let rect = this._group.rect(qs, qs)
+                .center(
+                    cell.center.x - qs / 2,
+                    cell.center.y - qs / 2
+                );
 
-        let line_len = rect2.x() - rect1.x();
+            cells.push(cell);
+            rects.push(rect);
+        }
 
-        this._group.polyline([
+        paths[0] = this._group.polyline([
             [0, 0],
-            [line_len, 0]
+            [0, -qs/2],
+            [cells[1].pos.x - cells[0].pos.x + qs, -qs/2]
         ])
-            .stroke({width: 1})
-            .fill('none')
-            .move(rect1.cx(), rect2.cy());
+            .move(rects[0].cx(), rects[0].y() - qs/2)
+            .stroke({width: 2, color: "#000"}).fill('none');
 
-        this._group.rect(line_len / 2.5, qs / 1.5)
-            .stroke({width: 1})
-            .fill("#fffffd")
-            .cx(rect1.cx() + line_len / 2)
-            .cy(rect1.cy())
-    }
+        paths[1] = this._group.polyline([
+            [0, 0],
+            [0, qs/2],
+            [qs, qs/2]
+        ])
+            .move(rects[1].cx(), rects[1].y() + rects[1].height())
+            .stroke({width: 2, color: "#000"}).fill('none');
 
-    _drawLabel(text="", size=16) {
-        let num = Number(text);
+        paths[2] = this._group.path([
+            ['M', 0, 0],
+            ['l', qs, 0],
+            ['l', 0, -qs*2.3],
+            ['l', cells[3].pos.x - cells[2].pos.x - qs/2.2, 0],
 
-        if (num / 1000 >= 1)    {text = num / 1000      + 'k'}
-        if (num / 1000000 >= 1) {text = num / 1000000   + 'M'}
+            ['M', 0, qs*0.2],
+            ['l', qs + cells[3].pos.x - cells[2].pos.x, 0],
+            ['l', 0, -qs*1.8],
+            ['l', -qs/1.4, -qs],
 
-        this._group.text(String(text))
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
-            .cx(this._container.width() / 2)
-            .cy(this._container.height() / 4)
-            .stroke({width: 0.5})
+            ['M', 0, qs*0.42],
+            ['l', cells[4].pos.x - cells[2].pos.x + qs, 0],
+            ['l', 0, -(rects[4].height() + qs*1.72)],
+            ['l', -(cells[4].pos.x - cells[3].pos.x), 0],
+        ])
+            .move(rects[2].x() - rects[2].width() / 2, rects[2].y() - rects[2].height() / 2 - qs/1.2)
+            .stroke({width: 2, color: "#000"}).fill('none');
     }
 }
 
-export default ResistorPlate;
+export default RelayPlate;

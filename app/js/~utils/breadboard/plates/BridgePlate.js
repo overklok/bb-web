@@ -30,9 +30,12 @@ class BridgePlate extends Plate {
     draw(position, orientation) {
         super.draw(position, orientation);
 
-        this._bezel.fill({color: "#ff9205"}).radius(10);
+        this._bezel.fill({color: "#fffffd"}).radius(10);
+        this._bezel.stroke({color: "#fffffd", width: 2});
 
-        this._group.text(`Bridge ${this._params.len} cells`).font({size: 20});
+        this._drawPicture();
+
+        // this._group.text(`Bridge ${this._params.len} cells`).font({size: 20});
     };
 
     /**
@@ -42,6 +45,33 @@ class BridgePlate extends Plate {
      */
     setState(state) {
         super.setState(state);
+    }
+
+    /**
+     *
+     * @param {number} qs размер квадратов
+     * @param {number} ls толщина линии
+     * @private
+     */
+    _drawPicture(qs=20, ls=8) {
+        let cell1 = this.__grid.cell(0, 0);
+        let cell2 = this.__grid.cell(this._size.x-1, this._size.y-1);
+
+        let rect1 = this._group.rect(qs, qs)
+            .center(
+                cell1.center.x - qs / 2,
+                cell1.center.y - qs / 2
+            );
+
+        let rect2 = this._group.rect(qs, qs)
+            .center(
+                cell2.center.x - qs / 2,
+                cell2.center.y - qs / 2
+            );
+
+        this._group.rect(rect2.x() - rect1.x(), ls)
+            .x(cell1.center.x - qs / 2)
+            .cy(cell1.center.y - qs / 2);
     }
 }
 

@@ -5,6 +5,12 @@ const BUTTON_CLASS = "launch-btn";
 
 import thm from "../../css/launch-button.css";
 
+const VARIANTS = {
+    CHECK: 0,
+    LAUNCH: 1,
+    CHECK_N_LAUNCH: 2,
+};
+
 class LaunchBtnWrapper extends Wrapper {
     constructor() {
         super();
@@ -21,23 +27,33 @@ class LaunchBtnWrapper extends Wrapper {
         this._started = false;
     }
 
-    show(check) {
+    show(variant) {
         this._ensureButton();
 
         this._button.style.display = "block";
 
-        if (check) {
-            this._caption_start = "Проверить";
-            this._caption_stop = "Проверяем...";
-        } else {
-            this._caption_start = "Запустить";
-            this._caption_stop = "Остановить"
+        switch (variant) {
+            case VARIANTS.CHECK: {
+                this._caption_start = "Проверить";
+                this._caption_stop = "Проверяем...";
+                break;
+            }
+            case VARIANTS.LAUNCH: {
+                this._caption_start = "Запустить";
+                this._caption_stop = "Остановить";
+                break;
+            }
+            case VARIANTS.CHECK_N_LAUNCH: {
+                this._caption_start = "Запустить и проверить";
+                this._caption_stop = "Остановить";
+                break;
+            }
         }
 
         this.setStart();
 
         this._button.onclick = (evt) => {
-            this._callbacks.button_click(check, !this._started);
+            this._callbacks.button_click(variant, !this._started);
         };
     }
 
