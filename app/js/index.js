@@ -196,11 +196,11 @@ class Application {
                 .then(() => this.gui.listenButtons(exercise.check_buttons))
                 .then(() => this.ins.setButtonsModel(exercise.buttons_model))
                 .then(() => {
-                    // if (exercise.check_buttons) {
-                    //     this._dispatcher.only(['gui:*', 'ins:pass']);
-                    // } else {
+                    if (exercise.check_buttons) {
+                        this._dispatcher.only(['gui:*', 'ins:pass']);
+                    } else {
                         this._dispatcher.only(['gui:*']);
-                    // }
+                    }
                 })
         });
 
