@@ -385,7 +385,12 @@ class Application {
 
             this.ws.highlightBlock(null);
             this.gui.affirmLaunchButtonState('execute', true);
-            this._dispatcher.only(["gui:*"]);
+
+            if (exercise.check_buttons) {
+                this._dispatcher.only(['gui:*', 'ins:pass']);
+            } else {
+                this._dispatcher.only(['gui:*']);
+            }
 
             // if (!exercise.is_sandbox  && !exercise.listeners_only) {
             //     this._dispatcher.call("gui:check");
