@@ -7,7 +7,7 @@
 }
 
 .introjs-tooltip-error {
-    background-color: #f5dcdc;
+    background-color: #f5dcdc !important;
 }
 
 .introjs-tooltip-error .introjs-skipbutton {

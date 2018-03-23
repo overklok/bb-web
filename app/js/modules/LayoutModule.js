@@ -52,6 +52,7 @@ const MODES = {
  */
 const MAPPINGS = {
     full: {
+        launch_buttons: PANE_IDS.MAIN_CENTER,
         workspace: PANE_IDS.MAIN_CENTER,
         breadboard: PANE_IDS.EAST_SOUTH,
         tracing: PANE_IDS.EAST_CENTER_CENTER,
@@ -60,6 +61,7 @@ const MAPPINGS = {
         lesson: PANE_IDS.MAIN_NORTH
     },
     simple: {
+        launch_buttons: PANE_IDS.MAIN_CENTER,
         breadboard: PANE_IDS.MAIN_CENTER,
         task: PANE_IDS.EAST_CENTER_CENTER,
         lesson: PANE_IDS.MAIN_NORTH

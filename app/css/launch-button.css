@@ -1,9 +1,16 @@
-#launch-btn {
+.launch-pane {
     position: absolute;
     bottom: 36px;
     right: 36px;
+}
+
+.launch-btn {
+    position: relative;
+    display: inline;
+
     z-index: 1;
 
+    margin: 0 4px;
     padding: 6px 10px;
 
     border-style: none;

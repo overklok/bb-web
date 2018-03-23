@@ -24,7 +24,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "цвет",
+                message0:       "Цвет",
                 inputsInline:   false,
                 output:         FIELDTYPES.COLOUR,
                 colour:         CATEGORIES.COLOUR.colour,
@@ -177,7 +177,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "задать цвет: %1",
+                message0:           "задать Цвет: %1",
                 args0: [
                     {
                         type:       "input_value",
@@ -199,7 +199,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "сбросить цвет",
+                message0:           "сбросить Цвет",
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       false,
@@ -213,7 +213,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "добавить %1 в %2",
+                message0:           "добавить %1 %2 в Цвет",
                 args0: [
                     {
                         type:       "input_value",
@@ -223,8 +223,8 @@ let JSONBlocks = {
                     {
                         type:       "field_dropdown",
                         name:       "CLRCHN",
-                        options:    BLOCK_INPUTS_CONSTRAINTS.CHANNELS.NOMINAL
-                    }
+                        options:    BLOCK_INPUTS_CONSTRAINTS.CHANNELS.GENITIVE
+                    },
                 ],
                 previousStatement:  null,
                 nextStatement:      null,
@@ -240,7 +240,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "убавить %1 из %2",
+                message0:           "убавить %1 %2 из Цвета",
                 args0: [
                     {
                         type:       "input_value",
@@ -267,7 +267,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "выбрать случайный цвет",
+                message0:           "выбрать случайный Цвет",
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       false,
@@ -281,7 +281,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "сгенерировать случайный цвет",
+                message0:           "сгенерировать случайный Цвет",
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       false,
@@ -291,6 +291,7 @@ let JSONBlocks = {
         }
     },
 
+    /// Emit
     strip_colour_current_chn_inc: {
         init: function() {
             this.jsonInit({
@@ -311,13 +312,14 @@ let JSONBlocks = {
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       true,
-                colour:             CATEGORIES.COLOUR.colour,
+                colour:             CATEGORIES.EMIT.colour,
                 tooltip:            "У текущей лампочки выбранный компонент будет гореть ярче на заданное число"
             });
             appendShadowBlock(this, "BRT", "math_number_brightness");
         }
     },
 
+    /// Emit
     strip_colour_current_chn_dec: {
         init: function() {
             this.jsonInit({
@@ -338,7 +340,7 @@ let JSONBlocks = {
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       true,
-                colour:             CATEGORIES.COLOUR.colour,
+                colour:             CATEGORIES.EMIT.colour,
                 tooltip:            "У текущей лампочки выбранный компонент будет гореть тусклее на заданное число"
             });
             appendShadowBlock(this, "BRT", "math_number_brightness");

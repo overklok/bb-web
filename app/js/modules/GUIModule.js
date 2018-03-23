@@ -23,8 +23,8 @@ const REGEXPS = {
 const LAUNCH_VARIANTS = {
     NONE: 0,
     CHECK: 1,
-    LAUNCH: 2,
-    CHECK_N_LAUNCH: 3,
+    EXECUTE: 2,
+    CHECK_N_EXECUTE: 3,
 };
 
 /**
@@ -58,7 +58,8 @@ class GUIModule extends Module {
 
             areasDisp: {
                 text: false,
-                lesson: false
+                lesson: false,
+                button: false,
             }
         };
 
@@ -141,8 +142,10 @@ class GUIModule extends Module {
         return Promise.resolve();
     }
 
-    switchLaunchVariant(variant) {
-        if (!this._launch_btn) {return Promise.resolve(false)}
+    setLaunchVariant(variant) {
+        if (!this._state.areasDisp.buttons)   {return Promise.resolve(false)}
+
+        console.log("SLV", variant);
 
         switch (variant) {
             case LAUNCH_VARIANTS.NONE: {
@@ -153,11 +156,11 @@ class GUIModule extends Module {
                 this._launch_btn.show(0);
                 break;
             }
-            case LAUNCH_VARIANTS.LAUNCH: {
+            case LAUNCH_VARIANTS.EXECUTE: {
                 this._launch_btn.show(1);
                 break;
             }
-            case LAUNCH_VARIANTS.CHECK_N_LAUNCH: {
+            case LAUNCH_VARIANTS.CHECK_N_EXECUTE: {
                 this._launch_btn.show(2);
                 break;
             }
@@ -171,16 +174,24 @@ class GUIModule extends Module {
         return Promise.resolve(true);
     }
 
-    affirmLaunchButtonState(start=true) {
-        if (!this._launch_btn) {return false}
-
-        if (!this._state.launchVariant) {return false}
+    affirmLaunchButtonState(button, start=true) {
+        if (!this._state.areasDisp.buttons) {return false}
+        if (!button) {throw new TypeError("Button is not defined")}
 
         if (start) {
-            this._launch_btn.setStart();
+            this._launch_btn.setStart(button);
         } else {
-            this._launch_btn.setStop();
+            this._launch_btn.setStop(button);
         }
+    }
+
+    injectLaunchButtons(dom_node) {
+        if (!dom_node)                      {return Promise.resolve(false)}
+        if (this._state.areasDisp.buttons)   {return Promise.resolve(true)}
+
+        this._state.areasDisp.buttons = true;
+
+        return this._launch_btn.inject(dom_node);
     }
 
     injectTextPane(dom_node) {
@@ -328,14 +339,16 @@ class GUIModule extends Module {
         });
 
         /* Как только нажата кнопка запуска/проверки */
-        this._launch_btn.onButtonClick((check, start) => {
-            console.log(check, start);
+        this._launch_btn.onButtonClick((button, start) => {
+            console.log(button, start);
 
-            if (check) {
+            if (button === 'check') {
                 console.log("emitting check...");
 
                 this.emitEvent("check");
-            } else {
+            }
+
+            if (button === 'execute') {
                 if (start) {
                     this.emitEvent("run");
                 } else {

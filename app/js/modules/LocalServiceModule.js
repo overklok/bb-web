@@ -85,7 +85,7 @@ class LocalServiceModule extends Module {
      * @param {Object} handlers обработчики, формат:
      *                          {
      *                              commands: "<код обработчика>",
-     *                              launch: "<флаг запуска>"
+     *                              execute: "<флаг запуска>"
      *                           }
      *
      *                           Для главного обработчика ID = main, key = "None"
@@ -160,6 +160,8 @@ class LocalServiceModule extends Module {
     }
 
     setMode(mode) {
+        if (this._options.modeDummy) {return true}
+
         this._ipc.send('set-mode', mode);
     }
 

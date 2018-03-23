@@ -185,7 +185,7 @@ class Application {
                 .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
                 .then(() => this.ws.setMaxBlockLimit(exercise.max_blocks))
                 .then(() => this.ws.setEditable(exercise.editable))
-                .then(() => this.gui.switchLaunchVariant(exercise.launch_variant))
+                .then(() => this.gui.setLaunchVariant(exercise.launch_variant))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))
                 .then(() => this.trc.registerVariables(exercise.variables))
@@ -196,11 +196,11 @@ class Application {
                 .then(() => this.gui.listenButtons(exercise.check_buttons))
                 .then(() => this.ins.setButtonsModel(exercise.buttons_model))
                 .then(() => {
-                    if (exercise.check_buttons) {
-                        this._dispatcher.only(['gui:*', 'ins:pass']);
-                    } else {
+                    // if (exercise.check_buttons) {
+                    //     this._dispatcher.only(['gui:*', 'ins:pass']);
+                    // } else {
                         this._dispatcher.only(['gui:*']);
-                    }
+                    // }
                 })
         });
 
@@ -225,7 +225,7 @@ class Application {
             /// определить ИД упражнения
             let exID = this.ins.getExerciseID();
             /// зажать кнопку
-            this.gui.affirmLaunchButtonState(false);
+            this.gui.affirmLaunchButtonState('check', false);
             /// очистить ошибочные блоки
             this.ws.clearErrorBlocks();
 
@@ -237,14 +237,14 @@ class Application {
                 .then(results   => {return {handlers: results[0], board: results[1]}})
                 .then(data      => this.gs.commitSolution(exID, data))
                 .then(verdict   => this.ins.applyVerdict(verdict))
-                .then(()        => this.gui.affirmLaunchButtonState(true))
+                .then(()        => this.gui.affirmLaunchButtonState('check', true))
                 .then(()        => {
-                    this.gui.affirmLaunchButtonState(true);
+                    this.gui.affirmLaunchButtonState('check', true);
                     this._dispatcher.only(['gui:*', 'ins:*']);
                 })
                 .catch((err)    => {
                     console.error(err);
-                    this.gui.affirmLaunchButtonState(true);
+                    this.gui.affirmLaunchButtonState('check', true);
                     this._dispatcher.only(['gui:*', 'ins:*'])
                 });
         });
@@ -255,7 +255,7 @@ class Application {
         this._dispatcher.on('gui:run', () => {
             this._dispatcher.only(["gui:stop"]);
 
-            this.gui.affirmLaunchButtonState(false);
+            this.gui.affirmLaunchButtonState('execute', false);
 
             let handler = this.ws.getMainHandler();
             this.ls.updateHandlers({commands: handler.commands, launch: true});
@@ -269,7 +269,7 @@ class Application {
             this.ls.stopExecution();
             this.ws.highlightBlock(null);
 
-            this.gui.affirmLaunchButtonState(true);
+            this.gui.affirmLaunchButtonState('execute', true);
 
             this._dispatcher.only(["gui:*"]);
         });
@@ -384,12 +384,12 @@ class Application {
             let exercise = this.ins.getExerciseCurrent();
 
             this.ws.highlightBlock(null);
-            this.gui.affirmLaunchButtonState(true);
+            this.gui.affirmLaunchButtonState('execute', true);
             this._dispatcher.only(["gui:*"]);
 
-            if (!exercise.is_sandbox  && !exercise.listeners_only) {
-                this._dispatcher.call("gui:check");
-            }
+            // if (!exercise.is_sandbox  && !exercise.listeners_only) {
+            //     this._dispatcher.call("gui:check");
+            // }
         });
 
         this._dispatcher.on('ls:plates', data => {
@@ -417,6 +417,7 @@ class Application {
          */
         this._dispatcher.on('lay:compose-end', data => {
             if (data) {
+                this.gui.injectLaunchButtons(data.launch_buttons);
                 this.ws.inject(data.workspace);
                 this.bb.inject(data.breadboard);
                 this.trc.injectBlocks(data.tracing);

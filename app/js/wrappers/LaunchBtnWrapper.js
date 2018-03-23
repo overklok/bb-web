@@ -1,91 +1,141 @@
 import Wrapper from "../core/Wrapper";
 
-const BUTTON_ID = "launch-btn";
-const BUTTON_CLASS = "launch-btn";
-
 import thm from "../../css/launch-button.css";
+
+const IDS = {
+    EXECUTE_BTN: "execute-btn",
+    CHECK_BTN: "check-btn",
+};
+
+const CLASSES = {
+    LAUNCH_PANE: "launch-pane",
+    LAUNCH_BTN: "launch-btn",
+};
 
 const VARIANTS = {
     CHECK: 0,
-    LAUNCH: 1,
-    CHECK_N_LAUNCH: 2,
+    EXECUTE: 1,
+    CHECK_N_EXECUTE: 2,
 };
 
 class LaunchBtnWrapper extends Wrapper {
     constructor() {
         super();
 
-        this._button = undefined;
-
         this._callbacks = {
-            button_click: (check, start) => {console.warn(`Unhandled launch button click, check = ${check}, start=${start}`)}
+            button_click: (button, start) => {console.warn(`Unhandled button click, button=${button}, start=${start}`)},
         };
 
-        this._caption_start = "TEXT_START";
-        this._caption_stop = "TEXT_STOP";
+        this._captions = {
+            execute: {
+                start: "Запустить",
+                stop: "Остановить",
+            },
+            check: {
+                start: "Проверить",
+                stop: "Остановить",
+            }
+        };
 
-        this._started = false;
+        this._buttons = {
+            check: undefined,
+            execute: undefined,
+        };
+
+        this._started = {
+            check: false,
+            execute: false,
+        };
+    }
+
+    inject(dom_node) {
+        this._ensureButtons(dom_node);
+        this.hide();
+
+        return Promise.resolve(true);
     }
 
     show(variant) {
-        this._ensureButton();
-
-        this._button.style.display = "block";
+        console.log(variant);
 
         switch (variant) {
             case VARIANTS.CHECK: {
-                this._caption_start = "Проверить";
-                this._caption_stop = "Проверяем...";
+                this._buttons.check.style.display = "inline";
+                this._buttons.execute.style.display = "none";
                 break;
             }
-            case VARIANTS.LAUNCH: {
-                this._caption_start = "Запустить";
-                this._caption_stop = "Остановить";
+            case VARIANTS.EXECUTE: {
+                this._buttons.check.style.display = "none";
+                this._buttons.execute.style.display = "inline";
                 break;
             }
-            case VARIANTS.CHECK_N_LAUNCH: {
-                this._caption_start = "Запустить и проверить";
-                this._caption_stop = "Остановить";
+            case VARIANTS.CHECK_N_EXECUTE: {
+                this._buttons.check.style.display = "inline";
+                this._buttons.execute.style.display = "inline";
+                break;
+            }
+            default: {
+                this._buttons.check.style.display = "none";
+                this._buttons.execute.style.display = "none";
                 break;
             }
         }
 
-        this.setStart();
-
-        this._button.onclick = (evt) => {
-            this._callbacks.button_click(variant, !this._started);
-        };
+        for (let button_key in this._buttons) {
+            this.setStart(button_key);
+        }
     }
 
     hide() {
-        this._ensureButton();
-
-        this._button.style.display = "none";
+        this._buttons.execute.style.display = "none";
+        this._buttons.check.style.display = "none";
     }
 
-    setStart() {
-        this._ensureButton();
+    setStart(button_key) {
+        if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
 
-        this._button.innerText = this._caption_start;
-        this._started = false;
+        this._buttons[button_key].innerText = this._captions[button_key].start;
+        this._started[button_key] = false;
     }
 
-    setStop() {
-        this._ensureButton();
+    setStop(button_key) {
+        if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
 
-        this._button.innerText = this._caption_stop;
-        this._started = true;
+        this._buttons[button_key].innerText = this._captions[button_key].stop;
+        this._started[button_key] = true;
     }
 
     onButtonClick(cb) {
         this._callbacks.button_click = cb;
     }
 
-    _ensureButton() {
-        if (!this._button) {
-            this._button = document.getElementById(BUTTON_ID);
-            this._button.classList.add(BUTTON_CLASS)
-        }
+    _ensureButtons(dom_node) {
+        let parent = document.createElement("div");
+        parent.classList.add(CLASSES.LAUNCH_PANE);
+
+        this._buttons = {
+            execute: document.createElement("div"),
+            check: document.createElement("div"),
+        };
+
+        this._buttons.execute.id = IDS.EXECUTE_BTN;
+        this._buttons.check.id = IDS.CHECK_BTN;
+
+        this._buttons.execute.classList.add(CLASSES.LAUNCH_BTN);
+        this._buttons.check.classList.add(CLASSES.LAUNCH_BTN);
+
+        parent.appendChild(this._buttons.execute);
+        parent.appendChild(this._buttons.check);
+
+        dom_node.appendChild(parent);
+
+        this._buttons.execute.onclick = (evt) => {
+            this._callbacks.button_click('execute', !this._started.execute);
+        };
+
+        this._buttons.check.onclick = (evt) => {
+            this._callbacks.button_click('check', !this._started.check);
+        };
     }
 }
 

@@ -8,7 +8,7 @@ const CLASS_NAMES = {
 
 class ButtonPane {
     constructor(options) {
-        if (!options) {throw new TypeError("Some config should be provided for launch")}
+        if (!options) {throw new TypeError("Some config should be provided for execute")}
 
         this._button     = options.container;
         this._amount_max    = 30;
