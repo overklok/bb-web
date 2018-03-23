@@ -87,8 +87,6 @@ class GUIModule extends Module {
         return new Promise((resolve, reject) => {
             if (!missions) {return resolve(false)}
 
-            console.log(missions);
-
             this._lesson_pane.registerMissions(missions);
 
             resolve(true);

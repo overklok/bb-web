@@ -32,6 +32,8 @@ class LocalServiceModule extends Module {
 
         this._ipc = undefined;
 
+        this._version = undefined;
+
         this._state = {
             connected: false,
         };
@@ -205,10 +207,11 @@ class LocalServiceModule extends Module {
      */
     _subscribeToWrapperEvents() {
         /* Как только сервис сообщил о соединении */
-        this._ipc.on('connect', () => {
+        this._ipc.on('connect', (version) => {
             this._state.connected = true;
             this.emitEvent('connect');
-            this._debug.info('Connected to IPC');
+            this._debug.info(`Connected to IPC ver. ${version}`);
+            this._version = version;
         });
 
         /* Как только сервис сообщил о разъединении */

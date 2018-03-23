@@ -154,8 +154,6 @@ class Application {
                 mission_idx = command.data.missionIDX;
             }
 
-            console.log(command);
-
             this.ins.getInitialLessonID()
                 .then(lesson_id => this.gs.getLessonData(lesson_id))
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
@@ -418,8 +416,6 @@ class Application {
          * Окончание компоновки разметки
          */
         this._dispatcher.on('lay:compose-end', data => {
-            console.log(data);
-
             if (data) {
                 this.ws.inject(data.workspace);
                 this.bb.inject(data.breadboard);

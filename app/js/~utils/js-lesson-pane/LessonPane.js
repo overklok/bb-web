@@ -126,8 +126,6 @@ class LessonPane {
     setMissionActive(mission_idx) {
         if (!this._state.included) {throw new Error("Cannot set active mission, include first")}
 
-        console.log('sMA')
-
         this._blocks.bars.lesson.setMissionActive(mission_idx);
     }
 

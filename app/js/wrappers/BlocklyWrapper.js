@@ -198,6 +198,8 @@ class BlocklyWrapper extends Wrapper {
     updateBlockLimit(block_limit) {
         if (!this.workspace) {return false}
 
+        block_limit = block_limit > 0 ? block_limit : 9999;
+
         this.workspace.options.maxBlocks = block_limit;
         this.workspace.flyout_.filterForCapacity_();
 
