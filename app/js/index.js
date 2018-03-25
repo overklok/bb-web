@@ -329,7 +329,10 @@ class Application {
             this.ins.tourPass()
                 .then(
                     onResolve => this.ins.launchExerciseNext(),
-                    onReject => {this.ins.launchExerciseNext(true)}
+                    onReject => {
+                        this.ins.launchExerciseNext(true);
+                        this.gui.setMissionSkiddingOn(verdict.missionIDX);
+                    }
                 )
                 .then(() => this._dispatcher.only(['gui:*', 'ins:pass']))
         });

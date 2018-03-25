@@ -102,6 +102,10 @@ class LessonPaneWrapper extends Wrapper {
         this._lesson_pane.setMissionProgress(mission_idx, exercises_passed_count);
     }
 
+    setMissionSkidding(mission_idx, on) {
+        this._lesson_pane.setMissionSkidding(mission_idx, on);
+    }
+
     onMissionClick(cb) {
         this._lesson_pane.onMissionClick(cb);
     }

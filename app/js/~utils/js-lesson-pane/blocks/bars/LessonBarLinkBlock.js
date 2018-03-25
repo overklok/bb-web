@@ -1,5 +1,10 @@
 import Block from "../../core/Block";
 
+const SCALE_DURATION = 500; // ms, taken from css
+
+const CONTENT_REDO = `<i class="fas fa-redo"></i>`;
+const CONTENT_FF = `<i class="fas fa-fast-forward"></i>`;
+
 class LessonBarLinkBlock extends Block {
     static get ClassDOM() {return "lesson-bar__link"}
     static get ModifierClassesDOM() {return ["progressor"]}
@@ -14,6 +19,10 @@ class LessonBarLinkBlock extends Block {
         this._level_count = level_count;
 
         this._elements = [];
+
+        this._state.muteNumberChange = false;
+        this._state.skidding = false;
+        this._state.dispSkidding = false;
 
         this._callbacks = {
             onclick: () => {console.warn("Unhandled event 'click' were triggered")}
@@ -33,6 +42,14 @@ class LessonBarLinkBlock extends Block {
         console.log("PERC", percent);
 
         this._elements.progressor.style.height = percent + "%";
+    }
+
+    setSkiddingDisplay(on=false) {
+        this._state.dispSkidding = on;
+    }
+
+    setSkidding(on=false) {
+        this._state.skidding = on;
     }
 
     dispose() {
@@ -61,11 +78,43 @@ class LessonBarLinkBlock extends Block {
     _attachCallbacks() {
         this._container.onclick = () => {
             this._callbacks.onclick();
-        }
+        };
+
+        this._container.onmouseover = () => {
+            this._onMouseOver();
+        };
+
+        this._container.onmouseout = () => {
+            this._onMouseOut();
+        };
     }
 
     _detachCallbacks() {
         this._container.onclick = undefined;
+        this._container.onmouseover = undefined;
+        this._container.onmouseover = undefined;
+    }
+
+    _onMouseOver() {
+        if (!this._state.dispSkidding) {return}
+
+        this._elements.num.classList.remove("animate-hover");
+        setTimeout(() => {
+            if (!this._state.muteNumberChange) {
+                this._elements.num.innerHTML = this._state.skidding ? CONTENT_FF : CONTENT_REDO;
+                this._elements.num.classList.add("animate-hover");
+            }
+        }, SCALE_DURATION)
+    }
+
+    _onMouseOut() {
+        if (!this._state.dispSkidding) {return}
+
+        this._state.muteNumberChange = true;
+        setTimeout(() => {
+            this._elements.num.innerHTML = this._number;
+            this._state.muteNumberChange = false;
+        }, SCALE_DURATION);
     }
 }
 

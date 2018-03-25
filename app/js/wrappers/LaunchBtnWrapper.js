@@ -28,12 +28,12 @@ class LaunchBtnWrapper extends Wrapper {
 
         this._captions = {
             execute: {
-                start: "Запустить",
-                stop: "Остановить",
+                start: `<i class="fas fa-play"></i>&nbsp;<small>Запустить</small>`,
+                stop: `<i class="fas fa-stop"></i>&nbsp;<small>Остановить</small>`,
             },
             check: {
-                start: "Проверить",
-                stop: "Остановить",
+                start: `<i class="fas fa-forward"></i>&nbsp;<small>Проверить</small>`,
+                stop: `<i class="fas fa-sync fa-spin fa-fw"></i>`,
             }
         };
 
@@ -94,14 +94,14 @@ class LaunchBtnWrapper extends Wrapper {
     setStart(button_key) {
         if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
 
-        this._buttons[button_key].innerText = this._captions[button_key].start;
+        this._buttons[button_key].innerHTML = this._captions[button_key].start;
         this._started[button_key] = false;
     }
 
     setStop(button_key) {
         if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
 
-        this._buttons[button_key].innerText = this._captions[button_key].stop;
+        this._buttons[button_key].innerHTML = this._captions[button_key].stop;
         this._started[button_key] = true;
     }
 

@@ -112,6 +112,16 @@ class GUIModule extends Module {
         });
     }
 
+    setMissionSkiddingOn(mission_idx) {
+        return new Promise((resolve, reject) => {
+            if (!mission_idx) {return resolve(false)}
+
+            this._lesson_pane.setMissionSkidding(mission_idx, true);
+
+            resolve(true);
+        });
+    }
+
     setExerciseCurrent(exercise_idx) {
         return new Promise((resolve, reject) => {
             console.log(exercise_idx);

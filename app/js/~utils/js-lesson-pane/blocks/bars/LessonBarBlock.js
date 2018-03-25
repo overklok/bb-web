@@ -39,6 +39,14 @@ class LessonBarBlock extends BarBlock {
         this._state.missionActiveIDX = mission_idx;
     }
 
+    setMissionSkidding(mission_idx, is_skidding) {
+        if (!(mission_idx in this._items)) {
+            throw new RangeError(`Lesson bar doesn't have an item with number ${mission_idx}`)
+        }
+
+        this._items[mission_idx].setSkidding(is_skidding);
+    }
+
     setMissionProgress(mission_idx, exercise_count) {
         if (!(mission_idx in this._items)) {
             throw new RangeError(`Lesson bar doesn't have an item with number ${mission_idx}`)

@@ -127,6 +127,13 @@ class LessonPane {
         if (!this._state.included) {throw new Error("Cannot set active mission, include first")}
 
         this._blocks.bars.lesson.setMissionActive(mission_idx);
+        this._blocks.bars.lesson.setMissionSkidding(mission_idx, false);
+    }
+
+    setMissionSkidding(mission_idx, skidding=false) {
+        if (!this._state.included) {throw new Error("Cannot set skidding mission, include first")}
+
+        this._blocks.bars.lesson.setMissionSkidding(mission_idx, skidding);
     }
 
     setMissionProgress(mission_idx, exercises_passed_count) {

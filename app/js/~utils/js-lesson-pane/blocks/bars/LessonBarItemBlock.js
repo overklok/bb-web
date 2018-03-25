@@ -32,6 +32,8 @@ class LessonBarItemBlock extends BarItemBlock {
 
     setLeading(on=false) {
         this.setModifierBoolean('leading', on);
+
+        this._link.setSkiddingDisplay(on);
     }
 
     setProgress(level) {
@@ -41,9 +43,13 @@ class LessonBarItemBlock extends BarItemBlock {
             );
         }
 
-        let percent = level / (this._level_count - 1) * 100;
+        let percent = (level + 1) / (this._level_count) * 100;
 
         this._link.setProgress(percent);
+    }
+
+    setSkidding(on=false) {
+        this._link.setSkidding(on);
     }
 
     dispose() {
