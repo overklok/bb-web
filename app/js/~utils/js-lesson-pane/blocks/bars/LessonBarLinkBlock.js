@@ -18,7 +18,7 @@ class LessonBarLinkBlock extends Block {
         this._number = number || 'UNK';
         this._level_count = level_count;
 
-        this._elements = [];
+        this._elements = {};
 
         this._state.muteNumberChange = false;
         this._state.skidding = false;
@@ -67,12 +67,21 @@ class LessonBarLinkBlock extends Block {
     _createElements() {
         this._elements.progressor   = document.createElement("div");
         this._elements.num          = document.createElement("div");
+        this._elements.iconRestart  = document.createElement("div");
+        this._elements.iconForward  = document.createElement("div");
 
-        this._elements.progressor.classList = LessonBarLinkBlock.ClassDOM + "_progressor";
-        this._elements.num.classList        = LessonBarLinkBlock.ClassDOM + "_num";
+        this._elements.progressor.classList     = LessonBarLinkBlock.ClassDOM + "_progressor";
+        this._elements.num.classList            = LessonBarLinkBlock.ClassDOM + "_num fadeIn";
+        this._elements.iconRestart.classList    = LessonBarLinkBlock.ClassDOM + "_restart hidden";
+        this._elements.iconForward.classList    = LessonBarLinkBlock.ClassDOM + "_forward hidden";
+
+        this._elements.iconRestart.innerHTML = CONTENT_REDO;
+        this._elements.iconForward.innerHTML = CONTENT_FF;
 
         this._container.appendChild(this._elements.progressor);
         this._container.appendChild(this._elements.num);
+        this._container.appendChild(this._elements.iconRestart);
+        this._container.appendChild(this._elements.iconForward);
     }
 
     _attachCallbacks() {
@@ -98,11 +107,18 @@ class LessonBarLinkBlock extends Block {
     _onMouseOver() {
         if (!this._state.dispSkidding) {return}
 
-        this._elements.num.classList.remove("animate-hover");
+        this._state.muteNumberChange = false;
+
         setTimeout(() => {
             if (!this._state.muteNumberChange) {
-                this._elements.num.innerHTML = this._state.skidding ? CONTENT_FF : CONTENT_REDO;
-                this._elements.num.classList.add("animate-hover");
+                this._elements.num.classList.add("hidden");
+                this._elements.num.classList.remove("bounceIn");
+                this._elements.num.classList.remove("fadeIn");
+
+                let iconToAnimate = this._state.skidding ? this._elements.iconForward : this._elements.iconRestart;
+
+                iconToAnimate.classList.remove("hidden");
+                iconToAnimate.classList.add("bounceIn");
             }
         }, SCALE_DURATION)
     }
@@ -111,9 +127,15 @@ class LessonBarLinkBlock extends Block {
         if (!this._state.dispSkidding) {return}
 
         this._state.muteNumberChange = true;
+
         setTimeout(() => {
-            this._elements.num.innerHTML = this._number;
-            this._state.muteNumberChange = false;
+            this._elements.num.classList.add("fadeIn");
+            this._elements.num.classList.remove("hidden");
+
+            this._elements.iconRestart.classList.add("hidden");
+            this._elements.iconRestart.classList.remove("bounceIn");
+            this._elements.iconForward.classList.add("hidden");
+            this._elements.iconForward.classList.remove("bounceIn");
         }, SCALE_DURATION);
     }
 }
