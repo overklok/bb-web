@@ -1,0 +1,16 @@
+.status-chip .status-chip_indicator {
+  margin-top: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9d9a9b;
+}
+.status-chip .status-chip_indicator.success {
+  background-color: #00a603;
+}
+.status-chip .status-chip_indicator.warning {
+  background-color: #ffe43c;
+}
+.status-chip .status-chip_indicator.error {
+  background-color: #971500;
+}

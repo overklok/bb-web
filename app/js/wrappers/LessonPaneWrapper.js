@@ -15,6 +15,7 @@ class LessonPaneWrapper extends Wrapper {
         this._missions = undefined;
         this._mission_active_deferred   = undefined;
         this._exercise_active_deferred  = undefined;
+        this._status_deferred = undefined;
         this._logo_text = undefined;
         this._course_text = undefined;
     }
@@ -28,6 +29,8 @@ class LessonPaneWrapper extends Wrapper {
         if (this._course_text)  {this.setCourseText(this._course_text)}
         if (this._logo_text)    {this.setLogoText(this._logo_text)}
 
+        this._state.display = true;
+
         if (!(this._mission_active_deferred === undefined)) {
             this._lesson_pane.setMissionActive(this._mission_active_deferred);
             this.setMissionText(this._missions[this._mission_active_deferred].name);
@@ -38,7 +41,9 @@ class LessonPaneWrapper extends Wrapper {
             this._lesson_pane.setExerciseActive(this._exercise_active_deferred);
         }
 
-        this._state.display = true;
+        if (!(this._status_deferred === undefined)) {
+            this.setStatus(this._status_deferred);
+        }
 
         return true;
     }
@@ -108,6 +113,32 @@ class LessonPaneWrapper extends Wrapper {
 
     onMissionClick(cb) {
         this._lesson_pane.onMissionClick(cb);
+    }
+
+    setStatus(status) {
+        if (!this._state.display) {
+            this._status_deferred = status;
+            return;
+        }
+
+        switch (status) {
+            case 'success': {
+                this._lesson_pane.setStatusSuccess();
+                break;
+            }
+            case 'warning': {
+                this._lesson_pane.setStatusWarning();
+                break;
+            }
+            case 'error': {
+                this._lesson_pane.setStatusError();
+                break;
+            }
+            default: {
+                this._lesson_pane.setStatusDefault();
+                break;
+            }
+        }
     }
 }
 

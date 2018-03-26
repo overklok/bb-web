@@ -16,7 +16,7 @@ class LocalServiceModule extends Module {
     static get eventspace_name()    {return "ls"}
     static get event_types()        {return [
         "connect", "disconnect", "command", "variable",
-        "terminate", "plates", "currents", "error"
+        "terminate", "plates", "currents", "board-status", "error"
     ]};
 
     static defaults() {
@@ -44,6 +44,7 @@ class LocalServiceModule extends Module {
 
             setTimeout(() => {
                 this.emitEvent("connect");
+                this.emitEvent("board-status", "connect");
             }, 1000);
 
         } else {
@@ -64,14 +65,16 @@ class LocalServiceModule extends Module {
         }
 
         return new Promise(resolve => {
+            this.emitEvent("board-status", "search");
             this._ipc.send('reset-port', port);
 
             this._ipc.once('reset-port.result', (event, error) => {
                 if (error) {
-                   this._debug.error(error);
-                   throw error;
+                    this.emitEvent("board-status", "disconnect");
+                    this._debug.error(error);
                 } else {
                     this._debug.info("Connected to", port);
+                    this.emitEvent("board-status", "connect");
 
                     resolve();
                 }
@@ -219,6 +222,18 @@ class LocalServiceModule extends Module {
         /* Как только сервис сообщил о разъединении */
         this._ipc.on('disconnect', () => {
             this.emitEvent('disconnect');
+        });
+
+        this._ipc.on('board-search', () => {
+            this.emitEvent('board-status', 'search');
+        });
+
+        this._ipc.on('board-connect', () => {
+            this.emitEvent('board-status', 'connect');
+        });
+
+        this._ipc.on('board-disconnect', () => {
+            this.emitEvent('board-status', 'disconnect');
         });
 
         /* Как только сервис сообщил об исполнении команды */

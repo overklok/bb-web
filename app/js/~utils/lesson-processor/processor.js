@@ -94,7 +94,7 @@ let processExercise = (_exercise) => {
     exercise.editable           = exercise.type !== 2;
     exercise.check_buttons      = !exercise.is_sandbox || (exercise.type >= 1 && exercise.type <= 3);
     exercise.display_buttons    = (exercise.type >= 1 && exercise.type <= 3) && exercise.display_buttons;
-    exercise.layout_mode        = exercise.type === 0 ? 'simple' : 'full';
+    exercise.layout_mode        = [0,4,5].indexOf(exercise.type) > -1 ? 'simple' : 'full';
     exercise.launch_variant     = [0,4,5].indexOf(exercise.type) > -1 ? 1 : 0;
     exercise.launch_variant     =   [1,3].indexOf(exercise.type) > -1 ? 3 : exercise.launch_variant;
     exercise.launch_variant     = exercise.launch_variant === 3 && exercise.listeners_only ? 1 : exercise.launch_variant;

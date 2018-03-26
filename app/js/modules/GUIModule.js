@@ -6,6 +6,12 @@ import TextPaneWrapper from "../wrappers/TextPaneWrapper";
 import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
 
+const BOARD_STATUSES = {
+    SEARCH: 'search',
+    CONNECT: 'connect',
+    DISCONNECT: 'disconnect',
+};
+
 const HASH_TYPES = {
     GOTO: "goto",
 
@@ -144,6 +150,28 @@ class GUIModule extends Module {
 
             resolve(true);
         });
+    }
+
+    setBoardStatus(status) {
+        console.log("BS", status);
+        switch (status) {
+            case BOARD_STATUSES.SEARCH: {
+                this._lesson_pane.setStatus('warning');
+                break;
+            }
+            case BOARD_STATUSES.CONNECT: {
+                this._lesson_pane.setStatus('success');
+                break;
+            }
+            case BOARD_STATUSES.DISCONNECT: {
+                this._lesson_pane.setStatus('error');
+                break;
+            }
+            default: {
+                this._lesson_pane.setStatus('default');
+                break;
+            }
+        }
     }
 
     showTask(html) {

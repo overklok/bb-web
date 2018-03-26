@@ -5,6 +5,7 @@ import CourseChipBlock from "./blocks/chips/CourseChipBlock";
 import MenuChipBlock from "./blocks/chips/MenuChipBlock";
 import TaskChipBlock from "./blocks/chips/TaskChipBlock";
 import FlipperBlock from "./blocks/FlipperBlock";
+import StatusChipBlock from "./blocks/chips/StatusChipBlock";
 
 import thm from "./styles/containers/lesson-pane.css";
 
@@ -23,6 +24,7 @@ class LessonPane {
                     front: {
                         west: undefined,
                         center: undefined,
+                        east: undefined,
                     },
                     top: {
                         center: undefined,
@@ -45,7 +47,8 @@ class LessonPane {
             chips: {
                 course: new CourseChipBlock(),
                 menu: new MenuChipBlock(),
-                task: new TaskChipBlock()
+                task: new TaskChipBlock(),
+                status: new StatusChipBlock()
             },
 
             flipper: new FlipperBlock()
@@ -142,6 +145,30 @@ class LessonPane {
         this._blocks.bars.lesson.setMissionProgress(mission_idx, exercises_passed_count);
     }
 
+    setStatusSuccess() {
+        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+
+        this._blocks.chips.status.setSuccess();
+    }
+
+    setStatusWarning() {
+        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+
+        this._blocks.chips.status.setWarning();
+    }
+
+    setStatusError() {
+        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+
+        this._blocks.chips.status.setError();
+    }
+
+    setStatusDefault() {
+        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+
+        this._blocks.chips.status.setDefault();
+    }
+
     /**
      * Скомпоновать дерево контейнеров
      *
@@ -193,6 +220,7 @@ class LessonPane {
         this._blocks.chips.course.include(this._containers.north.center.front.west);
         this._blocks.chips.task.include(this._containers.south.west);
         this._blocks.chips.menu.include(this._containers.north.west);
+        this._blocks.chips.status.include(this._containers.north.center.front.east);
     }
 
     _attachHandlers() {

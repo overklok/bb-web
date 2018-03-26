@@ -356,6 +356,7 @@ class Application {
          * Готовность платы к работе
          */
         this._dispatcher.on('ls:connect', () => {
+            this.gui.setBoardStatus('disconnect');
             /// Запросить ссылки для прошивки
             // this.gs.getUpgradeURLs()
                 /// Обновить прошивку
@@ -407,6 +408,10 @@ class Application {
 
         this._dispatcher.on('ls:currents', data => {
             this.bb.updateCurrents(data);
+        });
+
+        this._dispatcher.on('ls:board-status', status => {
+            this.gui.setBoardStatus(status);
         });
 
         /**
