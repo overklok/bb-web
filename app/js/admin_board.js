@@ -42,7 +42,7 @@ class AdminBoardApplication {
 
     setData(plates, currents) {
         this.bb.updatePlates(plates);
-        this.bb.updateCurrents(currents);
+        // this.bb.updateCurrents(currents);
     }
 
     getData() {

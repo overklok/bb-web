@@ -113,6 +113,9 @@ class PlateLayer extends Layer {
 
         if (this._editable) {
             this._attachEventsEditable(plate);
+
+            /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
+            plate.showGroupEditable(true);
         }
 
         plate.draw(this.__grid.cell(x, y), orientation);
@@ -203,12 +206,22 @@ class PlateLayer extends Layer {
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
             document.removeEventListener('click', this._onClick(), false);
             document.removeEventListener('keyup', this._onKey(), false);
+
+            for (let plate_id in this._plates) {
+                let plate = this._plates[plate_id];
+
+                /// скрыть на плашке группу, отвечающую за информацию в состоянии редактируемости
+                plate.showGroupEditable(false);
+            }
+
             return true;
         }
 
         for (let plate_id in this._plates) {
             let plate = this._plates[plate_id];
 
+            /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
+            plate.showGroupEditable(true);
             this._attachEventsEditable(plate);
         }
 

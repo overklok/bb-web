@@ -4,8 +4,12 @@ import Cell from "../core/Cell";
 class CapacitorPlate extends Plate {
     static get Alias() {return "capacitor"}
 
-    constructor(container, grid, id) {
-        super(container, grid, id);
+    constructor(container, grid, id, capacity) {
+        super(container, grid, id, capacity);
+
+        this._params.capacity = capacity || 0.01;
+
+        this._extra = this._params.capacity;
 
         this._cell = new Cell(0, 0, this.__grid);
         this._size = {x: 2, y: 1};
@@ -27,7 +31,7 @@ class CapacitorPlate extends Plate {
 
         this._drawPicture();
 
-        // this._group.text(`Capacitor`).font({size: 20});
+        this._groupEditable.text(`${this._params.capacity} F`).font({size: 20});
     };
 
     /**

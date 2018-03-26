@@ -31,6 +31,8 @@ class Plate {
         this._bezel     = this._group.rect("100%", "100%"); // для окантовки
         this.__grid     = grid;
 
+        this._groupEditable = this._group.group(); // для режима редактирования
+
         /// Размер плашки и её опорная точка
         this._size      = {x: 0, y: 0};
         this._origin    = {x: 0, y: 0};
@@ -58,6 +60,8 @@ class Plate {
 
         this._editable = false;
         this._dragging = false;
+
+        this._groupEditable.opacity(0);
     }
 
     /**
@@ -323,6 +327,14 @@ class Plate {
 
         this._editable = true;
         return true;
+    }
+
+    showGroupEditable(on=false) {
+        if (on) {
+            this._groupEditable.opacity(1);
+        } else {
+            this._groupEditable.opacity(0);
+        }
     }
 
     /**
