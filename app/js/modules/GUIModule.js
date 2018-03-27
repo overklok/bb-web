@@ -10,6 +10,7 @@ const BOARD_STATUSES = {
     SEARCH: 'search',
     CONNECT: 'connect',
     DISCONNECT: 'disconnect',
+    NONE: 'none',
 };
 
 const HASH_TYPES = {
@@ -165,6 +166,10 @@ class GUIModule extends Module {
             }
             case BOARD_STATUSES.DISCONNECT: {
                 this._lesson_pane.setStatus('error');
+                break;
+            }
+            case BOARD_STATUSES.NONE: {
+                this._lesson_pane.setStatus('active');
                 break;
             }
             default: {
@@ -378,11 +383,7 @@ class GUIModule extends Module {
 
         /* Как только нажата кнопка запуска/проверки */
         this._launch_btn.onButtonClick((button, start) => {
-            console.log(button, start);
-
             if (button === 'check') {
-                console.log("emitting check...");
-
                 this.emitEvent("check");
             }
 

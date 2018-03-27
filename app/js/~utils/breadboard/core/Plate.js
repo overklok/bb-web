@@ -31,7 +31,8 @@ class Plate {
         this._bezel     = this._group.rect("100%", "100%"); // для окантовки
         this.__grid     = grid;
 
-        this._groupEditable = this._group.group(); // для режима редактирования
+        this._groupEditable = this._group.group();              // для режима редактирования
+        this._highlighter = this._group.rect("100%", "100%");   // для подсветки
 
         /// Размер плашки и её опорная точка
         this._size      = {x: 0, y: 0};
@@ -128,7 +129,7 @@ class Plate {
      * @abstract
      */
     __draw__() {
-
+        // stub
     }
 
     /**
@@ -144,8 +145,12 @@ class Plate {
 
         this._container.size(width, height);
 
-        this._bezel.fill({color: "#ff0"});
+        this._bezel.fill({color: "#fffffd"}).radius(10);
+        this._bezel.stroke({color: "#fffffd", width: 2});
 
+        this._highlighter.fill({color: "#f00"}).radius(10);
+
+        this.highlight(false);
         this.move(cell, true);
         this.__draw__(cell, orientation);
         this.rotate(orientation, true);
@@ -164,9 +169,17 @@ class Plate {
         }
 
         if (this._state.highlighted === true) {
-            this._bezel.attr('filter', 'url(#glow-p)');
+            this._bezel.attr('filter', 'url(#glow-plate)');
         } else {
             this._bezel.attr('filter', null);
+        }
+    }
+
+    highlight(on=false) {
+        if (on) {
+            this._highlighter.opacity(0.3);
+        } else {
+            this._highlighter.opacity(0);
         }
     }
 
@@ -238,10 +251,29 @@ class Plate {
     }
 
     /**
+     * Повернуть плашку по часовой стрелке
+     */
+    rotateCounterClockwise() {
+        let orientation;
+
+        switch (this.orientation) {
+            case Plate.Orientations.West: {orientation = Plate.Orientations.South; break}
+            case Plate.Orientations.South: {orientation = Plate.Orientations.East; break}
+            case Plate.Orientations.East: {orientation = Plate.Orientations.North; break}
+            case Plate.Orientations.North: {orientation = Plate.Orientations.West; break}
+
+            default: {throw new TypeError("Current orientation is invalid")}
+        }
+
+        this.rotate(orientation);
+    }
+
+    /**
      * Выделить плашку
      */
     select() {
         this._bezel.stroke({color: "#0900fa", width: 2});
+        this.highlight(false);
     }
 
     /**
@@ -281,7 +313,6 @@ class Plate {
 
         /// если svg задан, но не включено, включить
         this._editable = true;
-        this.firstclickmade = false;
 
         this._container.style({cursor: 'move'});
 
@@ -299,7 +330,9 @@ class Plate {
 
             cursor_point_last = cursor_point;
 
-            this._dragging = true;
+            if (dx > 0 || dy > 0) {
+                this._dragging = true;
+            }
         };
 
         this._group.mousedown((evt) => {
@@ -312,18 +345,28 @@ class Plate {
         this._group.mouseup((evt) => {
             document.body.removeEventListener('mousemove', onmove, false);
 
-            if (!this._dragging) {
-                if (this.firstclickmade) {
-                    this.rotateClockwise();
-                } else {
-                    this.firstclickmade = true;
-                }
-            } else {
-                this._snapToNearestCell();
-            }
+            this._snapToNearestCell();
 
             this._dragging = false;
         });
+
+        if (this._group.node.addEventListener) {
+            if ('onwheel' in document) {
+                // IE9+, FF17+, Ch31+
+                this._group.node.removeEventListener("wheel", this.onWheel());
+                this._group.node.addEventListener("wheel", this.onWheel());
+            } else if ('onmousewheel' in document) {
+                // устаревший вариант события
+                this._group.node.removeEventListener("mousewheel", this.onWheel());
+                this._group.node.addEventListener("mousewheel", this.onWheel());
+            } else {
+                // Firefox < 17
+            this._group.node.removeEventListener("MozMousePixelScroll", this.onWheel());
+            this._group.node.addEventListener("MozMousePixelScroll", this.onWheel());
+            }
+        } else { // IE8-
+            this._group.node.attachEvent("onmousewheel", this.onWheel());
+        }
 
         this._editable = true;
         return true;
@@ -346,6 +389,24 @@ class Plate {
         if (!cb) {this._callbacks.change = () => {}}
 
         this._callbacks.change = cb;
+    }
+
+    onWheel() {
+        if (this._onwheel) {
+            return this._onwheel;
+        }
+
+        this._onwheel = (evt) => {
+            if (evt.deltaY > 16) {
+                this.rotateClockwise();
+            }
+
+            if (evt.deltaY < -16) {
+                this.rotateCounterClockwise();
+            }
+        };
+
+        return this._onwheel;
     }
 
     /**

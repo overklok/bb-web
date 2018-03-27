@@ -3,7 +3,10 @@
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #9d9a9b;
+  background-color: #000000;
+}
+.status-chip .status-chip_indicator.active {
+  background-color: #dfdcdf;
 }
 .status-chip .status-chip_indicator.success {
   background-color: #00a603;

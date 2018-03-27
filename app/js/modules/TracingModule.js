@@ -136,6 +136,8 @@ class TracingModule extends Module {
     }
 
     displayKeyboardPress(keycode, fault=false) {
+        if (!this._state.areasDisp.buttons) {return true}
+
         this._kbdpane.addButton(keycode, fault);
     }
 

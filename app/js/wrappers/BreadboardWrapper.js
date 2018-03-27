@@ -1,5 +1,7 @@
 import Wrapper from "../core/Wrapper";
 
+import domtoimage from 'dom-to-image';
+
 import Breadboard from "../~utils/breadboard/Breadboard";
 
 const PLATE_TYPES = {
@@ -72,6 +74,12 @@ class BreadboardWrapper extends Wrapper {
         }
     }
 
+    highlightErrorPlates(plate_ids) {
+        if (!plate_ids) {return true}
+
+        this._plugin.highlightPlates(plate_ids, true);
+    }
+
     setPlateState(plate_id, state) {
         this._plugin.setPlateState(plate_id, state);
     }
@@ -134,6 +142,26 @@ class BreadboardWrapper extends Wrapper {
         wrap.appendChild(input);
         wrap.appendChild(btn_apply);
         dom_node.appendChild(wrap);
+    }
+
+    _saveToImage() {
+        let svg = this._plugin.getContainer();
+
+        console.log(svg);
+
+        if (!svg) {
+            return;
+        }
+
+        domtoimage.toJpeg(svg)
+            .then(function (dataUrl) {
+                let img = new Image();
+                img.src = dataUrl;
+                document.body.appendChild(img);
+            })
+            .catch(function (error) {
+                console.error('oops, something went wrong!', error);
+            });
     }
 }
 

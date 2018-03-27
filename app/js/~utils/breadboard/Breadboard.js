@@ -44,6 +44,14 @@ class Breadboard {
         };
     }
 
+    getContainer() {
+        if (!this._brush) {
+            return null;
+        }
+
+        return this._brush.node;
+    }
+
     getPlates() {
         return this._layers.plate.getCurrentPlatesData();
     }
@@ -54,6 +62,10 @@ class Breadboard {
 
     setPlateState(plate_id, state) {
         this._layers.plate.setPlateState(plate_id, state);
+    }
+
+    highlightPlates(plate_ids, on) {
+        this._layers.plate.highlightPlates(plate_ids, on);
     }
 
     clearPlates() {

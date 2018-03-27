@@ -32,7 +32,8 @@ class BreadboardModule extends Module {
             }
 
             if (dom_node !== undefined) {
-                this._board.inject(dom_node, !this._options.modeAdmin);
+                this._board.inject(dom_node, false);
+                // this._board.inject(dom_node, !this._options.modeAdmin);
 
                 this._state.display = true;
             }
@@ -47,6 +48,12 @@ class BreadboardModule extends Module {
         this._board.eject();
 
         this._state.display = false;
+    }
+
+    highlightErrorPlates(plate_ids) {
+        if (!this._state.display) {return true}
+
+        this._board.highlightErrorPlates(plate_ids);
     }
 
     updatePlates(plates) {

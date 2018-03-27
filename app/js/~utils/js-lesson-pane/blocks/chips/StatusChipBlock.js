@@ -40,6 +40,11 @@ class StatusChipBlock extends ChipBlock {
         this._containers.indicator.classList.add("error");
     }
 
+    setActive() {
+        this._clearIndicatorStatus();
+        this._containers.indicator.classList.add("active");
+    }
+
     setDefault() {
         this._clearIndicatorStatus();
     }

@@ -348,7 +348,7 @@ class InstructorModule extends Module {
         }
 
         if (verdict.status === API.STATUS_CODES.FAULT) {
-            this.emitEvent("fault", {
+            this.emitEvent('fault', {
                 message: verdict.html,
                 blocks: verdict.blocks
             });

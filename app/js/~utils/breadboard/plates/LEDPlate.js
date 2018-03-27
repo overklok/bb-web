@@ -4,8 +4,18 @@ import Cell from "../core/Cell";
 class LEDPlate extends Plate {
     static get Alias() {return "LED"}
 
-    constructor(container, grid, id, colour='R') {
+    constructor(container, grid, id, colour=0) {
         super(container, grid, id, colour);
+
+        if (colour === 'R') {colour = 0}
+        if (colour === 'G') {colour = 1}
+
+        colour = Number(colour);
+
+        if (colour !== 0 && colour !== 1) {
+            colour = 0;
+            console.error("Colour of LED must be one of R, G, 0, 1. Fall back to 0");
+        }
 
         this._extra = this._params.colour = colour;
 
@@ -24,11 +34,8 @@ class LEDPlate extends Plate {
      * @param {string}  orientation ориентация резистора
      */
     __draw__(position, orientation) {
-        this._bezel.fill({color: "#fffffd"}).radius(10);
-        this._bezel.stroke({color: "#fffffd", width: 2});
-
         this._drawPicture();
-        this._drawLabel(this._params.colour);
+        this._drawLabel(this._params.colour === 0 ? 'R' : 'G');
 
         // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };

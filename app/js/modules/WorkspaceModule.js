@@ -113,10 +113,14 @@ class WorkspaceModule extends Module {
      * @param {String|null} block_id идентификатор блока
      */
     highlightBlock(block_id) {
+        if (!this._state.display) {return false}
+
         this._blockly.highlightBlock(block_id);
     }
 
     highlightErrorBlocks(block_ids) {
+        if (!this._state.display) {return false}
+
         for (let block_id of block_ids) {
             this._blockly.highlightErrorBlock(block_id);
         }
@@ -224,6 +228,8 @@ class WorkspaceModule extends Module {
      * @returns {object} обработчик, включающий код клавиши и код программы
      */
     getButtonHandler(btn_code) {
+        if (!this._state.display) {return null}
+
         let handlers = this._blockly.getJSONHandlers().sub;
 
         for (let id of Object.keys(handlers)) {

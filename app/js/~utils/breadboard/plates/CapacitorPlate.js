@@ -7,7 +7,7 @@ class CapacitorPlate extends Plate {
     constructor(container, grid, id, capacity) {
         super(container, grid, id, capacity);
 
-        this._params.capacity = capacity || 0.01;
+        this._params.capacity = capacity || 1000;
 
         this._extra = this._params.capacity;
 
@@ -26,12 +26,9 @@ class CapacitorPlate extends Plate {
      * @param {string}  orientation ориентация конденсатора
      */
     __draw__(position, orientation) {
-        this._bezel.fill({color: "#fffffd"}).radius(10);
-        this._bezel.stroke({color: "#fffffd", width: 2});
-
         this._drawPicture();
 
-        this._groupEditable.text(`${this._params.capacity} F`).font({size: 20});
+        this._drawLabel(this._params.capacity);
     };
 
     /**
@@ -80,6 +77,14 @@ class CapacitorPlate extends Plate {
         let line2 = this._group.line(0, 0, 0, qs*2).stroke({width: 1}).x(rect2.x() - line_len/2 + qs*3/4).cy(rect2.cy());
 
         this._group.text("+").move(line2.x() + 4, line2.y() - 8);
+    }
+
+    _drawLabel(text="", size=16) {
+        this._group.text(String(text) + "мкФ")
+            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "normal"})
+            .cx(this._container.width() / 2)
+            .y(this._container.height() - size - 2)
+            // .stroke({width: 0.5})
     }
 }
 

@@ -343,7 +343,13 @@ class Application {
         this._dispatcher.on('ins:fault', verdict => {
             console.log("fault", verdict);
             this._dispatcher.only([]);
-            this.ws.highlightErrorBlocks(verdict.blocks);
+            try {
+                this.ws.highlightErrorBlocks(verdict.blocks);
+                this.bb.highlightErrorPlates(verdict.blocks);
+            } catch (err) {
+                console.error(err);
+            }
+
             this.ins.tourFault(verdict.message)
                 .then(() => this._dispatcher.only(['gui:*']))
         });
@@ -356,7 +362,7 @@ class Application {
          * Готовность платы к работе
          */
         this._dispatcher.on('ls:connect', () => {
-            this.gui.setBoardStatus('disconnect');
+            this.gui.setBoardStatus('none');
             /// Запросить ссылки для прошивки
             // this.gs.getUpgradeURLs()
                 /// Обновить прошивку
@@ -411,7 +417,12 @@ class Application {
         });
 
         this._dispatcher.on('ls:board-status', status => {
+            console.log("BOARD STATUS", status);
             this.gui.setBoardStatus(status);
+        });
+
+        this._dispatcher.on('ls:timeout', () => {
+            alert("TIMEOUT");
         });
 
         /**

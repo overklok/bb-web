@@ -6,6 +6,7 @@
   "dependencies": {
     "blockly": "^1.0.0",
     "clientjs": "^0.1.11",
+    "dom-to-image": "^2.6.0",
     "intro.js": "^2.8.0-alpha.1",
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",

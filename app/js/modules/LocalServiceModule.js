@@ -16,7 +16,7 @@ class LocalServiceModule extends Module {
     static get eventspace_name()    {return "ls"}
     static get event_types()        {return [
         "connect", "disconnect", "command", "variable",
-        "terminate", "plates", "currents", "board-status", "error"
+        "terminate", "plates", "currents", "board-status", "timeout", "error"
     ]};
 
     static defaults() {
@@ -199,9 +199,11 @@ class LocalServiceModule extends Module {
      * @private
      */
     _checkConnection() {
+        if (!this._options.connectTimeout) {return}
+
         setTimeout(() => {
             if (this._state.connected === false) {
-                this.emitEvent("error", new Error("Connection timeout"));
+                this.emitEvent("timeout");
             }
         }, this._options.connectTimeout)
     }
@@ -212,9 +214,10 @@ class LocalServiceModule extends Module {
      */
     _subscribeToWrapperEvents() {
         /* Как только сервис сообщил о соединении */
-        this._ipc.on('connect', (version) => {
+        this._ipc.on('connect', (evt, version) => {
             this._state.connected = true;
             this.emitEvent('connect');
+            console.log(version);
             this._debug.info(`Connected to IPC ver. ${version}`);
             this._version = version;
         });

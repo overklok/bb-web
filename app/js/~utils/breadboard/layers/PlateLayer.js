@@ -126,6 +126,25 @@ class PlateLayer extends Layer {
     }
 
     /**
+     * Подсветить ошибочные плашки
+     *
+     * @param {Array} plate_ids массив идентификаторов плашек, которые требуется подсветить
+     */
+    highlightPlates(plate_ids) {
+        for (let plate_id in this._plates) {
+            this._plates[plate_id].highlight(false);
+        }
+
+        for (let plate_id of plate_ids) {
+            if (!(plate_id in this._plates)) {
+                throw new RangeError("Plate does not exist");
+            }
+
+            this._plates[plate_id].highlight(true);
+        }
+    }
+
+    /**
      * Удалить плашку
      *
      * @param {int} id идентификатор плашки
@@ -317,9 +336,15 @@ class PlateLayer extends Layer {
 
         /// Когда нажата кнопка клавиатуры
         this._onkey = (evt) => {
-            if (evt.key === "Backspace") {
+            if (this._plate_selected) {
                 /// Если есть выденленная плашка
-                if (this._plate_selected) {
+
+                if (evt.key === "ArrowUp")      {this._plate_selected.rotate(Plate.Orientations.West)}
+                if (evt.key === "ArrowLeft")    {this._plate_selected.rotate(Plate.Orientations.South)}
+                if (evt.key === "ArrowRight")   {this._plate_selected.rotate(Plate.Orientations.North)}
+                if (evt.key === "ArrowDown")    {this._plate_selected.rotate(Plate.Orientations.East)}
+
+                if (evt.key === "Backspace" || evt.key === "Delete") {
                     /// Удалить её
                     this.removePlate(this._plate_selected.id);
                     this._plate_selected = null;

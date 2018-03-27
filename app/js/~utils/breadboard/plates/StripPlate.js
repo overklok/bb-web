@@ -30,10 +30,13 @@ class StripPlate extends Plate {
      * @param {string}  orientation ориентация перемычки
      */
     __draw__(position, orientation) {
-        this._bezel.fill({color: "#fffffd"});
+        this._bezel.fill({color: "#fffffd"}).radius(0);
         this._bezel.width(this._container.width() + this._cell.size.x / 4);
         this._bezel.dx(-this._cell.size.x / 4);
-        this._bezel.stroke({color: "#fffffd", width: 2});
+
+        this._highlighter.fill({color: "#f00"}).radius(0);
+        this._highlighter.width(this._container.width() + this._cell.size.x / 4);
+        this._highlighter.dx(-this._cell.size.x / 4);
 
         this._drawPicture();
 

@@ -22,9 +22,6 @@ class PhotoresistorPlate extends Plate {
      * @param {string}  orientation ориентация резистора
      */
     __draw__(position, orientation) {
-        this._bezel.fill({color: "#fffffd"}).radius(10);
-        this._bezel.stroke({color: "#fffffd", width: 2});
-
         this._drawPicture();
 
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});

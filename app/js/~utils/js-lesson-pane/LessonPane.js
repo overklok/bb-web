@@ -163,6 +163,12 @@ class LessonPane {
         this._blocks.chips.status.setError();
     }
 
+    setStatusActive() {
+        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+
+        this._blocks.chips.status.setActive();
+    }
+
     setStatusDefault() {
         if (!this._state.included) {throw new Error("Cannot set status, include first")}
 

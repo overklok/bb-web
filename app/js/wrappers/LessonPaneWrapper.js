@@ -134,6 +134,10 @@ class LessonPaneWrapper extends Wrapper {
                 this._lesson_pane.setStatusError();
                 break;
             }
+            case 'active': {
+                this._lesson_pane.setStatusActive();
+                break;
+            }
             default: {
                 this._lesson_pane.setStatusDefault();
                 break;
