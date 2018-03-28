@@ -37,6 +37,10 @@ class GlobalServiceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    goToLessonPage() {
+        window.location.href = origin;
+    }
+
     /**
      * Получить данные урока
      *

@@ -40,7 +40,7 @@ class Block {
 
         if (value) {
             this._container.classList.remove(class_name_full);
-            this._container.classList += " " + class_name_full;
+            this._container.classList.add(class_name_full);
         } else {
             this._container.classList.remove(class_name_full);
         }

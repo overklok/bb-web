@@ -1,0 +1,39 @@
+.menu-bar__item {
+  float: left;
+  padding: 14px;
+
+  color: #1DA1F2;
+  cursor: pointer;
+
+  transition: all 200ms ease-in-out 0ms;
+
+  &.right {
+    float: right;
+  }
+
+  &.disabled {
+    cursor: default;
+    color: #d8d8d8;
+  }
+
+  &.pressed {
+    color: #ffffff;
+    background-color: #1DA1F2;
+  }
+
+  .menu-bar__item_text {
+    transition: all 200ms ease-in-out 0ms;
+  }
+
+  &:not(.disabled):hover {
+    background-color: #f0efff;
+  }
+
+  &.pressed:hover {
+    background-color: #7ebcff;
+  }
+
+  &:not(.disabled):hover .menu-bar__item_text {
+    transform: scale(1.1);
+  }
+}

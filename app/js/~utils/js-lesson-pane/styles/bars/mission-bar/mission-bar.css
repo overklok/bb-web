@@ -2,7 +2,6 @@
   min-width: 50% !important;
   font-weight: bolder !important;
   font-size: 18px !important;
-  background-color: #fff6af !important;
 }
 .mission-bar__item {
   display: inline;
@@ -24,6 +23,9 @@
   -o-transition: all 1000ms cubic-bezier(0.77, 0, 0.175, 1) 0ms;
   transition: all 1000ms cubic-bezier(0.77, 0, 0.175, 1) 0ms;
 }
+.mission-bar__item.highlighted {
+  background-color: #fff6af !important;
+}
 .mission-bar__item_passed {
   background-color: #a6ff82;
 }
@@ -32,4 +34,7 @@
   justify-content: space-around;
   float: right;
   height: 30px;
+}
+.mission-bar.stretched {
+  width: 100% !important;
 }

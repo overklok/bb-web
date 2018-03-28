@@ -22,6 +22,14 @@ class MissionBarItemBlock extends BarItemBlock {
         this.setModifierBoolean('leading', on);
     }
 
+    highlightLeading(on=false) {
+        if (on) {
+            this._container.classList.add('highlighted');
+        } else {
+            this._container.classList.remove('highlighted');
+        }
+    }
+
     displayPassed(on=false) {
         this.setModifierBoolean('passed', on);
     }

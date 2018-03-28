@@ -42,12 +42,15 @@ class Application {
             gui: {
                 anyKey: config.anyKey,
                 logoText: config.logoText,
+                imagesPath: config.imagesPath,
+                devMode: config.showDebugInfo
             },
             lay: {
 
             },
             ins: {
-                lessonID: config.lessonID
+                lessonID: config.lessonID,
+                silent: config.noIntros,
             },
             trc: {
 
@@ -93,7 +96,7 @@ class Application {
             '*:resize', '*:error',
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
-            'gui:hash-command', 'gui:stop',
+            'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready'
         ]);
     }
 
@@ -215,6 +218,16 @@ class Application {
             this.gui.setMissionCurrent(mission_idx);
         });
 
+        this._dispatcher.on('gui:ready', () => {
+            // setTimeout(() => {
+            //     let status = this.ls.getBoardStatus();
+            //
+            //     if (status) {
+            //         this.gui.setBoardStatus(status);
+            //     }
+            // }, 5000);
+        });
+
         /**
          * Нажата кнопка "Проверить"
          */
@@ -315,6 +328,33 @@ class Application {
                 }
                 default: {
                     console.warn("Unrecognised hash command");
+                }
+            }
+        });
+
+        this._dispatcher.on('gui:menu', (data) => {
+            switch (data.name) {
+                case 'courses': {
+                    this.gs.goToLessonPage();
+                    break;
+                }
+                case 'settings': {
+                    this.ls.openMenu();
+                    break;
+                }
+                case 'developer': {
+                    if (data.state) {
+                        this.gui.switchDeveloperMode(true);
+                        this.lay.revealTopPane();
+                    } else {
+                        this.gui.switchDeveloperMode(false);
+                        this.lay.concealTopPane();
+                    }
+                    break;
+                }
+                default: {
+                    console.warn(`Unhandled menu option '${option}'`);
+                    break;
                 }
             }
         });
@@ -422,7 +462,11 @@ class Application {
         });
 
         this._dispatcher.on('ls:timeout', () => {
-            alert("TIMEOUT");
+            this.gui.showAlert('no_ipc');
+
+            // setTimeout(() => {
+            //     this.gui.hideAllAlerts();
+            // }, 1000);
         });
 
         /**

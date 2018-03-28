@@ -7,7 +7,7 @@ class CapacitorPlate extends Plate {
     constructor(container, grid, id, capacity) {
         super(container, grid, id, capacity);
 
-        this._params.capacity = capacity || 1000;
+        this._params.capacity = Number(capacity) || 1000;
 
         this._extra = this._params.capacity;
 

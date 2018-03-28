@@ -145,6 +145,7 @@ class LayoutModule extends Module {
         this._panes = this._getPanes();
 
         this._busy = false;
+        this._resizing = false;
 
         if (!this._options.animSpeedFade) {
             this._options.delayBeforeEnd = 0;
@@ -345,6 +346,13 @@ class LayoutModule extends Module {
         });
     }
 
+    revealTopPane() {
+        this._layout.sizePane('north', 80);
+    }
+
+    concealTopPane() {
+        this._layout.sizePane('north', 55);
+    }
 
     /**
      * Преобразовать соответствия "ID области" -> "ID DOM-узла области"
@@ -370,6 +378,22 @@ class LayoutModule extends Module {
      * @private
      */
     _onResize() {
+        if (!this._busy && !this._resizing) {
+            this._resizing = true;
+
+            if (this._state.mode === "simple") {
+                this._layout.sizePane("east", .4);
+            }
+
+            if (this._state.mode === "full") {
+                this._layout.sizePane("east", .3);
+            }
+
+            setTimeout(() => {
+                this._resizing = false;
+            }, this._options.animSpeedMain);
+        }
+
         this.emitEvent("resize");
     }
 
@@ -386,9 +410,9 @@ class LayoutModule extends Module {
             closable: true,	    // pane can open & close
             resizable: true,	// when open, pane can be resized
             slidable: true,	    // when closed, pane can 'slide' open over other panes - closes on mouse-out
-            livePaneResizing: true,
+            // livePaneResizing: true,
             fxSpeed: this._options.animSpeedMain,
-            resizeWhileDragging: true,
+            // resizeWhileDragging: true,
 
             fxName:     "slide",
             fxSettings: { duration: this._options.animSpeedMain, easing: "easeInOutCirc" },
@@ -405,21 +429,25 @@ class LayoutModule extends Module {
                 slidable: false,	            // OVERRIDE the pane-default of 'slidable=true'
                 closable: false,
                 spacing_closed: 20,		        // big resizer-bar when open (zero height)
-                size: 80,
+                size: 55,
                 // maxSize: 100
             },
 
-            center: {},
+            center: {
+            },
 
             //	some pane-size settings
             east: {
-                size: .3,
-                maxSize: 400,
+                size: .4,
+                // maxSize: 400,
 
+                livePaneResizing: true,
                 resizable: true,
+
                 fxSpeed: this._options.animSpeedMain,
 
-                onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+                onresize: () => {try {this._onResize('east')} catch (e) {console.error(e)}},
+
                 childOptions: {
                     north: {
                         size: .3,

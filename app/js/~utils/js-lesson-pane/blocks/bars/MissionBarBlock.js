@@ -10,11 +10,28 @@ class MissionBarBlock extends BarBlock {
     constructor() {
         super();
 
+        this._nominalWidth = undefined;
+
         this._state.exerciseActiveIDX = undefined;
+        this._state.stretched = false;
     }
 
     include(dom_node) {
         super.include(dom_node);
+    }
+
+    stretch() {
+        this._container.classList.add('stretched');
+        this._state.stretched = true;
+
+        this.setExerciseActive(this._state.exerciseActiveIDX);
+    }
+
+    fit() {
+        this._container.classList.remove('stretched');
+        this._state.stretched = false;
+
+        this.setExerciseActive(false);
     }
 
     displayProgress(exercise_count) {
@@ -31,6 +48,7 @@ class MissionBarBlock extends BarBlock {
         if (exercise_idx === false) {
             if (this._state.exerciseActiveIDX !== undefined) {
                this._items[this._state.exerciseActiveIDX].setLeading(false);
+               // this._items[this._state.exerciseActiveIDX].highlightLeading(false);
             }
 
             return;
@@ -42,9 +60,15 @@ class MissionBarBlock extends BarBlock {
 
         if (this._state.exerciseActiveIDX !== undefined) {
             this._items[this._state.exerciseActiveIDX].setLeading(false);
+            this._items[this._state.exerciseActiveIDX].highlightLeading(false);
         }
 
-        this._items[exercise_idx].setLeading(true);
+        if (!this._state.stretched) {
+            this._items[exercise_idx].setLeading(true);
+        }
+
+        this._items[exercise_idx].highlightLeading(true);
+
         this._state.exerciseActiveIDX = exercise_idx;
     }
 
@@ -56,6 +80,10 @@ class MissionBarBlock extends BarBlock {
         for (let exercise_data of exercises_data) {
             this.addExercise(exercise_data);
         }
+
+        // if (this._state.stretched) {
+        //     this.stretch();
+        // }
     }
 
     addExercise(exercise_data) {

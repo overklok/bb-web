@@ -36,6 +36,7 @@ class LocalServiceModule extends Module {
 
         this._state = {
             connected: false,
+            board_status: undefined,
         };
 
         /// если режим холостой
@@ -55,6 +56,22 @@ class LocalServiceModule extends Module {
             this._launchIPC();
             this._subscribeToWrapperEvents();
         }
+    }
+
+    getBoardStatus() {
+        return this._state.board_status;
+    }
+
+    openMenu() {
+        if (this._options.modeDummy) {
+            return new Promise(resolve => resolve())
+        }
+
+        return new Promise(resolve => {
+            this._ipc.send('menu');
+
+            resolve();
+        });
     }
 
     resetPort(port) {
@@ -228,14 +245,17 @@ class LocalServiceModule extends Module {
         });
 
         this._ipc.on('board-search', () => {
+            this._state.board_status = 'search';
             this.emitEvent('board-status', 'search');
         });
 
         this._ipc.on('board-connect', () => {
+            this._state.board_status = 'connect';
             this.emitEvent('board-status', 'connect');
         });
 
         this._ipc.on('board-disconnect', () => {
+            this._state.board_status = 'disconnect';
             this.emitEvent('board-status', 'disconnect');
         });
 

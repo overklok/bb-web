@@ -1,0 +1,37 @@
+.menu-bar__item {
+  float: left;
+  padding: 14px;
+  color: #1DA1F2;
+  cursor: pointer;
+  transition: all 200ms ease-in-out 0ms;
+}
+.menu-bar__item.right {
+  float: right;
+}
+.menu-bar__item.disabled {
+  cursor: default;
+  color: #d8d8d8;
+}
+.menu-bar__item.pressed {
+  color: #ffffff;
+  background-color: #1DA1F2;
+}
+.menu-bar__item .menu-bar__item_text {
+  transition: all 200ms ease-in-out 0ms;
+}
+.menu-bar__item:not(.disabled):hover {
+  background-color: #f0efff;
+}
+.menu-bar__item.pressed:hover {
+  background-color: #7ebcff;
+}
+.menu-bar__item:not(.disabled):hover .menu-bar__item_text {
+  transform: scale(1.1);
+}
+.menu-bar {
+  float: right;
+  width: 100%;
+  height: 50px;
+  padding: 0 10px;
+  overflow: hidden;
+}

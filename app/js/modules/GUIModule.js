@@ -5,6 +5,7 @@ import LessonPaneWrapper from "../wrappers/LessonPaneWrapper";
 import TextPaneWrapper from "../wrappers/TextPaneWrapper";
 import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
+import AlertifierWrapper from "../wrappers/AlertifierWrapper";
 
 const BOARD_STATUSES = {
     SEARCH: 'search',
@@ -44,12 +45,14 @@ const LAUNCH_VARIANTS = {
  */
 class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["mission", "run", "stop", "check", "keyup", "hash-command", "load-file", "unload-file"]}
+    static get event_types() {return ["ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file"]}
 
     static defaults() {
         return {
             anyKey: false,  // отключить фильтрацию клавиш
-            logoText: "Tapanda"
+            logoText: "Tapanda",
+            imagesPath: "",
+            devMode: false,
         }
     }
 
@@ -59,6 +62,7 @@ class GUIModule extends Module {
         this._button_codes = [];
 
         this._state = {
+            ready: false,
             switched: true, // debug only
             listenButtons: false,
             launchVariant: false,
@@ -77,14 +81,32 @@ class GUIModule extends Module {
         this._lesson_pane = new LessonPaneWrapper();
         this._text_pane = new TextPaneWrapper();
         this._launch_btn = new LaunchBtnWrapper();
+        this._alertifier = new AlertifierWrapper();
+
+        if (this._options.imagesPath) {
+            this._alertifier.setImagesPath(this._options.imagesPath);
+        }
 
         this._lesson_pane.registerLogoText(this._options.logoText);
+
+        this._setMenuStructure();
+
+        if (this._options.devMode) {
+            this.switchDeveloperMode(true);
+        } else {
+            this.switchDeveloperMode(false);
+        }
 
         this._subscribeToWrapperEvents();
     }
 
     hideSpinner() {
         this._spinner.hide();
+
+        if (!this._state.ready) {
+            this._state.ready = true;
+            this.emitEvent("ready");
+        }
     }
 
     showSpinnerError(message) {
@@ -157,14 +179,17 @@ class GUIModule extends Module {
         console.log("BS", status);
         switch (status) {
             case BOARD_STATUSES.SEARCH: {
+                this.hideAllAlerts();
                 this._lesson_pane.setStatus('warning');
                 break;
             }
             case BOARD_STATUSES.CONNECT: {
+                this.hideAllAlerts();
                 this._lesson_pane.setStatus('success');
                 break;
             }
             case BOARD_STATUSES.DISCONNECT: {
+                this.showAlert('no_board');
                 this._lesson_pane.setStatus('error');
                 break;
             }
@@ -310,6 +335,27 @@ class GUIModule extends Module {
             .then(str => this.emitEvent("load-file", str));
     }
 
+    showAlert(type) {
+        this._alertifier.alertIndelible(type);
+    }
+
+    showAlertInputCommand() {
+        this._alertifier.alertInput('command')
+            .then(command => {
+                command = this._filterURLHashCommand(command);
+
+                this.emitEvent("hash-command", command);
+            });
+    }
+
+    hideAllAlerts() {
+        this._alertifier.closeAll();
+    }
+
+    switchDeveloperMode(on) {
+        this._lesson_pane.switchTask(on);
+    }
+
     /**
      * Отфильтровать событие нажатия клавиши
      *
@@ -367,6 +413,41 @@ class GUIModule extends Module {
         return this._filterURLHashCommand(hash);
     }
 
+    _setMenuStructure() {
+        this._lesson_pane.setMenuStructure([
+            {
+                type: 'default',
+                name: "courses",
+                text: "Курсы",
+                handler: (name) => {this.emitEvent("menu", {name: name})}
+            },
+            {
+                type: 'default',
+                name: "settings",
+                text: "Настройки",
+                handler: (name) => {this.emitEvent("menu", {name: name})}
+            },
+            {
+                type: 'radio',
+                name: "developer",
+                text: "Разработчик",
+                handler: (name, pressed) => {this.emitEvent("menu", {name: name, state: pressed})}
+            },
+            {
+                type: 'default',
+                name: "command",
+                text: "Выполнить",
+                handler: () => {this.showAlertInputCommand()}
+            },
+            {
+                type: 'disabled',
+                name: "origin",
+                text: window.location.host,
+                right: true
+            },
+        ]);
+    }
+
     _subscribeToWrapperEvents() {
         /* Как только нажата кнопка переключения разметки */
         // $("#switch-btn").click(() => {
@@ -379,6 +460,10 @@ class GUIModule extends Module {
         /* Как только нажата кнопка запуса миссии */
         this._lesson_pane.onMissionClick(idx => {
             this.emitEvent("mission", idx);
+        });
+
+        this._lesson_pane.onMenuClick(() => {
+            this.emitEvent("menu");
         });
 
         /* Как только нажата кнопка запуска/проверки */

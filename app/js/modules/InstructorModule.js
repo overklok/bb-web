@@ -17,7 +17,8 @@ class InstructorModule extends Module {
 
     static defaults() {
         return {
-            lessonID: 1
+            lessonID: 1,
+            silent: false,
         }
     }
 
@@ -264,6 +265,10 @@ class InstructorModule extends Module {
         /// Если нет поповеров, выйти
         if (!popovers) {return Promise.resolve()}
 
+        if (this._options.silent) {
+            return Promise.resolve();
+        }
+
         /// Подключить поповер-обёртку
         let intro = new TourWrapper("intro", popovers);
         /// Запустить интро
@@ -272,9 +277,6 @@ class InstructorModule extends Module {
 
     /**
      * Показать сообщение о прохождении упражнения
-     *
-     * TODO
-     * @stub
      */
     tourPass() {
         let missionIDX = this._state.missionIDX;
@@ -292,9 +294,6 @@ class InstructorModule extends Module {
 
     /**
      * Показать сообщение о провале упражнения
-     *
-     * TODO
-     * @stub
      *
      * @param message
      */

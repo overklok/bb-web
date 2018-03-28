@@ -13,6 +13,14 @@ const CLASEES = {
     CONTAINER_MAIN: "lesson-pane"
 };
 
+class NotIncludedError extends Error {
+    constructor(...args) {
+        super(...args);
+        Error.captureStackTrace(this, NotIncludedError);
+        this.code = "ENOCON";
+    }
+}
+
 class LessonPane {
     constructor() {
         this._container = undefined;
@@ -56,6 +64,7 @@ class LessonPane {
 
         this._callbacks = {
             onmissionclick: (idx) => {},
+            onmenuclick: () => {},
         };
 
         this._state = {
@@ -86,7 +95,7 @@ class LessonPane {
     }
 
     setMissions(missions) {
-        if (!this._state.included) {throw new Error("Cannot set any missions, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set any missions, include first")}
 
         this._blocks.bars.lesson.setMissions(missions);
 
@@ -96,83 +105,103 @@ class LessonPane {
     }
 
     setExercises(exercises) {
-        if (!this._state.included) {throw new Error("Cannot set any exercises, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set any exercises, include first")}
 
         this._blocks.bars.mission.setExercises(exercises);
     }
 
     setLogoText(text) {
-        if (!this._state.included) {throw new Error("Cannot set logo text, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set logo text, include first")}
 
         this._blocks.chips.course.setTextLogo(text);
     }
 
     setCourseText(text) {
-        if (!this._state.included) {throw new Error("Cannot set course text, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set course text, include first")}
 
         this._blocks.chips.course.setTextMeta(text);
     }
 
     setTaskText(text) {
-        if (!this._state.included) {throw new Error("Cannot set task text, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set task text, include first")}
 
         this._blocks.chips.task.setText(text);
     }
 
     setExerciseActive(exercise_idx) {
-        if (!this._state.included) {throw new Error("Cannot set active exercise, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set active exercise, include first")}
 
         this._blocks.bars.mission.setExerciseActive(exercise_idx);
         this._blocks.bars.mission.displayProgress(exercise_idx);
     }
 
     setMissionActive(mission_idx) {
-        if (!this._state.included) {throw new Error("Cannot set active mission, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set active mission, include first")}
 
         this._blocks.bars.lesson.setMissionActive(mission_idx);
         this._blocks.bars.lesson.setMissionSkidding(mission_idx, false);
     }
 
     setMissionSkidding(mission_idx, skidding=false) {
-        if (!this._state.included) {throw new Error("Cannot set skidding mission, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set skidding mission, include first")}
 
         this._blocks.bars.lesson.setMissionSkidding(mission_idx, skidding);
     }
 
     setMissionProgress(mission_idx, exercises_passed_count) {
-        if (!this._state.included) {throw new Error("Cannot set mission progress, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set mission progress, include first")}
 
         this._blocks.bars.lesson.setMissionProgress(mission_idx, exercises_passed_count);
     }
 
     setStatusSuccess() {
-        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set status, include first")}
 
         this._blocks.chips.status.setSuccess();
     }
 
     setStatusWarning() {
-        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set status, include first")}
 
         this._blocks.chips.status.setWarning();
     }
 
     setStatusError() {
-        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set status, include first")}
 
         this._blocks.chips.status.setError();
     }
 
     setStatusActive() {
-        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set status, include first")}
 
         this._blocks.chips.status.setActive();
     }
 
     setStatusDefault() {
-        if (!this._state.included) {throw new Error("Cannot set status, include first")}
+        if (!this._state.included) {throw new NotIncludedError("Cannot set status, include first")}
 
         this._blocks.chips.status.setDefault();
+    }
+
+    setMenuStructure(structure) {
+        if (!this._state.included) {throw new NotIncludedError("Cannot set menu structure, include first")}
+
+        this._blocks.bars.menu.setStructure(structure);
+    }
+
+    showTask() {
+        if (!this._state.included) {throw new NotIncludedError("Cannot set menu structure, include first")}
+
+        this._blocks.bars.mission.fit();
+        this._blocks.chips.task.show();
+    }
+
+    hideTask() {
+        if (!this._state.included) {throw new NotIncludedError("Cannot set menu structure, include first")}
+
+        this._blocks.chips.task.hide();
+        this._blocks.bars.mission.stretch();
     }
 
     /**
@@ -206,6 +235,10 @@ class LessonPane {
         this._callbacks.onmissionclick = cb;
     }
 
+    onMenuClick(cb) {
+        this._callbacks.onmenuclick = cb;
+    }
+
     /**
      * Встроить блоки в контейнеры
      *
@@ -217,6 +250,7 @@ class LessonPane {
     _includeBlocks() {
         this._blocks.bars.mission.include(this._containers.south.center);
         this._blocks.bars.lesson.include(this._containers.north.center.front.center);
+        this._blocks.bars.menu.include(this._containers.north.center.top.center);
         this._blocks.flipper.include(
             this._containers.north.center.self,
             this._containers.north.center.front.self,
@@ -230,7 +264,7 @@ class LessonPane {
     }
 
     _attachHandlers() {
-        this._blocks.chips.menu.onClick((pressed) => {
+        this._blocks.chips.menu.onClick(pressed => {
             this._blocks.flipper.showSide(pressed ? 'top' : 'front');
         });
 

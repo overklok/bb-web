@@ -3,9 +3,9 @@
 @height: 30px;
 @font_size: 14px;
 
-@bgcolor_default: #ffffff;
-@bgcolor_leading: #fff6af;
-@bgcolor_passed:  #a6ff82;
+@bgcolor_default:     #ffffff;
+@bgcolor_highlighted: #fff6af;
+@bgcolor_passed:      #a6ff82;
 
 .mission-bar {
   display: flex;
@@ -13,4 +13,8 @@
 
   float: right;
   height: @height;
+
+  &.stretched {
+    width: 100% !important;
+  }
 }

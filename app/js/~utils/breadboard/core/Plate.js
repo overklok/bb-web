@@ -15,7 +15,7 @@ class Plate {
     static get Class() {return "bb-plate"}
     static get Alias() {return "default"}
 
-    constructor(container_parent, grid, id=null, extra) {
+    constructor(container_parent, grid, id=null, extra=0) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
@@ -23,7 +23,7 @@ class Plate {
         this._alias = this.constructor.Alias;
 
         /// Идентификатор - по умолчанию случайная строка
-        this._id = (id === null) ? (Math.random().toString(36).substring(7)) : (id);
+        this._id = (id === null) ? (Math.floor(Math.random() * (10 ** 6))) : (id);
 
         /// Контейнер, группа и ссылка на сетку
         this._container = container_parent.nested();        // для масштабирования

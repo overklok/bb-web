@@ -13,6 +13,14 @@ class TaskChipBlock extends ChipBlock {
         super.include(dom_node);
     }
 
+    hide() {
+        this._container.classList.add("hidden");
+    }
+
+    show() {
+        this._container.classList.remove("hidden");
+    }
+
     setText(text) {
         this._container.innerHTML = `<p>${text}</p>`;
     }

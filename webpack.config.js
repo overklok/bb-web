@@ -98,6 +98,7 @@ module.exports = {
             {from: './app/css/spinner.css', to: './spinner.css'},
             // {from: './app/css/spinner.css', to: '../../codehour-breadboard-client/web/spinner.css'},
             {from: './app/css/spinner.css', to: '../../codehour-breadboard-server/frontend/static/frontend/app/css/spinner.css'},
+            {from: './app/images/', to: '../../codehour-breadboard-server/frontend/static/frontend/app/images'},
 
             // {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
             // {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},

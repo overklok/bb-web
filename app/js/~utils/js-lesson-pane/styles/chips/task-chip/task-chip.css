@@ -7,3 +7,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
 }
+.task-chip.hidden {
+  display: none;
+}
