@@ -2,9 +2,16 @@ import Module from "../core/Module";
 import BlocklyWrapper from "../wrappers/BlocklyWrapper";
 import KbdPaneWrapper from "../wrappers/KbdPaneWrapper";
 
-import JSONBlocks       from '../~utils/blockly/extras/blocks';
+import JSONBlocks       from '../utils/blockly/extras/blocks';
 
-class TracingModule extends Module {
+/**
+ * Модуль, отвечающий за поведение области трассировки кода:
+ *
+ * Например:
+ * Текущие переменные
+ * История выполняемых команд
+ */
+export default class TracingModule extends Module {
     static get eventspace_name() {return "trc"}
     static get event_types() {return []}
 
@@ -181,5 +188,3 @@ class TracingModule extends Module {
         // stub
     }
 }
-
-export default TracingModule;

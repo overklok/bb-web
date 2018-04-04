@@ -1,0 +1,100 @@
+{
+  "coverage": "51.42%",
+  "expectCount": 105,
+  "actualCount": 54,
+  "files": {
+    "js/admin_blockly.js": {
+      "expectCount": 20,
+      "actualCount": 4,
+      "undocumentLines": [
+        12,
+        14,
+        16,
+        18,
+        64,
+        68,
+        72,
+        76,
+        80,
+        81,
+        84,
+        88,
+        92,
+        105,
+        114,
+        118
+      ]
+    },
+    "js/admin_board.js": {
+      "expectCount": 15,
+      "actualCount": 4,
+      "undocumentLines": [
+        12,
+        14,
+        16,
+        34,
+        49,
+        54,
+        58,
+        59,
+        71,
+        74,
+        78
+      ]
+    },
+    "js/core/Dispatcher.js": {
+      "expectCount": 26,
+      "actualCount": 25,
+      "undocumentLines": [
+        1
+      ]
+    },
+    "js/core/Loggable.js": {
+      "expectCount": 7,
+      "actualCount": 4,
+      "undocumentLines": [
+        13,
+        18,
+        20
+      ]
+    },
+    "js/core/Module.js": {
+      "expectCount": 16,
+      "actualCount": 10,
+      "undocumentLines": [
+        55,
+        60,
+        61,
+        63,
+        64,
+        66
+      ]
+    },
+    "js/core/Wrapper.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        29
+      ]
+    },
+    "js/index.js": {
+      "expectCount": 19,
+      "actualCount": 6,
+      "undocumentLines": [
+        13,
+        27,
+        29,
+        31,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126
+      ]
+    }
+  }
+}

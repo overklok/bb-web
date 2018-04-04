@@ -10,7 +10,7 @@ import ElectronIPCWrapper from '../wrappers/ElectronIPCWrapper';
  *      - Electron IPC (при запуске в среде Electron)
  *      - Socket.IO (при запуске в браузере)
  */
-class LocalServiceModule extends Module {
+export default class LocalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "ls"}
@@ -288,5 +288,3 @@ class LocalServiceModule extends Module {
         });
     }
 }
-
-export default LocalServiceModule;

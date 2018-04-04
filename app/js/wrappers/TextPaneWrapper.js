@@ -6,7 +6,7 @@ const CLASSES = {
     TEXT_PANE: "text-pane"
 };
 
-class TextPaneWrapper extends Wrapper {
+export default class TextPaneWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -45,5 +45,3 @@ class TextPaneWrapper extends Wrapper {
         return Promise.resolve(true);
     }
 }
-
-export default TextPaneWrapper;

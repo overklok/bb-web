@@ -2,6 +2,12 @@ import Dispatcher from "./core/Dispatcher";
 
 import BreadboardModule      from "./modules/BreadboardModule";
 
+/**
+ * Модуль "Редактор платы" административного интерфейса web-приложения "Макетная плата"
+ *
+ * Задаёт взаимосвязи между событиями и функциями модулей.
+ * Запускается в браузере администратора приложения.
+ */
 class AdminBoardApplication {
     constructor() {
         /// Диспетчер событий
@@ -20,7 +26,7 @@ class AdminBoardApplication {
      * Конфигурация, удобная для пользователя, преобразуется
      * в конфигурацию, требуемую в отдельных модулях
      *
-     * @param config пользовательская конфигурация
+     * @param {Object} config пользовательская конфигурация
      */
     configure(config) {
         if (!config) {return true}

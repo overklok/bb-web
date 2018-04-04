@@ -2,6 +2,12 @@ import Dispatcher from "./core/Dispatcher";
 
 import WorkspaceModule      from "./modules/WorkspaceModule";
 
+/**
+ * Модуль "Редактор блоков" административного интерфейса web-приложения "Макетная плата"
+ *
+ * Задаёт взаимосвязи между событиями и функциями модулей.
+ * Запускается в браузере администратора приложения.
+ */
 class AdminBlocklyApplication {
     constructor() {
         /// Диспетчер событий
@@ -21,7 +27,7 @@ class AdminBlocklyApplication {
      * Конфигурация, удобная для пользователя, преобразуется
      * в конфигурацию, требуемую в отдельных модулях
      *
-     * @param config пользовательская конфигурация
+     * @param {Object} config пользовательская конфигурация
      */
     configure(config) {
         if (!config) {return true}

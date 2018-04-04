@@ -2,7 +2,7 @@ import Wrapper from '../core/Wrapper'
 
 import io from 'socket.io-client'
 
-class SocketWrapper extends Wrapper {
+export default class SocketWrapper extends Wrapper {
 // public:
 
     constructor(addr='127.0.0.1', port=8080) {
@@ -28,5 +28,3 @@ class SocketWrapper extends Wrapper {
         return 'http://' + this._addr + ':' + this._port;
     }
 }
-
-export default SocketWrapper;

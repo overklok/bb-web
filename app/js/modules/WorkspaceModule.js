@@ -1,17 +1,16 @@
 import Module from '../core/Module'
 
 import BlocklyWrapper from '../wrappers/BlocklyWrapper'
-import VirtLEDWrapper from '../wrappers/VirtLEDWrapper'
 
-import JSONBlocks       from '../~utils/blockly/extras/blocks';
-import JSONGenerators   from '../~utils/blockly/extras/generators';
+import JSONBlocks       from '../utils/blockly/extras/blocks';
+import JSONGenerators   from '../utils/blockly/extras/generators';
 
 /**
  * Модуль "Рабочая область"
  *
  * Предоставляет набор методов для управления интерфейсом Blockly
  */
-class WorkspaceModule extends Module {
+export default class WorkspaceModule extends Module {
     static get eventspace_name() {return "ws"}
     static get event_types() {return ["ready", "change"]}
 
@@ -211,7 +210,7 @@ class WorkspaceModule extends Module {
     /**
      * Получить список обработчиков в формате объекта
      *
-     * @returns {{commands, button}} - {object} commands - JSON-код программы, {number} button - код клавиши
+     * @returns {{commands:Array, button:number}} - {object} commands - JSON-код программы, {number} button - код клавиши
      */
     getMainHandler() {
         let handlers = this._blockly.getJSONHandlers();
@@ -392,5 +391,3 @@ class WorkspaceModule extends Module {
         return JSON.parse("[" + code + "]");
     }
 }
-
-export default WorkspaceModule;

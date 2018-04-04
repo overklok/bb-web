@@ -18,7 +18,7 @@ const VARIANTS = {
     CHECK_N_EXECUTE: 2,
 };
 
-class LaunchBtnWrapper extends Wrapper {
+export default class LaunchBtnWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -138,5 +138,3 @@ class LaunchBtnWrapper extends Wrapper {
         };
     }
 }
-
-export default LaunchBtnWrapper;

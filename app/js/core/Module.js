@@ -22,7 +22,7 @@ import Loggable from './Loggable';
  * Имена классов-модулей именуются в стиле CamelCase с постфиксом Module.
  * Каждый класс должен быть расположен в отдельном одноимённом файле.
  */
-class Module extends Loggable {
+export default class Module extends Loggable {
 // public:
 
     /**
@@ -190,5 +190,3 @@ class Module extends Loggable {
         return settings;
     }
 }
-
-export default Module;

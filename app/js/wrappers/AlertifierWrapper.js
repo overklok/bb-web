@@ -8,7 +8,7 @@ const ALERTS = {
     no_ipc: {
         title: "Упс...",
         html:   "Кажется, Вы случайно зашли через браузер. " +
-                "Для корректной работы используйте, пожалуйста, наше специальное <b>приложение</b>.",
+                "Для корректной работы используйте, пожалуйста, наше <b>приложение</b>.",
         image: false
     },
     no_board: {
@@ -22,7 +22,7 @@ const ALERTS = {
     }
 };
 
-class AlertifierWrapper extends Wrapper {
+export default class AlertifierWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -90,5 +90,3 @@ class AlertifierWrapper extends Wrapper {
         }
     }
 }
-
-export default AlertifierWrapper;

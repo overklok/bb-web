@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">js/core/Wrapper.js | &#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="&#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;"><meta property="twitter:description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a href="https://bitbucket.org/makeitlab/codehour-breadboard-web">Repository</a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_blockly.js~AdminBlocklyApplication.html">AdminBlocklyApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_board.js~AdminBoardApplication.html">AdminBoardApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/index.js~Application.html">Application</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#core">core</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Dispatcher.js~Dispatcher.html">Dispatcher</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Loggable.js~Loggable.html">Loggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Module.js~Module.html">Module</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Wrapper.js~Wrapper.html">Wrapper</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">js/core/Wrapper.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Loggable from &apos;./Loggable&apos;;
+
+/**
+ * &#x41E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x438; - &#x437;&#x430;&#x432;&#x438;&#x441;&#x438;&#x43C;&#x44B;&#x435; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x435;&#x43D;&#x442;&#x44B; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439;.
+ *
+ * &#x41E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x438; &#x43C;&#x43E;&#x433;&#x443;&#x442; &#x441;&#x443;&#x449;&#x435;&#x441;&#x442;&#x432;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x442;&#x43E;&#x43B;&#x44C;&#x43A;&#x43E; &#x432; &#x441;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x435; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439; (&#x441;&#x43C;. {@link Module}).
+ * &#x41E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x438; &#x43D;&#x435; &#x437;&#x43D;&#x430;&#x44E;&#x442; &#x43E; &#x441;&#x443;&#x449;&#x435;&#x441;&#x442;&#x432;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x438; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439; &#x438; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x439;.
+ * &#x41C;&#x435;&#x442;&#x43E;&#x434;&#x44B; &#x43E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x438; &#x43C;&#x43E;&#x433;&#x443;&#x442; &#x431;&#x44B;&#x442;&#x44C; &#x440;&#x435;&#x430;&#x43B;&#x438;&#x437;&#x43E;&#x432;&#x430;&#x43D;&#x44B; &#x441; &#x43F;&#x43E;&#x43C;&#x43E;&#x449;&#x44C;&#x44E; &#x43E;&#x434;&#x43D;&#x43E;&#x439; &#x438;&#x43B;&#x438; &#x43D;&#x435;&#x441;&#x43A;&#x43E;&#x43B;&#x44C;&#x43A;&#x438;&#x445; &#x431;&#x438;&#x431;&#x43B;&#x438;&#x43E;&#x442;&#x435;&#x43A; &#x441;&#x445;&#x43E;&#x436;&#x435;&#x433;&#x43E; &#x43D;&#x430;&#x437;&#x43D;&#x430;&#x447;&#x435;&#x43D;&#x438;&#x44F;.
+ *
+ * &#x417;&#x430;&#x434;&#x430;&#x447;&#x430; &#x43E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x438; - &#x430;&#x431;&#x441;&#x442;&#x440;&#x430;&#x433;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x43E;&#x441;&#x442;&#x430;&#x43B;&#x44C;&#x43D;&#x43E;&#x439; &#x43A;&#x43E;&#x434; &#x43E;&#x442; &#x43A;&#x43E;&#x43D;&#x43A;&#x440;&#x435;&#x442;&#x43D;&#x43E;&#x439; &#x431;&#x438;&#x431;&#x43B;&#x438;&#x43E;&#x442;&#x435;&#x43A;&#x438; (&#x43D;&#x430;&#x431;&#x43E;&#x440;&#x430; &#x431;&#x438;&#x431;&#x438;&#x43B;&#x43E;&#x442;&#x435;&#x43A;). &#x41D;&#x430;&#x43F;&#x440;&#x438;&#x43C;&#x435;&#x440;:
+ *      - GUI &#x44F;&#x437;&#x44B;&#x43A;&#x430; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x430;&#x43C;&#x43C;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x44F; Blockly
+ *      - &#x421;&#x43E;&#x43A;&#x435;&#x442;-&#x43A;&#x43B;&#x438;&#x435;&#x43D;&#x442;
+ *      - &#x412;&#x435;&#x431;-&#x43A;&#x43B;&#x438;&#x435;&#x43D;&#x442;
+ *      - &#x421;&#x43F;&#x435;&#x446;&#x438;&#x444;&#x438;&#x447;&#x435;&#x441;&#x43A;&#x438;&#x439; &#x432;&#x438;&#x437;&#x443;&#x430;&#x43B;&#x44C;&#x43D;&#x44B;&#x439; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x435;&#x43D;&#x442; &quot;&#x433;&#x438;&#x440;&#x43B;&#x44F;&#x43D;&#x434;&#x430;&quot;
+ *      - &#x421;&#x438;&#x441;&#x442;&#x435;&#x43C;&#x430; &#x432;&#x441;&#x43F;&#x43B;&#x44B;&#x432;&#x430;&#x44E;&#x449;&#x438;&#x445; &#x43E;&#x43A;&#x43E;&#x43D;
+ *
+ * &#x41E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x430; &#x434;&#x43E;&#x43B;&#x436;&#x43D;&#x430; &#x438;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x43A;&#x43B;&#x430;&#x441;&#x441; Promise &#x43F;&#x440;&#x438; &#x43D;&#x435;&#x43E;&#x431;&#x445;&#x43E;&#x434;&#x438;&#x43C;&#x43E;&#x441;&#x442;&#x438; &#x432;&#x44B;&#x43F;&#x43E;&#x43B;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x441;&#x438;&#x43D;&#x445;&#x440;&#x43E;&#x43D;&#x43D;&#x43E;&#x433;&#x43E; &#x43A;&#x43E;&#x434;&#x430;.
+ *
+ * &#x41A;&#x43B;&#x430;&#x441;&#x441;&#x44B;-&#x43E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x438; &#x434;&#x43E;&#x43B;&#x436;&#x43D;&#x44B; &#x43D;&#x430;&#x441;&#x43B;&#x435;&#x434;&#x43E;&#x432;&#x430;&#x442;&#x44C;&#x441;&#x44F; &#x43E;&#x442; &#x43A;&#x43B;&#x430;&#x441;&#x441;&#x430; {@link Wrapper}.
+ * &#x418;&#x43C;&#x435;&#x43D;&#x430; &#x43A;&#x43B;&#x430;&#x441;&#x441;&#x43E;&#x432;-&#x43E;&#x431;&#x451;&#x440;&#x442;&#x43E;&#x43A; &#x438;&#x43C;&#x435;&#x43D;&#x443;&#x44E;&#x442;&#x441;&#x44F; &#x432; &#x441;&#x442;&#x438;&#x43B;&#x435; CamelCase &#x441; &#x43F;&#x43E;&#x441;&#x442;&#x444;&#x438;&#x43A;&#x441;&#x43E;&#x43C; `Wrapper`.
+ * &#x41A;&#x430;&#x436;&#x434;&#x44B;&#x439; &#x43A;&#x43B;&#x430;&#x441;&#x441; &#x434;&#x43E;&#x43B;&#x436;&#x435;&#x43D; &#x431;&#x44B;&#x442;&#x44C; &#x440;&#x430;&#x441;&#x43F;&#x43E;&#x43B;&#x43E;&#x436;&#x435;&#x43D; &#x432; &#x43E;&#x442;&#x434;&#x435;&#x43B;&#x44C;&#x43D;&#x43E;&#x43C; &#x43E;&#x434;&#x43D;&#x43E;&#x438;&#x43C;&#x451;&#x43D;&#x43D;&#x43E;&#x43C; &#x444;&#x430;&#x439;&#x43B;&#x435;.
+ *
+ * &#x41D;&#x430;&#x43F;&#x440;&#x438;&#x43C;&#x435;&#x440;:
+ *
+ * `BlocklyWrapper.js`,
+ * `BreadboardWrapper.js`
+ */
+export default class Wrapper extends Loggable {
+    constructor(options) {
+        options = options || {};
+        super(options);
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -110,7 +110,7 @@ const DURATION_INITIAL = 0;
  * @class
  * @classdesc APPROVED, STRESS-TESTED ON THROTTLED CPU
  */
-class LayoutModule extends Module {
+export default class LayoutModule extends Module {
     static get eventspace_name() {return "lay"}
     static get event_types() {return ["compose-begin", "compose-end", "resize"]}
 
@@ -521,5 +521,3 @@ class LayoutModule extends Module {
         // No events
     }
 }
-
-export default LayoutModule;

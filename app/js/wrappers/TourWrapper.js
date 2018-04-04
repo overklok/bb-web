@@ -23,7 +23,7 @@ const DIALOG_MODES = ["dialog", "success"];
 
 const DIALOG_DEFAULT = "Упражнение пройдено!";
 
-class TourWrapper extends Wrapper {
+export default class TourWrapper extends Wrapper {
     constructor(mode, steps) {
         super();
 
@@ -56,9 +56,10 @@ class TourWrapper extends Wrapper {
 
             this._setStyles();
 
-            this._introJS.onafterchange(function(){
+            this._introJS.onafterchange(function () {
                 if (DIALOG_MODES.indexOf(self._mode) >= 0) {
-                    reject(); rejected = true;
+                    reject();
+                    rejected = true;
                     this.exit(true);
                 }
 
@@ -145,5 +146,3 @@ class TourWrapper extends Wrapper {
         return options;
     }
 }
-
-export default TourWrapper;

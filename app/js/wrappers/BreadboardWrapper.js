@@ -2,7 +2,7 @@ import Wrapper from "../core/Wrapper";
 
 import domtoimage from 'dom-to-image';
 
-import Breadboard from "../~utils/breadboard/Breadboard";
+import Breadboard from "../utils/breadboard/Breadboard";
 
 const PLATE_TYPES = {
     'bridge':       'перемычка',
@@ -22,7 +22,7 @@ const PLATE_TYPES = {
 /**
  * Обёртка библиотеки Breadboard для отображения макетной платы
  */
-class BreadboardWrapper extends Wrapper {
+export default class BreadboardWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -164,5 +164,3 @@ class BreadboardWrapper extends Wrapper {
             });
     }
 }
-
-export default BreadboardWrapper;

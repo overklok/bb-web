@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">js/index.js | &#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="&#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;"><meta property="twitter:description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a href="https://bitbucket.org/makeitlab/codehour-breadboard-web">Repository</a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_blockly.js~AdminBlocklyApplication.html">AdminBlocklyApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_board.js~AdminBoardApplication.html">AdminBoardApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/index.js~Application.html">Application</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#core">core</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Dispatcher.js~Dispatcher.html">Dispatcher</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Loggable.js~Loggable.html">Loggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Module.js~Module.html">Module</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Wrapper.js~Wrapper.html">Wrapper</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">js/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Dispatcher from &quot;./core/Dispatcher&quot;;
+
+import LogModule            from &quot;./modules/LogModule&quot;;
+import GUIModule            from &quot;./modules/GUIModule&quot;;
+import TracingModule        from &quot;./modules/TracingModule&quot;;
+import LayoutModule         from &quot;./modules/LayoutModule&quot;;
+import BreadboardModule     from &quot;./modules/BreadboardModule&quot;;
+import WorkspaceModule      from &quot;./modules/WorkspaceModule&quot;;
+import InstructorModule     from &apos;./modules/InstructorModule&apos;;
+import LocalServiceModule   from &quot;./modules/LocalServiceModule&quot;;
+import GlobalServiceModule  from &quot;./modules/GlobalServiceModule&quot;;
+
+const BUTTON_CODES = [
+    48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // 0-9
+    81, 87, 69, 82, 84, 89,                 // QWERTY
+    65, 83, 68, 70, 71, 72,                 // ASDFGH
+    38, 40, 37, 39                          // arrows
+];
+
+/**
+ * &#x41F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;&#x441;&#x43A;&#x438;&#x439; &#x438;&#x43D;&#x442;&#x435;&#x440;&#x444;&#x435;&#x439;&#x441; &#x43A;&#x43B;&#x438;&#x435;&#x43D;&#x442;&#x441;&#x43A;&#x43E;&#x439; &#x441;&#x442;&#x43E;&#x440;&#x43E;&#x43D;&#x44B; web-&#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x44F; &quot;&#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;&quot;
+ *
+ * &#x417;&#x430;&#x434;&#x430;&#x451;&#x442; &#x432;&#x437;&#x430;&#x438;&#x43C;&#x43E;&#x441;&#x432;&#x44F;&#x437;&#x438; &#x43C;&#x435;&#x436;&#x434;&#x443; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F;&#x43C;&#x438; &#x438; &#x444;&#x443;&#x43D;&#x43A;&#x446;&#x438;&#x44F;&#x43C;&#x438; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439;.
+ * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x43A;&#x430;&#x435;&#x442;&#x441;&#x44F; &#x432; &#x431;&#x440;&#x430;&#x443;&#x437;&#x435;&#x440;&#x435; &#x43A;&#x43E;&#x43D;&#x435;&#x447;&#x43D;&#x43E;&#x433;&#x43E; &#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44F;.
+ */
+class Application {
+    constructor() {
+        /// &#x414;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439;
+        this._dispatcher = new Dispatcher();
+        /// &#x41A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44F;
+        this._config = {};
+
+        this._defineChains();
+    }
+
+    /**
+     * &#x41F;&#x440;&#x435;&#x43E;&#x431;&#x440;&#x430;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;&#x441;&#x43A;&#x443;&#x44E; &#x43A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44E; &#x432; &#x43D;&#x430;&#x441;&#x442;&#x440;&#x43E;&#x439;&#x43A;&#x438; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439;
+     *
+     * &#x41A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44F;, &#x443;&#x434;&#x43E;&#x431;&#x43D;&#x430;&#x44F; &#x434;&#x43B;&#x44F; &#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44F;, &#x43F;&#x440;&#x435;&#x43E;&#x431;&#x440;&#x430;&#x437;&#x443;&#x435;&#x442;&#x441;&#x44F;
+     * &#x432; &#x43A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44E;, &#x442;&#x440;&#x435;&#x431;&#x443;&#x435;&#x43C;&#x443;&#x44E; &#x432; &#x43E;&#x442;&#x434;&#x435;&#x43B;&#x44C;&#x43D;&#x44B;&#x445; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F;&#x445;
+     *
+     * @param {Object} config &#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;&#x441;&#x43A;&#x430;&#x44F; &#x43A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44F;
+     */
+    configure(config) {
+        if (!config) {return true}
+
+        this._config = {
+            gui: {
+                anyKey: config.anyKey,
+                logoText: config.logoText,
+                imagesPath: config.imagesPath,
+                devMode: config.showDebugInfo
+            },
+            lay: {
+
+            },
+            ins: {
+                lessonID: config.lessonID,
+                silent: config.noIntros,
+            },
+            trc: {
+
+            },
+            ws: {
+                allBlocks: config.allBlocks,
+            },
+            bb: {
+
+            },
+            gs: {
+                origin: config.origin,
+                csrfRequired: config.isInternal,
+                modeDummy:  config.offline
+            },
+            ls: {
+                modeDummy: config.isolated,
+                portUrgent: config.port
+            },
+            log: {
+                modeDummy: config.noRemoteLogs
+            }
+        };
+
+        for (let conf_item in this._config) {
+            this._config[conf_item].logging = {
+                local: config.noRemoteLogs
+            }
+        }
+    }
+
+    /**
+     * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x435;
+     *
+     * &#x418;&#x43D;&#x438;&#x446;&#x438;&#x430;&#x43B;&#x438;&#x437;&#x438;&#x440;&#x443;&#x44E;&#x442;&#x441;&#x44F; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x438;, &#x43F;&#x440;&#x43E;&#x438;&#x437;&#x432;&#x43E;&#x434;&#x438;&#x442;&#x441;&#x44F;
+     */
+    run() {
+        this._initModules();
+        this._subscribeToModules();
+
+        this._dispatcher.only([&apos;ls:connect&apos;]);
+        this._dispatcher.always([
+            &apos;*:resize&apos;, &apos;*:error&apos;,
+            &apos;ins:start&apos;, &apos;ins:progress&apos;, &apos;ins:mission&apos;,
+            &apos;ls:*&apos;, &apos;lay:*&apos;, &apos;log:*&apos;,
+            &apos;gui:hash-command&apos;, &apos;gui:stop&apos;, &apos;gui:menu&apos;, &apos;gui:ready&apos;
+        ]);
+    }
+
+    /**
+     * &#x418;&#x43D;&#x438;&#x446;&#x438;&#x430;&#x43B;&#x438;&#x437;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x438;
+     *
+     * &#x418;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x443;&#x435;&#x442;&#x441;&#x44F; &#x437;&#x430;&#x434;&#x430;&#x43D;&#x43D;&#x430;&#x44F; &#x440;&#x430;&#x43D;&#x435;&#x435; &#x43A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44F; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439;
+     *
+     * @private
+     */
+    _initModules() {
+        /// &#x41C;&#x43E;&#x434;&#x443;&#x43B;&#x438;
+        this.log    = new LogModule(this._config.log);                      // &#x43B;&#x43E;&#x433;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x435;
+        this.gui    = new GUIModule(this._config.gui);
+        this.trc    = new TracingModule(this._config.trc);                  // &#x43C;&#x43D;&#x43E;&#x433;&#x43E;&#x444;&#x443;&#x43D;&#x43A;&#x446;&#x438;&#x43E;&#x43D;&#x430;&#x43B;&#x44C;&#x43D;&#x430;&#x44F; &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x44C;
+        this.lay    = new LayoutModule(this._config.lay);
+        this.ws     = new WorkspaceModule(this._config.ws);                 // Blockly
+        this.bb     = new BreadboardModule(this._config.bb);                // &#x43C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430; - &#x433;&#x440;&#x430;&#x444;&#x438;&#x43A;&#x430;
+        this.ins    = new InstructorModule(this._config.ins);               // &#x434;&#x435;&#x434;
+        this.ls     = new LocalServiceModule(this._config.ls);              // &#x43C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430; - electron
+        this.gs     = new GlobalServiceModule(this._config.gs);             // &#x432;&#x435;&#x431;-&#x441;&#x435;&#x440;&#x432;&#x435;&#x440;
+
+        this.gui.registerButtonCodes(BUTTON_CODES);
+    }
+
+    /**
+     * &#x41F;&#x43E;&#x434;&#x43F;&#x438;&#x441;&#x430;&#x442;&#x44C; &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440; &#x43D;&#x430; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439;
+     *
+     * @private
+     */
+    _subscribeToModules() {
+        this._dispatcher.subscribe(this.log);
+        this._dispatcher.subscribe(this.gui);
+        this._dispatcher.subscribe(this.ins);
+        this._dispatcher.subscribe(this.lay);
+        this._dispatcher.subscribe(this.ws);
+        this._dispatcher.subscribe(this.ls);
+        this._dispatcher.subscribe(this.gs);
+
+        this._dispatcher.ready();
+    }
+
+    /**
+     * &#x41E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x438;&#x442;&#x44C; &#x446;&#x435;&#x43F;&#x43E;&#x447;&#x43A;&#x438;-&#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A;&#x438;
+     *
+     * @private
+     */
+    _defineChains() {
+        /**
+         * &#x413;&#x43E;&#x442;&#x43E;&#x432;&#x43D;&#x43E;&#x441;&#x442;&#x44C; &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440;&#x430; &#x43A; &#x440;&#x430;&#x431;&#x43E;&#x442;&#x435;
+         */
+        this._dispatcher.onReady(() =&gt; {
+            let exercise_idx, mission_idx;
+
+            let command = this.gui._checkURLHashCommand();
+            if (command.type === &quot;goto&quot;) {
+                exercise_idx = command.data.exerciseIDX;
+                mission_idx = command.data.missionIDX;
+            }
+
+            this.ins.getInitialLessonID()
+                .then(lesson_id =&gt; this.gs.getLessonData(lesson_id))
+                .then(lesson_data =&gt; this.ins.loadLesson(lesson_data))
+                .then(lesson =&gt; {
+                    this.gui.showMissionButtons(lesson.missions);
+                    this.gui.setCourseText(lesson.name)
+                })
+                .then(() =&gt; this.ins.launchLesson(mission_idx, exercise_idx))
+                .catch(error =&gt; {
+                    this.gui.showSpinnerError(error.message);
+                    console.error(error);
+                });
+        });
+
+        /**
+         * &#x417;&#x430;&#x43F;&#x443;&#x449;&#x435;&#x43D;&#x43E; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x435;
+         */
+        this._dispatcher.on(&apos;ins:start&apos;, exercise =&gt; {
+            console.log(exercise);
+
+            /// &#x417;&#x430;&#x431;&#x43B;&#x43E;&#x43A;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x432;&#x441;&#x435; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F;
+            this._dispatcher.only([]);
+
+            this.gui.setExerciseCurrent(exercise.exerciseIDX);
+
+            /// &#x421;&#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x443;, &#x443;&#x431;&#x440;&#x430;&#x442;&#x44C; &#x441;&#x43F;&#x438;&#x43D;&#x43D;&#x435;&#x440; &#x438; &#x440;&#x430;&#x437;&#x431;&#x43B;&#x43E;&#x43A;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; GUI
+            this.lay.compose(exercise.layout_mode)
+                .then(() =&gt; this.ls.setMode(exercise.board_mode))
+                .then(() =&gt; this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
+                .then(() =&gt; this.ws.setMaxBlockLimit(exercise.max_blocks))
+                .then(() =&gt; this.ws.setEditable(exercise.editable))
+                .then(() =&gt; this.gui.setLaunchVariant(exercise.launch_variant))
+                .then(() =&gt; this.gui.showTask(exercise.task_description))
+                .then(() =&gt; this.ws.setBlockTypes(exercise.block_types))
+                .then(() =&gt; this.trc.registerVariables(exercise.variables))
+                .then(() =&gt; this.lay.switchButtonsPane(exercise.display_buttons))
+                .then(() =&gt; this.gui.hideSpinner())
+                .then(() =&gt; this.ins.tourIntro(exercise.popovers))
+                .then(() =&gt; this.trc.clearButtons())
+                .then(() =&gt; this.gui.listenButtons(exercise.check_buttons))
+                .then(() =&gt; this.ins.setButtonsModel(exercise.buttons_model))
+                .then(() =&gt; {
+                    if (exercise.check_buttons) {
+                        this._dispatcher.only([&apos;gui:*&apos;, &apos;ins:pass&apos;]);
+                    } else {
+                        this._dispatcher.only([&apos;gui:*&apos;]);
+                    }
+                })
+        });
+
+        /**
+         * &#x41D;&#x430;&#x436;&#x430;&#x442;&#x430; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x430; &quot;&#x417;&#x430;&#x434;&#x430;&#x43D;&#x438;&#x435; &#x2116;&quot;
+         */
+        this._dispatcher.on(&apos;gui:mission&apos;, mission_idx =&gt; {
+            this.ins.launchMission(mission_idx);
+        });
+
+        this._dispatcher.on(&apos;ins:mission&apos;, mission_idx =&gt; {
+            this.gui.setMissionCurrent(mission_idx);
+        });
+
+        this._dispatcher.on(&apos;gui:ready&apos;, () =&gt; {
+            // setTimeout(() =&gt; {
+            //     let status = this.ls.getBoardStatus();
+            //
+            //     if (status) {
+            //         this.gui.setBoardStatus(status);
+            //     }
+            // }, 5000);
+        });
+
+        /**
+         * &#x41D;&#x430;&#x436;&#x430;&#x442;&#x430; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x430; &quot;&#x41F;&#x440;&#x43E;&#x432;&#x435;&#x440;&#x438;&#x442;&#x44C;&quot;
+         */
+        this._dispatcher.on(&apos;gui:check&apos;, () =&gt; {
+            /// &#x43F;&#x440;&#x43E;&#x441;&#x43B;&#x443;&#x448;&#x438;&#x432;&#x430;&#x442;&#x44C; &#x442;&#x43E;&#x43B;&#x44C;&#x43A;&#x43E; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; &#x43F;&#x440;&#x43E;&#x445;&#x43E;&#x436;&#x434;&#x435;&#x43D;&#x438;&#x44F; &#x438;&#x43B;&#x438; &#x43F;&#x440;&#x43E;&#x432;&#x430;&#x43B;&#x430;
+            this._dispatcher.only([&quot;ins:pass&quot;, &quot;ins:fault&quot;]);
+
+            /// &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x438;&#x442;&#x44C; &#x418;&#x414; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+            let exID = this.ins.getExerciseID();
+            /// &#x437;&#x430;&#x436;&#x430;&#x442;&#x44C; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x443;
+            this.gui.affirmLaunchButtonState(&apos;check&apos;, false);
+            /// &#x43E;&#x447;&#x438;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x43E;&#x448;&#x438;&#x431;&#x43E;&#x447;&#x43D;&#x44B;&#x435; &#x431;&#x43B;&#x43E;&#x43A;&#x438;
+            this.ws.clearErrorBlocks();
+
+            /// &#x43F;&#x43E;&#x43B;&#x443;&#x447;&#x438;&#x442;&#x44C; &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A;&#x438;
+            Promise.all([
+                this.ws.getAllHandlers(),
+                this.bb.getData()
+            ])
+                .then(results   =&gt; {return {handlers: results[0], board: results[1]}})
+                .then(data      =&gt; this.gs.commitSolution(exID, data))
+                .then(verdict   =&gt; this.ins.applyVerdict(verdict))
+                .then(()        =&gt; this.gui.affirmLaunchButtonState(&apos;check&apos;, true))
+                .then(()        =&gt; {
+                    this.gui.affirmLaunchButtonState(&apos;check&apos;, true);
+                    this._dispatcher.only([&apos;gui:*&apos;, &apos;ins:*&apos;]);
+                })
+                .catch((err)    =&gt; {
+                    console.error(err);
+                    this.gui.affirmLaunchButtonState(&apos;check&apos;, true);
+                    this._dispatcher.only([&apos;gui:*&apos;, &apos;ins:*&apos;])
+                });
+        });
+
+        /**
+         * &#x41D;&#x430;&#x436;&#x430;&#x442;&#x430; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x430; &quot;&#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C;&quot;
+         */
+        this._dispatcher.on(&apos;gui:run&apos;, () =&gt; {
+            this._dispatcher.only([&quot;gui:stop&quot;]);
+
+            this.gui.affirmLaunchButtonState(&apos;execute&apos;, false);
+
+            let handler = this.ws.getMainHandler();
+            this.ls.updateHandlers({commands: handler.commands, launch: true});
+            console.log({commands: handler.commands, launch: true});
+        });
+
+        /**
+         * &#x41D;&#x430;&#x436;&#x430;&#x442;&#x430; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x430; &quot;&#x41E;&#x441;&#x442;&#x430;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C;&quot;
+         */
+        this._dispatcher.on(&apos;gui:stop&apos;, () =&gt; {
+            this.ls.stopExecution();
+            this.ws.highlightBlock(null);
+
+            this.gui.affirmLaunchButtonState(&apos;execute&apos;, true);
+
+            this._dispatcher.only([&quot;gui:*&quot;]);
+        });
+
+        /**
+         * &#x41D;&#x430;&#x436;&#x430;&#x442;&#x430; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;&#x430;
+         */
+        this._dispatcher.on(&apos;gui:keyup&apos;, button_code =&gt; {
+            /// &#x43D;&#x430;&#x439;&#x442;&#x438; &#x43F;&#x435;&#x440;&#x432;&#x44B;&#x439; &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x438;&#x44F; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;&#x438;
+            let handler = this.ws.getButtonHandler(button_code);
+
+            console.log(handler);
+
+            if (handler) {
+                /// &#x43E;&#x431;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x43A;&#x43E;&#x434; &#x43D;&#x430; &#x43F;&#x43B;&#x430;&#x442;&#x435;
+                this.ls.updateHandlers({commands: handler.code, launch: false});
+            }
+
+            /// &#x43F;&#x440;&#x43E;&#x432;&#x435;&#x440;&#x438;&#x442;&#x44C; &#x43F;&#x440;&#x430;&#x432;&#x438;&#x43B;&#x44C;&#x43D;&#x43E;&#x441;&#x442;&#x44C; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x438;&#x44F; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;&#x438;
+            let valid = this.ins.validateButtonPress(button_code);
+            /// &#x432;&#x44B;&#x432;&#x435;&#x441;&#x442;&#x438; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x438;&#x435; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;&#x438;
+            this.trc.displayKeyboardPress(button_code, !valid);
+
+            console.log(&apos;keyup&apos;, button_code);
+        });
+
+        this._dispatcher.on(&apos;gui:hash-command&apos;, command =&gt; {
+            switch (command.type) {
+                case &quot;goto&quot;: {
+                    if (command.data.missionIDX === undefined)  {
+                        this.ins.forceExercise(command.data.missionIDX, undefined);
+                    }
+
+                    else if (command.data.exerciseIDX === undefined) {
+                        this.ins.forceExercise(undefined, command.data.exerciseIDX);
+                    }
+
+                    else {
+                        this.ins.forceExercise(command.data.missionIDX, command.data.exerciseIDX);
+                    }
+
+                    break;
+                }
+                default: {
+                    console.warn(&quot;Unrecognised hash command&quot;);
+                }
+            }
+        });
+
+        this._dispatcher.on(&apos;gui:menu&apos;, (data) =&gt; {
+            switch (data.name) {
+                case &apos;courses&apos;: {
+                    this.gs.goToLessonPage();
+                    break;
+                }
+                case &apos;settings&apos;: {
+                    this.ls.openMenu();
+                    break;
+                }
+                case &apos;developer&apos;: {
+                    if (data.state) {
+                        this.gui.switchDeveloperMode(true);
+                        this.lay.revealTopPane();
+                    } else {
+                        this.gui.switchDeveloperMode(false);
+                        this.lay.concealTopPane();
+                    }
+                    break;
+                }
+                default: {
+                    console.warn(`Unhandled menu option &apos;${option}&apos;`);
+                    break;
+                }
+            }
+        });
+
+        /**
+         * &#x417;&#x430;&#x434;&#x430;&#x43D;&#x438;&#x435; &#x43F;&#x440;&#x43E;&#x439;&#x434;&#x435;&#x43D;&#x43E;
+         */
+        this._dispatcher.on(&apos;ins:pass&apos;, verdict =&gt; {
+            this._dispatcher.only([]);
+            this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX);
+            this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX+1);
+            this.ins.tourPass()
+                .then(
+                    onResolve =&gt; this.ins.launchExerciseNext(),
+                    onReject =&gt; {
+                        this.ins.launchExerciseNext(true);
+                        this.gui.setMissionSkiddingOn(verdict.missionIDX);
+                    }
+                )
+                .then(() =&gt; this._dispatcher.only([&apos;gui:*&apos;, &apos;ins:pass&apos;]))
+        });
+
+        /**
+         * &#x417;&#x430;&#x434;&#x430;&#x43D;&#x438;&#x435; &#x43F;&#x440;&#x43E;&#x432;&#x430;&#x43B;&#x435;&#x43D;&#x43E;
+         */
+        this._dispatcher.on(&apos;ins:fault&apos;, verdict =&gt; {
+            console.log(&quot;fault&quot;, verdict);
+            this._dispatcher.only([]);
+            try {
+                this.ws.highlightErrorBlocks(verdict.blocks);
+                this.bb.highlightErrorPlates(verdict.blocks);
+            } catch (err) {
+                console.error(err);
+            }
+
+            this.ins.tourFault(verdict.message)
+                .then(() =&gt; this._dispatcher.only([&apos;gui:*&apos;]))
+        });
+
+        this._dispatcher.on(&apos;ins:progress&apos;, mission =&gt; {
+           this.gui.setMissionProgress(mission);
+        });
+
+        /**
+         * &#x413;&#x43E;&#x442;&#x43E;&#x432;&#x43D;&#x43E;&#x441;&#x442;&#x44C; &#x43F;&#x43B;&#x430;&#x442;&#x44B; &#x43A; &#x440;&#x430;&#x431;&#x43E;&#x442;&#x435;
+         */
+        this._dispatcher.on(&apos;ls:connect&apos;, () =&gt; {
+            this.gui.setBoardStatus(&apos;none&apos;);
+            /// &#x417;&#x430;&#x43F;&#x440;&#x43E;&#x441;&#x438;&#x442;&#x44C; &#x441;&#x441;&#x44B;&#x43B;&#x43A;&#x438; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x448;&#x438;&#x432;&#x43A;&#x438;
+            // this.gs.getUpgradeURLs()
+                /// &#x41E;&#x431;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x43F;&#x440;&#x43E;&#x448;&#x438;&#x432;&#x43A;&#x443;
+                // .then(urls  =&gt; this.ls.firmwareUpgrade(urls))
+                /// &#x420;&#x430;&#x437;&#x440;&#x435;&#x448;&#x438;&#x442;&#x44C; &#x43E;&#x431;&#x440;&#x430;&#x431;&#x430;&#x442;&#x44B;&#x432;&#x430;&#x442;&#x44C; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x44B; &#x438; GUI
+                // .then(()    =&gt; this._dispatcher.only([&apos;ls:*&apos;, &apos;gui:*&apos;]))
+        });
+
+        /**
+         * &#x412;&#x44B;&#x43F;&#x43E;&#x43B;&#x43D;&#x435;&#x43D;&#x430; &#x43A;&#x43E;&#x43C;&#x430;&#x43D;&#x434;&#x430;
+         */
+        this._dispatcher.on(&apos;ls:command&apos;, data =&gt; {
+            console.log(data);
+            this.ws.highlightBlock(data.block_id);
+        });
+
+        /**
+         * &#x418;&#x437;&#x43C;&#x435;&#x43D;&#x435;&#x43D;&#x43E; &#x437;&#x43D;&#x430;&#x447;&#x435;&#x43D;&#x438;&#x435; &#x43F;&#x435;&#x440;&#x435;&#x43C;&#x435;&#x43D;&#x43D;&#x43E;&#x439;
+         */
+        this._dispatcher.on(&apos;ls:variable&apos;, data =&gt; {
+            console.log(data);
+            this.trc.setVariableValue(data.id, data.value);
+        });
+
+        /**
+         * &#x41A;&#x43E;&#x433;&#x434;&#x430; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x430;&#x43C;&#x43C;&#x430; &#x437;&#x430;&#x432;&#x435;&#x440;&#x448;&#x438;&#x442;&#x441;&#x44F;
+         */
+        this._dispatcher.on(&apos;ls:terminate&apos;, () =&gt; {
+            let exercise = this.ins.getExerciseCurrent();
+
+            this.ws.highlightBlock(null);
+            this.gui.affirmLaunchButtonState(&apos;execute&apos;, true);
+
+            if (exercise.check_buttons) {
+                this._dispatcher.only([&apos;gui:*&apos;, &apos;ins:pass&apos;]);
+            } else {
+                this._dispatcher.only([&apos;gui:*&apos;]);
+            }
+
+            // if (!exercise.is_sandbox  &amp;&amp; !exercise.listeners_only) {
+            //     this._dispatcher.call(&quot;gui:check&quot;);
+            // }
+        });
+
+        this._dispatcher.on(&apos;ls:plates&apos;, data =&gt; {
+            this.bb.clearCurrents();
+            this.bb.updatePlates(data);
+        });
+
+        this._dispatcher.on(&apos;ls:currents&apos;, data =&gt; {
+            this.bb.updateCurrents(data);
+        });
+
+        this._dispatcher.on(&apos;ls:board-status&apos;, status =&gt; {
+            console.log(&quot;BOARD STATUS&quot;, status);
+            this.gui.setBoardStatus(status);
+        });
+
+        this._dispatcher.on(&apos;ls:timeout&apos;, () =&gt; {
+            this.gui.showAlert(&apos;no_ipc&apos;);
+
+            // setTimeout(() =&gt; {
+            //     this.gui.hideAllAlerts();
+            // }, 1000);
+        });
+
+        /**
+         * &#x41D;&#x430;&#x447;&#x430;&#x43B;&#x43E; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x43A;&#x438; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+         */
+        this._dispatcher.on(&apos;lay:compose-begin&apos;, data =&gt; {
+            this.ws.eject();
+            this.bb.eject();
+            this.trc.ejectBlocks();
+            this.trc.ejectButtons();
+            this.gui.ejectTextPane();
+        });
+
+        /**
+         * &#x41E;&#x43A;&#x43E;&#x43D;&#x447;&#x430;&#x43D;&#x438;&#x435; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x43A;&#x438; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+         */
+        this._dispatcher.on(&apos;lay:compose-end&apos;, data =&gt; {
+            if (data) {
+                this.gui.injectLaunchButtons(data.launch_buttons);
+                this.ws.inject(data.workspace);
+                this.bb.inject(data.breadboard);
+                this.trc.injectBlocks(data.tracing);
+                this.trc.injectButtons(data.buttons);
+                this.gui.injectTextPane(data.task);
+                this.gui.injectLessonPane(data.lesson);
+            }
+        });
+
+        /**
+         * &#x41D;&#x430;&#x436;&#x430;&#x442;&#x430; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x430; &quot;&#x412;&#x44B;&#x433;&#x440;&#x443;&#x437;&#x438;&#x442;&#x44C; &#x432; &#x444;&#x430;&#x439;&#x43B;&quot;
+         */
+        this._dispatcher.on(&apos;gui:unload-file&apos;, () =&gt; {
+            let tree = this.ws.getTree();
+            this.gui.saveToFile(tree);
+        });
+
+        /**
+         * &#x41D;&#x430;&#x436;&#x430;&#x442;&#x430; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x430; &quot;&#x417;&#x430;&#x433;&#x440;&#x443;&#x437;&#x438;&#x442;&#x44C; &#x438;&#x437; &#x444;&#x430;&#x439;&#x43B;&#x430;&quot;
+         */
+        this._dispatcher.on(&apos;gui:load-file&apos;, tree =&gt; {
+            this.ws.loadTree(tree);
+        });
+
+        /**
+         * &#x422;&#x438;&#x43A; &#x441;&#x431;&#x43E;&#x440;&#x43A;&#x438; &#x43B;&#x43E;&#x433;&#x43E;&#x432;
+         */
+        this._dispatcher.on(&apos;log:tick&apos;, () =&gt; {
+            this._dispatcher.dumpLogs(true)
+                .then(logs      =&gt; this.log.collectLogs(logs))
+                .then(log_bunch =&gt; this.gs.reportLogBunch(log_bunch))
+                .then(()        =&gt; this.log.runTicker())
+        });
+
+        /**
+         * &#x420;&#x430;&#x437;&#x43C;&#x435;&#x440; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438; &#x438;&#x437;&#x43C;&#x435;&#x43D;&#x451;&#x43D;
+         */
+        this._dispatcher.on(&apos;lay:resize&apos;, () =&gt; {
+            this.ws.resize();
+            this.trc.resize();
+        });
+    }
+}
+
+window.Application = Application;
+
+export default Application;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

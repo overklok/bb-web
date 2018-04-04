@@ -14,7 +14,7 @@ const CLASSES = {
 
 const SPINNER_HIDE_DURATION = 500;
 
-class SpinnerWrapper extends Wrapper {
+export default class SpinnerWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -68,5 +68,3 @@ class SpinnerWrapper extends Wrapper {
         });
     }
 }
-
-export default SpinnerWrapper

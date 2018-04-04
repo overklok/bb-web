@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="./">
+  <title data-ice="title">Manual | &#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="&#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;"><meta property="twitter:description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"></head>
+<body class="layout-container manual-root manual-index" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a href="https://bitbucket.org/makeitlab/codehour-breadboard-web">Repository</a></header>
+
+<nav class="navigation" data-ice="nav"><div class="manual-toc-root">
+  
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1" data-link="manual/overview.html"><a href="manual/overview.html" data-ice="link">&#x41E;&#x431;&#x449;&#x430;&#x44F; &#x438;&#x43D;&#x444;&#x43E;&#x440;&#x43C;&#x430;&#x446;&#x438;&#x44F;</a></li>
+</ul>
+  </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1" data-link="manual/design.html"><a href="manual/design.html" data-ice="link">&#x410;&#x440;&#x445;&#x438;&#x442;&#x435;&#x43A;&#x442;&#x443;&#x440;&#x430;</a></li>
+</ul>
+  </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    </ul>
+  </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    </ul>
+  </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    </ul>
+  </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    </ul>
+  </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    </ul>
+  </div>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div class="github-markdown">
+  <div class="manual-user-index" data-ice="manualUserIndex"><p><img src="manual/asset/logo.png" alt="CodeHour: Breadboard logo" title="CodeHour: Breadboard"></p>
+<p><em>CodeHour: Breadboard project</em></p>
+<h2 id="&#x434;&#x43E;&#x43A;&#x443;&#x43C;&#x435;&#x43D;&#x442;&#x430;&#x446;&#x438;&#x44F;-&#x43A;-web-&#x438;&#x43D;&#x442;&#x435;&#x440;&#x444;&#x435;&#x439;&#x441;&#x443;-&#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x44F;--quot-&#x442;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;--&#x43C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F;-&#x43F;&#x43B;&#x430;&#x442;&#x430;-quot-">&#x414;&#x43E;&#x43A;&#x443;&#x43C;&#x435;&#x43D;&#x442;&#x430;&#x446;&#x438;&#x44F; &#x43A; web-&#x438;&#x43D;&#x442;&#x435;&#x440;&#x444;&#x435;&#x439;&#x441;&#x443; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x44F; &quot;&#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x43C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;&quot;</h2><p>&#x41E;&#x43F;&#x438;&#x441;&#x44B;&#x432;&#x430;&#x435;&#x442; &#x440;&#x435;&#x430;&#x43B;&#x438;&#x437;&#x430;&#x446;&#x438;&#x44E; &#x447;&#x430;&#x441;&#x442;&#x438; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430;, &#x437;&#x430;&#x43F;&#x443;&#x441;&#x43A;&#x430;&#x435;&#x43C;&#x43E;&#x439; &#x432; &#x431;&#x440;&#x430;&#x443;&#x437;&#x435;&#x440;&#x435; &#x438; &#x441;&#x43E;&#x434;&#x435;&#x440;&#x436;&#x438;&#x442; &#x438;&#x43D;&#x441;&#x442;&#x440;&#x443;&#x43A;&#x446;&#x438;&#x438; &#x43F;&#x43E; &#x435;&#x451; &#x43D;&#x430;&#x441;&#x442;&#x440;&#x43E;&#x439;&#x43A;&#x435; &#x438; &#x438;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x44E;.</p>
+<p>&#x423;&#x442;&#x432;&#x435;&#x440;&#x436;&#x434;&#x430;&#x435;&#x442; &#x441;&#x43E;&#x433;&#x43B;&#x430;&#x448;&#x435;&#x43D;&#x438;&#x44F; &#x434;&#x43B;&#x44F; &#x434;&#x430;&#x43B;&#x44C;&#x43D;&#x435;&#x439;&#x448;&#x435;&#x439; &#x440;&#x430;&#x437;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x43A;&#x438;.</p>
+<p>&#x421;&#x43E;&#x434;&#x435;&#x440;&#x436;&#x430;&#x43D;&#x438;&#x435;:</p>
+<ol>
+<li><a href="manual/overview.html">&#x41E;&#x431;&#x449;&#x430;&#x44F; &#x438;&#x43D;&#x444;&#x43E;&#x440;&#x43C;&#x430;&#x446;&#x438;&#x44F;</a></li>
+<li><a href="manual/design.html">&#x410;&#x440;&#x445;&#x438;&#x442;&#x435;&#x43A;&#x442;&#x443;&#x440;&#x430;</a></li>
+<li><a href="manual/installation.html">&#x423;&#x441;&#x442;&#x430;&#x43D;&#x43E;&#x432;&#x43A;&#x430; &#x438; &#x441;&#x431;&#x43E;&#x440;&#x43A;&#x430;</a></li>
+<li><a href="manual/configuration.html">&#x41A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x435;</a></li>
+<li><a href="manual/usage.html">&#x418;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x435;</a></li>
+<li><a href="manual/usage.html">&#x41F;&#x440;&#x438;&#x43C;&#x435;&#x440;&#x44B;</a></li>
+</ol>
+<p><em>&#x41D;&#x430; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x439; &#x43C;&#x43E;&#x43C;&#x435;&#x43D;&#x442; &#x438;&#x441;&#x445;&#x43E;&#x434;&#x43D;&#x44B;&#x439; &#x43A;&#x43E;&#x434; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x449;&#x451;&#x43D; &#x432; &#x437;&#x430;&#x43A;&#x440;&#x44B;&#x442;&#x43E;&#x43C; &#x440;&#x435;&#x43F;&#x43E;&#x437;&#x438;&#x442;&#x43E;&#x440;&#x438;&#x438;.</em></p>
+</div>
+
+  
+
+  <div class="manual-cards">
+    
+  <div class="manual-card-wrap" data-ice="cards">
+      <div class="manual-card">
+        <div data-ice="card"><h1>&#x41E;&#x431;&#x449;&#x430;&#x44F; &#x438;&#x43D;&#x444;&#x43E;&#x440;&#x43C;&#x430;&#x446;&#x438;&#x44F;</h1><p>&#x426;&#x435;&#x43B;&#x44C;:</p><p>&#x417;&#x430;&#x434;&#x430;&#x447;&#x438;:</p><p>&#x418;&#x43D;&#x441;&#x442;&#x440;&#x443;&#x43C;&#x435;&#x43D;&#x442;&#x430;&#x440;&#x438;&#x439; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430;:</p><ul>
+<li><strong>&#x42F;&#x437;&#x44B;&#x43A;&#x438; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x430;&#x43C;&#x43C;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x44F;</strong>:</li>
+<li>JavaScript (ES6)</li>
+<li>LESS</li>
+</ul><ul>
+<li><strong>&#x421;&#x431;&#x43E;&#x440;&#x43A;&#x430;</strong>:</li>
+<li>Webpack</li>
+<li>Babel </li>
+</ul><ul>
+<li><strong>&#x422;&#x435;&#x441;&#x442;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x435;</strong></li>
+<li>Karma</li>
+<li>Jasmine</li>
+<li>Chai</li>
+<li>Mocha</li>
+</ul><ul>
+<li><strong>&#x414;&#x43E;&#x43A;&#x443;&#x43C;&#x435;&#x43D;&#x442;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x438;&#x435;</strong></li>
+<li>ESDoc</li>
+</ul></div>
+        <a data-ice="link" href="manual/overview.html"></a>
+      </div>
+    </div>
+<div class="manual-card-wrap" data-ice="cards">
+      <div class="manual-card">
+        <div data-ice="card"><h1>&#x410;&#x440;&#x445;&#x438;&#x442;&#x435;&#x43A;&#x442;&#x443;&#x440;&#x430;</h1><p>&#x412; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x435; &#x432;&#x44B;&#x441;&#x442;&#x440;&#x43E;&#x438;&#x43B;&#x430;&#x441;&#x44C; &#x430;&#x440;&#x445;&#x438;&#x442;&#x435;&#x43A;&#x442;&#x443;&#x440;&#x430;, &#x43E;&#x442;&#x434;&#x430;&#x43B;&#x451;&#x43D;&#x43D;&#x43E; &#x43D;&#x430;&#x43F;&#x43E;&#x43C;&#x438;&#x43D;&#x430;&#x44E;&#x449;&#x430;&#x44F; &#x448;&#x430;&#x431;&#x43B;&#x43E;&#x43D; MVC.</p><p><code>[&#x441;&#x445;&#x435;&#x43C;&#x430;]</code></p></div>
+        <a data-ice="link" href="manual/design.html"></a>
+      </div>
+    </div>
+</div>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

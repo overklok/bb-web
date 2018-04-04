@@ -11,21 +11,33 @@ const ERROR_EVENT_NAME = 'error';
  * С помощью диспетчера можно управлять прослушиванием событий: включать или отключать подмножества типов событий
  * в различных ситуациях.
  */
-class Dispatcher {
+export default class Dispatcher {
+    /**
+     * Создать экземпляр диспетчера.
+     */
     constructor() {
+        /** @type {Array<Module>} */
         this._modules = [];
 
+        /** @type {boolean} */
         this._handler_ready = undefined;
 
+        /** @type {Object} */
         this._handlers = {};
+
+        /**
+         * @type {{always: Set, current: Set}}
+         */
         this._event_types_listening = {
             always: new Set(),
             current: new Set()
         };
 
+        /** @type {boolean} */
         this._denied = false;
+        /** @type {Array<string>} */
         this._deny_excepts = [];
-
+        /** @type {Set} */
         this._event_types = new Set();
     }
 
@@ -38,9 +50,9 @@ class Dispatcher {
      *       суррогатного события
      *
      * События модуля будут обрабатываться подключёнными к нему обработчиками суррогатных событий
-     * по имени "краткое_имя_модуля:имя_события" (см. метод [Dispatcher.on()])
+     * по имени `краткое_имя_модуля:имя_события` (см. метод {@link on})
      *
-     * Событие "краткое_имя_модуля:ERROR_EVENT_NAME" переданного модуля
+     * Событие `краткое_имя_модуля:ERROR_EVENT_NAME` переданного модуля
      * автоматически заносится в список прослушиваемых
      *
      * @param {Module} module экземпляр модуля, на события которого требуется подписка
@@ -66,12 +78,22 @@ class Dispatcher {
         this._modules.push(module);
     }
 
+    /**
+     * Сообщить о готовности модуля вручную
+     *
+     * @param {Object} data данные, передаваемые обраотчику события `ready`
+     */
     ready(data) {
         if (this._handler_ready) {
             this._handler_ready(data);
         }
     }
 
+    /**
+     * Установить обработчик события готовности модуля
+     *
+     * @param {function} handler обработчик события готовности модуля
+     */
     onReady(handler) {
         this._handler_ready = handler;
     }
@@ -86,7 +108,7 @@ class Dispatcher {
      *     - Словарь обработчиков дополняется данным обработчиком с данным именем события
      *     - При вызове функции с тем же именем события, но с другим обработчиком происходит переопределение
      *
-     * @param {string}      name        имя типа суррогатного события в формате "краткое_имя_модуля:имя_события"
+     * @param {string}      name        имя типа суррогатного события в формате `краткое_имя_модуля:имя_события`
      * @param {Function}    handler     функция-обработчик событий
      */
     on(name, handler) {
@@ -103,7 +125,7 @@ class Dispatcher {
      *     - Выбрасывает исключение, если аргумент не является массивом
      *     - Заданный массив преобразуется в развёрнутое подмножество событий, сохраняющееся в параметрах объекта
      *
-     * Формат массива eventspace см. [getFilterByEventspace()]
+     * Формат массива eventspace см. {@link getFilterByEventspace}
      *
      * @param {Array<string>} eventspace подмножество событий
      */
@@ -157,7 +179,7 @@ class Dispatcher {
     }
 
     /**
-     * TODO NEEDS TEST
+     * TODO: tests
      *
      * @deprecated
      */
@@ -170,7 +192,7 @@ class Dispatcher {
     /**
      * Запрет на прослушивание любого типа событий
      *
-     * TODO NEEDS TEST
+     * TODO: tests
      *
      * @deprecated
      */
@@ -185,7 +207,7 @@ class Dispatcher {
     /**
      * Выгрузить отладочные записи всех модулей в единый JSON-объект
      *
-     * @param flush
+     * @param {boolean} flush
      */
     dumpLogs(flush) {
         return new Promise(resolve => {
@@ -202,8 +224,8 @@ class Dispatcher {
     /**
      * Вызвать событие вручную
      *
-     * @param name
-     * @param data
+     * @param {string} name название события
+     * @param {Object} data данные события
      */
     call(name, data) {
         this._getHandler(name)(data);
@@ -267,7 +289,7 @@ class Dispatcher {
      *       в заданном массиве масок
      *
      * @param eventspace        массив масок типов событий
-     * @returns {Function}      фильтр для массивов (см. функцию [Array.filter()])
+     * @returns {function}      фильтр для массивов (см. функцию Array.filter())
      */
     static getFilterByEventspace(eventspace) {
         return function(item) {
@@ -349,5 +371,3 @@ class Dispatcher {
         }
     }
 }
-
-export default Dispatcher;

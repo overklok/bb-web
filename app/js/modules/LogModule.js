@@ -8,7 +8,7 @@ import IdentifierWrapper from "../wrappers/IdentifierWrapper";
  * Сортирует и фильтрует лог-записи.
  * Отвечает за своевременный сбор логов
  */
-class LogModule extends Module {
+export default class LogModule extends Module {
 // public:
 
     static get eventspace_name()    {return "log"}
@@ -113,5 +113,3 @@ class LogModule extends Module {
 
     }
 }
-
-export default LogModule;

@@ -1,6 +1,6 @@
 import Wrapper from '../core/Wrapper';
 
-class FileWrapper extends Wrapper {
+export default class FileWrapper extends Wrapper {
     constructor() {
         super();
     }
@@ -42,5 +42,3 @@ class FileWrapper extends Wrapper {
         });
     }
 }
-
-export default FileWrapper;

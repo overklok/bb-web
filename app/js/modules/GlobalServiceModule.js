@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 /**
  * Модуль для работы с глобальным сервером
  */
-class GlobalServiceModule extends Module {
+export default class GlobalServiceModule extends Module {
 // public:
 
     static get eventspace_name()    {return "gs"}
@@ -38,7 +38,7 @@ class GlobalServiceModule extends Module {
     }
 
     goToLessonPage() {
-        window.location.href = origin;
+        window.location.href = this._options.origin;
     }
 
     /**
@@ -200,5 +200,3 @@ class GlobalServiceModule extends Module {
         }
     }
 }
-
-export default GlobalServiceModule;

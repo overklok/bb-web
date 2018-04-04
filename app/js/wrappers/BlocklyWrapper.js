@@ -30,7 +30,7 @@ window.BLOCKLY_BTS_REG = false;
 /**
  * Обёртка библиотеки Blockly для отображения среды программирования
  */
-class BlocklyWrapper extends Wrapper {
+export default class BlocklyWrapper extends Wrapper {
     static get BLOCKLY_BLOCK_TYPES_REGISTERED() {return BLOCKLY_BTS_REG}
 
     constructor() {
@@ -676,5 +676,3 @@ class BlocklyWrapper extends Wrapper {
         // }
     }
 }
-
-export default BlocklyWrapper;

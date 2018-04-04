@@ -1,8 +1,8 @@
 import Wrapper from "../core/Wrapper";
 
-import LessonPane from "../~utils/js-lesson-pane/LessonPane";
+import LessonPane from "../utils/js-lesson-pane/LessonPane";
 
-class LessonPaneWrapper extends Wrapper {
+export default class LessonPaneWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -199,5 +199,3 @@ class LessonPaneWrapper extends Wrapper {
         this._plugin.onMissionClick(cb);
     }
 }
-
-export default LessonPaneWrapper;

@@ -43,7 +43,7 @@ const LAUNCH_VARIANTS = {
  * выгрузку и загрузку файлов.
  *
  */
-class GUIModule extends Module {
+export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
     static get event_types() {return ["ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file"]}
 
@@ -507,5 +507,3 @@ class GUIModule extends Module {
         }
     }
 }
-
-export default GUIModule;

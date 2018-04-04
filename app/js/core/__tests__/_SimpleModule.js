@@ -5,7 +5,7 @@ import Module from '../Module'
  *
  * Используется для тестирования других компонентов
  */
-class SimpleModule extends Module {
+export default class SimpleModule extends Module {
 // public:
 
     static get eventspace_name()    {return "sim"}
@@ -35,5 +35,3 @@ class SimpleModule extends Module {
         this._attached_listeners['et1'] = function() {self._getEventListener('et1')()};
     }
 }
-
-export default SimpleModule;

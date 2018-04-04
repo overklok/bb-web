@@ -2,7 +2,7 @@ import Module from "../core/Module";
 
 import TourWrapper from "../wrappers/TourWrapper";
 
-import processLesson from  "../~utils/lesson-processor/processor";
+import LessonPreprocessor from  "../utils/lesson-processor/processor";
 
 const API = {
     STATUS_CODES: {
@@ -11,7 +11,10 @@ const API = {
     }
 };
 
-class InstructorModule extends Module {
+/**
+ * Модуль, отвечающий за отображение всплывающих подсказок.
+ */
+export default class InstructorModule extends Module {
     static get eventspace_name() {return "ins"}
     static get event_types() {return ["start", "pass", "fault", "progress", "mission", "finish", "error"]}
 
@@ -452,7 +455,7 @@ class InstructorModule extends Module {
      * @private
      */
     _parseLesson(lesson_data) {
-        this._lesson = processLesson(lesson_data);
+        this._lesson = LessonPreprocessor.processLesson(lesson_data);
 
         for (let mission of this._lesson.missions) {
             /// заполнить данные прогресса
@@ -472,5 +475,3 @@ class InstructorModule extends Module {
         // stub
     }
 }
-
-export default InstructorModule;

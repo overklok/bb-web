@@ -2,7 +2,7 @@ import Wrapper from "../core/Wrapper";
 
 require("clientjs/dist/client.min");
 
-class IdentifierWrapper extends Wrapper {
+export default class IdentifierWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -33,5 +33,3 @@ class IdentifierWrapper extends Wrapper {
         return this._client.getOSVersion();
     }
 }
-
-export default IdentifierWrapper;

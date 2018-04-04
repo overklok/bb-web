@@ -2,7 +2,10 @@ import Module from "../core/Module";
 
 import BreadboardWrapper from '../wrappers/BreadboardWrapper';
 
-class BreadboardModule extends Module {
+/**
+ * Модуль для работы с макетной платой
+ */
+export default class BreadboardModule extends Module {
     static get eventspace_name() {return "bb"}
     static get event_types() {return ["change"]}
 
@@ -105,5 +108,3 @@ class BreadboardModule extends Module {
         })
     }
 }
-
-export default BreadboardModule;

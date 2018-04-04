@@ -1,7 +1,7 @@
 import Wrapper from "../core/Wrapper";
-import ButtonPane from "../~utils/js-buttons/ButtonPane";
+import ButtonPane from "../utils/js-buttons/ButtonPane";
 
-import styles from "../~utils/js-buttons/themes/default/css/main.css";
+import styles from "../utils/js-buttons/themes/default/css/main.css";
 
 const BUTTON_CHARS = {
     48: '0', 81: 'Q', 65: 'A', 38: '↑',
@@ -16,7 +16,7 @@ const BUTTON_CHARS = {
     57: '9',
 };
 
-class KbdPaneWrapper extends Wrapper {
+export default class KbdPaneWrapper extends Wrapper {
     constructor() {
         super();
 
@@ -62,5 +62,3 @@ class KbdPaneWrapper extends Wrapper {
         this._pane.resize();
     }
 }
-
-export default KbdPaneWrapper;

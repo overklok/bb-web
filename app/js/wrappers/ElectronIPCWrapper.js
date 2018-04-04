@@ -6,7 +6,7 @@ if (require('electron') !== undefined) {
     ipcRenderer = require('electron').ipcRenderer;
 }
 
-class ElectronIPCWrapper extends Wrapper {
+export default class ElectronIPCWrapper extends Wrapper {
 // public:
 
     constructor() {
@@ -38,5 +38,3 @@ class ElectronIPCWrapper extends Wrapper {
 // private:
 
 }
-
-export default ElectronIPCWrapper;

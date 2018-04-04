@@ -1,0 +1,2909 @@
+[
+  {
+    "__docId__": 1,
+    "kind": "external",
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Infinity",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 2,
+    "kind": "external",
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~NaN",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 3,
+    "kind": "external",
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~undefined",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 4,
+    "kind": "external",
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~null",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 5,
+    "kind": "external",
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Object",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 6,
+    "kind": "external",
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~object",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 7,
+    "kind": "external",
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Function",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 8,
+    "kind": "external",
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~function",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 9,
+    "kind": "external",
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Boolean",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 10,
+    "kind": "external",
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~boolean",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 11,
+    "kind": "external",
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Symbol",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 12,
+    "kind": "external",
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Error",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 13,
+    "kind": "external",
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~EvalError",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 14,
+    "kind": "external",
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~InternalError",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 15,
+    "kind": "external",
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~RangeError",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 16,
+    "kind": "external",
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~ReferenceError",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 17,
+    "kind": "external",
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~SyntaxError",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 18,
+    "kind": "external",
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~TypeError",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 19,
+    "kind": "external",
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~URIError",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 20,
+    "kind": "external",
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Number",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 21,
+    "kind": "external",
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~number",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 22,
+    "kind": "external",
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Date",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 23,
+    "kind": "external",
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~String",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 24,
+    "kind": "external",
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~string",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 25,
+    "kind": "external",
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~RegExp",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 26,
+    "kind": "external",
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 27,
+    "kind": "external",
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Int8Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 28,
+    "kind": "external",
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Uint8Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 29,
+    "kind": "external",
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Uint8ClampedArray",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 30,
+    "kind": "external",
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Int16Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 31,
+    "kind": "external",
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Uint16Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 32,
+    "kind": "external",
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Int32Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 33,
+    "kind": "external",
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Uint32Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 34,
+    "kind": "external",
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Float32Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 35,
+    "kind": "external",
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Float64Array",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 36,
+    "kind": "external",
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Map",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 37,
+    "kind": "external",
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Set",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 38,
+    "kind": "external",
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~WeakMap",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 39,
+    "kind": "external",
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~WeakSet",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 40,
+    "kind": "external",
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~ArrayBuffer",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 41,
+    "kind": "external",
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~DataView",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 42,
+    "kind": "external",
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~JSON",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 43,
+    "kind": "external",
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Promise",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 44,
+    "kind": "external",
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Generator",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 45,
+    "kind": "external",
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~GeneratorFunction",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 46,
+    "kind": "external",
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Reflect",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 47,
+    "kind": "external",
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "js/.external-ecmascript.js",
+    "static": true,
+    "longname": "js/.external-ecmascript.js~Proxy",
+    "access": "public",
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 48,
+    "kind": "file",
+    "name": "js/admin_blockly.js",
+    "content": "import Dispatcher from \"./core/Dispatcher\";\n\nimport WorkspaceModule      from \"./modules/WorkspaceModule\";\n\n/**\n * Модуль \"Редактор блоков\" административного интерфейса web-приложения \"Макетная плата\"\n *\n * Задаёт взаимосвязи между событиями и функциями модулей.\n * Запускается в браузере администратора приложения.\n */\nclass AdminBlocklyApplication {\n    constructor() {\n        /// Диспетчер событий\n        this._dispatcher = new Dispatcher();\n        /// Конфигурация\n        this._config = {};\n\n        this._container_id = undefined;\n        this._on_change_callback = function() {};\n\n        this._defineChains();\n    }\n\n    /**\n     * Преобразовать пользовательскую конфигурацию в настройки модулей\n     *\n     * Конфигурация, удобная для пользователя, преобразуется\n     * в конфигурацию, требуемую в отдельных модулях\n     *\n     * @param {Object} config пользовательская конфигурация\n     */\n    configure(config) {\n        if (!config) {return true}\n\n        this._container_id = config.containerId || \"\";\n\n        this._config = {\n            ws: {\n                allBlocks: config.allBlocks,\n                useScrollbars: true,\n                zoomInitial: config.workspaceZoomInitial,\n            },\n        };\n\n        for (let conf_item in this._config) {\n            this._config[conf_item].logging = {\n                local: config.noRemoteLogs\n            }\n        }\n    }\n\n    /**\n     * Запустить приложение\n     *\n     * Инициализируются модули, производится\n     */\n    run(types=false) {\n        this._initModules(types);\n        this._subscribeToModules();\n\n        this._dispatcher.always(['ws:*']);\n    }\n\n    getBlockLimit() {\n        return this.ws.getBlockLimit();\n    }\n\n    getHandlers() {\n        return this.ws.getAllHandlers();\n    }\n\n    getCodeXml() {\n        return this.ws.getTree();\n    }\n\n    setCodeXml(code_xml) {\n        this.ws.loadTree(code_xml);\n    }\n\n    onChange(callback) {\n        this._on_change_callback = callback;\n    }\n\n    resize() {\n        this.ws.resize();\n    }\n\n    getBlockTypeLimits() {\n        return this.ws.getBlockLimitInputsByType();\n    }\n    \n    setBlockTypeLimits(block_type_limits) {\n        this.ws.setBlockLimitInputsByType(block_type_limits);\n    }\n\n    /**\n     * Инициализировать модули\n     *\n     * Используется заданная ранее конфигурация модулей\n     *\n     * @private\n     */\n    _initModules(types=false) {\n        /// Модули\n        this.ws = new WorkspaceModule(this._config.ws); // Blockly\n\n        this.ws.wakeUp();\n\n        if (types) {\n            this.ws.generateExtraFields(true);\n        }\n    }\n\n    _subscribeToModules() {\n        this._dispatcher.subscribe(this.ws);\n    }\n\n    _defineChains() {\n        $(document).ready(() => {\n            this.ws.inject(document.getElementById(this._container_id));\n        });\n\n        this._dispatcher.on(\"ws:change\", () => {\n            this._on_change_callback();\n        })\n    }\n}\n\nwindow.AdminBlocklyApplication = AdminBlocklyApplication;\n\nexport default AdminBlocklyApplication;\n",
+    "static": true,
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/admin_blockly.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 49,
+    "kind": "class",
+    "name": "AdminBlocklyApplication",
+    "memberof": "js/admin_blockly.js",
+    "static": true,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication",
+    "access": "public",
+    "export": true,
+    "importPath": "codehour-breadboard-web/js/admin_blockly.js",
+    "importStyle": "AdminBlocklyApplication",
+    "description": "Модуль \"Редактор блоков\" административного интерфейса web-приложения \"Макетная плата\"\n\nЗадаёт взаимосвязи между событиями и функциями модулей.\nЗапускается в браузере администратора приложения.",
+    "lineNumber": 11,
+    "interface": false
+  },
+  {
+    "__docId__": 50,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 12,
+    "undocument": true
+  },
+  {
+    "__docId__": 51,
+    "kind": "member",
+    "name": "_dispatcher",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#_dispatcher",
+    "access": "private",
+    "description": null,
+    "lineNumber": 14,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 52,
+    "kind": "member",
+    "name": "_config",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#_config",
+    "access": "private",
+    "description": null,
+    "lineNumber": 16,
+    "undocument": true,
+    "type": {
+      "types": [
+        "{}"
+      ]
+    }
+  },
+  {
+    "__docId__": 53,
+    "kind": "member",
+    "name": "_container_id",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#_container_id",
+    "access": "private",
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 54,
+    "kind": "method",
+    "name": "configure",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#configure",
+    "access": "public",
+    "description": "Преобразовать пользовательскую конфигурацию в настройки модулей\n\nКонфигурация, удобная для пользователя, преобразуется\nв конфигурацию, требуемую в отдельных модулях",
+    "lineNumber": 32,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "config",
+        "description": "пользовательская конфигурация"
+      }
+    ],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    }
+  },
+  {
+    "__docId__": 57,
+    "kind": "method",
+    "name": "run",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#run",
+    "access": "public",
+    "description": "Запустить приложение\n\nИнициализируются модули, производится",
+    "lineNumber": 57,
+    "params": [
+      {
+        "name": "types",
+        "optional": true,
+        "types": [
+          "boolean"
+        ],
+        "defaultRaw": false,
+        "defaultValue": "false"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 58,
+    "kind": "method",
+    "name": "getBlockLimit",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#getBlockLimit",
+    "access": "public",
+    "description": null,
+    "lineNumber": 64,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 59,
+    "kind": "method",
+    "name": "getHandlers",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#getHandlers",
+    "access": "public",
+    "description": null,
+    "lineNumber": 68,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 60,
+    "kind": "method",
+    "name": "getCodeXml",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#getCodeXml",
+    "access": "public",
+    "description": null,
+    "lineNumber": 72,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 61,
+    "kind": "method",
+    "name": "setCodeXml",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#setCodeXml",
+    "access": "public",
+    "description": null,
+    "lineNumber": 76,
+    "undocument": true,
+    "params": [
+      {
+        "name": "code_xml",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 62,
+    "kind": "method",
+    "name": "onChange",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#onChange",
+    "access": "public",
+    "description": null,
+    "lineNumber": 80,
+    "undocument": true,
+    "params": [
+      {
+        "name": "callback",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 63,
+    "kind": "member",
+    "name": "_on_change_callback",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#_on_change_callback",
+    "access": "private",
+    "description": null,
+    "lineNumber": 81,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 64,
+    "kind": "method",
+    "name": "resize",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#resize",
+    "access": "public",
+    "description": null,
+    "lineNumber": 84,
+    "undocument": true,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 65,
+    "kind": "method",
+    "name": "getBlockTypeLimits",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#getBlockTypeLimits",
+    "access": "public",
+    "description": null,
+    "lineNumber": 88,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 66,
+    "kind": "method",
+    "name": "setBlockTypeLimits",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#setBlockTypeLimits",
+    "access": "public",
+    "description": null,
+    "lineNumber": 92,
+    "undocument": true,
+    "params": [
+      {
+        "name": "block_type_limits",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 67,
+    "kind": "method",
+    "name": "_initModules",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#_initModules",
+    "access": "private",
+    "description": "Инициализировать модули\n\nИспользуется заданная ранее конфигурация модулей",
+    "lineNumber": 103,
+    "params": [
+      {
+        "name": "types",
+        "optional": true,
+        "types": [
+          "boolean"
+        ],
+        "defaultRaw": false,
+        "defaultValue": "false"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 68,
+    "kind": "member",
+    "name": "ws",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#ws",
+    "access": "public",
+    "description": null,
+    "lineNumber": 105,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 69,
+    "kind": "method",
+    "name": "_subscribeToModules",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#_subscribeToModules",
+    "access": "private",
+    "description": null,
+    "lineNumber": 114,
+    "undocument": true,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 70,
+    "kind": "method",
+    "name": "_defineChains",
+    "memberof": "js/admin_blockly.js~AdminBlocklyApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_blockly.js~AdminBlocklyApplication#_defineChains",
+    "access": "private",
+    "description": null,
+    "lineNumber": 118,
+    "undocument": true,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 71,
+    "kind": "file",
+    "name": "js/admin_board.js",
+    "content": "import Dispatcher from \"./core/Dispatcher\";\n\nimport BreadboardModule      from \"./modules/BreadboardModule\";\n\n/**\n * Модуль \"Редактор платы\" административного интерфейса web-приложения \"Макетная плата\"\n *\n * Задаёт взаимосвязи между событиями и функциями модулей.\n * Запускается в браузере администратора приложения.\n */\nclass AdminBoardApplication {\n    constructor() {\n        /// Диспетчер событий\n        this._dispatcher = new Dispatcher();\n        /// Конфигурация\n        this._config = {};\n\n        this._on_change_callback = function() {};\n\n        this._defineChains();\n    }\n\n    /**\n     * Преобразовать пользовательскую конфигурацию в настройки модулей\n     *\n     * Конфигурация, удобная для пользователя, преобразуется\n     * в конфигурацию, требуемую в отдельных модулях\n     *\n     * @param {Object} config пользовательская конфигурация\n     */\n    configure(config) {\n        if (!config) {return true}\n\n        this._container_id = config.containerId || \"\";\n    }\n\n    /**\n     * Запустить приложение\n     *\n     * Инициализируются модули, производится\n     */\n    run() {\n        this._initModules();\n        this._subscribeToModules();\n\n        this._dispatcher.always(['bb:*']);\n    }\n\n    setData(plates, currents) {\n        this.bb.updatePlates(plates);\n        // this.bb.updateCurrents(currents);\n    }\n\n    getData() {\n        return this.bb.getData();\n    }\n\n    onChange(callback) {\n        this._on_change_callback = callback;\n    }\n\n    /**\n     * Инициализировать модули\n     *\n     * Используется заданная ранее конфигурация модулей\n     *\n     * @private\n     */\n    _initModules() {\n        /// Модули\n        this.bb = new BreadboardModule({modeAdmin: true}); // Breadboard\n    }\n\n    _subscribeToModules() {\n        this._dispatcher.subscribe(this.bb);\n    }\n\n    _defineChains() {\n        $(document).ready(() => {\n            this.bb.inject(document.getElementById(this._container_id));\n        });\n\n        this._dispatcher.on(\"bb:change\", data => {\n            this._on_change_callback(data);\n        })\n    }\n}\n\nwindow.AdminBoardApplication = AdminBoardApplication;\n\nexport default AdminBoardApplication;\n",
+    "static": true,
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/admin_board.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 72,
+    "kind": "class",
+    "name": "AdminBoardApplication",
+    "memberof": "js/admin_board.js",
+    "static": true,
+    "longname": "js/admin_board.js~AdminBoardApplication",
+    "access": "public",
+    "export": true,
+    "importPath": "codehour-breadboard-web/js/admin_board.js",
+    "importStyle": "AdminBoardApplication",
+    "description": "Модуль \"Редактор платы\" административного интерфейса web-приложения \"Макетная плата\"\n\nЗадаёт взаимосвязи между событиями и функциями модулей.\nЗапускается в браузере администратора приложения.",
+    "lineNumber": 11,
+    "interface": false
+  },
+  {
+    "__docId__": 73,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 12,
+    "undocument": true
+  },
+  {
+    "__docId__": 74,
+    "kind": "member",
+    "name": "_dispatcher",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#_dispatcher",
+    "access": "private",
+    "description": null,
+    "lineNumber": 14,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 75,
+    "kind": "member",
+    "name": "_config",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#_config",
+    "access": "private",
+    "description": null,
+    "lineNumber": 16,
+    "undocument": true,
+    "type": {
+      "types": [
+        "{}"
+      ]
+    }
+  },
+  {
+    "__docId__": 76,
+    "kind": "method",
+    "name": "configure",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#configure",
+    "access": "public",
+    "description": "Преобразовать пользовательскую конфигурацию в настройки модулей\n\nКонфигурация, удобная для пользователя, преобразуется\nв конфигурацию, требуемую в отдельных модулях",
+    "lineNumber": 31,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "config",
+        "description": "пользовательская конфигурация"
+      }
+    ],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    }
+  },
+  {
+    "__docId__": 77,
+    "kind": "member",
+    "name": "_container_id",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#_container_id",
+    "access": "private",
+    "description": null,
+    "lineNumber": 34,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 78,
+    "kind": "method",
+    "name": "run",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#run",
+    "access": "public",
+    "description": "Запустить приложение\n\nИнициализируются модули, производится",
+    "lineNumber": 42,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 79,
+    "kind": "method",
+    "name": "setData",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#setData",
+    "access": "public",
+    "description": null,
+    "lineNumber": 49,
+    "undocument": true,
+    "params": [
+      {
+        "name": "plates",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "currents",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 80,
+    "kind": "method",
+    "name": "getData",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#getData",
+    "access": "public",
+    "description": null,
+    "lineNumber": 54,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 81,
+    "kind": "method",
+    "name": "onChange",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#onChange",
+    "access": "public",
+    "description": null,
+    "lineNumber": 58,
+    "undocument": true,
+    "params": [
+      {
+        "name": "callback",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 82,
+    "kind": "member",
+    "name": "_on_change_callback",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#_on_change_callback",
+    "access": "private",
+    "description": null,
+    "lineNumber": 59,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 83,
+    "kind": "method",
+    "name": "_initModules",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#_initModules",
+    "access": "private",
+    "description": "Инициализировать модули\n\nИспользуется заданная ранее конфигурация модулей",
+    "lineNumber": 69,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 84,
+    "kind": "member",
+    "name": "bb",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#bb",
+    "access": "public",
+    "description": null,
+    "lineNumber": 71,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 85,
+    "kind": "method",
+    "name": "_subscribeToModules",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#_subscribeToModules",
+    "access": "private",
+    "description": null,
+    "lineNumber": 74,
+    "undocument": true,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 86,
+    "kind": "method",
+    "name": "_defineChains",
+    "memberof": "js/admin_board.js~AdminBoardApplication",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/admin_board.js~AdminBoardApplication#_defineChains",
+    "access": "private",
+    "description": null,
+    "lineNumber": 78,
+    "undocument": true,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 87,
+    "kind": "file",
+    "name": "js/core/Dispatcher.js",
+    "content": "const ERROR_EVENT_NAME = 'error';\n\n/**\n * Диспетчер - менеджер суррогатных событий.\n * Каждое приложение обладает единственным диспетчером.\n * Диспетчер не знает о существовании приложения, но знает о модулях.\n *\n * Задача диспетчера - сообщить приложение с модулями, вызывая обработчики суррогатных событий в приложении\n * для обработки событий в модулях. В качестве обработчиков выступают цепочки обещаний.\n *\n * С помощью диспетчера можно управлять прослушиванием событий: включать или отключать подмножества типов событий\n * в различных ситуациях.\n */\nexport default class Dispatcher {\n    /**\n     * Создать экземпляр диспетчера.\n     */\n    constructor() {\n        /** @type {Array<Module>} */\n        this._modules = [];\n\n        /** @type {boolean} */\n        this._handler_ready = undefined;\n\n        /** @type {Object} */\n        this._handlers = {};\n\n        /**\n         * @type {{always: Set, current: Set}}\n         */\n        this._event_types_listening = {\n            always: new Set(),\n            current: new Set()\n        };\n\n        /** @type {boolean} */\n        this._denied = false;\n        /** @type {Array<string>} */\n        this._deny_excepts = [];\n        /** @type {Set} */\n        this._event_types = new Set();\n    }\n\n    /**\n     * Подписать диспетчер на события модуля\n     *\n     * Тестируемое поведение:\n     *     - Тип события добавляется в список прослушиваемых типов событий\n     *     - Обработчики событий модуля будут вызывать метод, вызывающий локальный обработчик соответствующего\n     *       суррогатного события\n     *\n     * События модуля будут обрабатываться подключёнными к нему обработчиками суррогатных событий\n     * по имени `краткое_имя_модуля:имя_события` (см. метод {@link on})\n     *\n     * Событие `краткое_имя_модуля:ERROR_EVENT_NAME` переданного модуля\n     * автоматически заносится в список прослушиваемых\n     *\n     * @param {Module} module экземпляр модуля, на события которого требуется подписка\n     */\n    subscribe(module) {\n        let self = this;\n\n        let event_types = module.event_types;\n        let module_prefix = module.eventspace_name;\n\n        event_types.forEach((name, index) => {\n            let full_name = module_prefix + ':' + name;\n\n            module.attachEventListener(name, (data) => {\n                let fn = this._getHandler(full_name);\n                fn(data);\n            });\n\n            /// Добавить тип события в общий список\n            this._event_types.add(full_name);\n        });\n\n        this._modules.push(module);\n    }\n\n    /**\n     * Сообщить о готовности модуля вручную\n     *\n     * @param {Object} data данные, передаваемые обраотчику события `ready`\n     */\n    ready(data) {\n        if (this._handler_ready) {\n            this._handler_ready(data);\n        }\n    }\n\n    /**\n     * Установить обработчик события готовности модуля\n     *\n     * @param {function} handler обработчик события готовности модуля\n     */\n    onReady(handler) {\n        this._handler_ready = handler;\n    }\n\n    /**\n     * Установить обработчик суррогатного события\n     *\n     * События с именем name будут использовать функцию handler в качестве реакции\n     *\n     * Тестируемое поведение:\n     *     - Выбрасывает исключения при неверных аргументах\n     *     - Словарь обработчиков дополняется данным обработчиком с данным именем события\n     *     - При вызове функции с тем же именем события, но с другим обработчиком происходит переопределение\n     *\n     * @param {string}      name        имя типа суррогатного события в формате `краткое_имя_модуля:имя_события`\n     * @param {Function}    handler     функция-обработчик событий\n     */\n    on(name, handler) {\n        if (typeof name     !== 'string')    {throw new TypeError('Name is not a string!')}\n        if (typeof handler  !== 'function')  {throw new TypeError('Handler is not a function!')}\n\n        this._handlers[name] = handler;\n    }\n\n    /**\n     * Установить подмножество типов событий, которые будут обрабатываться всегда\n     *\n     * Тестируемое поведение:\n     *     - Выбрасывает исключение, если аргумент не является массивом\n     *     - Заданный массив преобразуется в развёрнутое подмножество событий, сохраняющееся в параметрах объекта\n     *\n     * Формат массива eventspace см. {@link getFilterByEventspace}\n     *\n     * @param {Array<string>} eventspace подмножество событий\n     */\n    always(eventspace) {\n        if (eventspace && !Array.isArray(eventspace))    {throw new TypeError ('Eventspace should be an array!')}\n\n        // this._event_types_listening.always.clear();\n\n        this._event_types_listening.always = new Set(\n            [...this._event_types].filter(Dispatcher.getFilterByEventspace(eventspace))\n        );\n    }\n\n    /**\n     * Прослушивать все типы событий\n     *\n     * Тестируемое поведение\n     *     - Функция должна заменить прослушиваемые типы событий на все возможные\n     */\n    all() {\n        this._event_types_listening.current = this._event_types;\n    }\n\n    /**\n     * Прослушивать только заданные типы событий\n     *\n     * @param eventspace\n     */\n    only(eventspace) {\n        return new Promise(resolve => {\n            if (eventspace && !Array.isArray(eventspace))    {throw new TypeError ('Eventspace should be an array!')}\n\n            this._event_types_listening.current.clear();\n\n            this._event_types_listening.current = new Set(\n                [...this._event_types].filter(Dispatcher.getFilterByEventspace(eventspace))\n            );\n\n            resolve();\n        });\n    }\n\n    /**\n     * Прослушивать все типы событий, кроме заданных\n     *\n     * TODO\n     * @param eventspace\n     */\n    aside(eventspace) {\n\n    }\n\n    /**\n     * TODO: tests\n     *\n     * @deprecated\n     */\n    allowAll() {\n        this._denied = false;\n\n        this._deny_excepts = new Set();\n    }\n\n    /**\n     * Запрет на прослушивание любого типа событий\n     *\n     * TODO: tests\n     *\n     * @deprecated\n     */\n    denyAll(eventspace_excepts) {\n        this._deny_excepts = new Set(\n            [...this._event_types].filter(Dispatcher.getFilterByEventspace(eventspace_excepts))\n        );\n\n        this._denied = true;\n    }\n\n    /**\n     * Выгрузить отладочные записи всех модулей в единый JSON-объект\n     *\n     * @param {boolean} flush\n     */\n    dumpLogs(flush) {\n        return new Promise(resolve => {\n           let logs = [];\n\n            for (module of this._modules) {\n                logs.push(module.getDebugBuffer(flush));\n            }\n\n            resolve(logs);\n        });\n    }\n\n    /**\n     * Вызвать событие вручную\n     *\n     * @param {string} name название события\n     * @param {Object} data данные события\n     */\n    call(name, data) {\n        this._getHandler(name)(data);\n    }\n\n    /**\n     * Возвратить функцию-обработчик суррогатного события типа name\n     *\n     * Тестируемое поведение:\n     *     - Если событие включено в список прослушиваемых, возвращаемая функция вызывает его обработчик\n     *     - Если события нет в списке прослушиваемых, возвращаемая функция выводит предупреждение\n     *     - При неправильном типе аргумента возвращаемая функция выбрасывает исключение с сообщением об ошибке\n     *\n     * @param   {string}    name          тип суррогатного события\n     * @returns {Function}  функция-обработчик события / функция, выбрасывающая исключение\n     * @private\n     */\n    _getHandler(name) {\n        if (typeof name !== \"string\")\n            return function() {throw new TypeError(\"Dispatcher._getHandler(): Name is not a string!\")};\n\n        let allow = false;\n\n        if (this._denied) {\n            /// если включён запрет\n            if (this._deny_excepts.has(name)) {\n                /// если есть исключения\n                allow = true;\n            }\n        } else {\n            /// если выключен запрет\n            if (this._event_types_listening.always.has(name) || this._event_types_listening.current.has(name)) {\n                allow = true;\n            }\n        }\n\n        if (allow) {\n            if (name in this._handlers) {\n                return this._handlers[name];\n            } else {\n                return function(data) {console.warn(\"Dispatcher._getHandler(): handler for \", name, \" was not defined, data:\", data)};\n            }\n        } else {\n            return function(data) {console.warn(\"Dispatcher_getHandler(): Event listener \", name , \"was disabled for a while, data:\", data);}\n        }\n    }\n\n    /**\n     * Возвратить фильтр по маскам типов событий\n     *\n     * Массив eventspace может содержать как имена типов событий в развёрнутом виде, так и в виде маски.\n     *\n     * Правила:\n     *     - `module:event1`    означает тип события `event1` модуля `module`\n     *     - `module:*`         означает все события модуля `module`\n     *     - `*`                означает абсолютно все события\n     *\n     * Тестируемое поведение:\n     *     - Возвращаемая функция должна оставлять в фильтрующемся массиве только те элементы,\n     *       которые заданы с помощью строк, составленных по правилам, перечисленным выше,\n     *       в заданном массиве масок\n     *\n     * @param eventspace        массив масок типов событий\n     * @returns {function}      фильтр для массивов (см. функцию Array.filter())\n     */\n    static getFilterByEventspace(eventspace) {\n        return function(item) {\n            /// Если пространство событий содержит фильтрующий элемент\n            if (eventspace.includes(item)) {\n                return true;\n            }\n\n            /// Для всех элементов из заданного массива\n            for (let i = 0; i < eventspace.length; i++) {\n                /// Является ли групповым символом\n                let is_wildcard = (eventspace[i] === '*');\n                /// Имя модуля, если групповой символ стоит после двоеточия\n                let module_name = Dispatcher._isWildcardAfterColon(eventspace[i]);\n                /// Имя события, если групповой символ стоит до двоеточия\n                let event_name  = Dispatcher._isWildcardBeforeColon(eventspace[i]);\n\n                /// Если является групповым символом\n                if ((is_wildcard)) {\n                    return true;\n                }\n\n                /// Если групповой символ стоит после двоеточия и совпадает с именем модуля фильтрующего элемента\n                if ((module_name && (module_name === item.split(':')[0]))) {\n                    return true;\n                }\n\n                /// Если групповой символ стоит до двоеточия и совпадает с именем события фильтрующего элемента\n                if ((event_name && (event_name === item.split(':')[1]))) {\n                    return true;\n                }\n            }\n        }\n    }\n\n    /**\n     * Проверить, содержит ли маска символ '*' после двоеточия\n     *\n     * Если символ есть, функция возвращает подстроку перед двоеточием\n     * Если символа нет, функция возвращает false\n     *\n     * @param   {string}            mask    исходная маска\n     * @returns {boolean|string}    соответствует ли маска требованию / подстрока перед двоеточием\n     * @private\n     */\n    static _isWildcardAfterColon(mask) {\n        if (typeof name !== \"string\")\n            throw new TypeError(\"Dispatcher._isWildcard(): mask in not a string\");\n\n        if (mask.split(':').length === 1) {\n            return false;\n        }\n\n        if (mask.split(':')[1] === \"*\") {\n            return mask.split(':')[0];\n        }\n    }\n\n    /**\n     * Проверить, содержит ли маска символ '*' перед двоеточием\n     *\n     * Если символ есть, функция возвращает подстроку после двоеточия\n     * Если символа нет, функция возвращает false\n     *\n     * @param   {string}            mask    исходная маска\n     * @returns {boolean|string}    соответствует ли маска требованию / подстрока после двоеточия\n     * @private\n     */\n    static _isWildcardBeforeColon(mask) {\n        if (typeof name !== \"string\")\n            throw new TypeError(\"Dispatcher._isWildcard(): mask in not a string\");\n\n        if (mask.split(':').length === 1) {\n            return false;\n        }\n\n        if (mask.split(':')[0] === \"*\") {\n            return mask.split(':')[1];\n        }\n    }\n}",
+    "static": true,
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/core/Dispatcher.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 88,
+    "kind": "variable",
+    "name": "ERROR_EVENT_NAME",
+    "memberof": "js/core/Dispatcher.js",
+    "static": true,
+    "longname": "js/core/Dispatcher.js~ERROR_EVENT_NAME",
+    "access": "public",
+    "export": false,
+    "importPath": "codehour-breadboard-web/js/core/Dispatcher.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "string"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 89,
+    "kind": "class",
+    "name": "Dispatcher",
+    "memberof": "js/core/Dispatcher.js",
+    "static": true,
+    "longname": "js/core/Dispatcher.js~Dispatcher",
+    "access": "public",
+    "export": true,
+    "importPath": "codehour-breadboard-web/js/core/Dispatcher.js",
+    "importStyle": "Dispatcher",
+    "description": "Диспетчер - менеджер суррогатных событий.\nКаждое приложение обладает единственным диспетчером.\nДиспетчер не знает о существовании приложения, но знает о модулях.\n\nЗадача диспетчера - сообщить приложение с модулями, вызывая обработчики суррогатных событий в приложении\nдля обработки событий в модулях. В качестве обработчиков выступают цепочки обещаний.\n\nС помощью диспетчера можно управлять прослушиванием событий: включать или отключать подмножества типов событий\nв различных ситуациях.",
+    "lineNumber": 14,
+    "interface": false
+  },
+  {
+    "__docId__": 90,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#constructor",
+    "access": "public",
+    "description": "Создать экземпляр диспетчера.",
+    "lineNumber": 18
+  },
+  {
+    "__docId__": 91,
+    "kind": "member",
+    "name": "_modules",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_modules",
+    "access": "private",
+    "description": null,
+    "lineNumber": 20,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Array<Module>"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 92,
+    "kind": "member",
+    "name": "_handler_ready",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_handler_ready",
+    "access": "private",
+    "description": null,
+    "lineNumber": 23,
+    "type": {
+      "nullable": null,
+      "types": [
+        "boolean"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 93,
+    "kind": "member",
+    "name": "_handlers",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_handlers",
+    "access": "private",
+    "description": null,
+    "lineNumber": 26,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 94,
+    "kind": "member",
+    "name": "_event_types_listening",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_event_types_listening",
+    "access": "private",
+    "description": "",
+    "lineNumber": 31,
+    "type": {
+      "nullable": null,
+      "types": [
+        "{always: Set, current: Set}"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 95,
+    "kind": "member",
+    "name": "_denied",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_denied",
+    "access": "private",
+    "description": null,
+    "lineNumber": 37,
+    "type": {
+      "nullable": null,
+      "types": [
+        "boolean"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 96,
+    "kind": "member",
+    "name": "_deny_excepts",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_deny_excepts",
+    "access": "private",
+    "description": null,
+    "lineNumber": 39,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Array<string>"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 97,
+    "kind": "member",
+    "name": "_event_types",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_event_types",
+    "access": "private",
+    "description": null,
+    "lineNumber": 41,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Set"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 98,
+    "kind": "method",
+    "name": "subscribe",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#subscribe",
+    "access": "public",
+    "description": "Подписать диспетчер на события модуля\n\nТестируемое поведение:\n    - Тип события добавляется в список прослушиваемых типов событий\n    - Обработчики событий модуля будут вызывать метод, вызывающий локальный обработчик соответствующего\n      суррогатного события\n\nСобытия модуля будут обрабатываться подключёнными к нему обработчиками суррогатных событий\nпо имени `краткое_имя_модуля:имя_события` (см. метод {@link on})\n\nСобытие `краткое_имя_модуля:ERROR_EVENT_NAME` переданного модуля\nавтоматически заносится в список прослушиваемых",
+    "lineNumber": 60,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Module"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "module",
+        "description": "экземпляр модуля, на события которого требуется подписка"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 99,
+    "kind": "method",
+    "name": "ready",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#ready",
+    "access": "public",
+    "description": "Сообщить о готовности модуля вручную",
+    "lineNumber": 86,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "data",
+        "description": "данные, передаваемые обраотчику события `ready`"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 100,
+    "kind": "method",
+    "name": "onReady",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#onReady",
+    "access": "public",
+    "description": "Установить обработчик события готовности модуля",
+    "lineNumber": 97,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "handler",
+        "description": "обработчик события готовности модуля"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 102,
+    "kind": "method",
+    "name": "on",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#on",
+    "access": "public",
+    "description": "Установить обработчик суррогатного события\n\nСобытия с именем name будут использовать функцию handler в качестве реакции\n\nТестируемое поведение:\n    - Выбрасывает исключения при неверных аргументах\n    - Словарь обработчиков дополняется данным обработчиком с данным именем события\n    - При вызове функции с тем же именем события, но с другим обработчиком происходит переопределение",
+    "lineNumber": 114,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "имя типа суррогатного события в формате `краткое_имя_модуля:имя_события`"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "handler",
+        "description": "функция-обработчик событий"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 103,
+    "kind": "method",
+    "name": "always",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#always",
+    "access": "public",
+    "description": "Установить подмножество типов событий, которые будут обрабатываться всегда\n\nТестируемое поведение:\n    - Выбрасывает исключение, если аргумент не является массивом\n    - Заданный массив преобразуется в развёрнутое подмножество событий, сохраняющееся в параметрах объекта\n\nФормат массива eventspace см. {@link getFilterByEventspace}",
+    "lineNumber": 132,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Array<string>"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "eventspace",
+        "description": "подмножество событий"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 104,
+    "kind": "method",
+    "name": "all",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#all",
+    "access": "public",
+    "description": "Прослушивать все типы событий\n\nТестируемое поведение\n    - Функция должна заменить прослушиваемые типы событий на все возможные",
+    "lineNumber": 148,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 105,
+    "kind": "method",
+    "name": "only",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#only",
+    "access": "public",
+    "description": "Прослушивать только заданные типы событий",
+    "lineNumber": 157,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "eventspace",
+        "description": ""
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 106,
+    "kind": "method",
+    "name": "aside",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#aside",
+    "access": "public",
+    "description": "Прослушивать все типы событий, кроме заданных\n\nTODO",
+    "lineNumber": 177,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "eventspace",
+        "description": ""
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 107,
+    "kind": "method",
+    "name": "allowAll",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#allowAll",
+    "access": "public",
+    "description": "TODO: tests",
+    "lineNumber": 186,
+    "deprecated": true,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 110,
+    "kind": "method",
+    "name": "denyAll",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#denyAll",
+    "access": "public",
+    "description": "Запрет на прослушивание любого типа событий\n\nTODO: tests",
+    "lineNumber": 199,
+    "deprecated": true,
+    "params": [
+      {
+        "name": "eventspace_excepts",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 113,
+    "kind": "method",
+    "name": "dumpLogs",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#dumpLogs",
+    "access": "public",
+    "description": "Выгрузить отладочные записи всех модулей в единый JSON-объект",
+    "lineNumber": 212,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "flush",
+        "description": ""
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 114,
+    "kind": "method",
+    "name": "call",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#call",
+    "access": "public",
+    "description": "Вызвать событие вручную",
+    "lineNumber": 230,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "название события"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "data",
+        "description": "данные события"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 115,
+    "kind": "method",
+    "name": "_getHandler",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Dispatcher.js~Dispatcher#_getHandler",
+    "access": "private",
+    "description": "Возвратить функцию-обработчик суррогатного события типа name\n\nТестируемое поведение:\n    - Если событие включено в список прослушиваемых, возвращаемая функция вызывает его обработчик\n    - Если события нет в списке прослушиваемых, возвращаемая функция выводит предупреждение\n    - При неправильном типе аргумента возвращаемая функция выбрасывает исключение с сообщением об ошибке",
+    "lineNumber": 246,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Function}  функция-обработчик события / функция, выбрасывающая исключение"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "тип суррогатного события"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Function"
+      ],
+      "spread": false,
+      "description": "функция-обработчик события / функция, выбрасывающая исключение"
+    }
+  },
+  {
+    "__docId__": 116,
+    "kind": "method",
+    "name": "getFilterByEventspace",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "js/core/Dispatcher.js~Dispatcher.getFilterByEventspace",
+    "access": "public",
+    "description": "Возвратить фильтр по маскам типов событий\n\nМассив eventspace может содержать как имена типов событий в развёрнутом виде, так и в виде маски.\n\nПравила:\n    - `module:event1`    означает тип события `event1` модуля `module`\n    - `module:*`         означает все события модуля `module`\n    - `*`                означает абсолютно все события\n\nТестируемое поведение:\n    - Возвращаемая функция должна оставлять в фильтрующемся массиве только те элементы,\n      которые заданы с помощью строк, составленных по правилам, перечисленным выше,\n      в заданном массиве масок",
+    "lineNumber": 294,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{function}      фильтр для массивов (см. функцию Array.filter())"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "eventspace",
+        "description": "массив масок типов событий"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "function"
+      ],
+      "spread": false,
+      "description": "фильтр для массивов (см. функцию Array.filter())"
+    }
+  },
+  {
+    "__docId__": 117,
+    "kind": "method",
+    "name": "_isWildcardAfterColon",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "js/core/Dispatcher.js~Dispatcher._isWildcardAfterColon",
+    "access": "private",
+    "description": "Проверить, содержит ли маска символ '*' после двоеточия\n\nЕсли символ есть, функция возвращает подстроку перед двоеточием\nЕсли символа нет, функция возвращает false",
+    "lineNumber": 338,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{boolean|string}    соответствует ли маска требованию / подстрока перед двоеточием"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "mask",
+        "description": "исходная маска"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "boolean",
+        "string"
+      ],
+      "spread": false,
+      "description": "соответствует ли маска требованию / подстрока перед двоеточием"
+    }
+  },
+  {
+    "__docId__": 118,
+    "kind": "method",
+    "name": "_isWildcardBeforeColon",
+    "memberof": "js/core/Dispatcher.js~Dispatcher",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "js/core/Dispatcher.js~Dispatcher._isWildcardBeforeColon",
+    "access": "private",
+    "description": "Проверить, содержит ли маска символ '*' перед двоеточием\n\nЕсли символ есть, функция возвращает подстроку после двоеточия\nЕсли символа нет, функция возвращает false",
+    "lineNumber": 361,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{boolean|string}    соответствует ли маска требованию / подстрока после двоеточия"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "mask",
+        "description": "исходная маска"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "boolean",
+        "string"
+      ],
+      "spread": false,
+      "description": "соответствует ли маска требованию / подстрока после двоеточия"
+    }
+  },
+  {
+    "__docId__": 119,
+    "kind": "file",
+    "name": "js/core/Loggable.js",
+    "content": "/**\n * Класс для создания логируемых объектов\n *\n * Любой логируемый объект может работать в двух режимах:\n *      - Логирование в консоль\n *      - Логирование в буфер\n *\n * При логировании в консоль происходит стандартное перенаправление к стандартным функцям отладки `console.*`\n * При логировании в буфер стандартные функции отладки не вызываются; результаты сохраняются в буфер JSON-объектов,\n * содержимое которого можно получить с помощью метода getDebugBuffer()\n */\nexport default class Loggable {\n    constructor(options) {\n        let logOptions = options.logging || {};\n\n        let local = logOptions.local || false;\n\n        this._debug_buffer = [];\n\n        this._debug = {};\n\n        if (local) {\n            this._bindConsole();\n        } else {\n            this._bindBuffer();\n        }\n    }\n\n    /**\n     * Получить содержимое отладочного буфера\n     *\n     * @param   {Boolean} flush очистить ли буфер перед возвращением\n     * @returns {Array}         буфер отладочных JSON-объектов\n     */\n    getDebugBuffer(flush = true) {\n        if (flush) {\n            let buf = this._debug_buffer;\n            this._debug_buffer = [];\n\n            return buf;\n        }\n\n        return this._debug_buffer;\n    }\n\n//private:\n\n    /**\n     * Привязать стандартные функции логирования `console.*`\n     *\n     * Привязать в качестве набора отладочных методов стандартные функции `console.*`\n     *\n     * @private\n     */\n    _bindConsole() {\n        for (let cfn in window.console) {\n            if (typeof console[cfn].bind !== \"undefined\") {\n                this._debug[cfn] = window.console[cfn].bind(window.console, \"[\" + this.constructor.name + \"]\");\n            }\n        }\n    }\n\n    /**\n     * Привязать функции логирования в буфер\n     *\n     * Привязать в качестве набора отладочных методов функции логирования в буфер.\n     * Наименования отладочных методов аналогичны набору console.*\n     *\n     * @private\n     */\n    _bindBuffer() {\n        for (let cfn in window.console) {\n            this._debug[cfn] = () => {\n                let debug_item = JSON.stringify(arguments);\n\n                /// Запись в буфер\n                this._debug_buffer.push({\n                    module: this.constructor.name,\n                    type:   cfn,\n                    data:   debug_item\n                });\n\n                /// Стандартное логирование\n                window.console[cfn].bind(window.console, \"[\" + this.constructor.name + \"]\")();\n            }\n        }\n    }\n}",
+    "static": true,
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/core/Loggable.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 120,
+    "kind": "class",
+    "name": "Loggable",
+    "memberof": "js/core/Loggable.js",
+    "static": true,
+    "longname": "js/core/Loggable.js~Loggable",
+    "access": "public",
+    "export": true,
+    "importPath": "codehour-breadboard-web/js/core/Loggable.js",
+    "importStyle": "Loggable",
+    "description": "Класс для создания логируемых объектов\n\nЛюбой логируемый объект может работать в двух режимах:\n     - Логирование в консоль\n     - Логирование в буфер\n\nПри логировании в консоль происходит стандартное перенаправление к стандартным функцям отладки `console.*`\nПри логировании в буфер стандартные функции отладки не вызываются; результаты сохраняются в буфер JSON-объектов,\nсодержимое которого можно получить с помощью метода getDebugBuffer()",
+    "lineNumber": 12,
+    "interface": false
+  },
+  {
+    "__docId__": 121,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "js/core/Loggable.js~Loggable",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Loggable.js~Loggable#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 13,
+    "undocument": true
+  },
+  {
+    "__docId__": 122,
+    "kind": "member",
+    "name": "_debug_buffer",
+    "memberof": "js/core/Loggable.js~Loggable",
+    "static": false,
+    "longname": "js/core/Loggable.js~Loggable#_debug_buffer",
+    "access": "private",
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*[]"
+      ]
+    }
+  },
+  {
+    "__docId__": 123,
+    "kind": "member",
+    "name": "_debug",
+    "memberof": "js/core/Loggable.js~Loggable",
+    "static": false,
+    "longname": "js/core/Loggable.js~Loggable#_debug",
+    "access": "private",
+    "description": null,
+    "lineNumber": 20,
+    "undocument": true,
+    "type": {
+      "types": [
+        "{}"
+      ]
+    }
+  },
+  {
+    "__docId__": 124,
+    "kind": "method",
+    "name": "getDebugBuffer",
+    "memberof": "js/core/Loggable.js~Loggable",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Loggable.js~Loggable#getDebugBuffer",
+    "access": "public",
+    "description": "Получить содержимое отладочного буфера",
+    "lineNumber": 35,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Array}         буфер отладочных JSON-объектов"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "flush",
+        "description": "очистить ли буфер перед возвращением"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Array"
+      ],
+      "spread": false,
+      "description": "буфер отладочных JSON-объектов"
+    }
+  },
+  {
+    "__docId__": 126,
+    "kind": "method",
+    "name": "_bindConsole",
+    "memberof": "js/core/Loggable.js~Loggable",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Loggable.js~Loggable#_bindConsole",
+    "access": "private",
+    "description": "Привязать стандартные функции логирования `console.*`\n\nПривязать в качестве набора отладочных методов стандартные функции `console.*`",
+    "lineNumber": 55,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 127,
+    "kind": "method",
+    "name": "_bindBuffer",
+    "memberof": "js/core/Loggable.js~Loggable",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Loggable.js~Loggable#_bindBuffer",
+    "access": "private",
+    "description": "Привязать функции логирования в буфер\n\nПривязать в качестве набора отладочных методов функции логирования в буфер.\nНаименования отладочных методов аналогичны набору console.*",
+    "lineNumber": 71,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 128,
+    "kind": "file",
+    "name": "js/core/Module.js",
+    "content": "import Loggable from './Loggable';\n\n/**\n * Модули - независимые компоненты приложений.\n * Модули самостоятельны, не знают о существовании приложений и других модулей.\n * Модули не обязательно могут использоваться только приложениями (например, когда состоят из статических методов)\n *\n * Каждый модуль задаёт своё подпространство событий, обладающее своим именем.\n *\n * Задача модуля - предоставить использующему набор методов, которые можно вызывать единично\n * (как команду, без циклов/условий и т.д.).\n *\n * Каждый модуль агрегирует набор функциональностей одного рода. Например:\n *      - Коммуникация\n *      - Рабочая область\n *      - Логирование\n *      - Кэширование настроек среды\n *\n * Модули могут использовать вспомогательные обёртки (см. Wrapper) для реализации функциональностей.\n *\n * Классы-обёртки должны наследоваться от класса Module.\n * Имена классов-модулей именуются в стиле CamelCase с постфиксом Module.\n * Каждый класс должен быть расположен в отдельном одноимённом файле.\n */\nexport default class Module extends Loggable {\n// public:\n\n    /**\n     * @abstract\n     */\n    static get eventspace_name() {throw new TypeError(\"This method should be overridden by inheriting classes\")}\n\n    /**\n     * @abstract\n     */\n    static get event_types()     {throw new TypeError(\"This method should be overridden by inheriting classes\")}\n\n    /**\n     * Установить опции по умолчанию\n     *\n     * Метод должен возвращать объект, в котором ключи означают\n     * настройки, а значения - их опции по умолчанию\n     *\n     * Вызывается конструкторами классов-наслдеников\n     * Заданные настройки и опции по умолчанию используются впоследствии методом _coverOptions(),\n     * передающим опции из конструктора во внутренний атрибут объекта this._options\n     *\n     * @abstract\n     */\n    static defaults() {\n        // throw new TypeError(\"_setDefaults() should be overridden by inherited classes\");\n        return {};\n    }\n\n    constructor(options) {\n        options = options || {};\n        super(options);\n\n        /// Загрузить опции по умолчанию, перекрыть их кастомными опциями\n        this.__defaults = this.constructor.defaults();\n        this._options   = this._coverOptions(this.__defaults, options);\n\n        this.eventspace_name    = this.constructor.eventspace_name;\n        this.event_types        = this.constructor.event_types;\n\n        this._event_listeners = {};\n    }\n\n    /**\n     * Подключить обработчик событий типа name\n     *\n     * Вызывается диспетчером.\n     * Устанавливает в качестве обработчика событий типа name функцию handler.\n     *\n     * Если обработчик ещё не был создан, после вызова этой функции последующее создание обработчика\n     * не перезапишет имеющийся, если не выбран строгий режим (см. Module._createEventListener())\n     *\n     * @param {string}      name    имя типа событий\n     * @param {Function}    handler функция-обработчик типа событий name\n     */\n    attachEventListener(name, handler) {\n        if (name    === undefined) {console.error('Attaching listener with undefined name is not correct!')}\n        if (handler === undefined) {console.error('Attaching listener with undefined handler is not correct!')}\n        if (typeof name     !== 'string')    {console.error('Name is not a string!')}\n        if (typeof handler  !== 'function')  {console.error('Handler is not a function!')}\n\n        this._event_listeners[name] = handler;\n    }\n\n    /**\n     * Инициировать событие типа name\n     *\n     * Метод не является асинхронным.\n     * При вызове из модуля блокируется на время выполнения\n     * кода обработчика события\n     *\n     * @param {string} name имя типа события\n     * @param {Object} data данные события\n     */\n    emitEvent(name, data) {\n        this._getEventListener(name)(data);\n    }\n\n// private:\n\n    /**\n     * Создать пустой обработчик событий типа name\n     *\n     * Пустой обработчик событий - функция, выводящая информацию о том, что обработчик ни к кому не подключён\n     *\n     * @param {string} name     имя типа событий\n     * @param {bool}   strict   перезаписывать ли установленный ранее обработчик (строгий режим)\n     * @private\n     */\n    _createEventListener(name, strict = false) {\n        if (!this.event_types.includes(name)) {\n            throw new RangeError(\"This event type name was not registered in the module's event_types() getter\");\n        }\n\n        if (this._event_listeners[name] === undefined || strict) {\n            this._event_listeners[name] = function (data) {\n                console.warn(\"Unattached listener `\" + name + \"` called with data\", data,\n                    \"(did you subscribe dispatcher to this module?)\");\n            };\n        }\n    }\n\n    /**\n     * Возвратить функцию-обработчик типа событий name\n     *\n     * Вызывается классами-наледниками в методе _subscribeToWrapperEvents()\n     *\n     * @param   {string}      name   имя типа событий\n     * @returns {Function}           функция-обработчик типа событий name\n     * @private\n     */\n    _getEventListener(name) {\n        if (!this.event_types.includes(name)) {\n            throw new RangeError(\"This event type name was not registered in the module's event_types() getter\");\n        }\n\n        if (this._event_listeners[name] === undefined) {\n            this._createEventListener(name);\n        }\n\n        return this._event_listeners[name];\n    }\n\n    /**\n     * Подписаться на события обработчиков\n     *\n     * Вызывается конструкторами классов-наследников.\n     * Создаёт типы событий путём задания в классах-наследниках обработчиков\n     *\n     * Виртуальный метод: его должен реализовать каждый наследник.\n     *\n     * @abstract\n     * @private\n     */\n    _subscribeToWrapperEvents() {\n        throw new TypeError(\"_subscribeToWrapperEvents() should be overridden by inherited classes\");\n    }\n\n    /**\n     * Наложить заданные опции поверх опций по умолчанию и сохранить в объект\n     * в соответствии с настройками, заданными в defaults()\n     *\n     * TODO: критическая функция, нужно покрывать тестами\n     *\n     * @private\n     */\n    _coverOptions(defaults, options) {\n        /// Если не заданы настройки с опциями по умолчанию - выдать пустой объект\n        if (typeof defaults === \"undefined\") return {};\n        /// Если не заданы опции - выдать опции по умолчанию\n        if (typeof options === \"undefined\") return defaults;\n        /// Если настроек нет - выдать пустой объект\n        // if (Object.keys(defaults).length === 0) return 'undefined';\n\n        /// Если options - не объект, то возвратить значение\n        if (typeof options !== 'object') return options;\n\n        let settings = {};\n\n        /// Для каждой заданной опции выполнить рекурсивно поиск опции\n        for (let setting of Object.keys(defaults)) {\n            settings[setting] = this._coverOptions(defaults[setting], options[setting]);\n        }\n\n        return settings;\n    }\n}",
+    "static": true,
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/core/Module.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 129,
+    "kind": "class",
+    "name": "Module",
+    "memberof": "js/core/Module.js",
+    "static": true,
+    "longname": "js/core/Module.js~Module",
+    "access": "public",
+    "export": true,
+    "importPath": "codehour-breadboard-web/js/core/Module.js",
+    "importStyle": "Module",
+    "description": "Модули - независимые компоненты приложений.\nМодули самостоятельны, не знают о существовании приложений и других модулей.\nМодули не обязательно могут использоваться только приложениями (например, когда состоят из статических методов)\n\nКаждый модуль задаёт своё подпространство событий, обладающее своим именем.\n\nЗадача модуля - предоставить использующему набор методов, которые можно вызывать единично\n(как команду, без циклов/условий и т.д.).\n\nКаждый модуль агрегирует набор функциональностей одного рода. Например:\n     - Коммуникация\n     - Рабочая область\n     - Логирование\n     - Кэширование настроек среды\n\nМодули могут использовать вспомогательные обёртки (см. Wrapper) для реализации функциональностей.\n\nКлассы-обёртки должны наследоваться от класса Module.\nИмена классов-модулей именуются в стиле CamelCase с постфиксом Module.\nКаждый класс должен быть расположен в отдельном одноимённом файле.",
+    "lineNumber": 25,
+    "interface": false,
+    "extends": [
+      "js/core/Loggable.js~Loggable"
+    ]
+  },
+  {
+    "__docId__": 130,
+    "kind": "get",
+    "name": "eventspace_name",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "js/core/Module.js~Module.eventspace_name",
+    "access": "public",
+    "description": "",
+    "lineNumber": 31,
+    "abstract": true,
+    "type": null
+  },
+  {
+    "__docId__": 131,
+    "kind": "get",
+    "name": "event_types",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "js/core/Module.js~Module.event_types",
+    "access": "public",
+    "description": "",
+    "lineNumber": 36,
+    "abstract": true,
+    "type": null
+  },
+  {
+    "__docId__": 132,
+    "kind": "method",
+    "name": "defaults",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "js/core/Module.js~Module.defaults",
+    "access": "public",
+    "description": "Установить опции по умолчанию\n\nМетод должен возвращать объект, в котором ключи означают\nнастройки, а значения - их опции по умолчанию\n\nВызывается конструкторами классов-наслдеников\nЗаданные настройки и опции по умолчанию используются впоследствии методом _coverOptions(),\nпередающим опции из конструктора во внутренний атрибут объекта this._options",
+    "lineNumber": 50,
+    "abstract": true,
+    "params": [],
+    "return": {
+      "types": [
+        "{}"
+      ]
+    }
+  },
+  {
+    "__docId__": 133,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Module.js~Module#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 55,
+    "undocument": true
+  },
+  {
+    "__docId__": 134,
+    "kind": "member",
+    "name": "__defaults",
+    "memberof": "js/core/Module.js~Module",
+    "static": false,
+    "longname": "js/core/Module.js~Module#__defaults",
+    "access": "private",
+    "description": null,
+    "lineNumber": 60,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 135,
+    "kind": "member",
+    "name": "_options",
+    "memberof": "js/core/Module.js~Module",
+    "static": false,
+    "longname": "js/core/Module.js~Module#_options",
+    "access": "private",
+    "description": null,
+    "lineNumber": 61,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 136,
+    "kind": "member",
+    "name": "eventspace_name",
+    "memberof": "js/core/Module.js~Module",
+    "static": false,
+    "longname": "js/core/Module.js~Module#eventspace_name",
+    "access": "public",
+    "description": null,
+    "lineNumber": 63,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 137,
+    "kind": "member",
+    "name": "event_types",
+    "memberof": "js/core/Module.js~Module",
+    "static": false,
+    "longname": "js/core/Module.js~Module#event_types",
+    "access": "public",
+    "description": null,
+    "lineNumber": 64,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 138,
+    "kind": "member",
+    "name": "_event_listeners",
+    "memberof": "js/core/Module.js~Module",
+    "static": false,
+    "longname": "js/core/Module.js~Module#_event_listeners",
+    "access": "private",
+    "description": null,
+    "lineNumber": 66,
+    "undocument": true,
+    "type": {
+      "types": [
+        "{}"
+      ]
+    }
+  },
+  {
+    "__docId__": 139,
+    "kind": "method",
+    "name": "attachEventListener",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Module.js~Module#attachEventListener",
+    "access": "public",
+    "description": "Подключить обработчик событий типа name\n\nВызывается диспетчером.\nУстанавливает в качестве обработчика событий типа name функцию handler.\n\nЕсли обработчик ещё не был создан, после вызова этой функции последующее создание обработчика\nне перезапишет имеющийся, если не выбран строгий режим (см. Module._createEventListener())",
+    "lineNumber": 81,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "имя типа событий"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "handler",
+        "description": "функция-обработчик типа событий name"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 140,
+    "kind": "method",
+    "name": "emitEvent",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Module.js~Module#emitEvent",
+    "access": "public",
+    "description": "Инициировать событие типа name\n\nМетод не является асинхронным.\nПри вызове из модуля блокируется на время выполнения\nкода обработчика события",
+    "lineNumber": 100,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "имя типа события"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "data",
+        "description": "данные события"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 141,
+    "kind": "method",
+    "name": "_createEventListener",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Module.js~Module#_createEventListener",
+    "access": "private",
+    "description": "Создать пустой обработчик событий типа name\n\nПустой обработчик событий - функция, выводящая информацию о том, что обработчик ни к кому не подключён",
+    "lineNumber": 115,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "имя типа событий"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "strict",
+        "description": "перезаписывать ли установленный ранее обработчик (строгий режим)"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 142,
+    "kind": "method",
+    "name": "_getEventListener",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Module.js~Module#_getEventListener",
+    "access": "private",
+    "description": "Возвратить функцию-обработчик типа событий name\n\nВызывается классами-наледниками в методе _subscribeToWrapperEvents()",
+    "lineNumber": 137,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Function}           функция-обработчик типа событий name"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "имя типа событий"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Function"
+      ],
+      "spread": false,
+      "description": "функция-обработчик типа событий name"
+    }
+  },
+  {
+    "__docId__": 143,
+    "kind": "method",
+    "name": "_subscribeToWrapperEvents",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Module.js~Module#_subscribeToWrapperEvents",
+    "access": "private",
+    "description": "Подписаться на события обработчиков\n\nВызывается конструкторами классов-наследников.\nСоздаёт типы событий путём задания в классах-наследниках обработчиков\n\nВиртуальный метод: его должен реализовать каждый наследник.",
+    "lineNumber": 160,
+    "abstract": true,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 144,
+    "kind": "method",
+    "name": "_coverOptions",
+    "memberof": "js/core/Module.js~Module",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Module.js~Module#_coverOptions",
+    "access": "private",
+    "description": "Наложить заданные опции поверх опций по умолчанию и сохранить в объект\nв соответствии с настройками, заданными в defaults()\n\nTODO: критическая функция, нужно покрывать тестами",
+    "lineNumber": 172,
+    "params": [
+      {
+        "name": "defaults",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "options",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 145,
+    "kind": "file",
+    "name": "js/core/Wrapper.js",
+    "content": "import Loggable from './Loggable';\n\n/**\n * Обёртки - зависимые компоненты модулей.\n *\n * Обёртки могут существовать только в составе модулей (см. {@link Module}).\n * Обёртки не знают о существовании модулей и приложений.\n * Методы обёртки могут быть реализованы с помощью одной или нескольких библиотек схожего назначения.\n *\n * Задача обёртки - абстрагировать остальной код от конкретной библиотеки (набора бибилотек). Например:\n *      - GUI языка программирования Blockly\n *      - Сокет-клиент\n *      - Веб-клиент\n *      - Специфический визуальный компонент \"гирлянда\"\n *      - Система всплывающих окон\n *\n * Обёртка должна использовать класс Promise при необходимости выполнения синхронного кода.\n *\n * Классы-обёртки должны наследоваться от класса {@link Wrapper}.\n * Имена классов-обёрток именуются в стиле CamelCase с постфиксом `Wrapper`.\n * Каждый класс должен быть расположен в отдельном одноимённом файле.\n *\n * Например:\n *\n * `BlocklyWrapper.js`,\n * `BreadboardWrapper.js`\n */\nexport default class Wrapper extends Loggable {\n    constructor(options) {\n        options = options || {};\n        super(options);\n    }\n}",
+    "static": true,
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/core/Wrapper.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 146,
+    "kind": "class",
+    "name": "Wrapper",
+    "memberof": "js/core/Wrapper.js",
+    "static": true,
+    "longname": "js/core/Wrapper.js~Wrapper",
+    "access": "public",
+    "export": true,
+    "importPath": "codehour-breadboard-web/js/core/Wrapper.js",
+    "importStyle": "Wrapper",
+    "description": "Обёртки - зависимые компоненты модулей.\n\nОбёртки могут существовать только в составе модулей (см. {@link Module}).\nОбёртки не знают о существовании модулей и приложений.\nМетоды обёртки могут быть реализованы с помощью одной или нескольких библиотек схожего назначения.\n\nЗадача обёртки - абстрагировать остальной код от конкретной библиотеки (набора бибилотек). Например:\n     - GUI языка программирования Blockly\n     - Сокет-клиент\n     - Веб-клиент\n     - Специфический визуальный компонент \"гирлянда\"\n     - Система всплывающих окон\n\nОбёртка должна использовать класс Promise при необходимости выполнения синхронного кода.\n\nКлассы-обёртки должны наследоваться от класса {@link Wrapper}.\nИмена классов-обёрток именуются в стиле CamelCase с постфиксом `Wrapper`.\nКаждый класс должен быть расположен в отдельном одноимённом файле.\n\nНапример:\n\n`BlocklyWrapper.js`,\n`BreadboardWrapper.js`",
+    "lineNumber": 28,
+    "interface": false,
+    "extends": [
+      "js/core/Loggable.js~Loggable"
+    ]
+  },
+  {
+    "__docId__": 147,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "js/core/Wrapper.js~Wrapper",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/core/Wrapper.js~Wrapper#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 29,
+    "undocument": true
+  },
+  {
+    "__docId__": 148,
+    "kind": "file",
+    "name": "js/index.js",
+    "content": "import Dispatcher from \"./core/Dispatcher\";\n\nimport LogModule            from \"./modules/LogModule\";\nimport GUIModule            from \"./modules/GUIModule\";\nimport TracingModule        from \"./modules/TracingModule\";\nimport LayoutModule         from \"./modules/LayoutModule\";\nimport BreadboardModule     from \"./modules/BreadboardModule\";\nimport WorkspaceModule      from \"./modules/WorkspaceModule\";\nimport InstructorModule     from './modules/InstructorModule';\nimport LocalServiceModule   from \"./modules/LocalServiceModule\";\nimport GlobalServiceModule  from \"./modules/GlobalServiceModule\";\n\nconst BUTTON_CODES = [\n    48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // 0-9\n    81, 87, 69, 82, 84, 89,                 // QWERTY\n    65, 83, 68, 70, 71, 72,                 // ASDFGH\n    38, 40, 37, 39                          // arrows\n];\n\n/**\n * Пользовательский интерфейс клиентской стороны web-приложения \"Макетная плата\"\n *\n * Задаёт взаимосвязи между событиями и функциями модулей.\n * Запускается в браузере конечного пользователя.\n */\nclass Application {\n    constructor() {\n        /// Диспетчер событий\n        this._dispatcher = new Dispatcher();\n        /// Конфигурация\n        this._config = {};\n\n        this._defineChains();\n    }\n\n    /**\n     * Преобразовать пользовательскую конфигурацию в настройки модулей\n     *\n     * Конфигурация, удобная для пользователя, преобразуется\n     * в конфигурацию, требуемую в отдельных модулях\n     *\n     * @param {Object} config пользовательская конфигурация\n     */\n    configure(config) {\n        if (!config) {return true}\n\n        this._config = {\n            gui: {\n                anyKey: config.anyKey,\n                logoText: config.logoText,\n                imagesPath: config.imagesPath,\n                devMode: config.showDebugInfo\n            },\n            lay: {\n\n            },\n            ins: {\n                lessonID: config.lessonID,\n                silent: config.noIntros,\n            },\n            trc: {\n\n            },\n            ws: {\n                allBlocks: config.allBlocks,\n            },\n            bb: {\n\n            },\n            gs: {\n                origin: config.origin,\n                csrfRequired: config.isInternal,\n                modeDummy:  config.offline\n            },\n            ls: {\n                modeDummy: config.isolated,\n                portUrgent: config.port\n            },\n            log: {\n                modeDummy: config.noRemoteLogs\n            }\n        };\n\n        for (let conf_item in this._config) {\n            this._config[conf_item].logging = {\n                local: config.noRemoteLogs\n            }\n        }\n    }\n\n    /**\n     * Запустить приложение\n     *\n     * Инициализируются модули, производится\n     */\n    run() {\n        this._initModules();\n        this._subscribeToModules();\n\n        this._dispatcher.only(['ls:connect']);\n        this._dispatcher.always([\n            '*:resize', '*:error',\n            'ins:start', 'ins:progress', 'ins:mission',\n            'ls:*', 'lay:*', 'log:*',\n            'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready'\n        ]);\n    }\n\n    /**\n     * Инициализировать модули\n     *\n     * Используется заданная ранее конфигурация модулей\n     *\n     * @private\n     */\n    _initModules() {\n        /// Модули\n        this.log    = new LogModule(this._config.log);                      // логирование\n        this.gui    = new GUIModule(this._config.gui);\n        this.trc    = new TracingModule(this._config.trc);                  // многофункциональная область\n        this.lay    = new LayoutModule(this._config.lay);\n        this.ws     = new WorkspaceModule(this._config.ws);                 // Blockly\n        this.bb     = new BreadboardModule(this._config.bb);                // макетная плата - графика\n        this.ins    = new InstructorModule(this._config.ins);               // дед\n        this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron\n        this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер\n\n        this.gui.registerButtonCodes(BUTTON_CODES);\n    }\n\n    /**\n     * Подписать диспетчер на события модулей\n     *\n     * @private\n     */\n    _subscribeToModules() {\n        this._dispatcher.subscribe(this.log);\n        this._dispatcher.subscribe(this.gui);\n        this._dispatcher.subscribe(this.ins);\n        this._dispatcher.subscribe(this.lay);\n        this._dispatcher.subscribe(this.ws);\n        this._dispatcher.subscribe(this.ls);\n        this._dispatcher.subscribe(this.gs);\n\n        this._dispatcher.ready();\n    }\n\n    /**\n     * Определить цепочки-обработчики\n     *\n     * @private\n     */\n    _defineChains() {\n        /**\n         * Готовность диспетчера к работе\n         */\n        this._dispatcher.onReady(() => {\n            let exercise_idx, mission_idx;\n\n            let command = this.gui._checkURLHashCommand();\n            if (command.type === \"goto\") {\n                exercise_idx = command.data.exerciseIDX;\n                mission_idx = command.data.missionIDX;\n            }\n\n            this.ins.getInitialLessonID()\n                .then(lesson_id => this.gs.getLessonData(lesson_id))\n                .then(lesson_data => this.ins.loadLesson(lesson_data))\n                .then(lesson => {\n                    this.gui.showMissionButtons(lesson.missions);\n                    this.gui.setCourseText(lesson.name)\n                })\n                .then(() => this.ins.launchLesson(mission_idx, exercise_idx))\n                .catch(error => {\n                    this.gui.showSpinnerError(error.message);\n                    console.error(error);\n                });\n        });\n\n        /**\n         * Запущено упражнение\n         */\n        this._dispatcher.on('ins:start', exercise => {\n            console.log(exercise);\n\n            /// Заблокировать все события\n            this._dispatcher.only([]);\n\n            this.gui.setExerciseCurrent(exercise.exerciseIDX);\n\n            /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI\n            this.lay.compose(exercise.layout_mode)\n                .then(() => this.ls.setMode(exercise.board_mode))\n                .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))\n                .then(() => this.ws.setMaxBlockLimit(exercise.max_blocks))\n                .then(() => this.ws.setEditable(exercise.editable))\n                .then(() => this.gui.setLaunchVariant(exercise.launch_variant))\n                .then(() => this.gui.showTask(exercise.task_description))\n                .then(() => this.ws.setBlockTypes(exercise.block_types))\n                .then(() => this.trc.registerVariables(exercise.variables))\n                .then(() => this.lay.switchButtonsPane(exercise.display_buttons))\n                .then(() => this.gui.hideSpinner())\n                .then(() => this.ins.tourIntro(exercise.popovers))\n                .then(() => this.trc.clearButtons())\n                .then(() => this.gui.listenButtons(exercise.check_buttons))\n                .then(() => this.ins.setButtonsModel(exercise.buttons_model))\n                .then(() => {\n                    if (exercise.check_buttons) {\n                        this._dispatcher.only(['gui:*', 'ins:pass']);\n                    } else {\n                        this._dispatcher.only(['gui:*']);\n                    }\n                })\n        });\n\n        /**\n         * Нажата кнопка \"Задание №\"\n         */\n        this._dispatcher.on('gui:mission', mission_idx => {\n            this.ins.launchMission(mission_idx);\n        });\n\n        this._dispatcher.on('ins:mission', mission_idx => {\n            this.gui.setMissionCurrent(mission_idx);\n        });\n\n        this._dispatcher.on('gui:ready', () => {\n            // setTimeout(() => {\n            //     let status = this.ls.getBoardStatus();\n            //\n            //     if (status) {\n            //         this.gui.setBoardStatus(status);\n            //     }\n            // }, 5000);\n        });\n\n        /**\n         * Нажата кнопка \"Проверить\"\n         */\n        this._dispatcher.on('gui:check', () => {\n            /// прослушивать только события прохождения или провала\n            this._dispatcher.only([\"ins:pass\", \"ins:fault\"]);\n\n            /// определить ИД упражнения\n            let exID = this.ins.getExerciseID();\n            /// зажать кнопку\n            this.gui.affirmLaunchButtonState('check', false);\n            /// очистить ошибочные блоки\n            this.ws.clearErrorBlocks();\n\n            /// получить обработчики\n            Promise.all([\n                this.ws.getAllHandlers(),\n                this.bb.getData()\n            ])\n                .then(results   => {return {handlers: results[0], board: results[1]}})\n                .then(data      => this.gs.commitSolution(exID, data))\n                .then(verdict   => this.ins.applyVerdict(verdict))\n                .then(()        => this.gui.affirmLaunchButtonState('check', true))\n                .then(()        => {\n                    this.gui.affirmLaunchButtonState('check', true);\n                    this._dispatcher.only(['gui:*', 'ins:*']);\n                })\n                .catch((err)    => {\n                    console.error(err);\n                    this.gui.affirmLaunchButtonState('check', true);\n                    this._dispatcher.only(['gui:*', 'ins:*'])\n                });\n        });\n\n        /**\n         * Нажата кнопка \"Запустить\"\n         */\n        this._dispatcher.on('gui:run', () => {\n            this._dispatcher.only([\"gui:stop\"]);\n\n            this.gui.affirmLaunchButtonState('execute', false);\n\n            let handler = this.ws.getMainHandler();\n            this.ls.updateHandlers({commands: handler.commands, launch: true});\n            console.log({commands: handler.commands, launch: true});\n        });\n\n        /**\n         * Нажата кнопка \"Остановить\"\n         */\n        this._dispatcher.on('gui:stop', () => {\n            this.ls.stopExecution();\n            this.ws.highlightBlock(null);\n\n            this.gui.affirmLaunchButtonState('execute', true);\n\n            this._dispatcher.only([\"gui:*\"]);\n        });\n\n        /**\n         * Нажата клавиша\n         */\n        this._dispatcher.on('gui:keyup', button_code => {\n            /// найти первый обработчик нажатия клавиши\n            let handler = this.ws.getButtonHandler(button_code);\n\n            console.log(handler);\n\n            if (handler) {\n                /// обновить код на плате\n                this.ls.updateHandlers({commands: handler.code, launch: false});\n            }\n\n            /// проверить правильность нажатия клавиши\n            let valid = this.ins.validateButtonPress(button_code);\n            /// вывести нажатие клавиши\n            this.trc.displayKeyboardPress(button_code, !valid);\n\n            console.log('keyup', button_code);\n        });\n\n        this._dispatcher.on('gui:hash-command', command => {\n            switch (command.type) {\n                case \"goto\": {\n                    if (command.data.missionIDX === undefined)  {\n                        this.ins.forceExercise(command.data.missionIDX, undefined);\n                    }\n\n                    else if (command.data.exerciseIDX === undefined) {\n                        this.ins.forceExercise(undefined, command.data.exerciseIDX);\n                    }\n\n                    else {\n                        this.ins.forceExercise(command.data.missionIDX, command.data.exerciseIDX);\n                    }\n\n                    break;\n                }\n                default: {\n                    console.warn(\"Unrecognised hash command\");\n                }\n            }\n        });\n\n        this._dispatcher.on('gui:menu', (data) => {\n            switch (data.name) {\n                case 'courses': {\n                    this.gs.goToLessonPage();\n                    break;\n                }\n                case 'settings': {\n                    this.ls.openMenu();\n                    break;\n                }\n                case 'developer': {\n                    if (data.state) {\n                        this.gui.switchDeveloperMode(true);\n                        this.lay.revealTopPane();\n                    } else {\n                        this.gui.switchDeveloperMode(false);\n                        this.lay.concealTopPane();\n                    }\n                    break;\n                }\n                default: {\n                    console.warn(`Unhandled menu option '${option}'`);\n                    break;\n                }\n            }\n        });\n\n        /**\n         * Задание пройдено\n         */\n        this._dispatcher.on('ins:pass', verdict => {\n            this._dispatcher.only([]);\n            this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX);\n            this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX+1);\n            this.ins.tourPass()\n                .then(\n                    onResolve => this.ins.launchExerciseNext(),\n                    onReject => {\n                        this.ins.launchExerciseNext(true);\n                        this.gui.setMissionSkiddingOn(verdict.missionIDX);\n                    }\n                )\n                .then(() => this._dispatcher.only(['gui:*', 'ins:pass']))\n        });\n\n        /**\n         * Задание провалено\n         */\n        this._dispatcher.on('ins:fault', verdict => {\n            console.log(\"fault\", verdict);\n            this._dispatcher.only([]);\n            try {\n                this.ws.highlightErrorBlocks(verdict.blocks);\n                this.bb.highlightErrorPlates(verdict.blocks);\n            } catch (err) {\n                console.error(err);\n            }\n\n            this.ins.tourFault(verdict.message)\n                .then(() => this._dispatcher.only(['gui:*']))\n        });\n\n        this._dispatcher.on('ins:progress', mission => {\n           this.gui.setMissionProgress(mission);\n        });\n\n        /**\n         * Готовность платы к работе\n         */\n        this._dispatcher.on('ls:connect', () => {\n            this.gui.setBoardStatus('none');\n            /// Запросить ссылки для прошивки\n            // this.gs.getUpgradeURLs()\n                /// Обновить прошивку\n                // .then(urls  => this.ls.firmwareUpgrade(urls))\n                /// Разрешить обрабатывать события платы и GUI\n                // .then(()    => this._dispatcher.only(['ls:*', 'gui:*']))\n        });\n\n        /**\n         * Выполнена команда\n         */\n        this._dispatcher.on('ls:command', data => {\n            console.log(data);\n            this.ws.highlightBlock(data.block_id);\n        });\n\n        /**\n         * Изменено значение переменной\n         */\n        this._dispatcher.on('ls:variable', data => {\n            console.log(data);\n            this.trc.setVariableValue(data.id, data.value);\n        });\n\n        /**\n         * Когда программа завершится\n         */\n        this._dispatcher.on('ls:terminate', () => {\n            let exercise = this.ins.getExerciseCurrent();\n\n            this.ws.highlightBlock(null);\n            this.gui.affirmLaunchButtonState('execute', true);\n\n            if (exercise.check_buttons) {\n                this._dispatcher.only(['gui:*', 'ins:pass']);\n            } else {\n                this._dispatcher.only(['gui:*']);\n            }\n\n            // if (!exercise.is_sandbox  && !exercise.listeners_only) {\n            //     this._dispatcher.call(\"gui:check\");\n            // }\n        });\n\n        this._dispatcher.on('ls:plates', data => {\n            this.bb.clearCurrents();\n            this.bb.updatePlates(data);\n        });\n\n        this._dispatcher.on('ls:currents', data => {\n            this.bb.updateCurrents(data);\n        });\n\n        this._dispatcher.on('ls:board-status', status => {\n            console.log(\"BOARD STATUS\", status);\n            this.gui.setBoardStatus(status);\n        });\n\n        this._dispatcher.on('ls:timeout', () => {\n            this.gui.showAlert('no_ipc');\n\n            // setTimeout(() => {\n            //     this.gui.hideAllAlerts();\n            // }, 1000);\n        });\n\n        /**\n         * Начало компоновки разметки\n         */\n        this._dispatcher.on('lay:compose-begin', data => {\n            this.ws.eject();\n            this.bb.eject();\n            this.trc.ejectBlocks();\n            this.trc.ejectButtons();\n            this.gui.ejectTextPane();\n        });\n\n        /**\n         * Окончание компоновки разметки\n         */\n        this._dispatcher.on('lay:compose-end', data => {\n            if (data) {\n                this.gui.injectLaunchButtons(data.launch_buttons);\n                this.ws.inject(data.workspace);\n                this.bb.inject(data.breadboard);\n                this.trc.injectBlocks(data.tracing);\n                this.trc.injectButtons(data.buttons);\n                this.gui.injectTextPane(data.task);\n                this.gui.injectLessonPane(data.lesson);\n            }\n        });\n\n        /**\n         * Нажата кнопка \"Выгрузить в файл\"\n         */\n        this._dispatcher.on('gui:unload-file', () => {\n            let tree = this.ws.getTree();\n            this.gui.saveToFile(tree);\n        });\n\n        /**\n         * Нажата кнопка \"Загрузить из файла\"\n         */\n        this._dispatcher.on('gui:load-file', tree => {\n            this.ws.loadTree(tree);\n        });\n\n        /**\n         * Тик сборки логов\n         */\n        this._dispatcher.on('log:tick', () => {\n            this._dispatcher.dumpLogs(true)\n                .then(logs      => this.log.collectLogs(logs))\n                .then(log_bunch => this.gs.reportLogBunch(log_bunch))\n                .then(()        => this.log.runTicker())\n        });\n\n        /**\n         * Размер разметки изменён\n         */\n        this._dispatcher.on('lay:resize', () => {\n            this.ws.resize();\n            this.trc.resize();\n        });\n    }\n}\n\nwindow.Application = Application;\n\nexport default Application;\n",
+    "static": true,
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/index.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 149,
+    "kind": "variable",
+    "name": "BUTTON_CODES",
+    "memberof": "js/index.js",
+    "static": true,
+    "longname": "js/index.js~BUTTON_CODES",
+    "access": "public",
+    "export": false,
+    "importPath": "codehour-breadboard-web/js/index.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 13,
+    "undocument": true,
+    "type": {
+      "types": [
+        "number[]"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 150,
+    "kind": "class",
+    "name": "Application",
+    "memberof": "js/index.js",
+    "static": true,
+    "longname": "js/index.js~Application",
+    "access": "public",
+    "export": true,
+    "importPath": "codehour-breadboard-web/js/index.js",
+    "importStyle": "Application",
+    "description": "Пользовательский интерфейс клиентской стороны web-приложения \"Макетная плата\"\n\nЗадаёт взаимосвязи между событиями и функциями модулей.\nЗапускается в браузере конечного пользователя.",
+    "lineNumber": 26,
+    "interface": false
+  },
+  {
+    "__docId__": 151,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "js/index.js~Application",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/index.js~Application#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 27,
+    "undocument": true
+  },
+  {
+    "__docId__": 152,
+    "kind": "member",
+    "name": "_dispatcher",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#_dispatcher",
+    "access": "private",
+    "description": null,
+    "lineNumber": 29,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 153,
+    "kind": "member",
+    "name": "_config",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#_config",
+    "access": "private",
+    "description": null,
+    "lineNumber": 31,
+    "undocument": true,
+    "type": {
+      "types": [
+        "{}"
+      ]
+    }
+  },
+  {
+    "__docId__": 154,
+    "kind": "method",
+    "name": "configure",
+    "memberof": "js/index.js~Application",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/index.js~Application#configure",
+    "access": "public",
+    "description": "Преобразовать пользовательскую конфигурацию в настройки модулей\n\nКонфигурация, удобная для пользователя, преобразуется\nв конфигурацию, требуемую в отдельных модулях",
+    "lineNumber": 44,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "config",
+        "description": "пользовательская конфигурация"
+      }
+    ],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    }
+  },
+  {
+    "__docId__": 156,
+    "kind": "method",
+    "name": "run",
+    "memberof": "js/index.js~Application",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/index.js~Application#run",
+    "access": "public",
+    "description": "Запустить приложение\n\nИнициализируются модули, производится",
+    "lineNumber": 96,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 157,
+    "kind": "method",
+    "name": "_initModules",
+    "memberof": "js/index.js~Application",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/index.js~Application#_initModules",
+    "access": "private",
+    "description": "Инициализировать модули\n\nИспользуется заданная ранее конфигурация модулей",
+    "lineNumber": 116,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 158,
+    "kind": "member",
+    "name": "log",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#log",
+    "access": "public",
+    "description": null,
+    "lineNumber": 118,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 159,
+    "kind": "member",
+    "name": "gui",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#gui",
+    "access": "public",
+    "description": null,
+    "lineNumber": 119,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 160,
+    "kind": "member",
+    "name": "trc",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#trc",
+    "access": "public",
+    "description": null,
+    "lineNumber": 120,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 161,
+    "kind": "member",
+    "name": "lay",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#lay",
+    "access": "public",
+    "description": null,
+    "lineNumber": 121,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 162,
+    "kind": "member",
+    "name": "ws",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#ws",
+    "access": "public",
+    "description": null,
+    "lineNumber": 122,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 163,
+    "kind": "member",
+    "name": "bb",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#bb",
+    "access": "public",
+    "description": null,
+    "lineNumber": 123,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 164,
+    "kind": "member",
+    "name": "ins",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#ins",
+    "access": "public",
+    "description": null,
+    "lineNumber": 124,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 165,
+    "kind": "member",
+    "name": "ls",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#ls",
+    "access": "public",
+    "description": null,
+    "lineNumber": 125,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 166,
+    "kind": "member",
+    "name": "gs",
+    "memberof": "js/index.js~Application",
+    "static": false,
+    "longname": "js/index.js~Application#gs",
+    "access": "public",
+    "description": null,
+    "lineNumber": 126,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 167,
+    "kind": "method",
+    "name": "_subscribeToModules",
+    "memberof": "js/index.js~Application",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/index.js~Application#_subscribeToModules",
+    "access": "private",
+    "description": "Подписать диспетчер на события модулей",
+    "lineNumber": 136,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 168,
+    "kind": "method",
+    "name": "_defineChains",
+    "memberof": "js/index.js~Application",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "js/index.js~Application#_defineChains",
+    "access": "private",
+    "description": "Определить цепочки-обработчики",
+    "lineNumber": 153,
+    "params": [],
+    "return": null
+  },
+  {
+    "kind": "index",
+    "content": "codehour-breadboard-web",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/README.md",
+    "name": "./README.md",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "packageJSON",
+    "content": "{\n  \"name\": \"codehour-breadboard-web\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A Codehour web application for bread board\",\n  \"main\": \"index.js\",\n  \"dependencies\": {\n    \"blockly\": \"^1.0.0\",\n    \"clientjs\": \"^0.1.11\",\n    \"dom-to-image\": \"^2.6.0\",\n    \"intro.js\": \"^2.8.0-alpha.1\",\n    \"jquery\": \"^3.2.1\",\n    \"jquery-ui\": \"^1.12.1\",\n    \"jquery-ui-bundle\": \"^1.12.1\",\n    \"js-cookie\": \"^2.2.0\",\n    \"node-blockly\": \"^1.0.32\",\n    \"socket.io-client\": \"^2.0.4\",\n    \"svgjs\": \"^2.6.2\",\n    \"sweetalert\": \"^2.1.0\",\n    \"webpack\": \"^3.10.0\"\n  },\n  \"devDependencies\": {\n    \"@ryancavanaugh/jquery.ui.layout\": \"0.0.13-alpha\",\n    \"babel-core\": \"^6.26.0\",\n    \"babel-loader\": \"^7.1.2\",\n    \"babel-preset-env\": \"^1.6.1\",\n    \"chai\": \"^4.1.2\",\n    \"chai-spies\": \"^0.7.1\",\n    \"copy-webpack-plugin\": \"^4.3.1\",\n    \"css-loader\": \"^0.28.9\",\n    \"esdoc\": \"^1.0.4\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"expose-loader\": \"^0.7.4\",\n    \"html-webpack-plugin\": \"^2.30.1\",\n    \"jasmine-core\": \"^2.8.0\",\n    \"jshint\": \"^2.9.5\",\n    \"jshint-loader\": \"^0.8.4\",\n    \"karma\": \"^1.7.1\",\n    \"karma-chai\": \"^0.1.0\",\n    \"karma-chrome-launcher\": \"^2.2.0\",\n    \"karma-coverage\": \"^1.1.1\",\n    \"karma-firefox-launcher\": \"^1.1.0\",\n    \"karma-ie-launcher\": \"^1.0.0\",\n    \"karma-jasmine\": \"^1.1.1\",\n    \"karma-junit-reporter\": \"^1.2.0\",\n    \"karma-mocha\": \"^1.3.0\",\n    \"karma-mocha-reporter\": \"^2.2.5\",\n    \"karma-opera-launcher\": \"^1.0.0\",\n    \"karma-phantomjs-launcher\": \"^1.0.4\",\n    \"karma-sourcemap-loader\": \"^0.3.7\",\n    \"karma-webpack\": \"^2.0.7\",\n    \"less\": \"^3.0.1\",\n    \"less-loader\": \"^4.0.5\",\n    \"mocha\": \"^4.0.1\",\n    \"phantomjs-prebuilt\": \"^2.1.16\",\n    \"style-loader\": \"^0.19.1\"\n  },\n  \"scripts\": {\n    \"build\": \"webpack -p\",\n    \"watch\": \"webpack --watch\",\n    \"test:single\": \"rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome\",\n    \"test:watch\": \"karma start karma.conf.js --browsers Chrome\",\n    \"docs\": \"./node_modules/.bin/esdoc\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://bitbucket.org/makeitlab/codehour-breadboard-web.git\"\n  },\n  \"keywords\": [\n    \"codehour\",\n    \"breadboard\",\n    \"makeitlab\",\n    \"tapanda\",\n    \"topanda\"\n  ],\n  \"author\": \"Alexander Molodykh\",\n  \"license\": \"ISC\",\n  \"homepage\": \"https://bitbucket.org/makeitlab/codehour-breadboard-web#readme\"\n}\n",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/package.json",
+    "name": "package.json",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manualIndex",
+    "globalIndex": true,
+    "content": "[logo]: manual/asset/logo.png \"CodeHour: Breadboard\"\n\n![CodeHour: Breadboard logo][logo]\n\n_CodeHour: Breadboard project_\n\n## Документация к web-интерфейсу приложения \"Тапанда: макетная плата\"\n\nОписывает реализацию части проекта, запускаемой в браузере и содержит инструкции по её настройке и использованию.\n\nУтверждает соглашения для дальнейшей разработки.\n\nСодержание:\n\n1. [Общая информация](manual/overview.html)\n2. [Архитектура](manual/design.html)\n3. [Установка и сборка](manual/installation.html)\n4. [Конфигурирование](manual/configuration.html)\n5. [Использование](manual/usage.html)\n6. [Примеры](manual/usage.html)\n\n_На данный момент исходный код проекта размещён в закрытом репозитории._",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/index.md",
+    "name": "./man/index.md",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manualAsset",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/asset",
+    "name": "./man/asset",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manual",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/overview.md",
+    "name": "./man/overview.md",
+    "content": "# Общая информация\n\nЦель:\n\nЗадачи:\n\n\nИнструментарий проекта:\n\n* **Языки программирования**:\n* JavaScript (ES6)\n* LESS\n\n\n* **Сборка**:\n* Webpack\n* Babel \n\n\n* **Тестирование**\n* Karma\n* Jasmine\n* Chai\n* Mocha\n\n\n* **Документирование**\n* ESDoc\n\n\n",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manual",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/design.md",
+    "name": "./man/design.md",
+    "content": "# Архитектура\n\nВ проекте выстроилась архитектура, отдалённо напоминающая шаблон MVC.\n\n`[схема]`\n\n\n",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manual",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/installation.md",
+    "name": "./man/installation.md",
+    "content": "",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manual",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/usage.md",
+    "name": "./man/usage.md",
+    "content": "",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manual",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/configuration.md",
+    "name": "./man/configuration.md",
+    "content": "",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manual",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/example.md",
+    "name": "./man/example.md",
+    "content": "",
+    "static": true,
+    "access": "public"
+  },
+  {
+    "kind": "manual",
+    "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/CHANGELOG.md",
+    "name": "./CHANGELOG.md",
+    "content": "",
+    "static": true,
+    "access": "public"
+  }
+]
