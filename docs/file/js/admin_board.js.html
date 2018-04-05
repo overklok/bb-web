@@ -52,12 +52,17 @@ import BreadboardModule      from &quot;./modules/BreadboardModule&quot;;
  * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x43A;&#x430;&#x435;&#x442;&#x441;&#x44F; &#x432; &#x431;&#x440;&#x430;&#x443;&#x437;&#x435;&#x440;&#x435; &#x430;&#x434;&#x43C;&#x438;&#x43D;&#x438;&#x441;&#x442;&#x440;&#x430;&#x442;&#x43E;&#x440;&#x430; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x44F;.
  */
 class AdminBoardApplication {
+    /**
+     * &#x421;&#x43E;&#x437;&#x434;&#x430;&#x442;&#x44C; &#x44D;&#x43A;&#x437;&#x435;&#x43C;&#x43F;&#x43B;&#x44F;&#x440; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x44F;
+     */
     constructor() {
-        /// &#x414;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439;
+        /** @type {Dispatcher} &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439; */
         this._dispatcher = new Dispatcher();
-        /// &#x41A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44F;
+
+        /** @type {Object} &#x43E;&#x431;&#x449;&#x430;&#x44F; &#x43A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x44F; */
         this._config = {};
 
+        /** @type {function} &#x41E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; `&#x438;&#x437;&#x43C;&#x435;&#x43D;&#x435;&#x43D;&#x44B; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435;` */
         this._on_change_callback = function() {};
 
         this._defineChains();
@@ -80,7 +85,7 @@ class AdminBoardApplication {
     /**
      * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x435;
      *
-     * &#x418;&#x43D;&#x438;&#x446;&#x438;&#x430;&#x43B;&#x438;&#x437;&#x438;&#x440;&#x443;&#x44E;&#x442;&#x441;&#x44F; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x438;, &#x43F;&#x440;&#x43E;&#x438;&#x437;&#x432;&#x43E;&#x434;&#x438;&#x442;&#x441;&#x44F;
+     * &#x418;&#x43D;&#x438;&#x446;&#x438;&#x430;&#x43B;&#x438;&#x437;&#x438;&#x440;&#x443;&#x44E;&#x442;&#x441;&#x44F; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x438;, &#x432;&#x44B;&#x43F;&#x43E;&#x43B;&#x43D;&#x44F;&#x435;&#x442;&#x441;&#x44F; &#x43F;&#x43E;&#x434;&#x43F;&#x438;&#x441;&#x43A;&#x430; &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440;&#x430; &#x43D;&#x430; &#x43D;&#x438;&#x445;
      */
     run() {
         this._initModules();
@@ -89,15 +94,31 @@ class AdminBoardApplication {
         this._dispatcher.always([&apos;bb:*&apos;]);
     }
 
+    /**
+     * &#x41E;&#x431;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x44F;
+     *
+     * @param {Array&lt;Object&gt;} plates &#x43F;&#x43B;&#x430;&#x448;&#x43A;&#x438;
+     * @param {Array&lt;Object&gt;} currents &#x442;&#x43E;&#x43A;&#x438;
+     */
     setData(plates, currents) {
         this.bb.updatePlates(plates);
         // this.bb.updateCurrents(currents);
     }
 
+    /**
+     * &#x41F;&#x43E;&#x43B;&#x443;&#x447;&#x438;&#x442;&#x44C; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435; &#x43F;&#x440;&#x438;&#x43B;&#x43E;&#x436;&#x435;&#x43D;&#x438;&#x44F;
+     *
+     * @param {Array&lt;Object&gt;} plates &#x43F;&#x43B;&#x430;&#x448;&#x43A;&#x438;
+     */
     getData() {
         return this.bb.getData();
     }
 
+    /**
+     * &#x417;&#x430;&#x434;&#x430;&#x442;&#x44C; &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; `&#x438;&#x437;&#x43C;&#x435;&#x43D;&#x435;&#x43D;&#x44B; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435;`
+     *
+     * @param {function} callback &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; `&#x438;&#x437;&#x43C;&#x435;&#x43D;&#x435;&#x43D;&#x44B; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435;`
+     */
     onChange(callback) {
         this._on_change_callback = callback;
     }
@@ -111,13 +132,25 @@ class AdminBoardApplication {
      */
     _initModules() {
         /// &#x41C;&#x43E;&#x434;&#x443;&#x43B;&#x438;
+
+        /** @type {BreadboardModule} &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44C; &#x43E;&#x442;&#x43E;&#x431;&#x440;&#x430;&#x436;&#x435;&#x43D;&#x438;&#x44F; &#x43C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x43E;&#x439; &#x43F;&#x43B;&#x430;&#x442;&#x44B; */
         this.bb = new BreadboardModule({modeAdmin: true}); // Breadboard
     }
 
+    /**
+     * &#x41F;&#x43E;&#x434;&#x43F;&#x438;&#x441;&#x430;&#x442;&#x44C; &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440; &#x43D;&#x430; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x435;&#x439;
+     *
+     * @private
+     */
     _subscribeToModules() {
         this._dispatcher.subscribe(this.bb);
     }
 
+    /**
+     * &#x41E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x438;&#x442;&#x44C; &#x446;&#x435;&#x43F;&#x43E;&#x447;&#x43A;&#x438;-&#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A;&#x438;
+     *
+     * @private
+     */
     _defineChains() {
         $(document).ready(() =&gt; {
             this.bb.inject(document.getElementById(this._container_id));

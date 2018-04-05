@@ -338,6 +338,11 @@ export default class BlocklyWrapper extends Wrapper {
         return block_counts;
     }
 
+    /**
+     * Установить значения полей ввода пределов количества блоков по типам
+     *
+     * @param block_counts {{<string>: number}}
+     */
     setBlockLimitInputsByType(block_counts) {
         if (!this.workspace) {return false}
 

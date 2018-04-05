@@ -16,28 +16,28 @@ export default class Dispatcher {
      * Создать экземпляр диспетчера.
      */
     constructor() {
-        /** @type {Array<Module>} */
+        /** @type {Array<Module>} экземпляры прослушиваемых модулей */
         this._modules = [];
 
-        /** @type {boolean} */
+        /** @type {boolean} готовность модуля генерировать события */
         this._handler_ready = undefined;
 
-        /** @type {Object} */
+        /** @type {Object} обработчики событий */
         this._handlers = {};
 
         /**
-         * @type {{always: Set, current: Set}}
+         * @type {{always: Set, current: Set}} прослушиваемые типы событий: постоянные и текущие
          */
         this._event_types_listening = {
             always: new Set(),
             current: new Set()
         };
 
-        /** @type {boolean} */
+        /** @type {boolean} события заблокированы */
         this._denied = false;
-        /** @type {Array<string>} */
+        /** @type {Array<string>} искючения при блокировке */
         this._deny_excepts = [];
-        /** @type {Set} */
+        /** @type {Set} все зарегистрированные типы событий */
         this._event_types = new Set();
     }
 
@@ -152,7 +152,7 @@ export default class Dispatcher {
     /**
      * Прослушивать только заданные типы событий
      *
-     * @param eventspace
+     * @param eventspace {string} имя пространства событий
      */
     only(eventspace) {
         return new Promise(resolve => {
@@ -172,7 +172,7 @@ export default class Dispatcher {
      * Прослушивать все типы событий, кроме заданных
      *
      * TODO
-     * @param eventspace
+     * @param eventspace {string} имя пространства событий
      */
     aside(eventspace) {
 
@@ -207,7 +207,7 @@ export default class Dispatcher {
     /**
      * Выгрузить отладочные записи всех модулей в единый JSON-объект
      *
-     * @param {boolean} flush
+     * @param {boolean} flush очищать буфер после выгрузки
      */
     dumpLogs(flush) {
         return new Promise(resolve => {
@@ -240,7 +240,8 @@ export default class Dispatcher {
      *     - При неправильном типе аргумента возвращаемая функция выбрасывает исключение с сообщением об ошибке
      *
      * @param   {string}    name          тип суррогатного события
-     * @returns {Function}  функция-обработчик события / функция, выбрасывающая исключение
+     *
+     * @returns {function}  функция-обработчик события / функция, выбрасывающая исключение
      * @private
      */
     _getHandler(name) {
@@ -289,6 +290,7 @@ export default class Dispatcher {
      *       в заданном массиве масок
      *
      * @param eventspace        массив масок типов событий
+     *
      * @returns {function}      фильтр для массивов (см. функцию Array.filter())
      */
     static getFilterByEventspace(eventspace) {
@@ -332,6 +334,7 @@ export default class Dispatcher {
      * Если символа нет, функция возвращает false
      *
      * @param   {string}            mask    исходная маска
+     *
      * @returns {boolean|string}    соответствует ли маска требованию / подстрока перед двоеточием
      * @private
      */
@@ -355,6 +358,7 @@ export default class Dispatcher {
      * Если символа нет, функция возвращает false
      *
      * @param   {string}            mask    исходная маска
+     *
      * @returns {boolean|string}    соответствует ли маска требованию / подстрока после двоеточия
      * @private
      */

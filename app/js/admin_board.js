@@ -9,12 +9,17 @@ import BreadboardModule      from "./modules/BreadboardModule";
  * Запускается в браузере администратора приложения.
  */
 class AdminBoardApplication {
+    /**
+     * Создать экземпляр приложения
+     */
     constructor() {
-        /// Диспетчер событий
+        /** @type {Dispatcher} диспетчер событий */
         this._dispatcher = new Dispatcher();
-        /// Конфигурация
+
+        /** @type {Object} общая конфигурация */
         this._config = {};
 
+        /** @type {function} Обработчик события `изменены данные` */
         this._on_change_callback = function() {};
 
         this._defineChains();
@@ -37,7 +42,7 @@ class AdminBoardApplication {
     /**
      * Запустить приложение
      *
-     * Инициализируются модули, производится
+     * Инициализируются модули, выполняется подписка диспетчера на них
      */
     run() {
         this._initModules();
@@ -46,15 +51,31 @@ class AdminBoardApplication {
         this._dispatcher.always(['bb:*']);
     }
 
+    /**
+     * Обновить данные приложения
+     *
+     * @param {Array<Object>} plates плашки
+     * @param {Array<Object>} currents токи
+     */
     setData(plates, currents) {
         this.bb.updatePlates(plates);
         // this.bb.updateCurrents(currents);
     }
 
+    /**
+     * Получить данные приложения
+     *
+     * @param {Array<Object>} plates плашки
+     */
     getData() {
         return this.bb.getData();
     }
 
+    /**
+     * Задать обработчик события `изменены данные`
+     *
+     * @param {function} callback обработчик события `изменены данные`
+     */
     onChange(callback) {
         this._on_change_callback = callback;
     }
@@ -68,13 +89,25 @@ class AdminBoardApplication {
      */
     _initModules() {
         /// Модули
+
+        /** @type {BreadboardModule} модуль отображения макетной платы */
         this.bb = new BreadboardModule({modeAdmin: true}); // Breadboard
     }
 
+    /**
+     * Подписать диспетчер на события модулей
+     *
+     * @private
+     */
     _subscribeToModules() {
         this._dispatcher.subscribe(this.bb);
     }
 
+    /**
+     * Определить цепочки-обработчики
+     *
+     * @private
+     */
     _defineChains() {
         $(document).ready(() => {
             this.bb.inject(document.getElementById(this._container_id));

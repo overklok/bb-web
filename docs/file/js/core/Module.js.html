@@ -70,11 +70,15 @@ export default class Module extends Loggable {
 
     /**
      * @abstract
+     *
+     * @type {string} &#x438;&#x43C;&#x44F; &#x43F;&#x440;&#x43E;&#x441;&#x442;&#x440;&#x430;&#x43D;&#x441;&#x442;&#x432;&#x430; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439;
      */
     static get eventspace_name() {throw new TypeError(&quot;This method should be overridden by inheriting classes&quot;)}
 
     /**
      * @abstract
+     *
+     * @type {Array} &#x43C;&#x430;&#x441;&#x441;&#x438;&#x432; &#x442;&#x438;&#x43F;&#x43E;&#x432; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439;
      */
     static get event_types()     {throw new TypeError(&quot;This method should be overridden by inheriting classes&quot;)}
 
@@ -95,17 +99,29 @@ export default class Module extends Loggable {
         return {};
     }
 
+    /**
+     * &#x421;&#x43E;&#x437;&#x434;&#x430;&#x442;&#x44C; &#x44D;&#x43A;&#x437;&#x435;&#x43C;&#x43F;&#x43B;&#x44F;&#x440; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F;
+     *
+     * &#x41F;&#x43E;&#x441;&#x43B;&#x435; &#x44D;&#x442;&#x43E;&#x439; &#x43E;&#x43F;&#x435;&#x440;&#x430;&#x446;&#x438;&#x438; &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440; &#x43C;&#x43E;&#x436;&#x43D;&#x43E; &#x43F;&#x43E;&#x434;&#x43F;&#x438;&#x441;&#x44B;&#x432;&#x430;&#x442;&#x44C; &#x43D;&#x430; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x44F; &#x44D;&#x442;&#x43E;&#x433;&#x43E; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F;
+     *
+     * @param {Object} options &#x43E;&#x43F;&#x446;&#x438;&#x438; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F; &#x432; &#x444;&#x43E;&#x440;&#x43C;&#x430;&#x442;&#x435;, &#x437;&#x430;&#x434;&#x430;&#x432;&#x430;&#x435;&#x43C;&#x43E;&#x43C; &#x432; &#x43C;&#x435;&#x442;&#x43E;&#x434;&#x435; {@link defaults}
+     */
     constructor(options) {
         options = options || {};
         super(options);
 
         /// &#x417;&#x430;&#x433;&#x440;&#x443;&#x437;&#x438;&#x442;&#x44C; &#x43E;&#x43F;&#x446;&#x438;&#x438; &#x43F;&#x43E; &#x443;&#x43C;&#x43E;&#x43B;&#x447;&#x430;&#x43D;&#x438;&#x44E;, &#x43F;&#x435;&#x440;&#x435;&#x43A;&#x440;&#x44B;&#x442;&#x44C; &#x438;&#x445; &#x43A;&#x430;&#x441;&#x442;&#x43E;&#x43C;&#x43D;&#x44B;&#x43C;&#x438; &#x43E;&#x43F;&#x446;&#x438;&#x44F;&#x43C;&#x438;
+        /** @type {Object} &#x43E;&#x43F;&#x446;&#x438;&#x438; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F; &#x43F;&#x43E; &#x443;&#x43C;&#x43E;&#x43B;&#x447;&#x430;&#x43D;&#x438;&#x44E; */
         this.__defaults = this.constructor.defaults();
+        /** @type {Object} &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x430;&#x43D;&#x43D;&#x44B;&#x435; &#x43E;&#x43F;&#x446;&#x438;&#x438; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F; */
         this._options   = this._coverOptions(this.__defaults, options);
 
+        /** @type {string} &#x438;&#x43C;&#x44F; &#x43F;&#x440;&#x43E;&#x441;&#x442;&#x440;&#x430;&#x43D;&#x441;&#x442;&#x432;&#x430; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F; */
         this.eventspace_name    = this.constructor.eventspace_name;
+        /** @type {Array} &#x442;&#x438;&#x43F;&#x44B; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F; */
         this.event_types        = this.constructor.event_types;
 
+        /** @type {Object} &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A;&#x438; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x439; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F; */
         this._event_listeners = {};
     }
 

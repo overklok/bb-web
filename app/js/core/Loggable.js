@@ -10,13 +10,24 @@
  * содержимое которого можно получить с помощью метода getDebugBuffer()
  */
 export default class Loggable {
+    /**
+     * Создать экземпляр логируемого объекта
+     *
+     * Препдполагается, что метод будет вызван в конструкторе логируемого объекта
+     *
+     * @param options {{logging: Object}}
+     */
     constructor(options) {
+        /** @type {Object} опции логирования */
         let logOptions = options.logging || {};
 
+        /** @type {boolean} работать локально */
         let local = logOptions.local || false;
 
+        /** @type {Array<{module: string, type: string, data: string}>} отладочный буфер */
         this._debug_buffer = [];
 
+        /** @type {Object} функции отладки */
         this._debug = {};
 
         if (local) {
@@ -29,7 +40,7 @@ export default class Loggable {
     /**
      * Получить содержимое отладочного буфера
      *
-     * @param   {Boolean} flush очистить ли буфер перед возвращением
+     * @param   {boolean} flush очистить ли буфер перед возвращением
      * @returns {Array}         буфер отладочных JSON-объектов
      */
     getDebugBuffer(flush = true) {

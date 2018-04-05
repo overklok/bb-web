@@ -26,6 +26,11 @@ import Loggable from './Loggable';
  * `BreadboardWrapper.js`
  */
 export default class Wrapper extends Loggable {
+    /**
+     * Создать экземпляр обёртки
+     *
+     * @param {Object} options опции обёртки в произвольном формате
+     */
     constructor(options) {
         options = options || {};
         super(options);

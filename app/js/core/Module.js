@@ -27,11 +27,15 @@ export default class Module extends Loggable {
 
     /**
      * @abstract
+     *
+     * @type {string} имя пространства событий
      */
     static get eventspace_name() {throw new TypeError("This method should be overridden by inheriting classes")}
 
     /**
      * @abstract
+     *
+     * @type {Array} массив типов событий
      */
     static get event_types()     {throw new TypeError("This method should be overridden by inheriting classes")}
 
@@ -52,17 +56,29 @@ export default class Module extends Loggable {
         return {};
     }
 
+    /**
+     * Создать экземпляр модуля
+     *
+     * После этой операции диспетчер можно подписывать на события этого модуля
+     *
+     * @param {Object} options опции модуля в формате, задаваемом в методе {@link defaults}
+     */
     constructor(options) {
         options = options || {};
         super(options);
 
         /// Загрузить опции по умолчанию, перекрыть их кастомными опциями
+        /** @type {Object} опции модуля по умолчанию */
         this.__defaults = this.constructor.defaults();
+        /** @type {Object} обработанные опции модуля */
         this._options   = this._coverOptions(this.__defaults, options);
 
+        /** @type {string} имя пространства событий модуля */
         this.eventspace_name    = this.constructor.eventspace_name;
+        /** @type {Array} типы событий модуля */
         this.event_types        = this.constructor.event_types;
 
+        /** @type {Object} обработчики событий модуля */
         this._event_listeners = {};
     }
 

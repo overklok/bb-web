@@ -24,10 +24,14 @@ const BUTTON_CODES = [
  * Запускается в браузере конечного пользователя.
  */
 class Application {
+    /**
+     * Создать экземпляр приложения
+     */
     constructor() {
-        /// Диспетчер событий
+        /** @type {Dispatcher} диспетчер событий */
         this._dispatcher = new Dispatcher();
-        /// Конфигурация
+
+        /** @type {Object} общая конфигурация */
         this._config = {};
 
         this._defineChains();
@@ -44,6 +48,7 @@ class Application {
     configure(config) {
         if (!config) {return true}
 
+        /** type {Object} конфигурации модулей */
         this._config = {
             gui: {
                 anyKey: config.anyKey,
@@ -91,7 +96,7 @@ class Application {
     /**
      * Запустить приложение
      *
-     * Инициализируются модули, производится
+     * Инициализируются модули, выполняется подписка диспетчера на них
      */
     run() {
         this._initModules();
@@ -115,15 +120,25 @@ class Application {
      */
     _initModules() {
         /// Модули
-        this.log    = new LogModule(this._config.log);                      // логирование
+
+        /** @type {LogModule} */
+        this.log    = new LogModule(this._config.log);
+        /** @type {GUIModule} модуль графического интерфейса */
         this.gui    = new GUIModule(this._config.gui);
-        this.trc    = new TracingModule(this._config.trc);                  // многофункциональная область
+        /** @type {TracingModule} модуль трассировки кода */
+        this.trc    = new TracingModule(this._config.trc);
+        /** @type {LayoutModule} модуль разметки страницы */
         this.lay    = new LayoutModule(this._config.lay);
-        this.ws     = new WorkspaceModule(this._config.ws);                 // Blockly
-        this.bb     = new BreadboardModule(this._config.bb);                // макетная плата - графика
-        this.ins    = new InstructorModule(this._config.ins);               // дед
-        this.ls     = new LocalServiceModule(this._config.ls);              // макетная плата - electron
-        this.gs     = new GlobalServiceModule(this._config.gs);             // веб-сервер
+        /** @type {WorkspaceModule} модуль рабочей области */
+        this.ws     = new WorkspaceModule(this._config.ws);
+        /** @type {BreadboardModule} модуль отображения макетной платы */
+        this.bb     = new BreadboardModule(this._config.bb);
+        /** @type {InstructorModule} модуль управления прогрессом и выдачи подсказок */
+        this.ins    = new InstructorModule(this._config.ins);
+        /** @type {LocalServiceModule} модуль локального сервиса */
+        this.ls     = new LocalServiceModule(this._config.ls);
+        /** @type {GlobalServiceModule} модуль глобального сервиса */
+        this.gs     = new GlobalServiceModule(this._config.gs);
 
         this.gui.registerButtonCodes(BUTTON_CODES);
     }
@@ -315,6 +330,9 @@ class Application {
             console.log('keyup', button_code);
         });
 
+        /**
+         * Введена хэш-команда
+         */
         this._dispatcher.on('gui:hash-command', command => {
             switch (command.type) {
                 case "goto": {
@@ -338,6 +356,9 @@ class Application {
             }
         });
 
+        /**
+         * Нажат пункт меню
+         */
         this._dispatcher.on('gui:menu', (data) => {
             switch (data.name) {
                 case 'courses': {
@@ -400,6 +421,9 @@ class Application {
                 .then(() => this._dispatcher.only(['gui:*']))
         });
 
+        /**
+         * Задание выполнено
+         */
         this._dispatcher.on('ins:progress', mission => {
            this.gui.setMissionProgress(mission);
         });
@@ -453,26 +477,34 @@ class Application {
             // }
         });
 
+        /**
+         * Изменены плашки
+         */
         this._dispatcher.on('ls:plates', data => {
             this.bb.clearCurrents();
             this.bb.updatePlates(data);
         });
 
+        /**
+         * Изменены токи
+         */
         this._dispatcher.on('ls:currents', data => {
             this.bb.updateCurrents(data);
         });
 
+        /**
+         * Изменён статус платы
+         */
         this._dispatcher.on('ls:board-status', status => {
             console.log("BOARD STATUS", status);
             this.gui.setBoardStatus(status);
         });
 
+        /**
+         * Достигнут тайм-аут соединения с IPC
+         */
         this._dispatcher.on('ls:timeout', () => {
             this.gui.showAlert('no_ipc');
-
-            // setTimeout(() => {
-            //     this.gui.hideAllAlerts();
-            // }, 1000);
         });
 
         /**

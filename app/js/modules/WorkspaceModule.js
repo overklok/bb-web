@@ -22,6 +22,11 @@ export default class WorkspaceModule extends Module {
         }
     }
 
+    /**
+     * Создать экземпляр рабочей области
+     *
+     * @param {Object} options опции модуля в формате, задаваемом в методе {@link defaults}
+     */
     constructor(options) {
         super(options);
 
@@ -117,6 +122,11 @@ export default class WorkspaceModule extends Module {
         this._blockly.highlightBlock(block_id);
     }
 
+    /**
+     * Выделить ошибочные блоки
+     *
+     * @param {Array<string>} block_ids идентификаторы блоков
+     */
     highlightErrorBlocks(block_ids) {
         if (!this._state.display) {return false}
 
@@ -125,10 +135,21 @@ export default class WorkspaceModule extends Module {
         }
     }
 
+    /**
+     * Удалить выделения ошибочных блоков
+     */
     clearErrorBlocks() {
         this._blockly.clearErrorBlocks();
     }
 
+    /**
+     * Сохранить программный код для текущего упражнения
+     *
+     * @param {number} mission_id   ИД задания
+     * @param {number} exercise_id  ИД упражнения
+     *
+     * @returns {boolean} было ли изменено состояние модуля
+     */
     saveProgram(mission_id, exercise_id) {
         if (!this._state.display) {return false}
 
@@ -141,12 +162,18 @@ export default class WorkspaceModule extends Module {
         return true;
     }
 
+    /**
+     * Загрузить сохраненный для упражнения программный код
+     *
+     * @param {number} mission_id   ИД задания
+     * @param {number} exercise_id  ИД упражнения
+     *
+     * @returns {boolean} было ли изменено состояние модуля
+     */
     loadProgram(mission_id, exercise_id) {
         if (!this._state.display) {return false}
 
         this._blockly.clear();
-
-        console.log(mission_id, exercise_id);
 
         if (!(mission_id in this._code_storage)) {
             console.log("NO MID IN STOR");
@@ -163,16 +190,33 @@ export default class WorkspaceModule extends Module {
         return true;
     }
 
+    /**
+     * Возвратить несколько соседних блоков от текущего
+     *
+     * TODO
+     *
+     * @param {number} neighbours_amount количество соседних блоков (сверху и снизу)
+     */
     getBlockMultiplet(neighbours_amount=3) {
 
     }
 
+    /**
+     * Установить предел количества блоков
+     *
+     * @param {number} [max_block_count=0] максимальное количество блоков
+     */
     setMaxBlockLimit(max_block_count=0) {
         if (!this._state.display) {return false}
 
         this._blockly.updateBlockLimit(max_block_count)
     }
 
+    /**
+     * Установить режим редактирования
+     *
+     * @param [on=false] {boolean} вкл./выкл. режим редактирования
+     */
     setEditable(on=false) {
         if (!this._state.display) {return false}
 
@@ -183,12 +227,28 @@ export default class WorkspaceModule extends Module {
         }
     }
 
+    /**
+     * Возвратить значения полей ввода пределов количества блоков по типам
+     *
+     * Формат возвращаемого объекта:
+     *      - ключ:     {string} тип блока
+     *      - значение: {number} предел количества блоков по типу
+     *
+     * @returns {Object},
+     */
     getBlockLimitInputsByType() {
         if (!this._state.display) {return false}
 
         return this._blockly.getBlockLimitInputsByType();
     }
 
+    /**
+     * Установить значения полей ввода пределов количества блоков по типам
+     *
+     * @param block_counts {Object} , где
+     *      - ключ:     {string} тип блока
+     *      - значение: {number} предел количества блоков по типу
+     */
     setBlockLimitInputsByType(block_counts) {
         if (!this._state.display) {return false}
 
@@ -199,7 +259,7 @@ export default class WorkspaceModule extends Module {
      * Определить число блоков, необходимое для сборки
      * текущей последовательности блоков
      *
-     * @returns {bool|int}
+     * @returns {bool|int} колиество блоков, необходимых для сборки текущей последовательности блоков
      */
     getBlockLimit() {
         if (!this._state.display) {return false}
@@ -208,9 +268,9 @@ export default class WorkspaceModule extends Module {
     }
 
     /**
-     * Получить список обработчиков в формате объекта
+     * Возвратить список обработчиков в формате объекта
      *
-     * @returns {{commands:Array, button:number}} - {object} commands - JSON-код программы, {number} button - код клавиши
+     * @returns {{commands:Array, button:number}} обработчик, включающий код клавиши и код программы
      */
     getMainHandler() {
         let handlers = this._blockly.getJSONHandlers();
@@ -221,10 +281,11 @@ export default class WorkspaceModule extends Module {
     }
 
     /**
-     * Получить обработчик нажатия клавиши
+     * Возвратить обработчик нажатия клавиши
      *
      * @param {number} btn_code код клавиши
-     * @returns {object} обработчик, включающий код клавиши и код программы
+     *
+     * @returns {{commands:Array, button:number}} обработчик, включающий код клавиши и код программы
      */
     getButtonHandler(btn_code) {
         if (!this._state.display) {return null}
@@ -244,6 +305,15 @@ export default class WorkspaceModule extends Module {
         return null;
     }
 
+    /**
+     * Возвратить набранные коды
+     *
+     * Формат возвращаемого объекта:
+     *      - ключ: `main`/ ID блока-обработчика
+     *      - значение: {commands: {Array}, button: {number}}, где `commands` - JSON-код программы, `button` - код клавиши
+     *
+     * @returns {Object} основной код и коды обработчиков
+     */
     getAllHandlers() {
         if (!this._state.display) {return null}
 
@@ -271,9 +341,9 @@ export default class WorkspaceModule extends Module {
     }
 
     /**
-     * Получить XML-дерево кода в виде строки
+     * Возвратить XML-дерево кода в виде строки
      *
-     * @returns {String} строка с XML-деревом
+     * @returns {string} строка с XML-деревом
      */
     getTree() {
         return this._blockly.getXMLText();
@@ -282,7 +352,8 @@ export default class WorkspaceModule extends Module {
     /**
      * Загрузить XML-дерево в виде строки
      *
-     * @param   {String} tree дерево в виде строки
+     * @param   {string} tree дерево в виде строки
+     *
      * @returns {boolean} false, если строка пустая или не задана
      */
     loadTree(tree) {
@@ -293,7 +364,6 @@ export default class WorkspaceModule extends Module {
 
     /**
      * Разрешить обработку событий Blockly
-     *
      */
     wakeUp() {
         this._blockly.silent = false;
@@ -314,7 +384,7 @@ export default class WorkspaceModule extends Module {
      * Заставить Blockly генерировать дополнительные поля (для админки)
      * Работает только с wakeUp()
      *
-     * @param on
+     * @param {boolean} on генерировать ли поля
      */
     generateExtraFields(on) {
         if (this._blockly.silent) {return false}
@@ -336,6 +406,9 @@ export default class WorkspaceModule extends Module {
         }
     }
 
+    /**
+     * Подписаться на события обёрток
+     */
     _subscribeToWrapperEvents() {
         this._blockly.onChange(() => {
             this.emitEvent("change");
@@ -376,6 +449,7 @@ export default class WorkspaceModule extends Module {
      * Преобразует строку в JSON-объект
      *
      * @param {string} code исходный код, сгенерированный в Blockly
+     *
      * @returns {Object} JSON-версия исходного кода, сгенерированного в Blockly
      * @private
      */
