@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">js/modules/InstructorModule.js | &#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="&#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;"><meta property="twitter:description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a href="https://bitbucket.org/makeitlab/codehour-breadboard-web">Repository</a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_blockly.js~AdminBlocklyApplication.html">AdminBlocklyApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_board.js~AdminBoardApplication.html">AdminBoardApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/index.js~Application.html">Application</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#core">core</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Dispatcher.js~Dispatcher.html">Dispatcher</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Loggable.js~Loggable.html">Loggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Module.js~Module.html">Module</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Wrapper.js~Wrapper.html">Wrapper</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#modules">modules</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/BreadboardModule.js~BreadboardModule.html">BreadboardModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/GUIModule.js~GUIModule.html">GUIModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/GlobalServiceModule.js~GlobalServiceModule.html">GlobalServiceModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/InstructorModule.js~InstructorModule.html">InstructorModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LayoutModule.js~LayoutModule.html">LayoutModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LocalServiceModule.js~LocalServiceModule.html">LocalServiceModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LogModule.js~LogModule.html">LogModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/TracingModule.js~TracingModule.html">TracingModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/WorkspaceModule.js~WorkspaceModule.html">WorkspaceModule</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">js/modules/InstructorModule.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Module from &quot;../core/Module&quot;;
+
+import TourWrapper from &quot;../wrappers/TourWrapper&quot;;
+
+import LessonPreprocessor from  &quot;../utils/lesson-processor/processor&quot;;
+
+const API = {
+    STATUS_CODES: {
+        PASS: &quot;OK&quot;,
+        FAULT: &quot;error&quot;
+    }
+};
+
+/**
+ * &#x41C;&#x43E;&#x434;&#x443;&#x43B;&#x44C;, &#x43E;&#x442;&#x432;&#x435;&#x447;&#x430;&#x44E;&#x449;&#x438;&#x439; &#x437;&#x430; &#x43E;&#x442;&#x43E;&#x431;&#x440;&#x430;&#x436;&#x435;&#x43D;&#x438;&#x435; &#x432;&#x441;&#x43F;&#x43B;&#x44B;&#x432;&#x430;&#x44E;&#x449;&#x438;&#x445; &#x43F;&#x43E;&#x434;&#x441;&#x43A;&#x430;&#x437;&#x43E;&#x43A;.
+ */
+export default class InstructorModule extends Module {
+    static get eventspace_name() {return &quot;ins&quot;}
+    static get event_types() {return [&quot;start&quot;, &quot;pass&quot;, &quot;fault&quot;, &quot;progress&quot;, &quot;mission&quot;, &quot;finish&quot;, &quot;error&quot;]}
+
+    static defaults() {
+        return {
+            lessonID: 1,
+            silent: false,
+        }
+    }
+
+    constructor(options) {
+        super(options);
+
+        this._lesson = undefined;
+        this._buttons_model = [];
+
+        this._state = {
+            missionIDX: undefined,
+            missions: [],
+
+            buttonIDX: undefined
+        };
+
+        this._subscribeToWrapperEvents();
+    }
+
+    /**
+     * &#x412;&#x44B;&#x434;&#x430;&#x442;&#x44C; &#x418;&#x414; &#x43D;&#x430;&#x447;&#x430;&#x43B;&#x44C;&#x43D;&#x43E;&#x433;&#x43E; &#x443;&#x440;&#x43E;&#x43A;&#x430;
+     *
+     * &#x41E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x44F;&#x435;&#x442; &#x43D;&#x43E;&#x43C;&#x435;&#x440; &#x443;&#x440;&#x43E;&#x43A;&#x430; &#x432; &#x437;&#x430;&#x432;&#x438;&#x441;&#x438;&#x43C;&#x43E;&#x441;&#x442;&#x438; &#x43E;&#x442; &#x432;&#x445;&#x43E;&#x434;&#x43D;&#x44B;&#x445; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x445;
+     * &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F;
+     *
+     * @param {number} lesson_id (&#x43E;&#x43F;&#x446;&#x438;&#x43E;&#x43D;&#x430;&#x43B;&#x44C;&#x43D;&#x43E;) &#x418;&#x414; &#x443;&#x440;&#x43E;&#x43A;&#x430;
+     * @returns {Promise&lt;number&gt;} &#x418;&#x414; &#x443;&#x440;&#x43E;&#x43A;&#x430;
+     */
+    getInitialLessonID(lesson_id) {
+        return new Promise(resolve =&gt; {
+            if (lesson_id) {
+                resolve(lesson_id);
+            } else {
+                resolve(this._options.lessonID);
+            }
+        });
+    }
+
+    /**
+     * &#x417;&#x430;&#x433;&#x440;&#x443;&#x437;&#x438;&#x442;&#x44C; &#x443;&#x440;&#x43E;&#x43A; &#x432; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44C;
+     *
+     * &#x41F;&#x440;&#x43E;&#x438;&#x441;&#x445;&#x43E;&#x434;&#x438;&#x442; &#x43F;&#x435;&#x440;&#x432;&#x438;&#x447;&#x43D;&#x430;&#x44F; &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x43A;&#x430; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x445; &#x438; &#x443;&#x441;&#x442;&#x430;&#x43D;&#x43E;&#x432;&#x43A;&#x430; &#x443;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x435;&#x43B;&#x435;&#x439;
+     *
+     * @param lesson_data {object} JSON-&#x43F;&#x430;&#x43A;&#x435;&#x442; &#x441; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x43C;&#x438; &#x443;&#x440;&#x43E;&#x43A;&#x430;
+     *
+     * @returns {Promise&lt;any&gt;}
+     */
+    loadLesson(lesson_data) {
+        return new Promise(resolve =&gt; {
+            if (!lesson_data) {
+                throw new TypeError(&quot;No lesson data were provided&quot;);
+            }
+
+            console.log(lesson_data);
+
+            this._parseLesson(lesson_data);
+
+            resolve(this._lesson);
+        });
+    }
+
+    /**
+     * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x443;&#x440;&#x43E;&#x43A;
+     *
+     * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x43A;&#x430;&#x435;&#x442; &#x443;&#x440;&#x43E;&#x43A; &#x441; &#x43F;&#x435;&#x440;&#x432;&#x433;&#x43E; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x43F;&#x435;&#x440;&#x432;&#x43E;&#x439; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+     *
+     * @returns {boolean}
+     */
+    launchLesson(mission_idx, exercise_idx) {
+        mission_idx = mission_idx ? mission_idx : 0;
+        exercise_idx = exercise_idx ? exercise_idx : 0;
+
+        return this.forceExercise(mission_idx, exercise_idx);
+    }
+
+    /**
+     * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x443;&#x44E; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x44E;
+     *
+     * @returns {Promise&lt;object&gt;|Promise&lt;void&gt;}
+     */
+    launchMissionNext() {
+        /// &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x439; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+        let mission_idx = this._state.missionIDX + 1;
+
+        if (this._state.missions[this._state.missionIDX].skidding) {
+            return Promise.resolve();
+        }
+
+        /// &#x435;&#x441;&#x43B;&#x438; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x439; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438; &#x43D;&#x435; &#x441;&#x443;&#x449;&#x435;&#x441;&#x442;&#x432;&#x443;&#x435;&#x442;
+        if (mission_idx === this._state.missions.length) {
+            /// &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x438;&#x442;&#x44C; &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440;&#x443; &#x43E; &#x437;&#x430;&#x432;&#x435;&#x440;&#x448;&#x435;&#x43D;&#x438;&#x438;
+            this.emitEvent(&apos;finish&apos;);
+
+            return Promise.resolve();
+        } else {
+            /// &#x437;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x443;&#x44E; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x44E;
+            return this.launchMission(mission_idx);
+        }
+    }
+
+    /**
+     * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x435; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x435;
+     *
+     * @param {boolean} skid    &#x440;&#x435;&#x436;&#x438;&#x43C; &quot;&#x431;&#x443;&#x43A;&#x441;&#x43E;&#x432;&#x43A;&#x438;&quot; - &#x442;&#x43E;&#x43B;&#x44C;&#x43A;&#x43E; &#x43F;&#x435;&#x440;&#x435;&#x43A;&#x43B;&#x44E;&#x447;&#x438;&#x442;&#x44C; &#x443;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x435;&#x43B;&#x438;
+     *
+     * @returns {Promise&lt;object&gt;|Promise&lt;void&gt;}
+     */
+    launchExerciseNext(skid=false) {
+        /// &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x433;&#x43E; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+        let exercise_idx = this._getExerciseIDX(this._state.missionIDX) + 1;
+
+        this._state.missions[this._state.missionIDX].skidding = skid;
+        this._state.missions[this._state.missionIDX].exerciseSkiddingIDX = exercise_idx - 1;
+
+        /// &#x435;&#x441;&#x43B;&#x438; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x433;&#x43E; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x43D;&#x435; &#x441;&#x443;&#x449;&#x435;&#x441;&#x442;&#x432;&#x443;&#x435;&#x442;
+        if (exercise_idx === this._state.missions[this._state.missionIDX].exerciseCount) {
+            /// &#x437;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x443;&#x44E; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x44E;
+            return this.launchMissionNext();
+        } else if (exercise_idx &gt; 0) {
+            /// &#x437;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x435; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x435;
+            return this.launchExercise(exercise_idx);
+        }
+    }
+
+    /**
+     * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x44E;
+     *
+     * @param {number}  mission_idx     &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+     *
+     * @returns {boolean}
+     */
+    launchMission(mission_idx) {
+        let chain = new Promise(resolve =&gt; {resolve(false)});
+
+        /// &#x435;&#x441;&#x43B;&#x438; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438; &#x441;&#x43E;&#x432;&#x43F;&#x430;&#x43B;&#x438;
+        if (mission_idx === this._state.missionIDX) {
+            /// &#x435;&#x441;&#x43B;&#x438; &#x442;&#x435;&#x43A;&#x443;&#x449;&#x430;&#x44F; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x44F; &#x432; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x435; &#x43F;&#x440;&#x43E;&#x431;&#x443;&#x43A;&#x441;&#x43E;&#x432;&#x43A;&#x438;
+            if (this._state.missions[mission_idx].skidding) {
+                /// &#x43D;&#x435;&#x43E;&#x431;&#x445;&#x43E;&#x434;&#x438;&#x43C; &#x441;&#x431;&#x440;&#x43E;&#x441; (&#x441;&#x43C;. &#x434;&#x430;&#x43B;&#x435;&#x435;)
+                chain = new Promise(resolve =&gt; {resolve(true)});
+            } else {
+                /// &#x435;&#x441;&#x43B;&#x438; &#x43D;&#x435; &#x440;&#x435;&#x436;&#x438;&#x43C; &#x43F;&#x440;&#x43E;&#x431;&#x443;&#x43A;&#x441;&#x43E;&#x432;&#x43A;&#x438;, &#x442;&#x43E; &#x441;&#x43F;&#x440;&#x43E;&#x441;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x434;&#x442;&#x432;&#x435;&#x440;&#x436;&#x435;&#x43D;&#x438;&#x435; &#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44F;
+                chain = chain.then(() =&gt; this.tourConfirm(&quot;&#x41D;&#x430;&#x447;&#x430;&#x442;&#x44C; &#x437;&#x430;&#x434;&#x430;&#x43D;&#x438;&#x435; &#x441;&#x43D;&#x43E;&#x432;&#x430;?&quot;))
+            }
+        }
+
+        chain.then(
+            reset =&gt; {
+                this.emitEvent(&quot;mission&quot;, mission_idx);
+
+                /// &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x432; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+                let exercise_idx = this._state.missions[mission_idx].exerciseIDX;
+
+                /// &#x435;&#x441;&#x43B;&#x438; &#x441;&#x431;&#x440;&#x43E;&#x441; &#x432;&#x43A;&#x43B;&#x44E;&#x447;&#x451;&#x43D; &#x438; &#x43D;&#x435;&#x442; &#x43F;&#x440;&#x43E;&#x431;&#x443;&#x43A;&#x441;&#x43E;&#x432;&#x43A;&#x438;
+                if (reset &amp;&amp; !this._state.missions[this._state.missionIDX].skidding) {
+                    exercise_idx = 0;
+                }
+
+                /// &#x432;&#x44B;&#x43A;&#x43B;&#x44E;&#x447;&#x438;&#x442;&#x44C; &#x440;&#x435;&#x436;&#x438;&#x43C; &#x43F;&#x440;&#x43E;&#x431;&#x443;&#x43A;&#x441;&#x43E;&#x432;&#x43A;&#x438;
+                this._state.missions[mission_idx].skidding = false;
+
+                if (mission_idx in this._state.missions) {
+                    /// &#x43E;&#x431;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+                    this._state.missionIDX = mission_idx;
+
+                    return this.launchExercise(exercise_idx);
+                }
+            },
+            skip =&gt; {
+                return false;
+            }
+
+        );
+
+        return chain;
+    }
+
+    /**
+     * &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x435;
+     *
+     * @param {number}  exercise_idx    &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x432; &#x442;&#x435;&#x43A;&#x443;&#x449;&#x435;&#x439; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+     * @param {boolean} forced
+     *
+     * @returns {Promise&lt;object&gt;}
+     */
+    launchExercise(exercise_idx, forced=false) {
+        let mission_idx = this._state.missionIDX;
+
+        /// &#x435;&#x441;&#x43B;&#x438; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x43D;&#x430;&#x445;&#x43E;&#x434;&#x438;&#x442;&#x441;&#x44F; &#x432; &#x434;&#x43E;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x43C;&#x44B;&#x445; &#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x430;&#x445;
+        if (0 &lt;= exercise_idx &amp;&amp; exercise_idx &lt; this._state.missions[mission_idx].exerciseCount) {
+            /// &#x43E;&#x431;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x437;&#x430;&#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x439; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x432; &#x442;&#x435;&#x43A;&#x443;&#x449;&#x435;&#x439; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+            this._state.missions[mission_idx].exerciseIDX = exercise_idx;
+
+            /// &#x438;&#x437;&#x432;&#x43B;&#x435;&#x447;&#x44C; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+            let exercise_data = this._lesson.missions[mission_idx].exercises[exercise_idx];
+            exercise_data.missionIDX = mission_idx;
+            exercise_data.exerciseIDX = exercise_idx;
+
+            /// &#x435;&#x441;&#x43B;&#x438; &#x43D;&#x435; &#x440;&#x435;&#x436;&#x438;&#x43C; &#x431;&#x443;&#x43A;&#x441;&#x43E;&#x432;&#x43A;&#x438; &#x43B;&#x438;&#x431;&#x43E; &#x444;&#x43E;&#x440;&#x441;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x43D;&#x44B;&#x439; &#x440;&#x435;&#x436;&#x438;&#x43C;
+            if (forced || !this._state.missions[mission_idx].skidding) {
+                /// &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x438;&#x442;&#x44C; &#x434;&#x438;&#x441;&#x43F;&#x435;&#x442;&#x447;&#x435;&#x440;&#x443; &#x43E; &#x437;&#x430;&#x43F;&#x443;&#x441;&#x43A;&#x435; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+                this.emitEvent(&quot;start&quot;, exercise_data);
+            }
+
+            /// &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x438;&#x442;&#x44C; &#x432;&#x44B;&#x437;&#x44B;&#x432;&#x430;&#x44E;&#x449;&#x435;&#x439; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x430;&#x43C;&#x43C;&#x435; &#x43E; &#x437;&#x430;&#x43F;&#x443;&#x441;&#x43A;&#x435; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+            return Promise.resolve(exercise_data);
+        } else {
+            throw new Error(`Exercise ${exercise_idx} in mission ${mission_idx} not found`);
+        }
+    }
+
+    forceExercise(mission_idx, exercise_idx) {
+        if (mission_idx === undefined || Number.isNaN(mission_idx)) {
+            mission_idx = this._state.missionIDX
+        }
+
+        if (exercise_idx === undefined || Number.isNaN(exercise_idx)) {
+            exercise_idx = this._state.missions[this._state.missionIDX].exerciseIDX
+        }
+
+        if (!(mission_idx in this._state.missions)) {
+            throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
+        }
+
+        if (!(exercise_idx &lt; this._state.missions[mission_idx].exerciseCount)) {
+            throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
+        }
+
+        /// &#x43E;&#x431;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441; &#x43C;&#x438;&#x441;&#x441;&#x438;&#x438;
+        if (this._state.missionIDX !== mission_idx) {
+            this._state.missionIDX = mission_idx;
+            this.emitEvent(&apos;mission&apos;, mission_idx);
+        }
+
+        return this.launchExercise(exercise_idx, true);
+    }
+
+    /**
+     * &#x41F;&#x43E;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x44C; &#x432;&#x432;&#x435;&#x434;&#x435;&#x43D;&#x438;&#x435; &#x432; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x435;
+     *
+     * @returns {Promise&lt;any&gt;}
+     */
+    tourIntro(popovers) {
+        /// &#x415;&#x441;&#x43B;&#x438; &#x43D;&#x435;&#x442; &#x43F;&#x43E;&#x43F;&#x43E;&#x432;&#x435;&#x440;&#x43E;&#x432;, &#x432;&#x44B;&#x439;&#x442;&#x438;
+        if (!popovers) {return Promise.resolve()}
+
+        if (this._options.silent) {
+            return Promise.resolve();
+        }
+
+        /// &#x41F;&#x43E;&#x434;&#x43A;&#x43B;&#x44E;&#x447;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x43F;&#x43E;&#x432;&#x435;&#x440;-&#x43E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x443;
+        let intro = new TourWrapper(&quot;intro&quot;, popovers);
+        /// &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x442;&#x440;&#x43E;
+        return intro.start();
+    }
+
+    /**
+     * &#x41F;&#x43E;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x44C; &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x435;&#x43D;&#x438;&#x435; &#x43E; &#x43F;&#x440;&#x43E;&#x445;&#x43E;&#x436;&#x434;&#x435;&#x43D;&#x438;&#x438; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+     */
+    tourPass() {
+        let missionIDX = this._state.missionIDX;
+        let exerciseIDX = this._getExerciseIDX(missionIDX);
+
+        let message = this._lesson.missions[missionIDX].exercises[exerciseIDX].message_success;
+
+        this._checkLessonProgress(missionIDX);
+
+        /// &#x41F;&#x43E;&#x434;&#x43A;&#x43B;&#x44E;&#x447;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x43F;&#x43E;&#x432;&#x435;&#x440;-&#x43E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x443;
+        let intro = new TourWrapper(&quot;success&quot;, message);
+        /// &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x442;&#x440;&#x43E;
+        return intro.start();
+    }
+
+    /**
+     * &#x41F;&#x43E;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x44C; &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x435;&#x43D;&#x438;&#x435; &#x43E; &#x43F;&#x440;&#x43E;&#x432;&#x430;&#x43B;&#x435; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+     *
+     * @param message
+     */
+    tourFault(message) {
+        message = message || &quot;&#x423;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x435; &#x43D;&#x435; &#x43F;&#x440;&#x43E;&#x439;&#x434;&#x435;&#x43D;&#x43E;&quot;;
+        /// &#x41F;&#x43E;&#x434;&#x43A;&#x43B;&#x44E;&#x447;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x43F;&#x43E;&#x432;&#x435;&#x440;-&#x43E;&#x431;&#x451;&#x440;&#x442;&#x43A;&#x443;
+        let intro = new TourWrapper(&quot;error&quot;, [{
+            intro: `&lt;p&gt;${message}`
+        }]);
+        /// &#x417;&#x430;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C; &#x438;&#x43D;&#x442;&#x440;&#x43E;
+        return intro.start();
+    }
+
+    /**
+     * &#x412;&#x44B;&#x432;&#x435;&#x441;&#x442;&#x438; &#x434;&#x438;&#x430;&#x43B;&#x43E;&#x433;&#x43E;&#x432;&#x43E;&#x435; &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x435;&#x43D;&#x438;&#x435; &#x43E; &#x43F;&#x43E;&#x434;&#x442;&#x432;&#x435;&#x440;&#x436;&#x434;&#x435;&#x43D;&#x438;&#x438;
+     *
+     * @param question_text
+     * @returns {Promise&lt;any&gt;} resolve, &#x435;&#x441;&#x43B;&#x438; &#x43E;&#x442;&#x432;&#x435;&#x442; &quot;&#x414;&#x430;&quot;, reject - &#x435;&#x441;&#x43B;&#x438; &quot;&#x41D;&#x435;&#x442;&quot;
+     */
+    tourConfirm(question_text) {
+        let intro = new TourWrapper(&quot;dialog&quot;, question_text);
+
+        return intro.start();
+    }
+
+    getExerciseCurrent() {
+        let missionIDX = this._state.missionIDX;
+        let exerciseIDX = this._getExerciseIDX(missionIDX);
+
+        return this._lesson.missions[missionIDX].exercises[exerciseIDX];
+    }
+
+    getExerciseID() {
+        let missionIDX = this._state.missionIDX;
+        let exerciseIDX = this._getExerciseIDX(missionIDX);
+
+        return this._lesson.missions[missionIDX].exercises[exerciseIDX].pk;
+    }
+
+    /**
+     * &#x41E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x430;&#x442;&#x44C; &#x440;&#x435;&#x437;&#x443;&#x43B;&#x44C;&#x442;&#x430;&#x442; &#x43F;&#x440;&#x43E;&#x432;&#x435;&#x440;&#x43A;&#x438; &#x443;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x44F;
+     *
+     * @param verdict
+     */
+    applyVerdict(verdict) {
+        verdict.missionIDX = this._state.missionIDX;
+        verdict.exerciseIDX = this._state.missions[this._state.missionIDX].exerciseIDX;
+
+        if (verdict.status === API.STATUS_CODES.PASS) {
+            this.emitEvent(&apos;pass&apos;, verdict);
+        }
+
+        if (verdict.status === API.STATUS_CODES.FAULT) {
+            this.emitEvent(&apos;fault&apos;, {
+                message: verdict.html,
+                blocks: verdict.blocks
+            });
+        }
+    }
+
+    /**
+     * &#x41F;&#x440;&#x43E;&#x432;&#x435;&#x440;&#x438;&#x442;&#x44C; &#x43F;&#x440;&#x430;&#x432;&#x438;&#x43B;&#x44C;&#x43D;&#x43E;&#x441;&#x442;&#x44C; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x438;&#x44F; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;&#x438;
+     *
+     * @param code
+     * @returns {boolean}
+     */
+    validateButtonPress(code) {
+        if (typeof this._buttons_model === &quot;undefined&quot;) {
+            return true;
+        }
+
+        /// &#x435;&#x441;&#x43B;&#x438; &#x43F;&#x43E;&#x441;&#x43B;&#x435;&#x434;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;&#x43D;&#x43E;&#x441;&#x442;&#x44C; &#x43F;&#x443;&#x441;&#x442;&#x430;&#x44F;, &#x438;&#x433;&#x43D;&#x43E;&#x440;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x442;&#x44C;
+        if (this._buttons_model.length === 0) {
+            /// &#x437;&#x430;&#x434;&#x430;&#x43D;&#x438;&#x435; &#x43F;&#x440;&#x43E;&#x439;&#x434;&#x435;&#x43D;&#x43E;
+            // this.emitEvent(&quot;pass&quot;, {
+            //     missionIDX: this._state.missionIDX,
+            //     exerciseIDX: this._state.missions[this._state.missionIDX].exerciseIDX
+            // });
+            return true;
+        }
+
+        /// &#x435;&#x441;&#x43B;&#x438; &#x43A;&#x43E;&#x434; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x43E;&#x439; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;&#x438; &#x441;&#x43E;&#x432;&#x43F;&#x430;&#x43B; &#x441; &#x43E;&#x436;&#x438;&#x434;&#x430;&#x435;&#x43C;&#x44B;&#x43C;
+        if (code === this._buttons_model[this._state.buttonIDX]) {
+            /// &#x435;&#x441;&#x43B;&#x438; &#x43E;&#x436;&#x438;&#x434;&#x430;&#x435;&#x43C;&#x44B;&#x439; &#x43A;&#x43E;&#x434; - &#x43F;&#x43E;&#x441;&#x43B;&#x435;&#x434;&#x43D;&#x438;&#x439;
+            if ((this._state.buttonIDX + 1) === this._buttons_model.length) {
+                /// &#x441;&#x431;&#x440;&#x43E;&#x441;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x437;&#x438;&#x446;&#x438;&#x44E; &#x443;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x435;&#x43B;&#x44F;
+                this._state.buttonIDX = 0;
+                /// &#x437;&#x430;&#x434;&#x430;&#x43D;&#x438;&#x435; &#x43F;&#x440;&#x43E;&#x439;&#x434;&#x435;&#x43D;&#x43E;
+                this.emitEvent(&apos;pass&apos;, {
+                    missionIDX: this._state.missionIDX,
+                    exerciseIDX: this._state.missions[this._state.missionIDX].exerciseIDX
+                });
+            } else {
+                /// &#x443;&#x432;&#x435;&#x43B;&#x438;&#x447;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x437;&#x438;&#x446;&#x438;&#x44E; &#x443;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x435;&#x43B;&#x44F;
+                this._state.buttonIDX += 1;
+            }
+
+            return true;
+        }
+
+        /// &#x441;&#x431;&#x440;&#x43E;&#x441;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x437;&#x438;&#x446;&#x438;&#x44E; &#x443;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x435;&#x43B;&#x44F;, &#x435;&#x441;&#x43B;&#x438; &#x43A;&#x43E;&#x434; &#x43D;&#x435; &#x441;&#x43E;&#x432;&#x43F;&#x430;&#x43B;
+        this._state.buttonIDX = 0;
+
+        return false;
+    }
+
+    /**
+     * &#x423;&#x441;&#x442;&#x430;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x44D;&#x442;&#x430;&#x43B;&#x43E;&#x43D;&#x43D;&#x443;&#x44E; &#x43F;&#x43E;&#x441;&#x43B;&#x435;&#x434;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;&#x43D;&#x43E;&#x441;&#x442;&#x44C; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x438;&#x439; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;
+     *
+     * @param {Array&lt;number&gt;} seq &#x44D;&#x442;&#x430;&#x43B;&#x43E;&#x43D;&#x43D;&#x430;&#x44F; &#x43F;&#x43E;&#x441;&#x43B;&#x435;&#x434;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;&#x43D;&#x43E;&#x441;&#x442;&#x44C; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x438;&#x439; &#x43A;&#x43B;&#x430;&#x432;&#x438;&#x448;
+     * @private
+     */
+    setButtonsModel(seq) {
+        if (seq === null) {
+            seq = undefined;
+        }
+
+        this._buttons_model = seq;
+        this._state.buttonIDX = 0;
+
+        return Promise.resolve(true);
+    }
+
+    _checkLessonProgress(mission_idx) {
+        if (typeof mission_idx === &quot;undefined&quot;) {return false}
+
+        if (this._state.missions[mission_idx].exerciseIDXLast &lt; this._state.missions[mission_idx].exerciseIDX) {
+            this.emitEvent(&quot;progress&quot;, {
+                missionIDX: mission_idx,
+                exerciseIDX: this._state.missions[mission_idx].exerciseIDX,
+                exerciseCount: this._state.missions[mission_idx].exerciseCount
+            });
+
+            this._state.missions[mission_idx].exerciseIDXLast = this._state.missions[mission_idx].exerciseIDX;
+        }
+    }
+
+    _getExerciseIDX(mission_idx) {
+        let exerciseIDX = this._state.missions[mission_idx].exerciseIDX;
+
+        /// &#x435;&#x441;&#x43B;&#x438; &#x432;&#x43A;&#x43B;&#x44E;&#x447;&#x451;&#x43D; &#x440;&#x435;&#x436;&#x438;&#x43C; &#x431;&#x443;&#x43A;&#x441;&#x43E;&#x432;&#x43A;&#x438;
+        if (this._state.missions[mission_idx].skidding) {
+            /// &#x438;&#x437;&#x432;&#x43B;&#x435;&#x447;&#x44C; &#x431;&#x443;&#x43A;&#x43E;&#x441;&#x43E;&#x432;&#x447;&#x43D;&#x44B;&#x439; &#x438;&#x43D;&#x434;&#x435;&#x43A;&#x441;
+            exerciseIDX = this._state.missions[mission_idx].exerciseSkiddingIDX
+        }
+
+        return exerciseIDX;
+    }
+
+    /**
+     * &#x41E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x430;&#x442;&#x44C; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435; &#x443;&#x440;&#x43E;&#x43A;&#x430; &#x438; &#x443;&#x441;&#x442;&#x430;&#x43D;&#x43E;&#x432;&#x438;&#x442;&#x44C; &#x438;&#x445; &#x432; &#x43E;&#x431;&#x44A;&#x435;&#x43A;&#x442;
+     *
+     * &#x41F;&#x440;&#x43E;&#x438;&#x441;&#x445;&#x43E;&#x434;&#x438;&#x442; &#x441;&#x431;&#x440;&#x43E;&#x441; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x445; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x435;&#x441;&#x441;&#x430;
+     *
+     * @param lesson_data
+     * @private
+     */
+    _parseLesson(lesson_data) {
+        this._lesson = LessonPreprocessor.processLesson(lesson_data);
+
+        for (let mission of this._lesson.missions) {
+            /// &#x437;&#x430;&#x43F;&#x43E;&#x43B;&#x43D;&#x438;&#x442;&#x44C; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x435; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x435;&#x441;&#x441;&#x430;
+            this._state.missions.push({
+                exerciseIDX: 0,
+                exerciseCount: mission.exercises.length,
+                exerciseIDXLast: -1,
+                skidding: false,
+                exerciseSkiddingIDX: undefined
+            });
+        }
+
+        console.log(this._lesson);
+    }
+
+    _subscribeToWrapperEvents() {
+        // stub
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

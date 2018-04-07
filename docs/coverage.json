@@ -1,7 +1,7 @@
 {
-  "coverage": "95.23%",
-  "expectCount": 105,
-  "actualCount": 100,
+  "coverage": "57.05%",
+  "expectCount": 326,
+  "actualCount": 186,
   "files": {
     "js/admin_blockly.js": {
       "expectCount": 20,
@@ -45,6 +45,195 @@
       "actualCount": 18,
       "undocumentLines": [
         13
+      ]
+    },
+    "js/modules/BreadboardModule.js": {
+      "expectCount": 16,
+      "actualCount": 1,
+      "undocumentLines": [
+        9,
+        10,
+        12,
+        18,
+        21,
+        25,
+        30,
+        48,
+        56,
+        62,
+        66,
+        70,
+        85,
+        95,
+        105
+      ]
+    },
+    "js/modules/GUIModule.js": {
+      "expectCount": 47,
+      "actualCount": 6,
+      "undocumentLines": [
+        10,
+        17,
+        23,
+        31,
+        47,
+        48,
+        50,
+        59,
+        62,
+        64,
+        77,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        103,
+        112,
+        116,
+        126,
+        134,
+        144,
+        154,
+        164,
+        178,
+        207,
+        213,
+        245,
+        256,
+        265,
+        274,
+        282,
+        338,
+        342,
+        351,
+        355,
+        376,
+        410,
+        416,
+        451
+      ]
+    },
+    "js/modules/GlobalServiceModule.js": {
+      "expectCount": 13,
+      "actualCount": 7,
+      "undocumentLines": [
+        11,
+        12,
+        14,
+        28,
+        31,
+        40
+      ]
+    },
+    "js/modules/InstructorModule.js": {
+      "expectCount": 30,
+      "actualCount": 16,
+      "undocumentLines": [
+        7,
+        18,
+        19,
+        21,
+        28,
+        31,
+        32,
+        34,
+        236,
+        325,
+        332,
+        423,
+        437,
+        474
+      ]
+    },
+    "js/modules/LayoutModule.js": {
+      "expectCount": 28,
+      "actualCount": 15,
+      "undocumentLines": [
+        14,
+        114,
+        115,
+        117,
+        133,
+        141,
+        143,
+        145,
+        147,
+        148,
+        349,
+        353,
+        520
+      ]
+    },
+    "js/modules/LocalServiceModule.js": {
+      "expectCount": 19,
+      "actualCount": 8,
+      "undocumentLines": [
+        16,
+        17,
+        22,
+        30,
+        33,
+        35,
+        37,
+        61,
+        65,
+        77,
+        182
+      ]
+    },
+    "js/modules/LogModule.js": {
+      "expectCount": 11,
+      "actualCount": 5,
+      "undocumentLines": [
+        14,
+        15,
+        17,
+        24,
+        27,
+        31
+      ]
+    },
+    "js/modules/TracingModule.js": {
+      "expectCount": 23,
+      "actualCount": 1,
+      "undocumentLines": [
+        15,
+        16,
+        18,
+        24,
+        27,
+        34,
+        36,
+        37,
+        42,
+        67,
+        83,
+        103,
+        117,
+        127,
+        141,
+        145,
+        151,
+        163,
+        167,
+        171,
+        181,
+        187
+      ]
+    },
+    "js/modules/WorkspaceModule.js": {
+      "expectCount": 34,
+      "actualCount": 27,
+      "undocumentLines": [
+        14,
+        15,
+        17,
+        33,
+        37,
+        42,
+        105
       ]
     }
   }

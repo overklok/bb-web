@@ -5,7 +5,6 @@
   "excludes": [
     "^vendor/",
     "^utils",
-    "^modules",
     "^wrappers",
     "^.*\/__tests__*?/",
     "(spec|Spec|test|Test)\\.js$"

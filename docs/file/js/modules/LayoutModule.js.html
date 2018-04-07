@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">js/modules/LayoutModule.js | &#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="&#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;"><meta property="twitter:description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a href="https://bitbucket.org/makeitlab/codehour-breadboard-web">Repository</a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_blockly.js~AdminBlocklyApplication.html">AdminBlocklyApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_board.js~AdminBoardApplication.html">AdminBoardApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/index.js~Application.html">Application</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#core">core</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Dispatcher.js~Dispatcher.html">Dispatcher</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Loggable.js~Loggable.html">Loggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Module.js~Module.html">Module</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Wrapper.js~Wrapper.html">Wrapper</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#modules">modules</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/BreadboardModule.js~BreadboardModule.html">BreadboardModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/GUIModule.js~GUIModule.html">GUIModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/GlobalServiceModule.js~GlobalServiceModule.html">GlobalServiceModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/InstructorModule.js~InstructorModule.html">InstructorModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LayoutModule.js~LayoutModule.html">LayoutModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LocalServiceModule.js~LocalServiceModule.html">LocalServiceModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LogModule.js~LogModule.html">LogModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/TracingModule.js~TracingModule.html">TracingModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/WorkspaceModule.js~WorkspaceModule.html">WorkspaceModule</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">js/modules/LayoutModule.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Module from &quot;../core/Module&quot;;
+
+require(&quot;jquery-ui/ui/widgets/resizable&quot;);
+require(&quot;jquery-ui-bundle&quot;);
+import layout   from &quot;../../vendor/js/jquery.layout.js&quot;;
+
+// console.log(&quot;JQR&quot;, jQuery.easing);
+
+import styles from &quot;../../css/layout.css&quot;;
+
+/// jQuery Layout conflict fix
+(function ($){$.fn.selector = { split: function() { return &quot;&quot;; }};})(jQuery);
+
+const ROOT_CLASS = &quot;ui-layout-container&quot;;
+
+/**
+ * DOM-&#x438;&#x434;&#x435;&#x43D;&#x442;&#x438;&#x444;&#x438;&#x43A;&#x430;&#x442;&#x43E;&#x440;&#x44B; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x435;&#x439;
+ *
+ * @const
+ * @type {object}
+ */
+const PANE_IDS = {
+    MAIN_NORTH:     &quot;main-north&quot;,
+    MAIN_CENTER:    &quot;main-center&quot;,
+    MAIN_EAST:      &quot;main-east&quot;,
+
+    EAST_NORTH:         &quot;east-north&quot;,
+    EAST_CENTER_CENTER: &quot;east-center-center&quot;,
+    EAST_CENTER_SOUTH:  &quot;east-center-south&quot;,
+
+    EAST_SOUTH:     &quot;east-south&quot;
+};
+
+
+/**
+ * &#x420;&#x435;&#x436;&#x438;&#x43C;&#x44B; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+ *
+ * @const
+ * @type {object}
+ */
+const MODES = {
+    FULL:   &quot;full&quot;,
+    SIMPLE: &quot;simple&quot;
+};
+
+
+/**
+ * &#x41E;&#x442;&#x43E;&#x431;&#x440;&#x430;&#x436;&#x435;&#x43D;&#x438;&#x44F; &quot;&#x43D;&#x430;&#x437;&#x43D;&#x430;&#x447;&#x435;&#x43D;&#x438;&#x435; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x438;&quot; -&gt; &quot;ID DOM-&#x443;&#x437;&#x43B;&#x430;&quot; &#x434;&#x43B;&#x44F; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x43E;&#x432; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+ *
+ * @const
+ * @type {object}
+ */
+const MAPPINGS = {
+    full: {
+        launch_buttons: PANE_IDS.MAIN_CENTER,
+        workspace: PANE_IDS.MAIN_CENTER,
+        breadboard: PANE_IDS.EAST_SOUTH,
+        tracing: PANE_IDS.EAST_CENTER_CENTER,
+        buttons: PANE_IDS.EAST_CENTER_SOUTH,
+        task: PANE_IDS.EAST_NORTH,
+        lesson: PANE_IDS.MAIN_NORTH
+    },
+    simple: {
+        launch_buttons: PANE_IDS.MAIN_CENTER,
+        breadboard: PANE_IDS.MAIN_CENTER,
+        task: PANE_IDS.EAST_CENTER_CENTER,
+        lesson: PANE_IDS.MAIN_NORTH
+    }
+};
+
+/**
+ * &#x42D;&#x43B;&#x435;&#x43C;&#x435;&#x43D;&#x442;&#x44B; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x43E;&#x432; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;, &#x43A;&#x43E;&#x442;&#x43E;&#x440;&#x44B;&#x435; &#x434;&#x43E;&#x43B;&#x436;&#x43D;&#x44B; &#x431;&#x44B;&#x442;&#x44C; &#x43F;&#x440;&#x43E;&#x438;&#x433;&#x43D;&#x43E;&#x440;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D;&#x44B;
+ * &#x43F;&#x440;&#x438; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x43F;&#x435;&#x440;&#x435;&#x445;&#x43E;&#x434;&#x430; &#x43C;&#x435;&#x436;&#x434;&#x443; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x430;&#x43C;&#x438;
+ *
+ * @const
+ * @type {{full: *[string], simple: *[string]}}
+ */
+const FADEBLOCKINGS = {
+    full: [
+        PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_NORTH,
+        PANE_IDS.EAST_NORTH,
+        PANE_IDS.EAST_CENTER_SOUTH,
+    ],
+    simple: [
+        PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_NORTH,
+        PANE_IDS.EAST_NORTH,
+        PANE_IDS.EAST_CENTER_SOUTH,
+    ]
+};
+
+/**
+ * &#x41D;&#x430;&#x447;&#x430;&#x43B;&#x44C;&#x43D;&#x430;&#x44F; &#x437;&#x430;&#x434;&#x435;&#x440;&#x436;&#x43A;&#x430;
+ *
+ * &#x418;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x443;&#x435;&#x442;&#x441;&#x44F; &#x434;&#x43B;&#x44F; &#x443;&#x441;&#x442;&#x440;&#x430;&#x43D;&#x435;&#x43D;&#x438;&#x44F; &#x432;&#x435;&#x440;&#x43E;&#x44F;&#x442;&#x43D;&#x44B;&#x445; &#x43A;&#x43E;&#x43B;&#x43B;&#x438;&#x437;&#x438;&#x439;
+ * &#x43F;&#x440;&#x438; &#x447;&#x430;&#x441;&#x442;&#x43E;&#x439; &#x441;&#x43C;&#x435;&#x43D;&#x435; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x43E;&#x432; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+ *
+ * @const
+ * @type {number}
+ */
+const DURATION_INITIAL = 0;
+
+/**
+ * &#x41C;&#x43E;&#x434;&#x443;&#x43B;&#x44C; &#x430;&#x432;&#x442;&#x43E;&#x43C;&#x430;&#x442;&#x438;&#x447;&#x435;&#x441;&#x43A;&#x43E;&#x439; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;&#x44B;
+ *
+ * &#x410;&#x432;&#x442;&#x43E;&#x43C;&#x430;&#x442;&#x438;&#x447;&#x435;&#x441;&#x43A;&#x438; &#x440;&#x430;&#x441;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x44F;&#x435;&#x442; &#x437;&#x43E;&#x43D;&#x44B; &#x441;&#x440;&#x435;&#x434;&#x44B;
+ * &#x438; &#x437;&#x430;&#x434;&#x430;&#x451;&#x442; &#x43F;&#x430;&#x440;&#x430;&#x43C;&#x435;&#x442;&#x440;&#x44B; &#x438;&#x445; &#x43E;&#x442;&#x43E;&#x431;&#x440;&#x430;&#x436;&#x435;&#x43D;&#x438;&#x44F;
+ *
+ * @class
+ * @classdesc APPROVED, STRESS-TESTED ON THROTTLED CPU
+ */
+export default class LayoutModule extends Module {
+    static get eventspace_name() {return &quot;lay&quot;}
+    static get event_types() {return [&quot;compose-begin&quot;, &quot;compose-end&quot;, &quot;resize&quot;]}
+
+    static defaults() {
+        return {
+            animSpeedMain: 500,     // &#x441;&#x43A;&#x43E;&#x440;&#x43E;&#x441;&#x442;&#x44C; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x433;&#x43B;&#x430;&#x432;&#x43D;&#x44B;&#x445; &#x44D;&#x43B;&#x435;&#x43C;&#x435;&#x43D;&#x442;&#x43E;&#x432;
+            animSpeedSub: 100,      // &#x441;&#x43A;&#x43E;&#x440;&#x43E;&#x441;&#x442;&#x44C; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x43C;&#x435;&#x43B;&#x43A;&#x438;&#x445; &#x44D;&#x43B;&#x435;&#x43C;&#x435;&#x43D;&#x442;&#x43E;&#x432;
+            animSpeedFade: 200,     // &#x441;&#x43A;&#x43E;&#x440;&#x43E;&#x441;&#x442;&#x44C; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x43F;&#x435;&#x440;&#x435;&#x445;&#x43E;&#x434;&#x430;
+            delayBeforeEnd: 100     // &#x437;&#x430;&#x434;&#x435;&#x440;&#x436;&#x43A;&#x430; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x443;&#x437;&#x43A;&#x438; &#x432;&#x43D;&#x443;&#x442;&#x440;&#x435;&#x43D;&#x43D;&#x43E;&#x441;&#x442;&#x435;&#x439;
+        }
+    }
+
+    /**
+     * @constructor
+     * @param options &#x41D;&#x430;&#x441;&#x442;&#x440;&#x43E;&#x439;&#x43A;&#x438; &#x43C;&#x43E;&#x434;&#x443;&#x43B;&#x44F;
+     */
+    constructor(options) {
+        super(options);
+
+        this._state = {
+            mode: MODES.FULL,
+            transitionActive: false,
+            transitionDummy: false,
+            buttonsPaneVisible: true,
+            firstLaunch: true
+        };
+
+        this._layout_options = this._getFullLayout();
+
+        this._layout = $(&quot;.&quot; + ROOT_CLASS).layout(this._layout_options);
+
+        this._panes = this._getPanes();
+
+        this._busy = false;
+        this._resizing = false;
+
+        if (!this._options.animSpeedFade) {
+            this._options.delayBeforeEnd = 0;
+        }
+    }
+
+    /**
+     * &#x421;&#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x443; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;&#x44B;
+     *
+     * @param mode {string} &#x440;&#x435;&#x436;&#x438;&#x43C; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x43A;&#x438;
+     */
+    compose(mode) {
+        if (!(mode in MAPPINGS)) {
+            throw new RangeError(&quot;There are no layout mode named `&quot; + mode + &quot;` in mappings&quot;);
+        }
+
+        return new Promise(resolve =&gt; {
+            /// &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x438;&#x442;&#x44C; DOM-&#x443;&#x437;&#x43B;&#x44B; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x43A;&#x438;
+            let nodes = this._transformMappingToNodes(MAPPINGS[mode]);
+
+            /// &#x43D;&#x430;&#x447;&#x430;&#x43B;&#x44C;&#x43D;&#x430;&#x44F; &#x43F;&#x440;&#x43E;&#x434;&#x43E;&#x43B;&#x436;&#x438;&#x442;&#x435;&#x43B;&#x44C;&#x43D;&#x43E;&#x441;&#x442;&#x44C;
+            let duration = DURATION_INITIAL;
+
+            /// &#x435;&#x441;&#x43B;&#x438; &#x432; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x439; &#x43C;&#x43E;&#x43C;&#x435;&#x43D;&#x442; &#x438;&#x434;&#x451;&#x442; &#x440;&#x430;&#x431;&#x43E;&#x442;&#x430;, &#x43E;&#x442;&#x43A;&#x43B;&#x43E;&#x43D;&#x438;&#x442;&#x44C;
+            if (this._busy) {
+                return;
+            }
+
+            /// &#x435;&#x441;&#x43B;&#x438; &#x443;&#x436;&#x435; &#x432; &#x43D;&#x443;&#x436;&#x43D;&#x43E;&#x43C; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x435;
+            if (this._state.mode === mode) {
+                /// &#x437;&#x430;&#x43D;&#x44F;&#x442;&#x43E;
+                this._busy = true;
+                setTimeout(() =&gt; {
+                    /// &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x438;&#x442;&#x44C; &#x43E; &#x433;&#x43E;&#x442;&#x43E;&#x432;&#x43D;&#x43E;&#x441;&#x442;&#x438; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x43A;&#x438;
+                    if (this._state.firstLaunch &amp;&amp; mode === MODES.FULL) {
+                        this.emitEvent(&quot;compose-end&quot;, nodes);
+                    }
+                    /// &#x440;&#x430;&#x437;&#x440;&#x435;&#x448;&#x438;&#x442;&#x44C; &#x432;&#x44B;&#x437;&#x43E;&#x432; &#x444;&#x443;&#x43D;&#x43A;&#x446;&#x438;&#x438;
+                    this._busy = false;
+                    /// &#x440;&#x430;&#x437;&#x440;&#x435;&#x448;&#x438;&#x442;&#x44C; &#x432;&#x44B;&#x43F;&#x43E;&#x43B;&#x43D;&#x435;&#x43D;&#x438;&#x435; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x439; &#x438;&#x43D;&#x441;&#x442;&#x440;&#x443;&#x43A;&#x446;&#x438;&#x438; &#x432;&#x44B;&#x437;&#x44B;&#x432;&#x430;&#x44E;&#x449;&#x435;&#x439; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x430;&#x43C;&#x43C;&#x44B;
+                    resolve();
+
+                    this._state.firstLaunch = false;
+                }, duration);
+
+                return;
+            }
+
+            /// &#x435;&#x441;&#x43B;&#x438; &#x440;&#x435;&#x436;&#x438;&#x43C; &#x43D;&#x443;&#x436;&#x43D;&#x43E; &#x441;&#x43C;&#x435;&#x43D;&#x438;&#x442;&#x44C;, &#x437;&#x430;&#x43D;&#x44F;&#x442;&#x43E;
+            this._busy = true;
+
+            /// &#x435;&#x441;&#x43B;&#x438; &#x437;&#x430;&#x434;&#x430;&#x43D;&#x430; &#x441;&#x43A;&#x43E;&#x440;&#x43E;&#x441;&#x442;&#x44C; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x43F;&#x43E;&#x44F;&#x432;&#x43B;&#x435;&#x43D;&#x438;&#x44F;/&#x438;&#x441;&#x447;&#x435;&#x437;&#x43D;&#x43E;&#x432;&#x435;&#x43D;&#x438;&#x44F; &#x441;&#x43E;&#x434;&#x435;&#x440;&#x436;&#x438;&#x43C;&#x43E;&#x433;&#x43E; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x435;&#x439;
+            if (this._options.animSpeedFade) {
+                /// &#x443;&#x432;&#x435;&#x43B;&#x438;&#x447;&#x438;&#x442;&#x44C; &#x437;&#x430;&#x434;&#x435;&#x440;&#x436;&#x43A;&#x443;
+                duration += this._options.animSpeedFade;
+                /// &#x441;&#x43A;&#x440;&#x44B;&#x442;&#x44C; &#x441;&#x43E;&#x434;&#x435;&#x440;&#x436;&#x438;&#x43C;&#x43E;&#x435; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x435;&#x439;
+                this.hidePanes(this._state.mode);
+            }
+
+            /// &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x438;&#x442;&#x44C; &#x43E; &#x433;&#x43E;&#x442;&#x43E;&#x432;&#x43D;&#x43E;&#x441;&#x442;&#x438; &#x43D;&#x430;&#x447;&#x430;&#x442;&#x44C; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x43A;&#x443;
+            setTimeout(() =&gt; {
+                this.emitEvent(&quot;compose-begin&quot;, nodes);
+            }, duration);
+
+            /// &#x435;&#x441;&#x43B;&#x438; &#x437;&#x430;&#x43F;&#x430;&#x434;&#x43D;&#x430;&#x44F; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x44C; &#x43D;&#x435; &#x440;&#x430;&#x441;&#x43A;&#x440;&#x44B;&#x442;&#x430;, &#x440;&#x430;&#x441;&#x43A;&#x440;&#x44B;&#x442;&#x44C;
+            this._layout.open(&quot;east&quot;);
+
+            /// &#x432; &#x437;&#x430;&#x432;&#x438;&#x441;&#x438;&#x43C;&#x43E;&#x441;&#x442;&#x438; &#x43E;&#x442; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x430;, &#x432; &#x43A;&#x43E;&#x442;&#x43E;&#x440;&#x44B;&#x439; &#x43D;&#x443;&#x436;&#x43D;&#x43E; &#x43F;&#x435;&#x440;&#x435;&#x439;&#x442;&#x438;
+            switch (mode) {
+                case MODES.SIMPLE: {
+                    this._panes.east.hide(&quot;north&quot;);
+                    duration += this._options.animSpeedSub;
+
+                    this._panes.east.hide(&quot;south&quot;);
+                    duration += this._options.animSpeedSub;
+
+                    this._layout.sizePane(&quot;east&quot;, .4);
+                    duration += this._options.animSpeedMain;
+
+                    if (this._state.buttonsPaneVisible) {
+                        this._panes._east.center.hide(&quot;south&quot;);
+                        duration += this._options.animSpeedSub;
+                    }
+
+                    break;
+                }
+                case MODES.FULL: {
+                    this._panes.east.show(&quot;north&quot;);
+                    duration += this._options.animSpeedSub;
+
+                    this._panes.east.show(&quot;south&quot;);
+                    duration += this._options.animSpeedSub;
+
+                    this._layout.sizePane(&quot;east&quot;, .3);
+                    duration += this._options.animSpeedMain;
+
+                    if (this._state.buttonsPaneVisible) {
+                        this._panes._east.center.show(&quot;south&quot;);
+                        duration += this._options.animSpeedSub;
+                    }
+
+                    break;
+                }
+                default: {
+                    throw new TypeError(&quot;Mode &quot; + mode + &quot;is not supported&quot;);
+                }
+            }
+
+            this._state.mode = mode;
+
+            /// &#x437;&#x430;&#x434;&#x435;&#x440;&#x436;&#x43A;&#x430; &#x434;&#x43B;&#x44F; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x441;&#x43C;&#x435;&#x43D;&#x44B; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+            setTimeout(() =&gt; {
+                /// &#x441;&#x43E;&#x43E;&#x431;&#x449;&#x438;&#x442;&#x44C; &#x43E; &#x433;&#x43E;&#x442;&#x43E;&#x432;&#x43D;&#x43E;&#x441;&#x442;&#x438; &#x43A;&#x43E;&#x43C;&#x43F;&#x43E;&#x43D;&#x43E;&#x432;&#x43A;&#x438;
+                this.emitEvent(&quot;compose-end&quot;, nodes);
+                /// &#x437;&#x430;&#x434;&#x435;&#x440;&#x436;&#x43A;&#x430; &#x434;&#x43B;&#x44F; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x43F;&#x43E;&#x44F;&#x432;&#x43B;&#x435;&#x43D;&#x438;&#x44F; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x435;&#x439;
+                setTimeout(() =&gt; {
+                    /// &#x440;&#x430;&#x437;&#x440;&#x435;&#x448;&#x438;&#x442;&#x44C; &#x432;&#x44B;&#x437;&#x43E;&#x432; &#x444;&#x443;&#x43D;&#x43A;&#x446;&#x438;&#x438;
+                    this._busy = false;
+                    /// &#x440;&#x430;&#x437;&#x440;&#x435;&#x448;&#x438;&#x442;&#x44C; &#x432;&#x44B;&#x43F;&#x43E;&#x43B;&#x43D;&#x435;&#x43D;&#x438;&#x435; &#x441;&#x43B;&#x435;&#x434;&#x443;&#x44E;&#x449;&#x435;&#x439; &#x438;&#x43D;&#x441;&#x442;&#x440;&#x443;&#x43A;&#x446;&#x438;&#x438; &#x432;&#x44B;&#x437;&#x44B;&#x432;&#x430;&#x44E;&#x449;&#x435;&#x439; &#x43F;&#x440;&#x43E;&#x433;&#x440;&#x430;&#x43C;&#x43C;&#x44B;
+                    resolve();
+                    this.showPanes();
+                }, this._options.animSpeedFade); // &#x437;&#x430;&#x434;&#x435;&#x440;&#x436;&#x43A;&#x430; &#x434;&#x43B;&#x44F; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x43F;&#x43E;&#x44F;&#x432;&#x43B;&#x435;&#x43D;&#x438;&#x44F; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x435;&#x439;
+            }, duration); // &#x437;&#x430;&#x434;&#x435;&#x440;&#x436;&#x43A;&#x430; &#x434;&#x43B;&#x44F; &#x430;&#x43D;&#x438;&#x43C;&#x430;&#x446;&#x438;&#x438; &#x441;&#x43C;&#x435;&#x43D;&#x44B; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+
+            this._state.firstLaunch = false;
+        });
+    }
+
+    /**
+     * &#x41F;&#x435;&#x440;&#x435;&#x43A;&#x43B;&#x44E;&#x447;&#x438;&#x442;&#x44C; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x44C;, &#x43E;&#x442;&#x43E;&#x431;&#x440;&#x430;&#x436;&#x430;&#x44E;&#x449;&#x443;&#x44E; &#x43D;&#x430;&#x436;&#x430;&#x442;&#x44B;&#x435; &#x43A;&#x43D;&#x43E;&#x43F;&#x43A;&#x438;
+     *
+     * @param on
+     * @returns {Promise&lt;any&gt;}
+     */
+    switchButtonsPane(on) {
+        return new Promise(resolve =&gt; {
+            if (on === this._state.buttonsPaneVisible || this._state.mode === MODES.SIMPLE) {
+                resolve();
+                return;
+            }
+
+            let duration = DURATION_INITIAL;
+
+            if (on) {
+                this._state.buttonsPaneVisible = true;
+
+                this._panes._east.center.show(&quot;south&quot;);
+                duration += this._options.animSpeedSub;
+            } else {
+                this._state.buttonsPaneVisible = false;
+
+                this._panes._east.center.hide(&quot;south&quot;);
+                duration += this._options.animSpeedSub;
+            }
+
+            setTimeout(() =&gt; {
+                resolve();
+            }, duration);
+        });
+    }
+
+    /**
+     * &#x421;&#x43A;&#x440;&#x44B;&#x442;&#x44C; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x438;
+     *
+     * &#x412;&#x44B;&#x437;&#x44B;&#x432;&#x430;&#x435;&#x442;&#x441;&#x44F; &#x43F;&#x440;&#x438; &#x441;&#x43C;&#x435;&#x43D;&#x435; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x43E;&#x432; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+     *
+     * @param {string} mode     &#x440;&#x435;&#x436;&#x438;&#x43C; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;, &#x438;&#x437; &#x43A;&#x43E;&#x442;&#x43E;&#x440;&#x43E;&#x433;&#x43E; &#x43D;&#x435;&#x43E;&#x431;&#x445;&#x43E;&#x434;&#x438;&#x43C;&#x43E; &#x432;&#x44B;&#x439;&#x442;&#x438;
+     * @private
+     */
+    hidePanes(mode) {
+        for (let pane_id of Object.values(PANE_IDS)) {
+            if (FADEBLOCKINGS[mode].indexOf(pane_id) &gt;= 0) {
+                continue;
+            }
+
+            if (Object.values(MAPPINGS[mode]).indexOf(pane_id) &gt;= 0) {
+                $(&quot;#&quot; + pane_id).animate({opacity: 0}, this._options.animSpeedFade)
+            } else {
+                $(&quot;#&quot; + pane_id).animate({opacity: 0}, 0)
+            }
+        }
+    }
+
+    /**
+     * &#x41F;&#x43E;&#x43A;&#x430;&#x437;&#x430;&#x442;&#x44C; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x438;
+     *
+     * &#x412;&#x44B;&#x437;&#x44B;&#x432;&#x430;&#x435;&#x442;&#x441;&#x44F; &#x43F;&#x440;&#x438; &#x441;&#x43C;&#x435;&#x43D;&#x435; &#x440;&#x435;&#x436;&#x438;&#x43C;&#x43E;&#x432; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+     *
+     * @private
+     */
+    showPanes() {
+        return new Promise(resolve =&gt; {
+            for (let pane_id of Object.values(PANE_IDS)) {
+                $(&quot;#&quot; + pane_id).animate({opacity: 1}, this._options.animSpeedFade)
+            }
+
+            setTimeout(() =&gt; {resolve()}, this._options.animSpeedFade);
+        });
+    }
+
+    revealTopPane() {
+        this._layout.sizePane(&apos;north&apos;, 80);
+    }
+
+    concealTopPane() {
+        this._layout.sizePane(&apos;north&apos;, 55);
+    }
+
+    /**
+     * &#x41F;&#x440;&#x435;&#x43E;&#x431;&#x440;&#x430;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x44C; &#x441;&#x43E;&#x43E;&#x442;&#x432;&#x435;&#x442;&#x441;&#x442;&#x432;&#x438;&#x44F; &quot;ID &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot; -&gt; &quot;ID DOM-&#x443;&#x437;&#x43B;&#x430; &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot;
+     * &#x432; &#x441;&#x43E;&#x43E;&#x442;&#x432;&#x435;&#x442;&#x441;&#x442;&#x432;&#x438;&#x44F; &quot;ID &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot; -&gt; &quot;DOM-&#x443;&#x437;&#x435;&#x43B; &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot;
+     *
+     * @param map {Object}  &#x421;&#x43E;&#x43E;&#x442;&#x432;&#x435;&#x442;&#x441;&#x442;&#x432;&#x438;&#x44F; &quot;ID &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot; -&gt; &quot;ID DOM-&#x443;&#x437;&#x43B;&#x430; &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot;
+     * @returns {Object}    &#x421;&#x43E;&#x43E;&#x442;&#x432;&#x435;&#x442;&#x441;&#x442;&#x432;&#x438;&#x44F; &quot;ID &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot; -&gt; &quot;DOM-&#x443;&#x437;&#x435;&#x43B; &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438;&quot;
+     * @private
+     */
+    _transformMappingToNodes(map) {
+        let nodes = {};
+
+        for ([k, node_id] of Object.entries(map)) {
+            nodes[k] = document.getElementById(node_id);
+        }
+
+        return nodes;
+    }
+
+    /**
+     * &#x41E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x430;&#x442;&#x44C; &#x441;&#x43E;&#x431;&#x44B;&#x442;&#x438;&#x435; &quot;&#x438;&#x437;&#x43C;&#x435;&#x43D;&#x435;&#x43D;&#x438;&#x435; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x440;&#x430;&quot;
+     *
+     * @private
+     */
+    _onResize() {
+        if (!this._busy &amp;&amp; !this._resizing) {
+            this._resizing = true;
+
+            if (this._state.mode === &quot;simple&quot;) {
+                this._layout.sizePane(&quot;east&quot;, .4);
+            }
+
+            if (this._state.mode === &quot;full&quot;) {
+                this._layout.sizePane(&quot;east&quot;, .3);
+            }
+
+            setTimeout(() =&gt; {
+                this._resizing = false;
+            }, this._options.animSpeedMain);
+        }
+
+        this.emitEvent(&quot;resize&quot;);
+    }
+
+    /**
+     * &#x41F;&#x43E;&#x43B;&#x443;&#x447;&#x438;&#x442;&#x44C; &#x43F;&#x43E;&#x43B;&#x43D;&#x443;&#x44E; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x443;
+     *
+     * &#x41C;&#x435;&#x442;&#x43E;&#x434; &#x438;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x443;&#x435;&#x442;&#x441;&#x44F; &#x434;&#x43B;&#x44F; &#x441;&#x43E;&#x43A;&#x440;&#x44B;&#x442;&#x438;&#x44F; &#x431;&#x43E;&#x43B;&#x44C;&#x448;&#x43E;&#x433;&#x43E; &#x43E;&#x431;&#x44A;&#x435;&#x43A;&#x442;&#x430; &#x438;&#x437; &#x43A;&#x43E;&#x43D;&#x441;&#x442;&#x440;&#x443;&#x43A;&#x442;&#x43E;&#x440;&#x430;
+     *
+     * @returns {object}
+     * @private
+     */
+    _getFullLayout() {
+        return {
+            closable: true,	    // pane can open &amp; close
+            resizable: true,	// when open, pane can be resized
+            slidable: true,	    // when closed, pane can &apos;slide&apos; open over other panes - closes on mouse-out
+            // livePaneResizing: true,
+            fxSpeed: this._options.animSpeedMain,
+            // resizeWhileDragging: true,
+
+            fxName:     &quot;slide&quot;,
+            fxSettings: { duration: this._options.animSpeedMain, easing: &quot;easeInOutCirc&quot; },
+            fxSettings_open: { duration: this._options.animSpeedMain, easing: &quot;easeOutCirc&quot; },
+            fxSettings_close: { duration: this._options.animSpeedMain, easing: &quot;easeOutCirc&quot; },
+
+            // fxSpeed_size: 1000,
+
+            animatePaneSizing: true,
+            onresize: () =&gt; {try {this._onResize()} catch (e) {console.error(e)}},
+
+            //	some resizing/toggling settings
+            north: {
+                slidable: false,	            // OVERRIDE the pane-default of &apos;slidable=true&apos;
+                closable: false,
+                spacing_closed: 20,		        // big resizer-bar when open (zero height)
+                size: 55,
+                // maxSize: 100
+            },
+
+            center: {
+            },
+
+            //	some pane-size settings
+            east: {
+                size: .4,
+                // maxSize: 400,
+
+                livePaneResizing: true,
+                resizable: true,
+
+                fxSpeed: this._options.animSpeedMain,
+
+                onresize: () =&gt; {try {this._onResize(&apos;east&apos;)} catch (e) {console.error(e)}},
+
+                childOptions: {
+                    north: {
+                        size: .3,
+
+                        resizable: true,
+                        fxSpeed: this._options.animSpeedSub,
+                        onresize: () =&gt; {try {this._onResize()} catch (e) {console.error(e)}},
+                    },
+                    south: {
+                        size: .3,
+
+                        resizable: true,
+                        fxSpeed: this._options.animSpeedSub,
+                        onresize: () =&gt; {try {this._onResize()} catch (e) {console.error(e)}},
+                    },
+                    center: {
+                        childOptions: {
+                            center: {
+                                spacing_open: 0,
+                                spacing_closed: 0,
+
+                                resizable: true,
+                                onresize: () =&gt; {try {this._onResize()} catch (e) {console.error(e)}},
+                            },
+                            south: {
+                                size: .2,
+                                minSize: 35,
+                                maxSize: 45,
+                                spacing_open: 0,
+                                spacing_closed: 0,
+                                slidable: false,
+                                closable: false,
+                                onresize: () =&gt; {try {this._onResize()} catch (e) {console.error(e)}},
+                            }
+                        }
+                    }
+                }
+            },
+        };
+    }
+
+    /**
+     * &#x41F;&#x43E;&#x43B;&#x443;&#x447;&#x438;&#x442;&#x44C; &#x441;&#x441;&#x44B;&#x43B;&#x43A;&#x438; &#x43D;&#x430; &#x43F;&#x430;&#x43D;&#x435;&#x43B;&#x438; jQuery UI Layouts
+     *
+     * &#x41C;&#x435;&#x442;&#x43E;&#x434; &#x438;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x443;&#x435;&#x442;&#x441;&#x44F; &#x443;&#x43F;&#x440;&#x43E;&#x449;&#x451;&#x43D;&#x43D;&#x43E;&#x433;&#x43E; &#x434;&#x43E;&#x441;&#x442;&#x443;&#x43F;&#x430; &#x43A; &#x44D;&#x43B;&#x435;&#x43C;&#x435;&#x43D;&#x442;&#x430;&#x43C; &#x440;&#x430;&#x437;&#x43C;&#x435;&#x442;&#x43A;&#x438;
+     *
+     * @returns {object}
+     * @private
+     */
+    _getPanes() {
+        return {
+            north: this._layout.north,
+            center: this._layout.center,
+            east: this._layout.east.children.layout1,
+
+            _east: {
+                north:  this._layout.east.children.layout1.north,
+                south:  this._layout.east.children.layout1.south,
+                center: this._layout.east.children.layout1.center.children.layout1,
+
+                _center: {
+                    center: this._layout.east.children.layout1.center.children.layout1.center,
+                    south:  this._layout.east.children.layout1.center.children.layout1.south,
+                }
+            }
+        }
+    }
+
+
+    _subscribeToWrapperEvents() {
+        // No events
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

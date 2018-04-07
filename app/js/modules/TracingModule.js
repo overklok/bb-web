@@ -5,7 +5,7 @@ import KbdPaneWrapper from "../wrappers/KbdPaneWrapper";
 import JSONBlocks       from '../utils/blockly/extras/blocks';
 
 /**
- * Модуль, отвечающий за поведение области трассировки кода:
+ * Модуль, отвечающий за поведение области трассировки кода
  *
  * Например:
  * Текущие переменные
