@@ -75,22 +75,25 @@ let getArguments = (block, fields) => {
     return args;
 };
 
-let appendShadowBlock = (block_svg, input_name, block_name, block_value) => {
-    let numberShadowBlock = block_svg.workspace.newBlock(block_name);
+/**
+ * @param {BlockSvg} block_svg      block that should contain a shadow block
+ * @param {string} input_name       name of the argument related with shadow block
+ * @param {string} block_name       name of the block to be appended
+ */
+let appendShadowBlock = (block_svg, input_name, block_name) => {
+    setTimeout(() => {
+        let numberShadowBlock = block_svg.workspace.newBlock(block_name);
 
-    if (typeof block_value !== "undefined") {
-        numberShadowBlock.setFieldValue(block_value, 'NUM');
-    }
+        numberShadowBlock.setShadow(true);
+        numberShadowBlock.initSvg();
 
-    numberShadowBlock.setShadow(true);
-    numberShadowBlock.initSvg();
+        numberShadowBlock.render();
 
-    numberShadowBlock.render();
+        let ob = numberShadowBlock.outputConnection;
 
-    let ob = numberShadowBlock.outputConnection;
-
-    let cc = block_svg.getInput(input_name).connection;
-    cc.connect(ob);
+        let cc = block_svg.getInput(input_name).connection;
+        cc.connect(ob);
+    }, 0);
 };
 
 export {

@@ -29,7 +29,7 @@ export default class LessonPreprocessor {
         let missions = [];
 
         for (let _mission of _lesson.missions) {
-            let mission = processMission(_mission);
+            let mission = LessonPreprocessor.processMission(_mission);
 
             if (mission) missions.push(mission);
         }
@@ -49,7 +49,7 @@ export default class LessonPreprocessor {
         let exercises = [];
 
         for (let _exercise of _mission.exercises) {
-            let exercise = processExercise(_exercise);
+            let exercise = LessonPreprocessor.processExercise(_exercise);
 
             if (exercise) exercises.push(exercise);
         }
@@ -69,7 +69,7 @@ export default class LessonPreprocessor {
         let popovers    = [];
 
         for (let _popover of _exercise.popovers) {
-            let popover = processPopover(_popover);
+            let popover = LessonPreprocessor.processPopover(_popover);
 
             if (popover) popovers.push(popover);
         }
