@@ -3319,7 +3319,7 @@
     "__docId__": 186,
     "kind": "file",
     "name": "js/modules/GUIModule.js",
-    "content": "import Module from \"../core/Module\";\n\nimport SpinnerWrapper from \"../wrappers/SpinnerWrapper\";\nimport LessonPaneWrapper from \"../wrappers/LessonPaneWrapper\";\nimport TextPaneWrapper from \"../wrappers/TextPaneWrapper\";\nimport LaunchBtnWrapper from \"../wrappers/LaunchBtnWrapper\";\nimport FileWrapper from \"../wrappers/FileWrapper\";\nimport AlertifierWrapper from \"../wrappers/AlertifierWrapper\";\n\nconst BOARD_STATUSES = {\n    SEARCH: 'search',\n    CONNECT: 'connect',\n    DISCONNECT: 'disconnect',\n    NONE: 'none',\n};\n\nconst HASH_TYPES = {\n    GOTO: \"goto\",\n\n    NONE: \"none\",\n};\n\nconst REGEXPS = {\n    MISSION_EXERCISE:   /^#m[0-9]+e[0-9]+$/g,\n    MISSION:            /^#m[0-9]+$/g,\n    EXERCISE:           /^#e[0-9]+$/g,\n\n    NUMBERS:            /[0-9]+/g,\n};\n\nconst LAUNCH_VARIANTS = {\n    NONE: 0,\n    CHECK: 1,\n    EXECUTE: 2,\n    CHECK_N_EXECUTE: 3,\n};\n\n/**\n * Модуль, управляющий базовым функциями графического интерфейса\n * и выполняющий первичную обработку его событий\n *\n * Отвечает за нажатия всех кнопок, нажатие всех клавиш,\n * выгрузку и загрузку файлов.\n *\n */\nexport default class GUIModule extends Module {\n    static get eventspace_name() {return \"gui\"}\n    static get event_types() {return [\"ready\", \"mission\", \"run\", \"stop\", \"check\", \"keyup\", \"hash-command\", \"menu\", \"load-file\", \"unload-file\"]}\n\n    static defaults() {\n        return {\n            anyKey: false,  // отключить фильтрацию клавиш\n            logoText: \"Tapanda\",\n            imagesPath: \"\",\n            devMode: false,\n        }\n    }\n\n    constructor(options) {\n        super(options);\n\n        this._button_codes = [];\n\n        this._state = {\n            ready: false,\n            switched: true, // debug only\n            listenButtons: false,\n            launchVariant: false,\n\n            areasDisp: {\n                text: false,\n                lesson: false,\n                button: false,\n            }\n        };\n\n        this._task_description = undefined;\n\n        this._filer = new FileWrapper();\n        this._spinner = new SpinnerWrapper();\n        this._lesson_pane = new LessonPaneWrapper();\n        this._text_pane = new TextPaneWrapper();\n        this._launch_btn = new LaunchBtnWrapper();\n        this._alertifier = new AlertifierWrapper();\n\n        if (this._options.imagesPath) {\n            this._alertifier.setImagesPath(this._options.imagesPath);\n        }\n\n        this._lesson_pane.registerLogoText(this._options.logoText);\n\n        this._setMenuStructure();\n\n        if (this._options.devMode) {\n            this.switchDeveloperMode(true);\n        } else {\n            this.switchDeveloperMode(false);\n        }\n\n        this._subscribeToWrapperEvents();\n    }\n\n    hideSpinner() {\n        this._spinner.hide();\n\n        if (!this._state.ready) {\n            this._state.ready = true;\n            this.emitEvent(\"ready\");\n        }\n    }\n\n    showSpinnerError(message) {\n        this._spinner.setTextError(message);\n    }\n\n    showMissionButtons(missions) {\n        return new Promise((resolve, reject) => {\n            if (!missions) {return resolve(false)}\n\n            this._lesson_pane.registerMissions(missions);\n\n            resolve(true);\n        });\n    }\n\n    setMissionCurrent(mission_idx) {\n        return new Promise((resolve, reject) => {\n            this._lesson_pane.setMissionActive(mission_idx);\n\n            resolve(true);\n        });\n    }\n\n    setMissionProgress(mission) {\n        return new Promise((resolve, reject) => {\n            if (!mission) {return resolve(false)}\n\n            this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX);\n\n            resolve(true);\n        });\n    }\n\n    setMissionSkiddingOn(mission_idx) {\n        return new Promise((resolve, reject) => {\n            if (!mission_idx) {return resolve(false)}\n\n            this._lesson_pane.setMissionSkidding(mission_idx, true);\n\n            resolve(true);\n        });\n    }\n\n    setExerciseCurrent(exercise_idx) {\n        return new Promise((resolve, reject) => {\n            console.log(exercise_idx);\n\n            this._lesson_pane.setExerciseActive(exercise_idx);\n\n            resolve(true);\n        });\n    }\n\n    setCourseText(lesson_name) {\n        return new Promise((resolve, reject) => {\n            let text = \"Урок: \" + lesson_name;\n\n            if (!this._state.areasDisp.lesson) {\n                this._lesson_pane.registerCourseText(text);\n            } else {\n                this._lesson_pane.setCourseText(text);\n            }\n\n            resolve(true);\n        });\n    }\n\n    setBoardStatus(status) {\n        console.log(\"BS\", status);\n        switch (status) {\n            case BOARD_STATUSES.SEARCH: {\n                this.hideAllAlerts();\n                this._lesson_pane.setStatus('warning');\n                break;\n            }\n            case BOARD_STATUSES.CONNECT: {\n                this.hideAllAlerts();\n                this._lesson_pane.setStatus('success');\n                break;\n            }\n            case BOARD_STATUSES.DISCONNECT: {\n                this.showAlert('no_board');\n                this._lesson_pane.setStatus('error');\n                break;\n            }\n            case BOARD_STATUSES.NONE: {\n                this._lesson_pane.setStatus('active');\n                break;\n            }\n            default: {\n                this._lesson_pane.setStatus('default');\n                break;\n            }\n        }\n    }\n\n    showTask(html) {\n        this._text_pane.setText(html);\n\n        return Promise.resolve();\n    }\n\n    setLaunchVariant(variant) {\n        if (!this._state.areasDisp.buttons)   {return Promise.resolve(false)}\n\n        console.log(\"SLV\", variant);\n\n        switch (variant) {\n            case LAUNCH_VARIANTS.NONE: {\n                this._launch_btn.hide();\n                break;\n            }\n            case LAUNCH_VARIANTS.CHECK: {\n                this._launch_btn.show(0);\n                break;\n            }\n            case LAUNCH_VARIANTS.EXECUTE: {\n                this._launch_btn.show(1);\n                break;\n            }\n            case LAUNCH_VARIANTS.CHECK_N_EXECUTE: {\n                this._launch_btn.show(2);\n                break;\n            }\n            default: {\n                this._state.launchVariant = variant;\n            }\n        }\n\n        this._state.launchVariant = !this._state.launchVariant;\n\n        return Promise.resolve(true);\n    }\n\n    affirmLaunchButtonState(button, start=true) {\n        if (!this._state.areasDisp.buttons) {return false}\n        if (!button) {throw new TypeError(\"Button is not defined\")}\n\n        if (start) {\n            this._launch_btn.setStart(button);\n        } else {\n            this._launch_btn.setStop(button);\n        }\n    }\n\n    injectLaunchButtons(dom_node) {\n        if (!dom_node)                      {return Promise.resolve(false)}\n        if (this._state.areasDisp.buttons)   {return Promise.resolve(true)}\n\n        this._state.areasDisp.buttons = true;\n\n        return this._launch_btn.inject(dom_node);\n    }\n\n    injectTextPane(dom_node) {\n        if (!dom_node)                  {return Promise.resolve(false)}\n        if (this._state.areasDisp.text) {return Promise.resolve(true)}\n\n        this._state.areasDisp.text = true;\n\n        return this._text_pane.inject(dom_node);\n    }\n\n    ejectTextPane() {\n        if (!this._state.areasDisp.text) {return Promise.resolve(true)}\n\n        this._state.areasDisp.text = false;\n\n        return this._text_pane.eject();\n    }\n\n    injectLessonPane(dom_node) {\n        if (!dom_node)                  {return Promise.resolve(false)}\n        if (this._state.areasDisp.lesson) {return Promise.resolve(true)}\n\n        this._state.areasDisp.lesson = true;\n\n        return this._lesson_pane.inject(dom_node);\n    }\n\n    /**\n     * Назначить допустимые коды клавиш для фильтрации\n     *\n     * @param {Array} button_codes массив кодов клавиш\n     */\n    registerButtonCodes(button_codes) {\n        if (!Array.isArray(button_codes)) {\n            throw new TypeError(\"setButtonCodes(): button codes should be an Array instance\");\n        }\n\n        this._button_codes = button_codes;\n    }\n\n    /**\n     * Прослушивать ли нажатия клавиш\n     *\n     * @param {boolean} on true - включить прослушивание, иначе - выключить\n     */\n    listenButtons(on) {\n        this._state.listenButtons = on;\n    }\n\n    /**\n     * Выгрузить строку в файл\n     *\n     * После вызова функции последует вывод диалогового окна\n     * с запросом на указание пути и имени нового файла\n     *\n     * @param str {String} исходная строка для сохранения\n     */\n    saveToFile(str) {\n        this._filer.saveStrToFile(\"codehour-sample-code.txt\", str);\n    }\n\n    /**\n     * Загрузить строку из файла\n     *\n     * Процедура асинхронная, поэтому по результату обработки файла\n     * генерируется событие \"load-file\"\n     *\n     * @param {File} file исходный файл\n     */\n    loadFromFile(file) {\n        this._filer.readStrFromFile(file)\n            .then(str => this.emitEvent(\"load-file\", str));\n    }\n\n    showAlert(type) {\n        this._alertifier.alertIndelible(type);\n    }\n\n    showAlertInputCommand() {\n        this._alertifier.alertInput('command')\n            .then(command => {\n                command = this._filterURLHashCommand(command);\n\n                this.emitEvent(\"hash-command\", command);\n            });\n    }\n\n    hideAllAlerts() {\n        this._alertifier.closeAll();\n    }\n\n    switchDeveloperMode(on) {\n        this._lesson_pane.switchTask(on);\n    }\n\n    /**\n     * Отфильтровать событие нажатия клавиши\n     *\n     * Тип события (keydown, keypress, keyup) не имеет значения\n     *\n     * @param {Integer} keycode код нажатой клавиши\n     * @returns {Integer|bool} true, если код прошёл через фильтр, код нажатой клавиши; иначе false\n     * @private\n     */\n    _filterKeyEvent(keycode) {\n        if (this._button_codes.indexOf(keycode) >= 0 || this._options.anyKey) {\n            return keycode;\n        }\n\n        return false;\n    }\n\n    _filterURLHashCommand(hash) {\n        if (typeof hash !== \"string\") {throw new TypeError(\"URL Hash is not a string\")}\n\n        let mission_idx, exercise_idx;\n\n        console.log(hash);\n\n        if (hash.match(REGEXPS.MISSION_EXERCISE)) {\n            [mission_idx, exercise_idx] = hash.match(REGEXPS.NUMBERS);\n        }\n\n        else if (hash.match(REGEXPS.MISSION)) {\n            mission_idx = hash.match(REGEXPS.NUMBERS);\n        }\n\n        else if (hash.match(REGEXPS.EXERCISE)) {\n            exercise_idx = hash.match(REGEXPS.NUMBERS);\n        }\n\n        else {\n            return {\n                type: HASH_TYPES.NONE,\n            }\n        }\n\n        return {\n            type: HASH_TYPES.GOTO,\n            data: {\n                missionIDX: Number(mission_idx),\n                exerciseIDX: Number(exercise_idx),\n            }\n        };\n    }\n\n    _checkURLHashCommand() {\n        let hash = window.location.hash;\n\n        return this._filterURLHashCommand(hash);\n    }\n\n    _setMenuStructure() {\n        this._lesson_pane.setMenuStructure([\n            {\n                type: 'default',\n                name: \"courses\",\n                text: \"Курсы\",\n                handler: (name) => {this.emitEvent(\"menu\", {name: name})}\n            },\n            {\n                type: 'default',\n                name: \"settings\",\n                text: \"Настройки\",\n                handler: (name) => {this.emitEvent(\"menu\", {name: name})}\n            },\n            {\n                type: 'radio',\n                name: \"developer\",\n                text: \"Разработчик\",\n                handler: (name, pressed) => {this.emitEvent(\"menu\", {name: name, state: pressed})}\n            },\n            {\n                type: 'default',\n                name: \"command\",\n                text: \"Выполнить\",\n                handler: () => {this.showAlertInputCommand()}\n            },\n            {\n                type: 'disabled',\n                name: \"origin\",\n                text: window.location.host,\n                right: true\n            },\n        ]);\n    }\n\n    _subscribeToWrapperEvents() {\n        /* Как только нажата кнопка переключения разметки */\n        // $(\"#switch-btn\").click(() => {\n        //     this._state.switched = !this._state.switched;\n        //     this.emitEvent(\"switch\", this._state.switched);\n        //\n        //     this._debug.log('Switch clicked: ', this._state.switched);\n        // });\n\n        /* Как только нажата кнопка запуса миссии */\n        this._lesson_pane.onMissionClick(idx => {\n            this.emitEvent(\"mission\", idx);\n        });\n\n        this._lesson_pane.onMenuClick(() => {\n            this.emitEvent(\"menu\");\n        });\n\n        /* Как только нажата кнопка запуска/проверки */\n        this._launch_btn.onButtonClick((button, start) => {\n            if (button === 'check') {\n                this.emitEvent(\"check\");\n            }\n\n            if (button === 'execute') {\n                if (start) {\n                    this.emitEvent(\"run\");\n                } else {\n                    this.emitEvent(\"stop\");\n                }\n            }\n        });\n\n        /* Когда нажата кнопка загрузки файла */\n        $(\" #load-btn\").change((evt) => {\n            this.loadFromFile(evt.target.files[0]);\n        });\n\n        /* Как только нажата кнопка выгрузки кода */\n        $(\"#unload-btn\").click(() => {\n            this.emitEvent(\"unload-file\");\n        });\n\n        /* Как только нажата клавиша */\n        $(document).keyup(event => {\n            if (this._state.listenButtons) {\n                if (this._filterKeyEvent(event.which)) {\n                    this.emitEvent(\"keyup\", event.which);\n                }\n            }\n        });\n\n        window.onhashchange = () => {\n            let command = this._checkURLHashCommand();\n\n            this.emitEvent(\"hash-command\", command);\n        }\n    }\n}",
+    "content": "import Module from \"../core/Module\";\n\nimport SpinnerWrapper from \"../wrappers/SpinnerWrapper\";\nimport LessonPaneWrapper from \"../wrappers/LessonPaneWrapper\";\nimport TextPaneWrapper from \"../wrappers/TextPaneWrapper\";\nimport LaunchBtnWrapper from \"../wrappers/LaunchBtnWrapper\";\nimport FileWrapper from \"../wrappers/FileWrapper\";\nimport AlertifierWrapper from \"../wrappers/AlertifierWrapper\";\n\nconst BOARD_STATUSES = {\n    SEARCH: 'search',\n    CONNECT: 'connect',\n    DISCONNECT: 'disconnect',\n    NONE: 'none',\n};\n\nconst HASH_TYPES = {\n    GOTO: \"goto\",\n\n    NONE: \"none\",\n};\n\nconst REGEXPS = {\n    MISSION_EXERCISE:   /^#m[0-9]+e[0-9]+$/g,\n    MISSION:            /^#m[0-9]+$/g,\n    EXERCISE:           /^#e[0-9]+$/g,\n\n    NUMBERS:            /[0-9]+/g,\n};\n\nconst LAUNCH_VARIANTS = {\n    NONE: 0,\n    CHECK: 1,\n    EXECUTE: 2,\n    CHECK_N_EXECUTE: 3,\n};\n\n/**\n * Модуль, управляющий базовым функциями графического интерфейса\n * и выполняющий первичную обработку его событий\n *\n * Отвечает за обработку нажатий всех кнопок, нажатий всех клавиш,\n * выгрузку и загрузку файлов.\n */\nexport default class GUIModule extends Module {\n    static get eventspace_name() {return \"gui\"}\n    static get event_types() {return [\"ready\", \"mission\", \"run\", \"stop\", \"check\", \"keyup\", \"hash-command\", \"menu\", \"load-file\", \"unload-file\"]}\n\n    static defaults() {\n        return {\n            anyKey: false,  // отключить фильтрацию клавиш\n            logoText: \"Tapanda\",\n            imagesPath: \"\",\n            devMode: false,\n        }\n    }\n\n    constructor(options) {\n        super(options);\n\n        this._button_codes = [];\n\n        this._state = {\n            ready: false,\n            switched: true, // debug only\n            listenButtons: false,\n            launchVariant: false,\n\n            areasDisp: {\n                text: false,\n                lesson: false,\n                button: false,\n            }\n        };\n\n        this._task_description = undefined;\n\n        this._filer = new FileWrapper();\n        this._spinner = new SpinnerWrapper();\n        this._lesson_pane = new LessonPaneWrapper();\n        this._text_pane = new TextPaneWrapper();\n        this._launch_btn = new LaunchBtnWrapper();\n        this._alertifier = new AlertifierWrapper();\n\n        if (this._options.imagesPath) {\n            this._alertifier.setImagesPath(this._options.imagesPath);\n        }\n\n        this._lesson_pane.registerLogoText(this._options.logoText);\n\n        this._setMenuStructure();\n\n        if (this._options.devMode) {\n            this.switchDeveloperMode(true);\n        } else {\n            this.switchDeveloperMode(false);\n        }\n\n        this._subscribeToWrapperEvents();\n    }\n\n    hideSpinner() {\n        this._spinner.hide();\n\n        if (!this._state.ready) {\n            this._state.ready = true;\n            this.emitEvent(\"ready\");\n        }\n    }\n\n    showSpinnerError(message) {\n        this._spinner.setTextError(message);\n    }\n\n    showMissionButtons(missions) {\n        return new Promise((resolve, reject) => {\n            if (!missions) {return resolve(false)}\n\n            this._lesson_pane.registerMissions(missions);\n\n            resolve(true);\n        });\n    }\n\n    setMissionCurrent(mission_idx) {\n        return new Promise((resolve, reject) => {\n            this._lesson_pane.setMissionActive(mission_idx);\n\n            resolve(true);\n        });\n    }\n\n    setMissionProgress(mission) {\n        return new Promise((resolve, reject) => {\n            if (!mission) {return resolve(false)}\n\n            this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX);\n\n            resolve(true);\n        });\n    }\n\n    setMissionSkiddingOn(mission_idx) {\n        return new Promise((resolve, reject) => {\n            if (!mission_idx) {return resolve(false)}\n\n            this._lesson_pane.setMissionSkidding(mission_idx, true);\n\n            resolve(true);\n        });\n    }\n\n    setExerciseCurrent(exercise_idx) {\n        return new Promise((resolve, reject) => {\n            console.log(exercise_idx);\n\n            this._lesson_pane.setExerciseActive(exercise_idx);\n\n            resolve(true);\n        });\n    }\n\n    setCourseText(lesson_name) {\n        return new Promise((resolve, reject) => {\n            let text = \"Урок: \" + lesson_name;\n\n            if (!this._state.areasDisp.lesson) {\n                this._lesson_pane.registerCourseText(text);\n            } else {\n                this._lesson_pane.setCourseText(text);\n            }\n\n            resolve(true);\n        });\n    }\n\n    setBoardStatus(status) {\n        console.log(\"BS\", status);\n        switch (status) {\n            case BOARD_STATUSES.SEARCH: {\n                this.hideAllAlerts();\n                this._lesson_pane.setStatus('warning');\n                break;\n            }\n            case BOARD_STATUSES.CONNECT: {\n                this.hideAllAlerts();\n                this._lesson_pane.setStatus('success');\n                break;\n            }\n            case BOARD_STATUSES.DISCONNECT: {\n                this.showAlert('no_board');\n                this._lesson_pane.setStatus('error');\n                break;\n            }\n            case BOARD_STATUSES.NONE: {\n                this._lesson_pane.setStatus('active');\n                break;\n            }\n            default: {\n                this._lesson_pane.setStatus('default');\n                break;\n            }\n        }\n    }\n\n    showTask(html) {\n        this._text_pane.setText(html);\n\n        return Promise.resolve();\n    }\n\n    setLaunchVariant(variant) {\n        if (!this._state.areasDisp.buttons)   {return Promise.resolve(false)}\n\n        console.log(\"SLV\", variant);\n\n        switch (variant) {\n            case LAUNCH_VARIANTS.NONE: {\n                this._launch_btn.hide();\n                break;\n            }\n            case LAUNCH_VARIANTS.CHECK: {\n                this._launch_btn.show(0);\n                break;\n            }\n            case LAUNCH_VARIANTS.EXECUTE: {\n                this._launch_btn.show(1);\n                break;\n            }\n            case LAUNCH_VARIANTS.CHECK_N_EXECUTE: {\n                this._launch_btn.show(2);\n                break;\n            }\n            default: {\n                this._state.launchVariant = variant;\n            }\n        }\n\n        this._state.launchVariant = !this._state.launchVariant;\n\n        return Promise.resolve(true);\n    }\n\n    affirmLaunchButtonState(button, start=true) {\n        if (!this._state.areasDisp.buttons) {return false}\n        if (!button) {throw new TypeError(\"Button is not defined\")}\n\n        if (start) {\n            this._launch_btn.setStart(button);\n        } else {\n            this._launch_btn.setStop(button);\n        }\n    }\n\n    injectLaunchButtons(dom_node) {\n        if (!dom_node)                      {return Promise.resolve(false)}\n        if (this._state.areasDisp.buttons)   {return Promise.resolve(true)}\n\n        this._state.areasDisp.buttons = true;\n\n        return this._launch_btn.inject(dom_node);\n    }\n\n    injectTextPane(dom_node) {\n        if (!dom_node)                  {return Promise.resolve(false)}\n        if (this._state.areasDisp.text) {return Promise.resolve(true)}\n\n        this._state.areasDisp.text = true;\n\n        return this._text_pane.inject(dom_node);\n    }\n\n    ejectTextPane() {\n        if (!this._state.areasDisp.text) {return Promise.resolve(true)}\n\n        this._state.areasDisp.text = false;\n\n        return this._text_pane.eject();\n    }\n\n    injectLessonPane(dom_node) {\n        if (!dom_node)                  {return Promise.resolve(false)}\n        if (this._state.areasDisp.lesson) {return Promise.resolve(true)}\n\n        this._state.areasDisp.lesson = true;\n\n        return this._lesson_pane.inject(dom_node);\n    }\n\n    /**\n     * Назначить допустимые коды клавиш для фильтрации\n     *\n     * @param {Array} button_codes массив кодов клавиш\n     */\n    registerButtonCodes(button_codes) {\n        if (!Array.isArray(button_codes)) {\n            throw new TypeError(\"setButtonCodes(): button codes should be an Array instance\");\n        }\n\n        this._button_codes = button_codes;\n    }\n\n    /**\n     * Прослушивать ли нажатия клавиш\n     *\n     * @param {boolean} on true - включить прослушивание, иначе - выключить\n     */\n    listenButtons(on) {\n        this._state.listenButtons = on;\n    }\n\n    /**\n     * Выгрузить строку в файл\n     *\n     * После вызова функции последует вывод диалогового окна\n     * с запросом на указание пути и имени нового файла\n     *\n     * @param str {String} исходная строка для сохранения\n     */\n    saveToFile(str) {\n        this._filer.saveStrToFile(\"codehour-sample-code.txt\", str);\n    }\n\n    /**\n     * Загрузить строку из файла\n     *\n     * Процедура асинхронная, поэтому по результату обработки файла\n     * генерируется событие \"load-file\"\n     *\n     * @param {File} file исходный файл\n     */\n    loadFromFile(file) {\n        this._filer.readStrFromFile(file)\n            .then(str => this.emitEvent(\"load-file\", str));\n    }\n\n    showAlert(type) {\n        this._alertifier.alertIndelible(type);\n    }\n\n    showAlertInputCommand() {\n        this._alertifier.alertInput('command')\n            .then(command => {\n                command = this._filterURLHashCommand(command);\n\n                this.emitEvent(\"hash-command\", command);\n            });\n    }\n\n    hideAllAlerts() {\n        this._alertifier.closeAll();\n    }\n\n    switchDeveloperMode(on) {\n        this._lesson_pane.switchTask(on);\n    }\n\n    /**\n     * Отфильтровать событие нажатия клавиши\n     *\n     * Тип события (keydown, keypress, keyup) не имеет значения\n     *\n     * @param {Integer} keycode код нажатой клавиши\n     * @returns {Integer|bool} true, если код прошёл через фильтр, код нажатой клавиши; иначе false\n     * @private\n     */\n    _filterKeyEvent(keycode) {\n        if (this._button_codes.indexOf(keycode) >= 0 || this._options.anyKey) {\n            return keycode;\n        }\n\n        return false;\n    }\n\n    _filterURLHashCommand(hash) {\n        if (typeof hash !== \"string\") {throw new TypeError(\"URL Hash is not a string\")}\n\n        let mission_idx, exercise_idx;\n\n        console.log(hash);\n\n        if (hash.match(REGEXPS.MISSION_EXERCISE)) {\n            [mission_idx, exercise_idx] = hash.match(REGEXPS.NUMBERS);\n        }\n\n        else if (hash.match(REGEXPS.MISSION)) {\n            mission_idx = hash.match(REGEXPS.NUMBERS);\n        }\n\n        else if (hash.match(REGEXPS.EXERCISE)) {\n            exercise_idx = hash.match(REGEXPS.NUMBERS);\n        }\n\n        else {\n            return {\n                type: HASH_TYPES.NONE,\n            }\n        }\n\n        return {\n            type: HASH_TYPES.GOTO,\n            data: {\n                missionIDX: Number(mission_idx),\n                exerciseIDX: Number(exercise_idx),\n            }\n        };\n    }\n\n    _checkURLHashCommand() {\n        let hash = window.location.hash;\n\n        return this._filterURLHashCommand(hash);\n    }\n\n    _setMenuStructure() {\n        this._lesson_pane.setMenuStructure([\n            {\n                type: 'default',\n                name: \"courses\",\n                text: \"Курсы\",\n                handler: (name) => {this.emitEvent(\"menu\", {name: name})}\n            },\n            {\n                type: 'default',\n                name: \"settings\",\n                text: \"Настройки\",\n                handler: (name) => {this.emitEvent(\"menu\", {name: name})}\n            },\n            {\n                type: 'radio',\n                name: \"developer\",\n                text: \"Разработчик\",\n                handler: (name, pressed) => {this.emitEvent(\"menu\", {name: name, state: pressed})}\n            },\n            {\n                type: 'default',\n                name: \"command\",\n                text: \"Выполнить\",\n                handler: () => {this.showAlertInputCommand()}\n            },\n            {\n                type: 'disabled',\n                name: \"origin\",\n                text: window.location.host,\n                right: true\n            },\n        ]);\n    }\n\n    _subscribeToWrapperEvents() {\n        /* Как только нажата кнопка переключения разметки */\n        // $(\"#switch-btn\").click(() => {\n        //     this._state.switched = !this._state.switched;\n        //     this.emitEvent(\"switch\", this._state.switched);\n        //\n        //     this._debug.log('Switch clicked: ', this._state.switched);\n        // });\n\n        /* Как только нажата кнопка запуса миссии */\n        this._lesson_pane.onMissionClick(idx => {\n            this.emitEvent(\"mission\", idx);\n        });\n\n        this._lesson_pane.onMenuClick(() => {\n            this.emitEvent(\"menu\");\n        });\n\n        /* Как только нажата кнопка запуска/проверки */\n        this._launch_btn.onButtonClick((button, start) => {\n            if (button === 'check') {\n                this.emitEvent(\"check\");\n            }\n\n            if (button === 'execute') {\n                if (start) {\n                    this.emitEvent(\"run\");\n                } else {\n                    this.emitEvent(\"stop\");\n                }\n            }\n        });\n\n        /* Когда нажата кнопка загрузки файла */\n        $(\" #load-btn\").change((evt) => {\n            this.loadFromFile(evt.target.files[0]);\n        });\n\n        /* Как только нажата кнопка выгрузки кода */\n        $(\"#unload-btn\").click(() => {\n            this.emitEvent(\"unload-file\");\n        });\n\n        /* Как только нажата клавиша */\n        $(document).keyup(event => {\n            if (this._state.listenButtons) {\n                if (this._filterKeyEvent(event.which)) {\n                    this.emitEvent(\"keyup\", event.which);\n                }\n            }\n        });\n\n        window.onhashchange = () => {\n            let command = this._checkURLHashCommand();\n\n            this.emitEvent(\"hash-command\", command);\n        }\n    }\n}",
     "static": true,
     "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/app/js/modules/GUIModule.js",
     "access": "public",
@@ -3421,8 +3421,8 @@
     "export": true,
     "importPath": "codehour-breadboard-web/js/modules/GUIModule.js",
     "importStyle": "GUIModule",
-    "description": "Модуль, управляющий базовым функциями графического интерфейса\nи выполняющий первичную обработку его событий\n\nОтвечает за нажатия всех кнопок, нажатие всех клавиш,\nвыгрузку и загрузку файлов.",
-    "lineNumber": 46,
+    "description": "Модуль, управляющий базовым функциями графического интерфейса\nи выполняющий первичную обработку его событий\n\nОтвечает за обработку нажатий всех кнопок, нажатий всех клавиш,\nвыгрузку и загрузку файлов.",
+    "lineNumber": 45,
     "interface": false,
     "extends": [
       "js/core/Module.js~Module"
@@ -3439,7 +3439,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule.eventspace_name",
     "access": "public",
     "description": null,
-    "lineNumber": 47,
+    "lineNumber": 46,
     "undocument": true,
     "type": {
       "types": [
@@ -3458,7 +3458,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule.event_types",
     "access": "public",
     "description": null,
-    "lineNumber": 48,
+    "lineNumber": 47,
     "undocument": true,
     "type": {
       "types": [
@@ -3477,7 +3477,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule.defaults",
     "access": "public",
     "description": null,
-    "lineNumber": 50,
+    "lineNumber": 49,
     "undocument": true,
     "params": [],
     "return": {
@@ -3497,7 +3497,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#constructor",
     "access": "public",
     "description": null,
-    "lineNumber": 59,
+    "lineNumber": 58,
     "undocument": true
   },
   {
@@ -3509,7 +3509,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_button_codes",
     "access": "private",
     "description": null,
-    "lineNumber": 62,
+    "lineNumber": 61,
     "undocument": true,
     "type": {
       "types": [
@@ -3526,7 +3526,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_state",
     "access": "private",
     "description": null,
-    "lineNumber": 64,
+    "lineNumber": 63,
     "undocument": true,
     "type": {
       "types": [
@@ -3543,7 +3543,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_task_description",
     "access": "private",
     "description": null,
-    "lineNumber": 77,
+    "lineNumber": 76,
     "undocument": true,
     "type": {
       "types": [
@@ -3560,7 +3560,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_filer",
     "access": "private",
     "description": null,
-    "lineNumber": 79,
+    "lineNumber": 78,
     "undocument": true,
     "type": {
       "types": [
@@ -3577,7 +3577,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_spinner",
     "access": "private",
     "description": null,
-    "lineNumber": 80,
+    "lineNumber": 79,
     "undocument": true,
     "type": {
       "types": [
@@ -3594,7 +3594,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_lesson_pane",
     "access": "private",
     "description": null,
-    "lineNumber": 81,
+    "lineNumber": 80,
     "undocument": true,
     "type": {
       "types": [
@@ -3611,7 +3611,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_text_pane",
     "access": "private",
     "description": null,
-    "lineNumber": 82,
+    "lineNumber": 81,
     "undocument": true,
     "type": {
       "types": [
@@ -3628,7 +3628,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_launch_btn",
     "access": "private",
     "description": null,
-    "lineNumber": 83,
+    "lineNumber": 82,
     "undocument": true,
     "type": {
       "types": [
@@ -3645,7 +3645,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_alertifier",
     "access": "private",
     "description": null,
-    "lineNumber": 84,
+    "lineNumber": 83,
     "undocument": true,
     "type": {
       "types": [
@@ -3664,7 +3664,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#hideSpinner",
     "access": "public",
     "description": null,
-    "lineNumber": 103,
+    "lineNumber": 102,
     "undocument": true,
     "params": [],
     "return": null
@@ -3680,7 +3680,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#showSpinnerError",
     "access": "public",
     "description": null,
-    "lineNumber": 112,
+    "lineNumber": 111,
     "undocument": true,
     "params": [
       {
@@ -3703,7 +3703,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#showMissionButtons",
     "access": "public",
     "description": null,
-    "lineNumber": 116,
+    "lineNumber": 115,
     "undocument": true,
     "params": [
       {
@@ -3730,7 +3730,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#setMissionCurrent",
     "access": "public",
     "description": null,
-    "lineNumber": 126,
+    "lineNumber": 125,
     "undocument": true,
     "params": [
       {
@@ -3757,7 +3757,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#setMissionProgress",
     "access": "public",
     "description": null,
-    "lineNumber": 134,
+    "lineNumber": 133,
     "undocument": true,
     "params": [
       {
@@ -3784,7 +3784,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#setMissionSkiddingOn",
     "access": "public",
     "description": null,
-    "lineNumber": 144,
+    "lineNumber": 143,
     "undocument": true,
     "params": [
       {
@@ -3811,7 +3811,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#setExerciseCurrent",
     "access": "public",
     "description": null,
-    "lineNumber": 154,
+    "lineNumber": 153,
     "undocument": true,
     "params": [
       {
@@ -3838,7 +3838,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#setCourseText",
     "access": "public",
     "description": null,
-    "lineNumber": 164,
+    "lineNumber": 163,
     "undocument": true,
     "params": [
       {
@@ -3865,7 +3865,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#setBoardStatus",
     "access": "public",
     "description": null,
-    "lineNumber": 178,
+    "lineNumber": 177,
     "undocument": true,
     "params": [
       {
@@ -3888,7 +3888,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#showTask",
     "access": "public",
     "description": null,
-    "lineNumber": 207,
+    "lineNumber": 206,
     "undocument": true,
     "params": [
       {
@@ -3915,7 +3915,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#setLaunchVariant",
     "access": "public",
     "description": null,
-    "lineNumber": 213,
+    "lineNumber": 212,
     "undocument": true,
     "params": [
       {
@@ -3942,7 +3942,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#affirmLaunchButtonState",
     "access": "public",
     "description": null,
-    "lineNumber": 245,
+    "lineNumber": 244,
     "undocument": true,
     "params": [
       {
@@ -3978,7 +3978,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#injectLaunchButtons",
     "access": "public",
     "description": null,
-    "lineNumber": 256,
+    "lineNumber": 255,
     "undocument": true,
     "params": [
       {
@@ -4005,7 +4005,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#injectTextPane",
     "access": "public",
     "description": null,
-    "lineNumber": 265,
+    "lineNumber": 264,
     "undocument": true,
     "params": [
       {
@@ -4032,7 +4032,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#ejectTextPane",
     "access": "public",
     "description": null,
-    "lineNumber": 274,
+    "lineNumber": 273,
     "undocument": true,
     "params": [],
     "return": {
@@ -4052,7 +4052,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#injectLessonPane",
     "access": "public",
     "description": null,
-    "lineNumber": 282,
+    "lineNumber": 281,
     "undocument": true,
     "params": [
       {
@@ -4079,7 +4079,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#registerButtonCodes",
     "access": "public",
     "description": "Назначить допустимые коды клавиш для фильтрации",
-    "lineNumber": 296,
+    "lineNumber": 295,
     "params": [
       {
         "nullable": null,
@@ -4105,7 +4105,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#listenButtons",
     "access": "public",
     "description": "Прослушивать ли нажатия клавиш",
-    "lineNumber": 309,
+    "lineNumber": 308,
     "params": [
       {
         "nullable": null,
@@ -4131,7 +4131,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#saveToFile",
     "access": "public",
     "description": "Выгрузить строку в файл\n\nПосле вызова функции последует вывод диалогового окна\nс запросом на указание пути и имени нового файла",
-    "lineNumber": 321,
+    "lineNumber": 320,
     "params": [
       {
         "nullable": null,
@@ -4157,7 +4157,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#loadFromFile",
     "access": "public",
     "description": "Загрузить строку из файла\n\nПроцедура асинхронная, поэтому по результату обработки файла\nгенерируется событие \"load-file\"",
-    "lineNumber": 333,
+    "lineNumber": 332,
     "params": [
       {
         "nullable": null,
@@ -4183,7 +4183,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#showAlert",
     "access": "public",
     "description": null,
-    "lineNumber": 338,
+    "lineNumber": 337,
     "undocument": true,
     "params": [
       {
@@ -4206,7 +4206,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#showAlertInputCommand",
     "access": "public",
     "description": null,
-    "lineNumber": 342,
+    "lineNumber": 341,
     "undocument": true,
     "params": [],
     "return": null
@@ -4222,7 +4222,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#hideAllAlerts",
     "access": "public",
     "description": null,
-    "lineNumber": 351,
+    "lineNumber": 350,
     "undocument": true,
     "params": [],
     "return": null
@@ -4238,7 +4238,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#switchDeveloperMode",
     "access": "public",
     "description": null,
-    "lineNumber": 355,
+    "lineNumber": 354,
     "undocument": true,
     "params": [
       {
@@ -4261,7 +4261,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_filterKeyEvent",
     "access": "private",
     "description": "Отфильтровать событие нажатия клавиши\n\nТип события (keydown, keypress, keyup) не имеет значения",
-    "lineNumber": 368,
+    "lineNumber": 367,
     "unknown": [
       {
         "tagName": "@returns",
@@ -4301,7 +4301,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_filterURLHashCommand",
     "access": "private",
     "description": null,
-    "lineNumber": 376,
+    "lineNumber": 375,
     "undocument": true,
     "params": [
       {
@@ -4328,7 +4328,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_checkURLHashCommand",
     "access": "private",
     "description": null,
-    "lineNumber": 410,
+    "lineNumber": 409,
     "undocument": true,
     "params": [],
     "return": {
@@ -4348,7 +4348,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_setMenuStructure",
     "access": "private",
     "description": null,
-    "lineNumber": 416,
+    "lineNumber": 415,
     "undocument": true,
     "params": [],
     "return": null
@@ -4364,7 +4364,7 @@
     "longname": "js/modules/GUIModule.js~GUIModule#_subscribeToWrapperEvents",
     "access": "private",
     "description": null,
-    "lineNumber": 451,
+    "lineNumber": 450,
     "undocument": true,
     "params": [],
     "return": null
@@ -8326,7 +8326,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"codehour-breadboard-web\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A Codehour web application for bread board\",\n  \"main\": \"index.js\",\n  \"dependencies\": {\n    \"blockly\": \"^1.0.0\",\n    \"clientjs\": \"^0.1.11\",\n    \"dom-to-image\": \"^2.6.0\",\n    \"intro.js\": \"^2.8.0-alpha.1\",\n    \"jquery\": \"^3.2.1\",\n    \"jquery-ui\": \"^1.12.1\",\n    \"jquery-ui-bundle\": \"^1.12.1\",\n    \"js-cookie\": \"^2.2.0\",\n    \"node-blockly\": \"^1.0.32\",\n    \"socket.io-client\": \"^2.0.4\",\n    \"svgjs\": \"^2.6.2\",\n    \"sweetalert\": \"^2.1.0\",\n    \"webpack\": \"^3.10.0\"\n  },\n  \"devDependencies\": {\n    \"@ryancavanaugh/jquery.ui.layout\": \"0.0.13-alpha\",\n    \"babel-core\": \"^6.26.0\",\n    \"babel-loader\": \"^7.1.2\",\n    \"babel-preset-env\": \"^1.6.1\",\n    \"chai\": \"^4.1.2\",\n    \"chai-spies\": \"^0.7.1\",\n    \"copy-webpack-plugin\": \"^4.3.1\",\n    \"css-loader\": \"^0.28.9\",\n    \"esdoc\": \"^1.0.4\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"expose-loader\": \"^0.7.4\",\n    \"html-webpack-plugin\": \"^2.30.1\",\n    \"jasmine-core\": \"^2.8.0\",\n    \"jshint\": \"^2.9.5\",\n    \"jshint-loader\": \"^0.8.4\",\n    \"karma\": \"^1.7.1\",\n    \"karma-chai\": \"^0.1.0\",\n    \"karma-chrome-launcher\": \"^2.2.0\",\n    \"karma-coverage\": \"^1.1.1\",\n    \"karma-firefox-launcher\": \"^1.1.0\",\n    \"karma-ie-launcher\": \"^1.0.0\",\n    \"karma-jasmine\": \"^1.1.1\",\n    \"karma-junit-reporter\": \"^1.2.0\",\n    \"karma-mocha\": \"^1.3.0\",\n    \"karma-mocha-reporter\": \"^2.2.5\",\n    \"karma-opera-launcher\": \"^1.0.0\",\n    \"karma-phantomjs-launcher\": \"^1.0.4\",\n    \"karma-sourcemap-loader\": \"^0.3.7\",\n    \"karma-webpack\": \"^2.0.7\",\n    \"less\": \"^3.0.1\",\n    \"less-loader\": \"^4.0.5\",\n    \"mocha\": \"^4.0.1\",\n    \"phantomjs-prebuilt\": \"^2.1.16\",\n    \"style-loader\": \"^0.19.1\"\n  },\n  \"scripts\": {\n    \"build\": \"webpack -p\",\n    \"watch\": \"webpack --watch\",\n    \"test:single\": \"rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome\",\n    \"test:watch\": \"karma start karma.conf.js --browsers Chrome\",\n    \"docs\": \"./node_modules/.bin/esdoc\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://bitbucket.org/makeitlab/codehour-breadboard-web.git\"\n  },\n  \"keywords\": [\n    \"codehour\",\n    \"breadboard\",\n    \"makeitlab\",\n    \"tapanda\",\n    \"topanda\"\n  ],\n  \"author\": \"Alexander Molodykh\",\n  \"license\": \"ISC\",\n  \"homepage\": \"https://bitbucket.org/makeitlab/codehour-breadboard-web#readme\"\n}\n",
+    "content": "{\n  \"name\": \"codehour-breadboard-web\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A Codehour web application for bread board\",\n  \"main\": \"index.js\",\n  \"dependencies\": {\n    \"clientjs\": \"^0.1.11\",\n    \"dom-to-image\": \"^2.6.0\",\n    \"intro.js\": \"^2.8.0-alpha.1\",\n    \"jquery\": \"^3.2.1\",\n    \"jquery-ui\": \"^1.12.1\",\n    \"jquery-ui-bundle\": \"^1.12.1\",\n    \"js-cookie\": \"^2.2.0\",\n    \"node-blockly\": \"^1.0.32\",\n    \"socket.io-client\": \"^2.0.4\",\n    \"svgjs\": \"^2.6.2\",\n    \"sweetalert\": \"^2.1.0\",\n    \"webpack\": \"^3.10.0\"\n  },\n  \"devDependencies\": {\n    \"@ryancavanaugh/jquery.ui.layout\": \"0.0.13-alpha\",\n    \"babel-core\": \"^6.26.0\",\n    \"babel-loader\": \"^7.1.2\",\n    \"babel-preset-env\": \"^1.6.1\",\n    \"chai\": \"^4.1.2\",\n    \"chai-spies\": \"^0.7.1\",\n    \"copy-webpack-plugin\": \"^4.3.1\",\n    \"css-loader\": \"^0.28.9\",\n    \"esdoc\": \"^1.0.4\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"expose-loader\": \"^0.7.4\",\n    \"html-webpack-plugin\": \"^2.30.1\",\n    \"jasmine-core\": \"^2.8.0\",\n    \"jshint\": \"^2.9.5\",\n    \"jshint-loader\": \"^0.8.4\",\n    \"karma\": \"^1.7.1\",\n    \"karma-chai\": \"^0.1.0\",\n    \"karma-chrome-launcher\": \"^2.2.0\",\n    \"karma-coverage\": \"^1.1.1\",\n    \"karma-firefox-launcher\": \"^1.1.0\",\n    \"karma-ie-launcher\": \"^1.0.0\",\n    \"karma-jasmine\": \"^1.1.1\",\n    \"karma-junit-reporter\": \"^1.2.0\",\n    \"karma-mocha\": \"^1.3.0\",\n    \"karma-mocha-reporter\": \"^2.2.5\",\n    \"karma-opera-launcher\": \"^1.0.0\",\n    \"karma-phantomjs-launcher\": \"^1.0.4\",\n    \"karma-sourcemap-loader\": \"^0.3.7\",\n    \"karma-webpack\": \"^2.0.7\",\n    \"less\": \"^3.0.1\",\n    \"less-loader\": \"^4.0.5\",\n    \"mocha\": \"^4.0.1\",\n    \"phantomjs-prebuilt\": \"^2.1.16\",\n    \"style-loader\": \"^0.19.1\"\n  },\n  \"scripts\": {\n    \"build\": \"webpack -p\",\n    \"watch\": \"webpack --watch\",\n    \"test:single\": \"rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome\",\n    \"test:watch\": \"karma start karma.conf.js --browsers Chrome\",\n    \"docs\": \"./node_modules/.bin/esdoc\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://bitbucket.org/makeitlab/codehour-breadboard-web.git\"\n  },\n  \"keywords\": [\n    \"codehour\",\n    \"breadboard\",\n    \"makeitlab\",\n    \"tapanda\",\n    \"topanda\"\n  ],\n  \"author\": \"Alexander Molodykh\",\n  \"license\": \"ISC\",\n  \"homepage\": \"https://bitbucket.org/makeitlab/codehour-breadboard-web#readme\"\n}\n",
     "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/package.json",
     "name": "package.json",
     "static": true,
@@ -8360,7 +8360,7 @@
     "kind": "manual",
     "longname": "/Applications/MAMP/htdocs/codehour-breadboard/codehour-breadboard-web/man/design.md",
     "name": "./man/design.md",
-    "content": "# Архитектура\n\nВ проекте выстроилась архитектура, отдалённо напоминающая шаблон MVC.\n\n`[схема]`\n\n\n",
+    "content": "# Архитектура\n\n## Предисловие\n\nВ проекте намернно не используются фреймворки с целью создать решение, \nмаксимально независимое от сторонних разработок:\n\n\nКроме того, планируется полностью избавиться от таких больших библиотек, как jQuery, jQuery UI и jQuery Layout.\n\n## Программный каркас\n\nСуществует две части архитектуры: общая и частная.\n\nОбщую часть будем называть _ядром_, его код содержит базовые классы, \nкоторые выступают в роли ограничивающих сущностей, поддерживающих структуру реализуемых на этом ядре приложений.\n\nЧастная же архитектура уникальна для каждого приложения и состоит из комбинации различных модулей.\n\n### Ядро\n\nЯдро предоставляет набор следующих базовых сущностей:\n\n* __Обёртка__\n* __Модуль__\n* __Диспетчер__\n\nКогда возникает необходимость коммуникации модулей в одном приложении, \nиспользуются _суррогатные события_.\n\nКод ядра хранится в каталоге `core`.\n\n[ПРИМЕР]\n\n#### Основные сущности ядра\n\n> __Обёртки__ - зависимые компоненты модулей:\n> \n> * используются только модулями,\n> * могут использовать одну или сразу несколько библиотек схожего назначения.\n\nОбёртки используются для создания API, независимого от библиотек.\nРоль обёртки заключается в абстрагировании модулей от библиотек так, что при обновлении библиотеки\nдостаточно произвести изменения в обёртке, а внутренняя структура модуля останется без изменений.\n\nЕсли требуется обернуть собственную (самописную) библиотеку, её следует размещать в виде _утилиты_.\nФормально утилиты не имеют структурных ограничений, однако по возможности их следует избегать. \n\nБазовый класс обёртки, `Wrapper`, описан в `core/Wrapper.js`.\nОбёртки-наследники располагаются в каталоге `wrappers`.\nУтилиты располагаются в каталоге `utils`.\n\n> __Модули__ - независимые компоненты приложений:\n>\n> * самостоятельны, не знают о существовании приложений и других модулей,\n> * могут использоваться не только приложениями (например, когда состоят из статических методов).\n\nЗадача модуля - предоставить приложению набор методов, которые можно вызывать единично\n(как команду, без циклов/условий и т.д.). \n\nБазовый класс модуля, `Module`, описан в `core/Module.js`.\nМодули-наследники располагаются в каталоге `modules`.\n\n> __Диспетчер__ - менеджер суррогатных событий:\n>\n> * не знает о существовании приложения, но управляет модулях,\n> * каждое приложение обладает единственным диспетчером.\n\nЗадача диспетчера - сообщить приложение с модулями, вызывая обработчики суррогатных событий в приложении \nдля обработки событий в модулях. В качестве обработчиков выступают цепочки обещаний.\n\nКласс диспетчера, `Dispatcher`, описан в `core/Dispatcher.js`. \n\n#### Суррогатные события\n\n> __Суррогатное событие__ - переименованное событие, имеющее непосредственное отношение к функциональности модуля.\n\nПростыми словами, это _обёртки сторонних событий_.\n\nПо своей сути, такие события не являются самостоятельными - они возникают в результате двух причин:\n* обёртка модуля генерирует событие оборачиваемой библиотеки,\n* в модуле происходит собственное событие, о котором, вероятно, должно знать приложение.\n\nСуррогатные события также отличаются тем, \nчто в приложении формально невозможно подписаться на них или отписаться от них.\nВместо этого доступом к событиям управляет _диспетчер_, работающий в приложении.\n\nДля управления доступом к событиям в приложении диспетчер предоставляет два инструмента:\n* сокращённая форма записи подмножеств суррогатных событий,\n* функции временного включения/отключения запуска обработчиков событий в этих подмножествах.\n\n##### Подмножества суррогатных событий\n\nДиспетчер использует следующий формат задания подмножеств:\n\n`имя_модуля:имя_события`, где \n\n* `имя_модуля` - сокращённое название класса модуля (например, `log`),\n* `имя_события` - полное название суррогатного события (например, `ready`).\n\nПри этом в качестве `имя_модуля` и `имя_события` можно использовать символ подстановки `*`,\nозначающий в следующих случаях:\n* `*:имя_модуля` - все события модуля `имя_модуля`,\n* `имя_события:*` - события `имя_события` всех модулей.\n\nЕсли требуется указать диспетчеру на все возможные события, допускается использование `*` \nвместо всей строки.\n\n##### Функции управления доступом к событиям\n\n```javascript\n    Dispatcher.only();   //впредь прослушивать только заданные события\n\tDispatcher.aside();  //впредь прослушивать все события, кроме заданных\n\tDispatcher.all();    //впредь прослушивать все типы событий\n\tDispatcher.on();     //как только произошло событие, вызвать функцию\n\tDispatcher.always(); //всегда прослушивать заданные события \n```\n\nВ качестве аргумента этих функций во всех случаях выступает массив элементов типа “строка”.\n\n```javascript\n    /* Пример 1: */ dispatcher.only(['gui:*', 'ls:*']); // прослушивать только события модулей GUI и LocalServer\n    /* Пример 2: */ dispatcher.only(['ls:exec-stop']);  // прослушивать только событие останова кода от локального сервера\n```\n\n### Приложение\n\n> Каждое _приложение_ есть множество модулей, объёдинённых логикой в виде обработчиков \n> суррогатных событий.\n\nПриложение может определять свои функции, иметь внутренние методы. \n\nЛогика приложения состоит:\n* в конфигурировании модулей,\n* в обработке суррогатных событий,\n* в управлении доступом к событиям с помощью Диспетчера.\n\nДля задания обработчиков суррогатных событий можно использовать _Promise-цепочки_.\n\n[ПРИМЕР]\n\n#### Promise-цепочки\n\n>_Цепочка обещаний_ - последовательность операций модулей, обрабатывающих события одного типа. \n\nЦепочка обычно завершается командой диспетчеру включить или отключить прослушивание событий. \nЭто можно назвать _“ограничением состояния”_ - когда приложение обрабатывает только ограниченный \nнабор событий, находясь в определённом состоянии.\n\n[ПРИМЕР]\n\n## Соглашения по именованию\n\nКлассы-наследники обёрток `FooWrapper` расположены в файлах `wrappers/FooWrapper.js`, где `Foo` - CamelCase-префикс, \nкратко и понятно описывающий функциональное назначение обёртки/оборачиваемой(-ых) библиотеки(-к).\n\nКлассы-наследники модулей `FooModule` расположены в файлах `modules/FooModule`, где `Foo` - CamelCase-префикс, \nкратко и понятно описывающий функциональное назначение модуля.\n\nКлассы-приложения `FooBarApplication` расположены в файлах `foo_bar.js`, где `FooBar` - CamelCase-префикс, \nкратко и понятно описывающий функциональное назначение приложения.",
     "static": true,
     "access": "public"
   },
