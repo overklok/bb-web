@@ -1,4 +1,4 @@
-[logo]: manual/asset/logo.png "CodeHour: Breadboard"
+[logo]: asset/logo.png "CodeHour: Breadboard"
 
 ![CodeHour: Breadboard logo][logo]
 

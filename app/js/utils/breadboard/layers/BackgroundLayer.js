@@ -8,6 +8,7 @@ export default class BackgroundLayer extends Layer {
 
         this._container.addClass(BackgroundLayer.Class);
 
+        this._regiongroup   = undefined;
         this._domaingroup   = undefined;
         this._cellgroup     = undefined;
         this._logogroup     = undefined;
@@ -17,13 +18,45 @@ export default class BackgroundLayer extends Layer {
         this._container
             .rect('99%', '99%') /// 99 из-за обрезания рамки
             .radius(20)
-            .fill({color: "#efefef"})
+            .fill({color: "#f9f9f9"})
             .stroke({color: "#c9c9c9", width: 8})
             .move(4, 4);
 
         this._drawLogo();
         this._drawDomains();
         this._drawCells();
+        this._drawRegions();
+    }
+
+    highlightRegion(from, to, clear=false, color="#d40010") {
+        if (clear) {
+            this._regiongroup.clear();
+        }
+
+        if (!from || !to) {return false}
+
+        if (from.x == null || from.y == null) {return false}
+        if (to.x == null || to.y == null) {return false}
+
+        let cell_from = this.__grid.cell(from.x, from.y);
+        let cell_to = this.__grid.cell(to.x, to.y);
+
+        let width = Math.abs(cell_from.pos.x - cell_to.pos.x) + cell_from.size.x + this.__grid.gap.x * 2;
+        let height = Math.abs(cell_from.pos.y - cell_to.pos.y) + cell_from.size.y + this.__grid.gap.y * 2;
+
+        let quad = this._regiongroup
+            .rect(width, height)
+            .move(cell_from.pos.x - this.__grid.gap.x, cell_from.pos.y - this.__grid.gap.y)
+            .radius(10)
+            .fill({color: color, opacity: 0.2})
+            .stroke({color: color, width: 2})
+            .scale(1.2)
+            .animate(250, '<>', 0).scale(1)
+            .animate(1000).fill({opacity: 0.6}).loop(100000, true);
+    }
+
+    clearRegions() {
+        this._regiongroup.clear();
     }
 
     _drawLogo() {
@@ -142,5 +175,11 @@ export default class BackgroundLayer extends Layer {
             .fill({opacity: 0})
             .stroke({color: "#FFF", width: 2, opacity: 0.4})
             .move(cell.pos.x, cell.pos.y);
+    }
+
+    _drawRegions() {
+        this._regiongroup = this._container.group().id("regiongroup");
+
+        this._regiongroup.move(100, 170);
     }
 }

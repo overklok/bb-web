@@ -1,7 +1,7 @@
 {
-  "coverage": "57.05%",
+  "coverage": "57.36%",
   "expectCount": 326,
-  "actualCount": 186,
+  "actualCount": 187,
   "files": {
     "js/admin_blockly.js": {
       "expectCount": 20,
@@ -117,14 +117,13 @@
     },
     "js/modules/GlobalServiceModule.js": {
       "expectCount": 13,
-      "actualCount": 7,
+      "actualCount": 8,
       "undocumentLines": [
         11,
         12,
         14,
         28,
-        31,
-        40
+        31
       ]
     },
     "js/modules/InstructorModule.js": {

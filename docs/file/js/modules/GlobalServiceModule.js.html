@@ -89,6 +89,11 @@ export default class GlobalServiceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    /**
+     * &#x41F;&#x435;&#x440;&#x435;&#x432;&#x435;&#x441;&#x442;&#x438; &#x431;&#x440;&#x430;&#x443;&#x437;&#x435;&#x440; &#x43D;&#x430; &#x441;&#x442;&#x440;&#x430;&#x43D;&#x438;&#x446;&#x443; &#x441; &#x443;&#x440;&#x43E;&#x43A;&#x430;&#x43C;&#x438;
+     *
+     * &#x418;&#x441;&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x443;&#x435;&#x442;&#x441;&#x44F; &#x437;&#x430;&#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x439; &#x432; &#x43A;&#x43E;&#x43D;&#x444;&#x438;&#x433;&#x443;&#x440;&#x430;&#x446;&#x438;&#x438; &#x430;&#x434;&#x440;&#x435;&#x441; &#x441;&#x435;&#x440;&#x432;&#x435;&#x440;&#x430;
+     */
     goToLessonPage() {
         window.location.href = this._options.origin;
     }

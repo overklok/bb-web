@@ -92,6 +92,14 @@ export default class BreadboardModule extends Module {
         }
     }
 
+    highlightRegions(regions) {
+        this._board.highlightRegions(regions);
+    }
+
+    clearRegions() {
+        this._board.clearRegions();
+    }
+
     getData() {
         if (!this._state.display) {return false}
 

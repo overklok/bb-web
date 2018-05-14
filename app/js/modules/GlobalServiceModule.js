@@ -37,6 +37,11 @@ export default class GlobalServiceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    /**
+     * Перевести браузер на страницу с уроками
+     *
+     * Используется заданный в конфигурации адрес сервера
+     */
     goToLessonPage() {
         window.location.href = this._options.origin;
     }

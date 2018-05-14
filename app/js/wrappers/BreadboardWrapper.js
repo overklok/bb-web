@@ -92,6 +92,26 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin._layers.current.removeAllCurrents();
     }
 
+    highlightRegions(regions) {
+        if (!regions) {
+            throw new TypeError("An Array parameter should be provided");
+        }
+
+        for (let region of regions) {
+            if (typeof region !== 'object') {
+                throw new TypeError("One of 'regions' is not an object");
+            }
+
+            console.log(region.from, region.to);
+
+            this._plugin.highlightRegion(region.from, region.to);
+        }
+    }
+
+    clearRegions() {
+        this._plugin.clearRegions();
+    }
+
     onChange(cb) {
         this._onchange = cb;
     }

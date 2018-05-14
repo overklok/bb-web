@@ -413,6 +413,7 @@ class Application {
             try {
                 this.ws.highlightErrorBlocks(verdict.blocks);
                 this.bb.highlightErrorPlates(verdict.blocks);
+                this.bb.highlightRegions(verdict.regions)
             } catch (err) {
                 console.error(err);
             }

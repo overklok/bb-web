@@ -90,6 +90,13 @@ export default class Breadboard {
         this._layers.current.removeAllCurrents();
     }
 
+    highlightRegion(from, to) {
+        this._layers.background.highlightRegion(from, to);
+    }
+
+    clearRegions() {
+        this._layers.background.clearRegions();
+    }
 
     inject(dom_node, options) {
         if (dom_node === undefined) {
