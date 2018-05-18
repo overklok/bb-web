@@ -81,7 +81,8 @@ let getArguments = (block, fields) => {
  * @param {string} block_name       name of the block to be appended
  */
 let appendShadowBlock = (block_svg, input_name, block_name) => {
-    setTimeout(() => {
+    // UNCOMMENT THIS LANES IF WANTED TO USE NEW BLOCKLY VERSIONS ("node-blockly": "^1.0.31")
+    // setTimeout(() => {
         let numberShadowBlock = block_svg.workspace.newBlock(block_name);
 
         numberShadowBlock.setShadow(true);
@@ -93,7 +94,7 @@ let appendShadowBlock = (block_svg, input_name, block_name) => {
 
         let cc = block_svg.getInput(input_name).connection;
         cc.connect(ob);
-    }, 10);
+    // }, 600);
 };
 
 export {
