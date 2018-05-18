@@ -1,7 +1,9 @@
 const GRID_DOT_SIZE = 20;           // Радиус точек
 
 //TODO: сделать градиент, по центру - белый, по бокам - синий, со свечением
-const CURRENT_ANIM_DELTA    = 40;           // Расстояние между соседними стрелками, px
+const CURRENT_ANIM_DELTA    = 100;           // Расстояние между соседними стрелками, px
+
+const CURRENT_COLOR = "#7DF9FF";
 
 /**
  * Класс "Ток"
@@ -37,6 +39,8 @@ export default class Current {
      * @param path
      */
     draw(path) {
+        this.style.color = CURRENT_COLOR;
+
         this.path = this.container
             .path(path)
             .addClass('current-path')
@@ -71,7 +75,6 @@ export default class Current {
      * Анимировать ток по контуру this.path
      *
      * @param speed       Скорость анимации тока (движения стрелок по контуру)
-     * @param arrow_color Цвет стрелки, обозначающей ток
      *
      * Генерируется некоторое число стрелок - векторных объектов, изображающих ток по контуру.
      * Каждая стрелка циклически проходит фрагмент пути длины delta с заданной скоростью speed
@@ -79,7 +82,7 @@ export default class Current {
      * где предыдущая заканчивает итерацию цикла движения.
      *
      */
-    activate(speed, arrow_color) {
+    activate(speed) {
         if (!this._visible) {
             throw new Error("Cannot activate invisible current!");
         }
@@ -108,39 +111,36 @@ export default class Current {
             }
 
             // Векторное представление стрелки
-            let arrow = this.container_anim.polygon(
-                "0,0 0," + GRID_DOT_SIZE/2 +  " " + GRID_DOT_SIZE / 4 + "," + GRID_DOT_SIZE / 4
-            ).center(0,0).addClass('current-arrow');
+            // let arrow = this.container_anim.polygon(
+            //     "0,0 0," + GRID_DOT_SIZE/2 +  " " + GRID_DOT_SIZE / 4 + "," + GRID_DOT_SIZE / 4
+            // ).center(0,0).addClass('current-arrow');
+
+            let arrow = this.container_anim
+                .circle(GRID_DOT_SIZE*1.8)
+                .center(0, 0)
+                .addClass('current-arrow');
 
             // Заливка и центрирование
-            arrow.fill(arrow_color);
+            arrow.fill(CURRENT_COLOR);
 
-            // SVG-анимация стрелки:
-            let aniMove = document.createElementNS("http://www.w3.org/2000/svg","animateMotion"); // тип: перемещение
-                aniMove.setAttribute("start", "0s");                                              // задержка
-                aniMove.setAttribute("dur", time + "ms");                                          // длительность
-                aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
-                aniMove.setAttribute("rotate", "auto");                                           // автоповорот
-                aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);           // нач. и кон. позиции в %
-                aniMove.setAttribute("keyTimes", "0;1");                                          // нач. и кон. время в %
-                aniMove.setAttribute("calcMode", "linear");                                       // (!) функция перемещения
+            Current.animateArrowMove(this.path.toString(), arrow, time, progress_start, progress_end);
 
-            // В аниматор нужно вставить путь анимации
-            let mpath = document.createElementNS("http://www.w3.org/2000/svg","mpath");
-                mpath.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + this.path.toString());
+            if (i === 0) {
+                // если первая стрелка
+                Current.animateArrowScale(arrow, time, false);
+            }
 
-            // Подключение в DOM
-            aniMove.appendChild(mpath);
-            arrow.node.appendChild(aniMove);
+            if (i === arrows_count - 1) {
+                // если последняя стрелка
+                Current.animateArrowScale(arrow, time, true);
+            }
         }
-
-        let self = this;
 
         // Это необходимо для того, чтобы дать браузеру вставить анимацию во все полигоны
         // В противном случае, на малую долю секунды будет заметна частица в положении (0,0)
         // до начала анимации
-        setTimeout(function () {
-            self.container_anim.opacity(1);
+        setTimeout(() => {
+            this.container_anim.opacity(1);
         }, 0);
     };
 
@@ -156,5 +156,44 @@ export default class Current {
      */
     addGlow() {
         this.path.attr('filter', 'url(#glow-current)');
+    };
+
+    static animateArrowMove(path, arrow, time, progress_start, progress_end) {
+        // SVG-анимация стрелки:
+        let aniMove = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion"); // тип: перемещение
+        aniMove.setAttribute("start", "0s");                                              // задержка
+        aniMove.setAttribute("dur", time + "ms");                                         // длительность
+        aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
+        aniMove.setAttribute("rotate", "auto");                                           // автоповорот
+        aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);           // нач. и кон. позиции в %
+        aniMove.setAttribute("keyTimes", "0;1");                                          // нач. и кон. время в %
+        aniMove.setAttribute("calcMode", "linear");                                       // (!) функция перемещения
+
+        // В аниматор нужно вставить путь анимации
+        let mpath = document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+        mpath.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + path.toString());
+
+        // Подключение в DOM
+        aniMove.appendChild(mpath);
+        arrow.node.appendChild(aniMove);
+    };
+
+    static animateArrowScale(arrow, time, out = false) {
+        // SVG-анимация стрелки:
+        let aniTrans = document.createElementNS("http://www.w3.org/2000/svg", "animateTransform"); // тип: трансформ.
+        aniTrans.setAttribute("attributeName", "transform");                               // радиус
+        aniTrans.setAttribute("type", "scale");
+        aniTrans.setAttribute("additive", "sum");
+        aniTrans.setAttribute("from", out ? "1 1" : "0.45 0.45");
+        aniTrans.setAttribute("to", out ? "0.45 0.45" : "1 1");
+        aniTrans.setAttribute("begin", "0s");
+        aniTrans.setAttribute("dur", time + "ms");
+        aniTrans.setAttribute("repeatCount", "indefinite");                                // бесконечная
+        aniTrans.setAttribute("calcMode", "spline");
+        aniTrans.setAttribute("keySplines", out ? "0.39, 0.575, 0.565, 1" : "0.47, 0, 0.745, 0.715");
+        // aniMove.setAttribute("keyTimes", "0;0.5");
+
+        // Подключение в DOM
+        arrow.node.appendChild(aniTrans);
     };
 }

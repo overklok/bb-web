@@ -2,11 +2,7 @@ import Layer from "../core/Layer";
 import Current from "../core/Current";
 
 const CURRENT_WIDTH = 20;
-const CURRENT_COLOR_GOOD = "#26d0ff";
-const CURRENT_COLOR_BAD = "#ff0003";
-
-const CURRENT_ARROW_COLOR   = '#00f';       // Цвет стрелок тока
-const CURRENT_ANIM_SPEED     = 300;            // Скорость анимации стрелок, arrows/sec
+const CURRENT_ANIM_SPEED     = 600;            // Скорость анимации стрелок, arrows/sec
 
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
@@ -52,13 +48,12 @@ export default class CurrentLayer extends Layer {
         }
     }
 
-    addCurrent(points, c_color=CURRENT_COLOR_GOOD) {
+    addCurrent(points) {
         if (!points || points.length === 0) {}
 
         let path_data = this._buildCurrentPath(points);
 
         let current = new Current(this._cellgroup, {
-            color: c_color,
             width: CURRENT_WIDTH,
             linecap: "round"
         });
@@ -66,7 +61,7 @@ export default class CurrentLayer extends Layer {
         this._currents.push(current);
 
         current.draw(path_data);
-        current.activate(CURRENT_ANIM_SPEED, CURRENT_ARROW_COLOR);
+        current.activate(CURRENT_ANIM_SPEED);
 
         this._point_arr.push(points);
     };

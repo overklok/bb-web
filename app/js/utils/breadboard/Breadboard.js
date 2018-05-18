@@ -5,6 +5,7 @@ import BackgroundLayer from "./layers/BackgroundLayer";
 import LabelLayer from "./layers/LabelLayer";
 import CurrentLayer from "./layers/CurrentLayer";
 import PlateLayer from "./layers/PlateLayer";
+import RegionLayer from "./layers/RegionLayer";
 
 const WRAP_WIDTH = 1200;              // Ширина рабочей области
 const WRAP_HEIGHT = 1350;             // Высота рабочей области
@@ -33,6 +34,7 @@ export default class Breadboard {
             label:      undefined,
             plate:      undefined,
             current:    undefined,
+            region:     undefined,
         };
 
         this._callbacks = {
@@ -91,11 +93,11 @@ export default class Breadboard {
     }
 
     highlightRegion(from, to, clear) {
-        this._layers.background.highlightRegion(from, to, clear);
+        this._layers.region.highlightRegion(from, to, clear);
     }
 
     clearRegions() {
-        this._layers.background.clearRegions();
+        this._layers.region.clearRegions();
     }
 
     inject(dom_node, options) {
@@ -139,16 +141,19 @@ export default class Breadboard {
         let label_panes = this._brush.nested();
         let current     = this._brush.nested();
         let plate       = this._brush.nested();
+        let region      = this._brush.nested();
 
         this._layers.background = new BackgroundLayer(background, this._grid);
         this._layers.label      = new LabelLayer(label_panes, this._grid);
         this._layers.current    = new CurrentLayer(current, this._grid);
         this._layers.plate      = new PlateLayer(plate, this._grid);
+        this._layers.region     = new RegionLayer(region, this._grid);
 
         this._layers.background.compose();
         this._layers.label.compose();
         this._layers.current.compose();
         this._layers.plate.compose();
+        this._layers.region.compose();
 
         if (!this._options.readOnly) {
             this._layers.plate.onChange((data) => {this._callbacks.change(data)});
@@ -175,6 +180,20 @@ export default class Breadboard {
 
     static _defineFilters() {
         let defs = [];
+
+        // Тень вовнутрь
+        defs.push(
+            '<filter id="inner-shadow">\
+                <feOffset dx="0" dy="0" />\
+                <feGaussianBlur stdDeviation="8" result="offset-blur"/>\
+                <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse" />\
+                <feFlood flood-color="6B2C22" flood-opacity=".3" result="color" />\
+                <!-- Clip color inside shadow -->\
+                <feComposite operator="in" in="color" in2="inverse" result="shadow" />\
+                <!-- Put shadow over original object -->\
+                <feComposite operator="over" in="shadow" in2="SourceGraphic">\
+            </filter>'
+        );
 
         // Свечение чёрным (тень)
         defs.push(
@@ -220,7 +239,7 @@ export default class Breadboard {
         );
 
         defs.push(
-            // Свечение голубым цветом
+            // Свечение серым цветом
             '<filter id="glow-plate" filterUnits="userSpaceOnUse">\
                 <feColorMatrix type="matrix" values=\
                         "0 0 0 0   0\
@@ -249,13 +268,16 @@ export default class Breadboard {
                          1 1 1 0   0\
                          0 0 0 0.5 0"/>\
                 <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
-                <feGaussianBlur in="colorCurrentCyan" stdDeviation="10" result="coloredBlurOut"/>\
+                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="10" result="coloredBlurOut"/>\
                 <feMerge>\
                     <feMergeNode in="coloredBlurOut"/>\
                     <feMergeNode in="SourceGraphic"/>\
                     <feMergeNode in="coloredBlurIn"/>\
                 </feMerge>\
-            </filter>'
+            </filter>\
+            <animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
+            values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>\
+            '
         );
 
         // defs.push(
@@ -269,6 +291,6 @@ export default class Breadboard {
         defs_elem.insertAdjacentHTML('beforeend', defs[2]);
         defs_elem.insertAdjacentHTML('beforeend', defs[3]);
         defs_elem.insertAdjacentHTML('beforeend', defs[4]);
-        // defs_elem.insertAdjacentHTML('beforeend', defs[5]);
+        defs_elem.insertAdjacentHTML('beforeend', defs[5]);
     };
 }
