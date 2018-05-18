@@ -353,7 +353,7 @@ export default class InstructorModule extends Module {
             this.emitEvent('fault', {
                 message: verdict.html,
                 blocks: verdict.blocks,
-                regions: verdict.data ? verdict.data.lane : []
+                region: verdict.data ? verdict.data.lane : null
             });
         }
     }

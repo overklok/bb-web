@@ -90,8 +90,8 @@ export default class Breadboard {
         this._layers.current.removeAllCurrents();
     }
 
-    highlightRegion(from, to) {
-        this._layers.background.highlightRegion(from, to);
+    highlightRegion(from, to, clear) {
+        this._layers.background.highlightRegion(from, to, clear);
     }
 
     clearRegions() {

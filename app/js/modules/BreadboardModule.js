@@ -92,8 +92,8 @@ export default class BreadboardModule extends Module {
         }
     }
 
-    highlightRegions(regions) {
-        this._board.highlightRegions(regions);
+    highlightRegion(region, clear) {
+        this._board.highlightRegion(region, clear);
     }
 
     clearRegions() {
@@ -112,6 +112,7 @@ export default class BreadboardModule extends Module {
 
     _subscribeToWrapperEvents() {
         this._board.onChange((data) => {
+            this.clearRegions();
             this.emitEvent("change", data);
         })
     }

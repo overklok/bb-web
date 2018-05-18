@@ -93,7 +93,7 @@ let appendShadowBlock = (block_svg, input_name, block_name) => {
 
         let cc = block_svg.getInput(input_name).connection;
         cc.connect(ob);
-    }, 0);
+    }, 10);
 };
 
 export {
