@@ -1,9 +1,6 @@
 const GRID_DOT_SIZE = 20;           // Радиус точек
 
-//TODO: сделать градиент, по центру - белый, по бокам - синий, со свечением
-const CURRENT_ANIM_DELTA    = 100;           // Расстояние между соседними стрелками, px
-
-const CURRENT_COLOR = "#7DF9FF";
+import thm from '../styles/current.css';
 
 /**
  * Класс "Ток"
@@ -21,10 +18,16 @@ const CURRENT_COLOR = "#7DF9FF";
  * @constructor
  */
 export default class Current {
+    static get ColorMin() {return "#7df9ff"}
+    static get ColorMax() {return "#6cff65"}
+    static get AnimationDelta() {return 100} // Расстояние между соседними стрелками, px
+
     constructor(container, style) {
         this.container = container;
         this.style = style;
         this.path = null;
+        this.arrows = [];
+        this.weight = 0;
 
         this.container_anim = this.container.nested();
 
@@ -38,15 +41,17 @@ export default class Current {
      *
      * @param path
      */
-    draw(path) {
-        this.style.color = CURRENT_COLOR;
+    draw(path, weight=0) {
+        this.weight = weight;
+        this.style.color = Current.pickColorFromRange(this.weight);
 
         this.path = this.container
             .path(path)
             .addClass('current-path')
             .fill('none')
             .stroke(this.style)
-            .data('key', 'value');
+            .data('key', 'value')
+            .addClass('current-path');
 
         this.container_anim.before(this.path);
         this.container_anim.opacity(0);
@@ -64,6 +69,8 @@ export default class Current {
             console.warn("An attempt to erase NULL path was made");
             return null;
         }
+
+        this.arrows = [];
 
         this.path.remove();
         this.container_anim.remove();
@@ -91,7 +98,7 @@ export default class Current {
         let length = this.path.length();
 
         // Определим число стрелок
-        let arrows_count = Math.floor(length) / (CURRENT_ANIM_DELTA);
+        let arrows_count = Math.floor(length) / (Current.AnimationDelta);
 
         // Для каждой стрелки:
         for (let i = 0; i < arrows_count; i++)
@@ -121,7 +128,9 @@ export default class Current {
                 .addClass('current-arrow');
 
             // Заливка и центрирование
-            arrow.fill(CURRENT_COLOR);
+            arrow.fill(Current.pickColorFromRange(this.weight));
+
+            this.arrows.push(arrow);
 
             Current.animateArrowMove(this.path.toString(), arrow, time, progress_start, progress_end);
 
@@ -148,6 +157,8 @@ export default class Current {
      * Остановить анимацию тока
      */
     deactivate() {
+        this.arrows = [];
+
         this.container_anim.clear();
     };
 
@@ -157,6 +168,20 @@ export default class Current {
     addGlow() {
         this.path.attr('filter', 'url(#glow-current)');
     };
+
+    setWeight(weight=0) {
+        this.weight = weight;
+
+        let color = Current.pickColorFromRange(weight);
+
+        console.log(color);
+
+        this.path.stroke({color});
+
+        for (let arw of this.arrows) {
+            arw.fill(color);
+        }
+    }
 
     static animateArrowMove(path, arrow, time, progress_start, progress_end) {
         // SVG-анимация стрелки:
@@ -196,4 +221,29 @@ export default class Current {
         // Подключение в DOM
         arrow.node.appendChild(aniTrans);
     };
+
+    static pickColorFromRange(weight) {
+        let w1 = weight,
+            w2 = 1 - w1;
+
+        let color_min = [
+            parseInt(Current.ColorMin.slice(1,3), 16),
+            parseInt(Current.ColorMin.slice(3,5), 16),
+            parseInt(Current.ColorMin.slice(5,7), 16)
+        ];
+
+        let color_max = [
+            parseInt(Current.ColorMax.slice(1,3), 16),
+            parseInt(Current.ColorMax.slice(3,5), 16),
+            parseInt(Current.ColorMax.slice(5,7), 16)
+        ];
+
+        let rgb = [
+            Math.round(color_max[0] * w1 + color_min[0] * w2),
+            Math.round(color_max[1] * w1 + color_min[1] * w2),
+            Math.round(color_max[2] * w1 + color_min[2] * w2),
+        ];
+
+        return '#' + Number(rgb[0]).toString(16) + Number(rgb[1]).toString(16) + Number(rgb[2]).toString(16);
+    }
 }

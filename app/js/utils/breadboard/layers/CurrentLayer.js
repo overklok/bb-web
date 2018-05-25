@@ -48,7 +48,7 @@ export default class CurrentLayer extends Layer {
         }
     }
 
-    addCurrent(points) {
+    addCurrent(points, weight) {
         if (!points || points.length === 0) {}
 
         let path_data = this._buildCurrentPath(points);
@@ -60,7 +60,7 @@ export default class CurrentLayer extends Layer {
 
         this._currents.push(current);
 
-        current.draw(path_data);
+        current.draw(path_data, weight);
         current.activate(CURRENT_ANIM_SPEED);
 
         this._point_arr.push(points);

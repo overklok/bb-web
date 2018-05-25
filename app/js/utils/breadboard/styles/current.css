@@ -1,0 +1,7 @@
+.current-path {
+     transition: stroke 2s;
+}
+
+.current-arrow {
+    transition: fill 2s;
+}

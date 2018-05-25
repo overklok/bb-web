@@ -68,12 +68,15 @@ export default class BreadboardModule extends Module {
     }
 
     updateCurrents(data) {
-        this._board.setCurrent(data.threads);
+        if (!data) {return false}
+
+        if (data.threads) {
+            this._board.setCurrent(data.threads);
+        }
 
         if (!('elements' in data)) {return true}
 
         for (let element of data.elements) {
-            console.log(element);
             this._board.setPlateState(element.id, {
                 highlighted: element.highlight || false,
             })

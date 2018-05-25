@@ -19,6 +19,7 @@ const GRID_GAP_Y = 10;
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
+import thm from "./styles/main.css";
 
 export default class Breadboard {
     constructor(options) {
@@ -74,7 +75,7 @@ export default class Breadboard {
         this._layers.plate.removeAllPlates();
     }
 
-    setCurrent(points) {
+    setCurrent(points, weight) {
         // if (this._cache.current) {
         //     if (JSON.stringify(this._cache.current) === JSON.stringify(points)) {
         //         console.log("cache equal, return");
@@ -85,7 +86,7 @@ export default class Breadboard {
         // }
 
         this._layers.current.removeAllCurrents();
-        this._layers.current.addCurrent(points);
+        this._layers.current.addCurrent(points, weight);
     }
 
     clearCurrents() {
@@ -121,6 +122,10 @@ export default class Breadboard {
         Breadboard._defineFilters();
         /// Инициализировать слои
         this._composeLayers();
+
+        if (!this._options.readOnly) {
+            this._displayControls(dom_node);
+        }
     };
 
     dispose() {
@@ -133,7 +138,6 @@ export default class Breadboard {
 
         this._callbacks.change = cb;
     }
-
 
     _composeLayers() {
         // В ней - фон, сетка и панели подписей
@@ -174,8 +178,54 @@ export default class Breadboard {
         }
     }
 
+    _displayControls(dom_node) {
+        let wrap = document.createElement("div");
+        let input = document.createElement("input");
+        let select = document.createElement("select");
+        let btn_apply = document.createElement("a");
+
+        wrap.classList += "bb-plate-add-wrap";
+        input.classList += "bb-plate-add-input";
+        select.classList += "bb-plate-add-selector";
+        btn_apply.classList += "bb-plate-add-btn";
+
+        let options = Breadboard.getAllPlateTypes();
+
+        for (let i = 0; i < options.length; i++) {
+            let opt = options[i];
+            let el = document.createElement("option");
+            el.textContent = Breadboard.getAllPlateCaptions()[opt];
+            el.value = opt;
+
+            select.appendChild(el);
+        }
+
+        btn_apply.addEventListener("click", () => {
+            let plate_type = select.options[select.selectedIndex].value;
+            let extra = input.value;
+
+            this.addPlate(plate_type, 0, 0, 'west', null, extra);
+
+            this._callbacks.change({
+                id: null,
+                action: 'create'
+            });
+        });
+
+        btn_apply.innerHTML = "Добавить";
+
+        wrap.appendChild(select);
+        wrap.appendChild(input);
+        wrap.appendChild(btn_apply);
+        dom_node.appendChild(wrap);
+    }
+
     static getAllPlateTypes() {
         return PlateLayer._getAllPlateTypes();
+    }
+
+    static getAllPlateCaptions() {
+        return PlateLayer._getAllPlateCaptions();
     }
 
     static _defineFilters() {

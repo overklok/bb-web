@@ -4,21 +4,6 @@ import domtoimage from 'dom-to-image';
 
 import Breadboard from "../utils/breadboard/Breadboard";
 
-const PLATE_TYPES = {
-    'bridge':       'перемычка',
-    'resistor':     'резистор',
-    'photoresistor':'фоторезистор',
-    'rheostat':     'реостат',
-    'button':       'кнопка',
-    'switch':       'ключ',
-    'relay':        'реле',
-    'capacitor':    'конденсатор',
-    'transistor':   'транзистор',
-    'inductor':     'индуктор',
-    'LED':          'диод',
-    'strip':        'лента',
-};
-
 /**
  * Обёртка библиотеки Breadboard для отображения макетной платы
  */
@@ -40,11 +25,6 @@ export default class BreadboardWrapper extends Wrapper {
     inject(dom_node, read_only=true) {
         if (!dom_node) {
             throw new TypeError("DOM Node must be defined");
-        }
-
-        if (!read_only) {
-            this._generatePlateSelector(dom_node);
-            this._plugin.onChange((data) => {this._onchange(data)});
         }
 
         this._plugin.inject(dom_node, {
@@ -84,8 +64,8 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.setPlateState(plate_id, state);
     }
 
-    setCurrent(points) {
-        this._plugin.setCurrent(points);
+    setCurrent(points, weight) {
+        this._plugin.setCurrent(points, weight);
     }
 
     removeCurrents() {
@@ -105,55 +85,7 @@ export default class BreadboardWrapper extends Wrapper {
     }
 
     onChange(cb) {
-        this._onchange = cb;
-    }
-
-    _generatePlateSelector(dom_node) {
-        let wrap = document.createElement("div");
-        let input = document.createElement("input");
-        let select = document.createElement("select");
-        let btn_apply = document.createElement("a");
-
-        wrap.classList += "bb-plate-add-wrap";
-        input.classList += "bb-plate-add-input";
-        select.classList += "bb-plate-add-selector";
-        btn_apply.classList += "bb-plate-add-btn";
-
-        wrap.style.cssText  += "position: absolute; bottom: 0;";
-        input.style.cssText += "width: 40px";
-        select.style.cssText += "width: 100px";
-        // input.setAttribute("type", "number");
-        // input.setAttribute("min", 0);
-
-        let options = Breadboard.getAllPlateTypes();
-
-        for (let i = 0; i < options.length; i++) {
-            let opt = options[i];
-            let el = document.createElement("option");
-            el.textContent = PLATE_TYPES[opt];
-            el.value = opt;
-
-            select.appendChild(el);
-        }
-
-        btn_apply.addEventListener("click", () => {
-            let plate_type = select.options[select.selectedIndex].value;
-            let extra = input.value;
-
-            this._plugin.addPlate(plate_type, 0, 0, 'west', null, extra);
-
-            this._onchange({
-                id: null,
-                action: 'create'
-            })
-        });
-
-        btn_apply.innerHTML = "Добавить";
-
-        wrap.appendChild(select);
-        wrap.appendChild(input);
-        wrap.appendChild(btn_apply);
-        dom_node.appendChild(wrap);
+        this._plugin.onChange(cb);
     }
 
     _saveToImage() {

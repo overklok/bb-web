@@ -378,6 +378,25 @@ export default class PlateLayer extends Layer {
         ]
     }
 
+    static _getAllPlateCaptions() {
+        let captions = {};
+
+        captions[ResistorPlate.Alias]       = 'резистор';
+        captions[PhotoresistorPlate.Alias]  = 'фоторезистор';
+        captions[RheostatPlate.Alias]       = 'реостат';
+        captions[BridgePlate.Alias]         = 'перемычка';
+        captions[ButtonPlate.Alias]         = 'кнопка';
+        captions[SwitchPlate.Alias]         = 'ключ';
+        captions[CapacitorPlate.Alias]      = 'конденсатор';
+        captions[TransistorPlate.Alias]     = 'транзистор';
+        captions[InductorPlate.Alias]       = 'индуктор';
+        captions[RelayPlate.Alias]          = 'реле';
+        captions[DiodePlate.Alias]          = 'диод';
+        captions[StripPlate.Alias]          = 'лента';
+
+        return captions;
+    }
+
     /**
      * Перевести тип плашки в класс
      *

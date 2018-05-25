@@ -66,7 +66,7 @@ export default class TransistorPlate extends Plate {
         let line_top_1 = this._group.path([
             ['M', 0, 0],
             ['l', line_len/2 - line_gap, 0],
-            ['l', qs*3/4, qs*3/4],
+            ['l', qs, qs],
         ])
             .stroke({width: 3})
             .fill('none')
@@ -92,36 +92,35 @@ export default class TransistorPlate extends Plate {
             .x(cell3.center.x - line_gap*2.5)
             .y(cell1.center.y - qs/2);
 
-        line_top_1.marker('end', qs/4, qs/4, function(add) {
-            add.path([
-                ['M', 0, 0],
-                ['l', -line_gap/2, -line_gap/4],
-                ['l', 0, line_gap/2],
-                ['l', line_gap/2, -line_gap/4],
-          ])
-              .fill('#000')
-              .move(-qs/4, -qs/8);
-        })
+        this._group.polyline([
+                [0, 0],
+                [line_gap/1.2, 0],
+                [line_gap/2.4, -line_gap/1.5],
+                [0, 0],
+            ])
+            .fill('#000')
+            .move(line_top_2.x() + line_gap/4.8, line_top_2.y())
+            .rotate(45);
 
         // this._group.path([
         //     ['M', 0, 0],
-        //     ['l', line_gap//2, -line_gap/2.2],
+        //     ['l', line_gap/2, -line_gap/2.2],
         //     ['l', line_gap/4, line_gap/1.5],
         //     ['l', -line_gap/1.35, -line_gap/4],
         // ])
         //     .stroke({width: 1, color: "#000"})
         //     .fill('#000')
         //     .move(rect1.cx() + line_gap*3.2, rect1.cy() + qs/3.6);
-
+        //
         // let line_connector = this._group.polyline([
         //     [0, 0],
         //     [0, qs/1.5],
         //     [qs/2, qs],
         //     [line_gap, qs]
         // ])
-            // .stroke({width: 3})
-            // .fill('none')
-            // .move(rect3.cx(), rect3.cy())
-            // .scale(-1, 1).x(rect3.cx() + line_gap)
+        //     .stroke({width: 3})
+        //     .fill('none')
+        //     .move(rect3.cx(), rect3.cy())
+        //     .scale(-1, 1).x(rect3.cx() + line_gap)
     }
 }
