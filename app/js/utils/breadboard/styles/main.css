@@ -16,7 +16,7 @@
     width: 100px;
 }
 
-.bb-plate-add-btn {
+.bb-plate-btn-add, .bb-plate-btn-clear {
     background-color: #ffffff;
     display: block;
     border-radius: 5px;

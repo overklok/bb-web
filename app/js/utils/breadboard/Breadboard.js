@@ -183,11 +183,13 @@ export default class Breadboard {
         let input = document.createElement("input");
         let select = document.createElement("select");
         let btn_apply = document.createElement("a");
+        let btn_clear = document.createElement("a");
 
         wrap.classList += "bb-plate-add-wrap";
         input.classList += "bb-plate-add-input";
         select.classList += "bb-plate-add-selector";
-        btn_apply.classList += "bb-plate-add-btn";
+        btn_apply.classList += "bb-plate-btn-add";
+        btn_clear.classList += "bb-plate-btn-clear";
 
         let options = Breadboard.getAllPlateTypes();
 
@@ -212,10 +214,21 @@ export default class Breadboard {
             });
         });
 
+        btn_clear.addEventListener("click", () => {
+            this.clearPlates();
+
+            this._callbacks.change({
+                id: null,
+                action: 'remove'
+            });
+        });
+
         btn_apply.innerHTML = "Добавить";
+        btn_clear.innerHTML = "Очистить всё";
 
         wrap.appendChild(select);
         wrap.appendChild(input);
+        wrap.appendChild(btn_clear);
         wrap.appendChild(btn_apply);
         dom_node.appendChild(wrap);
     }
