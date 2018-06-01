@@ -2,7 +2,7 @@
     stroke-width: 0;
 }
 
-#blockly-overlay {
+#blockly-dimmer {
     box-shadow: 0 0 200px rgba(0,0,0,0.9) inset;
     background-color: #BBBBBB;
     opacity: 0.3;
@@ -13,7 +13,7 @@
     transition-property: visibility, opacity;
 }
 
-.blockly-overlay-hidden {
+.blockly-dimmer-hidden {
     opacity: 0          !important;
     visibility: hidden  !important;
 }

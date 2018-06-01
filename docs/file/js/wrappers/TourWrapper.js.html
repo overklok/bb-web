@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">js/wrappers/TourWrapper.js | &#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="&#x422;&#x430;&#x43F;&#x430;&#x43D;&#x434;&#x430;: &#x41C;&#x430;&#x43A;&#x435;&#x442;&#x43D;&#x430;&#x44F; &#x43F;&#x43B;&#x430;&#x442;&#x430;"><meta property="twitter:description" content="&#x41F;&#x430;&#x43A;&#x435;&#x442; frontend-&#x440;&#x435;&#x448;&#x435;&#x43D;&#x438;&#x439; &#x434;&#x43B;&#x44F; &#x43F;&#x440;&#x43E;&#x435;&#x43A;&#x442;&#x430; &#x427;&#x430;&#x441; &#x43A;&#x43E;&#x434;&#x430;"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a href="https://bitbucket.org/makeitlab/codehour-breadboard-web">Repository</a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_blockly.js~AdminBlocklyApplication.html">AdminBlocklyApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/admin_board.js~AdminBoardApplication.html">AdminBoardApplication</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/index.js~Application.html">Application</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#core">core</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Dispatcher.js~Dispatcher.html">Dispatcher</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Loggable.js~Loggable.html">Loggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Module.js~Module.html">Module</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/core/Wrapper.js~Wrapper.html">Wrapper</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#modules">modules</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/BreadboardModule.js~BreadboardModule.html">BreadboardModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/GUIModule.js~GUIModule.html">GUIModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/GlobalServiceModule.js~GlobalServiceModule.html">GlobalServiceModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/InstructorModule.js~InstructorModule.html">InstructorModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LayoutModule.js~LayoutModule.html">LayoutModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LocalServiceModule.js~LocalServiceModule.html">LocalServiceModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/LogModule.js~LogModule.html">LogModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/TracingModule.js~TracingModule.html">TracingModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/modules/WorkspaceModule.js~WorkspaceModule.html">WorkspaceModule</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#wrappers">wrappers</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/AlertifierWrapper.js~AlertifierWrapper.html">AlertifierWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/BlocklyWrapper.js~BlocklyWrapper.html">BlocklyWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/BreadboardWrapper.js~BreadboardWrapper.html">BreadboardWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/ElectronIPCWrapper.js~ElectronIPCWrapper.html">ElectronIPCWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/FileWrapper.js~FileWrapper.html">FileWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/IdentifierWrapper.js~IdentifierWrapper.html">IdentifierWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/KbdPaneWrapper.js~KbdPaneWrapper.html">KbdPaneWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/LaunchBtnWrapper.js~LaunchBtnWrapper.html">LaunchBtnWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html">LessonPaneWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/SocketWrapper.js~SocketWrapper.html">SocketWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/SpinnerWrapper.js~SpinnerWrapper.html">SpinnerWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/TextPaneWrapper.js~TextPaneWrapper.html">TextPaneWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/js/wrappers/TourWrapper.js~TourWrapper.html">TourWrapper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://developers.google.com/blockly/reference/js/Blockly.BlockSvg">Blockly.BlockSvg</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">js/wrappers/TourWrapper.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Wrapper from &quot;../core/Wrapper&quot;
+
+import base from &quot;intro.js/introjs.css&quot;;
+// import thm from &quot;intro.js/themes/introjs-flattener.css&quot;;
+import thm from &quot;../../css/intro.css&quot;;
+
+let introJS = require(&apos;intro.js&apos;).introJs;
+// window.introJS = introJS;
+
+const CLASS_NAMES = {
+    SUCCESS: &quot;introjs-tooltip-success&quot;,
+    ERROR: &quot;introjs-tooltip-error&quot;
+};
+
+const MODES = {
+    INTRO: &quot;intro&quot;,
+    ERROR: &quot;error&quot;,
+    DIALOG: &quot;dialog&quot;,
+    SUCCESS: &quot;success&quot;
+};
+
+const DIALOG_MODES = [&quot;dialog&quot;, &quot;success&quot;];
+
+const DIALOG_DEFAULT = &quot;&#x423;&#x43F;&#x440;&#x430;&#x436;&#x43D;&#x435;&#x43D;&#x438;&#x435; &#x43F;&#x440;&#x43E;&#x439;&#x434;&#x435;&#x43D;&#x43E;!&quot;;
+
+export default class TourWrapper extends Wrapper {
+    constructor(mode, steps) {
+        super();
+
+        this._introJS = introJS();
+        this._mode = mode;
+
+        let options = this._getOptions(mode);
+
+        if (DIALOG_MODES.indexOf(this._mode) &gt;= 0) {
+            options.steps = [{intro: steps || DIALOG_DEFAULT}, {}]
+        } else {
+            if (steps) {
+                options.steps = steps;
+            }
+        }
+
+        this._introJS.setOptions(options);
+    }
+
+    start() {
+        return new Promise((resolve, reject) =&gt; {
+            let self = this;
+            let rejected = false;
+
+            this._introJS.start();
+
+            if (DIALOG_MODES.indexOf(this._mode) === -1 &amp;&amp; this._introJS._introItems.length &gt; 1) {
+                $(&apos;.introjs-skipbutton&apos;).hide();
+            }
+
+            this._setStyles();
+
+            this._introJS.onafterchange(function () {
+                if (DIALOG_MODES.indexOf(self._mode) &gt;= 0) {
+                    reject();
+                    rejected = true;
+                    this.exit(true);
+                }
+
+                if (this._introItems.length - 1 === this._currentStep || this._introItems.length === 1) {
+                    $(&apos;.introjs-skipbutton&apos;).show();
+                } else {
+                    $(&apos;.introjs-skipbutton&apos;).hide();
+                }
+            });
+
+            this._introJS.onexit(() =&gt; {
+                if (!rejected) {
+                    DIALOG_MODES.indexOf(this._mode) &gt;= 0 ? resolve(true) : resolve(false);
+                }
+            });
+
+            this._introJS.oncomplete(() =&gt; {
+                if (!rejected) {
+                    resolve(true);
+                }
+            })
+        });
+    }
+
+    _setStyles() {
+        switch (this._mode) {
+            case MODES.SUCCESS: {
+                $(&apos;.introjs-tooltip&apos;).addClass(CLASS_NAMES.SUCCESS);
+                break;
+            }
+            case MODES.ERROR: {
+                $(&apos;.introjs-tooltip&apos;).addClass(CLASS_NAMES.ERROR);
+                break;
+            }
+            default: {
+
+                break;
+            }
+        }
+
+    }
+
+    _getOptions(mode) {
+        let options = {
+            doneLabel: &quot;&#x41E;&#x41A;&quot;,
+            nextLabel: &quot;&#x414;&#x430;&#x43B;&#x44C;&#x448;&#x435;&quot;,
+            prevLabel: &quot;&#x41D;&#x430;&#x437;&#x430;&#x434;&quot;,
+            skipLabel: &quot;&#x41F;&#x440;&#x43E;&#x43F;&#x443;&#x441;&#x442;&#x438;&#x442;&#x44C;&quot;,
+            showStepNumbers: false,
+        };
+
+        switch (mode) {
+            case MODES.DIALOG: {
+                options.skipLabel = &quot;&#x414;&#x430;&quot;;
+                options.nextLabel = &quot;&#x41D;&#x435;&#x442;&quot;;
+                options.showBullets = false;
+                options.hidePrev = true;
+                options.exitOnOverlayClick = false;
+                break;
+            }
+            case MODES.SUCCESS: {
+                options.skipLabel = &quot;&#x41F;&#x435;&#x440;&#x435;&#x439;&#x442;&#x438;&quot;;
+                options.nextLabel = &quot;&#x41E;&#x441;&#x442;&#x430;&#x442;&#x44C;&#x441;&#x44F;&quot;;
+                options.showBullets = false;
+                options.hidePrev = true;
+                options.exitOnOverlayClick = false;
+                break;
+            }
+            case MODES.ERROR: {
+                options.doneLabel = &quot;&#x41E;&#x41A;&quot;;
+                options.hidePrev = true;
+                options.showBullets = false;
+                break;
+            }
+            case MODES.INTRO:
+            default: {
+                options.doneLabel = &quot;&#x41F;&#x440;&#x438;&#x441;&#x442;&#x443;&#x43F;&#x438;&#x442;&#x44C;&quot;;
+                options.hidePrev = true;
+                options.hideNext = true;
+                options.exitOnOverlayClick = false;
+            }
+        }
+
+        return options;
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

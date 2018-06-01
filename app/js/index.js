@@ -196,8 +196,6 @@ class Application {
          * Запущено упражнение
          */
         this._dispatcher.on('ins:start', exercise => {
-            console.log(exercise);
-
             /// Заблокировать все события
             this._dispatcher.only([]);
 
@@ -448,6 +446,7 @@ class Application {
         this._dispatcher.on('ls:command', data => {
             console.log(data);
             this.ws.highlightBlock(data.block_id);
+
         });
 
         /**

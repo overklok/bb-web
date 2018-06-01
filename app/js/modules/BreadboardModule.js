@@ -108,8 +108,6 @@ export default class BreadboardModule extends Module {
 
         let plates = this._board.getPlates();
 
-        console.log(plates);
-
         return plates;
     }
 

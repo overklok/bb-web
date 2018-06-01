@@ -152,8 +152,6 @@ export default class GUIModule extends Module {
 
     setExerciseCurrent(exercise_idx) {
         return new Promise((resolve, reject) => {
-            console.log(exercise_idx);
-
             this._lesson_pane.setExerciseActive(exercise_idx);
 
             resolve(true);
@@ -175,7 +173,6 @@ export default class GUIModule extends Module {
     }
 
     setBoardStatus(status) {
-        console.log("BS", status);
         switch (status) {
             case BOARD_STATUSES.SEARCH: {
                 this.hideAllAlerts();
@@ -211,8 +208,6 @@ export default class GUIModule extends Module {
 
     setLaunchVariant(variant) {
         if (!this._state.areasDisp.buttons)   {return Promise.resolve(false)}
-
-        console.log("SLV", variant);
 
         switch (variant) {
             case LAUNCH_VARIANTS.NONE: {
@@ -376,8 +371,6 @@ export default class GUIModule extends Module {
         if (typeof hash !== "string") {throw new TypeError("URL Hash is not a string")}
 
         let mission_idx, exercise_idx;
-
-        console.log(hash);
 
         if (hash.match(REGEXPS.MISSION_EXERCISE)) {
             [mission_idx, exercise_idx] = hash.match(REGEXPS.NUMBERS);

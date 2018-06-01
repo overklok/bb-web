@@ -176,12 +176,10 @@ export default class WorkspaceModule extends Module {
         this._blockly.clear();
 
         if (!(mission_id in this._code_storage)) {
-            console.log("NO MID IN STOR");
             return false;
         }
 
         if (!(exercise_id in this._code_storage[mission_id])) {
-            console.log("NO EXEC IN STOR");
             return false;
         }
 

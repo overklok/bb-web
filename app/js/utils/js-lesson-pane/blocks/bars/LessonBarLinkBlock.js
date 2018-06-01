@@ -39,8 +39,6 @@ export default class LessonBarLinkBlock extends Block {
     }
 
     setProgress(percent) {
-        console.log("PERC", percent);
-
         this._elements.progressor.style.height = percent + "%";
     }
 

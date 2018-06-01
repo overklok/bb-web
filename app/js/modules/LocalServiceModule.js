@@ -117,8 +117,6 @@ export default class LocalServiceModule extends Module {
         }
 
         return new Promise(resolve => {
-            console.log(handlers);
-
             this._ipc.send('code-update', handlers);
 
             this._ipc.once('code-update.result', (event, error) => {

@@ -1,9 +1,13 @@
+/**
+ * @external {Blockly.BlockSvg} https://developers.google.com/blockly/reference/js/Blockly.BlockSvg
+ */
+
 import Wrapper from '../core/Wrapper'
 
 import Blockly  from 'node-blockly/browser'
 import Ru       from 'node-blockly/lib/i18n/ru';
 
-import thm      from '../../css/blockly-overlay.css';
+import thm      from '../../css/blockly-dimmer.css';
 
 Blockly.setLocale(Ru);
 
@@ -12,11 +16,11 @@ const ERROR_COLOUR = "#920000";
 const DIV_IDS = {
     BLOCKLY: "blockly-div",
     TOOLBOX: "blockly-toolbox",
-    OVERLAY: "blockly-overlay"
+    DIMMER: "blockly-dimmer"
 };
 
 const DIV_CLASSES = {
-    OVERLAY_HIDDEN: "blockly-overlay-hidden",
+    DIMMER_HIDDEN: "blockly-dimmer-hidden",
 };
 
 const FIELD_TYPES = {
@@ -25,6 +29,10 @@ const FIELD_TYPES = {
     COLOUR: "colour"
 };
 
+/** Глобальная переменная, определяющая, загружены ли уже типы блоков в Blockly
+ *  Видимость переменной необходима в области 'window',
+ *  т.к. все экземпляры Blockly таже имеют к ней доступ
+ */
 window.BLOCKLY_BTS_REG = false;
 
 /**
@@ -39,23 +47,27 @@ export default class BlocklyWrapper extends Wrapper {
         this.area               = undefined;     // узел вставки контейнера
         this.container          = undefined;     // контейнер Blockly
         this.toolbox            = undefined;     // узел с описанием типов блоков
-        this.overlay            = undefined;
-
+        this.dimmer            = undefined;     // слой затемнения
         this.workspace          = undefined;     // SVG-контейнер с графикой Blockly
+
+        // Блоки
         this._block_types       = undefined;     // JSON-типы блоков
         this._generators        = undefined;     // JS-генератор кода
         this._audibles          = undefined;     // Прослушиваемые типы блоков
 
+        // Флаги
         this.silent             = false;          // "тихий" режим, не обрабатывать события
         this.extra_fields       = false;          // режим доп. полей, для админки
 
-        this._error_blocks = {};
-
-        this._variable_blocks   = [];
+        // Прочее
+        this._error_blocks      = {};             // блоки, помеченные как ошибочные
+        this._variable_blocks   = [];             // блоки-переменные
+        this._history_blocks    = {};
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
             changeListenerRegistered: false,    // зарегистрирован ли обработчик событий изменения
+            code_buffer: undefined              // буфер кода, используется при встраивании-удалении
         };
 
         this._callbacks = {
@@ -67,14 +79,22 @@ export default class BlocklyWrapper extends Wrapper {
             }
         };
 
-        this._state = {
-            code_buffer: undefined
-        };
-
+        // Конфигурация Blockly
         Blockly.HSV_SATURATION = 1;
         Blockly.HSV_HUE = 1;
     }
 
+    /**
+     * Зарегистрировать типы блоков в Blockly
+     *
+     * Формат входных данных см. в разделах Block Definition и Define Blocks
+     * (во вкладках JavaScript)
+     *
+     * @see https://developers.google.com/blockly/guides/configure/web/custom-blocks
+     * @see https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks
+     *
+     * @param {Object} blocksJSON объект формата Blockly (JavaScript), задающий определения блоков
+     */
     registerBlockTypes(blocksJSON) {
         this._block_types = blocksJSON;
 
@@ -83,6 +103,15 @@ export default class BlocklyWrapper extends Wrapper {
         BLOCKLY_BTS_REG = true;
     }
 
+    /**
+     * Зарегистрировать генераторы кода в Blockly
+     *
+     * Формат входных данных см. в разделе Add Generator Function
+     *
+     * @see https://developers.google.com/blockly/guides/configure/web/custom-blocks
+     *
+     * @param {Object} generatorsJS объект формата Blockly (JavaScript), задающий определения генераторов
+     */
     registerGenerators(generatorsJS) {
         this._generators = generatorsJS;
 
@@ -103,21 +132,21 @@ export default class BlocklyWrapper extends Wrapper {
         /// Сгенерировать контейнеры для Blockly и для типов блоков
         this.container   = document.createElement('div');
         this.toolbox     = document.createElement('xml');
-        this.overlay     = document.createElement('div');
+        this.dimmer     = document.createElement('div');
         /// Задать контейнерам соответствующие идентификаторы
         this.container.setAttribute("id", DIV_IDS.BLOCKLY);
         this.toolbox.setAttribute("id", DIV_IDS.TOOLBOX);
 
         if (!read_only) {
-            this.overlay.setAttribute("id", DIV_IDS.OVERLAY);
-            this.overlay.setAttribute("style", this._getOverlayStyle());
+            this.dimmer.setAttribute("id", DIV_IDS.DIMMER);
+            this.dimmer.setAttribute("style", this._getDimmerStyle());
             this.unlock();
         }
 
         this.toolbox.style.display = 'none';
 
         /// Разместить контейнеры в DOM-дереве
-        dom_node.appendChild(this.overlay);
+        dom_node.appendChild(this.dimmer);
         dom_node.appendChild(this.container);
         dom_node.appendChild(this.toolbox);
 
@@ -167,34 +196,59 @@ export default class BlocklyWrapper extends Wrapper {
         /// Отключить отображение Blockly
         this.workspace.dispose();
         /// Удалить контейнеры
-        this.overlay.remove();
+        this.dimmer.remove();
         this.container.remove();
         this.toolbox.remove();
 
         // window.removeEventListener('resize', this._onResize, false);
     }
 
+    /**
+     * Заблокировать редактор
+     *
+     * Сопровождается затемнением контейнера
+     *
+     * @returns {boolean} возможна ли блокировка/разблокировка
+     */
     lock() {
-        if (!this.overlay) {return false}
+        if (!this.dimmer) {return false}
 
-        this.overlay.className = this.overlay.className.replace(new RegExp(`(?:^|\\s)${DIV_CLASSES.OVERLAY_HIDDEN}(?!\\S)`) ,'');
+        this.dimmer.className = this.dimmer.className.replace(new RegExp(`(?:^|\\s)${DIV_CLASSES.DIMMER_HIDDEN}(?!\\S)`) ,'');
+
+        return true;
     }
 
+    /**
+     * Разблокировать редактор
+     *
+     * @returns {boolean} возможна ли блокировка/разблокировка
+     */
     unlock() {
-        if (!this.overlay) {return false}
+        if (!this.dimmer) {return false}
 
-        let classes = this.overlay.className.split(" ");
-        if (classes.indexOf(DIV_CLASSES.OVERLAY_HIDDEN) === -1) {
-            this.overlay.className += " " + DIV_CLASSES.OVERLAY_HIDDEN;
+        let classes = this.dimmer.className.split(" ");
+        if (classes.indexOf(DIV_CLASSES.DIMMER_HIDDEN) === -1) {
+            this.dimmer.className += " " + DIV_CLASSES.DIMMER_HIDDEN;
         }
     }
 
+    /**
+     * Очистить редактор от кода
+     *
+     * @returns {boolean} возможна ли очистка редактора
+     */
     clear() {
         if (!this.workspace) {return false}
 
         this.workspace.clear();
     }
 
+    /**
+     * Обновить предел допустимого количества блоков
+     *
+     * @param   {?number}    block_limit максимально допустимое количество блоков
+     * @returns {boolean}    возможно ли обновление предела
+     */
     updateBlockLimit(block_limit) {
         if (!this.workspace) {return false}
 
@@ -207,11 +261,11 @@ export default class BlocklyWrapper extends Wrapper {
     }
 
     /**
-     * Использовать типы блоков
+     * Обновить типы блоков
      *
-     * Обновляется содержимое тулбокса
+     * Обновляется список допустимых типов блоков в редакторе
      *
-     * @param block_types {object} объект типов блоков типа: {тип_блока: макс. кол-во}
+     * @param {Array<Object>} block_types массив объектов типа {тип_блока: макс. кол-во}
      */
     updateBlockTypes(block_types) {
         let toolbox_content = "";
@@ -227,10 +281,26 @@ export default class BlocklyWrapper extends Wrapper {
         this.workspace.updateToolbox(this.toolbox);
     }
 
+    /**
+     * Подсветить блок
+     *
+     * Блок с указанным ID подсвечивается (становится ярче).
+     * Если на момент вызова функции в коде уже существуют подсвеченные блоки,
+     * их подсветка исчезает
+     *
+     * @param {string} block_id идентифиактор блока в набранном коде
+     */
     highlightBlock(block_id) {
         this.workspace.highlightBlock(block_id);
     }
 
+    /**
+     * Подсветить блок как ошибочный
+     *
+     * Блок с указанным ID изменяет цвет на цвет ошибочного блока ({@link ERROR_COLOUR})
+     *
+     * @param {string} block_id идентифиактор блока в набранном коде
+     */
     highlightErrorBlock(block_id) {
         let block = this.workspace.getBlockById(block_id);
         let colour = block.getColour(ERROR_COLOUR);
@@ -240,6 +310,9 @@ export default class BlocklyWrapper extends Wrapper {
         this._error_blocks[block_id] = {colour: colour, block: block};
     }
 
+    /**
+     * Очистить подсветку у ошибочных блоков
+     */
     clearErrorBlocks() {
         for (let block_id of Object.keys(this._error_blocks)) {
             let block = this._error_blocks[block_id].block;
@@ -251,10 +324,14 @@ export default class BlocklyWrapper extends Wrapper {
         }
     }
 
-    setMaxBlockLimit() {
-        if (!this.workspace) {return false}
-    }
-
+    /**
+     * Возвратить список типов блоков, используемых в коде
+     *
+     * Функция фозвращает массив строк, идентифицирующих типы блоков, которые исользуются в коде
+     * на момент вызова функции
+     *
+     * @returns {Array<string>|boolean} список типов блоков / false, если операция невозможна
+     */
     getBlockTypes() {
         if (!this.workspace) {return false}
 
@@ -270,10 +347,10 @@ export default class BlocklyWrapper extends Wrapper {
     }
 
     /**
-     * Определить достаточное (но не всегда необходимое) число блоков
+     * Возвратить достаточное (но не всегда необходимое) число блоков
      * для сборки текущей последовательности блоков
      *
-     * @returns {int} число блоков
+     * @returns {number} число блоков
      */
     getBlockLimit() {
         if (!this.workspace) {return false}
@@ -317,8 +394,10 @@ export default class BlocklyWrapper extends Wrapper {
     }
 
     /**
-     * TODO Refactor -> getBlockLimitInputsByType
-     * @returns {*}
+     * Возвратить значения полей, определяющих максимально допустимое количество блоков,
+     * по всем типам блоков
+     *
+     * @returns {Array<Object>} массив объектов типа {тип_блока: макс. кол-во}
      */
     getBlockLimitInputsByType() {
         if (!this.workspace) {return false}
@@ -339,9 +418,10 @@ export default class BlocklyWrapper extends Wrapper {
     }
 
     /**
-     * Установить значения полей ввода пределов количества блоков по типам
+     * Установить значения полей, определяющих максимально допустимое количество блоков,
+     * по всем типам блоков
      *
-     * @param block_counts {{<string>: number}}
+     * @param block_counts {Array<Object>} массив объектов типа {тип_блока: макс. кол-во}
      */
     setBlockLimitInputsByType(block_counts) {
         if (!this.workspace) {return false}
@@ -366,7 +446,7 @@ export default class BlocklyWrapper extends Wrapper {
     /**
      * Получить текущий код программы Blockly в нотации XML
      *
-     * https://developers.google.com/blockly/guides/get-started/web
+     * @see https://developers.google.com/blockly/guides/get-started/web
      *
      * @returns {string} строка, содержащая XML-код программы
      */
@@ -379,9 +459,25 @@ export default class BlocklyWrapper extends Wrapper {
     /**
      * Получить список обработчиков в виде объекта
      *
-     * @returns {{main, sub}}, где main - главный обработчик, sub - обработчик нажатий клавиши
-     *                         main и sub имеют следующий формат:
-     *                         TODO: определить формат для обработчика
+     * Обработчик - последовательность команд, которая срабатывает
+     * при нажатии на клавишу с соответствующим кодом.
+     *
+     * Главный обработчик - обработчик, срабатывающий при нажатии кнопки "Запустить".
+     *
+     * Формат списка обработчиков:
+     *
+     * `{{main: string, sub: Object}}`,
+     *
+     * где ключ `main` указывает на главный обработчик.
+     *
+     * Ключ `sub` указывает на объект, содержащий обработчики нажатий клавиш:
+     * каждый его ключ - ID блока-обработчика, указывающий на объект типа
+     *
+     * {btn: number, code: string},
+     *
+     * где btn - код клавиши, нажатие которой обрабатывается, code - обработчик её нажатия.
+     *
+     * @returns {{main: string, sub: Object}}
      */
     getJSONHandlers() {
         let code = Blockly.JSON.workspaceToCode(this.workspace);
@@ -441,7 +537,7 @@ export default class BlocklyWrapper extends Wrapper {
      *  - изменение параметров блоков, заданных в _audibles
      *  - изменение параметров блоков, вложенных в блоки, заданные в _audibles
      *
-     *  О пределе уровня вложенности см. [[_filterEvent()]]
+     *  О пределе уровня вложенности см. {@link _filterEvent}
      *
      * @param callback  функция обратного вызова, в которую при глубоких изменениях будут передаваться
      *                  следующие параметры:
@@ -452,28 +548,17 @@ export default class BlocklyWrapper extends Wrapper {
         this._callbacks.onChangeAudible = callback;
     }
 
-    /**
-     * Загрузить типы блоков в JSON
-     *
-     * @private
-     */
-    _loadBlocksJSON() {
-        for (let block_name of Object.keys(this._block_types)) {
-            Blockly.Blocks[block_name] = this._block_types[block_name];
-        }
-    }
+    //
+    // ОТОБРАЖЕНИЕ ПЕРЕМЕННЫХ
+    //
 
     /**
-     * Загрузить генераторы для типов блоков
+     * Добавить блок-переменную
      *
-     * @private
+     * @param {string}              block_type тип блока-переменной
+     * @param {string}              field_type тип значения переменной ({@link FIELD_TYPES})
+     * @param {?string|number}      value значение переменной по умолчанию
      */
-    _loadGenerators() {
-        for (let generator_name of Object.keys(this._generators)) {
-            Blockly.JSON[generator_name] = this._generators[generator_name];
-        }
-    }
-
     addVariableBlock(block_type, field_type=FIELD_TYPES.STRING, value=0) {
         let block = this.workspace.newBlock(block_type);
 
@@ -498,6 +583,9 @@ export default class BlocklyWrapper extends Wrapper {
         this._variable_blocks[block_type] = {name: variable_name, element: block, pos_y: pos_y};
     }
 
+    /**
+     * Очистить блоки-переменные
+     */
     clearVariableBlocks() {
         for (let block_type in this._variable_blocks) {
             this._variable_blocks[block_type].element.dispose();
@@ -506,6 +594,12 @@ export default class BlocklyWrapper extends Wrapper {
         this._variable_blocks = [];
     }
 
+    /**
+     * Задать значение блоку-переменной
+     *
+     * @param {string}          type    тип значения переменной ({@link FIELD_TYPES})
+     * @param {?string|number}  value   значение переменной по умолчанию
+     */
     setVariableBlockValue(type, value=0) {
         let block = this._variable_blocks[type];
 
@@ -514,26 +608,36 @@ export default class BlocklyWrapper extends Wrapper {
         block.element.setFieldValue(value, "DUMMY");
     }
 
-    addBlock(type) {
-        let block = this.workspace.newBlock(type);
-        block.initSvg();
-        block.render();
-
-        // var parentBlock = workspace.newBlock('text_print');
-        // parentBlock.initSvg();
-        // parentBlock.render();
-        //
-        // var childBlock = workspace.newBlock('text');
-        //
-        // childBlock.setFieldValue('Hello', 'TEXT');
-        // childBlock.initSvg();
-        // childBlock.render();
-        //
-        // var parentConnection = parentBlock.getInput('TEXT').connection;
-        // var childConnection = childBlock.outputConnection;
-        // parentConnection.connect(childConnection);
+    /**
+     * Загрузить типы блоков в JSON
+     *
+     * @private
+     */
+    _loadBlocksJSON() {
+        for (let block_name of Object.keys(this._block_types)) {
+            Blockly.Blocks[block_name] = this._block_types[block_name];
+        }
     }
 
+    /**
+     * Загрузить генераторы для типов блоков
+     *
+     * @private
+     */
+    _loadGenerators() {
+        for (let generator_name of Object.keys(this._generators)) {
+            Blockly.JSON[generator_name] = this._generators[generator_name];
+        }
+    }
+
+    /**
+     * Добавить поле блоку-переменной
+     *
+     * @param {Blockly.BlockSvg}   block      блок-переменная
+     * @param {string}             field_type тип значения переменной ({@link FIELD_TYPES})
+     *
+     * @private
+     */
     _addFieldToVariableBlock(block, field_type) {
         let field = undefined;
 
@@ -561,6 +665,13 @@ export default class BlocklyWrapper extends Wrapper {
             .appendField(field, "DUMMY");
     }
 
+    /**
+     * Определить высоту, занимаемую всеми блоками-переменными
+     *
+     * @returns {number} высота в px
+     *
+     * @private
+     */
     _getAllVariablesHeight() {
         let height_sum = 0;
 
@@ -576,14 +687,16 @@ export default class BlocklyWrapper extends Wrapper {
      *
      * @private
      */
-    _getOverlayStyle() {
+    _getDimmerStyle() {
         return "position: absolute; width: 98%; height: 98%; z-index: 21;";
     }
 
     /**
-     * Изменить размер среды Blockly
+     * Изменить размер графики Blockly
      *
-     * https://developers.google.com/blockly/guides/configure/web/resizable
+     * @see https://developers.google.com/blockly/guides/configure/web/resizable
+     *
+     * @private
      */
     _onResize() {
         this.container.style.width   = (this.area.offsetWidth - 24) + 'px';
@@ -592,12 +705,13 @@ export default class BlocklyWrapper extends Wrapper {
     }
 
     /**
-     * Первичная обработка стандартных событий Blockly
+     * Выполнить первичнкю обработку стандартных событий Blockly
      *
      * Обнаруживаются глубокие изменения для блоков-обработчиков, задаваемых
-     * с помощью функции [[setAudibles()]]
+     * с помощью функции {@link setAudibles}
      *
      * @param event событие Blockly
+     *
      * @private
      */
     _filterEvent(event) {

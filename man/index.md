@@ -18,5 +18,6 @@ _CodeHour: Breadboard project_
 4. [Конфигурирование](manual/configuration.html)
 5. [Использование](manual/usage.html)
 6. [Примеры](manual/usage.html)
+6. [Планы по разработке](manual/future.html)
 
 _На данный момент исходный код проекта размещён в закрытом репозитории._

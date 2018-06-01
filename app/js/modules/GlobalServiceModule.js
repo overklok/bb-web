@@ -136,8 +136,6 @@ export default class GlobalServiceModule extends Module {
         // let data = new FormData();
         // data.append("json", JSON.stringify(log_bunch));
 
-        console.log(log_bunch);
-
         let request = {
             // mode: 'no-cors',
             headers: {

@@ -75,8 +75,6 @@ export default class InstructorModule extends Module {
                 throw new TypeError("No lesson data were provided");
             }
 
-            console.log(lesson_data);
-
             this._parseLesson(lesson_data);
 
             resolve(this._lesson);
