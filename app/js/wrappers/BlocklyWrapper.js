@@ -1,5 +1,6 @@
 /**
  * @external {Blockly.BlockSvg} https://developers.google.com/blockly/reference/js/Blockly.BlockSvg
+ * @external {Blockly.WorkspaceSvg} https://developers.google.com/blockly/reference/js/Blockly.WorkspaceSvg
  */
 
 import Wrapper from '../core/Wrapper'
@@ -41,28 +42,31 @@ window.BLOCKLY_BTS_REG = false;
 export default class BlocklyWrapper extends Wrapper {
     static get BLOCKLY_BLOCK_TYPES_REGISTERED() {return BLOCKLY_BTS_REG}
 
+    static get HistoryBlockIdPrefix() {return "BuFF"}
+
     constructor() {
         super();
 
-        this.area               = undefined;     // узел вставки контейнера
-        this.container          = undefined;     // контейнер Blockly
-        this.toolbox            = undefined;     // узел с описанием типов блоков
-        this.dimmer            = undefined;     // слой затемнения
-        this.workspace          = undefined;     // SVG-контейнер с графикой Blockly
+        this.area               = undefined;    // узел вставки контейнера
+        this.container          = undefined;    // контейнер Blockly
+        this.toolbox            = undefined;    // узел с описанием типов блоков
+        this.dimmer             = undefined;    // слой затемнения
+        this.workspace          = undefined;    // SVG-контейнер с графикой Blockly
 
         // Блоки
-        this._block_types       = undefined;     // JSON-типы блоков
-        this._generators        = undefined;     // JS-генератор кода
-        this._audibles          = undefined;     // Прослушиваемые типы блоков
+        this._block_types       = undefined;    // JSON-типы блоков
+        this._generators        = undefined;    // JS-генератор кода
+        this._audibles          = undefined;    // Прослушиваемые типы блоков
 
         // Флаги
-        this.silent             = false;          // "тихий" режим, не обрабатывать события
-        this.extra_fields       = false;          // режим доп. полей, для админки
+        this.silent             = false;        // "тихий" режим, не обрабатывать события
+        this.extra_fields       = false;        // режим доп. полей, для админки
 
         // Прочее
-        this._error_blocks      = {};             // блоки, помеченные как ошибочные
-        this._variable_blocks   = [];             // блоки-переменные
-        this._history_blocks    = {};
+        this._error_blocks      = {};           // блоки, помеченные как ошибочные
+        this._variable_blocks   = [];           // блоки-переменные
+        this._history_blocks    = [];           // блоки истории
+        this._history_counter   = 0;
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
@@ -555,11 +559,11 @@ export default class BlocklyWrapper extends Wrapper {
     /**
      * Добавить блок-переменную
      *
-     * @param {string}              block_type тип блока-переменной
-     * @param {string}              field_type тип значения переменной ({@link FIELD_TYPES})
-     * @param {?string|number}      value значение переменной по умолчанию
+     * @param {string}              block_type  тип блока-переменной
+     * @param {string}              field_type  тип значения переменной ({@link FIELD_TYPES})
+     * @param {?string|number}      field_value значение переменной по умолчанию
      */
-    addVariableBlock(block_type, field_type=FIELD_TYPES.STRING, value=0) {
+    addVariableBlock(block_type, field_type=FIELD_TYPES.STRING, field_value=0) {
         let block = this.workspace.newBlock(block_type);
 
         block.initSvg();
@@ -577,7 +581,7 @@ export default class BlocklyWrapper extends Wrapper {
         this._addFieldToVariableBlock(block, field_type);
 
         block.setFieldValue(variable_name + " = ");
-        block.setFieldValue(value, "DUMMY");
+        block.setFieldValue(field_value, "DUMMY");
         block.moveBy(0, pos_y);
 
         this._variable_blocks[block_type] = {name: variable_name, element: block, pos_y: pos_y};
@@ -606,6 +610,135 @@ export default class BlocklyWrapper extends Wrapper {
         if (!block) {throw new RangeError("Variable of type `" + type + "`does not exist in the base")}
 
         block.element.setFieldValue(value, "DUMMY");
+    }
+
+    //
+    // ОТОБРАЖЕНИЕ ИСТОРИИ
+    //
+
+    addHistoryBlock(block_id, workspace_src) {
+        // изменить буфер
+        this._allocateHistoryBlock(block_id, workspace_src);
+        // объединить блоки из буфера и вставить объединённый блок в рабочую область
+        this._displayHistoryBlockSequence();
+        // выровнять объединённый блок
+        this._moveHistoryBlockSequence(0, this._getAllVariablesHeight());
+    }
+
+    /**
+     * Скопировать блок истории из какой-либо рабочей области
+     * и разместить этот блок в буфере
+     *
+     * @see https://groups.google.com/forum/#!topic/blockly/7lx0ctULeoQ
+     *
+     * @param {string}                  block_id        идентификатор блока в исходной рабочей области
+     * @param {Blockly.WorkspaceSvg}    workspace_src   исходная рабочая область
+     *
+     * @private
+     */
+    _allocateHistoryBlock(block_id, workspace_src) {
+        if (!block_id || !workspace_src) {
+            throw new TypeError("Cannot allocate history block: incorrect parameters");
+        }
+
+        let wssrc_text = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace_src));
+
+        let sourceXML = new DOMParser().parseFromString(wssrc_text, "text/xml");
+
+        let oldNode = sourceXML.getElementById(block_id);
+
+        if (!oldNode) {
+            throw new RangeError(`Cannot find block ${block_id} in workspace ${workspace_src.id}`);
+        }
+
+        if (oldNode.tagName !== 'block') {
+            throw new RangeError(`Element ${block_id} is not a block`);
+        }
+
+        let newNode = oldNode.cloneNode(true);
+        let newNodeBuffId = this._generateHistoryBlockId();
+
+        newNode.setAttribute('id', newNodeBuffId);
+        newNode.setAttribute('x', 0);
+        newNode.setAttribute('y', 0);
+
+        this._history_blocks.push({buff_id: newNodeBuffId, node: newNode});
+    }
+
+    _generateHistoryBlockId() {
+        let prefix = BlocklyWrapper.HistoryBlockIdPrefix + this._history_counter;
+
+        this._history_counter++;
+
+        return prefix;
+    }
+
+    _displayHistoryBlockSequence() {
+        let parser = new DOMParser().parseFromString("", "text/xml");
+
+        this._removeHistoryBlockSequence();
+
+        let last_blk_node;
+
+        for (let blk of this._history_blocks) {
+            let blk_node = blk.node;
+
+            if (!last_blk_node) {
+                last_blk_node = blk_node;
+            } else {
+                let next = parser.createElement("next");
+                next.appendChild(last_blk_node);
+                blk_node.appendChild(next);
+
+                last_blk_node = blk_node;
+            }
+        }
+
+        this.workspace.paste(last_blk_node);
+    }
+
+    /**
+     * TODO Align
+     *
+     * @param dx
+     * @param dy
+     * @private
+     */
+    _moveHistoryBlockSequence(dx=0, dy=0) {
+        let hist_root_id = BlocklyWrapper.HistoryBlockIdPrefix + '0';
+
+        if (hist_root_id in this.workspace.blockDB_) {
+            let block_root = this.workspace.getBlockById(hist_root_id);
+            block_root.moveBy(dx, dy);
+        }
+    }
+
+    _removeHistoryBlockSequence() {
+        let hist_root_id = BlocklyWrapper.HistoryBlockIdPrefix + '0';
+
+        if (hist_root_id in this.workspace.blockDB_) {
+            let block_root = this.workspace.getBlockById(hist_root_id);
+            this._disposeBlockSequence(block_root);
+        }
+
+        this._history_counter = 0;
+    }
+
+    _clearHistoryBlocks() {
+        this._removeHistoryBlockSequence();
+
+        this._history_blocks = [];
+    }
+
+    _disposeBlockSequence(block) {
+        let block_next = block.getNextBlock();
+
+        if (block_next) {
+            console.log('block_next, gd');
+            this._disposeBlockSequence(block_next);
+        }
+
+        block.dispose();
     }
 
     /**
@@ -683,7 +816,7 @@ export default class BlocklyWrapper extends Wrapper {
     }
 
     /**
-     * Определить стиль оверлея
+     * Определить стиль диммера
      *
      * @private
      */
@@ -730,6 +863,7 @@ export default class BlocklyWrapper extends Wrapper {
         if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
             this._callbacks.onChange();
         }
+
         // if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
         //     let is_deep_change = false;
         //
