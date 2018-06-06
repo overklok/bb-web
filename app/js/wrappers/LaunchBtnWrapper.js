@@ -56,8 +56,6 @@ export default class LaunchBtnWrapper extends Wrapper {
     }
 
     show(variant) {
-        console.log(variant);
-
         switch (variant) {
             case VARIANTS.CHECK: {
                 this._buttons.check.style.display = "inline";

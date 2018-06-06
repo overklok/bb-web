@@ -67,7 +67,7 @@ export default class TracingModule extends Module {
     ejectBlocks() {
         return new Promise(resolve => {
             if (!this._state.areasDisp.blocks) {
-                resolve(true);
+                resolve(false);
                 return;
             }
 
@@ -129,17 +129,38 @@ export default class TracingModule extends Module {
 
         this._vars = variables;
 
-        if (!this._state.areasDisp.blocks) {return true}
+        if (!this._state.areasDisp.blocks) {return false}
 
         this._blockly.clearVariableBlocks();
 
         if (this._vars.length > 0) {
             this._showVariables(this._vars);
         }
+
+        return true;
     }
 
     setVariableValue(variable_type, variable_value) {
         this._blockly.setVariableBlockValue(variable_type, variable_value);
+    }
+
+    addHistoryBlock(block_id, workspace_src) {
+        if (!this._state.areasDisp.blocks) {return false}
+        this._blockly.addHistoryBlock(block_id, workspace_src);
+
+        return true;
+    }
+
+    clearHistoryBlocks() {
+        return new Promise(resolve => {
+            if (!this._state.areasDisp.blocks) {
+                resolve(false);
+            }
+
+            this._blockly.clearHistoryBlocks();
+
+            resolve(true);
+        });
     }
 
     displayKeyboardPress(keycode, fault=false) {

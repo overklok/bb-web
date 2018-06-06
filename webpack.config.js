@@ -101,7 +101,7 @@ module.exports = {
             {from: './app/images/', to: '../../codehour-breadboard-server/frontend/static/frontend/app/images'},
 
             // {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
-            // {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},
+            {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},
             {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
             // {from: './dist/admin_blockly.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js'},
             // {from: './dist/admin_board.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-board/js/admin_board.js'}

@@ -30,9 +30,10 @@ const FIELD_TYPES = {
     COLOUR: "colour"
 };
 
-/** Глобальная переменная, определяющая, загружены ли уже типы блоков в Blockly
- *  Видимость переменной необходима в области 'window',
- *  т.к. все экземпляры Blockly таже имеют к ней доступ
+/**
+ * Глобальная переменная, определяющая, загружены ли уже типы блоков в Blockly
+ * Видимость переменной необходима в области 'window',
+ * т.к. все экземпляры Blockly таже имеют к ней доступ
  */
 window.BLOCKLY_BTS_REG = false;
 
@@ -66,7 +67,9 @@ export default class BlocklyWrapper extends Wrapper {
         this._error_blocks      = {};           // блоки, помеченные как ошибочные
         this._variable_blocks   = [];           // блоки-переменные
         this._history_blocks    = [];           // блоки истории
-        this._history_counter   = 0;
+        this._history_counter   = 0;            // счётчик истории
+        this._history_limit     = 20;           // максимальное количество блоков в истории
+        this._history_root_id   = undefined;
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
@@ -610,19 +613,37 @@ export default class BlocklyWrapper extends Wrapper {
         if (!block) {throw new RangeError("Variable of type `" + type + "`does not exist in the base")}
 
         block.element.setFieldValue(value, "DUMMY");
+
+        this._setHistoryBlockRootVariable(type, value);
     }
 
     //
     // ОТОБРАЖЕНИЕ ИСТОРИИ
     //
 
+    /**
+     * Добавить блок к истории
+     *
+     * @param {string}                  block_id        идентификатор блока
+     * @param {Blockly.WorkspaceSvg}    workspace_src   исходная рабочая область
+     */
     addHistoryBlock(block_id, workspace_src) {
-        // изменить буфер
+        // изменить буфер блоков истории
         this._allocateHistoryBlock(block_id, workspace_src);
-        // объединить блоки из буфера и вставить объединённый блок в рабочую область
+        // отобразить все блоки истории
         this._displayHistoryBlockSequence();
         // выровнять объединённый блок
-        this._moveHistoryBlockSequence(0, this._getAllVariablesHeight());
+        this._alignHistoryBlockSequence();
+    }
+
+    /**
+     * Очистить блоки истории
+     */
+    clearHistoryBlocks() {
+        this._removeHistoryBlockSequence();
+
+        this._history_blocks = [];
+        this._history_counter = 0;
     }
 
     /**
@@ -641,30 +662,59 @@ export default class BlocklyWrapper extends Wrapper {
             throw new TypeError("Cannot allocate history block: incorrect parameters");
         }
 
-        let wssrc_text = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace_src));
+        /// Для того, чтобы работал getElementById, необходимо:
 
+        // DOM воркспейса перевести в текст
+        let wssrc_text = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace_src));
+        // создать парсер на основе воркспейса
         let sourceXML = new DOMParser().parseFromString(wssrc_text, "text/xml");
 
+        // найти блок
         let oldNode = sourceXML.getElementById(block_id);
 
+        // если блок не удаётся найти
         if (!oldNode) {
             throw new RangeError(`Cannot find block ${block_id} in workspace ${workspace_src.id}`);
         }
 
+        // если тег - не блок (напр. <shadow>)
         if (oldNode.tagName !== 'block') {
             throw new RangeError(`Element ${block_id} is not a block`);
         }
 
+        // скопировать блок
         let newNode = oldNode.cloneNode(true);
+        // сгенерироать id нового блока
         let newNodeBuffId = this._generateHistoryBlockId();
 
+        // установить id и очистить положение блока
         newNode.setAttribute('id', newNodeBuffId);
         newNode.setAttribute('x', 0);
         newNode.setAttribute('y', 0);
 
+        // удалить лишние next-теги, если таковые есть
+        let nexts = newNode.getElementsByTagName("next");
+
+        for (let next of nexts) {
+            next.remove();
+        }
+
+        // доавить новый блок в историю
         this._history_blocks.push({buff_id: newNodeBuffId, node: newNode});
+
+        if (this._history_blocks.length > this._history_limit) {
+            this._history_blocks.shift();
+            this._history_counter--;
+        }
     }
 
+    /**
+     * Сгенерировать новый идентификатор блока истории
+     *
+     * @returns {string} идентификатор блока истории
+     *
+     * @private
+     */
     _generateHistoryBlockId() {
         let prefix = BlocklyWrapper.HistoryBlockIdPrefix + this._history_counter;
 
@@ -673,15 +723,27 @@ export default class BlocklyWrapper extends Wrapper {
         return prefix;
     }
 
+    /**
+     * Отобразить последовательность блоков истории
+     *
+     * Удаляет старую последовательность блоков, если таковая отображается
+     * Объединяет все блоки, занесённые в историю, в единую последовательность
+     * Вставляет последовательность в рабочую область Blockly
+     *
+     * TODO: Аддитивно, не перестраивать. Нужна оптимизация
+     *
+     * @private
+     */
     _displayHistoryBlockSequence() {
         let parser = new DOMParser().parseFromString("", "text/xml");
 
         this._removeHistoryBlockSequence();
 
-        let last_blk_node;
+        let last_blk_node, last_blk_id;
 
         for (let blk of this._history_blocks) {
-            let blk_node = blk.node;
+            let blk_node = blk.node.cloneNode(true);
+            last_blk_id = blk.buff_id;
 
             if (!last_blk_node) {
                 last_blk_node = blk_node;
@@ -694,47 +756,93 @@ export default class BlocklyWrapper extends Wrapper {
             }
         }
 
+        this._history_root_id = last_blk_id;
         this.workspace.paste(last_blk_node);
     }
 
     /**
-     * TODO Align
+     * Удаляет текущую последовательность блоков из рабочей области
      *
-     * @param dx
-     * @param dy
+     * Удаляется лишь объединённая (отображаемая) последовательность блоков,
+     * а сами блоки истории сохраняются
+     *
      * @private
      */
-    _moveHistoryBlockSequence(dx=0, dy=0) {
-        let hist_root_id = BlocklyWrapper.HistoryBlockIdPrefix + '0';
+    _removeHistoryBlockSequence() {
+        if (this._history_root_id in this.workspace.blockDB_) {
+            let block_root = this.workspace.getBlockById(this._history_root_id);
+            this._disposeBlockSequence(block_root);
+        }
+    }
 
-        if (hist_root_id in this.workspace.blockDB_) {
-            let block_root = this.workspace.getBlockById(hist_root_id);
+    /**
+     *
+     * Установить значение переменной у корневого блока истории
+     *
+     * TODO: доделать после оптимизации истории
+     *
+     * @param {number}          block_type  тип блока-переменной, значение которой изменилось
+     * @param {number|string}   value       значение блока-переменной, которое требуется установить
+     *
+     * @returns {boolean} успех операции
+     *
+     * @stub
+     * @private
+     */
+    _setHistoryBlockRootVariable(block_type, value) {
+        // if (!block_type || value == null) {
+        //     throw TypeError("Cannot set history root variable value: incorrect parameters");
+        // }
+        //
+        // if (!(this._history_root_id in this.workspace.blockDB_)) {
+        //     return false;
+        // }
+        //
+        // let block_root = this.workspace.getBlockById(this._history_root_id);
+        //
+        // for (let subblock of block_root.getChildren()) {
+        //     if (subblock.type === block_type) {
+        //         if (subblock.inputList.length > 0 && subblock.inputList[0].fieldRow.length > 0) {
+        //             subblock.inputList[0].fieldRow[0].text = value;
+        //         }
+        //     }
+        // }
+    }
+
+    /**
+     * Выровнять последовательность блоков истории, отображаемую в данный момент
+     *
+     * @private
+     */
+    _alignHistoryBlockSequence() {
+        // Если история отображается
+        if (this._history_root_id in this.workspace.blockDB_) {
+            // Найти корневой блок истории
+            let block_root = this.workspace.getBlockById(this._history_root_id);
+
+            let dx = (this.container.offsetWidth / 2) - (this._getHistoryBlockSequenceAverageWidth() / 2);
+            let dy = (this._getAllVariablesHeight());
+
+            let pos = block_root.getRelativeToSurfaceXY();
+
+            dx -= pos.x - 40;
+            dy -= pos.y - 40;
+
             block_root.moveBy(dx, dy);
         }
     }
 
-    _removeHistoryBlockSequence() {
-        let hist_root_id = BlocklyWrapper.HistoryBlockIdPrefix + '0';
-
-        if (hist_root_id in this.workspace.blockDB_) {
-            let block_root = this.workspace.getBlockById(hist_root_id);
-            this._disposeBlockSequence(block_root);
-        }
-
-        this._history_counter = 0;
-    }
-
-    _clearHistoryBlocks() {
-        this._removeHistoryBlockSequence();
-
-        this._history_blocks = [];
-    }
-
+    /**
+     * Удалить последовательность блоков
+     *
+     * @param {Blockly.BlockSvg} block корневой блок последовательности, которую требуется удалить
+     *
+     * @private
+     */
     _disposeBlockSequence(block) {
         let block_next = block.getNextBlock();
 
         if (block_next) {
-            console.log('block_next, gd');
             this._disposeBlockSequence(block_next);
         }
 
@@ -815,6 +923,25 @@ export default class BlocklyWrapper extends Wrapper {
         return height_sum;
     }
 
+    _getHistoryBlockSequenceAverageWidth() {
+        // Если история не отображается
+        if (!(this._history_root_id in this.workspace.blockDB_)) {
+            return 0;
+        }
+
+        // Извлечь корневой блок истории
+        let block = this.workspace.getBlockById(this._history_root_id);
+
+        let widths = [];
+
+        while (block) {
+            widths.push(block.width);
+            block = block.getNextBlock();
+        }
+
+        return widths.reduce((a, b) => a + b, 0) / widths.length;
+    }
+
     /**
      * Определить стиль диммера
      *
@@ -835,6 +962,7 @@ export default class BlocklyWrapper extends Wrapper {
         this.container.style.width   = (this.area.offsetWidth - 24) + 'px';
         this.container.style.height  = (this.area.offsetHeight - 24) + 'px';
         Blockly.svgResize(this.workspace);
+        this._alignHistoryBlockSequence();
     }
 
     /**

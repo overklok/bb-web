@@ -212,6 +212,7 @@ class Application {
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))
                 .then(() => this.trc.registerVariables(exercise.variables))
+                .then(() => this.trc.clearHistoryBlocks())
                 .then(() => this.lay.switchButtonsPane(exercise.display_buttons))
                 .then(() => this.gui.hideSpinner())
                 .then(() => this.ins.tourIntro(exercise.popovers))
@@ -447,7 +448,7 @@ class Application {
         this._dispatcher.on('ls:command', data => {
             console.log(data);
             this.ws.highlightBlock(data.block_id);
-
+            this.trc.addHistoryBlock(data.block_id, this.ws.workspace);
         });
 
         /**

@@ -54,6 +54,14 @@ export default class WorkspaceModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    get workspace() {
+        if (!this._blockly.workspace) {
+            throw new Error("Blockly has not been injected");
+        }
+
+        return this._blockly.workspace;
+    }
+
     /**
      * Встроить рабочую область в DOM-узел
      *
