@@ -12,14 +12,27 @@ export default class SocketWrapper extends Wrapper {
         this._port = port;
 
         this._socket = io(this._getFullAddr());
+
+        this._socket.on('test', (data) => {
+            console.info('TEST/DEBUG', data);
+        });
     }
 
-    on(name, handler) {
-        this._socket.on(name, handler);
+    on(channel, handler) {
+        channel = (channel === 'connect') ? 'xconnect' : channel;
+        channel = (channel === 'command') ? 'xcommand' : channel;
+
+        let xhandler = (data) => {handler(undefined, data); console.log('XHDLR', channel)};
+
+        this._socket.on(channel, xhandler);
     }
 
-    send(name) {
-        // stub
+    once(channel, handler) {
+        this._socket.once(channel, handler);
+    }
+
+    send(channel, data) {
+        this._socket.emit(channel, data);
     }
 
 // private:

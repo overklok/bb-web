@@ -80,7 +80,9 @@ class Application {
             },
             ls: {
                 modeDummy: config.isolated,
-                portUrgent: config.port
+                portUrgent: config.port,
+                socketAddress: config.socketAddress,
+                socketPort: config.socketPort,
             },
             log: {
                 modeDummy: config.noRemoteLogs
@@ -448,7 +450,7 @@ class Application {
         this._dispatcher.on('ls:command', data => {
             console.log(data);
             this.ws.highlightBlock(data.block_id);
-            this.trc.addHistoryBlock(data.block_id, this.ws.workspace);
+            // this.trc.addHistoryBlock(data.block_id, this.ws.workspace);
         });
 
         /**
@@ -507,6 +509,24 @@ class Application {
          */
         this._dispatcher.on('ls:timeout', () => {
             this.gui.showAlert('no_ipc');
+        });
+
+        /**
+         * МПК отсоединился
+         */
+        this._dispatcher.on('ls:disconnect', () => {
+            console.log("IPC DISCONNECTED");
+            this.gui.setBoardStatus('default');
+            this.gui.showAlert('no_server');
+        });
+
+        /**
+         * МПК сменил клиента
+         */
+        this._dispatcher.on('ls:client_swap', () => {
+            console.log("IPC SWAPPED CLIENT");
+            this.gui.showAlert('another_client');
+            this._dispatcher.kill();
         });
 
         /**

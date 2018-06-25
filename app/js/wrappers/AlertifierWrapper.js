@@ -19,6 +19,18 @@ const ALERTS = {
     },
     command: {
         title: "Введите команду:",
+    },
+    no_server: {
+        title: "Нет связи с сервером",
+        html:   "Без специальной службы работать с макетной платой не получится. " +
+                "Пожалуйста, позовите вашего руководителя, чтобы он решил проблему.",
+        image: "terminal.gif"
+    },
+    another_client: {
+        title: "Обновите эту страницу",
+        html: "Скорее всего, Вы открыли приложение где-то ещё. Если Вы пользуетесь " +
+        "несколькими браузерами, проверьте, не открыта ли страница в них. Плата может работать только с " +
+        "одной из них."
     }
 };
 
@@ -43,6 +55,10 @@ export default class AlertifierWrapper extends Wrapper {
 
     alertIndelible(type) {
         if (!(type in ALERTS)) {throw new RangeError(`Type '${type}' does not exist`)}
+
+        if (!this._state.closed) {
+            this.closeAll();
+        }
 
         let title = ALERTS[type].title;
 

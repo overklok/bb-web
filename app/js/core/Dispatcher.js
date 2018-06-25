@@ -204,6 +204,15 @@ export default class Dispatcher {
         this._denied = true;
     }
 
+    kill() {
+        this._event_types_listening = {
+            always: new Set(),
+            current: new Set()
+        };
+
+        console.info("Dispatcher was permanently killed.");
+    }
+
     /**
      * Выгрузить отладочные записи всех модулей в единый JSON-объект
      *

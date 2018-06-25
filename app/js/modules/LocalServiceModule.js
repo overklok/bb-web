@@ -15,7 +15,7 @@ export default class LocalServiceModule extends Module {
 
     static get eventspace_name()    {return "ls"}
     static get event_types()        {return [
-        "connect", "disconnect", "command", "variable",
+        "connect", "disconnect", "client_swap", "command", "variable",
         "terminate", "plates", "currents", "board-status", "timeout", "error"
     ]};
 
@@ -24,6 +24,8 @@ export default class LocalServiceModule extends Module {
             modeDummy: false,       // холостой режим
             connectTimeout: 5000,   // время в мс, через которое запустится проверка подключения сервиса
             portUrgent: false,
+            socketAddress: '127.0.0.1',
+            socketPort: '8005'
         }
     }
 
@@ -83,7 +85,6 @@ export default class LocalServiceModule extends Module {
 
         return new Promise(resolve => {
             this.emitEvent("board-status", "search");
-            this._ipc.send('reset-port', port);
 
             this._ipc.once('reset-port.result', (event, error) => {
                 if (error) {
@@ -183,6 +184,26 @@ export default class LocalServiceModule extends Module {
         this._ipc.send('set-mode', mode);
     }
 
+    setIPC(ipc_alias, socket_addr, socket_port) {
+        switch (ipc_alias) {
+            case 'electron': {
+                if (window && window.process && window.process.type) {
+                    this._useIPCElectron();
+                } else {
+                    throw new Error('Cannot use Electron IPC');
+                }
+                break;
+            }
+            case 'socket': {
+                this._useIPCSocket(socket_addr, socket_port);
+                break;
+            }
+            default: {
+                throw new RangeError('Unrecognized IPC alias');
+            }
+        }
+    }
+
     /**
      * Запустить механизм межпроцессной коммуникации
      *
@@ -192,16 +213,27 @@ export default class LocalServiceModule extends Module {
         if (this._options.modeDummy) {return true}
 
         if (window && window.process && window.process.type) {
-            this._debug.log("Swtiching on IPCWrapper");
-            this._ipc = new ElectronIPCWrapper();
+            this._useIPCElectron();
         } else {
-            this._debug.log("Swtiching on SocketWrapper");
-            this._ipc = new SocketWrapper();
+            this._useIPCSocket();
         }
 
         this._ipc.send('connect');
 
         this._checkConnection();
+    }
+
+    _useIPCElectron() {
+        this._debug.log("Swtiching to IPCWrapper");
+        this._ipc = new ElectronIPCWrapper();
+    }
+
+    _useIPCSocket(socket_addr, socket_port) {
+        let saddr = socket_addr ? socket_addr : this._options.socketAddress,
+            sport = socket_port ? socket_port : this._options.socketPort;
+
+        this._debug.log("Swtiching to SocketWrapper", saddr, sport);
+        this._ipc = new SocketWrapper(saddr, sport);
     }
 
     /**
@@ -232,7 +264,6 @@ export default class LocalServiceModule extends Module {
         this._ipc.on('connect', (evt, version) => {
             this._state.connected = true;
             this.emitEvent('connect');
-            console.log(version);
             this._debug.info(`Connected to IPC ver. ${version}`);
             this._version = version;
         });
@@ -255,6 +286,10 @@ export default class LocalServiceModule extends Module {
         this._ipc.on('board-disconnect', () => {
             this._state.board_status = 'disconnect';
             this.emitEvent('board-status', 'disconnect');
+        });
+
+        this._ipc.on('client_swap', () => {
+            this.emitEvent('client_swap');
         });
 
         /* Как только сервис сообщил об исполнении команды */

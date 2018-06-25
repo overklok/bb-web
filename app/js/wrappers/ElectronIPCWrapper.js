@@ -29,12 +29,6 @@ export default class ElectronIPCWrapper extends Wrapper {
         ipcRenderer.send(channel, data);
     }
 
-    sendSync(channel, data) {
-        ipcRenderer.sendSync(channel, data);
-    }
-
-
-
 // private:
 
 }

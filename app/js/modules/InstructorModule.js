@@ -123,7 +123,7 @@ export default class InstructorModule extends Module {
     /**
      * Запустить следующее упражнение
      *
-     * @param {boolean} skid    режим "буксовки" - только переключить указатели
+     * @param {boolean} skid режим "буксовки" - только переключить указатели
      *
      * @returns {Promise<object>|Promise<void>}
      */
@@ -132,7 +132,7 @@ export default class InstructorModule extends Module {
         let exercise_idx = this._getExerciseIDX(this._state.missionIDX) + 1;
 
         this._state.missions[this._state.missionIDX].skidding = skid;
-        this._state.missions[this._state.missionIDX].exerciseSkiddingIDX = exercise_idx - 1;
+        this._state.missions[this._state.missionIDX].exerciseIDXSkiddingI= exercise_idx - 1;
 
         /// если следующего упражнения не существует
         if (exercise_idx === this._state.missions[this._state.missionIDX].exerciseCount) {
@@ -147,7 +147,7 @@ export default class InstructorModule extends Module {
     /**
      * Запустить миссию
      *
-     * @param {number}  mission_idx     индекс миссии
+     * @param {number} mission_idx индекс миссии
      *
      * @returns {boolean}
      */
@@ -231,6 +231,13 @@ export default class InstructorModule extends Module {
         }
     }
 
+    /**
+     * Выполнить безусловный переход к упражнению
+     *
+     * @param {number} mission_idx  индекс миссии
+     * @param {number} exercise_idx индекс упражнения
+     * @returns {Promise<Object>}
+     */
     forceExercise(mission_idx, exercise_idx) {
         if (mission_idx === undefined || Number.isNaN(mission_idx)) {
             mission_idx = this._state.missionIDX
@@ -320,6 +327,9 @@ export default class InstructorModule extends Module {
         return intro.start();
     }
 
+    /**
+     * Возвратить индекс текущего упражнения
+     */
     getExerciseCurrent() {
         let missionIDX = this._state.missionIDX;
         let exerciseIDX = this._getExerciseIDX(missionIDX);
@@ -327,6 +337,9 @@ export default class InstructorModule extends Module {
         return this._lesson.missions[missionIDX].exercises[exerciseIDX];
     }
 
+    /**
+     * Возвратить ID текущего упражнения
+     */
     getExerciseID() {
         let missionIDX = this._state.missionIDX;
         let exerciseIDX = this._getExerciseIDX(missionIDX);
@@ -419,10 +432,20 @@ export default class InstructorModule extends Module {
         return Promise.resolve(true);
     }
 
+    /**
+     * Проверить, нужно ли обновлять прогресс
+     *
+     * Возможна ситуация, когда задание проходится второй раз.
+     * В таких случаях прогресс остаётся неизменным.
+     *
+     * @param {number} mission_idx индекс миссии
+     *
+     * @private
+     */
     _checkLessonProgress(mission_idx) {
         if (typeof mission_idx === "undefined") {return false}
 
-        if (this._state.missions[mission_idx].exerciseIDXLast < this._state.missions[mission_idx].exerciseIDX) {
+        if (this._state.missions[mission_idx].exerciseIDXLast <= this._state.missions[mission_idx].exerciseIDX) {
             this.emitEvent("progress", {
                 missionIDX: mission_idx,
                 exerciseIDX: this._state.missions[mission_idx].exerciseIDX,
@@ -433,13 +456,21 @@ export default class InstructorModule extends Module {
         }
     }
 
+    /**
+     * Возвратить индекс текущего упражнения задания
+     *
+     * @param {number} mission_idx индекс задания
+     * @returns {number} индекс текущего упражнения задания
+     *
+     * @private
+     */
     _getExerciseIDX(mission_idx) {
         let exerciseIDX = this._state.missions[mission_idx].exerciseIDX;
 
         /// если включён режим буксовки
         if (this._state.missions[mission_idx].skidding) {
             /// извлечь букосовчный индекс
-            exerciseIDX = this._state.missions[mission_idx].exerciseSkiddingIDX
+            exerciseIDX = this._state.missions[mission_idx].exerciseIDXSkidding
         }
 
         return exerciseIDX;
@@ -451,6 +482,7 @@ export default class InstructorModule extends Module {
      * Происходит сброс данных прогресса
      *
      * @param lesson_data
+     *
      * @private
      */
     _parseLesson(lesson_data) {
@@ -463,7 +495,7 @@ export default class InstructorModule extends Module {
                 exerciseCount: mission.exercises.length,
                 exerciseIDXLast: -1,
                 skidding: false,
-                exerciseSkiddingIDX: undefined
+                exerciseIDXSkidding: undefined
             });
         }
 

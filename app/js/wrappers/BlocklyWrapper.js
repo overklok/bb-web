@@ -68,7 +68,7 @@ export default class BlocklyWrapper extends Wrapper {
         this._variable_blocks   = [];           // блоки-переменные
         this._history_blocks    = [];           // блоки истории
         this._history_counter   = 0;            // счётчик истории
-        this._history_limit     = 20;           // максимальное количество блоков в истории
+        this._history_limit     = 10;           // максимальное количество блоков в истории
         this._history_root_id   = undefined;
 
         this._state = {
@@ -326,7 +326,7 @@ export default class BlocklyWrapper extends Wrapper {
             let colour = this._error_blocks[block_id].colour;
 
             block.setColour(colour);
-            
+
             delete this._error_blocks[block_id];
         }
     }
@@ -548,7 +548,7 @@ export default class BlocklyWrapper extends Wrapper {
      *
      * @param callback  функция обратного вызова, в которую при глубоких изменениях будут передаваться
      *                  следующие параметры:
- *                          - {string} код изменённого блока-родителя
+     *                      - {string} код изменённого блока-родителя
      *                      - {string} вложенный код блока-родителя (если изменён)
      */
     onChangeAudible(callback) {
@@ -628,12 +628,18 @@ export default class BlocklyWrapper extends Wrapper {
      * @param {Blockly.WorkspaceSvg}    workspace_src   исходная рабочая область
      */
     addHistoryBlock(block_id, workspace_src) {
+        console.time('blkAlloc');
         // изменить буфер блоков истории
         this._allocateHistoryBlock(block_id, workspace_src);
+        console.timeEnd('blkAlloc');
+        console.time('blkSeqDisp');
         // отобразить все блоки истории
         this._displayHistoryBlockSequence();
+        console.timeEnd('blkSeqDisp');
+        console.time('blkSeqAlign');
         // выровнять объединённый блок
         this._alignHistoryBlockSequence();
+        console.timeEnd('blkSeqAlign');
     }
 
     /**

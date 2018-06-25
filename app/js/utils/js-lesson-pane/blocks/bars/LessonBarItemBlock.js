@@ -43,7 +43,7 @@ export default class LessonBarItemBlock extends BarItemBlock {
             );
         }
 
-        let percent = (level + 1) / (this._level_count) * 100;
+        let percent = (level+1) / (this._level_count) * 100;
 
         this._link.setProgress(percent);
     }

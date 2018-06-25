@@ -16,7 +16,10 @@ const CLASEES = {
 class NotIncludedError extends Error {
     constructor(...args) {
         super(...args);
-        Error.captureStackTrace(this, NotIncludedError);
+        if (typeof Error.captureStackTrace === 'function') {
+            Error.captureStackTrace(this, NotIncludedError);
+        }
+
         this.code = "ENOCON";
     }
 }
