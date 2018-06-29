@@ -26,6 +26,7 @@ export default class Plate {
 
     // Алиасы пунктов контекстного меню
     static get CMI_REMOVE() {return "cmi_rm"}
+    static get CMI_SWITCH() {return "cmi_sw"}
 
     constructor(container_parent, grid, id=null, extra=0) {
         if (!container_parent || !grid) {
@@ -520,26 +521,38 @@ export default class Plate {
 
         let menu_width = 200, menu_height = 50;
 
-        // let x_offset = (this._params.cell.size.x * 2) + this.__grid.gap.x;
-        // let y_offset = this._params.cell.size.y + this.__grid.gap.y;
+        let offset = {
+            x: this._params.cell.size.x + this.__grid.gap.x,
+            y: this._params.cell.size.y * 2 + this.__grid.gap.y
+        };
 
         let nested = this._ctx_menu_group.nested();
 
         nested.addClass(Plate.ContextMenuClass);
+
+        this._ctx_menu_height = 0;
+        this.appendContextMenuItem(nested, menu_width, menu_height, `Plate #${this.id}`, undefined);
+        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_REMOVE", Plate.CMI_REMOVE);
+        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_SWITCH", Plate.CMI_SWITCH);
 
         if (evt && svg_main) {
             let svg_point = svg_main.createSVGPoint();
             let cursor_point = Plate._getCursorPoint(svg_main, svg_point, evt);
 
             nested.move(
-                cursor_point.x,// - this._size_px.x + x_offset,
-                cursor_point.y// - this._size_px.y - y_offset
+                cursor_point.x - this._container.x() - offset.x,
+                cursor_point.y - this._container.y() - offset.y,
             );
-        }
 
-        this._ctx_menu_height = 0;
-        this.appendContextMenuItem(nested, menu_width, menu_height, "Item 1", Plate.CMI_REMOVE);
-        this.appendContextMenuItem(nested, menu_width, menu_height, "Item 2", undefined);
+            /// проверка на вылет за область видимости
+            let global_pos = {
+                x: cursor_point.x - offset.x + menu_width,
+                y: cursor_point.y - offset.y + this._ctx_menu_height,
+            };
+
+            if (global_pos.x > this.__grid.size.x) {nested.dx(-menu_width)}
+            if (global_pos.y > this.__grid.size.y) {nested.dy(-this._ctx_menu_height)}
+        }
 
         nested.addClass('fade-in');
 
@@ -564,8 +577,12 @@ export default class Plate {
 
         let text = container.text(name).y(this._ctx_menu_height).font({size: 24});
 
-        rect.addClass(Plate.ContextMenuItemClass);
-        text.addClass(Plate.ContextMenuItemTextClass);
+        if (alias) {
+            rect.addClass(Plate.ContextMenuItemClass);
+            text.addClass(Plate.ContextMenuItemTextClass);
+        } else {
+            text.font({weight: 'bolder'})
+        }
 
         rect.mousedown(() => {
             setTimeout(() => {
@@ -621,12 +638,15 @@ export default class Plate {
         let x = this._container.x();
         let y = this._container.y();
 
+
         for (let col of this.__grid.cells) {
             let cell0 = col[0];
 
             if (cell0.pos.x >= x) {
                 for (let cell of col) {
                     if (cell.pos.y >= y) {
+                        console.log('snap', x, y, cell);
+
                         this.move(cell); return;
                     }
                 }
@@ -645,8 +665,12 @@ export default class Plate {
      * @private
      */
     static _getCursorPoint(svg_main, svg_point, evt) {
-        svg_point.x = evt.clientX;
-        svg_point.y = evt.clientY;
+        return Plate._getTransformedPoint(svg_main, svg_point, evt.clientX, evt.clientY);
+    }
+
+    static _getTransformedPoint(svg_main, svg_point, x, y) {
+        svg_point.x = x;
+        svg_point.y = y;
 
         return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
     }

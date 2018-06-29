@@ -76,9 +76,12 @@ export default class BreadboardModule extends Module {
 
         if (!('elements' in data)) {return true}
 
+        // это будет приходить с сервера
         for (let element of data.elements) {
             this._board.setPlateState(element.id, {
                 highlighted: element.highlight || false,
+                // hidden: <smth>
+                // bytes_to_board: <smth>
             })
         }
 

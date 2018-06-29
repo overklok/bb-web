@@ -281,6 +281,8 @@ export default class PlateLayer extends Layer {
             if (this._plate_selected && plate !== this._plate_selected) {
                 /// Снять её выделение
                 this._plate_selected.deselect();
+                /// Убрать контекстное меню
+                this._plate_selected.hideContextMenu();
                 /// Отключить её события
                 this._plate_selected.setEditable(false);
                 this._plate_selected.onChange(null);
