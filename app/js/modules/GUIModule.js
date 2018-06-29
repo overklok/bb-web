@@ -36,7 +36,7 @@ const LAUNCH_VARIANTS = {
 };
 
 /**
- * Модуль, управляющий базовым функциями графического интерфейса
+ * Модуль, управляющий базовыми функциями графического интерфейса
  * и выполняющий первичную обработку его событий
  *
  * Отвечает за обработку нажатий всех кнопок, нажатий всех клавиш,
@@ -44,7 +44,9 @@ const LAUNCH_VARIANTS = {
  */
 export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
-    static get event_types() {return ["ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file"]}
+    static get event_types() {return [
+        "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file"
+    ]}
 
     static defaults() {
         return {
@@ -99,6 +101,13 @@ export default class GUIModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    /**
+     * Скрыть загрузочный экран
+     *
+     * С момента запуска веб-страницы отображется графический слой,
+     * включающий загрузочную анимацию. Как только приложение будет готов к работе,
+     * этот слой нужно отключить.
+     */
     hideSpinner() {
         this._spinner.hide();
 
@@ -108,10 +117,37 @@ export default class GUIModule extends Module {
         }
     }
 
+    /**
+     * Отобразить текст ошибки на загрузочном экране
+     *
+     * Если в приложении произошла ошибка, а загрузочный экран ещё не отключён,
+     * следует использовать эту функцию, чтобы сообщить пользователю об ошибке.
+     *
+     * @param {string} message текст ошибки
+     */
     showSpinnerError(message) {
         this._spinner.setTextError(message);
     }
 
+    /**
+     * Показать кнопки заданий
+     *
+     * Информация о каждом задании представляется следующим форматом:
+     * {
+     *      'category': номер категории,
+     *      'exercises': массив упражнений (см. ниже),
+     *      'name': название задания (опционально)
+     * }
+     *
+     * Информация о каждом упражнении представляется следующим форматом:
+     * {
+     *      mission: ID задания,
+     *      pk: ID упражнения
+     * }
+     *
+     * @param {Array<Object>} missions список заданий
+     * @returns {Promise<any>}
+     */
     showMissionButtons(missions) {
         return new Promise((resolve, reject) => {
             if (!missions) {return resolve(false)}
@@ -122,6 +158,12 @@ export default class GUIModule extends Module {
         });
     }
 
+    /**
+     * Установить текущее задание
+     *
+     * @param {number} mission_idx индекс задания
+     * @returns {Promise<any>}
+     */
     setMissionCurrent(mission_idx) {
         return new Promise((resolve, reject) => {
             this._lesson_pane.setMissionActive(mission_idx);
@@ -130,8 +172,20 @@ export default class GUIModule extends Module {
         });
     }
 
-    setMissionProgress(mission) {
-        return new Promise((resolve, reject) => {
+    /**
+     * Установить прогресс задания
+     *
+     * Информация о задании представляется с помощью сследующего формата:
+     * {
+     *      'missionIDX': номер задания,
+     *      'exerciseCount': кол-во упражнений в задании,
+     *      'exerciseIDX': текущее упражнение в задании
+     * }
+     *
+     * @param {Object} mission информация о задании
+     * @returns {Promise<any>}
+     */
+    setMissionProgress(mission) {return new Promise((resolve, reject) => {
             if (!mission) {return resolve(false)}
 
             this._lesson_pane.setMissionProgress(mission.missionIDX, mission.exerciseIDX);
@@ -140,6 +194,16 @@ export default class GUIModule extends Module {
         });
     }
 
+    /**
+     * Включить режим "пробуксовки" задания
+     *
+     * Режим "пробуксовки" - состояние задания, при котором номер текущего
+     * упражнения не совпадает с номером последнего: например, пользователь отказался
+     * переходить на следующее упражнение при прохождении текущего.
+     *
+     * @param {number} mission_idx индекс задания
+     * @returns {Promise<any>}
+     */
     setMissionSkiddingOn(mission_idx) {
         return new Promise((resolve, reject) => {
             if (!mission_idx) {return resolve(false)}
@@ -150,6 +214,14 @@ export default class GUIModule extends Module {
         });
     }
 
+    /**
+     * Установить текущее упражнение
+     *
+     * Выделяется указываемое упражнение текущего задания
+     *
+     * @param {number} exercise_idx индекс упражнения
+     * @returns {Promise<any>}
+     */
     setExerciseCurrent(exercise_idx) {
         return new Promise((resolve, reject) => {
             this._lesson_pane.setExerciseActive(exercise_idx);
@@ -158,20 +230,31 @@ export default class GUIModule extends Module {
         });
     }
 
-    setCourseText(lesson_name) {
+    /**
+     * Установить текст урока
+     *
+     * @param {string} lesson_name название урока
+     * @returns {Promise<any>}
+     */
+    setLessonText(lesson_name) {
         return new Promise((resolve, reject) => {
             let text = "Урок: " + lesson_name;
 
             if (!this._state.areasDisp.lesson) {
-                this._lesson_pane.registerCourseText(text);
+                this._lesson_pane.registerLessonText(text);
             } else {
-                this._lesson_pane.setCourseText(text);
+                this._lesson_pane.setLessonText(text);
             }
 
             resolve(true);
         });
     }
 
+    /**
+     * Установить статус платы
+     *
+     * @param status
+     */
     setBoardStatus(status) {
         switch (status) {
             case BOARD_STATUSES.SEARCH: {
@@ -423,6 +506,12 @@ export default class GUIModule extends Module {
                 type: 'radio',
                 name: "developer",
                 text: "Разработчик",
+                handler: (name, pressed) => {this.emitEvent("menu", {name: name, state: pressed})}
+            },
+            {
+                type: 'default',
+                name: "currents",
+                text: "Рассчитать токи",
                 handler: (name, pressed) => {this.emitEvent("menu", {name: name, state: pressed})}
             },
             {

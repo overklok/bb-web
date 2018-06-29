@@ -65,7 +65,7 @@ export default class WorkspaceModule extends Module {
     /**
      * Встроить рабочую область в DOM-узел
      *
-     * @param {Element} dom_node DOM-узел, в который будет встроена рабочая область
+     * @param {HTMLElement} dom_node DOM-узел, в который будет встроена рабочая область
      */
     inject(dom_node) {
         return new Promise(resolve => {

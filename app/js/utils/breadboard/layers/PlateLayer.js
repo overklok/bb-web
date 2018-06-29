@@ -41,6 +41,11 @@ export default class PlateLayer extends Layer {
         this._cellgroup.move(100, 170);
     }
 
+    /**
+     * Возвратить данные текущих плашек
+     *
+     * @returns {Array} данные текущих плашек
+     */
     getCurrentPlatesData() {
         let data = [];
 
@@ -74,17 +79,21 @@ export default class PlateLayer extends Layer {
         return this._plates[plate_id];
     }
 
+    /**
+     * Включить режим редактирования плашки
+     *
+     * @param editable
+     * @returns {boolean}
+     */
     setEditable(editable=false) {
         if (editable === this._editable) {
             return true;
         }
 
         if (editable) {
-            // this._setCurrentPlatesEditable(true);
             this._setCurrentPlatesEditable(true);
             this._editable = true;
         } else {
-            // this._setCurrentPlatesEditable(false);
             this._setCurrentPlatesEditable(false);
             this._editable = false;
         }
@@ -225,6 +234,7 @@ export default class PlateLayer extends Layer {
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
             document.removeEventListener('click', this._onClick(), false);
             document.removeEventListener('keyup', this._onKey(), false);
+            document.removeEventListener('contextmenu', this._onContextMenu(), false);
 
             for (let plate_id in this._plates) {
                 let plate = this._plates[plate_id];
@@ -246,6 +256,7 @@ export default class PlateLayer extends Layer {
 
         document.addEventListener('click', this._onClick(), false);
         document.addEventListener('keyup', this._onKey(), false);
+        document.addEventListener('contextmenu', this._onContextMenu(), false);
 
         return true;
     }
@@ -264,6 +275,8 @@ export default class PlateLayer extends Layer {
 
         /// Когда на плашку нажали кнопкой мыши
         plate.container.mousedown(evt => {
+            if (evt.target.classList.contains(Plate.ContextMenuItemClass)) return;
+
             /// Если плашка не была выделена ранее
             if (this._plate_selected && plate !== this._plate_selected) {
                 /// Снять её выделение
@@ -276,10 +289,19 @@ export default class PlateLayer extends Layer {
             /// Обрабатывать её события
             plate.setEditable(this._container.node);
             plate.onChange(this._callbacks.change);
+            plate.onContextMenuItemClick((alias) => this._onPlateContextMenuItemClick(alias));
+            plate.onDragStart(() => this._onPlateDragStart(plate));
+            plate.onDragFinish(() => this._onPlateDragFinish(plate));
 
             /// выделить данную плашку
             this._plate_selected = plate;
             this._plate_selected.select();
+
+            if (evt.which === 3) {
+                plate.showContextMenu(evt, this._container.node);
+            } else {
+                plate.hideContextMenu();
+            }
         });
     }
 
@@ -304,19 +326,53 @@ export default class PlateLayer extends Layer {
             /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
             while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
 
-            /// Если нет выделенной плашки
+            /// Если не попали по плашке, но есть выделенная плашка
             if (!el && this._plate_selected) {
                 /// Снять выделение
                 this._plate_selected.deselect();
+                /// Убрать контекстное меню
+                this._plate_selected.hideContextMenu();
+
                 /// Отключить её события
                 this._plate_selected.setEditable(false);
                 this._plate_selected.onChange(null);
+                this._plate_selected.onContextMenuItemClick(null);
 
                 this._plate_selected = null;
             }
         };
 
         return this._onclick;
+    }
+
+    /**
+     * Сгенерировать обработчик вызова контекстного меню
+     *
+     * @returns {function(evt: Object)): undefined} обработчик вызова контекстного меню
+     *
+     * @private
+     */
+    _onContextMenu() {
+        if (this._oncontextmenu) {
+            return this._oncontextmenu;
+        }
+
+        // ie 9+ only
+        this._oncontextmenu = (evt) => {
+            let el = evt.target;
+
+            /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
+            while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
+
+            /// Если элемент является частью плашки
+            if (el) {
+                evt.preventDefault();
+            } else if (this._plate_selected) {
+                this._plate_selected.hideContextMenu();
+            }
+        }
+
+        return this._oncontextmenu;
     }
 
     /**
@@ -356,9 +412,64 @@ export default class PlateLayer extends Layer {
     }
 
     /**
+     * Обработать нажатие на пункт контекстного меню текущей плашки
+     *
+     * @param {string} action_alias кодовое название пункта меню
+     *
+     * @private
+     */
+    _onPlateContextMenuItemClick(action_alias) {
+        switch (action_alias) {
+            case Plate.CMI_REMOVE: {
+                this.removePlate(this._plate_selected.id);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Обработать начало перетаскивания плашки
+     *
+     * Все остальные плашки "замораживаются"
+     *
+     * @param {Plate} plate перетаскиваемая плашка
+     *
+     * @private
+     */
+    _onPlateDragStart(plate) {
+        let id = String(plate.id);
+
+        for (let pl_id in this._plates) {
+            if (pl_id !== id) {
+                this._plates[pl_id].freeze();
+            }
+        }
+    }
+
+    /**
+     * Обработать конец перетаскивания плашки
+     *
+     * Все остальные плашки "размораживаются"
+     *
+     * @param {Plate} plate перетаскиваемая плашка
+     *
+     * @private
+     */
+    _onPlateDragFinish(plate) {
+        let id = String(plate.id);
+
+        for (let pl_id in this._plates) {
+            if (pl_id !== id) {
+                this._plates[pl_id].unfreeze();
+            }
+        }
+    }
+
+    /**
      * Возвратить массив всех типов плашек
      *
      * @returns {Array<string>}
+     *
      * @private
      */
     static _getAllPlateTypes() {
@@ -378,6 +489,13 @@ export default class PlateLayer extends Layer {
         ]
     }
 
+    /**
+     * Возвратить словарь всех названий типов плашек по типам плашек
+     *
+     * @returns {Array<string>} словарь названий типов плашек
+     *
+     * @private
+     */
     static _getAllPlateCaptions() {
         let captions = {};
 
@@ -403,6 +521,7 @@ export default class PlateLayer extends Layer {
      * @param {string} type строковый тип плашки
      *
      * @returns {Plate} класс плашки
+     *
      * @private
      */
     static _typeToPlateClass(type) {

@@ -19,6 +19,7 @@ export default class GlobalServiceModule extends Module {
                 firmware: '/fwsvc/geturls/last/',
                 log_bunch: '/logsvc/logbunch/',
                 check_handlers: '/coursesvc/check/',
+                calc_currents: '/coursesvc/calc/',
             },
             csrfRequired: true,
             modeDummy: false
@@ -169,6 +170,18 @@ export default class GlobalServiceModule extends Module {
         if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
 
         return fetch(this._options.origin + this._options.api.firmware)
+            .then(response => {
+                return response.json();
+            }).catch(err => {
+                this._debug.error(err);
+                this.emitEvent('error', err);
+            });
+    }
+
+    calcCurrents() {
+        if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
+
+        return fetch(this._options.origin + this._options.api.calc_currents)
             .then(response => {
                 return response.json();
             }).catch(err => {

@@ -1,7 +1,7 @@
 import MissionBarBlock from "./blocks/bars/MissionBarBlock";
 import LessonBarBlock from "./blocks/bars/LessonBarBlock";
 import MenuBarBlock from "./blocks/bars/MenuBarBlock";
-import CourseChipBlock from "./blocks/chips/CourseChipBlock";
+import LessonChipBlock from "./blocks/chips/LessonChipBlock";
 import MenuChipBlock from "./blocks/chips/MenuChipBlock";
 import TaskChipBlock from "./blocks/chips/TaskChipBlock";
 import FlipperBlock from "./blocks/FlipperBlock";
@@ -56,7 +56,7 @@ export default class LessonPane {
             },
 
             chips: {
-                course: new CourseChipBlock(),
+                lesson: new LessonChipBlock(),
                 menu: new MenuChipBlock(),
                 task: new TaskChipBlock(),
                 status: new StatusChipBlock()
@@ -116,13 +116,13 @@ export default class LessonPane {
     setLogoText(text) {
         if (!this._state.included) {throw new NotIncludedError("Cannot set logo text, include first")}
 
-        this._blocks.chips.course.setTextLogo(text);
+        this._blocks.chips.lesson.setTextLogo(text);
     }
 
-    setCourseText(text) {
-        if (!this._state.included) {throw new NotIncludedError("Cannot set course text, include first")}
+    setLessonText(text) {
+        if (!this._state.included) {throw new NotIncludedError("Cannot set lesson text, include first")}
 
-        this._blocks.chips.course.setTextMeta(text);
+        this._blocks.chips.lesson.setTextMeta(text);
     }
 
     setTaskText(text) {
@@ -260,7 +260,7 @@ export default class LessonPane {
             this._containers.north.center.top.self,
         );
 
-        this._blocks.chips.course.include(this._containers.north.center.front.west);
+        this._blocks.chips.lesson.include(this._containers.north.center.front.west);
         this._blocks.chips.task.include(this._containers.south.west);
         this._blocks.chips.menu.include(this._containers.north.west);
         this._blocks.chips.status.include(this._containers.north.center.front.east);

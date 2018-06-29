@@ -186,7 +186,7 @@ class Application {
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
                 .then(lesson => {
                     this.gui.showMissionButtons(lesson.missions);
-                    this.gui.setCourseText(lesson.name)
+                    this.gui.setLessonText(lesson.name)
                 })
                 .then(() => this.ins.launchLesson(mission_idx, exercise_idx))
                 .catch(error => {
@@ -379,6 +379,12 @@ class Application {
                         this.gui.switchDeveloperMode(false);
                         this.lay.concealTopPane();
                     }
+                    break;
+                }
+                case 'currents': {
+                    this.gs.calcCurrents()
+                        .then((currents) => this.bb.updateCurrents(currents));
+
                     break;
                 }
                 default: {

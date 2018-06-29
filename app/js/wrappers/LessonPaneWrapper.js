@@ -19,7 +19,7 @@ export default class LessonPaneWrapper extends Wrapper {
         this._task_on_deferred = undefined;
         this._status_deferred = undefined;
         this._logo_text = undefined;
-        this._course_text = undefined;
+        this._lesson_text = undefined;
     }
 
     inject(dom_node) {
@@ -28,7 +28,7 @@ export default class LessonPaneWrapper extends Wrapper {
         this._plugin.include(dom_node);
 
         if (this._missions)     {this._plugin.setMissions(this._missions)}
-        if (this._course_text)  {this.setCourseText(this._course_text)}
+        if (this._lesson_text)  {this.setLessonText(this._lesson_text)}
         if (this._logo_text)    {this.setLogoText(this._logo_text)}
 
         this._state.display = true;
@@ -62,8 +62,8 @@ export default class LessonPaneWrapper extends Wrapper {
         this._logo_text = text;
     }
 
-    registerCourseText(text) {
-        this._course_text = text;
+    registerLessonText(text) {
+        this._lesson_text = text;
     }
 
     registerMissions(missions) {
@@ -87,8 +87,8 @@ export default class LessonPaneWrapper extends Wrapper {
         this._plugin.setLogoText(text);
     }
 
-    setCourseText(text) {
-        this._plugin.setCourseText(text);
+    setLessonText(text) {
+        this._plugin.setLessonText(text);
     }
 
     setMissionText(text) {

@@ -1351,8 +1351,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/modules/guimodule.js~guimodule#setcoursetext",
-    "class/js/modules/GUIModule.js~GUIModule.html#instance-method-setCourseText",
-    "js/modules/GUIModule.js~GUIModule#setCourseText",
+    "class/js/modules/GUIModule.js~GUIModule.html#instance-method-setLessonText",
+    "js/modules/GUIModule.js~GUIModule#setLessonText",
     "method"
   ],
   [
@@ -3139,8 +3139,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/wrappers/lessonpanewrapper.js~lessonpanewrapper#registercoursetext",
-    "class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html#instance-method-registerCourseText",
-    "js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper#registerCourseText",
+    "class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html#instance-method-registerLessonText",
+    "js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper#registerLessonText",
     "method"
   ],
   [
@@ -3157,8 +3157,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/wrappers/lessonpanewrapper.js~lessonpanewrapper#setcoursetext",
-    "class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html#instance-method-setCourseText",
-    "js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper#setCourseText",
+    "class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html#instance-method-setLessonText",
+    "js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper#setLessonText",
     "method"
   ],
   [

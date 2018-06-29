@@ -1,14 +1,14 @@
 import ChipBlock from "../../core/blocks/ChipBlock";
 
-import thm from "../../styles/chips/course-chip/course-chip.css";
+import thm from "../../styles/chips/lesson-chip/lesson-chip.css";
 
 const CLASSES = {
     LOGO: "logo",
     META: "meta",
 };
 
-export default class CourseChipBlock extends ChipBlock {
-    static get ClassDOM() {return "course-chip"}
+export default class LessonChipBlock extends ChipBlock {
+    static get ClassDOM() {return "lesson-chip"}
 
     constructor() {
         super();

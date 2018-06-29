@@ -1,36 +1,36 @@
-.course-chip {
+.lesson-chip {
   display: flex;
   justify-content: space-evenly;
   height: 50px !important;
 }
-.course-chip > div {
+.lesson-chip > div {
   float: left;
 }
-.course-chip .logo {
+.lesson-chip .logo {
   width: 50%;
   min-width: 140px;
 }
-.course-chip .logo p {
+.lesson-chip .logo p {
   margin: 0;
   width: 100%;
   height: 50px;
   line-height: 50px;
   font-size: 22px;
 }
-.course-chip .meta {
+.lesson-chip .meta {
   position: relative;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.course-chip .meta .meta-abs {
+.lesson-chip .meta .meta-abs {
   position: absolute;
   display: table;
   padding: 4px 0;
   width: 100%;
   height: 45px !important;
 }
-.course-chip .meta .meta-abs p {
+.lesson-chip .meta .meta-abs p {
   display: table-cell;
   vertical-align: middle;
   text-align: center;

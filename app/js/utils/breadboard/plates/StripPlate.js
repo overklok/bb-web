@@ -34,9 +34,9 @@ export default class StripPlate extends Plate {
         this._bezel.width(this._container.width() + this._cell.size.x / 4);
         this._bezel.dx(-this._cell.size.x / 4);
 
-        this._highlighter.fill({color: "#f00"}).radius(0);
-        this._highlighter.width(this._container.width() + this._cell.size.x / 4);
-        this._highlighter.dx(-this._cell.size.x / 4);
+        this._error_highlighter.fill({color: "#f00"}).radius(0);
+        this._error_highlighter.width(this._container.width() + this._cell.size.x / 4);
+        this._error_highlighter.dx(-this._cell.size.x / 4);
 
         this._drawPicture();
 
