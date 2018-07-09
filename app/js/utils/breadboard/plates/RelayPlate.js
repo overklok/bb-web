@@ -10,12 +10,7 @@ export default class RelayPlate extends Plate {
         this._params.resistance = (resistance <= 0) ? 200 : resistance;
         this._extra = this._params.resistance;
 
-        this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: 5, y: 1};
-
-        this._state = {
-            highlighted: false,
-        }
+        this._params.size = {x: 5, y: 1};
     }
 
     /**

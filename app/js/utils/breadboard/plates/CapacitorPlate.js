@@ -7,16 +7,8 @@ export default class CapacitorPlate extends Plate {
     constructor(container, grid, id, capacity) {
         super(container, grid, id, capacity);
 
-        this._params.capacity = Number(capacity) || 1000;
-
-        this._extra = this._params.capacity;
-
-        this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: 2, y: 1};
-
-        this._state = {
-            highlighted: false,
-        }
+        this._params.size = {x: 2, y: 1};
+        this._params.extra = Number(capacity) || 1000;
     }
 
     /**
@@ -28,7 +20,7 @@ export default class CapacitorPlate extends Plate {
     __draw__(position, orientation) {
         this._drawPicture();
 
-        this._drawLabel(this._params.capacity);
+        this._drawLabel(this._params.extra);
     };
 
     /**
@@ -47,7 +39,7 @@ export default class CapacitorPlate extends Plate {
      */
     _drawPicture(qs=20) {
         let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._size.x-1, this._size.y-1);
+        let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
         let rect1 = this._group.rect(qs, qs)
             .center(

@@ -10,12 +10,7 @@ export default class ResistorPlate extends Plate {
         this._params.resistance = (resistance <= 0) ? 200 : resistance;
         this._extra = this._params.resistance;
 
-        this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: 2, y: 1};
-
-        this._state = {
-            highlighted: false,
-        }
+        this._params.size = {x: 2, y: 1};
     }
 
     /**
@@ -75,7 +70,7 @@ export default class ResistorPlate extends Plate {
      */
     _drawPicture(qs=20) {
         let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._size.x-1, this._size.y-1);
+        let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
         let rect1 = this._group.rect(qs, qs)
             .center(

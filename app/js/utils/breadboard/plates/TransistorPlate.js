@@ -7,12 +7,7 @@ export default class TransistorPlate extends Plate {
     constructor(container, grid, id) {
         super(container, grid, id);
 
-        this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: 3, y: 1};
-
-        this._state = {
-            highlighted: false,
-        }
+        this._params.size = {x: 3, y: 1};
     }
 
     /**
@@ -43,7 +38,7 @@ export default class TransistorPlate extends Plate {
      */
     _drawPicture(qs=20) {
         let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._size.x-1, this._size.y-1);
+        let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
         let cell3 = this.__grid.cell(1, 0);
 

@@ -54,11 +54,11 @@ export default class PlateLayer extends Layer {
 
             data.push({
                 type: plate.alias,
-                x: plate._params.cell.idx.x,
-                y: plate._params.cell.idx.y,
-                orientation: plate.orientation,
+                x: plate._state.cell.idx.x,
+                y: plate._state.cell.idx.y,
+                orientation: plate._state.orientation,
                 id: plate.id,
-                extra: plate.extra
+                extra: plate._params.extra
             });
         }
 
@@ -424,6 +424,14 @@ export default class PlateLayer extends Layer {
         switch (action_alias) {
             case Plate.CMI_REMOVE: {
                 this.removePlate(this._plate_selected.id);
+                break;
+            }
+            case Plate.CMI_ROTCW: {
+                this._plates[this._plate_selected.id].rotateClockwise();
+                break;
+            }
+            case Plate.CMI_ROTCCW: {
+                this._plates[this._plate_selected.id].rotateCounterClockwise();
                 break;
             }
         }

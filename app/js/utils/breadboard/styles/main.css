@@ -1,11 +1,14 @@
-.bb-plate-add-wrap {
-    position: absolute;
-    bottom: 0;
+.bb-plate-right-wrap, .bb-plate-left-wrap {
+    margin-top: 20px;
 }
 
 .bb-plate-add-input {
-    width: 80px;
-    height: 24px;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-weight: bold;
+    font-size: 20px;
+
+    width: 85px;
+    height: 42px;
     border-radius: 5px;
     border-color: #c9c9c9;
     border-style: solid;
@@ -13,14 +16,24 @@
 }
 
 .bb-plate-add-selector {
-    width: 100px;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-weight: bold;
+    font-size: 26px;
+
+    width: 270px;
+    margin-bottom: 4px !important;
+    height: 44px;
+    text-align: center;
 }
 
-.bb-plate-btn-add, .bb-plate-btn-clear {
+.bb-plate-btn-add, .bb-plate-btn-clear, .bb-plate-btn-fullscreen {
+    font-family: "Lucida Console", Monaco, monospace;
+    font-weight: bold;
+    font-size: 26px;
+
     background-color: #ffffff;
     display: block;
     border-radius: 5px;
-    float: right;
     border-color: #c9c9c9;
     border-style: solid;
     border-width: 1px;
@@ -28,6 +41,15 @@
     color: black;
     text-decoration: none;
     cursor: pointer;
+    width: 154px;
+    float: right;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+}
+
+.bb-plate-btn-clear, .bb-plate-btn-fullscreen {
+    width: 224px;
 }
 
 /* make keyframes that tell the start state and the end state of our object */
@@ -63,5 +85,9 @@
 }
 
 .bb-plate-ctxmenu-item-text {
+    pointer-events: none;
+}
+
+.bb-plate-shadow-img {
     pointer-events: none;
 }

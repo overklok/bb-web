@@ -23,51 +23,53 @@ export default class Plate {
     static get ContextMenuItemClass() {return "bb-plate-ctxmenu-item"}
     // CSS-класс текста элемента контекстного меню плашки
     static get ContextMenuItemTextClass() {return "bb-plate-ctxmenu-item-text"}
+    // CSS-класс изображения тени
+    static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
     // Алиасы пунктов контекстного меню
     static get CMI_REMOVE() {return "cmi_rm"}
     static get CMI_SWITCH() {return "cmi_sw"}
+    static get CMI_ROTCW()  {return "cmi_rcl"}
+    static get CMI_ROTCCW() {return "cmi_rccl"}
 
     constructor(container_parent, grid, id=null, extra=0) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
 
+        /// Кодовое имя плашки
         this._alias = this.constructor.Alias;
 
         /// Идентификатор - по умолчанию случайная строка
         this._id = (id === null) ? (Math.floor(Math.random() * (10 ** 6))) : (id);
 
         /// Контейнер, группа и ссылка на сетку
-        this._container = container_parent.nested();        // для масштабирования
-        this._group     = this._container.group();          // для поворота
-        this._bezel     = this._group.rect("100%", "100%"); // для окантовки
+        this._shadow        = container_parent.nested();        // для тени
+        this._container     = container_parent.nested();        // для масштабирования
+        this._shadowgroup   = this._shadow.group();             // для поворота тени
+        this._group         = this._container.group();          // для поворота
+        this._bezel     = this._group.rect("100%", "100%");     // для окантовки
         this.__grid     = grid;
 
-        this._group_editable = this._group.group();                   // для режима редактирования
-        this._error_highlighter = this._group.rect("100%", "100%");   // для подсветки
-
-        this._ctx_menu_group = this._container.group().move(0, 0); // для контекстного меню
-
-        /// Размер плашки и её опорная точка
-        this._size      = {x: 0, y: 0};
-        this._origin    = {x: 0, y: 0};
-
-        /// Физический размер плашки (в px)
-        this._size_px   = {x: 0, y: 0};
+        /// Дополнительные контейнеры
+        this._group_editable = this._group.group();                     // для режима редактирования
+        this._error_highlighter = this._group.rect("100%", "100%");     // для подсветки
+        this._ctx_menu_group = this._container.group().move(0, 0);      // для контекстного меню
 
         /// Параметры - постоянные свойства плашки
         this._params = {
-            cell:           undefined,                  // ячейка, задающая положение опорной точки
-            orientation:    Plate.Orientations.West,    // ориентация плашки
+            size:       {x: 0, y: 0},   // кол-во ячеек, занимаемое плашкой на доске
+            size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
+            origin:     {x: 0, y: 0},   // опорная точка плашки
+            extra:      extra           // доп. параметр
         };
-
-        /// Дополнительный параметр
-        this._extra = extra;
 
         /// Состояние - изменяемые свойства плашки
         this._state = {
-            highlighted: false,
+            cell:           new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
+            cell_supposed:  new Cell(0, 0, this.__grid),    // ячейка, задающая предполагаемое положение опорной точки
+            orientation:    Plate.Orientations.West,        // ориентация плашки
+            highlighted:    false,                          // подсвечена ли плашка
         };
 
         /// Присвоить класс контейнеру
@@ -113,26 +115,8 @@ export default class Plate {
         return this._id;
     }
 
-    /**
-     * Возвратить текущую ячейку, задающую положение опорной точки плашки
-     *
-     * @returns {undefined|Cell} ячейка, задающая положение опорной точки плашки
-     */
-    get cell() {
-        return this._params.cell;
-    }
-
-    /**
-     * Возвратить текущую ориентацию плашки
-     *
-     * @returns {undefined|string} ориентация плашки
-     */
-    get orientation() {
-        return this._params.orientation;
-    }
-
     get extra() {
-        return this._extra;
+        return this._params.extra;
     }
 
     /**
@@ -171,23 +155,29 @@ export default class Plate {
      * @param {string}  orientation ориентация элемента относительно опорной точки
      */
     draw(cell, orientation) {
-        let width   = (cell.size.x * this._size.x) + (this.__grid.gap.x * 2 * (this._size.x - 1));
-        let height  = (cell.size.y * this._size.y) + (this.__grid.gap.y * 2 * (this._size.y - 1));
+        let width   = (cell.size.x * this._params.size.x) + (this.__grid.gap.x * 2 * (this._params.size.x - 1));
+        let height  = (cell.size.y * this._params.size.y) + (this.__grid.gap.y * 2 * (this._params.size.y - 1));
 
         this._container.size(width, height);
+        this._shadow.size(width, height);
 
         this._bezel.fill({color: "#fffffd"}).radius(10);
         this._bezel.stroke({color: "#fffffd", width: 2});
 
         this._error_highlighter.fill({color: "#f00"}).radius(10);
 
+        this._shadowimg = this._shadowgroup.rect(width, height); // изображение тени
+        this._shadowimg.fill({color: "#51ff1e"}).radius(10).opacity(0.4);
+        this._shadowimg.addClass(Plate.ShadowImgClass);
+        this._hideShadow();
+
         this.highlightError(false);
         this.move(cell, true);
         this.__draw__(cell, orientation);
         this.rotate(orientation, true);
 
-        this._size_px.x = width;
-        this._size_px.y = height;
+        this._params.size_px.x = width;
+        this._params.size_px.y = height;
     };
 
     /**
@@ -230,15 +220,21 @@ export default class Plate {
      */
     move(cell, suppress_events=false) {
         /// TODO check position validity
-        this._params.cell = cell;
+        this._state.cell = cell;
+        this._state.cell_supposed = cell;
 
-        this._container.x(this.cell.pos.x);
-        this._container.y(this.cell.pos.y);
+        this._container.x(this._state.cell.pos.x);
+        this._container.y(this._state.cell.pos.y);
 
-        if (!suppress_events) {this._callbacks.change({
-            id: this._id,
-            action: 'move'
-        })}
+        this._shadow.x(this._state.cell.pos.x);
+        this._shadow.y(this._state.cell.pos.y);
+
+        if (!suppress_events) {
+            this._callbacks.change({
+                id: this._id,
+                action: 'move'
+            })
+        }
     }
 
     /**
@@ -248,7 +244,7 @@ export default class Plate {
      * @param {int} dy смещение по оси Y
      */
     shift(dx, dy) {
-        this.move(this.__grid.cell(this.cell.idx.x + dx, this.cell.idx.y + dy));
+        this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy));
     }
 
     /**
@@ -258,17 +254,22 @@ export default class Plate {
      * @param {boolean} suppress_events подавить инициацию событий
      */
     rotate(orientation, suppress_events=false) {
+        if (this._dragging) return;
+
         /// TODO check orientation validity
         let angle = Plate._orientationToAngle(orientation);
 
-        this._group.transform({rotation: angle, cx: this.cell.size.x / 2, cy: this.cell.size.y / 2});
+        this._group.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
+        this._shadowgroup.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
 
-        this._params.orientation = orientation;
+        this._state.orientation = orientation;
 
-        if (!suppress_events) {this._callbacks.change({
-            id: this._id,
-            action: 'rotate'
-        })}
+        if (!suppress_events) {
+            this._callbacks.change({
+                id: this._id,
+                action: 'rotate'
+            })
+        }
     }
 
     /**
@@ -277,7 +278,7 @@ export default class Plate {
     rotateClockwise() {
         let orientation;
 
-        switch (this.orientation) {
+        switch (this._state.orientation) {
             case Plate.Orientations.West: {orientation = Plate.Orientations.North; break}
             case Plate.Orientations.North: {orientation = Plate.Orientations.East; break}
             case Plate.Orientations.East: {orientation = Plate.Orientations.South; break}
@@ -295,7 +296,7 @@ export default class Plate {
     rotateCounterClockwise() {
         let orientation;
 
-        switch (this.orientation) {
+        switch (this._state.orientation) {
             case Plate.Orientations.West: {orientation = Plate.Orientations.South; break}
             case Plate.Orientations.South: {orientation = Plate.Orientations.East; break}
             case Plate.Orientations.East: {orientation = Plate.Orientations.North; break}
@@ -327,6 +328,7 @@ export default class Plate {
      */
     dispose() {
         this._container.node.remove();
+        this._shadow.node.remove();
     }
 
     /**
@@ -370,10 +372,14 @@ export default class Plate {
 
             cursor_point_last = cursor_point;
 
+            this._calcSupposedCell();
+            this._dropShadowToSupposedCell();
+
             if (dx > 0 || dy > 0) {
                 this._dragging = true;
 
                 if (!this._dragstart_activated) {
+                    this._showShadow();
                     this._callbacks.dragstart();
                     this._dragstart_activated = true;
                 }
@@ -393,7 +399,8 @@ export default class Plate {
             if (evt.which === 1) {
                 document.body.removeEventListener('mousemove', onmove, false);
 
-                this._snapToNearestCell();
+                this._snapToSupposedCell();
+                this._hideShadow();
 
                 this._dragging = false;
                 this._dragstart_activated = false;
@@ -522,8 +529,8 @@ export default class Plate {
         let menu_width = 200, menu_height = 50;
 
         let offset = {
-            x: this._params.cell.size.x + this.__grid.gap.x,
-            y: this._params.cell.size.y * 2 + this.__grid.gap.y
+            x: this._state.cell.size.x + this.__grid.gap.x,
+            y: this._state.cell.size.y * 2 + this.__grid.gap.y
         };
 
         let nested = this._ctx_menu_group.nested();
@@ -534,6 +541,8 @@ export default class Plate {
         this.appendContextMenuItem(nested, menu_width, menu_height, `Plate #${this.id}`, undefined);
         this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_REMOVE", Plate.CMI_REMOVE);
         this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_SWITCH", Plate.CMI_SWITCH);
+        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_ROTCW",  Plate.CMI_ROTCW);
+        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_ROTCCW", Plate.CMI_ROTCCW);
 
         if (evt && svg_main) {
             let svg_point = svg_main.createSVGPoint();
@@ -628,30 +637,100 @@ export default class Plate {
     }
 
     /**
-     * Прикрепить плашку к ближайшей ячейке
-     *
-     * TODO: сделать проверку со всех сторон
+     * Прикрепить плашку к предполагаемой ближайшей ячейке
      *
      * @private
      */
-    _snapToNearestCell() {
-        let x = this._container.x();
-        let y = this._container.y();
+    _snapToSupposedCell() {
+        this.move(this._state.cell_supposed);
+    }
 
+    /**
+     * Отобразить тень на предполагаемой ближайшей ячейке
+     *
+     * @private
+     */
+    _dropShadowToSupposedCell() {
+        this._shadow.x(this._state.cell_supposed.pos.x);
+        this._shadow.y(this._state.cell_supposed.pos.y);
+    }
 
-        for (let col of this.__grid.cells) {
-            let cell0 = col[0];
+    _showShadow() {
+        this._shadow.opacity(1);
+    }
 
-            if (cell0.pos.x >= x) {
-                for (let cell of col) {
-                    if (cell.pos.y >= y) {
-                        console.log('snap', x, y, cell);
+    _hideShadow() {
+        this._shadow.opacity(0);
+    }
 
-                        this.move(cell); return;
-                    }
-                }
+    /**
+     * Вычислить предполагаемую ближайшую ячейку
+     *
+     * @private
+     */
+    _calcSupposedCell() {
+        let x = this._container.x(),
+            y = this._container.y();
+
+        let w = this.__grid.size.x,
+            h = this.__grid.size.y;
+
+        let nx = this.__grid.dim.x,
+            ny = this.__grid.dim.y;
+
+        let px = Math.floor(x / w * nx),
+            py = Math.floor(y / h * ny);
+
+        let sx = this._params.size.x,
+            sy = this._params.size.y;
+
+        if (this._state.orientation === Plate.Orientations.North ||
+            this._state.orientation === Plate.Orientations.South) {
+            sx = this._params.size.y;
+            sy = this._params.size.x;
+        }
+
+        if (px + sx >= nx)  {px = nx - sx - 1}
+        if (px < 0)         {px = 0}
+
+        if (py + sy >= ny)  {py = ny - sy - 1}
+        if (py < 0)         {py = 0}
+
+        let neighbors = [];
+
+        /// Соседи по краям
+        if (px + 1 < nx)    neighbors.push(this.__grid.cell(px + 1, py));
+        if (px - 1 >= 0)    neighbors.push(this.__grid.cell(px - 1, py));
+        if (py + 1 < ny)    neighbors.push(this.__grid.cell(px, py + 1));
+        if (py - 1 >= 0)    neighbors.push(this.__grid.cell(px, py - 1));
+
+        /// Соседи по диагоналям
+        if (px + 1 < nx && py + 1 < ny)     neighbors.push(this.__grid.cell(px + 1, py + 1));
+        if (px + 1 < nx && py - 1 >= 0)     neighbors.push(this.__grid.cell(px + 1, py - 1));
+        if (px - 1 >= 0 && py + 1 < ny)     neighbors.push(this.__grid.cell(px - 1, py + 1));
+        if (px - 1 >= 0 && py - 1 >= 0)     neighbors.push(this.__grid.cell(px - 1, py - 1));
+
+        let nearest = this.__grid.cell(px, py);
+
+        /// Расстояния от точки до ближайшего соседа
+        let ndx = Math.abs(x - nearest.pos.x);
+        let ndy = Math.abs(y - nearest.pos.y);
+
+        for (let neighbor of neighbors) {
+            /// Расстояния от точки до соседа
+            let dx = Math.abs(x - neighbor.pos.x);
+            let dy = Math.abs(y - neighbor.pos.y);
+
+            if (dx < ndx || dy < ndy) {
+                // если хотя бы по одному измерению расстояние меньше,
+                // взять нового ближайшего соседа
+                nearest = neighbor;
+                ndx = Math.abs(x - nearest.pos.x);
+                ndy = Math.abs(y - nearest.pos.y);
             }
         }
+
+        this._state.cell_supposed = nearest;
     }
 
     /**

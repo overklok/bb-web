@@ -6,6 +6,7 @@ import LabelLayer from "./layers/LabelLayer";
 import CurrentLayer from "./layers/CurrentLayer";
 import PlateLayer from "./layers/PlateLayer";
 import RegionLayer from "./layers/RegionLayer";
+import ControlsLayer from "./layers/ControlsLayer";
 
 const WRAP_WIDTH = 1200;              // Ширина рабочей области
 const WRAP_HEIGHT = 1350;             // Высота рабочей области
@@ -36,6 +37,7 @@ export default class Breadboard {
             plate:      undefined,
             current:    undefined,
             region:     undefined,
+            controls:   undefined,
         };
 
         this._callbacks = {
@@ -122,10 +124,6 @@ export default class Breadboard {
         Breadboard._defineFilters();
         /// Инициализировать слои
         this._composeLayers();
-
-        if (!this._options.readOnly) {
-            this._displayControls(dom_node);
-        }
     };
 
     dispose() {
@@ -146,12 +144,14 @@ export default class Breadboard {
         let current     = this._brush.nested();
         let plate       = this._brush.nested();
         let region      = this._brush.nested();
+        let controls    = this._brush.nested();
 
         this._layers.background = new BackgroundLayer(background, this._grid);
         this._layers.label      = new LabelLayer(label_panes, this._grid);
         this._layers.current    = new CurrentLayer(current, this._grid);
         this._layers.plate      = new PlateLayer(plate, this._grid);
         this._layers.region     = new RegionLayer(region, this._grid);
+        this._layers.controls   = new ControlsLayer(controls, this._grid);
 
         this._layers.background.compose();
         this._layers.label.compose();
@@ -167,6 +167,8 @@ export default class Breadboard {
             this._layers.plate.setEditable(false);
         } else {
             this._layers.plate.setEditable(true);
+            this._layers.controls.compose(Breadboard.getAllPlateTypes(), Breadboard.getAllPlateCaptions());
+            this._attachControlsEvents();
         }
     }
 
@@ -178,34 +180,8 @@ export default class Breadboard {
         }
     }
 
-    _displayControls(dom_node) {
-        let wrap = document.createElement("div");
-        let input = document.createElement("input");
-        let select = document.createElement("select");
-        let btn_apply = document.createElement("a");
-        let btn_clear = document.createElement("a");
-
-        wrap.classList += "bb-plate-add-wrap";
-        input.classList += "bb-plate-add-input";
-        select.classList += "bb-plate-add-selector";
-        btn_apply.classList += "bb-plate-btn-add";
-        btn_clear.classList += "bb-plate-btn-clear";
-
-        let options = Breadboard.getAllPlateTypes();
-
-        for (let i = 0; i < options.length; i++) {
-            let opt = options[i];
-            let el = document.createElement("option");
-            el.textContent = Breadboard.getAllPlateCaptions()[opt];
-            el.value = opt;
-
-            select.appendChild(el);
-        }
-
-        btn_apply.addEventListener("click", () => {
-            let plate_type = select.options[select.selectedIndex].value;
-            let extra = input.value;
-
+    _attachControlsEvents() {
+        this._layers.controls.onAdd((plate_type, extra) => {
             this.addPlate(plate_type, 0, 0, 'west', null, extra);
 
             this._callbacks.change({
@@ -214,7 +190,7 @@ export default class Breadboard {
             });
         });
 
-        btn_clear.addEventListener("click", () => {
+        this._layers.controls.onClear(() => {
             this.clearPlates();
 
             this._callbacks.change({
@@ -223,14 +199,9 @@ export default class Breadboard {
             });
         });
 
-        btn_apply.innerHTML = "Добавить";
-        btn_clear.innerHTML = "Очистить всё";
-
-        wrap.appendChild(select);
-        wrap.appendChild(input);
-        wrap.appendChild(btn_clear);
-        wrap.appendChild(btn_apply);
-        dom_node.appendChild(wrap);
+        this._layers.controls.onFullscreen((on) => {
+            Breadboard.fullScreen(on, this._brush.node);
+        });
     }
 
     static getAllPlateTypes() {
@@ -356,4 +327,26 @@ export default class Breadboard {
         defs_elem.insertAdjacentHTML('beforeend', defs[4]);
         defs_elem.insertAdjacentHTML('beforeend', defs[5]);
     };
+
+    static fullScreen(on, element) {
+        if (on) {
+            if (element.requestFullScreen) {
+                element.requestFullScreen();
+            } else if (element.webkitRequestFullScreen) {
+                element.webkitRequestFullScreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            }else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+        }
+    }
 }

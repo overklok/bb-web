@@ -10,15 +10,8 @@ export default class BridgePlate extends Plate {
         length = Number(length);
         length = Number.isInteger(length) ? length : 2;
 
-        this._params.len = (length < 2) ? 2 : length;
-        this._extra = this._params.len;
-
-        this._cell = new Cell(0, 0, this.__grid);
-        this._size = {x: this._params.len, y: 1};
-
-        this._state = {
-            highlighted: false,
-        }
+        this._params.extra = (length < 2) ? 2 : length;
+        this._params.size = {x: this._params.extra, y: 1};
     }
 
     /**
@@ -50,7 +43,7 @@ export default class BridgePlate extends Plate {
      */
     _drawPicture(qs=20, ls=8) {
         let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._size.x-1, this._size.y-1);
+        let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
         let rect1 = this._group.rect(qs, qs)
             .center(
