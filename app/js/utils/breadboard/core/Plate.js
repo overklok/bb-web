@@ -1,5 +1,10 @@
 import Cell from "./Cell";
 
+/**
+ * Коды ориентаций
+ *
+ * @type {{West: string, North: string, East: string, South: string}}
+ */
 const ORIENTATIONS = {
     West:   'west',
     North:  'north',
@@ -7,6 +12,11 @@ const ORIENTATIONS = {
     South:  'south'
 };
 
+/**
+ * Текстовые метки контекстного меню
+ *
+ * @type {{cmi_rm: string, cmi_sw: string, cmi_rcw: string, cmi_rccw: string}}
+ */
 const CM_LABELS = {
     cmi_rm:     'Удалить',
     cmi_sw:     'Переключить',
@@ -529,9 +539,7 @@ export default class Plate {
     /**
      * Отобразить контекстное меню плашки
      *
-     * TODO: позиционирование
-     *
-     * @param {MouseEvent}  evt         событие нажатия мыши
+     * @param {MouseEvent}      evt         событие нажатия кнопки мыши
      * @param {HTMLElement}     svg_main    родительский SVG-узел
      */
     showContextMenu(evt, svg_main) {
@@ -670,10 +678,20 @@ export default class Plate {
         this._shadow.y(this._state.cell_supposed.pos.y);
     }
 
+    /**
+     * Показать тень плашки
+     *
+     * @private
+     */
     _showShadow() {
         this._shadow.opacity(1);
     }
 
+    /**
+     * Скрыть тень плашки
+     *
+     * @private
+     */
     _hideShadow() {
         this._shadow.opacity(0);
     }
@@ -684,30 +702,38 @@ export default class Plate {
      * @private
      */
     _calcSupposedCell() {
+        /// Реальные координаты плашки
         let x = this._container.x(),
             y = this._container.y();
 
+        /// Реальные размеры поля
         let w = this.__grid.size.x,
             h = this.__grid.size.y;
 
+        /// Количество ячеек
         let Nx = this.__grid.dim.x,
             Ny = this.__grid.dim.y;
 
+        /// Номер ячейки, над которой в данный момент находится центр опорной ячейки плашки
         let px = Math.floor(x / w * Nx),
             py = Math.floor(y / h * Ny);
 
+        /// Количество ячеек, занимаемое плашкой
         let sx = this._params.size.x,
             sy = this._params.size.y;
 
+        /// Нуль (мин. допустимый номера ячейки, куда может встать плашка)
         let Ox = 0,
             Oy = 0;
 
+        /// Ориентации плашки, обратные стандартным, требуют преобразований
         if (this._state.orientation === Plate.Orientations.North ||
             this._state.orientation === Plate.Orientations.South) {
             sx = this._params.size.y;
             sy = this._params.size.x;
         }
 
+        /// Смещение нуля и номера последней ячейки, необходимое в некоторых случаях
         if (this._state.orientation === Plate.Orientations.South) {
             Ny += sy - 1;
             Oy += sy - 1;
@@ -718,12 +744,14 @@ export default class Plate {
             Ox += sx - 1;
         }
 
+        /// Проверка на выход за границы сетки ячеек
         if (px + sx >= Nx)  {px = Nx - sx - 1}
         if (px < Ox)        {px = Ox}
 
         if (py + sy >= Ny)  {py = Ny - sy - 1}
         if (py < Oy)        {py = Oy}
 
+        /// Массив соседей ячейки, над которой находится плашка
         let neighbors = [];
 
         /// Соседи по краям
@@ -738,6 +766,7 @@ export default class Plate {
         if (px - 1 >= Ox && py + 1 < Ny)    neighbors.push(this.__grid.cell(px - 1, py + 1));
         if (px - 1 >= Ox && py - 1 >= Oy)   neighbors.push(this.__grid.cell(px - 1, py - 1));
 
+        /// Ближайший сосед
         let nearest = this.__grid.cell(px, py);
 
         /// Расстояния от точки до ближайшего соседа
@@ -761,6 +790,13 @@ export default class Plate {
         this._state.cell_supposed = nearest;
     }
 
+    /**
+     * Переставить плашку в DOM-дереве выше остальных
+     *
+     * Используется в случах, когда плашку необходимо отображать поверх остальных
+     *
+     * @private
+     */
     _rearrange() {
         let node_temp = this._container.node;
         this._container.node.remove();
@@ -771,6 +807,7 @@ export default class Plate {
      * Получить положение курсора в системе координат SVG
      *
      * @param {HTMLElement} svg_main    SVG-узел, в системе координат которого нужна точка
+     * @param {SVGPoint}    svg_point   SVG-тока в исходной системе координат
      * @param {MouseEvent}  evt         событие действия мышки
      *
      * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
