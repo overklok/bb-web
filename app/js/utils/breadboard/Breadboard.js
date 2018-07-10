@@ -202,6 +202,12 @@ export default class Breadboard {
         this._layers.controls.onFullscreen((on) => {
             Breadboard.fullScreen(on, this._brush.node);
         });
+
+        this._layers.background.onLogoClick(() => {
+            this._layers.controls.switchVisibility();
+        });
+
+        this._layers.background.clickLogo();
     }
 
     static getAllPlateTypes() {

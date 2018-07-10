@@ -22,6 +22,7 @@ const CM_LABELS = {
     cmi_sw:    'Переключить',
     cmi_rcw:   'Повернуть по часовой',
     cmi_rccw:  'Повернуть против часовой',
+    cmi_dupl:  'Дублировать'
 };
 
 const CM_SHORTCUTS = {
@@ -29,6 +30,7 @@ const CM_SHORTCUTS = {
     cmi_sw:    undefined,
     cmi_rcw:   '[',
     cmi_rccw:  ']',
+    cmi_dupl:  'D'
 };
 
 const CM_WIDTH = 360;
@@ -62,6 +64,7 @@ export default class Plate {
     static get CMI_SWITCH() {return "cmi_sw"}
     static get CMI_ROTCW()  {return "cmi_rcw"}
     static get CMI_ROTCCW() {return "cmi_rccw"}
+    static get CMI_DUPLIC() {return "cmi_dupl"}
 
     constructor(container_parent, grid, id=null, extra=0) {
         if (!container_parent || !grid) {
@@ -148,6 +151,10 @@ export default class Plate {
         return this._id;
     }
 
+    get pos() {
+        return this._state.cell.idx;
+    }
+
     get extra() {
         return this._params.extra;
     }
@@ -194,7 +201,7 @@ export default class Plate {
         this._container.size(width, height);
         this._shadow.size(width, height);
 
-        this._bezel.fill({color: "#fffffd"}).radius(10);
+        this._bezel.radius(10).fill("#fffffd");
         this._bezel.stroke({color: "#f0eddb", width: 2});
 
         this._error_highlighter.fill({color: "#f00"}).radius(10);
@@ -243,6 +250,19 @@ export default class Plate {
         } else {
             this._error_highlighter.opacity(0);
         }
+    }
+
+    /**
+     * Сымитировать клик на плашку
+     */
+    click() {
+        this._bezel
+            .animate('50ms').fill("#6b8fff").animate('50ms').fill("#fffffd")
+            .animate('50ms').fill("#6b8fff").animate('50ms').fill("#fffffd")
+            .animate('50ms').fill("#6b8fff").animate('50ms').fill("#fffffd");
+
+        this._container.fire('mousedown');
+        this._rearrange();
     }
 
     /**
@@ -604,6 +624,7 @@ export default class Plate {
         this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_SWITCH);
         this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_ROTCW);
         this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_ROTCCW);
+        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_DUPLIC);
         this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_REMOVE);
 
         if (evt && svg_main) {

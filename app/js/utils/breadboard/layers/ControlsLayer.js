@@ -24,11 +24,29 @@ export default class ControlsLayer extends Layer {
         };
 
         this._is_fullscreen = false;
+        this._is_visible = false;
     }
 
     compose(plate_types, plate_captions) {
         this._drawLeftMenu(plate_types, plate_captions);
         this._drawRightMenu();
+        this._hide();
+    }
+
+    switchVisibility() {
+        this._is_visible ? this._hide() : this._show();
+
+        this._is_visible = !this._is_visible;
+    }
+
+    _show() {
+        this._addgroup.style.display = "block";
+        this._cleargroup.style.display = "block";
+    }
+
+    _hide() {
+        this._addgroup.style.display = "none";
+        this._cleargroup.style.display = "none";
     }
 
     onAdd(cb) {

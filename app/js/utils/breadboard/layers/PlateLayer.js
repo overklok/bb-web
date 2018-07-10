@@ -424,6 +424,11 @@ export default class PlateLayer extends Layer {
                         break;
                 }
 
+                if (evt.key === "d" || evt.key === "D") {
+                    evt.preventDefault();
+                    this._duplicatePlate(this._plate_selected);
+                }
+
                 if (evt.key === "Backspace" || evt.key === "Delete") {
                     evt.preventDefault();
                     /// Удалить её
@@ -457,7 +462,23 @@ export default class PlateLayer extends Layer {
                 this._plates[this._plate_selected.id].rotateCounterClockwise();
                 break;
             }
+            case Plate.CMI_DUPLIC: {
+                this._duplicatePlate(this._plate_selected);
+            }
         }
+    }
+
+    _duplicatePlate(plate) {
+        let new_plate_id = this.addPlate(
+            plate.alias,
+            plate.pos.x,
+            plate.pos.y,
+            plate.state.orientation,
+            null,
+            plate.extra
+        );
+
+        this._plates[new_plate_id].click();
     }
 
     /**

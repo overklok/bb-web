@@ -1,5 +1,8 @@
 import Layer from "../core/Layer";
 
+const LOGO_COLOR_ACTIVE     = "#6B8FFF";
+const LOGO_COLOR_DEFAULT    = "#000000";
+
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
 
@@ -11,6 +14,12 @@ export default class BackgroundLayer extends Layer {
         this._domaingroup   = undefined;
         this._cellgroup     = undefined;
         this._logogroup     = undefined;
+
+        this._callbacks = {
+            logoclick: () => {}
+        };
+
+        this._is_logo_clicked = false;
     }
 
     compose() {
@@ -24,6 +33,16 @@ export default class BackgroundLayer extends Layer {
         this._drawLogo();
         this._drawDomains();
         this._drawCells();
+    }
+
+    clickLogo() {
+        this._logogroup.fire('click');
+    }
+
+    onLogoClick(cb) {
+        if (!cb) {this._callbacks.logoclick = () => {}}
+
+        this._callbacks.logoclick = cb;
     }
 
     _drawLogo() {
@@ -64,6 +83,22 @@ export default class BackgroundLayer extends Layer {
         text.move(100 + 10, 10);
 
         this._logogroup.cx(100 + this.__grid.size.x / 2);
+
+        this._logogroup.style({cursor: 'pointer'});
+
+        this._logogroup.click((evt) => {
+            if (this._is_logo_clicked) {
+                text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+                flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+            } else {
+                text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+                flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+            }
+
+            this._callbacks.logoclick();
+
+            this._is_logo_clicked = !this._is_logo_clicked;
+        });
     }
 
     _drawCells() {
