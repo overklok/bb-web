@@ -195,7 +195,7 @@ export default class Plate {
         this._shadow.size(width, height);
 
         this._bezel.fill({color: "#fffffd"}).radius(10);
-        this._bezel.stroke({color: "#fffffd", width: 2});
+        this._bezel.stroke({color: "#f0eddb", width: 2});
 
         this._error_highlighter.fill({color: "#f00"}).radius(10);
 
@@ -372,7 +372,7 @@ export default class Plate {
     select() {
         this._rearrange();
 
-        this._bezel.stroke({color: "#0900fa", width: 2});
+        this._bezel.animate('100ms').stroke({color: "#0900fa", width: 2});
         this.highlightError(false);
     }
 
@@ -380,7 +380,7 @@ export default class Plate {
      * Снять выделение контура плашки
      */
     deselect() {
-        this._bezel.stroke({width: 0});
+        this._bezel.animate('100ms').stroke({color: "#f0eddb", width: 2});
     }
 
     /**
