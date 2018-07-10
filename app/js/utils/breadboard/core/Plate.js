@@ -7,6 +7,13 @@ const ORIENTATIONS = {
     South:  'south'
 };
 
+const CM_LABELS = {
+    cmi_rm:     'Удалить',
+    cmi_sw:     'Переключить',
+    cmi_rcw:   'Пов. по часовой',
+    cmi_rccw:  'Пов. прот. часовой',
+};
+
 /**
  * Класс плашки доски
  */
@@ -29,13 +36,15 @@ export default class Plate {
     // Алиасы пунктов контекстного меню
     static get CMI_REMOVE() {return "cmi_rm"}
     static get CMI_SWITCH() {return "cmi_sw"}
-    static get CMI_ROTCW()  {return "cmi_rcl"}
-    static get CMI_ROTCCW() {return "cmi_rccl"}
+    static get CMI_ROTCW()  {return "cmi_rcw"}
+    static get CMI_ROTCCW() {return "cmi_rccw"}
 
     constructor(container_parent, grid, id=null, extra=0) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
+
+        this._node_parent = container_parent.node;
 
         /// Кодовое имя плашки
         this._alias = this.constructor.Alias;
@@ -312,6 +321,8 @@ export default class Plate {
      * Выделить контур плашки
      */
     select() {
+        this._rearrange();
+
         this._bezel.stroke({color: "#0900fa", width: 2});
         this.highlightError(false);
     }
@@ -386,18 +397,10 @@ export default class Plate {
             }
         };
 
-        /// обработчик нажатия кнопки мыши на плашке
-        this._group.mousedown((evt) => {
-            if (evt.which === 1 && !this._dragging) {
-                document.body.addEventListener('mousemove', onmove, false);
-                cursor_point_last = Plate._getCursorPoint(svg_main, svg_point, evt);
-            }
-        });
-
-        /// обработчик отпускания кнопки мыши на плашке
-        this._group.mouseup((evt) => {
+        let onmouseup = (evt) => {
             if (evt.which === 1) {
                 document.body.removeEventListener('mousemove', onmove, false);
+                document.body.removeEventListener('mouseup', onmouseup, false);
 
                 this._snapToSupposedCell();
                 this._hideShadow();
@@ -405,6 +408,18 @@ export default class Plate {
                 this._dragging = false;
                 this._dragstart_activated = false;
                 this._callbacks.dragfinish();
+            }
+        };
+
+        /// обработчик нажатия кнопки мыши на плашке
+        this._group.mousedown((evt) => {
+            if (evt.which === 1 && !this._dragging) {
+                this._rearrange();
+
+                document.body.addEventListener('mousemove', onmove, false);
+                document.body.addEventListener('mouseup', onmouseup, false);
+
+                cursor_point_last = Plate._getCursorPoint(svg_main, svg_point, evt);
             }
         });
 
@@ -526,7 +541,7 @@ export default class Plate {
             this.hideContextMenu();
         }
 
-        let menu_width = 200, menu_height = 50;
+        let menu_width = 240, menu_height = 50;
 
         let offset = {
             x: this._state.cell.size.x + this.__grid.gap.x,
@@ -538,11 +553,11 @@ export default class Plate {
         nested.addClass(Plate.ContextMenuClass);
 
         this._ctx_menu_height = 0;
-        this.appendContextMenuItem(nested, menu_width, menu_height, `Plate #${this.id}`, undefined);
-        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_REMOVE", Plate.CMI_REMOVE);
-        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_SWITCH", Plate.CMI_SWITCH);
-        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_ROTCW",  Plate.CMI_ROTCW);
-        this.appendContextMenuItem(nested, menu_width, menu_height, "CMI_ROTCCW", Plate.CMI_ROTCCW);
+        this.appendContextMenuItem(nested, menu_width, menu_height, `Плашка #${this.id}`, undefined);
+        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_REMOVE], Plate.CMI_REMOVE);
+        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_SWITCH], Plate.CMI_SWITCH);
+        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_ROTCW],  Plate.CMI_ROTCW);
+        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_ROTCCW], Plate.CMI_ROTCCW);
 
         if (evt && svg_main) {
             let svg_point = svg_main.createSVGPoint();
@@ -675,14 +690,17 @@ export default class Plate {
         let w = this.__grid.size.x,
             h = this.__grid.size.y;
 
-        let nx = this.__grid.dim.x,
-            ny = this.__grid.dim.y;
+        let Nx = this.__grid.dim.x,
+            Ny = this.__grid.dim.y;
 
-        let px = Math.floor(x / w * nx),
-            py = Math.floor(y / h * ny);
+        let px = Math.floor(x / w * Nx),
+            py = Math.floor(y / h * Ny);
 
         let sx = this._params.size.x,
             sy = this._params.size.y;
+
+        let Ox = 0,
+            Oy = 0;
 
         if (this._state.orientation === Plate.Orientations.North ||
             this._state.orientation === Plate.Orientations.South) {
@@ -690,25 +708,35 @@ export default class Plate {
             sy = this._params.size.x;
         }
 
-        if (px + sx >= nx)  {px = nx - sx - 1}
-        if (px < 0)         {px = 0}
+        if (this._state.orientation === Plate.Orientations.South) {
+            Ny += sy - 1;
+            Oy += sy - 1;
+        }
 
-        if (py + sy >= ny)  {py = ny - sy - 1}
-        if (py < 0)         {py = 0}
+        if (this._state.orientation === Plate.Orientations.East) {
+            Nx += sx - 1;
+            Ox += sx - 1;
+        }
+
+        if (px + sx >= Nx)  {px = Nx - sx - 1}
+        if (px < Ox)        {px = Ox}
+
+        if (py + sy >= Ny)  {py = Ny - sy - 1}
+        if (py < Oy)        {py = Oy}
 
         let neighbors = [];
 
         /// Соседи по краям
-        if (px + 1 < nx)    neighbors.push(this.__grid.cell(px + 1, py));
-        if (px - 1 >= 0)    neighbors.push(this.__grid.cell(px - 1, py));
-        if (py + 1 < ny)    neighbors.push(this.__grid.cell(px, py + 1));
-        if (py - 1 >= 0)    neighbors.push(this.__grid.cell(px, py - 1));
+        if (px + 1 < Nx)    neighbors.push(this.__grid.cell(px + 1, py));
+        if (px - 1 >= Ox)   neighbors.push(this.__grid.cell(px - 1, py));
+        if (py + 1 < Ny)    neighbors.push(this.__grid.cell(px, py + 1));
+        if (py - 1 >= Oy)   neighbors.push(this.__grid.cell(px, py - 1));
 
         /// Соседи по диагоналям
-        if (px + 1 < nx && py + 1 < ny)     neighbors.push(this.__grid.cell(px + 1, py + 1));
-        if (px + 1 < nx && py - 1 >= 0)     neighbors.push(this.__grid.cell(px + 1, py - 1));
-        if (px - 1 >= 0 && py + 1 < ny)     neighbors.push(this.__grid.cell(px - 1, py + 1));
-        if (px - 1 >= 0 && py - 1 >= 0)     neighbors.push(this.__grid.cell(px - 1, py - 1));
+        if (px + 1 < Nx && py + 1 < Ny)     neighbors.push(this.__grid.cell(px + 1, py + 1));
+        if (px + 1 < Nx && py - 1 >= Oy)    neighbors.push(this.__grid.cell(px + 1, py - 1));
+        if (px - 1 >= Ox && py + 1 < Ny)    neighbors.push(this.__grid.cell(px - 1, py + 1));
+        if (px - 1 >= Ox && py - 1 >= Oy)   neighbors.push(this.__grid.cell(px - 1, py - 1));
 
         let nearest = this.__grid.cell(px, py);
 
@@ -731,6 +759,12 @@ export default class Plate {
         }
 
         this._state.cell_supposed = nearest;
+    }
+
+    _rearrange() {
+        let node_temp = this._container.node;
+        this._container.node.remove();
+        this._node_parent.appendChild(node_temp);
     }
 
     /**

@@ -290,7 +290,7 @@ export default class PlateLayer extends Layer {
 
             /// Обрабатывать её события
             plate.setEditable(this._container.node);
-            plate.onChange(this._callbacks.change);
+            plate.onChange((data) => this._callbacks.change(data));
             plate.onContextMenuItemClick((alias) => this._onPlateContextMenuItemClick(alias));
             plate.onDragStart(() => this._onPlateDragStart(plate));
             plate.onDragFinish(() => this._onPlateDragFinish(plate));

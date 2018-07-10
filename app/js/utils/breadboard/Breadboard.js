@@ -141,10 +141,10 @@ export default class Breadboard {
         // В ней - фон, сетка и панели подписей
         let background  = this._brush.nested();
         let label_panes = this._brush.nested();
+        let controls    = this._brush.nested();
         let current     = this._brush.nested();
         let plate       = this._brush.nested();
         let region      = this._brush.nested();
-        let controls    = this._brush.nested();
 
         this._layers.background = new BackgroundLayer(background, this._grid);
         this._layers.label      = new LabelLayer(label_panes, this._grid);
@@ -182,10 +182,10 @@ export default class Breadboard {
 
     _attachControlsEvents() {
         this._layers.controls.onAdd((plate_type, extra) => {
-            this.addPlate(plate_type, 0, 0, 'west', null, extra);
+            let id_new = this.addPlate(plate_type, 0, 0, 'west', null, extra);
 
             this._callbacks.change({
-                id: null,
+                id: id_new,
                 action: 'create'
             });
         });
@@ -195,7 +195,7 @@ export default class Breadboard {
 
             this._callbacks.change({
                 id: null,
-                action: 'remove'
+                action: 'clear'
             });
         });
 
