@@ -219,6 +219,7 @@ export default class PlateLayer extends Layer {
      * Сделать текущие плашки редактируемыми
      *
      * @param   {boolean} editable флаг, сделать редактируемыми?
+     *
      * @returns {boolean} принято ли значение флага
      *
      * @private
@@ -233,7 +234,7 @@ export default class PlateLayer extends Layer {
             this._plate_selected = null;     // удалить ссылку на выделенный элемент
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
             document.removeEventListener('click', this._onClick(), false);
-            document.removeEventListener('keyup', this._onKey(), false);
+            document.removeEventListener('keydown', this._onKey(), false);
             document.removeEventListener('contextmenu', this._onContextMenu(), false);
 
             for (let plate_id in this._plates) {
@@ -255,7 +256,7 @@ export default class PlateLayer extends Layer {
         }
 
         document.addEventListener('click', this._onClick(), false);
-        document.addEventListener('keyup', this._onKey(), false);
+        document.addEventListener('keydown', this._onKey(), false);
         document.addEventListener('contextmenu', this._onContextMenu(), false);
 
         return true;
@@ -395,14 +396,36 @@ export default class PlateLayer extends Layer {
         /// Когда нажата кнопка клавиатуры
         this._onkey = (evt) => {
             if (this._plate_selected) {
-                /// Если есть выденленная плашка
-
-                if (evt.key === "ArrowUp")      {this._plate_selected.rotate(Plate.Orientations.West)}
-                if (evt.key === "ArrowLeft")    {this._plate_selected.rotate(Plate.Orientations.South)}
-                if (evt.key === "ArrowRight")   {this._plate_selected.rotate(Plate.Orientations.North)}
-                if (evt.key === "ArrowDown")    {this._plate_selected.rotate(Plate.Orientations.East)}
+                /// Если есть выделенная плашка
+                switch (evt.key) {
+                    case "[":
+                        evt.preventDefault();
+                        this._plate_selected.rotateClockwise();
+                        break;
+                    case "]":
+                        evt.preventDefault();
+                        this._plate_selected.rotateCounterClockwise();
+                        break;
+                    case "ArrowLeft":
+                        evt.preventDefault();
+                        this._plate_selected.shift(-1, 0);
+                        break;
+                    case "ArrowRight":
+                        evt.preventDefault();
+                        this._plate_selected.shift(1, 0);
+                        break;
+                    case "ArrowUp":
+                        evt.preventDefault();
+                        this._plate_selected.shift(0, -1);
+                        break;
+                    case "ArrowDown":
+                        evt.preventDefault();
+                        this._plate_selected.shift(0, 1);
+                        break;
+                }
 
                 if (evt.key === "Backspace" || evt.key === "Delete") {
+                    evt.preventDefault();
                     /// Удалить её
                     this.removePlate(this._plate_selected.id);
                     this._plate_selected = null;

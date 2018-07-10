@@ -18,11 +18,21 @@ const ORIENTATIONS = {
  * @type {{cmi_rm: string, cmi_sw: string, cmi_rcw: string, cmi_rccw: string}}
  */
 const CM_LABELS = {
-    cmi_rm:     'Удалить',
-    cmi_sw:     'Переключить',
-    cmi_rcw:   'Пов. по часовой',
-    cmi_rccw:  'Пов. прот. часовой',
+    cmi_rm:    'Удалить',
+    cmi_sw:    'Переключить',
+    cmi_rcw:   'Повернуть по часовой',
+    cmi_rccw:  'Повернуть против часовой',
 };
+
+const CM_SHORTCUTS = {
+    cmi_rm:    'Delete/Backspace',
+    cmi_sw:    undefined,
+    cmi_rcw:   '[',
+    cmi_rccw:  ']',
+};
+
+const CM_WIDTH = 360;
+const CM_HEIGHT = 50;
 
 /**
  * Класс плашки доски
@@ -38,8 +48,12 @@ export default class Plate {
     static get ContextMenuClass() {return "bb-plate-ctxmenu"}
     // CSS-класс фона элемента контекстного меню плашки
     static get ContextMenuItemClass() {return "bb-plate-ctxmenu-item"}
+    // CSS-класс фона неактивного элемента контекстного меню плашки
+    static get ContextMenuItemDisabledClass() {return "bb-plate-ctxmenu-item-disabled"}
     // CSS-класс текста элемента контекстного меню плашки
     static get ContextMenuItemTextClass() {return "bb-plate-ctxmenu-item-text"}
+    // CSS-класс текста неактивного элемента контекстного меню плашки
+    static get ContextMenuItemDisabledTextClass() {return "bb-plate-ctxmenu-item-disabled-text"}
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
@@ -236,17 +250,24 @@ export default class Plate {
      *
      * @param {Cell}    cell            положение плашки относительно опорной точки
      * @param {boolean} suppress_events подавить инициацию событий
+     * @param {boolean} animate         анимировать перемещение
      */
-    move(cell, suppress_events=false) {
-        /// TODO check position validity
+    move(cell, suppress_events=false, animate=false) {
+        if (cell.__grid !== this.__grid) {
+            throw new Error("Cell's grid and plate's grid are not the same");
+        }
+
         this._state.cell = cell;
         this._state.cell_supposed = cell;
 
-        this._container.x(this._state.cell.pos.x);
-        this._container.y(this._state.cell.pos.y);
-
         this._shadow.x(this._state.cell.pos.x);
         this._shadow.y(this._state.cell.pos.y);
+
+        if (animate) {
+            this._container.animate('100ms', '<>').move(this._state.cell.pos.x, this._state.cell.pos.y);
+        } else {
+            this._container.move(this._state.cell.pos.x, this._state.cell.pos.y);
+        }
 
         if (!suppress_events) {
             this._callbacks.change({
@@ -262,20 +283,34 @@ export default class Plate {
      * @param {int} dx смещение по оси X
      * @param {int} dy смещение по оси Y
      */
-    shift(dx, dy) {
+    shift(dx, dy, prevent_overflow=true) {
+        let px = this._state.cell.idx.x,
+            py = this._state.cell.idx.y;
+
+        let Nx = this.__grid.dim.x,
+            Ny = this.__grid.dim.y;
+
+        if (px + dx < 0 || px + dx >= Nx || py + dy < 0 || py + dy >= Ny) {
+            return;
+        }
+
         this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy));
+
+        if (prevent_overflow) {
+            this._preventOverflow();
+        }
     }
 
     /**
      * Повернуть плашку
      *
-     * @param {string} orientation ориентация плашки относительно опорной точки
-     * @param {boolean} suppress_events подавить инициацию событий
+     * @param {string}  orientation         ориентация плашки относительно опорной точки
+     * @param {boolean} suppress_events     подавить инициацию событий
+     * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
      */
-    rotate(orientation, suppress_events=false) {
+    rotate(orientation, suppress_events=false, prevent_overflow=true) {
         if (this._dragging) return;
 
-        /// TODO check orientation validity
         let angle = Plate._orientationToAngle(orientation);
 
         this._group.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
@@ -288,6 +323,10 @@ export default class Plate {
                 id: this._id,
                 action: 'rotate'
             })
+        }
+
+        if (prevent_overflow) {
+            this._preventOverflow();
         }
     }
 
@@ -528,7 +567,7 @@ export default class Plate {
     /**
      * Установить обработчик нажатия на пункт контекстного меню плашки
      *
-     * @param {function} cb обработчик нажатия на пункт контекстного меню плашки
+     * @param {function} cb обработчик нажатия на пункт контекстного меню плашки.
      */
     onContextMenuItemClick(cb) {
         if (!cb) {this._callbacks.ctxmenuitemclick = () => {}}
@@ -549,7 +588,7 @@ export default class Plate {
             this.hideContextMenu();
         }
 
-        let menu_width = 240, menu_height = 50;
+        let cmi_w = CM_WIDTH, cmi_h = CM_HEIGHT;
 
         let offset = {
             x: this._state.cell.size.x + this.__grid.gap.x,
@@ -561,11 +600,11 @@ export default class Plate {
         nested.addClass(Plate.ContextMenuClass);
 
         this._ctx_menu_height = 0;
-        this.appendContextMenuItem(nested, menu_width, menu_height, `Плашка #${this.id}`, undefined);
-        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_REMOVE], Plate.CMI_REMOVE);
-        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_SWITCH], Plate.CMI_SWITCH);
-        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_ROTCW],  Plate.CMI_ROTCW);
-        this.appendContextMenuItem(nested, menu_width, menu_height, CM_LABELS[Plate.CMI_ROTCCW], Plate.CMI_ROTCCW);
+        this.appendContextMenuItem(nested, cmi_w, cmi_h, `Плашка #${this.id}`, false);
+        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_SWITCH);
+        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_ROTCW);
+        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_ROTCCW);
+        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_REMOVE);
 
         if (evt && svg_main) {
             let svg_point = svg_main.createSVGPoint();
@@ -578,11 +617,11 @@ export default class Plate {
 
             /// проверка на вылет за область видимости
             let global_pos = {
-                x: cursor_point.x - offset.x + menu_width,
+                x: cursor_point.x - offset.x + cmi_w,
                 y: cursor_point.y - offset.y + this._ctx_menu_height,
             };
 
-            if (global_pos.x > this.__grid.size.x) {nested.dx(-menu_width)}
+            if (global_pos.x > this.__grid.size.x) {nested.dx(-cmi_w)}
             if (global_pos.y > this.__grid.size.y) {nested.dy(-this._ctx_menu_height)}
         }
 
@@ -598,23 +637,36 @@ export default class Plate {
      * @param {SVG.Group}   container   контейнер контекстного меню
      * @param {number}      width       ширина контекстного меню
      * @param {number}      height      высота пункта
-     * @param {string}      name        текст пункта
      * @param {string}      alias       алиас пункта
+     * @param {boolean}     active      активен ли пункт
      */
-    appendContextMenuItem(container, width, height, name, alias) {
+    appendContextMenuItem(container, width, height, alias, active=true) {
         let rect = container.rect(width, height)
                 .fill("#e7e4ff")
                 .x(-10)
                 .y(this._ctx_menu_height);
 
-        let text = container.text(name).y(this._ctx_menu_height).font({size: 24});
+        let label = alias in CM_LABELS ? CM_LABELS[alias] : alias;
 
-        if (alias) {
+        let text = container.text(label).y(this._ctx_menu_height).font({size: 24});
+
+        text.build(true);
+
+        if (CM_SHORTCUTS[alias]) {
+            text.plain(' (');
+            text.tspan(CM_SHORTCUTS[alias]).font({style: 'italic', weight: 'bolder'});
+            text.plain(')');
+        }
+
+        if (active) {
             rect.addClass(Plate.ContextMenuItemClass);
             text.addClass(Plate.ContextMenuItemTextClass);
         } else {
-            text.font({weight: 'bolder'})
+            rect.addClass(Plate.ContextMenuItemDisabledClass);
+            text.addClass(Plate.ContextMenuItemDisabledTextClass);
         }
+
+        text.build(false);
 
         rect.mousedown(() => {
             setTimeout(() => {
@@ -646,7 +698,7 @@ export default class Plate {
      */
     freeze() {
         this._container.style('pointer-events', 'none');
-        this._container.opacity(0.5);
+        this._container.animate('100ms').opacity(0.5);
     }
 
     /**
@@ -656,7 +708,7 @@ export default class Plate {
      */
     unfreeze() {
         this._container.style('pointer-events', 'inherit');
-        this._container.opacity(1);
+        this._container.animate('100ms').opacity(1);
     }
 
     /**
@@ -665,7 +717,7 @@ export default class Plate {
      * @private
      */
     _snapToSupposedCell() {
-        this.move(this._state.cell_supposed);
+        this.move(this._state.cell_supposed, false, true);
     }
 
     /**
@@ -788,6 +840,43 @@ export default class Plate {
         }
 
         this._state.cell_supposed = nearest;
+    }
+
+    _preventOverflow() {
+        /// Номер ячейки, занимаемой опорной ячейкой плашки
+        let px = this._state.cell.idx.x,
+            py = this._state.cell.idx.y;
+
+        /// Количество ячеек, занимаемое плашкой
+        let sx = this._params.size.x,
+            sy = this._params.size.y;
+
+        /// Количество ячеек
+        let Nx = this.__grid.dim.x,
+            Ny = this.__grid.dim.y;
+
+        let dx = 0,
+            dy = 0;
+
+        switch(this._state.orientation) {
+            case Plate.Orientations.West:
+                if (px + sx > Nx) {dx = Nx - (px + sx)}
+                break;
+            case Plate.Orientations.North:
+                if (py + sx > Ny) {dy = Ny - (py + sx)}
+                break;
+            case Plate.Orientations.East:
+                if (px - sx < -1) {dx = sx - px - 1}
+                break;
+            case Plate.Orientations.South:
+                if (py - sx < -1) {dy = sx - py - 1}
+                break;
+        }
+
+        px += dx;
+        py += dy;
+
+        this.move(this.__grid.cell(px, py), false, true);
     }
 
     /**

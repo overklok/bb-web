@@ -81,11 +81,21 @@
 }
 
 .bb-plate-ctxmenu-item:hover {
-    fill: #0f0;
+    fill: #72ff6d;
 }
 
 .bb-plate-ctxmenu-item-text {
     pointer-events: none;
+}
+
+.bb-plate-ctxmenu-item-disabled {
+    cursor: default;
+    fill: #96d0ff;
+}
+
+.bb-plate-ctxmenu-item-disabled-text {
+    cursor: default;
+    font-weight: bolder;
 }
 
 .bb-plate-shadow-img {
