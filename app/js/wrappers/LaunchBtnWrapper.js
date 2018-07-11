@@ -5,11 +5,15 @@ import thm from "../../css/launch-button.css";
 const IDS = {
     EXECUTE_BTN: "execute-btn",
     CHECK_BTN: "check-btn",
+    CALC_BTN: "calc-btn",
+    CALC_INPUT: "calc-input",
 };
 
 const CLASSES = {
+    TEST_PANE: "test-pane",
     LAUNCH_PANE: "launch-pane",
     LAUNCH_BTN: "launch-btn",
+    CALC_INPUT_ERROR: "calc-input-error",
 };
 
 const VARIANTS = {
@@ -34,17 +38,23 @@ export default class LaunchBtnWrapper extends Wrapper {
             check: {
                 start: `<i class="fas fa-forward"></i>&nbsp;<small>Проверить</small>`,
                 stop: `<i class="fas fa-sync fa-spin fa-fw"></i>`,
+            },
+            calc: {
+                start: `<i class="fas fa-calculator"></i>&nbsp;<small>Рассчитать</small>`,
+                stop: `<i class="fas fa-sync fa-spin fa-fw"></i>`,
             }
         };
 
         this._buttons = {
             check: undefined,
             execute: undefined,
+            calc: undefined,
         };
 
         this._started = {
             check: false,
             execute: false,
+            calc: false,
         };
     }
 
@@ -82,11 +92,14 @@ export default class LaunchBtnWrapper extends Wrapper {
         for (let button_key in this._buttons) {
             this.setStart(button_key);
         }
+
+        this._buttons.calc.style.display = "inline";
     }
 
     hide() {
         this._buttons.execute.style.display = "none";
         this._buttons.check.style.display = "none";
+        this._buttons.calc.style.display = "none";
     }
 
     setStart(button_key) {
@@ -104,28 +117,45 @@ export default class LaunchBtnWrapper extends Wrapper {
     }
 
     onButtonClick(cb) {
+        if (!cb) {cb = () => {}}
+
         this._callbacks.button_click = cb;
     }
 
     _ensureButtons(dom_node) {
-        let parent = document.createElement("div");
-        parent.classList.add(CLASSES.LAUNCH_PANE);
+        let panes = {
+            launch: document.createElement("div"),
+            test: document.createElement("div"),
+        };
+
+        panes.launch.classList.add(CLASSES.LAUNCH_PANE);
+        panes.test.classList.add(CLASSES.TEST_PANE);
 
         this._buttons = {
             execute: document.createElement("div"),
             check: document.createElement("div"),
+            calc: document.createElement("div"),
         };
+
+        let calc_input = document.createElement("input");
+        calc_input.id = IDS.CALC_INPUT;
+        calc_input.placeholder = 0;
 
         this._buttons.execute.id = IDS.EXECUTE_BTN;
         this._buttons.check.id = IDS.CHECK_BTN;
+        this._buttons.calc.id = IDS.CALC_BTN;
 
         this._buttons.execute.classList.add(CLASSES.LAUNCH_BTN);
         this._buttons.check.classList.add(CLASSES.LAUNCH_BTN);
 
-        parent.appendChild(this._buttons.execute);
-        parent.appendChild(this._buttons.check);
+        panes.launch.appendChild(this._buttons.execute);
+        panes.launch.appendChild(this._buttons.check);
 
-        dom_node.appendChild(parent);
+        panes.test.appendChild(calc_input);
+        panes.test.appendChild(this._buttons.calc);
+
+        dom_node.appendChild(panes.launch);
+        dom_node.appendChild(panes.test);
 
         this._buttons.execute.onclick = (evt) => {
             this._callbacks.button_click('execute', !this._started.execute);
@@ -133,6 +163,22 @@ export default class LaunchBtnWrapper extends Wrapper {
 
         this._buttons.check.onclick = (evt) => {
             this._callbacks.button_click('check', !this._started.check);
+        };
+
+        this._buttons.calc.onclick = (evt) => {
+            let data = Number(calc_input.value);
+
+            if (isNaN(data) || data == null) {
+                this._buttons.calc.classList.add(CLASSES.CALC_INPUT_ERROR);
+                calc_input.classList.add(CLASSES.CALC_INPUT_ERROR);
+
+                setTimeout(() => {
+                    this._buttons.calc.classList.remove(CLASSES.CALC_INPUT_ERROR);
+                    calc_input.classList.remove(CLASSES.CALC_INPUT_ERROR);
+                }, 1000);
+            } else {
+                this._callbacks.button_click('calc', !this._started.calc, data);
+            }
         };
     }
 }

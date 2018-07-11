@@ -22,10 +22,10 @@ export default class LEDPlate extends Plate {
     }
 
     /**
-     * Нарисовать резистор
+     * Нарисовать ленту
      *
-     * @param {Cell}   position    положение резистора
-     * @param {string}  orientation ориентация резистора
+     * @param {Cell}   position     положение ленты
+     * @param {string}  orientation ориентация ленты
      */
     __draw__(position, orientation) {
         this._drawPicture();
@@ -35,37 +35,28 @@ export default class LEDPlate extends Plate {
     };
 
     /**
-     * Установить состояние резистора
+     * Установить состояние ленты
      *
-     * @param {object} state новое состояние резистора
+     * @param {object} state новое состояние ленты
      */
     setState(state) {
         super.setState(state);
     }
 
     /**
-     * Переместить резистор
+     * Переместить ленту
      *
-     * @param {Cell} position положение резистора
-     */
-    move(position) {
-        super.move(position);
-    }
-
-    /**
-     * Переместить резистор
-     *
-     * @param {int} dx смещение резистора по оси X
-     * @param {int} dy смещение резистора по оси Y
+     * @param {int} dx смещение ленты по оси X
+     * @param {int} dy смещение ленты по оси Y
      */
     shift(dx, dy) {
         super.shift(dx, dy);
     }
 
     /**
-     * Повернуть резистор
+     * Повернуть ленту
      *
-     * @param {string} orientation ориентация резистора
+     * @param {string} orientation ориентация ленты
      */
     rotate(orientation) {
         super.rotate(orientation);

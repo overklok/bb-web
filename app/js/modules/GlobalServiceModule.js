@@ -178,16 +178,41 @@ export default class GlobalServiceModule extends Module {
             });
     }
 
-    calcCurrents() {
+    calcCurrents(plates, extra_num) {
         if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
 
-        return fetch(this._options.origin + this._options.api.calc_currents)
-            .then(response => {
-                return response.json();
-            }).catch(err => {
-                this._debug.error(err);
-                this.emitEvent('error', err);
-            });
+        return new Promise((resolve, reject) => {
+            let packet = {elements: plates, num: extra_num};
+            // let data = new FormData();
+            // data.append("json", JSON.stringify(packet));
+
+            let request = {
+                // mode: 'no-cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    // 'Access-Control-Allow-Origin': this._options.origin,
+                    // 'Access-Control-Allow-Credentials': true,
+                    // 'Access-Control-Allow-Methods': 'POST',
+                    'X-CSRFToken': this._csrfToken
+                },
+                method: "POST",
+                body: JSON.stringify(packet),
+                credentials: 'same-origin',
+            };
+
+            return fetch(this._options.origin + this._options.api.calc_currents, request)
+                .then(response => {
+                    if (response.error) {
+                        reject(response.error())
+                    }
+
+                    resolve(response.json());
+                }).catch(err => {
+                    this._debug.error(err);
+                    reject(err);
+                });
+        });
     }
 
     /**

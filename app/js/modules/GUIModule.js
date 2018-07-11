@@ -45,7 +45,8 @@ const LAUNCH_VARIANTS = {
 export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
     static get event_types() {return [
-        "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file"
+        "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file",
+        "calc"
     ]}
 
     static defaults() {
@@ -492,8 +493,8 @@ export default class GUIModule extends Module {
         this._lesson_pane.setMenuStructure([
             {
                 type: 'default',
-                name: "courses",
-                text: "Курсы",
+                name: "lessons",
+                text: "Уроки",
                 handler: (name) => {this.emitEvent("menu", {name: name})}
             },
             {
@@ -506,12 +507,6 @@ export default class GUIModule extends Module {
                 type: 'radio',
                 name: "developer",
                 text: "Разработчик",
-                handler: (name, pressed) => {this.emitEvent("menu", {name: name, state: pressed})}
-            },
-            {
-                type: 'default',
-                name: "currents",
-                text: "Рассчитать токи",
                 handler: (name, pressed) => {this.emitEvent("menu", {name: name, state: pressed})}
             },
             {
@@ -548,7 +543,7 @@ export default class GUIModule extends Module {
         });
 
         /* Как только нажата кнопка запуска/проверки */
-        this._launch_btn.onButtonClick((button, start) => {
+        this._launch_btn.onButtonClick((button, start, data) => {
             if (button === 'check') {
                 this.emitEvent("check");
             }
@@ -558,6 +553,12 @@ export default class GUIModule extends Module {
                     this.emitEvent("run");
                 } else {
                     this.emitEvent("stop");
+                }
+            }
+
+            if (button === 'calc') {
+                if (start) {
+                    this.emitEvent("calc", data);
                 }
             }
         });

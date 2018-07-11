@@ -80,6 +80,8 @@ export default class BreadboardModule extends Module {
         for (let element of data.elements) {
             this._board.setPlateState(element.id, {
                 highlighted: element.highlight || false,
+                currents: element.currents,
+                voltages: element.voltages
                 // hidden: <smth>
                 // bytes_to_board: <smth>
             })

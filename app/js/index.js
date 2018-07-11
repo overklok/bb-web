@@ -310,6 +310,19 @@ class Application {
             this._dispatcher.only(["gui:*"]);
         });
 
+        this._dispatcher.on('gui:calc', extra => {
+            this.gui.affirmLaunchButtonState('calc', false);
+
+            let plates = this.bb.getData();
+
+            this.gs.calcCurrents(plates, extra)
+                .then(results => this.bb.updateCurrents(results))
+                .then(() => this.gui.affirmLaunchButtonState('calc', true))
+                .catch(err => {
+                    this.gui.affirmLaunchButtonState('calc', true);
+                });
+        });
+
         /**
          * Нажата клавиша
          */
@@ -363,7 +376,7 @@ class Application {
          */
         this._dispatcher.on('gui:menu', (data) => {
             switch (data.name) {
-                case 'courses': {
+                case 'lessons': {
                     this.gs.goToLessonPage();
                     break;
                 }

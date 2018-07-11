@@ -53,12 +53,14 @@ export default class PlateLayer extends Layer {
             let plate = this._plates[plate_id];
 
             data.push({
+                id: plate.id,
                 type: plate.alias,
                 x: plate._state.cell.idx.x,
                 y: plate._state.cell.idx.y,
                 orientation: plate._state.orientation,
-                id: plate.id,
-                extra: plate._params.extra
+                extra: plate._params.extra,
+                currents: plate._state.currents,
+                voltages: plate._state.voltages,
             });
         }
 

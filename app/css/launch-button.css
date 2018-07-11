@@ -4,7 +4,13 @@
     right: 36px;
 }
 
-.launch-btn {
+.test-pane {
+    position: absolute;
+    bottom: 36px;
+    left: 16px;
+}
+
+.launch-btn, #calc-btn {
     position: relative;
     display: inline;
 
@@ -25,4 +31,34 @@
     font-weight: 100;
 
     cursor: pointer;
+}
+
+#calc-btn {
+    background-color: #8953f2;
+    color: #fff;
+
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    margin-left: 0;
+}
+
+#calc-input {
+    width: 60px;
+    height: 28px;
+    font-size: 14px;
+    margin-right: 0;
+
+    border: solid #8953f2 2px;
+    border-radius: 3px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#calc-btn.calc-input-error {
+    background-color: #f24446;
+}
+
+#calc-input.calc-input-error {
+    border-color: #f24446;
 }

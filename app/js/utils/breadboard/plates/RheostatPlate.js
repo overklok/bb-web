@@ -34,15 +34,6 @@ export default class RheostatPlate extends Plate {
     /**
      * Переместить резистор
      *
-     * @param {Cell} position положение резистора
-     */
-    move(position) {
-        super.move(position);
-    }
-
-    /**
-     * Переместить резистор
-     *
      * @param {int} dx смещение резистора по оси X
      * @param {int} dy смещение резистора по оси Y
      */

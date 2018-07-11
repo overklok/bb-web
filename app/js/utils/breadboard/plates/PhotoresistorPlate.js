@@ -11,10 +11,10 @@ export default class PhotoresistorPlate extends Plate {
     }
 
     /**
-     * Нарисовать резистор
+     * Нарисовать фоторезистор
      *
-     * @param {Cell}   position    положение резистора
-     * @param {string}  orientation ориентация резистора
+     * @param {Cell}    position    положение фоторезистора
+     * @param {string}  orientation ориентация фоторезистора
      */
     __draw__(position, orientation) {
         this._drawPicture();
@@ -23,37 +23,28 @@ export default class PhotoresistorPlate extends Plate {
     };
 
     /**
-     * Установить состояние резистора
+     * Установить состояние фоторезистора
      *
-     * @param {object} state новое состояние резистора
+     * @param {object} state новое состояние фоторезистора
      */
     setState(state) {
         super.setState(state);
     }
 
     /**
-     * Переместить резистор
+     * Переместить фоторезистор
      *
-     * @param {Cell} position положение резистора
-     */
-    move(position) {
-        super.move(position);
-    }
-
-    /**
-     * Переместить резистор
-     *
-     * @param {int} dx смещение резистора по оси X
-     * @param {int} dy смещение резистора по оси Y
+     * @param {int} dx смещение фоторезистора по оси X
+     * @param {int} dy смещение фоторезистора по оси Y
      */
     shift(dx, dy) {
         super.shift(dx, dy);
     }
 
     /**
-     * Повернуть резистор
+     * Повернуть фоторезистор
      *
-     * @param {string} orientation ориентация резистора
+     * @param {string} orientation ориентация фоторезистора
      */
     rotate(orientation) {
         super.rotate(orientation);

@@ -218,6 +218,8 @@ export default class Plate {
 
         this._params.size_px.x = width;
         this._params.size_px.y = height;
+
+        this._bezel.scale(1.15).animate('100ms').scale(1);
     };
 
     /**
@@ -407,8 +409,12 @@ export default class Plate {
      * Удалить плашку
      */
     dispose() {
-        this._container.node.remove();
-        this._shadow.node.remove();
+        this._bezel.scale(1).animate('100ms').scale(0.85).opacity(0);
+
+        setTimeout(() => {
+            this._container.node.remove();
+            this._shadow.node.remove();
+        }, 100);
     }
 
     /**

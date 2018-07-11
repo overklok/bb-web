@@ -14,10 +14,10 @@ export default class RelayPlate extends Plate {
     }
 
     /**
-     * Нарисовать резистор
+     * Нарисовать реле
      *
-     * @param {Cell}   position    положение резистора
-     * @param {string}  orientation ориентация резистора
+     * @param {Cell}    position    положение реле
+     * @param {string}  orientation ориентация реле
      */
     __draw__(position, orientation) {
         this._drawPicture();
@@ -26,37 +26,28 @@ export default class RelayPlate extends Plate {
     };
 
     /**
-     * Установить состояние резистора
+     * Установить состояние реле
      *
-     * @param {object} state новое состояние резистора
+     * @param {object} state новое состояние реле
      */
     setState(state) {
         super.setState(state);
     }
 
     /**
-     * Переместить резистор
+     * Переместить реле
      *
-     * @param {Cell} position положение резистора
-     */
-    move(position) {
-        super.move(position);
-    }
-
-    /**
-     * Переместить резистор
-     *
-     * @param {int} dx смещение резистора по оси X
-     * @param {int} dy смещение резистора по оси Y
+     * @param {int} dx смещение реле по оси X
+     * @param {int} dy смещение реле по оси Y
      */
     shift(dx, dy) {
         super.shift(dx, dy);
     }
 
     /**
-     * Повернуть резистор
+     * Повернуть реле
      *
-     * @param {string} orientation ориентация резистора
+     * @param {string} orientation ориентация реле
      */
     rotate(orientation) {
         super.rotate(orientation);
