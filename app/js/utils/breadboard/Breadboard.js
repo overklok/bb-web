@@ -29,7 +29,7 @@ export default class Breadboard {
         }
 
         this._brush = undefined;
-        this._grid  = undefined;
+        this.__grid  = undefined;
 
         this._layers = {
             background: undefined,
@@ -42,6 +42,7 @@ export default class Breadboard {
 
         this._callbacks = {
             change: () => {},
+            dragstart: () => {},
         };
 
         this._cache = {
@@ -118,7 +119,7 @@ export default class Breadboard {
 
         this._brush.style({"user-select": "none"});
 
-        this._grid = new Grid(GRID_ROWS, GRID_COLS, GRID_WIDTH, GRID_HEIGHT, GRID_GAP_X, GRID_GAP_Y);
+        this.__grid = new Grid(GRID_ROWS, GRID_COLS, GRID_WIDTH, GRID_HEIGHT, GRID_GAP_X, GRID_GAP_Y);
 
         /// Создать фильтры
         Breadboard._defineFilters();
@@ -137,6 +138,12 @@ export default class Breadboard {
         this._callbacks.change = cb;
     }
 
+    onDragStart(cb) {
+        if (!cb) {this._callbacks.dragstart = () => {}}
+
+        this._callbacks.dragstart = cb;
+    }
+
     _composeLayers() {
         // В ней - фон, сетка и панели подписей
         let background  = this._brush.nested();
@@ -146,12 +153,12 @@ export default class Breadboard {
         let plate       = this._brush.nested();
         let region      = this._brush.nested();
 
-        this._layers.background = new BackgroundLayer(background, this._grid);
-        this._layers.label      = new LabelLayer(label_panes, this._grid);
-        this._layers.current    = new CurrentLayer(current, this._grid);
-        this._layers.plate      = new PlateLayer(plate, this._grid);
-        this._layers.region     = new RegionLayer(region, this._grid);
-        this._layers.controls   = new ControlsLayer(controls, this._grid);
+        this._layers.background = new BackgroundLayer(background, this.__grid);
+        this._layers.label      = new LabelLayer(label_panes, this.__grid);
+        this._layers.current    = new CurrentLayer(current, this.__grid);
+        this._layers.plate      = new PlateLayer(plate, this.__grid);
+        this._layers.region     = new RegionLayer(region, this.__grid);
+        this._layers.controls   = new ControlsLayer(controls, this.__grid);
 
         this._layers.background.compose();
         this._layers.label.compose();
@@ -208,6 +215,10 @@ export default class Breadboard {
         });
 
         this._layers.background.clickLogo();
+
+        this._layers.plate.onDragStart(() => {
+            this._callbacks.dragstart();
+        })
     }
 
     static getAllPlateTypes() {

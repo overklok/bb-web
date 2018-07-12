@@ -51,11 +51,21 @@ export default class LaunchBtnWrapper extends Wrapper {
             calc: undefined,
         };
 
+        this._panes = {
+            launch: undefined,
+            test:   undefined,
+        };
+
         this._started = {
             check: false,
             execute: false,
             calc: false,
         };
+
+        this._panes_visibility = {
+            launch: true,
+            test: true,
+        }
     }
 
     inject(dom_node) {
@@ -94,12 +104,38 @@ export default class LaunchBtnWrapper extends Wrapper {
         }
 
         this._buttons.calc.style.display = "inline";
+
+        if (this._panes_visibility.launch) {
+            this._panes.launch.style.display = "block"
+        }
+
+        if (this._panes_visibility.test) {
+            this._panes.test.style.display = "block"
+        }
     }
 
     hide() {
         this._buttons.execute.style.display = "none";
         this._buttons.check.style.display = "none";
         this._buttons.calc.style.display = "none";
+
+        this._panes.launch.style.display = "none";
+        this._panes.test.style.display = "none";
+    }
+
+    switchPaneVisibility(pane, on) {
+        if (!(pane in this._panes)) {
+            throw new RangeError(`There is no "${pane}" pane`);
+        }
+
+        if (on) {
+            this._panes_visibility[pane] = true;
+            if (this._panes[pane]) {this._panes[pane].style.display = "block"}
+
+        } else {
+            this._panes_visibility[pane] = false;
+            if (this._panes[pane]) {this._panes[pane].style.display = "none"}
+        }
     }
 
     setStart(button_key) {
@@ -123,13 +159,13 @@ export default class LaunchBtnWrapper extends Wrapper {
     }
 
     _ensureButtons(dom_node) {
-        let panes = {
+        this._panes = {
             launch: document.createElement("div"),
             test: document.createElement("div"),
         };
 
-        panes.launch.classList.add(CLASSES.LAUNCH_PANE);
-        panes.test.classList.add(CLASSES.TEST_PANE);
+        this._panes.launch.classList.add(CLASSES.LAUNCH_PANE);
+        this._panes.test.classList.add(CLASSES.TEST_PANE);
 
         this._buttons = {
             execute: document.createElement("div"),
@@ -148,14 +184,14 @@ export default class LaunchBtnWrapper extends Wrapper {
         this._buttons.execute.classList.add(CLASSES.LAUNCH_BTN);
         this._buttons.check.classList.add(CLASSES.LAUNCH_BTN);
 
-        panes.launch.appendChild(this._buttons.execute);
-        panes.launch.appendChild(this._buttons.check);
+        this._panes.launch.appendChild(this._buttons.execute);
+        this._panes.launch.appendChild(this._buttons.check);
 
-        panes.test.appendChild(calc_input);
-        panes.test.appendChild(this._buttons.calc);
+        this._panes.test.appendChild(calc_input);
+        this._panes.test.appendChild(this._buttons.calc);
 
-        dom_node.appendChild(panes.launch);
-        dom_node.appendChild(panes.test);
+        dom_node.appendChild(this._panes.launch);
+        dom_node.appendChild(this._panes.test);
 
         this._buttons.execute.onclick = (evt) => {
             this._callbacks.button_click('execute', !this._started.execute);

@@ -27,7 +27,7 @@ export default class BackgroundLayer extends Layer {
             .rect('99%', '99%') /// 99 из-за обрезания рамки
             .radius(20)
             .fill({color: "#f9f9f9"})
-            .stroke({color: "#c9c9c9", width: 8})
+            .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
 
         this._drawLogo();

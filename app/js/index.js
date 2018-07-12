@@ -55,7 +55,8 @@ class Application {
                 anyKey: config.anyKey,
                 logoText: config.logoText,
                 imagesPath: config.imagesPath,
-                devMode: config.showDebugInfo
+                devMode: config.showDebugInfo,
+                testMode: config.testMode,
             },
             lay: {
 
@@ -110,7 +111,8 @@ class Application {
             '*:resize', '*:error',
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
-            'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready'
+            'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready',
+            'bb:change', 'bb:drag-start'
         ]);
     }
 
@@ -159,6 +161,7 @@ class Application {
         this._dispatcher.subscribe(this.ws);
         this._dispatcher.subscribe(this.ls);
         this._dispatcher.subscribe(this.gs);
+        this._dispatcher.subscribe(this.bb);
 
         this._dispatcher.ready();
     }
@@ -179,6 +182,9 @@ class Application {
             if (command.type === "goto") {
                 exercise_idx = command.data.exerciseIDX;
                 mission_idx = command.data.missionIDX;
+            }
+            if (command.type === "demo") {
+                this.ls.switchDummyMode(true);
             }
 
             this.ins.getInitialLessonID()
@@ -315,6 +321,8 @@ class Application {
 
             let plates = this.bb.getData();
 
+            this.bb.clearCurrents();
+
             this.gs.calcCurrents(plates, extra)
                 .then(results => this.bb.updateCurrents(results))
                 .then(() => this.gui.affirmLaunchButtonState('calc', true))
@@ -363,6 +371,11 @@ class Application {
                         this.ins.forceExercise(command.data.missionIDX, command.data.exerciseIDX);
                     }
 
+                    break;
+                }
+                case "demo": {
+                    this.gui.hideAllAlerts();
+                    this.ls.switchDummyMode(true);
                     break;
                 }
                 default: {
@@ -587,6 +600,14 @@ class Application {
          */
         this._dispatcher.on('gui:load-file', tree => {
             this.ws.loadTree(tree);
+        });
+
+        this._dispatcher.on('bb:change', () => {
+            this.bb.clearCurrents();
+        });
+
+        this._dispatcher.on('bb:drag-start', () => {
+            this.bb.clearCurrents();
         });
 
         /**

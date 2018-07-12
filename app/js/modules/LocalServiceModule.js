@@ -41,7 +41,16 @@ export default class LocalServiceModule extends Module {
             board_status: undefined,
         };
 
-        /// если режим холостой
+        this.launch();
+    }
+
+    switchDummyMode(on) {
+        super.switchDummyMode(on);
+
+        this.launch();
+    }
+
+    launch() {
         if (this._options.modeDummy) {
             this._debug.log('Working in DUMMY mode');
 
@@ -249,7 +258,7 @@ export default class LocalServiceModule extends Module {
         if (!this._options.connectTimeout) {return}
 
         setTimeout(() => {
-            if (this._state.connected === false) {
+            if (!this._options.modeDummy && this._state.connected === false) {
                 this.emitEvent("timeout");
             }
         }, this._options.connectTimeout)

@@ -1,4 +1,5 @@
 import Cell from "./Cell";
+import PlateContextMenu from "../menus/PlateContextMenu";
 
 /**
  * Коды ориентаций
@@ -13,30 +14,6 @@ const ORIENTATIONS = {
 };
 
 /**
- * Текстовые метки контекстного меню
- *
- * @type {{cmi_rm: string, cmi_sw: string, cmi_rcw: string, cmi_rccw: string}}
- */
-const CM_LABELS = {
-    cmi_rm:    'Удалить',
-    cmi_sw:    'Переключить',
-    cmi_rcw:   'Повернуть по часовой',
-    cmi_rccw:  'Повернуть против часовой',
-    cmi_dupl:  'Дублировать'
-};
-
-const CM_SHORTCUTS = {
-    cmi_rm:    'Delete/Backspace',
-    cmi_sw:    undefined,
-    cmi_rcw:   '[',
-    cmi_rccw:  ']',
-    cmi_dupl:  'D'
-};
-
-const CM_WIDTH = 360;
-const CM_HEIGHT = 50;
-
-/**
  * Класс плашки доски
  */
 export default class Plate {
@@ -46,25 +23,8 @@ export default class Plate {
     static get Class() {return "bb-plate"}
     // Алиас контейнера плашки
     static get Alias() {return "default"}
-    // CSS-класс контейнера контекстного меню плашки
-    static get ContextMenuClass() {return "bb-plate-ctxmenu"}
-    // CSS-класс фона элемента контекстного меню плашки
-    static get ContextMenuItemClass() {return "bb-plate-ctxmenu-item"}
-    // CSS-класс фона неактивного элемента контекстного меню плашки
-    static get ContextMenuItemDisabledClass() {return "bb-plate-ctxmenu-item-disabled"}
-    // CSS-класс текста элемента контекстного меню плашки
-    static get ContextMenuItemTextClass() {return "bb-plate-ctxmenu-item-text"}
-    // CSS-класс текста неактивного элемента контекстного меню плашки
-    static get ContextMenuItemDisabledTextClass() {return "bb-plate-ctxmenu-item-disabled-text"}
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
-
-    // Алиасы пунктов контекстного меню
-    static get CMI_REMOVE() {return "cmi_rm"}
-    static get CMI_SWITCH() {return "cmi_sw"}
-    static get CMI_ROTCW()  {return "cmi_rcw"}
-    static get CMI_ROTCCW() {return "cmi_rccw"}
-    static get CMI_DUPLIC() {return "cmi_dupl"}
 
     constructor(container_parent, grid, id=null, extra=0) {
         if (!container_parent || !grid) {
@@ -90,7 +50,6 @@ export default class Plate {
         /// Дополнительные контейнеры
         this._group_editable = this._group.group();                     // для режима редактирования
         this._error_highlighter = this._group.rect("100%", "100%");     // для подсветки
-        this._ctx_menu_group = this._container.group().move(0, 0);      // для контекстного меню
 
         /// Параметры - постоянные свойства плашки
         this._params = {
@@ -106,6 +65,9 @@ export default class Plate {
             cell_supposed:  new Cell(0, 0, this.__grid),    // ячейка, задающая предполагаемое положение опорной точки
             orientation:    Plate.Orientations.West,        // ориентация плашки
             highlighted:    false,                          // подсвечена ли плашка
+            currents:       undefined,
+            voltages:       undefined,
+            adc:            undefined,
         };
 
         /// Присвоить класс контейнеру
@@ -125,10 +87,9 @@ export default class Plate {
         this._dragging = false;
         /// Событие начала перетаскивания было инициировано
         this._dragstart_activated = false;
-        /// Контекстное меню отображается
-        this._ctx_menu_active = false;
-        /// Высота контекстного меню
-        this._ctx_menu_height = 0;
+
+        this._ctxmenu = new PlateContextMenu(this._container, this.__grid, {id: this._id});
+        this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
 
         this.showGroupEditable(false);
     }
@@ -258,11 +219,6 @@ export default class Plate {
      * Сымитировать клик на плашку
      */
     click() {
-        this._bezel
-            .animate('50ms').fill("#6b8fff").animate('50ms').fill("#fffffd")
-            .animate('50ms').fill("#6b8fff").animate('50ms').fill("#fffffd")
-            .animate('50ms').fill("#6b8fff").animate('50ms').fill("#fffffd");
-
         this._container.fire('mousedown');
         this._rearrange();
     }
@@ -610,111 +566,24 @@ export default class Plate {
     showContextMenu(evt, svg_main) {
         if (this._dragging) return;
 
-        if (this._ctx_menu_active) {
-            this.hideContextMenu();
-        }
+        let svg_point = svg_main.createSVGPoint();
+        let cursor_point = Plate._getCursorPoint(svg_main, svg_point, evt);
 
-        let cmi_w = CM_WIDTH, cmi_h = CM_HEIGHT;
-
-        let offset = {
-            x: this._state.cell.size.x + this.__grid.gap.x,
-            y: this._state.cell.size.y * 2 + this.__grid.gap.y
-        };
-
-        let nested = this._ctx_menu_group.nested();
-
-        nested.addClass(Plate.ContextMenuClass);
-
-        this._ctx_menu_height = 0;
-        this.appendContextMenuItem(nested, cmi_w, cmi_h, `Плашка #${this.id}`, false);
-        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_SWITCH);
-        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_ROTCW);
-        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_ROTCCW);
-        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_DUPLIC);
-        this.appendContextMenuItem(nested, cmi_w, cmi_h, Plate.CMI_REMOVE);
-
-        if (evt && svg_main) {
-            let svg_point = svg_main.createSVGPoint();
-            let cursor_point = Plate._getCursorPoint(svg_main, svg_point, evt);
-
-            nested.move(
-                cursor_point.x - this._container.x() - offset.x,
-                cursor_point.y - this._container.y() - offset.y,
-            );
-
-            /// проверка на вылет за область видимости
-            let global_pos = {
-                x: cursor_point.x - offset.x + cmi_w,
-                y: cursor_point.y - offset.y + this._ctx_menu_height,
-            };
-
-            if (global_pos.x > this.__grid.size.x) {nested.dx(-cmi_w)}
-            if (global_pos.y > this.__grid.size.y) {nested.dy(-this._ctx_menu_height)}
-        }
-
-        nested.addClass('fade-in');
-
-        this._ctx_menu_group.opacity(1);
-        this._ctx_menu_active = true;
-    }
-
-    /**
-     * Добавить пункт к контекстному меню плашки
-     *
-     * @param {SVG.Group}   container   контейнер контекстного меню
-     * @param {number}      width       ширина контекстного меню
-     * @param {number}      height      высота пункта
-     * @param {string}      alias       алиас пункта
-     * @param {boolean}     active      активен ли пункт
-     */
-    appendContextMenuItem(container, width, height, alias, active=true) {
-        let rect = container.rect(width, height)
-                .fill("#e7e4ff")
-                .x(-10)
-                .y(this._ctx_menu_height);
-
-        let label = alias in CM_LABELS ? CM_LABELS[alias] : alias;
-
-        let text = container.text(label).y(this._ctx_menu_height).font({size: 24});
-
-        text.build(true);
-
-        if (CM_SHORTCUTS[alias]) {
-            text.plain(' (');
-            text.tspan(CM_SHORTCUTS[alias]).font({style: 'italic', weight: 'bolder'});
-            text.plain(')');
-        }
-
-        if (active) {
-            rect.addClass(Plate.ContextMenuItemClass);
-            text.addClass(Plate.ContextMenuItemTextClass);
-        } else {
-            rect.addClass(Plate.ContextMenuItemDisabledClass);
-            text.addClass(Plate.ContextMenuItemDisabledTextClass);
-        }
-
-        text.build(false);
-
-        rect.mousedown(() => {
-            setTimeout(() => {
-                this._callbacks.ctxmenuitemclick(alias);
-                this.hideContextMenu();
-            }, 100);
-        });
-
-        this._ctx_menu_height += height;
+        this._ctxmenu.draw(cursor_point, [this._state.adc]);
     }
 
     /**
      * Скрыть контекстное меню плашки
      */
     hideContextMenu() {
-        if (!this._ctx_menu_active) return;
+        this._ctxmenu.dispose();
 
-        this._ctx_menu_group.clear();
-        this._ctx_menu_group.opacity(0);
-
-        this._ctx_menu_active = false;
+        // if (!this._ctx_menu_active) return;
+        //
+        // this._ctx_menu_group.clear();
+        // this._ctx_menu_group.opacity(0);
+        //
+        // this._ctx_menu_active = false;
     }
 
     /**

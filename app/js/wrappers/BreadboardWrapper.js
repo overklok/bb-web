@@ -88,6 +88,10 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.onChange(cb);
     }
 
+    onDragStart(cb) {
+        this._plugin.onDragStart(cb);
+    }
+
     _saveToImage() {
         let svg = this._plugin.getContainer();
 

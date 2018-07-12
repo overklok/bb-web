@@ -4,11 +4,8 @@ import Cell from "../core/Cell";
 export default class RelayPlate extends Plate {
     static get Alias() {return "relay"}
 
-    constructor(container, grid, id, resistance) {
-        super(container, grid, id, resistance);
-
-        this._params.resistance = (resistance <= 0) ? 200 : resistance;
-        this._extra = this._params.resistance;
+    constructor(container, grid, id) {
+        super(container, grid, id);
 
         this._params.size = {x: 5, y: 1};
     }

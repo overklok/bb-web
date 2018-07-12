@@ -58,6 +58,8 @@ export default class Current {
 
         this.addGlow();
 
+        this.path.opacity(0).animate('200ms').opacity(1);
+
         this._visible = true;
     };
 
@@ -72,8 +74,13 @@ export default class Current {
 
         this.arrows = [];
 
-        this.path.remove();
-        this.container_anim.remove();
+        this.path.animate('200ms').opacity(0);
+        this.container_anim.animate('300ms').opacity(0);
+
+        setTimeout(() => {
+            this.path.remove();
+            this.container_anim.remove();
+        }, 300);
 
         this._visible = false;
     };

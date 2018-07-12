@@ -16,6 +16,7 @@ const BOARD_STATUSES = {
 
 const HASH_TYPES = {
     GOTO: "goto",
+    DEMO: "demo",
 
     NONE: "none",
 };
@@ -26,6 +27,8 @@ const REGEXPS = {
     EXERCISE:           /^#e[0-9]+$/g,
 
     NUMBERS:            /[0-9]+/g,
+
+    DEMO:               /^#d+$/g,
 };
 
 const LAUNCH_VARIANTS = {
@@ -55,6 +58,7 @@ export default class GUIModule extends Module {
             logoText: "Tapanda",
             imagesPath: "",
             devMode: false,
+            testMode: false,
         }
     }
 
@@ -97,6 +101,12 @@ export default class GUIModule extends Module {
             this.switchDeveloperMode(true);
         } else {
             this.switchDeveloperMode(false);
+        }
+
+        if (this._options.testMode) {
+            this.switchTestMode(true);
+        } else {
+            this.switchTestMode(false);
         }
 
         this._subscribeToWrapperEvents();
@@ -434,6 +444,10 @@ export default class GUIModule extends Module {
         this._lesson_pane.switchTask(on);
     }
 
+    switchTestMode(on) {
+        this._launch_btn.switchPaneVisibility('test', on);
+    }
+
     /**
      * Отфильтровать событие нажатия клавиши
      *
@@ -466,6 +480,12 @@ export default class GUIModule extends Module {
 
         else if (hash.match(REGEXPS.EXERCISE)) {
             exercise_idx = hash.match(REGEXPS.NUMBERS);
+        }
+
+        else if (hash.match(REGEXPS.DEMO)) {
+            return {
+                type: HASH_TYPES.DEMO,
+            }
         }
 
         else {

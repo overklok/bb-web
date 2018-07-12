@@ -117,6 +117,10 @@ export default class Module extends Loggable {
         this._getEventListener(name)(data);
     }
 
+    switchDummyMode(on) {
+        this._options.modeDummy = on ? true : false;
+    }
+
 // private:
 
     /**

@@ -1,6 +1,7 @@
 import Layer from "../core/Layer";
 
 import Plate from "../core/Plate";
+import PlateContextMenu from "../menus/PlateContextMenu";
 import ResistorPlate        from "../plates/ResistorPlate";
 import PhotoresistorPlate   from "../plates/PhotoresistorPlate";
 import RheostatPlate        from "../plates/RheostatPlate";
@@ -13,6 +14,7 @@ import InductorPlate        from "../plates/InductorPlate";
 import RelayPlate           from "../plates/RelayPlate";
 import StripPlate           from "../plates/StripPlate";
 import DiodePlate           from "../plates/LEDPlate";
+import ContextMenu from "../core/ContextMenu";
 
 /**
  * Слой плашек
@@ -26,7 +28,8 @@ export default class PlateLayer extends Layer {
         this._container.addClass(PlateLayer.Class);
 
         this._callbacks = {
-            change: () => {}
+            change: () => {},
+            dragstart: () => {},
         };
 
         this._plates = {};
@@ -57,10 +60,12 @@ export default class PlateLayer extends Layer {
                 type: plate.alias,
                 x: plate._state.cell.idx.x,
                 y: plate._state.cell.idx.y,
+                length: plate._params.size.x,
                 orientation: plate._state.orientation,
                 extra: plate._params.extra,
                 currents: plate._state.currents,
                 voltages: plate._state.voltages,
+                adc: plate._state.adc,
             });
         }
 
@@ -217,6 +222,12 @@ export default class PlateLayer extends Layer {
         this._callbacks.change = cb;
     }
 
+    onDragStart(cb) {
+        if (!cb) {this._callbacks.dragstart = () => {}}
+
+        this._callbacks.dragstart = cb;
+    }
+
     /**
      * Сделать текущие плашки редактируемыми
      *
@@ -232,7 +243,9 @@ export default class PlateLayer extends Layer {
         }
 
         if (editable === false) {
-            this._plate_selected.deselect(); // снять выделение
+            if (this._plate_selected) {
+                this._plate_selected.deselect(); // снять выделение
+            }
             this._plate_selected = null;     // удалить ссылку на выделенный элемент
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
             document.removeEventListener('click', this._onClick(), false);
@@ -278,7 +291,8 @@ export default class PlateLayer extends Layer {
 
         /// Когда на плашку нажали кнопкой мыши
         plate.container.mousedown(evt => {
-            if (evt.target.classList.contains(Plate.ContextMenuItemClass)) return;
+            if (evt.target.classList.contains(ContextMenu.ItemClass)) return;
+            if (evt.target.classList.contains(ContextMenu.ItemInputClass)) return;
 
             /// Если плашка не была выделена ранее
             if (this._plate_selected && plate !== this._plate_selected) {
@@ -294,9 +308,12 @@ export default class PlateLayer extends Layer {
             /// Обрабатывать её события
             plate.setEditable(this._container.node);
             plate.onChange((data) => this._callbacks.change(data));
-            plate.onContextMenuItemClick((alias) => this._onPlateContextMenuItemClick(alias));
-            plate.onDragStart(() => this._onPlateDragStart(plate));
+            plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
             plate.onDragFinish(() => this._onPlateDragFinish(plate));
+            plate.onDragStart(() => {
+                this._onPlateDragStart(plate);
+                this._callbacks.dragstart(plate);
+            });
 
             /// выделить данную плашку
             this._plate_selected = plate;
@@ -431,7 +448,7 @@ export default class PlateLayer extends Layer {
                     this._duplicatePlate(this._plate_selected);
                 }
 
-                if (evt.key === "Backspace" || evt.key === "Delete") {
+                if (evt.key === "Delete") {
                     evt.preventDefault();
                     /// Удалить её
                     this.removePlate(this._plate_selected.id);
@@ -450,22 +467,27 @@ export default class PlateLayer extends Layer {
      *
      * @private
      */
-    _onPlateContextMenuItemClick(action_alias) {
+    _onPlateContextMenuItemClick(action_alias, value) {
         switch (action_alias) {
-            case Plate.CMI_REMOVE: {
+            case PlateContextMenu.CMI_REMOVE: {
                 this.removePlate(this._plate_selected.id);
                 break;
             }
-            case Plate.CMI_ROTCW: {
+            case PlateContextMenu.CMI_ROTCW: {
                 this._plates[this._plate_selected.id].rotateClockwise();
                 break;
             }
-            case Plate.CMI_ROTCCW: {
+            case PlateContextMenu.CMI_ROTCCW: {
                 this._plates[this._plate_selected.id].rotateCounterClockwise();
                 break;
             }
-            case Plate.CMI_DUPLIC: {
+            case PlateContextMenu.CMI_DUPLIC: {
                 this._duplicatePlate(this._plate_selected);
+                break;
+            }
+            case PlateContextMenu.CMI_SETADC: {
+                this._plate_selected.setState({adc: Number(value)});
+                break;
             }
         }
     }

@@ -7,8 +7,7 @@ export default class ResistorPlate extends Plate {
     constructor(container, grid, id, resistance) {
         super(container, grid, id, resistance);
 
-        this._params.resistance = (resistance <= 0) ? 200 : resistance;
-        this._extra = this._params.resistance;
+        this._params.extra = (resistance <= 0) ? 200 : resistance;
 
         this._params.size = {x: 2, y: 1};
     }
@@ -21,9 +20,9 @@ export default class ResistorPlate extends Plate {
      */
     __draw__(position, orientation) {
         this._drawPicture();
-        this._drawLabel(this._params.resistance);
+        this._drawLabel(this._params.extra);
 
-        // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
+        // this._group.text(`Resistor ${this._params.extra} Ohm`).font({size: 20});
     };
 
     /**
