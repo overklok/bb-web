@@ -499,8 +499,10 @@ export default class PlateLayer extends Layer {
             plate.pos.y,
             plate.state.orientation,
             null,
-            plate.extra
+            plate.extra,
         );
+
+        this._plates[new_plate_id].setState(plate.state);
 
         this._plates[new_plate_id].click();
     }
