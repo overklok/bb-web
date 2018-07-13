@@ -7,9 +7,6 @@ export default class StripPlate extends Plate {
     constructor(container, grid, id, length=1) {
         super(container, grid, id, length);
 
-        if (length > this.__grid.dim.x) {length = this.__grid.dim.x}
-        if (length > this.__grid.dim.y) {length = this.__grid.dim.y}
-
         this._params.extra = Number((length <= 0) ? 1 : length);
         this._params.size = {x: this._params.extra, y: 1};
 

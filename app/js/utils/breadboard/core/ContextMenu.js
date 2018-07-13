@@ -47,7 +47,7 @@ export default class ContextMenu {
         this._callbacks.itemclick = cb;
     }
 
-    draw(cursor_point, input_values=[]) {
+    draw(cursor_point, use_offset=false, input_values=[]) {
         if (this._active) {
             this.dispose();
         }
@@ -60,8 +60,8 @@ export default class ContextMenu {
         this._drawItems(nested, input_values);
 
         let offset = {
-            x: cell.size.x + this.__grid.gap.x,
-            y: cell.size.y * 2 + this.__grid.gap.y
+            x: use_offset ? (cell.size.x + this.__grid.gap.x) : 0,
+            y: use_offset ? (cell.size.y * 2 + this.__grid.gap.y): 0
         };
 
         let pos = {
@@ -171,10 +171,22 @@ export default class ContextMenu {
             rect.addClass('bb-cm-item-flash');
 
             setTimeout(() => {
+                if (input && input.type === 'file') {
+                    input_node.click();
+                    input_node.addEventListener("change", evt => {
+                        let value = evt.target.files[0];
+
+                        this._callbacks.itemclick(item_data.alias, value);
+                    });
+                }
+
                 let value = input_node ? input_node.value : undefined;
 
                 this.dispose();
-                this._callbacks.itemclick(item_data.alias, value);
+
+                if (!(input && input.type === 'file')) {
+                    this._callbacks.itemclick(item_data.alias, value);
+                }
             }, 100);
         });
     }
@@ -197,6 +209,10 @@ export default class ContextMenu {
             input.min = min;
             input.max = max;
             input.placeholder = min;
+        }
+
+        if (type === "file") {
+            input.style.display = "none";
         }
 
         if (initial_value) {

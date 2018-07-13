@@ -1,4 +1,9 @@
 import Layer from "../core/Layer";
+import BoardContextMenu from "../menus/BoardContextMenu";
+import Breadboard from "../Breadboard";
+import BackgroundLayer from "../layers/BackgroundLayer";
+import LabelLayer from "../layers/LabelLayer";
+import ContextMenu from "../core/ContextMenu";
 
 export default class ControlsLayer extends Layer {
     static get Class() {return "bb-layer-controls"}
@@ -16,11 +21,16 @@ export default class ControlsLayer extends Layer {
 
         this._addgroup      = undefined;
         this._cleargroup    = undefined;
+        this._menugroup     = this._container.group();
+
+        this._ctxmenu       = new BoardContextMenu(this._menugroup, grid);
+        this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
 
         this._callbacks = {
             add: () => {},
             clear: () => {},
             fullscreen: () => {},
+            ctxmenuitemclick: () => {},
         };
 
         this._is_fullscreen = false;
@@ -37,16 +47,6 @@ export default class ControlsLayer extends Layer {
         this._is_visible ? this._hide() : this._show();
 
         this._is_visible = !this._is_visible;
-    }
-
-    _show() {
-        this._addgroup.style.display = "block";
-        this._cleargroup.style.display = "block";
-    }
-
-    _hide() {
-        this._addgroup.style.display = "none";
-        this._cleargroup.style.display = "none";
     }
 
     onAdd(cb) {
@@ -73,8 +73,89 @@ export default class ControlsLayer extends Layer {
         }
     }
 
+    /**
+     * Установить обработчик нажатия на пункт контекстного меню плашки
+     *
+     * @param {function} cb обработчик нажатия на пункт контекстного меню плашки.
+     */
+    onContextMenuItemClick(cb) {
+        if (!cb) {this._callbacks.ctxmenuitemclick = () => {}}
+
+        this._callbacks.ctxmenuitemclick = cb;
+    }
+
+    _attachEventListeners() {
+        document.addEventListener("mousedown", this._onMouseDown(), false);
+        document.addEventListener("contextmenu", this._onContextMenu(), false);
+    }
+
+    _detachEventListeners() {
+        document.removeEventListener("mousedown", this._onMouseDown(), false);
+        document.removeEventListener("contextmenu", this._onContextMenu(), false);
+    }
+
+    _onMouseDown() {
+        if (this._onmousedown) {
+            return this._onmousedown;
+        }
+
+        this._onmousedown = (evt) => {
+            if (evt.target.classList.contains(ContextMenu.ItemClass)) return;
+            if (evt.target.classList.contains(ContextMenu.ItemInputClass)) return;
+
+            if (evt.which !== 3) {
+                this._ctxmenu.dispose();
+            }
+        };
+
+        return this._onmousedown;
+    }
+
+    _onContextMenu() {
+        if (this._oncontextmenu) {
+            return this._oncontextmenu;
+        }
+
+        this._oncontextmenu = (evt) => {
+            let el = evt.target;
+
+            /// Определить, является ли элемент, по которому выполнено нажатие, частью слоя
+            while ((el = el.parentElement) && !(
+                el.classList.contains(BackgroundLayer.Class) ||
+                el.classList.contains(LabelLayer.Class)
+            )) {}
+
+            if (el) {
+                evt.preventDefault();
+
+                let svg_main = this._container.node;
+                let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
+
+                this._ctxmenu.draw(cursor_point, false);
+            } else {
+                this._ctxmenu.dispose();
+            }
+        };
+
+        return this._oncontextmenu;
+    }
+
+    _show() {
+        this._addgroup.style.display = "block";
+        this._cleargroup.style.display = "block";
+
+        this._attachEventListeners();
+    }
+
+    _hide() {
+        this._addgroup.style.display = "none";
+        this._cleargroup.style.display = "none";
+
+        this._detachEventListeners();
+    }
+
     _drawLeftMenu(plate_types, plate_captions) {
-        this._addgroup = this._getEmbeddedHtmlGroup(270, 200, this._params.x1, this._params.y);
+        this._addgroup = this._getEmbeddedHtmlGroup(270, 120, this._params.x1, this._params.y);
 
         let wrap = document.createElement("div");
         let input = document.createElement("input");
@@ -114,7 +195,7 @@ export default class ControlsLayer extends Layer {
     }
 
     _drawRightMenu() {
-        this._cleargroup = this._getEmbeddedHtmlGroup(300, 200, this._params.x2, this._params.y);
+        this._cleargroup = this._getEmbeddedHtmlGroup(300, 120, this._params.x2, this._params.y);
 
         let wrap = document.createElement("div");
         let btn_clear = document.createElement("a");

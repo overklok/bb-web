@@ -1,4 +1,6 @@
+import Breadboard from "../Breadboard";
 import Layer from "../core/Layer";
+import PlateContextMenu from "../menus/PlateContextMenu";
 
 const LOGO_COLOR_ACTIVE     = "#6B8FFF";
 const LOGO_COLOR_DEFAULT    = "#000000";
@@ -11,9 +13,10 @@ export default class BackgroundLayer extends Layer {
 
         this._container.addClass(BackgroundLayer.Class);
 
-        this._domaingroup   = undefined;
-        this._cellgroup     = undefined;
-        this._logogroup     = undefined;
+        this._boardgroup    = this._container.group();
+        this._domaingroup   = this._container.group();
+        this._cellgroup     = this._container.group();
+        this._logogroup     = this._container.group().id("logogroup");
 
         this._callbacks = {
             logoclick: () => {}
@@ -23,7 +26,7 @@ export default class BackgroundLayer extends Layer {
     }
 
     compose() {
-        this._container
+        this._boardgroup
             .rect('99%', '99%') /// 99 из-за обрезания рамки
             .radius(20)
             .fill({color: "#f9f9f9"})
@@ -46,8 +49,6 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawLogo() {
-        this._logogroup = this._container.group().id("logogroup");
-
         let image = this._logogroup
             .nested();
 
@@ -102,8 +103,6 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawCells() {
-        this._cellgroup = this._container.group();
-
         for (let col of this.__grid.cells) {
             for (let cell of col) {
                 this._drawCell(this._cellgroup, cell);
@@ -114,8 +113,6 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawDomains() {
-        this._domaingroup = this._container.group();
-
         let gradient_vert = this._domaingroup.gradient('linear', function(stop) {
             stop.at(.0, '#BB772C');
             stop.at(.7, '#DBAB1D');

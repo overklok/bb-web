@@ -8,6 +8,8 @@ import PlateLayer from "./layers/PlateLayer";
 import RegionLayer from "./layers/RegionLayer";
 import ControlsLayer from "./layers/ControlsLayer";
 
+import BoardContextMenu from "./menus/BoardContextMenu";
+
 const WRAP_WIDTH = 1200;              // Ширина рабочей области
 const WRAP_HEIGHT = 1350;             // Высота рабочей области
 
@@ -148,10 +150,10 @@ export default class Breadboard {
         // В ней - фон, сетка и панели подписей
         let background  = this._brush.nested();
         let label_panes = this._brush.nested();
-        let controls    = this._brush.nested();
         let current     = this._brush.nested();
-        let plate       = this._brush.nested();
         let region      = this._brush.nested();
+        let plate       = this._brush.nested();
+        let controls    = this._brush.nested();
 
         this._layers.background = new BackgroundLayer(background, this.__grid);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
@@ -210,6 +212,17 @@ export default class Breadboard {
             Breadboard.fullScreen(on, this._brush.node);
         });
 
+        this._layers.controls.onContextMenuItemClick((alias, value) => {
+            switch (alias) {
+                case BoardContextMenu.CMI_IMPORT:
+                    this._importPlates(value);
+                    break;
+                case BoardContextMenu.CMI_EXPORT:
+                    this._exportPlates();
+                    break;
+            }
+        });
+
         this._layers.background.onLogoClick(() => {
             this._layers.controls.switchVisibility();
         });
@@ -219,6 +232,55 @@ export default class Breadboard {
         this._layers.plate.onDragStart(() => {
             this._callbacks.dragstart();
         })
+    }
+
+    _importPlates(file) {
+        let reader = new FileReader();
+
+        reader.readAsText(file, "UTF-8");
+
+        reader.onload = (evt) => {
+            let plates = JSON.parse(evt.target.result);
+
+            this.clearPlates();
+
+            for (let plate of plates) {
+                this.addPlate(plate.type, plate.x, plate.y, plate.orientation, plate.id, plate.extra);
+
+                this.setPlateState(plate.id, {
+                    adc: plate.adc,
+                    currents: plate.currents,
+                    volatges: plate.volatges,
+                })
+            }
+        };
+    }
+
+    _exportPlates() {
+        let plates_str = JSON.stringify(this.getPlates());
+
+        let file = new Blob([plates_str], {type: "text/plain;charset=utf-8"});
+
+        if (window.navigator.msSaveOrOpenBlob) {
+            // IE10+
+            window.navigator.msSaveOrOpenBlob(file, filename);
+        } else {
+            // Others
+            let a = document.createElement("a");
+            let url = URL.createObjectURL(file);
+
+            a.href = url;
+            a.download = "bbconfig.json";
+
+            document.body.appendChild(a);
+
+            a.click();
+
+            setTimeout(function () {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
     }
 
     static getAllPlateTypes() {
@@ -365,5 +427,25 @@ export default class Breadboard {
                 document.webkitCancelFullScreen();
             }
         }
+    }
+
+    /**
+     * Получить положение курсора в системе координат SVG
+     *
+     * @param {HTMLElement} svg_main    SVG-узел, в системе координат которого нужна точка
+     * @param {number}      clientX     Положение курсора по оси X
+     * @param {number}      clientY     Положение курсора по оси Y
+     *
+     * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
+     *                      в системе координат заданного SVG-узла
+     * @private
+     */
+    static _getCursorPoint(svg_main, clientX, clientY) {
+        let svg_point = svg_main.createSVGPoint();
+
+        svg_point.x = clientX;
+        svg_point.y = clientY;
+
+        return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
     }
 }

@@ -1,3 +1,4 @@
+import Breadboard from "../Breadboard";
 import Cell from "./Cell";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
@@ -402,13 +403,11 @@ export default class Plate {
 
         this._container.style({cursor: 'move'});
 
-        let svg_point = svg_main.createSVGPoint();
-
         let cursor_point_last = undefined;
 
         /// обработчик перетаскивания плашки
         let onmove = (evt) => {
-            let cursor_point = Plate._getCursorPoint(svg_main, svg_point, evt);
+            let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
 
             let dx = cursor_point.x - cursor_point_last.x;
             let dy = cursor_point.y - cursor_point_last.y;
@@ -453,7 +452,7 @@ export default class Plate {
                 document.body.addEventListener('mousemove', onmove, false);
                 document.body.addEventListener('mouseup', onmouseup, false);
 
-                cursor_point_last = Plate._getCursorPoint(svg_main, svg_point, evt);
+                cursor_point_last = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
             }
         });
 
@@ -569,10 +568,9 @@ export default class Plate {
     showContextMenu(evt, svg_main) {
         if (this._dragging) return;
 
-        let svg_point = svg_main.createSVGPoint();
-        let cursor_point = Plate._getCursorPoint(svg_main, svg_point, evt);
+        let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
 
-        this._ctxmenu.draw(cursor_point, [this._state.adc]);
+        this._ctxmenu.draw(cursor_point, true, [this._state.adc]);
     }
 
     /**
@@ -789,28 +787,6 @@ export default class Plate {
         let node_temp = this._container.node;
         this._container.node.remove();
         this._node_parent.appendChild(node_temp);
-    }
-
-    /**
-     * Получить положение курсора в системе координат SVG
-     *
-     * @param {HTMLElement} svg_main    SVG-узел, в системе координат которого нужна точка
-     * @param {SVGPoint}    svg_point   SVG-тока в исходной системе координат
-     * @param {MouseEvent}  evt         событие действия мышки
-     *
-     * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
-     *                      в системе координат заданного SVG-узла
-     * @private
-     */
-    static _getCursorPoint(svg_main, svg_point, evt) {
-        return Plate._getTransformedPoint(svg_main, svg_point, evt.clientX, evt.clientY);
-    }
-
-    static _getTransformedPoint(svg_main, svg_point, x, y) {
-        svg_point.x = x;
-        svg_point.y = y;
-
-        return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
     }
 
     /**

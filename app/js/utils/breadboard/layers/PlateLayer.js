@@ -134,7 +134,14 @@ export default class PlateLayer extends Layer {
             plate.showGroupEditable(true);
         }
 
-        plate.draw(this.__grid.cell(x, y), orientation);
+        try {
+            plate.draw(this.__grid.cell(x, y), orientation);
+        } catch (err) {
+            console.error("Cannot draw the plate");
+            plate.dispose();
+
+            return null;
+        }
 
         this._plates[plate.id] = plate;
 
