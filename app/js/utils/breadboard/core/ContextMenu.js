@@ -37,6 +37,10 @@ export default class ContextMenu {
         };
     }
 
+    get active() {
+        return this._active;
+    }
+
     onItemClick(cb) {
         if (!cb) {cb = () => {}}
 
@@ -113,6 +117,7 @@ export default class ContextMenu {
     _drawItem(container, item_data, input_value=null) {
         let rect = container.rect(0, this._item_height)
                 .fill("#e7e4ff")
+                .stroke({color: "#e7e4ff", width: 2, linejoin: "round"})
                 .x(-ITEM_TEXT_PADDING)
                 .y(this._size.y);
 
@@ -168,8 +173,8 @@ export default class ContextMenu {
             setTimeout(() => {
                 let value = input_node ? input_node.value : undefined;
 
-                this._callbacks.itemclick(item_data.alias, value);
                 this.dispose();
+                this._callbacks.itemclick(item_data.alias, value);
             }, 100);
         });
     }

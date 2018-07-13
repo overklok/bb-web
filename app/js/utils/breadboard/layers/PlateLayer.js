@@ -148,7 +148,7 @@ export default class PlateLayer extends Layer {
      */
     highlightPlates(plate_ids) {
         for (let plate_id in this._plates) {
-            this._plates[plate_id].highlight(false);
+            this._plates[plate_id].highlightError(false);
         }
 
         for (let plate_id of plate_ids) {
@@ -156,7 +156,7 @@ export default class PlateLayer extends Layer {
                 throw new RangeError("Plate does not exist");
             }
 
-            this._plates[plate_id].highlight(true);
+            this._plates[plate_id].highlightError(true);
         }
     }
 
@@ -416,12 +416,12 @@ export default class PlateLayer extends Layer {
         this._onkey = (evt) => {
             if (this._plate_selected) {
                 /// Если есть выделенная плашка
-                switch (evt.key) {
-                    case "[":
+                switch (evt.code) {
+                    case "BracketLeft":
                         evt.preventDefault();
                         this._plate_selected.rotateClockwise();
                         break;
-                    case "]":
+                    case "BracketRight":
                         evt.preventDefault();
                         this._plate_selected.rotateCounterClockwise();
                         break;
@@ -441,18 +441,16 @@ export default class PlateLayer extends Layer {
                         evt.preventDefault();
                         this._plate_selected.shift(0, 1);
                         break;
-                }
-
-                if (evt.key === "d" || evt.key === "D") {
-                    evt.preventDefault();
-                    this._duplicatePlate(this._plate_selected);
-                }
-
-                if (evt.key === "Delete") {
-                    evt.preventDefault();
-                    /// Удалить её
-                    this.removePlate(this._plate_selected.id);
-                    this._plate_selected = null;
+                    case "KeyD":
+                        evt.preventDefault();
+                        this._duplicatePlate(this._plate_selected);
+                        break;
+                    case "Delete":
+                        evt.preventDefault();
+                        /// Удалить её
+                        this.removePlate(this._plate_selected.id);
+                        this._plate_selected = null;
+                        break;
                 }
             }
         };

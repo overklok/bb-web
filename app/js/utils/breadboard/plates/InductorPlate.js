@@ -4,10 +4,11 @@ import Cell from "../core/Cell";
 export default class InductorPlate extends Plate {
     static get Alias() {return "inductor"}
 
-    constructor(container, grid, id) {
-        super(container, grid, id);
+    constructor(container, grid, id, inductance) {
+        super(container, grid, id, inductance);
 
         this._params.size = {x: 2, y: 1};
+        this._params.extra = Number(inductance) || 100;
     }
 
     /**

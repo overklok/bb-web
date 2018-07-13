@@ -235,6 +235,8 @@ export default class Plate {
             throw new Error("Cell's grid and plate's grid are not the same");
         }
 
+        if (this._ctxmenu.active) {return}
+
         this._state.cell = cell;
         this._state.cell_supposed = cell;
 
@@ -288,6 +290,7 @@ export default class Plate {
      */
     rotate(orientation, suppress_events=false, prevent_overflow=true) {
         if (this._dragging) return;
+        if (this._ctxmenu.active) {return}
 
         let angle = Plate._orientationToAngle(orientation);
 
