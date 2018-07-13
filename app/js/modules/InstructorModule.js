@@ -132,7 +132,7 @@ export default class InstructorModule extends Module {
         let exercise_idx = this._getExerciseIDX(this._state.missionIDX) + 1;
 
         this._state.missions[this._state.missionIDX].skidding = skid;
-        this._state.missions[this._state.missionIDX].exerciseIDXSkiddingI= exercise_idx - 1;
+        this._state.missions[this._state.missionIDX].exerciseIDXSkidding = exercise_idx - 1;
 
         /// если следующего упражнения не существует
         if (exercise_idx === this._state.missions[this._state.missionIDX].exerciseCount) {
