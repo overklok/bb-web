@@ -608,6 +608,7 @@ class Application {
 
         this._dispatcher.on('bb:drag-start', () => {
             this.bb.clearCurrents();
+            this.bb.clearRegions();
         });
 
         /**
