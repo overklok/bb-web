@@ -285,14 +285,21 @@ class Application {
         this._dispatcher.on('gui:run', check_later => {
             this._dispatcher.only(["gui:stop"]);
 
-            this._gui_run(check_later);
+            this.gui.affirmLaunchButtonState('execute', false);
+
+            let handler = this.ws.getMainHandler();
+            this.ls.updateHandlers({commands: handler.commands, launch: true}, check_later);
+            console.log({commands: handler.commands, launch: true});
         });
 
         /**
          * Нажата кнопка "Остановить"
          */
         this._dispatcher.on('gui:stop', () => {
-            this._gui_stop();
+            this.ls.stopExecution();
+            this.ws.highlightBlock(null);
+
+            this.gui.affirmLaunchButtonState('execute', true);
 
             this._dispatcher.only(["gui:*"]);
         });
@@ -517,9 +524,9 @@ class Application {
                 this._dispatcher.only(['gui:*', 'ins:*']);
             }
 
-            this._dispatcher.only(['ins:*']);
+            if (check_needed) {
+                this._dispatcher.only(['ins:*']);
 
-            if (check_needed)
                 this._gui_check()
                     .then(() => {
                         this.gui.affirmLaunchButtonState('chexec', true);
@@ -530,6 +537,7 @@ class Application {
                         this.gui.affirmLaunchButtonState('chexec', true);
                         this._dispatcher.only(['gui:*', 'ins:*'])
                     });
+            }
 
             // if (!exercise.is_sandbox  && !exercise.listeners_only) {
             //     this._dispatcher.call("gui:check");
@@ -655,21 +663,6 @@ class Application {
             this.ws.resize();
             this.trc.resize();
         });
-    }
-
-    _gui_run(check_later=false) {
-        this.gui.affirmLaunchButtonState('execute', false);
-
-        let handler = this.ws.getMainHandler();
-        this.ls.updateHandlers({commands: handler.commands, launch: true}, check_later);
-        console.log({commands: handler.commands, launch: true});
-    }
-
-    _gui_stop() {
-        this.ls.stopExecution();
-        this.ws.highlightBlock(null);
-
-        this.gui.affirmLaunchButtonState('execute', true);
     }
 
     _gui_check() {

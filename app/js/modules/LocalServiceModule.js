@@ -130,6 +130,11 @@ export default class LocalServiceModule extends Module {
             return new Promise(resolve => resolve())
         }
 
+        if (handlers.commands.length === 0) {
+            this.emitEvent("terminate", this._state.check_later);
+            return new Promise(resolve => resolve())
+        }
+
         return new Promise(resolve => {
             this._ipc.send('code-update', handlers);
 

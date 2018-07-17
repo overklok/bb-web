@@ -40,7 +40,7 @@ export default class LaunchBtnWrapper extends Wrapper {
                 stop: `<i class="fas fa-stop"></i>&nbsp;<small>Остановить</small>`,
             },
             check: {
-                start: `<i class="fas fa-forward"></i>&nbsp;<small>Запустить</small>`,
+                start: `<i class="fas fa-forward"></i>&nbsp;<small>Проверить</small>`,
                 stop: `<i class="fas fa-sync fa-spin fa-fw"></i>`,
             },
             chexec: {
