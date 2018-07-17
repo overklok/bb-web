@@ -637,6 +637,9 @@ export default class GUIModule extends Module {
                 if (start) {
                     this.emitEvent("run", true);
                 }
+                else {
+                    this.emitEvent("stop", true);
+                }
             }
 
             if (button === 'calc') {

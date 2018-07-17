@@ -45,7 +45,7 @@ export default class LaunchBtnWrapper extends Wrapper {
             },
             chexec: {
                 start: `<i class="fas fa-forward"></i>&nbsp;<small>Запустить</small>`,
-                stop: `<i class="fas fa-sync fa-spin fa-fw"></i>`,
+                stop: `<i class="fas fa-sync fa-spin fa-fw"></i>&nbsp;<small>Остановить</small>`,
             },
             calc: {
                 start: `<i class="fas fa-calculator"></i>&nbsp;<small>Рассчитать</small>`,

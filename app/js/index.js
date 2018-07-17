@@ -285,7 +285,11 @@ class Application {
         this._dispatcher.on('gui:run', check_later => {
             this._dispatcher.only(["gui:stop"]);
 
-            this.gui.affirmLaunchButtonState('execute', false);
+            if (check_later) {
+                this.gui.affirmLaunchButtonState('chexec', false);
+            } else {
+                this.gui.affirmLaunchButtonState('execute', false);
+            }
 
             let handler = this.ws.getMainHandler();
             this.ls.updateHandlers({commands: handler.commands, launch: true}, check_later);
@@ -295,11 +299,15 @@ class Application {
         /**
          * Нажата кнопка "Остановить"
          */
-        this._dispatcher.on('gui:stop', () => {
+        this._dispatcher.on('gui:stop', check_later => {
             this.ls.stopExecution();
             this.ws.highlightBlock(null);
 
-            this.gui.affirmLaunchButtonState('execute', true);
+            if (check_later) {
+                this.gui.affirmLaunchButtonState('chexec', true);
+            } else {
+                this.gui.affirmLaunchButtonState('execute', true);
+            }
 
             this._dispatcher.only(["gui:*"]);
         });
