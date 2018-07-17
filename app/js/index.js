@@ -413,6 +413,15 @@ class Application {
             }
         });
 
+        this._dispatcher.on('gui:lesson', lesson_id => {
+            this.gs.getLessonData(lesson_id)
+                .then(lesson_data => this.ins.loadLesson(lesson_data))
+                .then(lesson => {
+                    this.gui.showMissionButtons(lesson.missions);
+                    this.gui.setLessonText(lesson.name)
+                })
+        });
+
         /**
          * Задание пройдено
          */

@@ -50,8 +50,8 @@ const LAUNCH_VARIANTS = {
 export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
     static get event_types() {return [
-        "ready", "mission", "run", "stop", "check", "run&check", "keyup", "hash-command", "menu", "load-file", "unload-file",
-        "calc"
+        "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file",
+        "calc", "lesson"
     ]}
 
     static defaults() {
@@ -614,6 +614,10 @@ export default class GUIModule extends Module {
         this._lesson_pane.onMenuClick(() => {
             this.emitEvent("menu");
         });
+
+        this._home_menu.onLessonClick((lesson) => {
+            this.emitEvent("lesson", lesson);
+        })
 
         /* Как только нажата кнопка запуска/проверки */
         this._launch_btn.onButtonClick((button, start, data) => {

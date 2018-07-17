@@ -8,6 +8,16 @@ export default class HomeMenuWrapper extends Wrapper {
 
         this._container = undefined;
         this._courses_deferred = undefined;
+
+        this._callbacks = {
+            lessonclick: () => {}
+        }
+    }
+
+    onLessonClick(cb) {
+        if (!cb) {cb = () => {}}
+
+        this._callbacks = cb;
     }
 
     inject(dom_node) {
