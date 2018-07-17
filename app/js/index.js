@@ -57,6 +57,7 @@ class Application {
                 imagesPath: config.imagesPath,
                 devMode: config.showDebugInfo,
                 testMode: config.testMode,
+                emphasize: config.isStrip,
             },
             lay: {
 
@@ -208,6 +209,8 @@ class Application {
             /// Заблокировать все события
             this._dispatcher.only([]);
 
+            console.log(exercise);
+
             this.gui.setExerciseCurrent(exercise.exerciseIDX);
 
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
@@ -216,7 +219,7 @@ class Application {
                 .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
                 .then(() => this.ws.setMaxBlockLimit(exercise.max_blocks))
                 .then(() => this.ws.setEditable(exercise.editable))
-                .then(() => this.gui.setLaunchVariant(exercise.launch_variant))
+                .then(() => this.gui.setLaunchButtonVariant(exercise.launch_variant))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))
                 .then(() => this.trc.registerVariables(exercise.variables))
@@ -264,27 +267,12 @@ class Application {
             /// прослушивать только события прохождения или провала
             this._dispatcher.only(["ins:pass", "ins:fault"]);
 
-            /// определить ИД упражнения
-            let exID = this.ins.getExerciseID();
-            /// зажать кнопку
-            this.gui.affirmLaunchButtonState('check', false);
-            /// очистить ошибочные блоки
-            this.ws.clearErrorBlocks();
-
-            /// получить обработчики
-            Promise.all([
-                this.ws.getAllHandlers(),
-                this.bb.getData()
-            ])
-                .then(results   => {return {handlers: results[0], board: results[1]}})
-                .then(data      => this.gs.commitSolution(exID, data))
-                .then(verdict   => this.ins.applyVerdict(verdict))
-                .then(()        => this.gui.affirmLaunchButtonState('check', true))
-                .then(()        => {
+            this._gui_check()
+                .then(() => {
                     this.gui.affirmLaunchButtonState('check', true);
                     this._dispatcher.only(['gui:*', 'ins:*']);
                 })
-                .catch((err)    => {
+                .catch((err) => {
                     console.error(err);
                     this.gui.affirmLaunchButtonState('check', true);
                     this._dispatcher.only(['gui:*', 'ins:*'])
@@ -294,29 +282,24 @@ class Application {
         /**
          * Нажата кнопка "Запустить"
          */
-        this._dispatcher.on('gui:run', () => {
+        this._dispatcher.on('gui:run', check_later => {
             this._dispatcher.only(["gui:stop"]);
 
-            this.gui.affirmLaunchButtonState('execute', false);
-
-            let handler = this.ws.getMainHandler();
-            this.ls.updateHandlers({commands: handler.commands, launch: true});
-            console.log({commands: handler.commands, launch: true});
+            this._gui_run(check_later);
         });
 
         /**
          * Нажата кнопка "Остановить"
          */
         this._dispatcher.on('gui:stop', () => {
-            this.ls.stopExecution();
-            this.ws.highlightBlock(null);
-
-            this.gui.affirmLaunchButtonState('execute', true);
+            this._gui_stop();
 
             this._dispatcher.only(["gui:*"]);
         });
 
         this._dispatcher.on('gui:calc', extra => {
+            this._dispatcher.only([]);
+
             this.gui.affirmLaunchButtonState('calc', false);
 
             let plates = this.bb.getData();
@@ -324,11 +307,16 @@ class Application {
             this.bb.clearCurrents();
 
             this.gs.calcCurrents(plates, extra)
-                .then(results => this.bb.updateCurrents(results))
+                .then(results => Promise.all([
+                    this.bb.updateCurrents(results),
+                    this.ls.sendSpi(results.board_data)
+                ]))
                 .then(() => this.gui.affirmLaunchButtonState('calc', true))
                 .catch(err => {
                     this.gui.affirmLaunchButtonState('calc', true);
                 });
+
+            this._dispatcher.only(["gui:*"]);
         });
 
         /**
@@ -391,6 +379,11 @@ class Application {
             switch (data.name) {
                 case 'lessons': {
                     this.gs.goToLessonPage();
+                    // this.lay.compose('home');
+                    // this.gui.switchMenu(false);
+                    // this.gs.getCoursesData()
+                    //     .then(courses => this.gui.displayCourses(courses));
+
                     break;
                 }
                 case 'settings': {
@@ -442,11 +435,18 @@ class Application {
          * Задание провалено
          */
         this._dispatcher.on('ins:fault', verdict => {
+            let exercise = this.ins.getExerciseCurrent();
+
             console.log("fault", verdict);
             this._dispatcher.only([]);
             try {
-                this.ws.highlightErrorBlocks(verdict.blocks);
-                this.bb.highlightErrorPlates(verdict.blocks);
+                if (exercise.board_mode === "programming") {
+                    this.ws.highlightErrorBlocks(verdict.blocks);
+                }
+
+                if (exercise.board_mode === "electronics") {
+                    this.bb.highlightErrorPlates(verdict.blocks);
+                }
                 this.bb.highlightRegion(verdict.region, true);
             } catch (err) {
                 console.error(err);
@@ -496,7 +496,7 @@ class Application {
         /**
          * Когда программа завершится
          */
-        this._dispatcher.on('ls:terminate', () => {
+        this._dispatcher.on('ls:terminate', check_needed => {
             let exercise = this.ins.getExerciseCurrent();
 
             this.ws.highlightBlock(null);
@@ -505,8 +505,22 @@ class Application {
             if (exercise.check_buttons) {
                 this._dispatcher.only(['gui:*', 'ins:pass']);
             } else {
-                this._dispatcher.only(['gui:*']);
+                this._dispatcher.only(['gui:*', 'ins:*']);
             }
+
+            this._dispatcher.only(['ins:*']);
+
+            if (check_needed)
+                this._gui_check()
+                    .then(() => {
+                        this.gui.affirmLaunchButtonState('chexec', true);
+                        this._dispatcher.only(['gui:*', 'ins:*']);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        this.gui.affirmLaunchButtonState('chexec', true);
+                        this._dispatcher.only(['gui:*', 'ins:*'])
+                    });
 
             // if (!exercise.is_sandbox  && !exercise.listeners_only) {
             //     this._dispatcher.call("gui:check");
@@ -519,6 +533,7 @@ class Application {
         this._dispatcher.on('ls:plates', data => {
             this.bb.clearCurrents();
             this.bb.updatePlates(data);
+            this.gui.clickCalcButton();
         });
 
         /**
@@ -570,6 +585,8 @@ class Application {
             this.trc.ejectBlocks();
             this.trc.ejectButtons();
             this.gui.ejectTextPane();
+            this.gui.ejectLaunchButtons();
+            this.gui.ejectHomeMenu();
         });
 
         /**
@@ -584,6 +601,7 @@ class Application {
                 this.trc.injectButtons(data.buttons);
                 this.gui.injectTextPane(data.task);
                 this.gui.injectLessonPane(data.lesson);
+                this.gui.injectHomeMenu(data.course);
             }
         });
 
@@ -628,6 +646,42 @@ class Application {
             this.ws.resize();
             this.trc.resize();
         });
+    }
+
+    _gui_run(check_later=false) {
+        this.gui.affirmLaunchButtonState('execute', false);
+
+        let handler = this.ws.getMainHandler();
+        this.ls.updateHandlers({commands: handler.commands, launch: true}, check_later);
+        console.log({commands: handler.commands, launch: true});
+    }
+
+    _gui_stop() {
+        this.ls.stopExecution();
+        this.ws.highlightBlock(null);
+
+        this.gui.affirmLaunchButtonState('execute', true);
+    }
+
+    _gui_check() {
+        /// определить ИД упражнения
+        let exID = this.ins.getExerciseID();
+        /// зажать кнопку
+        this.gui.affirmLaunchButtonState('check', false);
+        /// очистить ошибочные блоки
+        this.ws.clearErrorBlocks();
+
+        /// получить обработчики
+        let chain = Promise.all([
+            this.ws.getAllHandlers(),
+            this.bb.getData()
+        ])
+            .then(results   => {return {handlers: results[0], board: results[1]}})
+            .then(data      => this.gs.commitSolution(exID, data))
+            .then(verdict   => this.ins.applyVerdict(verdict))
+            .then(()        => this.gui.affirmLaunchButtonState('check', true));
+
+        return chain;
     }
 }
 

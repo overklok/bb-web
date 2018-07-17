@@ -69,6 +69,8 @@ export default class Plate {
             currents:       undefined,
             voltages:       undefined,
             adc:            undefined,
+            cell_num:       undefined,
+            contr_num:      undefined,
         };
 
         /// Присвоить класс контейнеру
@@ -190,6 +192,8 @@ export default class Plate {
      * @param {object} state новое состояние плашки, которое требуется отобразить
      */
     setState(state) {
+        console.log(state);
+
         for (let state_param in this._state) {
             if (state_param in state) {
                 this._state[state_param] = state[state_param];

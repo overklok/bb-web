@@ -56,16 +56,18 @@ export default class PlateLayer extends Layer {
             let plate = this._plates[plate_id];
 
             data.push({
-                id: plate.id,
-                type: plate.alias,
-                x: plate._state.cell.idx.x,
-                y: plate._state.cell.idx.y,
-                length: plate._params.size.x,
-                orientation: plate._state.orientation,
-                extra: plate._params.extra,
-                currents: plate._state.currents,
-                voltages: plate._state.voltages,
-                adc: plate._state.adc,
+                id:             plate.id,
+                type:           plate.alias,
+                x:              plate._state.cell.idx.x,
+                y:              plate._state.cell.idx.y,
+                length:         plate._params.size.x,
+                orientation:    plate._state.orientation,
+                extra:          plate._params.extra,
+                currents:       plate._state.currents,
+                voltages:       plate._state.voltages,
+                adc:            plate._state.adc,
+                cell_num:       plate._state.cell_num,
+                contr_num:      plate._state.contr_num,
             });
         }
 

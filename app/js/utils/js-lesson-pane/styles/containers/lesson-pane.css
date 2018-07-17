@@ -59,3 +59,9 @@
   width: 80%;
   height: 100%;
 }
+.lesson-pane-emph {
+  background-color: #981df2 !important;
+}
+.lesson-pane-emph .lesson-pane-north-center-front {
+  background-color: #981df2 !important;
+}

@@ -6,6 +6,7 @@ import TextPaneWrapper from "../wrappers/TextPaneWrapper";
 import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
 import AlertifierWrapper from "../wrappers/AlertifierWrapper";
+import HomeMenuWrapper from "../wrappers/HomeMenuWrapper";
 
 const BOARD_STATUSES = {
     SEARCH: 'search',
@@ -36,6 +37,7 @@ const LAUNCH_VARIANTS = {
     CHECK: 1,
     EXECUTE: 2,
     CHECK_N_EXECUTE: 3,
+    CHEXEC: 4,
 };
 
 /**
@@ -48,7 +50,7 @@ const LAUNCH_VARIANTS = {
 export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
     static get event_types() {return [
-        "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file",
+        "ready", "mission", "run", "stop", "check", "run&check", "keyup", "hash-command", "menu", "load-file", "unload-file",
         "calc"
     ]}
 
@@ -59,6 +61,7 @@ export default class GUIModule extends Module {
             imagesPath: "",
             devMode: false,
             testMode: false,
+            emphasize: false,
         }
     }
 
@@ -77,6 +80,7 @@ export default class GUIModule extends Module {
                 text: false,
                 lesson: false,
                 button: false,
+                home_menu: false,
             }
         };
 
@@ -84,10 +88,11 @@ export default class GUIModule extends Module {
 
         this._filer = new FileWrapper();
         this._spinner = new SpinnerWrapper();
-        this._lesson_pane = new LessonPaneWrapper();
+        this._lesson_pane = new LessonPaneWrapper(this._options.emphasize);
         this._text_pane = new TextPaneWrapper();
         this._launch_btn = new LaunchBtnWrapper();
         this._alertifier = new AlertifierWrapper();
+        this._home_menu = new HomeMenuWrapper();
 
         if (this._options.imagesPath) {
             this._alertifier.setImagesPath(this._options.imagesPath);
@@ -300,7 +305,7 @@ export default class GUIModule extends Module {
         return Promise.resolve();
     }
 
-    setLaunchVariant(variant) {
+    setLaunchButtonVariant(variant) {
         if (!this._state.areasDisp.buttons)   {return Promise.resolve(false)}
 
         switch (variant) {
@@ -318,6 +323,10 @@ export default class GUIModule extends Module {
             }
             case LAUNCH_VARIANTS.CHECK_N_EXECUTE: {
                 this._launch_btn.show(2);
+                break;
+            }
+            case LAUNCH_VARIANTS.CHEXEC: {
+                this._launch_btn.show(3);
                 break;
             }
             default: {
@@ -341,6 +350,13 @@ export default class GUIModule extends Module {
         }
     }
 
+    getLaunchButtonState(button) {
+        if (!this._state.areasDisp.buttons) {return false}
+        if (!button) {throw new TypeError("Button is not defined")}
+
+        this._launch_btn.getState(button);
+    }
+
     injectLaunchButtons(dom_node) {
         if (!dom_node)                      {return Promise.resolve(false)}
         if (this._state.areasDisp.buttons)   {return Promise.resolve(true)}
@@ -348,6 +364,14 @@ export default class GUIModule extends Module {
         this._state.areasDisp.buttons = true;
 
         return this._launch_btn.inject(dom_node);
+    }
+
+    ejectLaunchButtons() {
+        if (!this._state.areasDisp.buttons)   {return Promise.resolve(true)}
+
+        this._state.areasDisp.buttons = false;
+
+        return this._launch_btn.eject();
     }
 
     injectTextPane(dom_node) {
@@ -374,6 +398,23 @@ export default class GUIModule extends Module {
         this._state.areasDisp.lesson = true;
 
         return this._lesson_pane.inject(dom_node);
+    }
+
+    injectHomeMenu(dom_node) {
+        if (!dom_node)                          {return Promise.resolve(false)}
+        if (this._state.areasDisp.home_menu)    {return Promise.resolve(true)}
+
+        this._state.areasDisp.home_menu = true;
+
+        return this._home_menu.inject(dom_node);
+    }
+
+    ejectHomeMenu() {
+        if (!this._state.areasDisp.home_menu) {return Promise.resolve(true)}
+
+        this._state.areasDisp.home_menu = false;
+
+        return this._home_menu.eject();
     }
 
     /**
@@ -440,12 +481,24 @@ export default class GUIModule extends Module {
         this._alertifier.closeAll();
     }
 
+    switchMenu(on) {
+        this._lesson_pane.switchMenu(on);
+    }
+
     switchDeveloperMode(on) {
         this._lesson_pane.switchTask(on);
     }
 
     switchTestMode(on) {
         this._launch_btn.switchPaneVisibility('test', on);
+    }
+
+    clickCalcButton() {
+        this.emitEvent('calc', this._launch_btn.getCalcInput());
+    }
+
+    displayCourses(courses) {
+        this._home_menu.displayCourses(courses);
     }
 
     /**
@@ -573,6 +626,12 @@ export default class GUIModule extends Module {
                     this.emitEvent("run");
                 } else {
                     this.emitEvent("stop");
+                }
+            }
+
+            if (button === 'chexec') {
+                if (start) {
+                    this.emitEvent("run", true);
                 }
             }
 

@@ -103,6 +103,8 @@ export default class LessonPreprocessor {
         exercise.launch_variant     = exercise.launch_variant === 3 && exercise.listeners_only ? 1 : exercise.launch_variant;
         exercise.launch_variant     = exercise.type !== 0 && exercise.is_sandbox ? 2 : exercise.launch_variant;
 
+        exercise.launch_variant     = exercise.launch_combined ? 4 : exercise.launch_variant;
+
         exercise.max_blocks         = exercise.is_sandbox ? 0 : exercise.max_blocks;
         exercise.buttons_model      = exercise.check_buttons ? exercise.buttons_model : null;
 

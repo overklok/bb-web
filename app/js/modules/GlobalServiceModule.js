@@ -20,6 +20,7 @@ export default class GlobalServiceModule extends Module {
                 log_bunch: '/logsvc/logbunch/',
                 check_handlers: '/coursesvc/check/',
                 calc_currents: '/coursesvc/calc/',
+                courses: '/coursesvc/',
             },
             csrfRequired: true,
             modeDummy: false
@@ -59,6 +60,27 @@ export default class GlobalServiceModule extends Module {
 
         return new Promise((resolve, reject) => {
             fetch(this._options.origin + this._options.api.lesson + lesson_id)
+                .then(response => {
+                    if (response.status >= 200 && response.status < 300) {
+                        resolve(response.json());
+                    } else {
+                        let error = new Error(response.statusText || response.status);
+                        error.response = response;
+
+                        reject(error);
+                    }
+                }).catch(err => {
+                    this._debug.error(err);
+                    reject(err);
+                });
+        });
+    }
+
+    getCoursesData() {
+        if (this._options.modeDummy) {return new Promise(resolve => resolve())}
+
+        return new Promise((resolve, reject) => {
+            fetch(this._options.origin + this._options.api.courses)
                 .then(response => {
                     if (response.status >= 200 && response.status < 300) {
                         resolve(response.json());

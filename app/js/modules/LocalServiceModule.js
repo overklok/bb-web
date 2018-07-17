@@ -39,6 +39,7 @@ export default class LocalServiceModule extends Module {
         this._state = {
             connected: false,
             board_status: undefined,
+            check_later: false,
         };
 
         this.launch();
@@ -119,10 +120,13 @@ export default class LocalServiceModule extends Module {
      *                           }
      *
      *                           Для главного обработчика ID = main, key = "None"
+     * @param {boolean} check_later запускать ли проверку после завершения программы
      */
-    updateHandlers(handlers) {
+    updateHandlers(handlers, check_later=false) {
+        this._state.check_later = check_later;
+
         if (this._options.modeDummy) {
-            this.emitEvent("terminate");
+            this.emitEvent("terminate", this._state.check_later);
             return new Promise(resolve => resolve())
         }
 
@@ -162,6 +166,27 @@ export default class LocalServiceModule extends Module {
         if (this._options.modeDummy) {return true}
 
         this._ipc.send('stop');
+    }
+
+    sendSpi(data) {
+        if (!data) throw new TypeError("Parameter `data` is not defined");
+
+        if (this._options.modeDummy) {
+            return new Promise(resolve => resolve())
+        }
+
+        return new Promise(resolve => {
+            this._ipc.send('spi-update', data);
+
+            this._ipc.once('spi-update.result', (event, error) => {
+                if (error) {
+                   this._debug.error(error);
+                   throw error;
+                } else {
+                   resolve();
+                }
+           });
+        });
     }
 
     /**
@@ -312,7 +337,8 @@ export default class LocalServiceModule extends Module {
 
         /* Как только сервис сообщил о завершении исполнения кода */
         this._ipc.on('terminate', (evt) => {
-            this.emitEvent('terminate');
+            this.emitEvent('terminate', this._state.check_later);
+            this._state.check_later = false;
         });
 
         this._ipc.on('draw_plates', (evt, data) => {

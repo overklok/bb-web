@@ -1363,8 +1363,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/modules/guimodule.js~guimodule#setlaunchvariant",
-    "class/js/modules/GUIModule.js~GUIModule.html#instance-method-setLaunchVariant",
-    "js/modules/GUIModule.js~GUIModule#setLaunchVariant",
+    "class/js/modules/GUIModule.js~GUIModule.html#instance-method-setLaunchButtonVariant",
+    "js/modules/GUIModule.js~GUIModule#setLaunchButtonVariant",
     "method"
   ],
   [

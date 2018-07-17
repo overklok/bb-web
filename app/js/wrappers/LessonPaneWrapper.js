@@ -3,14 +3,14 @@ import Wrapper from "../core/Wrapper";
 import LessonPane from "../utils/js-lesson-pane/LessonPane";
 
 export default class LessonPaneWrapper extends Wrapper {
-    constructor() {
+    constructor(emphasize=false) {
         super();
 
         this._state = {
             display: false,
         };
 
-        this._plugin = new LessonPane();
+        this._plugin = new LessonPane(emphasize);
 
         this._missions = undefined;
         this._mission_active_deferred   = undefined;
@@ -24,6 +24,7 @@ export default class LessonPaneWrapper extends Wrapper {
 
     inject(dom_node) {
         if (!dom_node) {return false}
+        if (this._state.display) {return true}
 
         this._plugin.include(dom_node);
 
@@ -197,5 +198,9 @@ export default class LessonPaneWrapper extends Wrapper {
 
     onMissionClick(cb) {
         this._plugin.onMissionClick(cb);
+    }
+
+    switchMenu(on) {
+        this._plugin.switchMenu(on);
     }
 }

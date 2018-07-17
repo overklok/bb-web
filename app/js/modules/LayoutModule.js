@@ -40,7 +40,8 @@ const PANE_IDS = {
  */
 const MODES = {
     FULL:   "full",
-    SIMPLE: "simple"
+    SIMPLE: "simple",
+    HOME: "home",
 };
 
 
@@ -65,6 +66,9 @@ const MAPPINGS = {
         breadboard: PANE_IDS.MAIN_CENTER,
         task: PANE_IDS.EAST_CENTER_CENTER,
         lesson: PANE_IDS.MAIN_NORTH
+    },
+    home: {
+        course: PANE_IDS.MAIN_CENTER
     }
 };
 
@@ -87,7 +91,8 @@ const FADEBLOCKINGS = {
         PANE_IDS.MAIN_NORTH,
         PANE_IDS.EAST_NORTH,
         PANE_IDS.EAST_CENTER_SOUTH,
-    ]
+    ],
+    home: []
 };
 
 /**
@@ -216,6 +221,8 @@ export default class LayoutModule extends Module {
             /// в зависимости от режима, в который нужно перейти
             switch (mode) {
                 case MODES.SIMPLE: {
+                    // this._layout.show("north");
+
                     this._panes.east.hide("north");
                     duration += this._options.animSpeedSub;
 
@@ -233,6 +240,8 @@ export default class LayoutModule extends Module {
                     break;
                 }
                 case MODES.FULL: {
+                    // this._layout.show("north");
+
                     this._panes.east.show("north");
                     duration += this._options.animSpeedSub;
 
@@ -247,6 +256,11 @@ export default class LayoutModule extends Module {
                         duration += this._options.animSpeedSub;
                     }
 
+                    break;
+                }
+                case MODES.HOME: {
+                    this._layout.hide("east");
+                    // this._layout.hide("north");
                     break;
                 }
                 default: {

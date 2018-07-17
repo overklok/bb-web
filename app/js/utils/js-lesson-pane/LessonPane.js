@@ -10,7 +10,8 @@ import StatusChipBlock from "./blocks/chips/StatusChipBlock";
 import thm from "./styles/containers/lesson-pane.css";
 
 const CLASEES = {
-    CONTAINER_MAIN: "lesson-pane"
+    CONTAINER_MAIN: "lesson-pane",
+    CONTAINER_MAIN_EMPH: "lesson-pane-emph"
 };
 
 class NotIncludedError extends Error {
@@ -25,8 +26,9 @@ class NotIncludedError extends Error {
 }
 
 export default class LessonPane {
-    constructor() {
+    constructor(emphasize=false) {
         this._container = undefined;
+        this._emphasized = emphasize;
 
         this._containers = {
             north: {
@@ -85,7 +87,11 @@ export default class LessonPane {
         if (!dom_node) {throw new TypeError("DOM Node is not defined")}
 
         this._container = document.createElement("div");
-        this._container.classList = CLASEES.CONTAINER_MAIN;
+        this._container.classList.add(CLASEES.CONTAINER_MAIN);
+        if (this._emphasized) {
+            this._container.classList.add(CLASEES.CONTAINER_MAIN_EMPH);
+        }
+
         dom_node.appendChild(this._container);
 
         this._composeContainers(this._container, this._containers, CLASEES.CONTAINER_MAIN);
@@ -240,6 +246,10 @@ export default class LessonPane {
 
     onMenuClick(cb) {
         this._callbacks.onmenuclick = cb;
+    }
+
+    switchMenu(on) {
+        this._blocks.flipper.showSide(on ? 'top' : 'front');
     }
 
     /**

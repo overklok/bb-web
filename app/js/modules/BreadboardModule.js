@@ -82,7 +82,6 @@ export default class BreadboardModule extends Module {
                 highlighted: element.highlight || false,
                 currents: element.currents,
                 voltages: element.voltages,
-                adc:      element.adc
                 // hidden: <smth>
                 // bytes_to_board: <smth>
             })

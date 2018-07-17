@@ -2,6 +2,8 @@ import Breadboard from "../Breadboard";
 import Layer from "../core/Layer";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
+import logopath from "../styles/logopath";
+
 const LOGO_COLOR_ACTIVE     = "#6B8FFF";
 const LOGO_COLOR_DEFAULT    = "#000000";
 
@@ -52,15 +54,7 @@ export default class BackgroundLayer extends Layer {
         let image = this._logogroup
             .nested();
 
-        let text = this._logogroup
-            .text("тапанда")
-            .font({
-                size: 80,
-                weight: "bolder",
-                family: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-                "letter-spacing": -2
-            })
-            .scale(1, 1.1);
+        let text = this._logogroup.path(logopath());
 
         let flower = image.group();
         let leaf = flower.symbol();
@@ -81,7 +75,9 @@ export default class BackgroundLayer extends Layer {
         flower.move(18,0);
         flower.scale(0.7);
 
-        text.move(100 + 10, 10);
+        text.move(-70, 5);
+
+        text.scale(0.5);
 
         this._logogroup.cx(100 + this.__grid.size.x / 2);
 
