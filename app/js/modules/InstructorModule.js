@@ -286,13 +286,17 @@ export default class InstructorModule extends Module {
     /**
      * Показать сообщение о прохождении упражнения
      */
-    tourPass() {
+    tourPass(skip_message=false) {
         let missionIDX = this._state.missionIDX;
         let exerciseIDX = this._getExerciseIDX(missionIDX);
 
         let message = this._lesson.missions[missionIDX].exercises[exerciseIDX].message_success;
 
         this._checkLessonProgress(missionIDX);
+
+        if (skip_message) {
+            return new Promise(resolve => {resolve(true)});
+        }
 
         /// Подключить поповер-обёртку
         let intro = new TourWrapper("success", message);
@@ -304,9 +308,11 @@ export default class InstructorModule extends Module {
      * Показать сообщение о провале упражнения
      *
      * @param message
+     * @param skip_message
      */
-    tourFault(message) {
+    tourFault(message, skip_message=false) {
         message = message || "Упражнение не пройдено";
+
         /// Подключить поповер-обёртку
         let intro = new TourWrapper("error", [{
             intro: `<p>${message}`
@@ -355,6 +361,10 @@ export default class InstructorModule extends Module {
     applyVerdict(verdict) {
         verdict.missionIDX = this._state.missionIDX;
         verdict.exerciseIDX = this._state.missions[this._state.missionIDX].exerciseIDX;
+
+        if (verdict.skip) {
+            this.emitEvent('pass', verdict);
+        }
 
         if (verdict.status === API.STATUS_CODES.PASS) {
             this.emitEvent('pass', verdict);
@@ -498,8 +508,6 @@ export default class InstructorModule extends Module {
                 exerciseIDXSkidding: undefined
             });
         }
-
-        console.log(this._lesson);
     }
 
     _subscribeToWrapperEvents() {

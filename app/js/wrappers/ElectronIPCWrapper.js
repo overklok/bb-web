@@ -29,6 +29,10 @@ export default class ElectronIPCWrapper extends Wrapper {
         ipcRenderer.send(channel, data);
     }
 
+    disconnect() {
+        // stub
+    }
+
 // private:
 
 }

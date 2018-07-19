@@ -20,10 +20,11 @@ const CLASSES = {
 };
 
 const VARIANTS = {
-    CHECK: 0,
-    EXECUTE: 1,
-    CHECK_N_EXECUTE: 2,
-    CHEXEC: 3,
+    NONE:               0,
+    CHECK:              1,
+    EXECUTE:            2,
+    CHECK_N_EXECUTE:    3,
+    CHEXEC:             4,
 };
 
 export default class LaunchBtnWrapper extends Wrapper {
@@ -32,6 +33,12 @@ export default class LaunchBtnWrapper extends Wrapper {
 
         this._callbacks = {
             button_click: (button, start) => {console.warn(`Unhandled button click, button=${button}, start=${start}`)},
+        };
+
+        this._captions_sandbox = {
+            check: {
+                start: `<i class="fas fa-forward"></i>&nbsp;<small>Перейти дальше</small>`
+            }
         };
 
         this._captions = {
@@ -82,6 +89,7 @@ export default class LaunchBtnWrapper extends Wrapper {
         };
 
         this._variant = undefined;
+        this._sandbox = undefined;
     }
 
     inject(dom_node) {
@@ -102,8 +110,12 @@ export default class LaunchBtnWrapper extends Wrapper {
         return Promise.resolve(true);
     }
 
-    show(variant) {
+    show(variant, is_sandbox=false) {
         switch (variant) {
+            case VARIANTS.NONE: {
+                this.hide();
+                return;
+            }
             case VARIANTS.CHECK: {
                 this._buttons.check.style.display = "inline";
                 this._buttons.execute.style.display = "none";
@@ -136,7 +148,7 @@ export default class LaunchBtnWrapper extends Wrapper {
         }
 
         for (let button_key in this._buttons) {
-            this.setStart(button_key);
+            this.setState(button_key, true);
         }
 
         this._buttons.calc.style.display = "inline";
@@ -150,6 +162,9 @@ export default class LaunchBtnWrapper extends Wrapper {
         }
 
         this._variant = variant;
+        this._sandbox = is_sandbox;
+
+        this._updateCaptions();
     }
 
     hide() {
@@ -177,18 +192,14 @@ export default class LaunchBtnWrapper extends Wrapper {
         }
     }
 
-    setStart(button_key) {
+    setState(button_key, start) {
         if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
 
-        this._buttons[button_key].innerHTML = this._captions[button_key].start;
+        let key = start ? "start" : "stop";
+
         this._started[button_key] = false;
-    }
 
-    setStop(button_key) {
-        if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
-
-        this._buttons[button_key].innerHTML = this._captions[button_key].stop;
-        this._started[button_key] = true;
+        this._sandbox ? this._setCaptionSandbox(button_key, key) : this._setCaption(button_key, key);
     }
 
     onButtonClick(cb) {
@@ -205,6 +216,32 @@ export default class LaunchBtnWrapper extends Wrapper {
         if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
 
         return this._started[button_key];
+    }
+
+    _updateCaptions() {
+        for (let button_key in this._buttons) {
+            if (!(button_key in this._started)) continue;
+
+            let key = this._started[button_key] ? "stop" : "start";
+
+            this._sandbox ? this._setCaptionSandbox(button_key, key) : this._setCaption(button_key, key);
+        }
+    }
+
+    _setCaption(button_key, key) {
+        if (!(key === "start" || key === "stop")) throw new RangeError("Caption key may be only `start` or `stop`");
+
+        this._buttons[button_key].innerHTML = this._captions[button_key][key];
+    }
+
+    _setCaptionSandbox(button_key, key) {
+        if (!(key === "start" || key === "stop")) throw new RangeError("Caption key may be only `start` or `stop`");
+
+        if ((button_key in this._captions_sandbox) && (key in this._captions_sandbox[button_key])) {
+            this._buttons[button_key].innerHTML = this._captions_sandbox[button_key][key];
+        } else {
+            this._setCaption(button_key, key);
+        }
     }
 
     _ensureButtons(dom_node) {

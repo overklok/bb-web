@@ -17,3 +17,6 @@
   background-color: #ffffff;
   color: #1DA1F2;
 }
+.lesson-pane-emph .menu-chip a.pressed {
+  color: #981df2;
+}

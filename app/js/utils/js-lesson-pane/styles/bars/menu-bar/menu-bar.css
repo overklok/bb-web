@@ -28,6 +28,19 @@
 .menu-bar__item:not(.disabled):hover .menu-bar__item_text {
   transform: scale(1.1);
 }
+.lesson-pane-emph .menu-bar__item {
+  color: #981df2;
+}
+.lesson-pane-emph .menu-bar__item.disabled {
+  color: #d8d8d8;
+}
+.lesson-pane-emph .menu-bar__item.pressed {
+  color: #ffffff;
+  background-color: #981df2;
+}
+.lesson-pane-emph .menu-bar__item.pressed:hover {
+  background-color: #c372ff;
+}
 .menu-bar {
   float: right;
   width: 100%;

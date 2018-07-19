@@ -3031,8 +3031,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/wrappers/launchbtnwrapper.js~launchbtnwrapper#setstart",
-    "class/js/wrappers/LaunchBtnWrapper.js~LaunchBtnWrapper.html#instance-method-setStart",
-    "js/wrappers/LaunchBtnWrapper.js~LaunchBtnWrapper#setStart",
+    "class/js/wrappers/LaunchBtnWrapper.js~LaunchBtnWrapper.html#instance-method-setState",
+    "js/wrappers/LaunchBtnWrapper.js~LaunchBtnWrapper#setState",
     "method"
   ],
   [

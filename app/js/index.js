@@ -209,8 +209,6 @@ class Application {
             /// Заблокировать все события
             this._dispatcher.only([]);
 
-            console.log(exercise);
-
             this.gui.setExerciseCurrent(exercise.exerciseIDX);
 
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
@@ -219,7 +217,7 @@ class Application {
                 .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
                 .then(() => this.ws.setMaxBlockLimit(exercise.max_blocks))
                 .then(() => this.ws.setEditable(exercise.editable))
-                .then(() => this.gui.setLaunchButtonVariant(exercise.launch_variant))
+                .then(() => this.gui.setLaunchButtonVariant(exercise.launch_variant, exercise.is_sandbox))
                 .then(() => this.gui.showTask(exercise.task_description))
                 .then(() => this.ws.setBlockTypes(exercise.block_types))
                 .then(() => this.trc.registerVariables(exercise.variables))
@@ -352,8 +350,6 @@ class Application {
             let valid = this.ins.validateButtonPress(button_code);
             /// вывести нажатие клавиши
             this.trc.displayKeyboardPress(button_code, !valid);
-
-            console.log('keyup', button_code);
         });
 
         /**
@@ -379,6 +375,10 @@ class Application {
                 case "demo": {
                     this.gui.hideAllAlerts();
                     this.ls.switchDummyMode(true);
+                    break;
+                }
+                case "full": {
+                    this.ls.switchDummyMode(false);
                     break;
                 }
                 default: {
@@ -444,7 +444,7 @@ class Application {
             this._dispatcher.only([]);
             this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX);
             this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX+1);
-            this.ins.tourPass()
+            this.ins.tourPass(verdict.skip)
                 .then(
                     onResolve => this.ins.launchExerciseNext(),
                     onReject => {
@@ -546,10 +546,6 @@ class Application {
                         this._dispatcher.only(['gui:*', 'ins:*'])
                     });
             }
-
-            // if (!exercise.is_sandbox  && !exercise.listeners_only) {
-            //     this._dispatcher.call("gui:check");
-            // }
         });
 
         /**
@@ -572,7 +568,6 @@ class Application {
          * Изменён статус платы
          */
         this._dispatcher.on('ls:board-status', status => {
-            console.log("BOARD STATUS", status);
             this.gui.setBoardStatus(status);
         });
 
@@ -675,11 +670,23 @@ class Application {
 
     _gui_check() {
         /// определить ИД упражнения
-        let exID = this.ins.getExerciseID();
+        let exercise = this.ins.getExerciseCurrent();
         /// зажать кнопку
         this.gui.affirmLaunchButtonState('check', false);
         /// очистить ошибочные блоки
         this.ws.clearErrorBlocks();
+
+        if (exercise.is_sandbox) {
+             this.ins.applyVerdict({
+                 missionIDX: exercise.missionIDX,
+                 exerciseIDX: exercise.idx,
+                 skip: true,
+             });
+
+             this.gui.affirmLaunchButtonState('check', true);
+
+             return new Promise(resolve => {resolve()});
+        }
 
         /// получить обработчики
         let chain = Promise.all([
@@ -687,7 +694,7 @@ class Application {
             this.bb.getData()
         ])
             .then(results   => {return {handlers: results[0], board: results[1]}})
-            .then(data      => this.gs.commitSolution(exID, data))
+            .then(data      => this.gs.commitSolution(exercise.pk, data))
             .then(verdict   => this.ins.applyVerdict(verdict))
             .then(()        => this.gui.affirmLaunchButtonState('check', true));
 

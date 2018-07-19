@@ -7,37 +7,13 @@ import LaunchBtnWrapper from "../wrappers/LaunchBtnWrapper";
 import FileWrapper from "../wrappers/FileWrapper";
 import AlertifierWrapper from "../wrappers/AlertifierWrapper";
 import HomeMenuWrapper from "../wrappers/HomeMenuWrapper";
+import URLHashWrapper from "../wrappers/URLHashWrapper";
 
 const BOARD_STATUSES = {
     SEARCH: 'search',
     CONNECT: 'connect',
     DISCONNECT: 'disconnect',
     NONE: 'none',
-};
-
-const HASH_TYPES = {
-    GOTO: "goto",
-    DEMO: "demo",
-
-    NONE: "none",
-};
-
-const REGEXPS = {
-    MISSION_EXERCISE:   /^#m[0-9]+e[0-9]+$/g,
-    MISSION:            /^#m[0-9]+$/g,
-    EXERCISE:           /^#e[0-9]+$/g,
-
-    NUMBERS:            /[0-9]+/g,
-
-    DEMO:               /^#d+$/g,
-};
-
-const LAUNCH_VARIANTS = {
-    NONE: 0,
-    CHECK: 1,
-    EXECUTE: 2,
-    CHECK_N_EXECUTE: 3,
-    CHEXEC: 4,
 };
 
 /**
@@ -74,7 +50,6 @@ export default class GUIModule extends Module {
             ready: false,
             switched: true, // debug only
             listenButtons: false,
-            launchVariant: false,
 
             areasDisp: {
                 text: false,
@@ -93,6 +68,7 @@ export default class GUIModule extends Module {
         this._launch_btn = new LaunchBtnWrapper();
         this._alertifier = new AlertifierWrapper();
         this._home_menu = new HomeMenuWrapper();
+        this._url_hash_parser = new URLHashWrapper();
 
         if (this._options.imagesPath) {
             this._alertifier.setImagesPath(this._options.imagesPath);
@@ -305,36 +281,10 @@ export default class GUIModule extends Module {
         return Promise.resolve();
     }
 
-    setLaunchButtonVariant(variant) {
+    setLaunchButtonVariant(variant, is_sandbox) {
         if (!this._state.areasDisp.buttons)   {return Promise.resolve(false)}
 
-        switch (variant) {
-            case LAUNCH_VARIANTS.NONE: {
-                this._launch_btn.hide();
-                break;
-            }
-            case LAUNCH_VARIANTS.CHECK: {
-                this._launch_btn.show(0);
-                break;
-            }
-            case LAUNCH_VARIANTS.EXECUTE: {
-                this._launch_btn.show(1);
-                break;
-            }
-            case LAUNCH_VARIANTS.CHECK_N_EXECUTE: {
-                this._launch_btn.show(2);
-                break;
-            }
-            case LAUNCH_VARIANTS.CHEXEC: {
-                this._launch_btn.show(3);
-                break;
-            }
-            default: {
-                this._state.launchVariant = variant;
-            }
-        }
-
-        this._state.launchVariant = !this._state.launchVariant;
+        this._launch_btn.show(variant, is_sandbox);
 
         return Promise.resolve(true);
     }
@@ -343,11 +293,7 @@ export default class GUIModule extends Module {
         if (!this._state.areasDisp.buttons) {return false}
         if (!button) {throw new TypeError("Button is not defined")}
 
-        if (start) {
-            this._launch_btn.setStart(button);
-        } else {
-            this._launch_btn.setStop(button);
-        }
+        this._launch_btn.setState(button, start);
     }
 
     getLaunchButtonState(button) {
@@ -518,48 +464,10 @@ export default class GUIModule extends Module {
         return false;
     }
 
-    _filterURLHashCommand(hash) {
-        if (typeof hash !== "string") {throw new TypeError("URL Hash is not a string")}
-
-        let mission_idx, exercise_idx;
-
-        if (hash.match(REGEXPS.MISSION_EXERCISE)) {
-            [mission_idx, exercise_idx] = hash.match(REGEXPS.NUMBERS);
-        }
-
-        else if (hash.match(REGEXPS.MISSION)) {
-            mission_idx = hash.match(REGEXPS.NUMBERS);
-        }
-
-        else if (hash.match(REGEXPS.EXERCISE)) {
-            exercise_idx = hash.match(REGEXPS.NUMBERS);
-        }
-
-        else if (hash.match(REGEXPS.DEMO)) {
-            return {
-                type: HASH_TYPES.DEMO,
-            }
-        }
-
-        else {
-            return {
-                type: HASH_TYPES.NONE,
-            }
-        }
-
-        return {
-            type: HASH_TYPES.GOTO,
-            data: {
-                missionIDX: Number(mission_idx),
-                exerciseIDX: Number(exercise_idx),
-            }
-        };
-    }
-
     _checkURLHashCommand() {
         let hash = window.location.hash;
 
-        return this._filterURLHashCommand(hash);
+        return this._url_hash_parser.parse(hash);
     }
 
     _setMenuStructure() {
@@ -598,14 +506,6 @@ export default class GUIModule extends Module {
     }
 
     _subscribeToWrapperEvents() {
-        /* Как только нажата кнопка переключения разметки */
-        // $("#switch-btn").click(() => {
-        //     this._state.switched = !this._state.switched;
-        //     this.emitEvent("switch", this._state.switched);
-        //
-        //     this._debug.log('Switch clicked: ', this._state.switched);
-        // });
-
         /* Как только нажата кнопка запуса миссии */
         this._lesson_pane.onMissionClick(idx => {
             this.emitEvent("mission", idx);

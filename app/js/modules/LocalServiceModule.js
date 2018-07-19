@@ -21,11 +21,11 @@ export default class LocalServiceModule extends Module {
 
     static defaults() {
         return {
-            modeDummy: false,       // холостой режим
-            connectTimeout: 5000,   // время в мс, через которое запустится проверка подключения сервиса
-            portUrgent: false,
-            socketAddress: '127.0.0.1',
-            socketPort: '8005'
+            modeDummy: false,           // холостой режим
+            connectTimeout: 5000,       // время в мс, через которое запустится проверка подключения сервиса
+            portUrgent: false,          // переопределить порт (платы)
+            socketAddress: '127.0.0.1', // адрес сокет-сервера
+            socketPort: '8005'          // порт сокет-сервера
         }
     }
 
@@ -46,12 +46,14 @@ export default class LocalServiceModule extends Module {
     }
 
     switchDummyMode(on) {
+        this.break();
+
         super.switchDummyMode(on);
 
         this.launch();
     }
 
-    launch() {
+    launch(socket_addr, socket_port) {
         if (this._options.modeDummy) {
             this._debug.log('Working in DUMMY mode');
 
@@ -65,8 +67,16 @@ export default class LocalServiceModule extends Module {
                 this.resetPort(this._options.portUrgent);
             }
 
-            this._launchIPC();
+            this._launchIPC(socket_addr, socket_port);
             this._subscribeToWrapperEvents();
+        }
+    }
+
+    break() {
+        if (!this._options.modeDummy) {
+            if (this._ipc) {
+                this._ipc.disconnect();
+            }
         }
     }
 
@@ -248,13 +258,17 @@ export default class LocalServiceModule extends Module {
      *
      * @private
      */
-    _launchIPC() {
+    _launchIPC(socket_addr, socket_port) {
         if (this._options.modeDummy) {return true}
+
+        if (this._ipc) {
+            this._ipc.disconnect();
+        }
 
         if (window && window.process && window.process.type) {
             this._useIPCElectron();
         } else {
-            this._useIPCSocket();
+            this._useIPCSocket(socket_addr, socket_port);
         }
 
         this._ipc.send('connect');

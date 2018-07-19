@@ -101,7 +101,7 @@ export default class LessonPaneWrapper extends Wrapper {
             this._plugin.setExerciseActive(exercise_idx);
         } catch (err) {
             if (err.code === "ENOCON") {
-                console.warn("setExerciseActive: called too early; setting deferred value");
+                // console.warn("setExerciseActive: called too early; setting deferred value");
                 this._exercise_active_deferred = exercise_idx;
             } else {
                 throw err;
@@ -116,7 +116,7 @@ export default class LessonPaneWrapper extends Wrapper {
             this.setExercises(this._missions[mission_idx].exercises);
         } catch (err) {
             if (err.code === "ENOCON") {
-                console.warn("setMissionActive: called too early; setting deferred value");
+                // console.warn("setMissionActive: called too early; setting deferred value");
                 this._mission_active_deferred = mission_idx;
             } else {
                 throw err;
@@ -137,7 +137,7 @@ export default class LessonPaneWrapper extends Wrapper {
             this._plugin.setMenuStructure(structure);
         } catch (err) {
             if (err.code === "ENOCON") {
-                console.warn("setMenuStructure: called too early; setting deferred value");
+                // console.warn("setMenuStructure: called too early; setting deferred value");
                 this._menu_structure_deferred = structure;
             } else {
                 throw err;
@@ -154,7 +154,7 @@ export default class LessonPaneWrapper extends Wrapper {
             }
         } catch (err) {
             if (err.code === "ENOCON") {
-                console.warn("setMenuStructure: called too early; setting deferred value");
+                // console.warn("setMenuStructure: called too early; setting deferred value");
                 this._task_on_deferred = on;
             } else {
                 throw err;
