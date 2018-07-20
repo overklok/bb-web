@@ -180,12 +180,16 @@ class Application {
             let exercise_idx, mission_idx;
 
             let command = this.gui._checkURLHashCommand();
+
             if (command.type === "goto") {
                 exercise_idx = command.data.exerciseIDX;
                 mission_idx = command.data.missionIDX;
             }
             if (command.type === "demo") {
                 this.ls.switchDummyMode(true);
+            }
+            if (command.type === "full" && command.data) {
+                this.ls.launch(command.data.address, command.data.port);
             }
 
             this.ins.getInitialLessonID()
@@ -381,12 +385,17 @@ class Application {
                     break;
                 }
                 case "demo": {
-                    this.gui.hideAllAlerts();
                     this.ls.switchDummyMode(true);
+                    this.gui.hideAllAlerts();
+
                     break;
                 }
                 case "full": {
                     this.ls.switchDummyMode(false);
+                    if (command.data) {
+                        this.ls.launch(command.data.address, command.data.port);
+                    }
+
                     break;
                 }
                 default: {

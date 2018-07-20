@@ -40,16 +40,18 @@ export default class LocalServiceModule extends Module {
             connected: false,
             board_status: undefined,
             check_later: false,
-
+            running: false,
         };
 
         this.launch();
     }
 
-    switchDummyMode(on, break_connection=true) {
-        this.break();
-
+    switchDummyMode(on) {
         super.switchDummyMode(on);
+
+        this._terminate();
+
+        this.break(true);
 
         this.launch();
     }
@@ -73,8 +75,8 @@ export default class LocalServiceModule extends Module {
         }
     }
 
-    break() {
-        if (!this._options.modeDummy) {
+    break(ignore_dummy) {
+        if (!this._options.modeDummy || ignore_dummy) {
             if (this._ipc) {
                 this._ipc.disconnect();
             }
@@ -147,6 +149,8 @@ export default class LocalServiceModule extends Module {
         }
 
         return new Promise(resolve => {
+            this._state.running = true;
+
             this._ipc.send('code-update', handlers);
 
             this._ipc.once('code-update.result', (event, error) => {
@@ -154,7 +158,7 @@ export default class LocalServiceModule extends Module {
                    this._debug.error(error);
                    throw error;
                 } else {
-                   resolve();
+                    resolve();
                 }
            });
         });
@@ -254,6 +258,12 @@ export default class LocalServiceModule extends Module {
         }
     }
 
+    _terminate() {
+        if (this._state.running) {
+            this.emitEvent('terminate');
+        }
+    }
+
     /**
      * Запустить механизм межпроцессной коммуникации
      *
@@ -309,6 +319,8 @@ export default class LocalServiceModule extends Module {
                 } else {
                     this.emitEvent("timeout");
                 }
+
+                this._terminate();
             }
         }, this._options.connectTimeout)
     }
@@ -329,7 +341,10 @@ export default class LocalServiceModule extends Module {
         /* Как только сервис сообщил о разъединении */
         this._ipc.on('disconnect', () => {
             this._state.connected = false;
-            this.emitEvent('disconnect');
+
+            if (!this._options.modeDummy) {
+                this.emitEvent('disconnect');
+            }
         });
 
         this._ipc.on('board-search', () => {
@@ -362,6 +377,7 @@ export default class LocalServiceModule extends Module {
 
         /* Как только сервис сообщил о завершении исполнения кода */
         this._ipc.on('terminate', (evt) => {
+            this._state.running = false;
             this.emitEvent('terminate', this._state.check_later);
             this._state.check_later = false;
         });
