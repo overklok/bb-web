@@ -352,6 +352,14 @@ class Application {
             this.trc.displayKeyboardPress(button_code, !valid);
         });
 
+        this._dispatcher.on('gui:reconnect', confirmed => {
+            if (confirmed) {
+                this.ls.switchDummyMode(false);
+            } else {
+                this.ls.switchDummyMode(true);
+            }
+        });
+
         /**
          * Введена хэш-команда
          */
@@ -492,6 +500,7 @@ class Application {
          */
         this._dispatcher.on('ls:connect', () => {
             this.gui.setBoardStatus('none');
+            this.gui.hideAllAlerts();
             /// Запросить ссылки для прошивки
             // this.gs.getUpgradeURLs()
                 /// Обновить прошивку
@@ -592,8 +601,10 @@ class Application {
          */
         this._dispatcher.on('ls:client_swap', () => {
             console.log("IPC SWAPPED CLIENT");
-            this.gui.showAlert('another_client');
-            this._dispatcher.kill();
+            this.ls.switchDummyMode(true);
+            this.gui.showAlertReconnect();
+
+            // this._dispatcher.kill();
         });
 
         /**

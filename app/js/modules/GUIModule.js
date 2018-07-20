@@ -27,7 +27,7 @@ export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
     static get event_types() {return [
         "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file",
-        "calc", "lesson"
+        "calc", "lesson", "reconnect"
     ]}
 
     static defaults() {
@@ -420,6 +420,13 @@ export default class GUIModule extends Module {
                 command = this._filterURLHashCommand(command);
 
                 this.emitEvent("hash-command", command);
+            });
+    }
+
+    showAlertReconnect() {
+        this._alertifier.alertInput('reconnect', true)
+            .then(confirmed => {
+                this.emitEvent("reconnect", confirmed);
             });
     }
 

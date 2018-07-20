@@ -40,12 +40,13 @@ export default class LocalServiceModule extends Module {
             connected: false,
             board_status: undefined,
             check_later: false,
+
         };
 
         this.launch();
     }
 
-    switchDummyMode(on) {
+    switchDummyMode(on, break_connection=true) {
         this.break();
 
         super.switchDummyMode(on);
@@ -57,10 +58,10 @@ export default class LocalServiceModule extends Module {
         if (this._options.modeDummy) {
             this._debug.log('Working in DUMMY mode');
 
-            setTimeout(() => {
+            // setTimeout(() => {
                 this.emitEvent("connect");
-                this.emitEvent("board-status", "connect");
-            }, 1000);
+                this.emitEvent("board-status", "default");
+            // }, 1000);
 
         } else {
             if (this._options.portUrgent) {
@@ -303,7 +304,11 @@ export default class LocalServiceModule extends Module {
 
         setTimeout(() => {
             if (!this._options.modeDummy && this._state.connected === false) {
-                this.emitEvent("timeout");
+                if (this._ipc && this._ipc.is_socket) {
+                    this.emitEvent("disconnect");
+                } else {
+                    this.emitEvent("timeout");
+                }
             }
         }, this._options.connectTimeout)
     }
@@ -323,6 +328,7 @@ export default class LocalServiceModule extends Module {
 
         /* Как только сервис сообщил о разъединении */
         this._ipc.on('disconnect', () => {
+            this._state.connected = false;
             this.emitEvent('disconnect');
         });
 

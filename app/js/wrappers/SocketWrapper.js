@@ -12,6 +12,8 @@ export default class SocketWrapper extends Wrapper {
         this._port = port;
 
         this._socket = io(this._getFullAddr());
+
+        this.is_socket = true;
     }
 
     on(channel, handler) {

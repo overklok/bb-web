@@ -31,6 +31,12 @@ const ALERTS = {
         html: "Скорее всего, Вы открыли приложение где-то ещё. Если Вы пользуетесь " +
         "несколькими браузерами, проверьте, не открыта ли страница в них. Плата может работать только с " +
         "одной из них."
+    },
+    reconnect: {
+        title: "Приложение запущено",
+        html: "Скорее всего, Вы открыли приложение где-то ещё. Если Вы пользуетесь " +
+        "несколькими браузерами, проверьте, не открыта ли страница в них. Плата может работать только с " +
+        "одной из них."
     }
 };
 
@@ -61,16 +67,9 @@ export default class AlertifierWrapper extends Wrapper {
         }
 
         let title = ALERTS[type].title;
-
-        let node = document.createElement("div");
-
         let html = ALERTS[type].html;
 
-        if (this._images_path && 'image' in ALERTS[type] && ALERTS[type].image) {
-            html += `<br><img src='${this._images_path}/${ALERTS[type].image}' style="width: 200px; margin-top: 20px;">`
-        }
-
-        node.innerHTML = html;
+        let node = this._getContentNode(type, html);
 
         this._alerts[type] = swal({
             title: title,
@@ -82,10 +81,24 @@ export default class AlertifierWrapper extends Wrapper {
         this._state.closed = false;
     }
 
-    alertInput(type) {
+    alertInput(type, confirm_only=false) {
         if (!(type in ALERTS)) {throw new RangeError(`Type '${type}' does not exist`)}
 
         let title = ALERTS[type].title;
+        let html = ALERTS[type].html;
+
+        let node = this._getContentNode(type, html);
+
+        if (confirm_only) {
+            return swal({
+                title: title,
+                content: node,
+                buttons: {
+                    cancel: "Работать без устройства",
+                    confirm: "Переподключиться",
+                },
+            });
+        }
 
         return swal({
             title: title,
@@ -104,5 +117,17 @@ export default class AlertifierWrapper extends Wrapper {
             swal.close();
             this._state.closed = true;
         }
+    }
+
+    _getContentNode(type, html) {
+        let node = document.createElement("div");
+
+        if (this._images_path && 'image' in ALERTS[type] && ALERTS[type].image) {
+            html += `<br><img src='${this._images_path}/${ALERTS[type].image}' style="width: 200px; margin-top: 20px;">`
+        }
+
+        node.innerHTML = html;
+
+        return node;
     }
 }
