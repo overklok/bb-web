@@ -58,8 +58,13 @@ class AdminBoardApplication {
      * @param {Array<Object>} currents токи
      */
     setData(plates, currents) {
-        this.bb.updatePlates(plates);
-        this.bb.updateCurrents(currents);
+        if (plates) {
+            this.bb.updatePlates(plates);
+        }
+
+        if (currents) {
+            this.bb.updateCurrents(currents);
+        }
     }
 
     /**

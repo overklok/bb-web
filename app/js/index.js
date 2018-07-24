@@ -572,7 +572,6 @@ class Application {
         this._dispatcher.on('ls:plates', data => {
             this.bb.clearCurrents();
             this.bb.updatePlates(data);
-            this.gui.clickCalcButton();
         });
 
         /**
@@ -587,6 +586,10 @@ class Application {
          */
         this._dispatcher.on('ls:board-status', status => {
             this.gui.setBoardStatus(status);
+        });
+
+        this._dispatcher.on('ls:request_calc', step => {
+            this.gui.clickCalcButton(step);
         });
 
         /**

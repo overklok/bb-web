@@ -80,18 +80,8 @@ export default class Breadboard {
         this._layers.plate.removeAllPlates();
     }
 
-    setCurrent(points, weight) {
-        // if (this._cache.current) {
-        //     if (JSON.stringify(this._cache.current) === JSON.stringify(points)) {
-        //         console.log("cache equal, return");
-        //         return;
-        //     }
-        // } else {
-        //     this._cache.current = points;
-        // }
-
-        this._layers.current.removeAllCurrents();
-        this._layers.current.addCurrent(points, weight);
+    setCurrents(threads) {
+        this._layers.current.setCurrents(threads);
     }
 
     clearCurrents() {
@@ -381,7 +371,7 @@ export default class Breadboard {
                          1 1 1 0   0\
                          0 0 0 0.5 0"/>\
                 <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
-                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="10" result="coloredBlurOut"/>\
+                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>\
                 <feMerge>\
                     <feMergeNode in="coloredBlurOut"/>\
                     <feMergeNode in="SourceGraphic"/>\

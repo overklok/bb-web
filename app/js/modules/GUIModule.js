@@ -446,8 +446,10 @@ export default class GUIModule extends Module {
         this._launch_btn.switchPaneVisibility('test', on);
     }
 
-    clickCalcButton() {
-        this.emitEvent('calc', this._launch_btn.getCalcInput());
+    clickCalcButton(step=null) {
+        step = step ? step : this._launch_btn.getCalcInput();
+
+        this.emitEvent('calc', step);
     }
 
     displayCourses(courses) {

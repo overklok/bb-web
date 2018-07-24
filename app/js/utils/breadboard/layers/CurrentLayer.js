@@ -12,8 +12,7 @@ export default class CurrentLayer extends Layer {
 
         this._container.addClass(CurrentLayer.Class);
 
-        this._currents = [];
-        this._point_arr = [];
+        this._currents = {};
 
         this._cellgroup = undefined;
     }
@@ -23,17 +22,30 @@ export default class CurrentLayer extends Layer {
         this._cellgroup.move(100, 170);
     }
 
-    getAllCurrentData() {
-        return this._point_arr;
+    getAllCurrents() {
+        return this._currents;
+    }
+
+    removeCurrent(id) {
+        if (typeof id === "undefined") {
+            throw new TypeError("Argument 'id' must be defined");
+        }
+
+        if (!(id in this._currents)) {
+            throw new TypeError(`Current ${id} does not exist`);
+        }
+
+        let current = this._currents[id];
+
+        current.erase();
+
+        delete this._currents[current.id];
     }
 
     removeAllCurrents() {
-        for (let current of this._currents) {
-            current.erase();
+        for (let current_id in this._currents) {
+            this.removeCurrent(current_id);
         }
-
-        this._currents = [];
-        this._point_arr = [];
     };
 
     activateAllCurrents() {
@@ -48,38 +60,92 @@ export default class CurrentLayer extends Layer {
         }
     }
 
-    addCurrent(points, weight) {
-        if (!points || points.length === 0) {}
+    setCurrents(threads) {
+        for (let current_id in this._currents) {
+            this._currents[current_id].touched = undefined;
+        }
 
-        let path_data = this._buildCurrentPath(points);
+        for (let current_id in this._currents) {
+            let current = this._currents[current_id];
 
-        let current = new Current(this._cellgroup, {
+            let same = false;
+
+            for (let thread of threads) {
+                if (current.hasSameThread(thread)) {
+                    same = thread;
+                    thread.touched = true;
+                    current.touched = true;
+
+                    break;
+                }
+            }
+
+            if (same) {
+                current.setWeight(same.weight);
+            }
+        }
+
+        for (let thread of threads) {
+            if (!thread.touched) {
+                let cur = this._addCurrent(thread);
+                cur.touched = true;
+            }
+        }
+
+        for (let current_id in this._currents) {
+            if (!this._currents[current_id].touched) {
+                this.removeCurrent(current_id)
+            }
+        }
+    }
+
+    _addCurrent(thread) {
+        if (!thread || thread.length === 0) {}
+
+        let current = new Current(this._cellgroup, thread, {
             width: CURRENT_WIDTH,
             linecap: "round"
         });
 
-        this._currents.push(current);
+        let path_data = this._buildCurrentPath(thread);
 
-        current.draw(path_data, weight);
+        this._currents[current.id] = current;
+
+        current.draw(path_data, thread.weight);
         current.activate(CURRENT_ANIM_SPEED);
 
-        this._point_arr.push(points);
+        return current;
     };
+
+    _findCurrentByPoints(points) {
+        for (let current of this._currents) {
+            // console.log(thread.from.x, thread.from.y,
+            //             thread.to.x, thread.to.y,
+            //             current.thread.from.x, current.thread.from.y,
+            //             current.thread.to.x, current.thread.to.y,
+            //     );
+
+            if (points.from.x === current.thread.from.x &&
+                points.from.y === current.thread.from.y &&
+                points.to.x === current.thread.to.x &&
+                points.to.y === current.thread.to.y) {
+                return current;
+            }
+        }
+
+        return null;
+    }
 
     _buildCurrentPath(points) {
         let full_path = [];
 
-        // Для каждой пары точек
-        for (let point of points) {
-            let cell_from  = this.__grid.cell(point.from.x, point.from.y);
-            let cell_to    = this.__grid.cell(point.to.x, point.to.y);
+        let cell_from  = this.__grid.cell(points.from.x, points.from.y);
+        let cell_to    = this.__grid.cell(points.to.x, points.to.y);
 
-            CurrentLayer._appendLinePath(full_path, cell_from, cell_to);
-        }
+        CurrentLayer._appendLinePath(full_path, cell_from, cell_to);
 
         return full_path;
     };
-
 
     static _appendLinePath(path, cell_from, cell_to) {
         path.push(['M', cell_from.center.x, cell_from.center.y]);

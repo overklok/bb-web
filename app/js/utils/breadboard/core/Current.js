@@ -22,16 +22,24 @@ export default class Current {
     static get ColorMax() {return "#6cff65"}
     static get AnimationDelta() {return 100} // Расстояние между соседними стрелками, px
 
-    constructor(container, style) {
+    constructor(container, points, style) {
         this.container = container;
         this.style = style;
         this.path = null;
         this.arrows = [];
         this.weight = 0;
+        this.thread = points;
+
+        /// Идентификатор - по умолчанию случайная строка
+        this._id = Math.floor(Math.random() * (10 ** 6));
 
         this.container_anim = this.container.nested();
 
         this._visible = false;
+    }
+
+    get id() {
+        return this._id;
     }
 
     /**
@@ -84,6 +92,13 @@ export default class Current {
 
         this._visible = false;
     };
+
+    hasSameThread(thread) {
+        return  thread.from.x === this.thread.from.x &&
+                thread.from.y === this.thread.from.y &&
+                thread.to.x === this.thread.to.x &&
+                thread.to.y === this.thread.to.y;
+    }
 
     /**
      * Анимировать ток по контуру this.path
@@ -180,8 +195,6 @@ export default class Current {
         this.weight = weight;
 
         let color = Current.pickColorFromRange(weight);
-
-        console.log(color);
 
         this.path.stroke({color});
 

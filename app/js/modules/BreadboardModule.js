@@ -68,10 +68,12 @@ export default class BreadboardModule extends Module {
     }
 
     updateCurrents(data) {
-        if (!data) {return false}
+        if (!data) throw new TypeError ("Currents data is not defined");
+
+        // this._board.removeCurrents();
 
         if (data.threads) {
-            this._board.setCurrent(data.threads);
+            this._board.setCurrents(data.threads);
         }
 
         if (!('elements' in data)) {return true}

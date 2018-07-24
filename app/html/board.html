@@ -30,25 +30,44 @@
                 // console.log("ONCHNG", data);
             });
 
-            // setInterval(() => {
+            let weight = 0;
+            let iter = 0;
+
+            let threads = [
+                                {from: {x: 0, y: 0}, to: {x: 5, y: 0}, weight: weight},
+                                {from: {x: 5, y: 0}, to: {x: 5, y: 1}, weight: 0.5},
+                                {from: {x: 5, y: 1}, to: {x: 0, y: 1}, weight: 0},
+                                {from: {x: 0, y: 1}, to: {x: 0, y: 2}, weight: 1},
+                                {from: {x: 0, y: 2}, to: {x: 5, y: 2}},
+                                {from: {x: 5, y: 2}, to: {x: 5, y: 3}},
+                                {from: {x: 5, y: 3}, to: {x: 0, y: 3}, weight: 1},
+                            ];
+
+            setInterval(() => {
+                weight = weight == 0 ? 1 : 0;
+
+                iter++;
+
+                if (iter === 5 || iter === 15 || iter === 25 || iter === 35) {
+                    threads.push({
+                        from: {x: 7, y: 3}, to: {x: 7, y: 7}, weight: 1
+                    });
+                }
+
+                if (iter === 10 || iter === 20 || iter === 30 || iter === 40) {
+                    threads.pop();
+                }
+
                 app.setData(
-                    [
-                        {type: 'strip', x: 4, y: 4, orientation: 'west', extra: 5},
-                    ],
-                    // {
-                    //     threads:
-                    //         [
-                    //             {from: {x: 0, y: 0}, to: {x: 5, y: 0}},
-                    //             {from: {x: 5, y: 0}, to: {x: 5, y: 1}},
-                    //             {from: {x: 5, y: 1}, to: {x: 0, y: 1}},
-                    //             {from: {x: 0, y: 1}, to: {x: 0, y: 2}},
-                    //             {from: {x: 0, y: 2}, to: {x: 5, y: 2}},
-                    //             {from: {x: 5, y: 2}, to: {x: 5, y: 3}},
-                    //             {from: {x: 5, y: 3}, to: {x: 0, y: 3}},
-                    //         ]
-                    // }
+                    undefined,
+                    // [
+                    //     {type: 'strip', x: 4, y: 4, orientation: 'west', extra: 5},
+                    // ],
+                    {
+                        threads: threads,
+                    }
                 );
-            // }, 1000);
+            }, 20);
         });
     </script>
 </html>

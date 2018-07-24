@@ -16,7 +16,7 @@ export default class LocalServiceModule extends Module {
     static get eventspace_name()    {return "ls"}
     static get event_types()        {return [
         "connect", "disconnect", "client_swap", "command", "variable",
-        "terminate", "plates", "currents", "board-status", "timeout", "error"
+        "terminate", "plates", "currents", "board-status", "request_calc", "timeout", "error"
     ]};
 
     static defaults() {
@@ -388,6 +388,10 @@ export default class LocalServiceModule extends Module {
 
         this._ipc.on('draw_currents', (evt, data) => {
            this.emitEvent('currents', data);
+        });
+
+        this._ipc.on('request_calc', (evt, data) => {
+            this.emitEvent('request_calc', data);
         });
 
         /* Как только сервис сообщил об ошибке- */

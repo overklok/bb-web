@@ -46,6 +46,8 @@ export default class BreadboardWrapper extends Wrapper {
     }
 
     setPlates(plates) {
+        if (!plates) throw new TypeError ("Plates is not iterable");
+
         this._plugin.clearPlates();
 
         for (let plate of plates) {
@@ -72,8 +74,8 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.setPlateState(plate_id, state);
     }
 
-    setCurrent(points, weight) {
-        this._plugin.setCurrent(points, weight);
+    setCurrents(threads) {
+        this._plugin.setCurrents(threads);
     }
 
     removeCurrents() {
