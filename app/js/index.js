@@ -112,7 +112,7 @@ class Application {
             '*:resize', '*:error',
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
-            'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready',
+            'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready', 'gui:reconnect',
             'bb:change', 'bb:drag-start'
         ]);
     }
