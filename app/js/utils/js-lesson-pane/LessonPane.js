@@ -103,6 +103,20 @@ export default class LessonPane {
         this._attachHandlers();
     }
 
+    emphasize(on) {
+        if (on) {
+            if (!this._emphasized) {
+                this._container.classList.add(CLASEES.CONTAINER_MAIN_EMPH);
+                this._emphasized = true;
+            }
+        } else {
+            if (this._emphasized) {
+                this._container.classList.remove(CLASEES.CONTAINER_MAIN_EMPH);
+                this._emphasized = false;
+            }
+        }
+    }
+
     setMissions(missions) {
         if (!this._state.included) {throw new NotIncludedError("Cannot set any missions, include first")}
 

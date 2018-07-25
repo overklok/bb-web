@@ -321,7 +321,7 @@ class Application {
 
             let plates = this.bb.getData();
 
-            this.bb.clearCurrents();
+            // this.bb.clearCurrents();
 
             this.gs.calcCurrents(plates, extra)
                 .then(results => Promise.all([
@@ -507,9 +507,14 @@ class Application {
         /**
          * Готовность платы к работе
          */
-        this._dispatcher.on('ls:connect', () => {
+        this._dispatcher.on('ls:connect', is_socket => {
             this.gui.setBoardStatus('none');
             this.gui.hideAllAlerts();
+
+            if (is_socket) {
+                this.gui.emphasize(is_socket);
+            }
+
             /// Запросить ссылки для прошивки
             // this.gs.getUpgradeURLs()
                 /// Обновить прошивку

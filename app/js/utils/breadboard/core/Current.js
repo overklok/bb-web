@@ -50,7 +50,7 @@ export default class Current {
      * @param path
      */
     draw(path, weight=0) {
-        this.weight = weight;
+        this.weight = weight > 1 ? 1 : weight;
         this.style.color = Current.pickColorFromRange(this.weight);
 
         this.path = this.container
@@ -192,9 +192,11 @@ export default class Current {
     };
 
     setWeight(weight=0) {
-        this.weight = weight;
+        this.weight = weight > 1 ? 1 : weight;
 
-        let color = Current.pickColorFromRange(weight);
+        console.log(this.weight);
+
+        let color = Current.pickColorFromRange(this.weight);
 
         this.path.stroke({color});
 

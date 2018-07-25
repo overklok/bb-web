@@ -203,4 +203,8 @@ export default class LessonPaneWrapper extends Wrapper {
     switchMenu(on) {
         this._plugin.switchMenu(on);
     }
+
+    emphasize(on) {
+        this._plugin.emphasize(on);
+    }
 }

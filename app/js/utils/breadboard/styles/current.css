@@ -1,7 +1,7 @@
 .current-path {
-     transition: stroke 2s;
+     transition: stroke 500ms;
 }
 
 .current-arrow {
-    transition: fill 2s;
+    transition: fill 500ms;
 }

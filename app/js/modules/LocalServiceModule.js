@@ -333,7 +333,8 @@ export default class LocalServiceModule extends Module {
         /* Как только сервис сообщил о соединении */
         this._ipc.on('connect', (evt, version) => {
             this._state.connected = true;
-            this.emitEvent('connect');
+
+            this.emitEvent('connect', this._ipc.is_socket);
             this._debug.info(`Connected to IPC ver. ${version}`);
             this._version = version;
         });

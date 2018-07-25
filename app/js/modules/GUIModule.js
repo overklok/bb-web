@@ -456,6 +456,10 @@ export default class GUIModule extends Module {
         this._home_menu.displayCourses(courses);
     }
 
+    emphasize(on) {
+        this._lesson_pane.emphasize(on);
+    }
+
     /**
      * Отфильтровать событие нажатия клавиши
      *

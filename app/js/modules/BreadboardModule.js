@@ -81,12 +81,17 @@ export default class BreadboardModule extends Module {
         // это будет приходить с сервера
         for (let element of data.elements) {
             this._board.setPlateState(element.id, {
-                highlighted: element.highlight || false,
                 currents: element.currents,
                 voltages: element.voltages,
                 // hidden: <smth>
                 // bytes_to_board: <smth>
-            })
+            });
+
+            if (element.highlight) {
+                this._board.setPlateState(element.id, {
+                    highlighted: element.highlight
+                });
+            }
         }
 
         return true;
