@@ -158,7 +158,7 @@ export default class Plate {
      * @param {Cell}    cell        положение элемента относительно опорной точки
      * @param {string}  orientation ориентация элемента относительно опорной точки
      */
-    draw(cell, orientation) {
+    draw(cell, orientation, animate=false) {
         let width   = (cell.size.x * this._params.size.x) + (this.__grid.gap.x * 2 * (this._params.size.x - 1));
         let height  = (cell.size.y * this._params.size.y) + (this.__grid.gap.y * 2 * (this._params.size.y - 1));
 
@@ -183,7 +183,9 @@ export default class Plate {
         this._params.size_px.x = width;
         this._params.size_px.y = height;
 
-        this._bezel.scale(1.15).animate('100ms').scale(1);
+        if (animate) {
+            this._bezel.scale(1.15).animate('100ms').scale(1);
+        }
     };
 
     /**
@@ -371,12 +373,12 @@ export default class Plate {
      * Удалить плашку
      */
     dispose() {
-        this._bezel.scale(1).animate('100ms').scale(0.85).opacity(0);
+        // this._bezel.scale(1).animate('100ms').scale(0.85).opacity(0);
 
-        setTimeout(() => {
-            this._container.node.remove();
-            this._shadow.node.remove();
-        }, 100);
+        // setTimeout(() => {
+        this._container.node.remove();
+        this._shadow.node.remove();
+        // }, 100);
     }
 
     /**

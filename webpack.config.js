@@ -77,9 +77,9 @@ module.exports = {
         //     inject: 'body'
         // }),
         // new HtmlWebpackPlugin({
-        //     template: './app/html/board.html',
-        //     inject: 'body',
-        //     filename: 'board.html'
+        //      template: './app/html/board.html',
+        //      inject: 'body',
+        //      filename: 'board.html'
         // }),
         // new HtmlWebpackPlugin({
         //     template: './app/html/admin.html',

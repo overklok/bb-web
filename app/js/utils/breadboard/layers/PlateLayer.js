@@ -117,10 +117,11 @@ export default class PlateLayer extends Layer {
      * @param {string}      orientation ориентация плашки
      * @param {null|int}    id          идентификатор плашки
      * @param {*}           extra       резервное поле
+     * @param {boolean}     animate     анимировать появление плашки
      *
      * @returns {int} идентификатор плашки
      */
-    addPlate(type, x, y, orientation, id, extra) {
+    addPlate(type, x, y, orientation, id, extra, animate) {
         if (!(typeof id !== "undefined") || !(typeof x !== "undefined") || !(typeof y !== "undefined") || !orientation) {
             throw new TypeError("All of 'type', 'x', 'y', 'orientation' and 'id' arguments must be defined");
         }
@@ -137,7 +138,7 @@ export default class PlateLayer extends Layer {
         }
 
         try {
-            plate.draw(this.__grid.cell(x, y), orientation);
+            plate.draw(this.__grid.cell(x, y), orientation, animate);
         } catch (err) {
             console.error("Cannot draw the plate");
             plate.dispose();
@@ -507,6 +508,7 @@ export default class PlateLayer extends Layer {
             plate.state.orientation,
             null,
             plate.extra,
+            true
         );
 
         this._plates[new_plate_id].setState(plate.state);

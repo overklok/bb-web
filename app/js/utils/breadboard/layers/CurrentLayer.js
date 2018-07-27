@@ -2,7 +2,6 @@ import Layer from "../core/Layer";
 import Current from "../core/Current";
 
 const CURRENT_WIDTH = 20;
-const CURRENT_ANIM_SPEED     = 600;            // Скорость анимации стрелок, arrows/sec
 
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
@@ -111,8 +110,10 @@ export default class CurrentLayer extends Layer {
 
         this._currents[current.id] = current;
 
-        current.draw(path_data, thread.weight);
-        current.activate(CURRENT_ANIM_SPEED);
+        let weight = thread.weight > 1 ? 1 : thread.weight;
+
+        current.draw(path_data, weight);
+        current.activate(weight);
 
         return current;
     };

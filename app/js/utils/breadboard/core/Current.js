@@ -20,6 +20,8 @@ import thm from '../styles/current.css';
 export default class Current {
     static get ColorMin() {return "#7df9ff"}
     static get ColorMax() {return "#6cff65"}
+    static get SpeedMin() {return 600}
+    static get SpeedMax() {return 200}
     static get AnimationDelta() {return 100} // Расстояние между соседними стрелками, px
 
     constructor(container, points, style) {
@@ -27,7 +29,6 @@ export default class Current {
         this.style = style;
         this.path = null;
         this.arrows = [];
-        this.weight = 0;
         this.thread = points;
 
         /// Идентификатор - по умолчанию случайная строка
@@ -50,8 +51,7 @@ export default class Current {
      * @param path
      */
     draw(path, weight=0) {
-        this.weight = weight > 1 ? 1 : weight;
-        this.style.color = Current.pickColorFromRange(this.weight);
+        this.style.color = Current.pickColorFromRange(weight);
 
         this.path = this.container
             .path(path)
@@ -103,7 +103,7 @@ export default class Current {
     /**
      * Анимировать ток по контуру this.path
      *
-     * @param speed       Скорость анимации тока (движения стрелок по контуру)
+     * @param weight      Скорость анимации тока (движения стрелок по контуру)
      *
      * Генерируется некоторое число стрелок - векторных объектов, изображающих ток по контуру.
      * Каждая стрелка циклически проходит фрагмент пути длины delta с заданной скоростью speed
@@ -111,10 +111,13 @@ export default class Current {
      * где предыдущая заканчивает итерацию цикла движения.
      *
      */
-    activate(speed) {
+    activate(weight=0) {
         if (!this._visible) {
             throw new Error("Cannot activate invisible current!");
         }
+
+        let speed = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
+        // let speed = Current.SpeedMin;
 
         // Рассчитаем длину контура
         let length = this.path.length();
@@ -150,7 +153,7 @@ export default class Current {
                 .addClass('current-arrow');
 
             // Заливка и центрирование
-            arrow.fill(Current.pickColorFromRange(this.weight));
+            arrow.fill(Current.pickColorFromRange(weight));
 
             this.arrows.push(arrow);
 
@@ -192,13 +195,14 @@ export default class Current {
     };
 
     setWeight(weight=0) {
-        this.weight = weight > 1 ? 1 : weight;
+        weight = weight > 1 ? 1 : weight;
 
-        console.log(this.weight);
-
-        let color = Current.pickColorFromRange(this.weight);
+        let color = Current.pickColorFromRange(weight);
 
         this.path.stroke({color});
+
+        this.deactivate();
+        this.activate(weight);
 
         for (let arw of this.arrows) {
             arw.fill(color);
