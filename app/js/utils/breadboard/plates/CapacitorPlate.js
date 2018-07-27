@@ -8,7 +8,7 @@ export default class CapacitorPlate extends Plate {
         super(container, grid, id, capacity);
 
         this._params.size = {x: 2, y: 1};
-        this._params.extra = Number(capacity) || 1000;
+        this._params.extra = Number(capacity) || 0.001;
     }
 
     /**
@@ -72,7 +72,13 @@ export default class CapacitorPlate extends Plate {
     }
 
     _drawLabel(text="", size=16) {
-        this._group.text(String(text) + "мкФ")
+        let num = Number(text);
+
+        if (num * 1e6 >= 1)    {text = String(Number(num * 1e6).toPrecision())   + 'мк'}
+        // if (num * 1e3 >= 1)    {text = String(Number(num * 1e3).toPrecision())   + 'н'}
+        if (num >= 1)          {text = String(Number(num).toPrecision())   + 'пк'}
+
+        this._group.text(text + 'Ф')
             .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "normal"})
             .cx(this._container.width() / 2)
             .y(this._container.height() - size - 2)

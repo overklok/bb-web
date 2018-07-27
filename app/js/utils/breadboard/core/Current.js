@@ -20,8 +20,8 @@ import thm from '../styles/current.css';
 export default class Current {
     static get ColorMin() {return "#7df9ff"}
     static get ColorMax() {return "#6cff65"}
-    static get SpeedMin() {return 600}
-    static get SpeedMax() {return 200}
+    static get SpeedMin() {return 200}
+    static get SpeedMax() {return 600}
     static get AnimationDelta() {return 100} // Расстояние между соседними стрелками, px
 
     constructor(container, points, style) {
