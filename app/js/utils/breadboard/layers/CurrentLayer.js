@@ -111,6 +111,7 @@ export default class CurrentLayer extends Layer {
         this._currents[current.id] = current;
 
         let weight = thread.weight > 1 ? 1 : thread.weight;
+        this._weight = weight;
 
         current.draw(path_data, weight);
         current.activate(weight);

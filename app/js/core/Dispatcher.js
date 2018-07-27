@@ -276,10 +276,10 @@ export default class Dispatcher {
             if (name in this._handlers) {
                 return this._handlers[name];
             } else {
-                return function(data) {console.warn("Dispatcher._getHandler(): handler for ", name, " was not defined, data:", data)};
+                return function(data) {console.debug("Dispatcher._getHandler(): handler for ", name, " was not defined, data:", data)};
             }
         } else {
-            return function(data) {console.warn("Dispatcher_getHandler(): Event listener ", name , "was disabled for a while, data:", data);}
+            return function(data) {console.debug("Dispatcher_getHandler(): Event listener ", name , "was disabled for a while, data:", data);}
         }
     }
 

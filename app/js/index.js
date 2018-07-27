@@ -594,7 +594,13 @@ class Application {
         });
 
         this._dispatcher.on('ls:request_calc', step => {
-            this.gui.clickCalcButton(step);
+            let plates = this.bb.getData();
+
+            this.gs.calcCurrents(plates, step)
+                .then(results => Promise.all([
+                    this.bb.updateCurrents(results),
+                    this.ls.sendSpi(results.board_data)
+                ]))
         });
 
         /**

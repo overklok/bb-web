@@ -30,11 +30,16 @@ export default class Current {
         this.path = null;
         this.arrows = [];
         this.thread = points;
+        this._weight = 0;
 
         /// Идентификатор - по умолчанию случайная строка
         this._id = Math.floor(Math.random() * (10 ** 6));
 
         this.container_anim = this.container.nested();
+        this.animators = {
+            move: [],
+            trans: []
+        };
 
         this._visible = false;
     }
@@ -111,9 +116,18 @@ export default class Current {
      * где предыдущая заканчивает итерацию цикла движения.
      *
      */
-    activate(weight=0) {
+    activate(weight=0, reset=true) {
         if (!this._visible) {
             throw new Error("Cannot activate invisible current!");
+        }
+
+        console.log("ACTIVATE", reset);
+
+        if (reset) {
+            this.animators = {
+                move: [],
+                trans: []
+            };
         }
 
         let speed = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
@@ -157,16 +171,23 @@ export default class Current {
 
             this.arrows.push(arrow);
 
-            Current.animateArrowMove(this.path.toString(), arrow, time, progress_start, progress_end);
+            let aniMove, aniTrans;
+
+            aniMove = Current.animateArrowMove(this.path.toString(), arrow, time, progress_start, progress_end, this.animators.move[i]);
 
             if (i === 0) {
                 // если первая стрелка
-                Current.animateArrowScale(arrow, time, false);
+                aniTrans = Current.animateArrowScale(arrow, time, false, this.animators.trans[i]);
             }
 
             if (i === arrows_count - 1) {
                 // если последняя стрелка
-                Current.animateArrowScale(arrow, time, true);
+                aniTrans = Current.animateArrowScale(arrow, time, true, this.animators.trans[i]);
+            }
+
+            if (reset) {
+                this.animators.move.push(aniMove);
+                this.animators.trans.push(aniTrans);
             }
         }
 
@@ -197,21 +218,25 @@ export default class Current {
     setWeight(weight=0) {
         weight = weight > 1 ? 1 : weight;
 
-        let color = Current.pickColorFromRange(weight);
+        if (this._weight !== weight) {
+            this.deactivate();
+            this.activate(weight, false);
 
-        this.path.stroke({color});
+            let color = Current.pickColorFromRange(weight);
 
-        this.deactivate();
-        this.activate(weight);
+            this.path.stroke({color});
 
-        for (let arw of this.arrows) {
-            arw.fill(color);
+            for (let arw of this.arrows) {
+                arw.fill(color);
+            }
+
+            this._weight = weight;
         }
     }
 
-    static animateArrowMove(path, arrow, time, progress_start, progress_end) {
+    static animateArrowMove(path, arrow, time, progress_start, progress_end, animator=undefined) {
         // SVG-анимация стрелки:
-        let aniMove = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion"); // тип: перемещение
+        let aniMove = animator ? animator.node : document.createElementNS("http://www.w3.org/2000/svg", "animateMotion"); // тип: перемещение
         aniMove.setAttribute("start", "0s");                                              // задержка
         aniMove.setAttribute("dur", time + "ms");                                         // длительность
         aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
@@ -221,17 +246,21 @@ export default class Current {
         aniMove.setAttribute("calcMode", "linear");                                       // (!) функция перемещения
 
         // В аниматор нужно вставить путь анимации
-        let mpath = document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+        let mpath = animator ? animator.path : document.createElementNS("http://www.w3.org/2000/svg", "mpath");
         mpath.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + path.toString());
 
         // Подключение в DOM
-        aniMove.appendChild(mpath);
-        arrow.node.appendChild(aniMove);
+        if (!animator) {
+            aniMove.appendChild(mpath);
+            arrow.node.appendChild(aniMove);
+        }
+
+        return {node: aniMove, path: mpath};
     };
 
-    static animateArrowScale(arrow, time, out = false) {
+    static animateArrowScale(arrow, time, out = false, animator=undefined) {
         // SVG-анимация стрелки:
-        let aniTrans = document.createElementNS("http://www.w3.org/2000/svg", "animateTransform"); // тип: трансформ.
+        let aniTrans = animator ? animator : document.createElementNS("http://www.w3.org/2000/svg", "animateTransform"); // тип: трансформ.
         aniTrans.setAttribute("attributeName", "transform");                               // радиус
         aniTrans.setAttribute("type", "scale");
         aniTrans.setAttribute("additive", "sum");
@@ -245,7 +274,11 @@ export default class Current {
         // aniMove.setAttribute("keyTimes", "0;0.5");
 
         // Подключение в DOM
-        arrow.node.appendChild(aniTrans);
+        if (!animator) {
+            arrow.node.appendChild(aniTrans);
+        }
+
+        return aniTrans;
     };
 
     static pickColorFromRange(weight) {

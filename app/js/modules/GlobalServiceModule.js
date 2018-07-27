@@ -203,6 +203,8 @@ export default class GlobalServiceModule extends Module {
     calcCurrents(plates, extra_num) {
         if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
 
+        if (!plates) {return new Promise(resolve => {resolve([])})}
+
         return new Promise((resolve, reject) => {
             let packet = {elements: plates, num: extra_num};
             // let data = new FormData();
