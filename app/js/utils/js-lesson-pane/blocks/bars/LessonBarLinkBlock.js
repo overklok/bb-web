@@ -52,6 +52,7 @@ export default class LessonBarLinkBlock extends Block {
 
     dispose() {
         this._detachCallbacks();
+        super.dispose();
     }
 
     onClick(cb) {

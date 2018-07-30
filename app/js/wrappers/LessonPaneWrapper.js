@@ -67,8 +67,12 @@ export default class LessonPaneWrapper extends Wrapper {
         this._lesson_text = text;
     }
 
-    registerMissions(missions) {
+    setMissions(missions) {
         this._missions = missions;
+
+        if (this._state.display) {
+            this._plugin.setMissions(this._missions);
+        }
     }
 
     setExercises(exercises) {

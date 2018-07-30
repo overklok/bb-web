@@ -144,7 +144,7 @@ export default class GUIModule extends Module {
         return new Promise((resolve, reject) => {
             if (!missions) {return resolve(false)}
 
-            this._lesson_pane.registerMissions(missions);
+            this._lesson_pane.setMissions(missions);
 
             resolve(true);
         });
@@ -530,7 +530,7 @@ export default class GUIModule extends Module {
 
         this._home_menu.onLessonClick((lesson) => {
             this.emitEvent("lesson", lesson);
-        })
+        });
 
         /* Как только нажата кнопка запуска/проверки */
         this._launch_btn.onButtonClick((button, start, data) => {

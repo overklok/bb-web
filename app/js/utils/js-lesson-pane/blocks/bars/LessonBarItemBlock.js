@@ -56,6 +56,8 @@ export default class LessonBarItemBlock extends BarItemBlock {
         if (this._link) {
             this._link.dispose();
         }
+
+        super.dispose();
     }
 
     onClick(cb) {

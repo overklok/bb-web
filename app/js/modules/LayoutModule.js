@@ -221,7 +221,7 @@ export default class LayoutModule extends Module {
             /// в зависимости от режима, в который нужно перейти
             switch (mode) {
                 case MODES.SIMPLE: {
-                    // this._layout.show("north");
+                    this._layout.show("north");
 
                     this._panes.east.hide("north");
                     duration += this._options.animSpeedSub;
@@ -240,7 +240,7 @@ export default class LayoutModule extends Module {
                     break;
                 }
                 case MODES.FULL: {
-                    // this._layout.show("north");
+                    this._layout.show("north");
 
                     this._panes.east.show("north");
                     duration += this._options.animSpeedSub;
@@ -259,8 +259,8 @@ export default class LayoutModule extends Module {
                     break;
                 }
                 case MODES.HOME: {
+                    this._layout.hide("north");
                     this._layout.hide("east");
-                    // this._layout.hide("north");
                     break;
                 }
                 default: {

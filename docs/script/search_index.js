@@ -3151,8 +3151,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/wrappers/lessonpanewrapper.js~lessonpanewrapper#registermissions",
-    "class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html#instance-method-registerMissions",
-    "js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper#registerMissions",
+    "class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html#instance-method-setMissions",
+    "js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper#setMissions",
     "method"
   ],
   [

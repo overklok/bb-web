@@ -264,6 +264,7 @@ export default class LessonPane {
 
     switchMenu(on) {
         this._blocks.flipper.showSide(on ? 'top' : 'front');
+        this._blocks.chips.menu.switchPressed(on);
     }
 
     /**

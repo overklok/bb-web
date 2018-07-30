@@ -410,11 +410,11 @@ class Application {
         this._dispatcher.on('gui:menu', (data) => {
             switch (data.name) {
                 case 'lessons': {
-                    this.gs.goToLessonPage();
-                    // this.lay.compose('home');
-                    // this.gui.switchMenu(false);
-                    // this.gs.getCoursesData()
-                    //     .then(courses => this.gui.displayCourses(courses));
+                    // this.gs.goToLessonPage();
+                    this.lay.compose('home');
+                    this.gui.switchMenu(false);
+                    this.gs.getCoursesData()
+                        .then(courses => this.gui.displayCourses(courses));
 
                     break;
                 }
@@ -452,6 +452,7 @@ class Application {
                     this.gui.showMissionButtons(lesson.missions);
                     this.gui.setLessonText(lesson.name)
                 })
+                .then(() => this.ins.launchLesson())
         });
 
         /**

@@ -34,6 +34,18 @@ export default class MenuChipBlock extends ChipBlock {
         this._attachCallbacks();
     }
 
+    switchPressed(on) {
+        if (on) {
+            if (!this._state.pressed) {
+                this._containers.button.click();
+            }
+        } else {
+            if (this._state.pressed) {
+                this._containers.button.click();
+            }
+        }
+    }
+
     onClick(cb) {
         this._callbacks.onclick = cb;
     }
