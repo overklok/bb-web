@@ -34,7 +34,9 @@
   justify-content: space-around;
   float: right;
   height: 30px;
+  cursor: pointer;
 }
 .mission-bar.stretched {
   width: 100% !important;
+  cursor: default;
 }

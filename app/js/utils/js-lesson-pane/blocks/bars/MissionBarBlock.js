@@ -96,7 +96,9 @@ export default class MissionBarBlock extends BarBlock {
         this.addItem(exercise);
 
         exercise.onClick((data) => {
-            this._callbacks.onclick(data);
+            if (!this._state.stretched) {
+                this._callbacks.onclick(data);
+            }
         });
     }
 
