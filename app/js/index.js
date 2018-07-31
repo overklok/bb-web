@@ -412,7 +412,7 @@ class Application {
                 case 'lessons': {
                     // this.gs.goToLessonPage();
                     this.lay.compose('home');
-                    this.gui.switchMenu(false);
+                    this.gui.switchMenu(2);
                     this.gs.getCoursesData()
                         .then(courses => this.gui.displayCourses(courses));
 
@@ -445,6 +445,22 @@ class Application {
             }
         });
 
+        this._dispatcher.on('gui:return', () => {
+            this._dispatcher.only([]);
+
+            this.gui.switchMenu(false);
+
+            let exercise = this.ins.getExerciseCurrent();
+            this.lay.compose(exercise.layout_mode)
+                .then(() => {
+                    if (exercise.check_buttons) {
+                        this._dispatcher.only(['gui:*', 'ins:pass']);
+                    } else {
+                        this._dispatcher.only(['gui:*']);
+                    }
+                });
+        });
+
         this._dispatcher.on('gui:lesson', lesson_id => {
             this.gs.getLessonData(lesson_id)
                 .then(lesson_data => this.ins.loadLesson(lesson_data))
@@ -453,6 +469,7 @@ class Application {
                     this.gui.setLessonText(lesson.name)
                 })
                 .then(() => this.ins.launchLesson())
+                .then(() => this.gui.switchMenu(false))
         });
 
         /**

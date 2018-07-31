@@ -12,6 +12,12 @@
     .lesson-pane-north-west {
       width: 100px;
       height: 100%;
+
+      transition: width 500ms ease-in-out;
+
+      &.lesson-pane-north-west-collapsed {
+        width: 0;
+      }
     }
 
     .lesson-pane-north-center {

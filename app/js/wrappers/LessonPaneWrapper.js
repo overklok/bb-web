@@ -196,6 +196,14 @@ export default class LessonPaneWrapper extends Wrapper {
         }
     }
 
+    switchMenu(on) {
+        this._plugin.switchMenu(on);
+    }
+
+    emphasize(on) {
+        this._plugin.emphasize(on);
+    }
+
     onMenuClick(cb) {
         this._plugin.onMenuClick(cb);
     }
@@ -204,11 +212,7 @@ export default class LessonPaneWrapper extends Wrapper {
         this._plugin.onMissionClick(cb);
     }
 
-    switchMenu(on) {
-        this._plugin.switchMenu(on);
-    }
-
-    emphasize(on) {
-        this._plugin.emphasize(on);
+    onReturnClick(cb) {
+        this._plugin.onReturnClick(cb);
     }
 }

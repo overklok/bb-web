@@ -1,6 +1,7 @@
 import MissionBarBlock from "./blocks/bars/MissionBarBlock";
 import LessonBarBlock from "./blocks/bars/LessonBarBlock";
 import MenuBarBlock from "./blocks/bars/MenuBarBlock";
+import ReturnChipBlock from "./blocks/chips/ReturnChipBlock";
 import LessonChipBlock from "./blocks/chips/LessonChipBlock";
 import MenuChipBlock from "./blocks/chips/MenuChipBlock";
 import TaskChipBlock from "./blocks/chips/TaskChipBlock";
@@ -11,7 +12,8 @@ import thm from "./styles/containers/lesson-pane.css";
 
 const CLASEES = {
     CONTAINER_MAIN: "lesson-pane",
-    CONTAINER_MAIN_EMPH: "lesson-pane-emph"
+    CONTAINER_MAIN_EMPH: "lesson-pane-emph",
+    NORTH_WEST_COLLAPSED: "lesson-pane-north-west-collapsed"
 };
 
 class NotIncludedError extends Error {
@@ -41,6 +43,9 @@ export default class LessonPane {
                     },
                     top: {
                         center: undefined,
+                    },
+                    bottom: {
+                        center: undefined,
                     }
                 }
             },
@@ -60,6 +65,7 @@ export default class LessonPane {
             chips: {
                 lesson: new LessonChipBlock(),
                 menu: new MenuChipBlock(),
+                ret: new ReturnChipBlock(),
                 task: new TaskChipBlock(),
                 status: new StatusChipBlock()
             },
@@ -70,6 +76,7 @@ export default class LessonPane {
         this._callbacks = {
             onmissionclick: (idx) => {},
             onmenuclick: () => {},
+            onreturnclick: () => {},
         };
 
         this._state = {
@@ -254,6 +261,33 @@ export default class LessonPane {
         }
     }
 
+    switchMenu(on) {
+        /// backwards-compatibility
+        on = (on === true)  ? 1 : on;
+        on = (on === false) ? 0 : on;
+
+        switch (on) {
+            case 2: {
+                this._switchMenuButton(false);
+                this._blocks.flipper.showSide('bottom');
+                break;
+            }
+            case 1: {
+                this._switchMenuButton(true);
+                this._blocks.flipper.showSide('top');
+                this._blocks.chips.menu.switchPressed(true);
+                break;
+            }
+            case 0:
+            default: {
+                this._switchMenuButton(true);
+                this._blocks.flipper.showSide('front');
+                this._blocks.chips.menu.switchPressed(false);
+                break;
+            }
+        }
+    }
+
     onMissionClick(cb) {
         this._callbacks.onmissionclick = cb;
     }
@@ -262,9 +296,16 @@ export default class LessonPane {
         this._callbacks.onmenuclick = cb;
     }
 
-    switchMenu(on) {
-        this._blocks.flipper.showSide(on ? 'top' : 'front');
-        this._blocks.chips.menu.switchPressed(on);
+    onReturnClick(cb) {
+        this._callbacks.onreturnclick = cb;
+    }
+
+    _switchMenuButton(on) {
+        if (on) {
+            this._containers.north.west.classList.remove(CLASEES.NORTH_WEST_COLLAPSED);
+        } else {
+            this._containers.north.west.classList.add(CLASEES.NORTH_WEST_COLLAPSED);
+        }
     }
 
     /**
@@ -279,10 +320,12 @@ export default class LessonPane {
         this._blocks.bars.mission.include(this._containers.south.center);
         this._blocks.bars.lesson.include(this._containers.north.center.front.center);
         this._blocks.bars.menu.include(this._containers.north.center.top.center);
+        this._blocks.chips.ret.include(this._containers.north.center.bottom.center);
         this._blocks.flipper.include(
             this._containers.north.center.self,
             this._containers.north.center.front.self,
             this._containers.north.center.top.self,
+            this._containers.north.center.bottom.self,
         );
 
         this._blocks.chips.lesson.include(this._containers.north.center.front.west);
@@ -299,5 +342,9 @@ export default class LessonPane {
         this._blocks.bars.lesson.onClick(data => {
             this._callbacks.onmissionclick(data);
         });
+
+        this._blocks.chips.ret.onClick(() => {
+            this._callbacks.onreturnclick();
+        })
     }
 }

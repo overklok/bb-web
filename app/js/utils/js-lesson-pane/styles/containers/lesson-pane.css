@@ -10,6 +10,10 @@
 .lesson-pane .lesson-pane-north .lesson-pane-north-west {
   width: 100px;
   height: 100%;
+  transition: width 500ms ease-in-out;
+}
+.lesson-pane .lesson-pane-north .lesson-pane-north-west.lesson-pane-north-west-collapsed {
+  width: 0;
 }
 .lesson-pane .lesson-pane-north .lesson-pane-north-center {
   min-width: 40%;

@@ -1,0 +1,25 @@
+.return-chip {
+  background-color: #ff7f7f;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  transition: all 500ms ease-in-out;
+}
+.return-chip a {
+  display: block;
+  line-height: 48px;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 400;
+  transition: transform 200ms;
+}
+.return-chip .return-chip-icon {
+  display: none;
+  margin-right: 4px;
+  line-height: 18px;
+  transition: all 500ms ease-in-out;
+}
+.return-chip:hover .return-chip-icon {
+  display: inline;
+}

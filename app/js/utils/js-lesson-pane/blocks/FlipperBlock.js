@@ -4,7 +4,8 @@ import thm from "../styles/flipper/flipper.css";
 
 const SIDES = {
     FRONT: 'front',
-    TOP: 'top'
+    TOP: 'top',
+    BOTTOM: 'bottom'
 };
 
 const CLASSES = {
@@ -21,21 +22,24 @@ export default class FlipperBlock extends Block {
         this._sides = {
             front: undefined,
             top: undefined,
+            bottom: undefined,
         };
 
         this._state.side = undefined;
     }
 
-    include(dom_node, front_node, top_node) {
+    include(dom_node, front_node, top_node, bottom_node) {
         super.include(dom_node);
 
         dom_node.parentNode.classList.add(FlipperBlock.ClassDOM + "-" + CLASSES.PARENT);
 
         front_node.classList.add(FlipperBlock.ClassDOM + "__" + SIDES.FRONT);
         top_node.classList.add(FlipperBlock.ClassDOM + "__" + SIDES.TOP);
+        bottom_node.classList.add(FlipperBlock.ClassDOM + "__" + SIDES.BOTTOM);
 
         this._sides.front = front_node;
         this._sides.top = top_node;
+        this._sides.bottom = bottom_node;
 
         this.showSide(SIDES.FRONT);
     }

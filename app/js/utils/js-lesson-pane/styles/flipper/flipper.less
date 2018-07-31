@@ -45,6 +45,12 @@
        -o-transform: rotateX(90deg) translateZ( @height / 2 );
           transform: rotateX(90deg) translateZ( @height / 2 );
 }
+.flipper .flipper__bottom {
+  -webkit-transform:  rotateX(-90deg) translateZ( @height / 2 );
+  -moz-transform:     rotateX(-90deg) translateZ( @height / 2 );
+  -o-transform:       rotateX(-90deg) translateZ( @height / 2 );
+  transform:          rotateX(-90deg) translateZ( @height / 2 );
+}
 .flipper.flipper_show_front {
   -webkit-transform: translateZ( -@height / 2 );
      -moz-transform: translateZ( -@height / 2 );
@@ -52,8 +58,14 @@
           transform: translateZ( -@height / 2 );
 }
 .flipper.flipper_show_top {
-  -webkit-transform: translateZ( -@height / 2 ) rotateX(  -90deg );
-     -moz-transform: translateZ( -@height / 2 ) rotateX(  -90deg );
-       -o-transform: translateZ( -@height / 2 ) rotateX(  -90deg );
-          transform: translateZ( -@height / 2 ) rotateX(  -90deg );
+  -webkit-transform: translateZ( -@height / 2 ) rotateX( -90deg );
+     -moz-transform: translateZ( -@height / 2 ) rotateX( -90deg );
+       -o-transform: translateZ( -@height / 2 ) rotateX( -90deg );
+          transform: translateZ( -@height / 2 ) rotateX( -90deg );
+}
+.flipper.flipper_show_bottom {
+  -webkit-transform: translateZ( -@height / 2 ) rotateX(  90deg );
+     -moz-transform: translateZ( -@height / 2 ) rotateX(  90deg );
+       -o-transform: translateZ( -@height / 2 ) rotateX(  90deg );
+          transform: translateZ( -@height / 2 ) rotateX(  90deg );
 }

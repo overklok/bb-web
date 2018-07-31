@@ -27,7 +27,7 @@ export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
     static get event_types() {return [
         "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file",
-        "calc", "lesson", "reconnect"
+        "calc", "lesson", "reconnect", "return"
     ]}
 
     static defaults() {
@@ -526,6 +526,10 @@ export default class GUIModule extends Module {
 
         this._lesson_pane.onMenuClick(() => {
             this.emitEvent("menu");
+        });
+
+        this._lesson_pane.onReturnClick(() => {
+            this.emitEvent("return");
         });
 
         this._home_menu.onLessonClick((lesson) => {

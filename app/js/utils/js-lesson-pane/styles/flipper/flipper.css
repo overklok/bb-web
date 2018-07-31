@@ -14,7 +14,7 @@
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;
   -o-transition: -o-transform 0.5s;
-  transition: transform .5s;
+  transition: transform 0.5s;
 }
 .flipper > div {
   display: block;
@@ -37,6 +37,12 @@
   -o-transform: rotateX(90deg) translateZ(25px);
   transform: rotateX(90deg) translateZ(25px);
 }
+.flipper .flipper__bottom {
+  -webkit-transform: rotateX(-90deg) translateZ(25px);
+  -moz-transform: rotateX(-90deg) translateZ(25px);
+  -o-transform: rotateX(-90deg) translateZ(25px);
+  transform: rotateX(-90deg) translateZ(25px);
+}
 .flipper.flipper_show_front {
   -webkit-transform: translateZ(-25px);
   -moz-transform: translateZ(-25px);
@@ -48,4 +54,10 @@
   -moz-transform: translateZ(-25px) rotateX(-90deg);
   -o-transform: translateZ(-25px) rotateX(-90deg);
   transform: translateZ(-25px) rotateX(-90deg);
+}
+.flipper.flipper_show_bottom {
+  -webkit-transform: translateZ(-25px) rotateX(90deg);
+  -moz-transform: translateZ(-25px) rotateX(90deg);
+  -o-transform: translateZ(-25px) rotateX(90deg);
+  transform: translateZ(-25px) rotateX(90deg);
 }
