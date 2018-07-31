@@ -71,6 +71,7 @@ class Application {
             },
             ws: {
                 allBlocks: config.allBlocks,
+                zoomInitial: config.zoomBlocks,
             },
             bb: {
 
@@ -473,7 +474,11 @@ class Application {
                     this.gui.setLessonText(lesson.name)
                 })
                 .then(() => this.ins.launchLesson())
-                .then(() => this.gui.switchMenu(false))
+                .then(() => {
+                    this.gui.switchMenu(false);
+                    this.ws.flushPrograms();
+                })
+
         });
 
         /**

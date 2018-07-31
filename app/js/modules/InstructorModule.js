@@ -75,6 +75,16 @@ export default class InstructorModule extends Module {
                 throw new TypeError("No lesson data were provided");
             }
 
+            this._lesson = undefined;
+            this._buttons_model = [];
+
+            this._state = {
+                missionIDX: undefined,
+                missions: [],
+
+                buttonIDX: undefined
+            };
+
             this._parseLesson(lesson_data);
 
             resolve(this._lesson);

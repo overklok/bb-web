@@ -150,6 +150,12 @@ export default class WorkspaceModule extends Module {
         this._blockly.clearErrorBlocks();
     }
 
+    flushPrograms() {
+        this._code_storage = [];
+
+        return true;
+    }
+
     /**
      * Сохранить программный код для текущего упражнения
      *

@@ -8,7 +8,8 @@ import Wrapper from '../core/Wrapper'
 import Blockly  from 'node-blockly/browser'
 import Ru       from 'node-blockly/lib/i18n/ru';
 
-import thm      from '../../css/blockly-dimmer.css';
+import '../../css/blockly-overrides.css';
+import '../../css/blockly-dimmer.css';
 
 Blockly.setLocale(Ru);
 
