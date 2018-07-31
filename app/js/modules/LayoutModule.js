@@ -92,7 +92,12 @@ const FADEBLOCKINGS = {
         PANE_IDS.EAST_NORTH,
         PANE_IDS.EAST_CENTER_SOUTH,
     ],
-    home: []
+    home: [
+        PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_NORTH,
+        PANE_IDS.EAST_NORTH,
+        PANE_IDS.EAST_CENTER_SOUTH,
+    ]
 };
 
 /**
@@ -140,7 +145,8 @@ export default class LayoutModule extends Module {
             transitionActive: false,
             transitionDummy: false,
             buttonsPaneVisible: true,
-            firstLaunch: true
+            firstLaunch: true,
+            topPaneRevealed: false,
         };
 
         this._layout_options = this._getFullLayout();
@@ -222,6 +228,9 @@ export default class LayoutModule extends Module {
             switch (mode) {
                 case MODES.SIMPLE: {
                     // this._layout.show("north");
+                    if (this._state.topPaneRevealed) {
+                        this.revealTopPane();
+                    }
 
                     this._panes.east.hide("north");
                     duration += this._options.animSpeedSub;
@@ -241,6 +250,9 @@ export default class LayoutModule extends Module {
                 }
                 case MODES.FULL: {
                     // this._layout.show("north");
+                    if (this._state.topPaneRevealed) {
+                        this.revealTopPane();
+                    }
 
                     this._panes.east.show("north");
                     duration += this._options.animSpeedSub;
@@ -260,6 +272,7 @@ export default class LayoutModule extends Module {
                 }
                 case MODES.HOME: {
                     // this._layout.hide("north");
+                    this.concealTopPane(true);
                     this._layout.hide("east");
                     break;
                 }
@@ -362,10 +375,13 @@ export default class LayoutModule extends Module {
 
     revealTopPane() {
         this._layout.sizePane('north', 80);
+        this._state.topPaneRevealed = true;
     }
 
-    concealTopPane() {
+    concealTopPane(temp=false) {
         this._layout.sizePane('north', 55);
+
+        if (!temp) this._state.topPaneRevealed = false;
     }
 
     /**

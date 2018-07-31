@@ -3,23 +3,33 @@
   height: 100%;
   display: flex;
   justify-content: center;
-  transition: all 500ms ease-in-out;
+  cursor: pointer;
+  transition: background-color 100ms ease-in-out;
 }
 .return-chip a {
   display: block;
+  background-color: #ff7f7f;
   line-height: 48px;
   text-align: center;
   color: #fff;
-  cursor: pointer;
   font-weight: 400;
-  transition: transform 200ms;
+  transition: transform 200ms, background-color 100ms ease-in-out;
 }
 .return-chip .return-chip-icon {
-  display: none;
+  display: block;
+  width: 0;
+  opacity: 0;
   margin-right: 4px;
   line-height: 18px;
-  transition: all 500ms ease-in-out;
+  transition: width 100ms ease-in-out, opacity 100ms linear;
+}
+.return-chip:hover {
+  background-color: #ffaca5;
+}
+.return-chip:hover a {
+  background-color: #ffaca5;
 }
 .return-chip:hover .return-chip-icon {
-  display: inline;
+  width: 15px;
+  opacity: 1;
 }

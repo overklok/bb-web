@@ -81,7 +81,10 @@ export default class LessonPaneWrapper extends Wrapper {
         for (let exercise_idx in exercises) {
             let exercise = exercises[exercise_idx];
 
-            exs_arr.push(`Зад. ${exercise.mission} упр. ${exercise.pk}`);
+            exs_arr.push({
+                text: `Зад. ${exercise.mission} упр. ${exercise.pk}`,
+                id: exercise.pk
+            });
         }
 
 
@@ -214,5 +217,9 @@ export default class LessonPaneWrapper extends Wrapper {
 
     onReturnClick(cb) {
         this._plugin.onReturnClick(cb);
+    }
+
+    onExerciseClick(cb) {
+        this._plugin.onExerciseClick(cb);
     }
 }

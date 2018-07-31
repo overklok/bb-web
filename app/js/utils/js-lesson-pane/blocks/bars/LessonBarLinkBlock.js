@@ -25,7 +25,7 @@ export default class LessonBarLinkBlock extends Block {
         this._state.dispSkidding = false;
 
         this._callbacks = {
-            onclick: () => {console.warn("Unhandled event 'click' were triggered")}
+            onclick: () => {console.warn("Unhandled event 'click' was triggered")}
         }
     }
 

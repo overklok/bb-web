@@ -17,7 +17,7 @@ export default class MenuChipBlock extends ChipBlock {
         };
 
         this._callbacks = {
-            onclick: (pressed) => {console.warn("Unhandled event 'click' were triggered with data:", pressed)}
+            onclick: (pressed) => {console.warn("Unhandled event 'click' was triggered with data:", pressed)}
         };
 
         this._state.pressed = false;

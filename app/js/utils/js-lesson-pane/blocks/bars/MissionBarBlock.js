@@ -14,6 +14,10 @@ export default class MissionBarBlock extends BarBlock {
 
         this._state.exerciseActiveIDX = undefined;
         this._state.stretched = false;
+
+        this._callbacks = {
+            onclick: () => {console.warn("Unhandled event 'click' was triggered")}
+        }
     }
 
     include(dom_node) {
@@ -78,7 +82,7 @@ export default class MissionBarBlock extends BarBlock {
         this._state.exerciseActiveIDX = undefined;
 
         for (let exercise_data of exercises_data) {
-            this.addExercise(exercise_data);
+            this.addExercise(exercise_data.text, exercise_data.id);
         }
 
         // if (this._state.stretched) {
@@ -86,9 +90,25 @@ export default class MissionBarBlock extends BarBlock {
         // }
     }
 
-    addExercise(exercise_data) {
-        let exercise = new MissionBarItemBlock(exercise_data);
+    addExercise(exercise_data, extra_data) {
+        let exercise = new MissionBarItemBlock(exercise_data, extra_data);
 
         this.addItem(exercise);
+
+        exercise.onClick((data) => {
+            this._callbacks.onclick(data);
+        });
+    }
+
+    onClick(cb) {
+        this._callbacks.onclick = cb;
+    }
+
+    _attachCallbacks() {
+        for (let item of this._items) {
+            item.onClick((data) => {
+                this._callbacks.onclick(data);
+            });
+        }
     }
 }

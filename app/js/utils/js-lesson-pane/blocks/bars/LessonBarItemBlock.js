@@ -15,7 +15,7 @@ export default class LessonBarItemBlock extends BarItemBlock {
         this._link = new LessonBarLinkBlock(number, level_count);
 
         this._callbacks = {
-            onclick: () => {console.warn("Unhandled event 'click' were triggered")}
+            onclick: () => {console.warn("Unhandled event 'click' was triggered")}
         }
     }
 

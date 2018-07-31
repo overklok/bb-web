@@ -77,6 +77,7 @@ export default class LessonPane {
             onmissionclick: (idx) => {},
             onmenuclick: () => {},
             onreturnclick: () => {},
+            onexerciseclick: (id) => {},
         };
 
         this._state = {
@@ -300,6 +301,10 @@ export default class LessonPane {
         this._callbacks.onreturnclick = cb;
     }
 
+    onExerciseClick(cb) {
+        this._callbacks.onexerciseclick = cb;
+    }
+
     _switchMenuButton(on) {
         if (on) {
             this._containers.north.west.classList.remove(CLASEES.NORTH_WEST_COLLAPSED);
@@ -345,6 +350,10 @@ export default class LessonPane {
 
         this._blocks.chips.ret.onClick(() => {
             this._callbacks.onreturnclick();
+        });
+
+        this._blocks.bars.mission.onClick(data => {
+            this._callbacks.onexerciseclick(data);
         })
     }
 }

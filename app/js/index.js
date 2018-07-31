@@ -252,6 +252,10 @@ class Application {
             this.gui.setMissionCurrent(mission_idx);
         });
 
+        this._dispatcher.on('gui:exercise', exercise_id => {
+            this.gs.goToExerciseAdminPage(exercise_id);
+        });
+
         this._dispatcher.on('gui:ready', () => {
             // setTimeout(() => {
             //     let status = this.ls.getBoardStatus();

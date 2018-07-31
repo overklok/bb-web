@@ -5,34 +5,46 @@
   height: 100%;
   display: flex;
   justify-content: center;
+  cursor: pointer;
 
-  transition: all 500ms ease-in-out;
+  transition: background-color 100ms ease-in-out;
 
   a {
     display: block;
+    background-color: #ff7f7f;
 
     line-height: @height - 2px;
     text-align: center;
 
     color: #fff;
 
-    cursor: pointer;
     font-weight: 400;
 
-    transition: transform 200ms;
+    transition: transform 200ms,
+                background-color 100ms ease-in-out;
   }
 
   .return-chip-icon {
-    display: none;
+    display: block;
+    width: 0;
+    opacity: 0;
     margin-right: 4px;
     line-height: 18px;
 
-    transition: all 500ms ease-in-out;
+    transition: width 100ms ease-in-out,
+                opacity 100ms linear;
   }
 
   &:hover {
+    background-color: #ffaca5;
+
+    a {
+      background-color: #ffaca5;
+    }
+
     .return-chip-icon {
-      display: inline;
+      width: 15px;
+      opacity: 1;
     }
   }
 }

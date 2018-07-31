@@ -22,6 +22,9 @@ export default class GlobalServiceModule extends Module {
                 calc_currents: '/coursesvc/calc/',
                 courses: '/coursesvc/',
             },
+            admin: {
+                exercise: '/admin/coursesvc/exercise/{id}/change'
+            },
             csrfRequired: true,
             modeDummy: false
         }
@@ -45,7 +48,18 @@ export default class GlobalServiceModule extends Module {
      * Используется заданный в конфигурации адрес сервера
      */
     goToLessonPage() {
-        window.location.href = this._options.origin;
+        window.open(this._options.origin);
+    }
+
+    goToExerciseAdminPage(exercise_id) {
+        if (!exercise_id) {
+            throw new ParameterError("Parameter `exercise_id` should be specified");
+        }
+
+        window.open(
+            this._options.origin + String(this._options.admin.exercise).formatUnicorn({id: exercise_id}),
+            '_blank'
+        );
     }
 
     /**

@@ -16,7 +16,7 @@ export default class LessonBarBlock extends BarBlock {
         super();
 
         this._callbacks = {
-            onclick: (idx) => {console.warn("Unhandled event 'click' were triggered with data:", idx)}
+            onclick: (idx) => {console.warn("Unhandled event 'click' was triggered with data:", idx)}
         };
 
         this._state.missionActiveIDX = undefined;

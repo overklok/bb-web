@@ -9,6 +9,8 @@ import AlertifierWrapper from "../wrappers/AlertifierWrapper";
 import HomeMenuWrapper from "../wrappers/HomeMenuWrapper";
 import URLHashWrapper from "../wrappers/URLHashWrapper";
 
+import "../utils/format-unicorn";
+
 const BOARD_STATUSES = {
     SEARCH: 'search',
     CONNECT: 'connect',
@@ -27,7 +29,7 @@ export default class GUIModule extends Module {
     static get eventspace_name() {return "gui"}
     static get event_types() {return [
         "ready", "mission", "run", "stop", "check", "keyup", "hash-command", "menu", "load-file", "unload-file",
-        "calc", "lesson", "reconnect", "return"
+        "calc", "lesson", "reconnect", "return", "exercise"
     ]}
 
     static defaults() {
@@ -530,6 +532,10 @@ export default class GUIModule extends Module {
 
         this._lesson_pane.onReturnClick(() => {
             this.emitEvent("return");
+        });
+
+        this._lesson_pane.onExerciseClick(id => {
+            this.emitEvent("exercise", id);
         });
 
         this._home_menu.onLessonClick((lesson) => {
