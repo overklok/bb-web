@@ -21,7 +21,7 @@ export default class Current {
     static get ColorMin() {return "#7df9ff"}
     static get ColorMax() {return "#6cff65"}
     static get SpeedMin() {return 200}
-    static get SpeedMax() {return 600}
+    static get SpeedMax() {return 800}
     static get AnimationDelta() {return 100} // Расстояние между соседними стрелками, px
 
     constructor(container, points, style) {
@@ -31,6 +31,7 @@ export default class Current {
         this.arrows = [];
         this.thread = points;
         this._weight = 0;
+        this._time = undefined;
 
         /// Идентификатор - по умолчанию случайная строка
         this._id = Math.floor(Math.random() * (10 ** 6));
@@ -125,11 +126,16 @@ export default class Current {
         }
 
         if (reset) {
-            this.deactivate();
+            this.arrows = [];
+
+            this.animators = {
+                move: [],
+                trans: []
+            };
         }
 
-        // let speed = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
-        let speed = Current.SpeedMin;
+        let time = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
+        // let speed = Current.SpeedMin;
 
         // Рассчитаем длину контура
         let length = this.path.length();
@@ -144,9 +150,6 @@ export default class Current {
             let progress_start  = (  i  ) / arrows_count;
             let progress_end    = (i + 1) / arrows_count;
 
-            // Время, за которое стрелка должна пройти этот путь
-            let time = speed;
-
             // Если стрелка - последняя, то progress_end будет больше 1
             // Необходимо скорректировать конечную позицию для последней стрелки,
             // так как длина всего пути может быть не кратной количеству стрелок
@@ -154,6 +157,7 @@ export default class Current {
                 progress_end = 1;
             }
 
+            /// Если сброс - генерируемы новую стрелку
             if (reset) {
                 let arrow = this.container_anim
                     .circle(GRID_DOT_SIZE * 1.8)
@@ -162,6 +166,16 @@ export default class Current {
 
                 this.arrows.push(arrow);
             }
+
+            /// Сглаживание изменения скорости движения стрелок
+            if (!reset) {
+                this.container_anim.node.setCurrentTime(
+                    this.container_anim.node.getCurrentTime() * time / this._time
+                );
+            }
+
+            /// Сохраним время (для случаев, когда функция будет вызываться повторно без reset)
+            this._time = time;
 
             // Заливка и центрирование
             this.arrows[i].fill(Current.pickColorFromRange(weight));
@@ -237,7 +251,12 @@ export default class Current {
         // SVG-анимация стрелки:
         let aniMove = animator ? animator.node : document.createElementNS("http://www.w3.org/2000/svg", "animateMotion"); // тип: перемещение
 
+        // В аниматор нужно вставить путь анимации
+        let mpath = animator ? animator.path : document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+
         if (animator === undefined) {
+            mpath.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + path.toString());
+
             aniMove.setAttribute("start", "0s");                                              // задержка
             aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
             aniMove.setAttribute("rotate", "auto");                                           // автоповорот
@@ -247,10 +266,6 @@ export default class Current {
 
         aniMove.setAttribute("dur", time + "ms");                                     // длительность
         aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);       // нач. и кон. позиции в %
-
-        // В аниматор нужно вставить путь анимации
-        let mpath = animator ? animator.path : document.createElementNS("http://www.w3.org/2000/svg", "mpath");
-        mpath.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + path.toString());
 
         // Подключение в DOM
         if (!animator) {

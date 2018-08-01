@@ -44,7 +44,10 @@
                             ];
 
             setInterval(() => {
-                weight += 0.005;
+                weight += 0.05;
+                if (weight > 1) weight = 0;
+
+                console.log("WEI", weight);
 
                 iter++;
 
@@ -69,7 +72,7 @@
                         ],
                     }
                 );
-            }, 20);
+            }, 1000);
         });
     </script>
 </html>
