@@ -78,6 +78,7 @@ export default class LessonPane {
             onmenuclick: () => {},
             onreturnclick: () => {},
             onexerciseclick: (id) => {},
+            onstatusclick: () => {},
         };
 
         this._state = {
@@ -96,9 +97,6 @@ export default class LessonPane {
 
         this._container = document.createElement("div");
         this._container.classList.add(CLASEES.CONTAINER_MAIN);
-        if (this._emphasized) {
-            this._container.classList.add(CLASEES.CONTAINER_MAIN_EMPH);
-        }
 
         dom_node.appendChild(this._container);
 
@@ -108,20 +106,20 @@ export default class LessonPane {
         this._state.included = true;
         this._state.missions = [];
 
+        this.emphasize(this._emphasized);
+
         this._attachHandlers();
     }
 
     emphasize(on) {
+        if (!this._state.included) {this._emphasized = on; return}
+
         if (on) {
-            if (!this._emphasized) {
-                this._container.classList.add(CLASEES.CONTAINER_MAIN_EMPH);
-                this._emphasized = true;
-            }
+            this._container.classList.add(CLASEES.CONTAINER_MAIN_EMPH);
+            this._emphasized = true;
         } else {
-            if (this._emphasized) {
-                this._container.classList.remove(CLASEES.CONTAINER_MAIN_EMPH);
-                this._emphasized = false;
-            }
+            this._container.classList.remove(CLASEES.CONTAINER_MAIN_EMPH);
+            this._emphasized = false;
         }
     }
 
@@ -305,6 +303,10 @@ export default class LessonPane {
         this._callbacks.onexerciseclick = cb;
     }
 
+    onStatusClick(cb) {
+        this._callbacks.onstatusclick = cb;
+    }
+
     _switchMenuButton(on) {
         if (on) {
             this._containers.north.west.classList.remove(CLASEES.NORTH_WEST_COLLAPSED);
@@ -354,6 +356,10 @@ export default class LessonPane {
 
         this._blocks.bars.mission.onClick(data => {
             this._callbacks.onexerciseclick(data);
+        });
+
+        this._blocks.chips.status.onClick(() => {
+            this._callbacks.onstatusclick();
         })
     }
 }

@@ -92,12 +92,7 @@ const FADEBLOCKINGS = {
         PANE_IDS.EAST_NORTH,
         PANE_IDS.EAST_CENTER_SOUTH,
     ],
-    home: [
-        PANE_IDS.MAIN_EAST,
-        PANE_IDS.MAIN_NORTH,
-        PANE_IDS.EAST_NORTH,
-        PANE_IDS.EAST_CENTER_SOUTH,
-    ]
+    home: []
 };
 
 /**
@@ -228,9 +223,6 @@ export default class LayoutModule extends Module {
             switch (mode) {
                 case MODES.SIMPLE: {
                     // this._layout.show("north");
-                    if (this._state.topPaneRevealed) {
-                        this.revealTopPane();
-                    }
 
                     this._panes.east.hide("north");
                     duration += this._options.animSpeedSub;
@@ -272,8 +264,8 @@ export default class LayoutModule extends Module {
                 }
                 case MODES.HOME: {
                     // this._layout.hide("north");
-                    this.concealTopPane(true);
                     this._layout.hide("east");
+                    this.concealTopPane(true);
                     break;
                 }
                 default: {

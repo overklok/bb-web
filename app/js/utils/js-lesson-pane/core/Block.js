@@ -63,6 +63,7 @@ export default class Block {
         if (!this._state.included) {throw new TypeError("Block must be included before performing this")}
 
         this._removeItems();
+        this._state.missionActiveIDX = undefined;
     }
 
     dispose() {

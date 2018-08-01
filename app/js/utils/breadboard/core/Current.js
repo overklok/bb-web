@@ -108,30 +108,28 @@ export default class Current {
     /**
      * Анимировать ток по контуру this.path
      *
-     * @param weight      Скорость анимации тока (движения стрелок по контуру)
+     * @param weight    Скорость анимации тока (движения стрелок по контуру)
+     * @param reset     Сбросить отрисованные стрелки
      *
      * Генерируется некоторое число стрелок - векторных объектов, изображающих ток по контуру.
      * Каждая стрелка циклически проходит фрагмент пути длины delta с заданной скоростью speed
      * таким образом, что путь движения каждой последующей стрелки берёт начало в том месте,
      * где предыдущая заканчивает итерацию цикла движения.
      *
+     * Отключение сброса стрелок необходимо в случае, когда требуется изменить свойства анимации,
+     * не перерисовывая стрелки с нуля.
      */
     activate(weight=0, reset=true) {
         if (!this._visible) {
             throw new Error("Cannot activate invisible current!");
         }
 
-        console.log("ACTIVATE", reset);
-
         if (reset) {
-            this.animators = {
-                move: [],
-                trans: []
-            };
+            this.deactivate();
         }
 
-        let speed = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
-        // let speed = Current.SpeedMin;
+        // let speed = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
+        let speed = Current.SpeedMin;
 
         // Рассчитаем длину контура
         let length = this.path.length();
@@ -156,33 +154,30 @@ export default class Current {
                 progress_end = 1;
             }
 
-            // Векторное представление стрелки
-            // let arrow = this.container_anim.polygon(
-            //     "0,0 0," + GRID_DOT_SIZE/2 +  " " + GRID_DOT_SIZE / 4 + "," + GRID_DOT_SIZE / 4
-            // ).center(0,0).addClass('current-arrow');
+            if (reset) {
+                let arrow = this.container_anim
+                    .circle(GRID_DOT_SIZE * 1.8)
+                    .center(0, 0)
+                    .addClass('current-arrow');
 
-            let arrow = this.container_anim
-                .circle(GRID_DOT_SIZE*1.8)
-                .center(0, 0)
-                .addClass('current-arrow');
+                this.arrows.push(arrow);
+            }
 
             // Заливка и центрирование
-            arrow.fill(Current.pickColorFromRange(weight));
-
-            this.arrows.push(arrow);
+            this.arrows[i].fill(Current.pickColorFromRange(weight));
 
             let aniMove, aniTrans;
 
-            aniMove = Current.animateArrowMove(this.path.toString(), arrow, time, progress_start, progress_end, this.animators.move[i]);
+            aniMove = Current.animateArrowMove(this.path.toString(), this.arrows[i], time, progress_start, progress_end, this.animators.move[i]);
 
             if (i === 0) {
                 // если первая стрелка
-                aniTrans = Current.animateArrowScale(arrow, time, false, this.animators.trans[i]);
+                aniTrans = Current.animateArrowScale(this.arrows[i], time, false, this.animators.trans[i]);
             }
 
             if (i === arrows_count - 1) {
                 // если последняя стрелка
-                aniTrans = Current.animateArrowScale(arrow, time, true, this.animators.trans[i]);
+                aniTrans = Current.animateArrowScale(this.arrows[i], time, true, this.animators.trans[i]);
             }
 
             if (reset) {
@@ -205,6 +200,11 @@ export default class Current {
     deactivate() {
         this.arrows = [];
 
+        this.animators = {
+            move: [],
+            trans: []
+        };
+
         this.container_anim.clear();
     };
 
@@ -219,7 +219,6 @@ export default class Current {
         weight = weight > 1 ? 1 : weight;
 
         if (this._weight !== weight) {
-            this.deactivate();
             this.activate(weight, false);
 
             let color = Current.pickColorFromRange(weight);
@@ -237,13 +236,17 @@ export default class Current {
     static animateArrowMove(path, arrow, time, progress_start, progress_end, animator=undefined) {
         // SVG-анимация стрелки:
         let aniMove = animator ? animator.node : document.createElementNS("http://www.w3.org/2000/svg", "animateMotion"); // тип: перемещение
-        aniMove.setAttribute("start", "0s");                                              // задержка
-        aniMove.setAttribute("dur", time + "ms");                                         // длительность
-        aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
-        aniMove.setAttribute("rotate", "auto");                                           // автоповорот
-        aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);           // нач. и кон. позиции в %
-        aniMove.setAttribute("keyTimes", "0;1");                                          // нач. и кон. время в %
-        aniMove.setAttribute("calcMode", "linear");                                       // (!) функция перемещения
+
+        if (animator === undefined) {
+            aniMove.setAttribute("start", "0s");                                              // задержка
+            aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
+            aniMove.setAttribute("rotate", "auto");                                           // автоповорот
+            aniMove.setAttribute("keyTimes", "0;1");                                          // нач. и кон. время в %
+            aniMove.setAttribute("calcMode", "linear");                                       // (!) функция перемещения
+        }
+
+        aniMove.setAttribute("dur", time + "ms");                                     // длительность
+        aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);       // нач. и кон. позиции в %
 
         // В аниматор нужно вставить путь анимации
         let mpath = animator ? animator.path : document.createElementNS("http://www.w3.org/2000/svg", "mpath");
@@ -261,17 +264,20 @@ export default class Current {
     static animateArrowScale(arrow, time, out = false, animator=undefined) {
         // SVG-анимация стрелки:
         let aniTrans = animator ? animator : document.createElementNS("http://www.w3.org/2000/svg", "animateTransform"); // тип: трансформ.
-        aniTrans.setAttribute("attributeName", "transform");                               // радиус
-        aniTrans.setAttribute("type", "scale");
-        aniTrans.setAttribute("additive", "sum");
+
+        if (animator === undefined) {
+            aniTrans.setAttribute("attributeName", "transform");                               // радиус
+            aniTrans.setAttribute("type", "scale");
+            aniTrans.setAttribute("additive", "sum");
+            aniTrans.setAttribute("begin", "0s");
+            aniTrans.setAttribute("repeatCount", "indefinite");                                // бесконечная
+            aniTrans.setAttribute("calcMode", "spline");
+        }
+
         aniTrans.setAttribute("from", out ? "1 1" : "0.45 0.45");
         aniTrans.setAttribute("to", out ? "0.45 0.45" : "1 1");
-        aniTrans.setAttribute("begin", "0s");
         aniTrans.setAttribute("dur", time + "ms");
-        aniTrans.setAttribute("repeatCount", "indefinite");                                // бесконечная
-        aniTrans.setAttribute("calcMode", "spline");
         aniTrans.setAttribute("keySplines", out ? "0.39, 0.575, 0.565, 1" : "0.47, 0, 0.745, 0.715");
-        // aniMove.setAttribute("keyTimes", "0;0.5");
 
         // Подключение в DOM
         if (!animator) {

@@ -285,10 +285,14 @@ export default class LocalServiceModule extends Module {
         this._ipc.send('connect');
 
         this._checkConnection();
+
+        this._options.socketAddress = socket_addr ? socket_addr : this._options.socketAddress;
+        this._options.socketPort = socket_port ? socket_port : this._options.socketPort;
     }
 
     _useIPCElectron() {
         this._debug.log("Swtiching to IPCWrapper");
+
         this._ipc = new ElectronIPCWrapper();
     }
 

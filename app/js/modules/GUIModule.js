@@ -538,6 +538,10 @@ export default class GUIModule extends Module {
             this.emitEvent("exercise", id);
         });
 
+        this._lesson_pane.onStatusClick(() => {
+            this.emitEvent("reconnect", true);
+        });
+
         this._home_menu.onLessonClick((lesson) => {
             this.emitEvent("lesson", lesson);
         });

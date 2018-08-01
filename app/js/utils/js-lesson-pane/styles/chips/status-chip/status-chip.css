@@ -3,6 +3,7 @@
   width: 10px;
   height: 10px;
   border-radius: 5px;
+  cursor: pointer;
   background-color: #000000;
 }
 .status-chip .status-chip_indicator.active {

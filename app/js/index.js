@@ -415,11 +415,16 @@ class Application {
         this._dispatcher.on('gui:menu', (data) => {
             switch (data.name) {
                 case 'lessons': {
+                    this._dispatcher.only([]);
                     // this.gs.goToLessonPage();
-                    this.lay.compose('home');
                     this.gui.switchMenu(2);
+                    this.gui.switchDeveloperMode(false);
+                    this.lay.compose('home')
+                        .then(() => this._dispatcher.only(['gui:*']));
                     this.gs.getCoursesData()
-                        .then(courses => this.gui.displayCourses(courses));
+                        .then(courses => {
+                            this.gui.displayCourses(courses);
+                        });
 
                     break;
                 }
@@ -454,6 +459,7 @@ class Application {
             this._dispatcher.only([]);
 
             this.gui.switchMenu(false);
+            this.gui.switchDeveloperMode(true);
 
             let exercise = this.ins.getExerciseCurrent();
             this.lay.compose(exercise.layout_mode)

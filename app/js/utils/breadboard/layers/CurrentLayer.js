@@ -80,7 +80,7 @@ export default class CurrentLayer extends Layer {
             }
 
             if (same) {
-                // current.setWeight(same.weight);
+                current.setWeight(same.weight);
             }
         }
 

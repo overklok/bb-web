@@ -15,6 +15,7 @@ section.header p {
 }
 section.header .logo-main {
   width: 200px;
+  background: none;
   filter: invert(1);
 }
 section.courses {

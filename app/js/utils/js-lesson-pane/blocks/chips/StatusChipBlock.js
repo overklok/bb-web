@@ -15,6 +15,10 @@ export default class StatusChipBlock extends ChipBlock {
         this._containers = {
             indicator: undefined
         };
+
+         this._callbacks = {
+            onclick: (pressed) => {console.warn("Unhandled event 'click' was triggered with data:", pressed)}
+        };
     }
 
     include(dom_node) {
@@ -23,6 +27,8 @@ export default class StatusChipBlock extends ChipBlock {
         this._containers.indicator = document.createElement("div");
         this._containers.indicator.classList.add(StatusChipBlock.ClassDOM + '_' + CLASSES.INDICATOR);
         this._container.appendChild(this._containers.indicator);
+
+        this._attachCallbacks();
     }
 
     setSuccess() {
@@ -49,7 +55,17 @@ export default class StatusChipBlock extends ChipBlock {
         this._clearIndicatorStatus();
     }
 
+    onClick(cb) {
+        this._callbacks.onclick = cb;
+    }
+
     _clearIndicatorStatus() {
         this._containers.indicator.classList = StatusChipBlock.ClassDOM + '_' + CLASSES.INDICATOR;
+    }
+
+    _attachCallbacks() {
+        this._container.onclick = () => {
+            this._callbacks.onclick();
+        };
     }
 }
