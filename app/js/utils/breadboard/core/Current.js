@@ -20,8 +20,8 @@ import thm from '../styles/current.css';
 export default class Current {
     static get ColorMin() {return "#7df9ff"}
     static get ColorMax() {return "#6cff65"}
-    static get SpeedMin() {return 200}
-    static get SpeedMax() {return 800}
+    static get SpeedMin() {return 600}
+    static get SpeedMax() {return 1000}
     static get AnimationDelta() {return 100} // Расстояние между соседними стрелками, px
 
     constructor(container, points, style) {
@@ -99,6 +99,12 @@ export default class Current {
         this._visible = false;
     };
 
+    /**
+     * Проверить, совпадает ли контур у тока
+     *
+     * @param {Object} thread контур
+     * @returns {boolean}
+     */
     hasSameThread(thread) {
         return  thread.from.x === this.thread.from.x &&
                 thread.from.y === this.thread.from.y &&
@@ -134,14 +140,24 @@ export default class Current {
             };
         }
 
-        let time = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
-        // let speed = Current.SpeedMin;
+        // let time = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
+        let time = Current.SpeedMin;
 
         // Рассчитаем длину контура
         let length = this.path.length();
 
         // Определим число стрелок
         let arrows_count = Math.floor(length) / (Current.AnimationDelta);
+
+        /// Сглаживание изменения скорости движения стрелок
+        // if (!reset) {
+        //     this.container_anim.node.setCurrentTime(
+        //         this.container_anim.node.getCurrentTime() * time / this._time
+        //     );
+        // }
+
+        /// Сохраним время (для случаев, когда функция будет вызываться повторно без reset)
+        // this._time = time;
 
         // Для каждой стрелки:
         for (let i = 0; i < arrows_count; i++)
@@ -166,16 +182,6 @@ export default class Current {
 
                 this.arrows.push(arrow);
             }
-
-            /// Сглаживание изменения скорости движения стрелок
-            if (!reset) {
-                this.container_anim.node.setCurrentTime(
-                    this.container_anim.node.getCurrentTime() * time / this._time
-                );
-            }
-
-            /// Сохраним время (для случаев, когда функция будет вызываться повторно без reset)
-            this._time = time;
 
             // Заливка и центрирование
             this.arrows[i].fill(Current.pickColorFromRange(weight));
@@ -243,8 +249,9 @@ export default class Current {
                 arw.fill(color);
             }
 
-            this._weight = weight;
         }
+
+        this._weight = weight;
     }
 
     static animateArrowMove(path, arrow, time, progress_start, progress_end, animator=undefined) {

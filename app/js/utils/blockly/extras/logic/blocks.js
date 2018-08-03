@@ -52,7 +52,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "%1 << %2",
+                message0:       "%1 < %2",
                 args0: [
                     {
                         type:   "input_value",
@@ -78,7 +78,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "%1 >> %2",
+                message0:       "%1 > %2",
                 args0: [
                     {
                         type:   "input_value",

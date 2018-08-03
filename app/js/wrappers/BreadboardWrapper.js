@@ -45,23 +45,13 @@ export default class BreadboardWrapper extends Wrapper {
         return this._plugin.getPlates();
     }
 
+
     setPlates(plates) {
         if (!plates) throw new TypeError ("Plates is not iterable");
 
-        this._plugin.clearPlates();
+        // this._plugin.clearPlates();
 
-        for (let plate of plates) {
-            plate.extra = plate.extra || plate.number;
-            let id = this._plugin.addPlate(plate.type, plate.x, plate.y, plate.orientation, plate.id, plate.extra);
-
-            if (id) {
-                this._plugin.setPlateState(id, {
-                    cell_num: plate.cell_num,
-                    contr_num: plate.contr_num,
-                    adc: plate.adc,
-                });
-            }
-        }
+        this._plugin.setPlates(plates);
     }
 
     highlightErrorPlates(plate_ids) {

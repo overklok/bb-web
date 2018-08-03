@@ -297,6 +297,8 @@ export default class Plate {
         if (this._dragging) return;
         if (this._ctxmenu.active) {return}
 
+        if (orientation === this._state.orientation) {return}
+
         let angle = Plate._orientationToAngle(orientation);
 
         this._group.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});

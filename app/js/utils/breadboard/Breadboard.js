@@ -22,8 +22,14 @@ const GRID_GAP_Y = 10;
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
+const POOR_MODE = true;
+
 import thm from "./styles/main.css";
 
+/**
+ * Основной класс платы.
+ * Предоставляет API управления визуализацией платы внешним модулям приложений
+ */
 export default class Breadboard {
     constructor(options) {
         if (!SVG.supported) {
@@ -64,46 +70,21 @@ export default class Breadboard {
         return this._layers.plate.getCurrentPlatesData();
     }
 
-    addPlate(type, x=0, y=0, orientation='west', id=null, extra) {
-        return this._layers.plate.addPlate(type, x, y, orientation, id, extra);
-    }
-
-    setPlateState(plate_id, state) {
-        this._layers.plate.setPlateState(plate_id, state);
-    }
-
-    highlightPlates(plate_ids, on) {
-        this._layers.plate.highlightPlates(plate_ids, on);
-    }
-
-    clearPlates() {
-        this._layers.plate.removeAllPlates();
-    }
-
-    setCurrents(threads) {
-        this._layers.current.setCurrents(threads);
-    }
-
-    clearCurrents() {
-        this._layers.current.removeAllCurrents();
-    }
-
-    highlightRegion(from, to, clear) {
-        this._layers.region.highlightRegion(from, to, clear);
-    }
-
-    clearRegions() {
-        this._layers.region.clearRegions();
-    }
-
+    /**
+     * Инициализировать графическую составляющую платы
+     *
+     * @param {HTMLElement} dom_node    DOM-узел, в который будет встроена плата
+     * @param {Object}      options     дополнительные опции инициализации
+     */
     inject(dom_node, options) {
         if (dom_node === undefined) {
             throw new TypeError("Breadboard::inject(): DOM node is undefined");
         }
 
+        /// применить опции
         this._setOptions(options);
 
-        // Базовая кисть
+        /// базовая кисть
         this._brush = SVG(dom_node).size(WRAP_WIDTH, WRAP_HEIGHT);
         this._brush.node.setAttribute("viewBox", "0 0 " + WRAP_WIDTH + " " + WRAP_HEIGHT);
         this._brush.node.style.width = "100%";
@@ -113,38 +94,144 @@ export default class Breadboard {
 
         this.__grid = new Grid(GRID_ROWS, GRID_COLS, GRID_WIDTH, GRID_HEIGHT, GRID_GAP_X, GRID_GAP_Y);
 
-        /// Создать фильтры
+        /// создать фильтры
         Breadboard._defineFilters();
-        /// Инициализировать слои
+        /// инициализировать слои
         this._composeLayers();
     };
 
+    /**
+     * Удалить графическую составляющую платы
+     */
     dispose() {
         this._brush.node.remove();
         this._layers = {};
     }
 
+    /**
+     * Добавить плашку
+     *
+     * @param {string}      type        тип плашки
+     * @param {int}         x           позиция плашки по оси X
+     * @param {int}         y           позиция плашки по оси Y
+     * @param {string}      orientation ориентация плашки
+     * @param {null|int}    id          идентификатор плашки
+     * @param {*}           extra       резервное поле
+     *
+     * @returns {null|int} идентификатор плашки
+     */
+    addPlate(type, x=0, y=0, orientation='west', id=null, extra) {
+        return this._layers.plate.addPlate(type, x, y, orientation, id, extra);
+    }
+
+    /**
+     * Установить состояние плашки
+     *
+     * @param {int}     plate_id    идентифиактор плашки
+     * @param {object}  state       состояние плашки
+     */
+    setPlateState(plate_id, state) {
+        this._layers.plate.setPlateState(plate_id, state);
+    }
+
+    /**
+     * Подсветить ошибочные плашки
+     *
+     * @param {Array} plate_ids массив идентификаторов плашек, которые требуется подсветить
+     *
+     */
+    highlightPlates(plate_ids) {
+        this._layers.plate.highlightPlates(plate_ids);
+    }
+
+    /**
+     * Удалить все плашки с платы
+     */
+    clearPlates() {
+        this._layers.plate.removeAllPlates();
+    }
+
+    /**
+     * Установить плашки на плату
+     *
+     * @param {Array<Object>} plates список плашек, которые должны отображаться на плате
+     */
+    setPlates(plates) {
+        this._layers.plate.setPlates(plates);
+    }
+
+    /**
+     * Отобразить токи на плате
+     *
+     * @param {Array<Object>} threads контуры токов
+     */
+    setCurrents(threads) {
+        this._layers.current.setCurrents(threads);
+    }
+
+    /**
+     * Очистить токи
+     */
+    clearCurrents() {
+        this._layers.current.removeAllCurrents();
+    }
+
+    /**
+     * Подсветить область
+     *
+     * @param {Object}  from    исходная координата выделения
+     * @param {Object}  to      конечная координата выделения
+     * @param {boolean} clear   очистить предыдущее выделение
+     * @param {String}  color   цвет выделения в формате Hex
+     */
+    highlightRegion(from, to, clear, color) {
+        this._layers.region.highlightRegion(from, to, clear, color);
+    }
+
+    /**
+     * Очистить подсвеченные области
+     */
+    clearRegions() {
+        this._layers.region.clearRegions();
+    }
+
+    /**
+     * Устаовить обработчик события изменения состояния платы
+     *
+     * @param {Function} cb обработчик события изменения состояния платы
+     */
     onChange(cb) {
         if (!cb) {this._callbacks.change = () => {}}
 
         this._callbacks.change = cb;
     }
 
+    /**
+     * Устаовить обработчик начала перетаскивания плашки
+     *
+     * @param {Function} cb обработчик начала перетаскивания плашки
+     */
     onDragStart(cb) {
         if (!cb) {this._callbacks.dragstart = () => {}}
 
         this._callbacks.dragstart = cb;
     }
 
+    /**
+     * Скомпоновать слои платы
+     *
+     * @private
+     */
     _composeLayers() {
-        // В ней - фон, сетка и панели подписей
-        let background  = this._brush.nested();
-        let label_panes = this._brush.nested();
-        let current     = this._brush.nested();
-        let region      = this._brush.nested();
-        let plate       = this._brush.nested();
-        let controls    = this._brush.nested();
+        /// создание DOM-контейнеров
+        let background  = this._brush.nested(); // фон
+        let label_panes = this._brush.nested(); // подписи
+        let current     = this._brush.nested(); // токи
+        let region      = this._brush.nested(); // области выделения
+        let plate       = this._brush.nested(); // плашки
+        let controls    = this._brush.nested(); // органы управления
 
+        /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
         this._layers.current    = new CurrentLayer(current, this.__grid);
@@ -152,16 +239,19 @@ export default class Breadboard {
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
 
+        /// внутренняя компоновка каждого слоя
         this._layers.background.compose();
         this._layers.label.compose();
         this._layers.current.compose();
         this._layers.plate.compose();
         this._layers.region.compose();
 
+        /// если не режим только чтения, подключить обработчик изменения состояния платы
         if (!this._options.readOnly) {
             this._layers.plate.onChange((data) => {this._callbacks.change(data)});
         }
 
+        /// включение / отключение режима только чтения
         if (this._options.readOnly) {
             this._layers.plate.setEditable(false);
         } else {
@@ -171,15 +261,28 @@ export default class Breadboard {
         }
     }
 
+    /**
+     * Задать опции платы
+     *
+     * @param {Object} options словарь опций
+     * @private
+     */
     _setOptions(options) {
         options = options || {};
 
         this._options = {
             readOnly: (options.readOnly === undefined) ? true : options.readOnly,
+            showControlsDefault: (options.showControlsDefault === undefined ? true : options.showControlsDefault)
         }
     }
 
+    /**
+     * Подключить обработчики событий органов управления платой
+     *
+     * @private
+     */
     _attachControlsEvents() {
+        /// добавление плашек
         this._layers.controls.onAdd((plate_type, extra) => {
             let id_new = this.addPlate(plate_type, 0, 0, 'west', null, extra);
 
@@ -189,6 +292,7 @@ export default class Breadboard {
             });
         });
 
+        /// очистка платы
         this._layers.controls.onClear(() => {
             this.clearPlates();
 
@@ -198,10 +302,12 @@ export default class Breadboard {
             });
         });
 
+        /// переключение полноэкранного режима
         this._layers.controls.onFullscreen((on) => {
             Breadboard.fullScreen(on, this._brush.node);
         });
 
+        /// нажатие на пункт глобального контекстного меню (платы)
         this._layers.controls.onContextMenuItemClick((alias, value) => {
             switch (alias) {
                 case BoardContextMenu.CMI_IMPORT:
@@ -213,17 +319,28 @@ export default class Breadboard {
             }
         });
 
+        /// нажатие на логотип платы
         this._layers.background.onLogoClick(() => {
             this._layers.controls.switchVisibility();
         });
 
-        this._layers.background.clickLogo();
+        /// выполнить нажатие вручную, если требуется показать органы управления при запуске
+        if (this._options.showControlsDefault) {
+            this._layers.background.clickLogo();
+        }
 
+        /// начало перетаскивания плашки
         this._layers.plate.onDragStart(() => {
             this._callbacks.dragstart();
         })
     }
 
+    /**
+     * Импортировать плашки из файла
+     *
+     * @param {File} file файл, содержащий JSON-объект с информацией о состоянии платы
+     * @private
+     */
     _importPlates(file) {
         let reader = new FileReader();
 
@@ -246,6 +363,11 @@ export default class Breadboard {
         };
     }
 
+    /**
+     * Экспортировать текущее состояние платы в файл
+     *
+     * @private
+     */
     _exportPlates() {
         let plates_str = JSON.stringify(this.getPlates());
 
@@ -273,14 +395,29 @@ export default class Breadboard {
         }
     }
 
+    /**
+     * Возвратить список всех типов плашек
+     *
+     * @returns {Array<string>}
+     */
     static getAllPlateTypes() {
         return PlateLayer._getAllPlateTypes();
     }
 
+    /**
+     * Возвратить список всех названий типов плашек
+     *
+     * @returns {Array<string>}
+     */
     static getAllPlateCaptions() {
         return PlateLayer._getAllPlateCaptions();
     }
 
+    /**
+     * Задать SVG-фильтры
+     *
+     * @private
+     */
     static _defineFilters() {
         let defs = [];
 
@@ -371,16 +508,15 @@ export default class Breadboard {
                          1 1 1 0   0\
                          0 0 0 0.5 0"/>\
                 <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
-                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>\
-                <feMerge>\
-                    <feMergeNode in="coloredBlurOut"/>\
-                    <feMergeNode in="SourceGraphic"/>\
-                    <feMergeNode in="coloredBlurIn"/>\
-                </feMerge>\
-            </filter>\
-            <animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
-            values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>\
-            '
+                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>'
+                + '<feMerge>'
+                + (POOR_MODE ? '' : '<feMergeNode in="coloredBlurOut"/>')
+                + '<feMergeNode in="SourceGraphic"/>'
+                + (POOR_MODE ? '' : '<feMergeNode in="coloredBlurIn"/>')
+                + '</feMerge>\
+            </filter>'
+            + '<animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
+                values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>'
         );
 
         // defs.push(
@@ -397,6 +533,12 @@ export default class Breadboard {
         defs_elem.insertAdjacentHTML('beforeend', defs[5]);
     };
 
+    /**
+     * Переключить полноэкранный режим отображения DOM-элемента
+     *
+     * @param {boolean}     on      включить полноэкранный режим?
+     * @param {HTMLElement} element DOM-элемент
+     */
     static fullScreen(on, element) {
         if (on) {
             if (element.requestFullScreen) {
@@ -411,9 +553,9 @@ export default class Breadboard {
                 document.exitFullscreen();
             } else if (document.msExitFullscreen) {
                 document.msExitFullscreen();
-            }else if (document.mozCancelFullScreen) {
+            } else if (document.mozCancelFullScreen) {
                 document.mozCancelFullScreen();
-            }else if (document.webkitCancelFullScreen) {
+            } else if (document.webkitCancelFullScreen) {
                 document.webkitCancelFullScreen();
             }
         }

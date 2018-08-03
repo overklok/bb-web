@@ -34,7 +34,7 @@
             let iter = 0;
 
             let threads = [
-                                {from: {x: 0, y: 0}, to: {x: 5, y: 0}, weight: weight},
+                                // {from: {x: 0, y: 0}, to: {x: 5, y: 0}, weight: weight},
                                 // {from: {x: 5, y: 0}, to: {x: 5, y: 1}, weight: 0.5},
                                 // {from: {x: 5, y: 1}, to: {x: 0, y: 1}, weight: 0},
                                 // {from: {x: 0, y: 1}, to: {x: 0, y: 2}, weight: 1},
@@ -47,30 +47,26 @@
                 weight += 0.05;
                 if (weight > 1) weight = 0;
 
-                console.log("WEI", weight);
-
                 iter++;
+
+                let xplate = (iter % 2) ? {type: 'resistor', x: 2, y: 2, orientation: 'west'} : undefined;
 
                 // if (iter === 5 || iter === 15 || iter === 25 || iter === 35) {
                 //     threads.push({
                 //         from: {x: 7, y: 3}, to: {x: 7, y: 7}, weight: 1
                 //     });
                 // }
-                //
+
                 // if (iter === 10 || iter === 20 || iter === 30 || iter === 40) {
                 //     threads.pop();
                 // }
 
                 app.setData(
-                    undefined,
-                    // [
-                    //     {type: 'strip', x: 4, y: 4, orientation: 'west', extra: 5},
-                    // ],
-                    {
-                        threads: [
-                            {from: {x: 0, y: 0}, to: {x: 5, y: 0}, weight: weight},
-                        ],
-                    }
+                    // undefined,
+                    [
+                        {type: 'strip', x: 4, y: 4, orientation: 'west', extra: 5, id: 100},
+                        xplate
+                    ],
                 );
             }, 1000);
         });

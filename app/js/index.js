@@ -628,6 +628,7 @@ class Application {
 
         this._dispatcher.on('ls:request_calc', step => {
             let plates = this.bb.getData();
+            console.log(plates);
 
             this.gs.calcCurrents(plates, step)
                 .then(results => Promise.all([

@@ -119,16 +119,22 @@ export default class PlateLayer extends Layer {
      * @param {*}           extra       резервное поле
      * @param {boolean}     animate     анимировать появление плашки
      *
-     * @returns {int} идентификатор плашки
+     * @returns {null|int} идентификатор плашки
      */
-    addPlate(type, x, y, orientation, id, extra, animate) {
-        if (!(typeof id !== "undefined") || !(typeof x !== "undefined") || !(typeof y !== "undefined") || !orientation) {
-            throw new TypeError("All of 'type', 'x', 'y', 'orientation' and 'id' arguments must be defined");
+    addPlate(type, x, y, orientation, id=null, extra=null, animate=false) {
+        if (!(typeof x !== "undefined") || !(typeof y !== "undefined") || !orientation) {
+            throw new TypeError("All of 'type', 'x', 'y', and 'orientation' arguments must be defined");
         }
 
-        let plate_class = PlateLayer._typeToPlateClass(type);
+        let plate_class, plate;
 
-        let plate = new plate_class(this._cellgroup, this.__grid, id, extra);
+        if (id in this._plates) {
+            this._plates[id].rotate(orientation);
+            return id;
+        } else {
+            plate_class = PlateLayer._typeToPlateClass(type);
+            plate = new plate_class(this._cellgroup, this.__grid, id, extra);
+        }
 
         if (this._editable) {
             this._attachEventsEditable(plate);
@@ -149,6 +155,56 @@ export default class PlateLayer extends Layer {
         this._plates[plate.id] = plate;
 
         return plate.id;
+    }
+
+    /**
+     * Установить плашки на плату
+     *
+     * Создание новых, сохранение текущих и удаление несуществующих плашек
+     * производится автоматически
+     *
+     * @param {Array<Object>} plates список плашек, которые должны отображаться на слое
+     */
+    setPlates(plates) {
+        /// снять возможную метку с локальных плашек
+        for (let plate_id in this._plates) {
+            this._plates[plate_id].___touched = undefined;
+        }
+
+        /// выполнить основной цикл
+        for (let plate of plates) {
+            /// если плашки нет, пропустить итерацию
+            if (!plate) continue;
+
+            /// ИД новой/текущей плашки
+            let id;
+
+            /// экстра-параметр может называться по-другому
+            plate.extra = plate.extra || plate.number;
+
+            /// добавить плашку, если таковой нет
+            id = this.addPlate(plate.type, plate.x, plate.y, plate.orientation, plate.id, plate.extra);
+
+            /// если плашка создана без ошибок / существует
+            if (id) {
+                /// пометить её
+                this._plates[id].___touched = true;
+
+                /// обновить состояние
+                this.setPlateState(id, {
+                    cell_num: plate.cell_num,
+                    contr_num: plate.contr_num,
+                    adc: plate.adc,
+                });
+            }
+        }
+
+        /// удалить непомеченные плашки
+        for (let plate_id in this._plates) {
+            if (!this._plates[plate_id].___touched) {
+                this.removePlate(plate_id);
+            }
+        }
     }
 
     /**
@@ -203,8 +259,8 @@ export default class PlateLayer extends Layer {
      * @param {object}  state       состояние плашки
      */
     setPlateState(plate_id, state) {
-        if (!plate_id in this._plates) {
-            throw new RangeError("This plate does not exist");
+        if (!(plate_id in this._plates)) {
+            throw new RangeError("This plate does not exist", plate_id);
         }
 
         let plate = this._plates[plate_id];
@@ -232,6 +288,11 @@ export default class PlateLayer extends Layer {
         this._callbacks.change = cb;
     }
 
+    /**
+     * Установить обработчик начала перетаскивания плашки
+     *
+     * @param {function} cb фукнция, вызывающаяся при начале перетаскивания плашки
+     */
     onDragStart(cb) {
         if (!cb) {this._callbacks.dragstart = () => {}}
 
@@ -500,6 +561,12 @@ export default class PlateLayer extends Layer {
         }
     }
 
+    /**
+     * Продублировать плашку
+     *
+     * @param {Plate} plate исходная плашка
+     * @private
+     */
     _duplicatePlate(plate) {
         let new_plate_id = this.addPlate(
             plate.alias,

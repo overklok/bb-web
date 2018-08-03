@@ -370,6 +370,8 @@ export default class BlocklyWrapper extends Wrapper {
         let block_taken_ids = new Set();
 
         for (let block of blocks) {
+            console.log("Watching for block...", block.id, block.type);
+
             if (!block_taken_ids.has(block.id)) {
                 block_count += 1;
             }
@@ -388,7 +390,7 @@ export default class BlocklyWrapper extends Wrapper {
                     }
                 } else  {
                     if (!subblock.isShadow_) {
-                        block_count += 2;
+                        block_count += 1; // maybe 2?
                     } else {
                         block_count += 1;
                     }
