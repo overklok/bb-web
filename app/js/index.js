@@ -276,12 +276,12 @@ class Application {
 
             this._gui_check()
                 .then(() => {
-                    this.gui.affirmLaunchButtonState('check', true);
+                    this.gui.affirmLaunchButtonStarted('check', false);
                     this._dispatcher.only(['gui:*', 'ins:*']);
                 })
                 .catch((err) => {
                     console.error(err);
-                    this.gui.affirmLaunchButtonState('check', true);
+                    this.gui.affirmLaunchButtonStarted('check', false);
                     this._dispatcher.only(['gui:*', 'ins:*'])
                 });
         });
@@ -293,9 +293,9 @@ class Application {
             this._dispatcher.only(["gui:stop"]);
 
             if (check_later) {
-                this.gui.affirmLaunchButtonState('chexec', false);
+                this.gui.affirmLaunchButtonStarted('chexec', true);
             } else {
-                this.gui.affirmLaunchButtonState('execute', false);
+                this.gui.affirmLaunchButtonStarted('execute', true);
             }
 
             let handler = this.ws.getMainHandler();
@@ -307,13 +307,14 @@ class Application {
          * Нажата кнопка "Остановить"
          */
         this._dispatcher.on('gui:stop', check_later => {
-            this.ls.stopExecution();
+            this.ls.stopExecution(true);
             this.ws.highlightBlock(null);
 
             if (check_later) {
-                this.gui.affirmLaunchButtonState('chexec', true);
+                this.gui.affirmLaunchButtonStarted('chexec', false);
             } else {
-                this.gui.affirmLaunchButtonState('execute', true);
+                this.gui.affirmLaunchButtonStarted('chexec', false);
+                this.gui.affirmLaunchButtonStarted('execute', false);
             }
 
             this._dispatcher.only(["gui:*"]);
@@ -322,7 +323,7 @@ class Application {
         this._dispatcher.on('gui:calc', extra => {
             this._dispatcher.only([]);
 
-            this.gui.affirmLaunchButtonState('calc', false);
+            this.gui.affirmLaunchButtonStarted('calc', true);
 
             let plates = this.bb.getData();
 
@@ -333,9 +334,9 @@ class Application {
                     this.bb.updateCurrents(results),
                     this.ls.sendSpi(results.board_data)
                 ]))
-                .then(() => this.gui.affirmLaunchButtonState('calc', true))
+                .then(() => this.gui.affirmLaunchButtonStarted('calc', false))
                 .catch(err => {
-                    this.gui.affirmLaunchButtonState('calc', true);
+                    this.gui.affirmLaunchButtonStarted('calc', false);
                 });
 
             this._dispatcher.only(["gui:*"]);
@@ -580,7 +581,7 @@ class Application {
             let exercise = this.ins.getExerciseCurrent();
 
             this.ws.highlightBlock(null);
-            this.gui.affirmLaunchButtonState('execute', true);
+            this.gui.affirmLaunchButtonStarted('execute', false);
 
             if (exercise.check_buttons) {
                 this._dispatcher.only(['gui:*', 'ins:pass']);
@@ -593,12 +594,12 @@ class Application {
 
                 this._gui_check()
                     .then(() => {
-                        this.gui.affirmLaunchButtonState('chexec', true);
+                        this.gui.affirmLaunchButtonStarted('chexec', false);
                         this._dispatcher.only(['gui:*', 'ins:*']);
                     })
                     .catch((err) => {
                         console.error(err);
-                        this.gui.affirmLaunchButtonState('chexec', true);
+                        this.gui.affirmLaunchButtonStarted('chexec', false);
                         this._dispatcher.only(['gui:*', 'ins:*'])
                     });
             }
@@ -740,7 +741,7 @@ class Application {
         /// определить ИД упражнения
         let exercise = this.ins.getExerciseCurrent();
         /// зажать кнопку
-        this.gui.affirmLaunchButtonState('check', false);
+        this.gui.affirmLaunchButtonStarted('check', true);
         /// очистить ошибочные блоки
         this.ws.clearErrorBlocks();
 
@@ -751,7 +752,7 @@ class Application {
                  skip: true,
              });
 
-             this.gui.affirmLaunchButtonState('check', true);
+             this.gui.affirmLaunchButtonStarted('check', false);
 
              return new Promise(resolve => {resolve()});
         }
@@ -764,7 +765,7 @@ class Application {
             .then(results   => {return {handlers: results[0], board: results[1]}})
             .then(data      => this.gs.commitSolution(exercise.pk, data))
             .then(verdict   => this.ins.applyVerdict(verdict))
-            .then(()        => this.gui.affirmLaunchButtonState('check', true));
+            .then(()        => this.gui.affirmLaunchButtonStarted('check', false));
 
         return chain;
     }

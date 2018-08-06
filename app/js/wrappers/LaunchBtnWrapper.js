@@ -148,7 +148,7 @@ export default class LaunchBtnWrapper extends Wrapper {
         }
 
         for (let button_key in this._buttons) {
-            this.setState(button_key, true);
+            this.setStarted(button_key, false);
         }
 
         this._buttons.calc.style.display = "inline";
@@ -192,12 +192,12 @@ export default class LaunchBtnWrapper extends Wrapper {
         }
     }
 
-    setState(button_key, start) {
+    setStarted(button_key, started) {
         if (!(button_key in this._buttons)) {throw new RangeError(`There is no '${button_key}' button`)}
 
-        let key = start ? "start" : "stop";
+        let key = started ? "stop" : "start";
 
-        this._started[button_key] = false;
+        this._started[button_key] = started;
 
         this._sandbox ? this._setCaptionSandbox(button_key, key) : this._setCaption(button_key, key);
     }
@@ -294,6 +294,7 @@ export default class LaunchBtnWrapper extends Wrapper {
 
         this._buttons.chexec.onclick = (evt) => {
             this._callbacks.button_click('chexec', !this._started.chexec);
+            console.log("CHEXEC CLC", this._started.chexec);
         };
 
         this._buttons.calc.onclick = (evt) => {

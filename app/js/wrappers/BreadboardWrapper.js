@@ -45,7 +45,6 @@ export default class BreadboardWrapper extends Wrapper {
         return this._plugin.getPlates();
     }
 
-
     setPlates(plates) {
         if (!plates) throw new TypeError ("Plates is not iterable");
 

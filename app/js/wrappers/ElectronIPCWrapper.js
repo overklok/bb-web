@@ -8,7 +8,6 @@ if (require('electron') !== undefined) {
 
 export default class ElectronIPCWrapper extends Wrapper {
 // public:
-
     constructor() {
         super();
 

@@ -1,6 +1,6 @@
 import Module from '../core/Module';
 
-import SocketWrapper from '../wrappers/SocketWrapper';
+import SocketIPCWrapper from '../wrappers/SocketIPCWrapper';
 import ElectronIPCWrapper from '../wrappers/ElectronIPCWrapper';
 
 /**
@@ -85,6 +85,10 @@ export default class LocalServiceModule extends Module {
 
     getBoardStatus() {
         return this._state.board_status;
+    }
+
+    echo(data) {
+        this._ipc.send('__echo__', data);
     }
 
     openMenu() {
@@ -182,10 +186,17 @@ export default class LocalServiceModule extends Module {
      *
      * @returns {boolean}   true, если модуль в холостом режиме
      */
-    stopExecution() {
+    stopExecution(urgent=false) {
         if (this._options.modeDummy) {return true}
 
         this._ipc.send('stop');
+
+        console.log("STEXEC", urgent);
+
+        if (urgent) {
+            this.emitEvent('terminate', this._state.check_later);
+            this._state.check_later = false;
+        }
     }
 
     sendSpi(data) {
@@ -291,7 +302,7 @@ export default class LocalServiceModule extends Module {
     }
 
     _useIPCElectron() {
-        this._debug.log("Swtiching to IPCWrapper");
+        this._debug.log("Swtiching to ElectronIPCWrapper");
 
         this._ipc = new ElectronIPCWrapper();
     }
@@ -300,8 +311,8 @@ export default class LocalServiceModule extends Module {
         let saddr = socket_addr ? socket_addr : this._options.socketAddress,
             sport = socket_port ? socket_port : this._options.socketPort;
 
-        this._debug.log("Swtiching to SocketWrapper", saddr, sport);
-        this._ipc = new SocketWrapper(saddr, sport);
+        this._debug.log("Swtiching to SocketIPCWrapper", saddr, sport);
+        this._ipc = new SocketIPCWrapper(saddr, sport);
     }
 
     /**
@@ -334,6 +345,9 @@ export default class LocalServiceModule extends Module {
      * @private
      */
     _subscribeToWrapperEvents() {
+        this._ipc.on('__echo__', (evt, data) => {
+            this._debug.info(`ECHO`, data);
+        });
         /* Как только сервис сообщил о соединении */
         this._ipc.on('connect', (evt, version) => {
             this._state.connected = true;

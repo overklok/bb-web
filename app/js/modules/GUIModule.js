@@ -291,11 +291,11 @@ export default class GUIModule extends Module {
         return Promise.resolve(true);
     }
 
-    affirmLaunchButtonState(button, start=true) {
+    affirmLaunchButtonStarted(button, start=true) {
         if (!this._state.areasDisp.buttons) {return false}
         if (!button) {throw new TypeError("Button is not defined")}
 
-        this._launch_btn.setState(button, start);
+        this._launch_btn.setStarted(button, start);
     }
 
     getLaunchButtonState(button) {
@@ -561,6 +561,8 @@ export default class GUIModule extends Module {
             }
 
             if (button === 'chexec') {
+                console.log("BUTTON chexec", start);
+
                 if (start) {
                     this.emitEvent("run", true);
                 }

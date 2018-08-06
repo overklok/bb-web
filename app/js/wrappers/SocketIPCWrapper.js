@@ -2,7 +2,7 @@ import Wrapper from '../core/Wrapper'
 
 import io from 'socket.io-client'
 
-export default class SocketWrapper extends Wrapper {
+export default class SocketIPCWrapper extends Wrapper {
 // public:
 
     constructor(addr='127.0.0.1', port=8080) {
