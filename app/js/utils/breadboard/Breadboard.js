@@ -22,8 +22,6 @@ const GRID_GAP_Y = 10;
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
-const POOR_MODE = true;
-
 import thm from "./styles/main.css";
 
 /**
@@ -56,6 +54,9 @@ export default class Breadboard {
         this._cache = {
             current: undefined,
         };
+
+        this._filters_adv = undefined;
+        this._filters_defined = false;
     }
 
     getContainer() {
@@ -95,7 +96,7 @@ export default class Breadboard {
         this.__grid = new Grid(GRID_ROWS, GRID_COLS, GRID_WIDTH, GRID_HEIGHT, GRID_GAP_X, GRID_GAP_Y);
 
         /// создать фильтры
-        Breadboard._defineFilters();
+        this._defineFilters();
         /// инициализировать слои
         this._composeLayers();
     };
@@ -215,6 +216,45 @@ export default class Breadboard {
         if (!cb) {this._callbacks.dragstart = () => {}}
 
         this._callbacks.dragstart = cb;
+    }
+
+    switchAdvancedFilters(on) {
+        this._filters_adv = on;
+
+        if (!this._filters_defined) {return}
+
+        // Фильтры должны храниться в этом узле
+        let defs_elem = document.getElementsByTagName("defs")[0];
+
+        let def = '<filter id="glow-current" filterUnits="userSpaceOnUse">\
+                <feColorMatrix type="matrix" result="colorCurrentCyan" values=\
+                        "0 0 0 0   0\
+                         0 1 0 0   0\
+                         0 0 1 0   0\
+                         0 0 0 1   0"/>\
+                <feColorMatrix type="matrix" result="colorCurrentWhite" values=\
+                        "1 1 1 0   0\
+                         1 1 1 0   0\
+                         1 1 1 0   0\
+                         0 0 0 0.5 0"/>\
+                <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
+                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>'
+                + '<feMerge>'
+                + (on ? '<feMergeNode in="coloredBlurOut"/>' : '')
+                + '<feMergeNode in="SourceGraphic"/>'
+                + (on ? '<feMergeNode in="coloredBlurIn"/>' : '')
+                + '</feMerge>\
+            </filter>'
+            + (on ? '<animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
+                values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>' : '');
+
+        let glow_old = document.getElementById('glow-current');
+
+        if (glow_old) {
+            glow_old.remove();
+        }
+
+        defs_elem.insertAdjacentHTML('beforeend', def);
     }
 
     /**
@@ -396,29 +436,11 @@ export default class Breadboard {
     }
 
     /**
-     * Возвратить список всех типов плашек
-     *
-     * @returns {Array<string>}
-     */
-    static getAllPlateTypes() {
-        return PlateLayer._getAllPlateTypes();
-    }
-
-    /**
-     * Возвратить список всех названий типов плашек
-     *
-     * @returns {Array<string>}
-     */
-    static getAllPlateCaptions() {
-        return PlateLayer._getAllPlateCaptions();
-    }
-
-    /**
      * Задать SVG-фильтры
      *
      * @private
      */
-    static _defineFilters() {
+    _defineFilters() {
         let defs = [];
 
         // Тень вовнутрь
@@ -494,44 +516,35 @@ export default class Breadboard {
             </filter>'
         );
 
-        defs.push(
-            // Свечение голубым цветом
-            '<filter id="glow-current" filterUnits="userSpaceOnUse">\
-                <feColorMatrix type="matrix" result="colorCurrentCyan" values=\
-                        "0 0 0 0   0\
-                         0 1 0 0   0\
-                         0 0 1 0   0\
-                         0 0 0 1   0"/>\
-                <feColorMatrix type="matrix" result="colorCurrentWhite" values=\
-                        "1 1 1 0   0\
-                         1 1 1 0   0\
-                         1 1 1 0   0\
-                         0 0 0 0.5 0"/>\
-                <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
-                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>'
-                + '<feMerge>'
-                + (POOR_MODE ? '' : '<feMergeNode in="coloredBlurOut"/>')
-                + '<feMergeNode in="SourceGraphic"/>'
-                + (POOR_MODE ? '' : '<feMergeNode in="coloredBlurIn"/>')
-                + '</feMerge>\
-            </filter>'
-            + '<animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
-                values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>'
-        );
-
-        // defs.push(
-        // );
-
         // Фильтры должны храниться в этом узле
         let defs_elem = document.getElementsByTagName("defs")[0];
 
-        defs_elem.insertAdjacentHTML('beforeend', defs[0]);
-        defs_elem.insertAdjacentHTML('beforeend', defs[1]);
-        defs_elem.insertAdjacentHTML('beforeend', defs[2]);
-        defs_elem.insertAdjacentHTML('beforeend', defs[3]);
-        defs_elem.insertAdjacentHTML('beforeend', defs[4]);
-        defs_elem.insertAdjacentHTML('beforeend', defs[5]);
+        for (let def of defs) {
+            defs_elem.insertAdjacentHTML('beforeend', def);
+        }
+
+        this._filters_defined = true;
+
+        this.switchAdvancedFilters(this._filters_adv);
     };
+
+    /**
+     * Возвратить список всех типов плашек
+     *
+     * @returns {Array<string>}
+     */
+    static getAllPlateTypes() {
+        return PlateLayer._getAllPlateTypes();
+    }
+
+    /**
+     * Возвратить список всех названий типов плашек
+     *
+     * @returns {Array<string>}
+     */
+    static getAllPlateCaptions() {
+        return PlateLayer._getAllPlateCaptions();
+    }
 
     /**
      * Переключить полноэкранный режим отображения DOM-элемента

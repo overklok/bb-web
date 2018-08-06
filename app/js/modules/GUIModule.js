@@ -249,7 +249,7 @@ export default class GUIModule extends Module {
      *
      * @param status
      */
-    setBoardStatus(status) {
+    setBoardStatus(status, is_socket, dev_type) {
         switch (status) {
             case BOARD_STATUSES.SEARCH: {
                 this.hideAllAlerts();

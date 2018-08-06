@@ -123,6 +123,12 @@ export default class BreadboardModule extends Module {
         return plates;
     }
 
+    switchAdvancedFilters(on) {
+        if (!this._state.display) {return false}
+
+        this._board.switchAdvancedFilters(on);
+    }
+
     _subscribeToWrapperEvents() {
         this._board.onChange((data) => {
             this.clearRegions();

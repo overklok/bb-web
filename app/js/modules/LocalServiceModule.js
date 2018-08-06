@@ -3,6 +3,13 @@ import Module from '../core/Module';
 import SocketIPCWrapper from '../wrappers/SocketIPCWrapper';
 import ElectronIPCWrapper from '../wrappers/ElectronIPCWrapper';
 
+const DEVICE_TYPES = {
+    UNKNOWN: 0,
+    "board": 1,
+    "strip": 2,
+    "board-rpi": 3,
+};
+
 /**
  * Модуль взаимодействия с локальным сервисом
  *
@@ -41,6 +48,8 @@ export default class LocalServiceModule extends Module {
             board_status: undefined,
             check_later: false,
             running: false,
+            mode: undefined,
+            dev_type: undefined,
         };
 
         this.launch();
@@ -191,8 +200,6 @@ export default class LocalServiceModule extends Module {
 
         this._ipc.send('stop');
 
-        console.log("STEXEC", urgent);
-
         if (urgent) {
             this.emitEvent('terminate', this._state.check_later);
             this._state.check_later = false;
@@ -247,6 +254,8 @@ export default class LocalServiceModule extends Module {
         if (this._options.modeDummy) {return true}
 
         this._ipc.send('set-mode', mode);
+
+        this._state.mode = mode;
     }
 
     setIPC(ipc_alias, socket_addr, socket_port) {
@@ -352,9 +361,15 @@ export default class LocalServiceModule extends Module {
         this._ipc.on('connect', (evt, version) => {
             this._state.connected = true;
 
-            this.emitEvent('connect', this._ipc.is_socket);
+            this._state.dev_type = LocalServiceModule.parseDeviceType(version);
+
+            this.emitEvent('connect', {is_socket: this._ipc.is_socket, dev_type: this._state.dev_type});
             this._debug.info(`Connected to IPC ver. ${version}`);
             this._version = version;
+
+            if (this._state.mode) {
+                this.setMode(this._state.mode);
+            }
         });
 
         /* Как только сервис сообщил о разъединении */
@@ -418,5 +433,15 @@ export default class LocalServiceModule extends Module {
             this._debug.error(err);
             // this.emitEvent('error', arg)
         });
+    }
+
+    static parseDeviceType(version) {
+        let verparts = version.split('/');
+
+        if (verparts[2] in DEVICE_TYPES) {
+            return DEVICE_TYPES[verparts[2]];
+        } else {
+            return DEVICE_TYPES.UNKNOWN;
+        }
     }
 }

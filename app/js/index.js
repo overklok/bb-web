@@ -541,12 +541,18 @@ class Application {
         /**
          * Готовность платы к работе
          */
-        this._dispatcher.on('ls:connect', is_socket => {
+        this._dispatcher.on('ls:connect', data => {
             this.gui.setBoardStatus('none');
             this.gui.hideAllAlerts();
 
-            if (is_socket) {
-                this.gui.emphasize(is_socket);
+            if (data && data.is_socket) {
+                this.gui.emphasize(data.is_socket);
+            }
+
+            if (data && data.dev_type === 3) {
+                this.bb.switchAdvancedFilters(false);
+            } else {
+                this.bb.switchAdvancedFilters(true);
             }
 
             /// Запросить ссылки для прошивки
@@ -629,7 +635,6 @@ class Application {
 
         this._dispatcher.on('ls:request_calc', step => {
             let plates = this.bb.getData();
-            console.log(plates);
 
             this.gs.calcCurrents(plates, step)
                 .then(results => Promise.all([
@@ -651,7 +656,8 @@ class Application {
         this._dispatcher.on('ls:disconnect', () => {
             console.log("IPC DISCONNECTED");
             this.gui.setBoardStatus('default');
-            this.gui.showAlert('no_server');
+
+            this.gui.showAlert("no_server");
         });
 
         /**
