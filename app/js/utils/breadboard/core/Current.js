@@ -72,7 +72,7 @@ export default class Current {
 
         this.addGlow();
 
-        this.path.opacity(0).animate('200ms').opacity(1);
+        // this.path.opacity(0).animate('50ms').opacity(1);
 
         this._visible = true;
     };
@@ -88,13 +88,13 @@ export default class Current {
 
         this.arrows = [];
 
-        this.path.animate('200ms').opacity(0);
-        this.container_anim.animate('300ms').opacity(0);
+        // this.path.animate('50ms').opacity(0);
+        // this.container_anim.animate('50ms').opacity(0);
 
-        setTimeout(() => {
+        // setTimeout(() => {
             this.path.remove();
             this.container_anim.remove();
-        }, 300);
+        // }, 50);
 
         this._visible = false;
     };
@@ -126,7 +126,7 @@ export default class Current {
      * Отключение сброса стрелок необходимо в случае, когда требуется изменить свойства анимации,
      * не перерисовывая стрелки с нуля.
      */
-    activate(weight=0, reset=true) {
+    activate(weight=0, reset=true, spare=false) {
         if (!this._visible) {
             throw new Error("Cannot activate invisible current!");
         }
@@ -175,10 +175,19 @@ export default class Current {
 
             /// Если сброс - генерируемы новую стрелку
             if (reset) {
-                let arrow = this.container_anim
-                    .circle(GRID_DOT_SIZE * 1.8)
-                    .center(0, 0)
-                    .addClass('current-arrow');
+                let arrow;
+
+                if (spare) {
+                    arrow = this.container_anim.polygon(
+                        "0,0 0," + GRID_DOT_SIZE * 2 +  " " + GRID_DOT_SIZE + "," + GRID_DOT_SIZE
+                    );
+                } else {
+                    arrow = this.container_anim.circle(
+                        GRID_DOT_SIZE * 1.8
+                    ).addClass('current-arrow');
+                }
+
+                    arrow.center(0, 0);
 
                 this.arrows.push(arrow);
             }
@@ -188,16 +197,18 @@ export default class Current {
 
             let aniMove, aniTrans;
 
-            aniMove = Current.animateArrowMove(this.path.toString(), this.arrows[i], time, progress_start, progress_end, this.animators.move[i]);
+            aniMove = Current.animateArrowMove(
+                this.path.toString(), this.arrows[i], time, progress_start, progress_end, spare, this.animators.move[i]
+            );
 
             if (i === 0) {
                 // если первая стрелка
-                aniTrans = Current.animateArrowScale(this.arrows[i], time, false, this.animators.trans[i]);
+                aniTrans = Current.animateArrowScale(this.arrows[i], time, false, spare, this.animators.trans[i]);
             }
 
             if (i === arrows_count - 1) {
                 // если последняя стрелка
-                aniTrans = Current.animateArrowScale(this.arrows[i], time, true, this.animators.trans[i]);
+                aniTrans = Current.animateArrowScale(this.arrows[i], time, true, spare, this.animators.trans[i]);
             }
 
             if (reset) {
@@ -254,7 +265,7 @@ export default class Current {
         this._weight = weight;
     }
 
-    static animateArrowMove(path, arrow, time, progress_start, progress_end, animator=undefined) {
+    static animateArrowMove(path, arrow, time, progress_start, progress_end, spare=false, animator=undefined) {
         // SVG-анимация стрелки:
         let aniMove = animator ? animator.node : document.createElementNS("http://www.w3.org/2000/svg", "animateMotion"); // тип: перемещение
 
@@ -271,7 +282,12 @@ export default class Current {
             aniMove.setAttribute("calcMode", "linear");                                       // (!) функция перемещения
         }
 
-        aniMove.setAttribute("dur", time + "ms");                                     // длительность
+        if (spare) {
+            aniMove.removeAttribute("dur");
+        } else {
+            aniMove.setAttribute("dur", time + "ms"); // длительность
+        }
+
         aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);       // нач. и кон. позиции в %
 
         // Подключение в DOM
@@ -283,7 +299,7 @@ export default class Current {
         return {node: aniMove, path: mpath};
     };
 
-    static animateArrowScale(arrow, time, out = false, animator=undefined) {
+    static animateArrowScale(arrow, time, out = false, spare, animator=undefined) {
         // SVG-анимация стрелки:
         let aniTrans = animator ? animator : document.createElementNS("http://www.w3.org/2000/svg", "animateTransform"); // тип: трансформ.
 
@@ -298,8 +314,13 @@ export default class Current {
 
         aniTrans.setAttribute("from", out ? "1 1" : "0.45 0.45");
         aniTrans.setAttribute("to", out ? "0.45 0.45" : "1 1");
-        aniTrans.setAttribute("dur", time + "ms");
         aniTrans.setAttribute("keySplines", out ? "0.39, 0.575, 0.565, 1" : "0.47, 0, 0.745, 0.715");
+
+        if (spare) {
+            aniTrans.removeAttribute("dur");
+        } else {
+            aniTrans.setAttribute("dur", time + "ms"); // длительность
+        }
 
         // Подключение в DOM
         if (!animator) {

@@ -550,9 +550,9 @@ class Application {
             }
 
             if (data && data.dev_type === 3) {
-                this.bb.switchAdvancedFilters(false);
+                this.bb.switchSpareFilters(true);
             } else {
-                this.bb.switchAdvancedFilters(true);
+                this.bb.switchSpareFilters(false);
             }
 
             /// Запросить ссылки для прошивки
@@ -633,15 +633,15 @@ class Application {
             this.gui.setBoardStatus(status);
         });
 
-        this._dispatcher.on('ls:request_calc', step => {
-            let plates = this.bb.getData();
-
-            this.gs.calcCurrents(plates, step)
-                .then(results => Promise.all([
-                    this.bb.updateCurrents(results),
-                    this.ls.sendSpi(results.board_data)
-                ]))
-        });
+        // this._dispatcher.on('ls:request_calc', step => {
+        //     let plates = this.bb.getData();
+        //
+        //     this.gs.calcCurrents(plates, step)
+        //         .then(results => Promise.all([
+        //             this.bb.updateCurrents(results),
+        //             this.ls.sendSpi(results.board_data)
+        //         ]))
+        // });
 
         /**
          * Достигнут тайм-аут соединения с IPC

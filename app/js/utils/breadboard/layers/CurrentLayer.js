@@ -87,9 +87,10 @@ export default class CurrentLayer extends Layer {
      * Создание новых, сохранение текущих и удаление несуществующих токов
      * производится автоматически
      *
-     * @param {Array<Object>} threads список контуров токов, которые должны отображаться на слое
+     * @param {Array<Object>}   threads     список контуров токов, которые должны отображаться на слое
+     * @param {boolean}         spare       щадящий режим (для слабых машин)
      */
-    setCurrents(threads) {
+    setCurrents(threads, spare) {
         /// снять возможную пометку с локальных токов
         for (let current_id in this._currents) {
             this._currents[current_id].___touched = undefined;
@@ -122,18 +123,18 @@ export default class CurrentLayer extends Layer {
             }
         }
 
-        /// создать токи для непомеченных контуров
-        for (let thread of threads) {
-            if (!thread.___touched) {
-                let cur = this._addCurrent(thread);
-                cur.___touched = true;
-            }
-        }
-
         /// удалить непомеченные токи
         for (let current_id in this._currents) {
             if (!this._currents[current_id].___touched) {
                 this.removeCurrent(current_id)
+            }
+        }
+
+        /// создать токи для непомеченных контуров
+        for (let thread of threads) {
+            if (!thread.___touched) {
+                let cur = this._addCurrent(thread, spare);
+                cur.___touched = true;
             }
         }
     }
@@ -142,10 +143,11 @@ export default class CurrentLayer extends Layer {
      * Добавить ток
      *
      * @param {Object} thread контур тока
+     * @param {boolean} spare щадящий режим
      * @returns {Current}
      * @private
      */
-    _addCurrent(thread) {
+    _addCurrent(thread, spare) {
         if (!thread || thread.length === 0) {}
 
         let current = new Current(this._cellgroup, thread, {
@@ -161,7 +163,7 @@ export default class CurrentLayer extends Layer {
         this._weight = weight;
 
         current.draw(path_data, weight);
-        current.activate(weight);
+        current.activate(weight, true, spare);
 
         return current;
     };

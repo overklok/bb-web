@@ -8,7 +8,7 @@ const IDS = {
     EXECUTE_BTN: "execute-btn",
     CHECK_BTN: "check-btn",
     CHEXEC_BTN: "chexec-btn",
-    CALC_BTN: "calc-btn",
+    // CALC_BTN: "calc-btn",
     CALC_INPUT: "calc-input",
 };
 
@@ -16,7 +16,7 @@ const CLASSES = {
     TEST_PANE: "test-pane",
     LAUNCH_PANE: "launch-pane",
     LAUNCH_BTN: "launch-btn",
-    CALC_INPUT_ERROR: "calc-input-error",
+    // CALC_INPUT_ERROR: "calc-input-error",
 };
 
 const VARIANTS = {
@@ -54,17 +54,17 @@ export default class LaunchBtnWrapper extends Wrapper {
                 start: `<i class="fas fa-forward"></i>&nbsp;<small>Запустить</small>`,
                 stop: `<i class="fas fa-sync fa-spin fa-fw"></i>&nbsp;<small>Остановить</small>`,
             },
-            calc: {
-                start: `<i class="fas fa-calculator"></i>&nbsp;<small>Рассчитать</small>`,
-                stop: `<i class="fas fa-sync fa-spin fa-fw"></i>`,
-            }
+            // calc: {
+            //     start: `<i class="fas fa-calculator"></i>&nbsp;<small>Рассчитать</small>`,
+            //     stop: `<i class="fas fa-sync fa-spin fa-fw"></i>`,
+            // }
         };
 
         this._buttons = {
             check: undefined,
             execute: undefined,
             chexec: undefined,
-            calc: undefined,
+            // calc: undefined,
         };
 
         this._panes = {
@@ -73,14 +73,14 @@ export default class LaunchBtnWrapper extends Wrapper {
         };
 
         this._inputs = {
-            calc: undefined,
+            // calc: undefined,
         };
 
         this._started = {
             check: false,
             execute: false,
             chexec: false,
-            calc: false,
+            // calc: false,
         };
 
         this._panes_visibility = {
@@ -151,7 +151,7 @@ export default class LaunchBtnWrapper extends Wrapper {
             this.setStarted(button_key, false);
         }
 
-        this._buttons.calc.style.display = "inline";
+        // this._buttons.calc.style.display = "inline";
 
         if (this._panes_visibility.launch) {
             this._panes.launch.style.display = "block"
@@ -171,7 +171,7 @@ export default class LaunchBtnWrapper extends Wrapper {
         this._buttons.execute.style.display = "none";
         this._buttons.check.style.display = "none";
         this._buttons.chexec.style.display = "none";
-        this._buttons.calc.style.display = "none";
+        // this._buttons.calc.style.display = "none";
 
         this._panes.launch.style.display = "none";
         this._panes.test.style.display = "none";
@@ -208,6 +208,10 @@ export default class LaunchBtnWrapper extends Wrapper {
         this._callbacks.button_click = cb;
     }
 
+    /**
+     * @deprecated
+     * @returns {number}
+     */
     getCalcInput() {
         return this._inputs.calc ? Number(this._inputs.calc.value) : 0;
     }
@@ -257,18 +261,18 @@ export default class LaunchBtnWrapper extends Wrapper {
             execute: document.createElement("div"),
             check: document.createElement("div"),
             chexec: document.createElement("div"),
-            calc: document.createElement("div"),
+            // calc: document.createElement("div"),
         };
 
-        this._inputs.calc = document.createElement("input");
-        this._inputs.calc.id = IDS.CALC_INPUT;
-        this._inputs.calc.placeholder = 0;
-        this._inputs.calc.value = CALC_INPUT_VALUE_DEFAULT;
+        // this._inputs.calc = document.createElement("input");
+        // this._inputs.calc.id = IDS.CALC_INPUT;
+        // this._inputs.calc.placeholder = 0;
+        // this._inputs.calc.value = CALC_INPUT_VALUE_DEFAULT;
 
         this._buttons.execute.id = IDS.EXECUTE_BTN;
         this._buttons.check.id = IDS.CHECK_BTN;
         this._buttons.chexec.id = IDS.CHEXEC_BTN;
-        this._buttons.calc.id = IDS.CALC_BTN;
+        // this._buttons.calc.id = IDS.CALC_BTN;
 
         this._buttons.execute.classList.add(CLASSES.LAUNCH_BTN);
         this._buttons.check.classList.add(CLASSES.LAUNCH_BTN);
@@ -278,8 +282,8 @@ export default class LaunchBtnWrapper extends Wrapper {
         this._panes.launch.appendChild(this._buttons.check);
         this._panes.launch.appendChild(this._buttons.chexec);
 
-        this._panes.test.appendChild(this._inputs.calc);
-        this._panes.test.appendChild(this._buttons.calc);
+        // this._panes.test.appendChild(this._inputs.calc);
+        // this._panes.test.appendChild(this._buttons.calc);
 
         dom_node.appendChild(this._panes.launch);
         dom_node.appendChild(this._panes.test);
@@ -294,23 +298,22 @@ export default class LaunchBtnWrapper extends Wrapper {
 
         this._buttons.chexec.onclick = (evt) => {
             this._callbacks.button_click('chexec', !this._started.chexec);
-            console.log("CHEXEC CLC", this._started.chexec);
         };
 
-        this._buttons.calc.onclick = (evt) => {
-            let data = Number(this._inputs.calc.value);
-
-            if (isNaN(data) || data == null) {
-                this._buttons.calc.classList.add(CLASSES.CALC_INPUT_ERROR);
-                this._inputs.calc.classList.add(CLASSES.CALC_INPUT_ERROR);
-
-                setTimeout(() => {
-                    this._buttons.calc.classList.remove(CLASSES.CALC_INPUT_ERROR);
-                    this._inputs.calc.classList.remove(CLASSES.CALC_INPUT_ERROR);
-                }, 1000);
-            } else {
-                this._callbacks.button_click('calc', !this._started.calc, data);
-            }
-        };
+        // this._buttons.calc.onclick = (evt) => {
+        //     let data = Number(this._inputs.calc.value);
+        //
+        //     if (isNaN(data) || data == null) {
+        //         this._buttons.calc.classList.add(CLASSES.CALC_INPUT_ERROR);
+        //         this._inputs.calc.classList.add(CLASSES.CALC_INPUT_ERROR);
+        //
+        //         setTimeout(() => {
+        //             this._buttons.calc.classList.remove(CLASSES.CALC_INPUT_ERROR);
+        //             this._inputs.calc.classList.remove(CLASSES.CALC_INPUT_ERROR);
+        //         }, 1000);
+        //     } else {
+        //         this._callbacks.button_click('calc', !this._started.calc, data);
+        //     }
+        // };
     }
 }

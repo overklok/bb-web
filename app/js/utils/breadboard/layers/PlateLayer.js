@@ -63,11 +63,11 @@ export default class PlateLayer extends Layer {
                 length:         plate._params.size.x,
                 orientation:    plate._state.orientation,
                 extra:          plate._params.extra,
-                currents:       plate._state.currents,
-                voltages:       plate._state.voltages,
                 adc:            plate._state.adc,
                 cell_num:       plate._state.cell_num,
                 contr_num:      plate._state.contr_num,
+                // currents:       plate._state.currents,
+                // voltages:       plate._state.voltages,
             });
         }
 
@@ -260,7 +260,9 @@ export default class PlateLayer extends Layer {
      */
     setPlateState(plate_id, state) {
         if (!(plate_id in this._plates)) {
-            throw new RangeError("This plate does not exist", plate_id);
+            console.debug('This plate does not exist', plate_id);
+            return false;
+            // throw new RangeError(`Plate does not exist (id = '${plate_id}')`);
         }
 
         let plate = this._plates[plate_id];

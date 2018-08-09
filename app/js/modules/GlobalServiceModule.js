@@ -214,6 +214,13 @@ export default class GlobalServiceModule extends Module {
             });
     }
 
+    /**
+     * @deprecated
+     *
+     * @param plates
+     * @param extra_num
+     * @returns {Promise<any>}
+     */
     calcCurrents(plates, extra_num) {
         if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
 

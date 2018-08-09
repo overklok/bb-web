@@ -83,8 +83,8 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.clearRegions();
     }
 
-    switchAdvancedFilters(on) {
-        this._plugin.switchAdvancedFilters(on);
+    switchSpareFilters(on) {
+        this._plugin.switchSpareFilters(on);
     }
 
     onChange(cb) {

@@ -20,6 +20,7 @@ export default class BreadboardModule extends Module {
 
         this._state = {
             display: false,
+            spare: undefined,
         };
 
         this._board = new BreadboardWrapper();
@@ -39,6 +40,10 @@ export default class BreadboardModule extends Module {
                 // this._board.inject(dom_node, !this._options.modeAdmin);
 
                 this._state.display = true;
+
+                if (this._state.spare != null) {
+                    this.switchSpareFilters(this._state.spare);
+                }
             }
 
             resolve();
@@ -51,6 +56,7 @@ export default class BreadboardModule extends Module {
         this._board.eject();
 
         this._state.display = false;
+        this._state.spare = false;
     }
 
     highlightErrorPlates(plate_ids) {
@@ -60,17 +66,21 @@ export default class BreadboardModule extends Module {
     }
 
     updatePlates(plates) {
+        if (!this._state.display) {return true}
+
         this._board.setPlates(plates);
     }
 
     updatePlateState(plate_id, state) {
+        if (!this._state.display) {return true}
+
         this._board.setPlateState(plate_id, state);
     }
 
     updateCurrents(data) {
         if (!data) throw new TypeError ("Currents data is not defined");
 
-        // this._board.removeCurrents();
+        if (!this._state.display) {return true}
 
         if (data.threads) {
             this._board.setCurrents(data.threads);
@@ -87,7 +97,7 @@ export default class BreadboardModule extends Module {
                 // bytes_to_board: <smth>
             });
 
-            if (element.highlight) {
+            if (element.highlight != null) {
                 this._board.setPlateState(element.id, {
                     highlighted: element.highlight
                 });
@@ -98,6 +108,8 @@ export default class BreadboardModule extends Module {
     }
 
     clearCurrents() {
+        if (!this._state.display) {return true}
+
         this._board.removeCurrents();
 
         for (let plate of this._board.getPlates()) {
@@ -108,10 +120,14 @@ export default class BreadboardModule extends Module {
     }
 
     highlightRegion(region, clear) {
+        if (!this._state.display) {return true}
+
         this._board.highlightRegion(region, clear);
     }
 
     clearRegions() {
+        if (!this._state.display) {return true}
+
         this._board.clearRegions();
     }
 
@@ -123,10 +139,13 @@ export default class BreadboardModule extends Module {
         return plates;
     }
 
-    switchAdvancedFilters(on) {
-        if (!this._state.display) {return false}
+    switchSpareFilters(on) {
+        if (!this._state.display) {
+            this._state.spare = on;
+            return false
+        }
 
-        this._board.switchAdvancedFilters(on);
+        this._board.switchSpareFilters(on);
     }
 
     _subscribeToWrapperEvents() {

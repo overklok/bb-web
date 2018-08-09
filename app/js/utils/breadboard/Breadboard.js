@@ -55,7 +55,7 @@ export default class Breadboard {
             current: undefined,
         };
 
-        this._filters_adv = undefined;
+        this._spare = undefined;
         this._filters_defined = false;
     }
 
@@ -167,7 +167,7 @@ export default class Breadboard {
      * @param {Array<Object>} threads контуры токов
      */
     setCurrents(threads) {
-        this._layers.current.setCurrents(threads);
+        this._layers.current.setCurrents(threads, this._spare);
     }
 
     /**
@@ -218,43 +218,74 @@ export default class Breadboard {
         this._callbacks.dragstart = cb;
     }
 
-    switchAdvancedFilters(on) {
-        this._filters_adv = on;
+    switchSpareFilters(on) {
+        this._spare = on;
 
         if (!this._filters_defined) {return}
 
         // Фильтры должны храниться в этом узле
         let defs_elem = document.getElementsByTagName("defs")[0];
 
-        let def = '<filter id="glow-current" filterUnits="userSpaceOnUse">\
-                <feColorMatrix type="matrix" result="colorCurrentCyan" values=\
-                        "0 0 0 0   0\
-                         0 1 0 0   0\
-                         0 0 1 0   0\
-                         0 0 0 1   0"/>\
-                <feColorMatrix type="matrix" result="colorCurrentWhite" values=\
-                        "1 1 1 0   0\
-                         1 1 1 0   0\
-                         1 1 1 0   0\
-                         0 0 0 0.5 0"/>\
-                <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
-                <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>'
-                + '<feMerge>'
-                + (on ? '<feMergeNode in="coloredBlurOut"/>' : '')
-                + '<feMergeNode in="SourceGraphic"/>'
-                + (on ? '<feMergeNode in="coloredBlurIn"/>' : '')
-                + '</feMerge>\
-            </filter>'
-            + (on ? '<animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
-                values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>' : '');
+        let defs = [];
 
-        let glow_old = document.getElementById('glow-current');
+        defs.push({
+            id: "glow-current",
+            html:
+                '<filter id="glow-current" filterUnits="userSpaceOnUse">\
+                    <feColorMatrix type="matrix" result="colorCurrentCyan" values=\
+                            "0 0 0 0   0\
+                             0 1 0 0   0\
+                             0 0 1 0   0\
+                             0 0 0 1   0"/>\
+                    <feColorMatrix type="matrix" result="colorCurrentWhite" values=\
+                            "1 1 1 0   0\
+                             1 1 1 0   0\
+                             1 1 1 0   0\
+                             0 0 0 0.5 0"/>\
+                    <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
+                    <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>'
+                    + '<feMerge>'
+                    + (on ? '' : '<feMergeNode in="coloredBlurOut"/>')
+                    + '<feMergeNode in="SourceGraphic"/>'
+                    + (on ? '' : '<feMergeNode in="coloredBlurIn"/>')
 
-        if (glow_old) {
-            glow_old.remove();
+                    + (on ? '<feMergeNode in="colorCurrentWhite"/>' : '')
+                    + '</feMerge>\
+                </filter>'
+                + (on ? '' : '<animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
+                values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>')
+            }
+        );
+
+        defs.push({
+            id: "glow-plate",
+            html:
+            // Свечение плашки
+                '<filter id="glow-plate" filterUnits="userSpaceOnUse">\
+                    <feColorMatrix type="matrix" result="colorPlateBlue" values=\
+                            "0 0 0 0   0\
+                             0 1 0 0   0\
+                             0 0 1 0   0\
+                             0 0 0 0.8 0"/>\
+                    <feGaussianBlur stdDeviation="20" in="feColorMatrix" result="coloredBlur"/>'
+                    + '<feMerge>'
+                        + (on ? '' : '<feMergeNode in="coloredBlur"/>')
+                        + '<feMergeNode in="SourceGraphic"/>'
+                        + (on ? '<feMergeNode in="colorPlateBlue"/>' : '')
+                    + '</feMerge>\
+                </filter>'
+            }
+        );
+
+        for (let def of defs) {
+            let def_node = document.getElementById(def.id);
+
+            if (def_node) {
+                def_node.remove();
+            }
+
+            defs_elem.insertAdjacentHTML('beforeend', def.html);
         }
-
-        defs_elem.insertAdjacentHTML('beforeend', def);
     }
 
     /**
@@ -396,8 +427,8 @@ export default class Breadboard {
 
                 this.setPlateState(plate.id, {
                     adc: plate.adc,
-                    currents: plate.currents,
-                    volatges: plate.volatges,
+                    // currents: plate.currents,
+                    // volatges: plate.volatges,
                 })
             }
         };
@@ -500,22 +531,6 @@ export default class Breadboard {
             </filter>'
         );
 
-        defs.push(
-            // Свечение серым цветом
-            '<filter id="glow-plate" filterUnits="userSpaceOnUse">\
-                <feColorMatrix type="matrix" values=\
-                        "0 0 0 0   0\
-                         0 1 0 0   0\
-                         0 0 1 0   0\
-                         0 0 0 0.8 0"/>\
-                <feGaussianBlur stdDeviation="20" result="coloredBlur"/>\
-                <feMerge>\
-                    <feMergeNode in="coloredBlur"/>\
-                    <feMergeNode in="SourceGraphic"/>\
-                </feMerge>\
-            </filter>'
-        );
-
         // Фильтры должны храниться в этом узле
         let defs_elem = document.getElementsByTagName("defs")[0];
 
@@ -525,7 +540,7 @@ export default class Breadboard {
 
         this._filters_defined = true;
 
-        this.switchAdvancedFilters(this._filters_adv);
+        this.switchSpareFilters(this._spare);
     };
 
     /**
