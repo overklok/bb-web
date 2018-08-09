@@ -74,7 +74,7 @@ class Application {
                 zoomInitial: config.zoomBlocks,
             },
             bb: {
-
+                modeAdmin: config.isAdmin,
             },
             gs: {
                 origin: config.origin,

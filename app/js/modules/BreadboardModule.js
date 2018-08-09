@@ -36,8 +36,8 @@ export default class BreadboardModule extends Module {
             }
 
             if (dom_node !== undefined) {
-                this._board.inject(dom_node, false);
-                // this._board.inject(dom_node, !this._options.modeAdmin);
+                // this._board.inject(dom_node, false);
+                this._board.inject(dom_node, !this._options.modeAdmin);
 
                 this._state.display = true;
 
