@@ -416,11 +416,10 @@ export default class GUIModule extends Module {
         this._alertifier.alertIndelible(type);
     }
 
-    showAlertInputCommand() {
-        this._alertifier.alertInput('command')
+    showAlertInputCommand(hash_entered=false) {
+        this._alertifier.alertInput('command', false, hash_entered)
             .then(command => {
-                command = this._filterURLHashCommand(command);
-
+                command = this._url_hash_parser.parse(command);
                 this.emitEvent("hash-command", command);
             });
     }
@@ -601,6 +600,12 @@ export default class GUIModule extends Module {
             let command = this._checkURLHashCommand();
 
             this.emitEvent("hash-command", command);
+        };
+
+        document.onkeyup = evt => {
+            if (evt.shiftKey && evt.which === 51) {
+                this.showAlertInputCommand(true);
+            }
         }
     }
 }

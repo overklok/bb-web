@@ -81,7 +81,7 @@ export default class AlertifierWrapper extends Wrapper {
         this._state.closed = false;
     }
 
-    alertInput(type, confirm_only=false) {
+    alertInput(type, confirm_only=false, def_val=false) {
         if (!(type in ALERTS)) {throw new RangeError(`Type '${type}' does not exist`)}
 
         let title = ALERTS[type].title;
@@ -106,6 +106,7 @@ export default class AlertifierWrapper extends Wrapper {
                 element: "input",
                 attributes: {
                     placeholder: "#",
+                    value: def_val ? "#" : "",
                     type: "text",
                 },
             },

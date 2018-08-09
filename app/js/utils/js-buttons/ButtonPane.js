@@ -43,32 +43,22 @@ export default class ButtonPane {
     resize() {
         let w = this._button.parentNode.offsetWidth;
         let h = this._button.parentNode.offsetHeight;
-        let px = parseInt(getStyle(this._button.parentNode, "padding-left").slice(0, -2));
-        let py = parseInt(getStyle(this._button.parentNode, "padding-top").slice(0, -2));
-        let mx = 5;
-        let my = 5;
+        let p = 5; // from css - padding
+        let m = 3 + 1; // from css - margin + border-top
 
-        // let amount_vert = Math.floor(this._calcAmountVert(w, h, px, py, mx, my));
-        // let node_size   = this._calcNodeSize(amount_vert, w, h, px, py, mx, my);
+        console.log("bpresize w", w,  "h", h,  "p", p, "m", m);
 
-        // node_size = Math.floor(node_size);
+        let s = h - (p * 2) - (m * 2);
 
-        // this._amount_total = Math.floor(amount_vert) * this._amount_max_w;
+        this._amount_max = Math.floor((w - p * 2) / (s + m * 2));
 
-        // if (this._amount_total > this._amount_max) {
-        //     this._amount_total = this._amount_max;
+        console.log("bpresize amount", this._amount_max);
+
+        // if ((s + py * 2) === h) {
+        //     s -=1;
         // }
-
-        let s = h - py * 2 - 1;
-
-        this._amount_max = Math.floor((w - px * 2) / (s + mx));
-
-
-        if ((s + py * 2) === h) {
-            s -=1;
-        }
-
-        s -= 1;
+        //
+        // s -= 1;
 
         this._checkButtonCount();
 
@@ -84,7 +74,7 @@ export default class ButtonPane {
             {
                 key: "#qwerty li a span",
                 props: [
-                     {name: "line-height", value: h - px * 2 + "px"}
+                     {name: "line-height", value: s + "px"}
                 ]
             }
         ]);
