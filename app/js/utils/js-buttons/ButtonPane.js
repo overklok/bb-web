@@ -46,19 +46,9 @@ export default class ButtonPane {
         let p = 5; // from css - padding
         let m = 3 + 1; // from css - margin + border-top
 
-        console.log("bpresize w", w,  "h", h,  "p", p, "m", m);
-
         let s = h - (p * 2) - (m * 2);
 
         this._amount_max = Math.floor((w - p * 2) / (s + m * 2));
-
-        console.log("bpresize amount", this._amount_max);
-
-        // if ((s + py * 2) === h) {
-        //     s -=1;
-        // }
-        //
-        // s -= 1;
 
         this._checkButtonCount();
 

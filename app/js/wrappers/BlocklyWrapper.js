@@ -13,6 +13,9 @@ import '../../css/blockly-dimmer.css';
 
 Blockly.setLocale(Ru);
 
+const VARIABLE_OFFSET_X = 5;
+const VARIABLE_OFFSET_Y = 5;
+
 const ERROR_COLOUR = "#920000";
 
 const DIV_IDS = {
@@ -572,25 +575,34 @@ export default class BlocklyWrapper extends Wrapper {
     addVariableBlock(block_type, field_type=FIELD_TYPES.STRING, field_value=0) {
         let block = this.workspace.newBlock(block_type);
 
+        block.setOutput(false);
+
         block.initSvg();
         block.render();
 
-        let variable_name = "";
-        let pos_y = this._getAllVariablesHeight();
+        // let variable_name = "";
+        let pos_x = this._getAllVariablesWidth();
+        // let pos_y = this._getAllVariablesHeight();
 
-        try {
-            variable_name = block.inputList[0].fieldRow[0].text_;
-        } catch (e) {
-            console.error("Variable block of type `" + block_type + "` has not a dummy input at 0 index");
-        }
+        // try {
+        //     variable_name = block.inputList[0].fieldRow[0].text_;
+        // } catch (e) {
+        //     console.error("Variable block of type `" + block_type + "` has not a dummy input at 0 index");
+        // }
 
         this._addFieldToVariableBlock(block, field_type);
 
-        block.setFieldValue(variable_name + " = ");
+        // block.setFieldValue(variable_name + " = ");
+        // block.setFieldValue("");
         block.setFieldValue(field_value, "DUMMY");
-        block.moveBy(0, pos_y);
+        block.moveBy(pos_x, 0);
 
-        this._variable_blocks[block_type] = {name: variable_name, element: block, pos_y: pos_y};
+        this._variable_blocks[block_type] = {
+            // name: variable_name,
+            element: block,
+            pos_x: pos_x,
+            // pos_y: pos_y,
+        };
     }
 
     /**
@@ -927,9 +939,28 @@ export default class BlocklyWrapper extends Wrapper {
 
         for (let block_type in this._variable_blocks) {
             height_sum += this._variable_blocks[block_type].element.height;
+            height_sum += VARIABLE_OFFSET_Y;
         }
 
         return height_sum;
+    }
+
+    /**
+     * Определить ширину, занимаемую всеми блоками-переменными
+     *
+     * @returns {number} ширина в px
+     *
+     * @private
+     */
+    _getAllVariablesWidth() {
+        let width_sum = 0;
+
+        for (let block_type in this._variable_blocks) {
+            width_sum += this._variable_blocks[block_type].element.width;
+            width_sum += VARIABLE_OFFSET_X;
+        }
+
+        return width_sum;
     }
 
     _getHistoryBlockSequenceAverageWidth() {

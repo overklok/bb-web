@@ -25,14 +25,14 @@ body {
 	*font-size:  80%;
 }
 
-#east-center-center {
+#east-south-center {
 	border-bottom-right-radius: 0;
 	border-bottom-left-radius: 0;
 
 	box-shadow: none;
 }
 
-#east-center-south {
+#east-south-south {
 	border-top-right-radius: 0;
 	border-top-left-radius: 0;
 

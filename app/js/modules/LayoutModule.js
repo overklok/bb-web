@@ -24,11 +24,13 @@ const PANE_IDS = {
     MAIN_CENTER:    "main-center",
     MAIN_EAST:      "main-east",
 
-    EAST_NORTH:         "east-north",
-    EAST_CENTER_CENTER: "east-center-center",
-    EAST_CENTER_SOUTH:  "east-center-south",
+    // EAST_NORTH:         "east-north",
+    EAST_CENTER:    "east-center",
 
-    EAST_SOUTH:     "east-south"
+    EAST_SOUTH_CENTER: "east-south-center",
+    EAST_SOUTH_SOUTH:  "east-south-south",
+
+    EAST_SOUTH:     "east-south",
 };
 
 
@@ -55,16 +57,16 @@ const MAPPINGS = {
     full: {
         launch_buttons: PANE_IDS.MAIN_CENTER,
         workspace: PANE_IDS.MAIN_CENTER,
-        breadboard: PANE_IDS.EAST_SOUTH,
-        tracing: PANE_IDS.EAST_CENTER_CENTER,
-        buttons: PANE_IDS.EAST_CENTER_SOUTH,
-        task: PANE_IDS.EAST_NORTH,
+        // breadboard: PANE_IDS.EAST_NORTH,
+        tracing: PANE_IDS.EAST_SOUTH_CENTER,
+        buttons: PANE_IDS.EAST_SOUTH_SOUTH,
+        task: PANE_IDS.EAST_CENTER,
         lesson: PANE_IDS.MAIN_NORTH
     },
     simple: {
         launch_buttons: PANE_IDS.MAIN_CENTER,
         breadboard: PANE_IDS.MAIN_CENTER,
-        task: PANE_IDS.EAST_CENTER_CENTER,
+        task: PANE_IDS.EAST_CENTER,
         lesson: PANE_IDS.MAIN_NORTH
     },
     home: {
@@ -83,14 +85,14 @@ const FADEBLOCKINGS = {
     full: [
         PANE_IDS.MAIN_EAST,
         PANE_IDS.MAIN_NORTH,
-        PANE_IDS.EAST_NORTH,
-        PANE_IDS.EAST_CENTER_SOUTH,
+        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_SOUTH_SOUTH,
     ],
     simple: [
         PANE_IDS.MAIN_EAST,
         PANE_IDS.MAIN_NORTH,
-        PANE_IDS.EAST_NORTH,
-        PANE_IDS.EAST_CENTER_SOUTH,
+        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_SOUTH_SOUTH,
     ],
     home: []
 };
@@ -222,10 +224,8 @@ export default class LayoutModule extends Module {
             /// в зависимости от режима, в который нужно перейти
             switch (mode) {
                 case MODES.SIMPLE: {
-                    // this._layout.show("north");
-
-                    this._panes.east.hide("north");
-                    duration += this._options.animSpeedSub;
+                    // this._panes.east.hide("north");
+                    // duration += this._options.animSpeedSub;
 
                     this._panes.east.hide("south");
                     duration += this._options.animSpeedSub;
@@ -234,20 +234,19 @@ export default class LayoutModule extends Module {
                     duration += this._options.animSpeedMain;
 
                     if (this._state.buttonsPaneVisible) {
-                        this._panes._east.center.hide("south");
+                        this._panes._east.south.hide("south");
                         duration += this._options.animSpeedSub;
                     }
 
                     break;
                 }
                 case MODES.FULL: {
-                    // this._layout.show("north");
                     if (this._state.topPaneRevealed) {
                         this.revealTopPane();
                     }
 
-                    this._panes.east.show("north");
-                    duration += this._options.animSpeedSub;
+                    // this._panes.east.show("north");
+                    // duration += this._options.animSpeedSub;
 
                     this._panes.east.show("south");
                     duration += this._options.animSpeedSub;
@@ -256,7 +255,7 @@ export default class LayoutModule extends Module {
                     duration += this._options.animSpeedMain;
 
                     if (this._state.buttonsPaneVisible) {
-                        this._panes._east.center.show("south");
+                        this._panes._east.south.show("south");
                         duration += this._options.animSpeedSub;
                     }
 
@@ -311,12 +310,12 @@ export default class LayoutModule extends Module {
             if (on) {
                 this._state.buttonsPaneVisible = true;
 
-                this._panes._east.center.show("south");
+                this._panes._east.south.show("south");
                 duration += this._options.animSpeedSub;
             } else {
                 this._state.buttonsPaneVisible = false;
 
-                this._panes._east.center.hide("south");
+                this._panes._east.south.hide("south");
                 duration += this._options.animSpeedSub;
             }
 
@@ -471,8 +470,8 @@ export default class LayoutModule extends Module {
                 onresize: () => {try {this._onResize('east')} catch (e) {console.error(e)}},
 
                 childOptions: {
-                    north: {
-                        size: .3,
+                    center: {
+                        size: .7,
 
                         resizable: true,
                         fxSpeed: this._options.animSpeedSub,
@@ -484,8 +483,7 @@ export default class LayoutModule extends Module {
                         resizable: true,
                         fxSpeed: this._options.animSpeedSub,
                         onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
-                    },
-                    center: {
+
                         childOptions: {
                             center: {
                                 spacing_open: 0,
@@ -505,7 +503,7 @@ export default class LayoutModule extends Module {
                                 onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                             }
                         }
-                    }
+                    },
                 }
             },
         };
@@ -526,13 +524,13 @@ export default class LayoutModule extends Module {
             east: this._layout.east.children.layout1,
 
             _east: {
-                north:  this._layout.east.children.layout1.north,
-                south:  this._layout.east.children.layout1.south,
-                center: this._layout.east.children.layout1.center.children.layout1,
+                // north:  this._layout.east.children.layout1.north,
+                south:  this._layout.east.children.layout1.south.children.layout1,
+                center: this._layout.east.children.layout1.center,
 
-                _center: {
-                    center: this._layout.east.children.layout1.center.children.layout1.center,
-                    south:  this._layout.east.children.layout1.center.children.layout1.south,
+                _south: {
+                    center: this._layout.east.children.layout1.south.children.layout1.center,
+                    south:  this._layout.east.children.layout1.south.children.layout1.south,
                 }
             }
         }

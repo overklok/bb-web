@@ -11,7 +11,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "номер лампочки",
+                // message0:       "номер лампочки",
                 inputsInline:   false,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.INDEX.colour,
@@ -24,7 +24,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "Цвет",
+                // message0:       "Цвет",
                 inputsInline:   false,
                 output:         FIELDTYPES.COLOUR,
                 colour:         CATEGORIES.COLOUR.colour,
@@ -37,7 +37,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "яркость",
+                // message0:       "яркость",
                 inputsInline:   false,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.BRIGHTNESS.colour,

@@ -55,7 +55,7 @@ export default class TracingModule extends Module {
                 return;
             }
 
-            this._blockly.inject(dom_node, false, true, 0.8);
+            this._blockly.inject(dom_node, false, true, 3);
 
             this._showVariables(this._vars);
 
