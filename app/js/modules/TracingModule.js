@@ -1,6 +1,7 @@
 import Module from "../core/Module";
 import BlocklyWrapper from "../wrappers/BlocklyWrapper";
 import KbdPaneWrapper from "../wrappers/KbdPaneWrapper";
+import PaneVariables from "../utils/pane-variables/PaneVariables";
 
 import JSONBlocks       from '../utils/blockly/extras/blocks';
 
@@ -36,6 +37,8 @@ export default class TracingModule extends Module {
         this._blockly = new BlocklyWrapper();
         this._kbdpane = new KbdPaneWrapper();
 
+        this._varpane = new PaneVariables();
+
         this._subscribeToWrapperEvents();
     }
 
@@ -55,7 +58,8 @@ export default class TracingModule extends Module {
                 return;
             }
 
-            this._blockly.inject(dom_node, false, true, 3);
+            // this._blockly.inject(dom_node, false, true, 3);
+            this._varpane.include(dom_node);
 
             this._showVariables(this._vars);
 
@@ -71,8 +75,10 @@ export default class TracingModule extends Module {
                 return;
             }
 
-            this._blockly.clearVariableBlocks();
-            this._blockly.eject();
+            this._varpane.removeAllVariables();
+            this._varpane.dispose();
+            // this._blockly.clearVariableBlocks();
+            // this._blockly.eject();
 
             this._state.areasDisp.blocks = false;
 
@@ -116,7 +122,7 @@ export default class TracingModule extends Module {
 
     resize() {
         if (this._state.areasDisp.blocks) {
-            this._blockly._onResize();
+            // this._blockly._onResize();
         }
 
         if (this._state.areasDisp.buttons) {
@@ -131,7 +137,8 @@ export default class TracingModule extends Module {
 
         if (!this._state.areasDisp.blocks) {return false}
 
-        this._blockly.clearVariableBlocks();
+        // this._blockly.clearVariableBlocks();
+        this._varpane.removeAllVariables();
 
         if (this._vars.length > 0) {
             this._showVariables(this._vars);
@@ -140,13 +147,14 @@ export default class TracingModule extends Module {
         return true;
     }
 
-    setVariableValue(variable_type, variable_value) {
-        this._blockly.setVariableBlockValue(variable_type, variable_value);
+    setVariableValue(variable_name, variable_value) {
+        this._varpane.setValue(variable_name, variable_value);
+        // this._blockly.setVariableBlockValue(variable_type, variable_value);
     }
 
     addHistoryBlock(block_id, workspace_src) {
         if (!this._state.areasDisp.blocks) {return false}
-        this._blockly.addHistoryBlock(block_id, workspace_src);
+        // this._blockly.addHistoryBlock(block_id, workspace_src);
 
         return true;
     }
@@ -157,7 +165,7 @@ export default class TracingModule extends Module {
                 resolve(false);
             }
 
-            this._blockly.clearHistoryBlocks();
+            // this._blockly.clearHistoryBlocks();
 
             resolve(true);
         });
@@ -173,7 +181,8 @@ export default class TracingModule extends Module {
         if (this._state.areasDisp.blocks === on) {return true}
 
         if (on === false) {
-            this._blockly.clearVariableBlocks();
+            this._varpane.removeAllVariables();
+            // this._blockly.clearVariableBlocks();
         } else {
             this._showVariables(this._vars);
         }
@@ -201,7 +210,8 @@ export default class TracingModule extends Module {
 
     _showVariables(variables) {
         for (let variable of variables) {
-            this._blockly.addVariableBlock(variable.name, variable.type, variable.initial_value);
+            this._varpane.addVariable(variable.name, variable.initial_value);
+            // this._blockly.addVariableBlock(variable.name, variable.type, variable.initial_value);
         }
     }
 

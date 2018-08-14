@@ -65,7 +65,7 @@
 
 <div class="content" data-ice="content"><h1 data-ice="title">js/wrappers/KbdPaneWrapper.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Wrapper from &quot;../core/Wrapper&quot;;
-import ButtonPane from &quot;../utils/js-buttons/ButtonPane&quot;;
+import PaneButton from &quot;../utils/js-buttons/PaneButton&quot;;
 
 import styles from &quot;../utils/js-buttons/themes/default/css/main.css&quot;;
 
@@ -96,7 +96,7 @@ export default class KbdPaneWrapper extends Wrapper {
         let cont = document.createElement(&quot;div&quot;);
         pane_container.appendChild(cont);
 
-        this._pane = new ButtonPane({
+        this._pane = new PaneButton({
             container: cont
         });
     }

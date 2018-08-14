@@ -66,7 +66,7 @@
 <div class="content" data-ice="content"><h1 data-ice="title">js/wrappers/LessonPaneWrapper.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Wrapper from &quot;../core/Wrapper&quot;;
 
-import LessonPane from &quot;../utils/js-lesson-pane/LessonPane&quot;;
+import PaneLesson from &quot;../utils/js-lesson-pane/PaneLesson&quot;;
 
 export default class LessonPaneWrapper extends Wrapper {
     constructor() {
@@ -76,7 +76,7 @@ export default class LessonPaneWrapper extends Wrapper {
             display: false,
         };
 
-        this._plugin = new LessonPane();
+        this._plugin = new PaneLesson();
 
         this._missions = undefined;
         this._mission_active_deferred   = undefined;

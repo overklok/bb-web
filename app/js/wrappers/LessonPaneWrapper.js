@@ -1,6 +1,6 @@
 import Wrapper from "../core/Wrapper";
 
-import LessonPane from "../utils/js-lesson-pane/LessonPane";
+import PaneLesson from "../utils/pane-lesson/PaneLesson";
 
 export default class LessonPaneWrapper extends Wrapper {
     constructor(emphasize=false) {
@@ -10,7 +10,7 @@ export default class LessonPaneWrapper extends Wrapper {
             display: false,
         };
 
-        this._plugin = new LessonPane(emphasize);
+        this._plugin = new PaneLesson(emphasize);
 
         this._missions = undefined;
         this._mission_active_deferred   = undefined;

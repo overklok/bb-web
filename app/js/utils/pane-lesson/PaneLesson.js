@@ -27,7 +27,7 @@ class NotIncludedError extends Error {
     }
 }
 
-export default class LessonPane {
+export default class PaneLesson {
     constructor(emphasize=false) {
         this._container = undefined;
         this._emphasized = emphasize;

@@ -299,8 +299,8 @@ class Application {
             }
 
             let handler = this.ws.getMainHandler();
-            this.ls.updateHandlers({commands: handler.commands, launch: true}, check_later);
-            console.log({commands: handler.commands, launch: true});
+            this.ls.updateHandlers({commands: handler.commands, launch: true, pause: handler.pause}, check_later);
+            console.log({commands: handler.commands, launch: true, pause: handler.pause});
         });
 
         /**

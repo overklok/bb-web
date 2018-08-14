@@ -1,7 +1,7 @@
 import Wrapper from "../core/Wrapper";
-import ButtonPane from "../utils/js-buttons/ButtonPane";
+import PaneButtons from "../utils/pane-buttons/PaneButtons";
 
-import styles from "../utils/js-buttons/themes/default/css/main.css";
+import styles from "../utils/pane-buttons/themes/default/css/main.css";
 
 const BUTTON_CHARS = {
     48: '0', 81: 'Q', 65: 'A', 38: '↑',
@@ -30,7 +30,7 @@ export default class KbdPaneWrapper extends Wrapper {
         let cont = document.createElement("div");
         pane_container.appendChild(cont);
 
-        this._pane = new ButtonPane({
+        this._pane = new PaneButtons({
             container: cont
         });
     }

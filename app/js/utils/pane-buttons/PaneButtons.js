@@ -6,7 +6,7 @@ const CLASS_NAMES = {
     HIGHLIGHTED: "highlighted"
 };
 
-export default class ButtonPane {
+export default class PaneButtons {
     constructor(options) {
         if (!options) {throw new TypeError("Some config should be provided for execute")}
 

@@ -37,6 +37,7 @@ export default class WorkspaceModule extends Module {
         this._state = {
             display: false,
             block_types: [],
+            pause: 0.2,
         };
 
         this._code_storage = [];
@@ -289,7 +290,7 @@ export default class WorkspaceModule extends Module {
 
         let code = WorkspaceModule._preprocessCode(handlers.main);
 
-        return {commands: code, button: "None"};
+        return {commands: code, button: "None", pause: this._state.pause};
     }
 
     /**
@@ -336,12 +337,13 @@ export default class WorkspaceModule extends Module {
 
             let code_main = WorkspaceModule._preprocessCode(_handlers.main);
 
-            handlers_result = {main: {commands: code_main, btn: "None"}};
+            handlers_result = {main: {commands: code_main, btn: "None", pause: this._state.pause}};
 
             for (let block_id of Object.keys(_handlers.sub)) {
                 handlers_result[block_id] = {
                     commands: WorkspaceModule._preprocessCode(_handlers.sub[block_id].code),
-                    btn: _handlers.sub[block_id].btn
+                    btn: _handlers.sub[block_id].btn,
+                    pause: this._state.pause
                 }
             }
         } catch (err) {
@@ -390,6 +392,10 @@ export default class WorkspaceModule extends Module {
      */
     shutUp() {
         this._blockly.silent = true;
+    }
+
+    setPause(pause_val) {
+        this._state.pause = pause_val;
     }
 
     /**
