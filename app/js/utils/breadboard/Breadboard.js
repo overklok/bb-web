@@ -267,7 +267,7 @@ export default class Breadboard {
                             "0 0 0 0   0\
                              0 1 0 0   0\
                              0 0 1 0   0\
-                             0 0 0 0.8 0"/>\
+                             0 0 0 0.5 0"/>\
                     <feGaussianBlur stdDeviation="20" in="feColorMatrix" result="coloredBlur"/>'
                     + '<feMerge>'
                         + (on ? '' : '<feMergeNode in="coloredBlur"/>')

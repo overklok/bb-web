@@ -214,9 +214,17 @@ export default class Plate {
      */
     highlightError(on=false) {
         if (on) {
+            // возможно, к плашке применён фильтр
+            this._bezel.attr('filter', null);
+            // установить подсветку ошибки
             this._error_highlighter.opacity(0.3);
         } else {
+            // снять подсветку ошибки
             this._error_highlighter.opacity(0);
+            // возможно, плашке нужно вернуть фильтр
+            if (this._state.highlighted === true) {
+                this._bezel.attr('filter', 'url(#glow-plate)');
+            }
         }
     }
 

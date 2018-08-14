@@ -50,6 +50,8 @@ export default class BreadboardWrapper extends Wrapper {
 
         // this._plugin.clearPlates();
 
+        this._plugin.clearRegions();
+
         this._plugin.setPlates(plates);
     }
 

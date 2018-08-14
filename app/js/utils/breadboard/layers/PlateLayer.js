@@ -169,6 +169,7 @@ export default class PlateLayer extends Layer {
         /// снять возможную метку с локальных плашек
         for (let plate_id in this._plates) {
             this._plates[plate_id].___touched = undefined;
+            this._plates[plate_id].highlightError(false);
         }
 
         /// выполнить основной цикл

@@ -2,3 +2,8 @@
     margin: 0;
     text-align: center;
 }
+
+.text-pane img {
+    width: 100% !important;
+    height: auto !important;
+}

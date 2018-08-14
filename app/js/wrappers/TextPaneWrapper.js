@@ -1,6 +1,6 @@
 import Wrapper from "../core/Wrapper";
 
-import thm from "../../css/text-pane.css";
+import "../../css/text-pane.css";
 
 const CLASSES = {
     TEXT_PANE: "text-pane"
