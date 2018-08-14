@@ -25,6 +25,8 @@
 
         app.run();
 
+        app.bb.switchSpareFilters(true);
+
         $(document).ready(() => {
             app.onChange((data) => {
                 // console.log("ONCHNG", data);
@@ -35,15 +37,15 @@
 
             let threads = [
                                 // {from: {x: 0, y: 0}, to: {x: 5, y: 0}, weight: weight},
-                                // {from: {x: 5, y: 0}, to: {x: 5, y: 1}, weight: 0.5},
-                                // {from: {x: 5, y: 1}, to: {x: 0, y: 1}, weight: 0},
-                                // {from: {x: 0, y: 1}, to: {x: 0, y: 2}, weight: 1},
-                                // {from: {x: 0, y: 2}, to: {x: 5, y: 2}, weight: 1},
-                                // {from: {x: 5, y: 2}, to: {x: 5, y: 3}, weight: 1},
-                                // {from: {x: 5, y: 3}, to: {x: 0, y: 3}, weight: 1},
+                                {from: {x: 5, y: 0}, to: {x: 5, y: 1}, weight: 0.5},
+                                {from: {x: 5, y: 1}, to: {x: 0, y: 1}, weight: 0},
+                                {from: {x: 0, y: 1}, to: {x: 0, y: 2}, weight: 1},
+                                {from: {x: 0, y: 2}, to: {x: 5, y: 2}, weight: 1},
+                                {from: {x: 5, y: 2}, to: {x: 5, y: 3}, weight: 1},
+                                {from: {x: 5, y: 3}, to: {x: 0, y: 3}, weight: 1},
                             ];
 
-            setInterval(() => {
+            // setInterval(() => {
                 weight += 0.05;
                 if (weight > 1) weight = 0;
 
@@ -62,13 +64,13 @@
                 // }
 
                 app.setData(
-                    // undefined,
                     [
                         {type: 'strip', x: 4, y: 4, orientation: 'west', extra: 5, id: 100},
                         xplate
                     ],
+                    {threads},
                 );
-            }, 1000);
+            // }, 1000);
         });
     </script>
 </html>

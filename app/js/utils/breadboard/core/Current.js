@@ -179,7 +179,8 @@ export default class Current {
 
                 if (spare) {
                     arrow = this.container_anim.polygon(
-                        "0,0 0," + GRID_DOT_SIZE * 2 * 1.3 +  " " + GRID_DOT_SIZE * 1.3 + "," + GRID_DOT_SIZE * 1.3
+                        "-13,-20 -13,20 13,0"
+                        // "0,0 0," + GRID_DOT_SIZE * 2 * 1.3 +  " " + GRID_DOT_SIZE * 1.3 + "," + GRID_DOT_SIZE * 1.3
                     );
                 } else {
                     arrow = this.container_anim.circle(
