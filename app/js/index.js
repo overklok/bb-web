@@ -549,6 +549,8 @@ class Application {
                 this.gui.emphasize(data.is_socket);
             }
 
+            console.log("LSCONN", data);
+
             if (data && data.dev_type === 3) {
                 this.bb.switchSpareFilters(true);
             } else {
