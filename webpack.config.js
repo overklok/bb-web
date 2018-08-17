@@ -7,10 +7,10 @@ const lib_dir = __dirname + '/vendor/js';
 
 module.exports = {
     entry: {
-        // bundle:             './app/js/index.js',
+        bundle:             './app/js/index.js',
         // lesson_pane:        './app/js/lesson_pane.js',
         // admin_board:        './app/js/admin_board.js',
-        admin_blockly:      './app/js/admin_blockly.js',
+        // admin_blockly:      './app/js/admin_blockly.js',
     },
     devtool: 'eval-source-map', // 'source-map' for production
     output: {
@@ -81,11 +81,11 @@ module.exports = {
         //      inject: 'body',
         //      filename: 'board.html'
         // }),
-        new HtmlWebpackPlugin({
-            template: './app/html/admin.html',
-            inject: 'body',
-            filename: 'admin.html'
-        }),
+        // new HtmlWebpackPlugin({
+        //     template: './app/html/admin.html',
+        //     inject: 'body',
+        //     filename: 'admin.html'
+        // }),
         // new HtmlWebpackPlugin({
         //     template: './app/html/lesson-pane.html',
         //     inject: 'head',
@@ -102,8 +102,8 @@ module.exports = {
 
             // {from: './dist/index.html', to: '../../codehour-breadboard-client/web/index.html'},
             // {from: './dist/bundle.js', to: '../../codehour-breadboard-client/web/bundle.js'},
-            // {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
-            {from: './dist/admin_blockly.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js'},
+            {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
+            // {from: './dist/admin_blockly.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js'},
             // {from: './dist/admin_board.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-board/js/admin_board.js'}
         ]),
         new webpack.WatchIgnorePlugin([

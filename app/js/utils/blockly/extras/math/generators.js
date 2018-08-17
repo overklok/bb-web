@@ -9,8 +9,8 @@ let BlocklyJSONGenerators = {
     },
 
     math_add: block => {
-        let a = Blockly.JSON.valueToCode(block, 'A', Blockly.JSON.ORDER_SUBTRACTION) || '0';
-        let b = Blockly.JSON.valueToCode(block, 'B', Blockly.JSON.ORDER_SUBTRACTION) || '0';
+        let a = Blockly.JSON.valueToCode(block, 'A', Blockly.JSON.ORDER_ADDITION) || '0';
+        let b = Blockly.JSON.valueToCode(block, 'B', Blockly.JSON.ORDER_ADDITION) || '0';
 
         return [a + ' + ' + b, Blockly.JSON.ORDER_SUBTRACTION];
     },
@@ -20,6 +20,20 @@ let BlocklyJSONGenerators = {
         let b = Blockly.JSON.valueToCode(block, 'B', Blockly.JSON.ORDER_SUBTRACTION) || '0';
 
         return [a + ' - ' + b, Blockly.JSON.ORDER_SUBTRACTION];
+    },
+
+    math_div: block => {
+        let a = Blockly.JSON.valueToCode(block, 'A', Blockly.JSON.ORDER_DIVISION) || '0';
+        let b = Blockly.JSON.valueToCode(block, 'B', Blockly.JSON.ORDER_DIVISION) || '0';
+
+        return [a + ' / ' + b, Blockly.JSON.ORDER_DIVISION];
+    },
+
+    math_mod: block => {
+        let a = Blockly.JSON.valueToCode(block, 'A', Blockly.JSON.ORDER_DIVISION) || '0';
+        let b = Blockly.JSON.valueToCode(block, 'B', Blockly.JSON.ORDER_DIVISION) || '0';
+
+        return [a + ' % ' + b, Blockly.JSON.ORDER_DIVISION];
     },
 
     math_number: block => {
