@@ -73,7 +73,7 @@ class AdminBoardApplication {
      * @param {Array<Object>} plates плашки
      */
     getData() {
-        return this.bb.getData();
+        return this.bb.getPlates();
     }
 
     /**

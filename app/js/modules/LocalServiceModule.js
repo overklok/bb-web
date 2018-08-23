@@ -70,8 +70,14 @@ export default class LocalServiceModule extends Module {
         if (this._options.modeDummy) {
             this._debug.log('Working in DUMMY mode');
 
+            let data;
+
+            if (this._state.dev_type != null) {
+                data = {is_socket:false, dev_type: this._state.dev_type};
+            }
+
             // setTimeout(() => {
-                this.emitEvent("connect");
+                this.emitEvent("connect", data);
                 this.emitEvent("board-status", "default");
             // }, 1000);
 
@@ -218,6 +224,27 @@ export default class LocalServiceModule extends Module {
             this._ipc.send('spi-update', data);
 
             this._ipc.once('spi-update.result', (event, error) => {
+                if (error) {
+                   this._debug.error(error);
+                   throw error;
+                } else {
+                   resolve();
+                }
+           });
+        });
+    }
+
+    sendVectorTable(vectable) {
+        if (!vectable) throw new TypeError("Parameter `vectable` is not defined");
+
+        if (this._options.modeDummy) {
+            return new Promise(resolve => resolve())
+        }
+
+        return new Promise(resolve => {
+            this._ipc.send('vec-update', vectable);
+
+            this._ipc.once('vec-update.result', (event, error) => {
                 if (error) {
                    this._debug.error(error);
                    throw error;

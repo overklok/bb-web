@@ -131,12 +131,10 @@ export default class BreadboardModule extends Module {
         this._board.clearRegions();
     }
 
-    getData() {
+    getPlates() {
         if (!this._state.display) {return false}
 
-        let plates = this._board.getPlates();
-
-        return plates;
+        return this._board.getPlates();
     }
 
     switchSpareFilters(on) {

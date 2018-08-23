@@ -325,7 +325,7 @@ class Application {
 
             this.gui.affirmLaunchButtonStarted('calc', true);
 
-            let plates = this.bb.getData();
+            let plates = this.bb.getPlates();
 
             // this.bb.clearCurrents();
 
@@ -549,8 +549,6 @@ class Application {
                 this.gui.emphasize(data.is_socket);
             }
 
-            console.log("LSCONN", data);
-
             if (data && data.dev_type === 3) {
                 this.bb.switchSpareFilters(true);
             } else {
@@ -619,6 +617,8 @@ class Application {
         this._dispatcher.on('ls:plates', data => {
             this.bb.clearCurrents();
             this.bb.updatePlates(data);
+            this.gs.getVectorTable(data)
+                .then(vectable => this.ls.sendVectorTable(vectable));
         });
 
         /**
@@ -636,7 +636,7 @@ class Application {
         });
 
         // this._dispatcher.on('ls:request_calc', step => {
-        //     let plates = this.bb.getData();
+        //     let plates = this.bb.getPlates();
         //
         //     this.gs.calcCurrents(plates, step)
         //         .then(results => Promise.all([
@@ -768,7 +768,7 @@ class Application {
         /// получить обработчики
         let chain = Promise.all([
             this.ws.getAllHandlers(),
-            this.bb.getData()
+            this.bb.getPlates()
         ])
             .then(results   => {return {handlers: results[0], board: results[1]}})
             .then(data      => this.gs.commitSolution(exercise.pk, data))

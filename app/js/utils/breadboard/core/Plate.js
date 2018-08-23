@@ -11,7 +11,8 @@ const ORIENTATIONS = {
     West:   'west',
     North:  'north',
     East:   'east',
-    South:  'south'
+    South:  'south',
+    Dummy:  'dummy',
 };
 
 /**
@@ -306,6 +307,11 @@ export default class Plate {
         if (this._ctxmenu.active) {return}
 
         if (orientation === this._state.orientation) {return}
+
+        if (orientation === Plate.Orientations.Dummy) {
+            console.debug('invalid orientation: dummy');
+            return;
+        }
 
         let angle = Plate._orientationToAngle(orientation);
 

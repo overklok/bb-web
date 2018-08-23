@@ -643,8 +643,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/admin_board.js~adminboardapplication#getdata",
-    "class/js/admin_board.js~AdminBoardApplication.html#instance-method-getData",
-    "js/admin_board.js~AdminBoardApplication#getData",
+    "class/js/admin_board.js~AdminBoardApplication.html#instance-method-getPlates",
+    "js/admin_board.js~AdminBoardApplication#getPlates",
     "method"
   ],
   [
@@ -1123,8 +1123,8 @@ window.esdocSearchIndex = [
   ],
   [
     "js/modules/breadboardmodule.js~breadboardmodule#getdata",
-    "class/js/modules/BreadboardModule.js~BreadboardModule.html#instance-method-getData",
-    "js/modules/BreadboardModule.js~BreadboardModule#getData",
+    "class/js/modules/BreadboardModule.js~BreadboardModule.html#instance-method-getPlates",
+    "js/modules/BreadboardModule.js~BreadboardModule#getPlates",
     "method"
   ],
   [

@@ -330,7 +330,7 @@ class Application {
             /// &#x43F;&#x43E;&#x43B;&#x443;&#x447;&#x438;&#x442;&#x44C; &#x43E;&#x431;&#x440;&#x430;&#x431;&#x43E;&#x442;&#x447;&#x438;&#x43A;&#x438;
             Promise.all([
                 this.ws.getAllHandlers(),
-                this.bb.getData()
+                this.bb.getPlates()
             ])
                 .then(results   =&gt; {return {handlers: results[0], board: results[1]}})
                 .then(data      =&gt; this.gs.commitSolution(exID, data))

@@ -20,6 +20,7 @@ export default class GlobalServiceModule extends Module {
                 log_bunch: '/logsvc/logbunch/',
                 check_handlers: '/coursesvc/check/',
                 calc_currents: '/coursesvc/calc/',
+                vector_table: '/coursesvc/vectable/',
                 courses: '/coursesvc/',
             },
             admin: {
@@ -212,6 +213,41 @@ export default class GlobalServiceModule extends Module {
                 this._debug.error(err);
                 this.emitEvent('error', err);
             });
+    }
+
+    getVectorTable(plates) {
+        if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
+
+        if (!plates) {return new Promise(resolve => {resolve([])})}
+
+        return new Promise((resolve, reject) => {
+            let request = {
+                // mode: 'no-cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    // 'Access-Control-Allow-Origin': this._options.origin,
+                    // 'Access-Control-Allow-Credentials': true,
+                    // 'Access-Control-Allow-Methods': 'POST',
+                    'X-CSRFToken': this._csrfToken
+                },
+                method: "POST",
+                body: JSON.stringify(plates),
+                credentials: 'same-origin',
+            };
+
+            return fetch(this._options.origin + this._options.api.vector_table, request)
+                .then(response => {
+                    if (response.error) {
+                        reject(response.error())
+                    }
+
+                    resolve(response.json());
+                }).catch(err => {
+                    this._debug.error(err);
+                    reject(err);
+                });
+        })
     }
 
     /**
