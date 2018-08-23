@@ -66,6 +66,10 @@ export default class LocalServiceModule extends Module {
         this.launch();
     }
 
+    getMode() {
+        return this._state.mode;
+    }
+
     launch(socket_addr, socket_port) {
         if (this._options.modeDummy) {
             this._debug.log('Working in DUMMY mode');

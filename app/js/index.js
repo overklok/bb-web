@@ -617,8 +617,11 @@ class Application {
         this._dispatcher.on('ls:plates', data => {
             this.bb.clearCurrents();
             this.bb.updatePlates(data);
-            this.gs.getVectorTable(data)
-                .then(vectable => this.ls.sendVectorTable(vectable));
+
+            if (this.ls.getMode() === 'electronics') {
+                this.gs.getVectorTable(data)
+                    .then(vectable => this.ls.sendVectorTable(vectable));
+            }
         });
 
         /**
