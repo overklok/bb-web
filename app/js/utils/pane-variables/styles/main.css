@@ -9,10 +9,29 @@
 .variables-pane .variable {
     height: 100%;
     max-height: 50%;
-    border: #ffd300 solid 4px;
     border-radius: 5px;
     box-sizing: border-box;
     margin: 5px 5px 0 5px;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.variables-pane .variable .variable-value {
+    height: 100%;
+    width: 100px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.variables-pane .variable .variable-name {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.variables-pane .variable .variable-name span {
+    font-size: 24px;
 }
 
 .variables-pane .variable:first-of-type {
@@ -24,24 +43,33 @@
 }
 
 .variables-pane .variable.var-colour {
+    background-color: #ff7b00;
+}
+
+.variables-pane .variable.var-colour .value {
     background-color: #000000;
-    border-color: #ff7b00;
 }
 
 .variables-pane .variable.var-index {
-    background-color: #bf9bff;
-    border-color: #5e06ff;
+    background-color: #5e06ff;
 
     display: flex;
     align-items: center;
 }
 
+.variables-pane .variable.var-index .variable-value {
+    background-color: #bf9bff;
+}
+
 .variables-pane .variable.var-brightness {
-    background-color: #99d5d1;
-    border-color: #00978d;
+    background-color: #00978d;
 
     display: flex;
     align-items: center;
+}
+
+.variables-pane .variable.var-brightness .variable-value {
+    background-color: #99d5d1;
 }
 
 .variables-pane svg {
@@ -60,7 +88,7 @@
 }
 
 @keyframes variable-pulse {
-    0%   { transform: scale(1); }
-    50%   { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0%   { filter: brightness(100%); }
+    50%   { filter: brightness(150%); }
+    100% { filter: brightness(100%); }
 }

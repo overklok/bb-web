@@ -211,7 +211,7 @@ export default class TracingModule extends Module {
     _showVariables(variables) {
         for (let variable of variables) {
             this._varpane.addVariable(variable.name, variable.initial_value);
-            // this._blockly.addVariableBlock(variable.name, variable.type, variable.initial_value);
+            // this._blockly.addVariableBlock(variable.name, variable.name, variable.initial_value);
         }
     }
 

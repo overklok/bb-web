@@ -7,14 +7,17 @@ const CLASSES = {
 
 const VARIABLES = {
     "strip_colour":     {
+        title: "цвет",
         class: "var-colour",
         initial_value: "#000000"
     },
     "strip_index":      {
+        title: "лампочка",
         class: "var-index",
         initial_value: 0
     },
     "strip_brightness":      {
+        title: "яркость",
         class: "var-brightness",
         initial_value: 0
     }
@@ -66,25 +69,34 @@ export default class PaneVariables {
 
         initial_value = initial_value ? initial_value : VARIABLES[name].initial_value;
 
-        let node = document.createElement("div");
+        let wrapper = document.createElement("div");
+        wrapper.classList.add('variable');
+        wrapper.classList.add(VARIABLES[name].class);
 
-        node.setAttribute('id', name);
-        node.classList.add('variable');
-        node.classList.add(VARIABLES[name].class);
+        let node_name = document.createElement("div");
+        node_name.classList.add('variable-name');
+        node_name.innerHTML = `<span>${VARIABLES[name].title}</span>`;
+
+        let node_value = document.createElement("div");
+        node_value.classList.add('variable-value');
+        node_value.setAttribute('id', name);
 
         let inner_node = null,
             text_node = null;
 
         if (TEXT_CLASSES.indexOf(VARIABLES[name].class) >= 0) {
             [inner_node, text_node] = PaneVariables._generateSVGTextNode();
-            node.appendChild(inner_node);
+            node_value.appendChild(inner_node);
         }
 
-        this.variables[name] = {node, text_node};
+        wrapper.appendChild(node_name);
+        wrapper.appendChild(node_value);
+
+        this.variables[name] = {node: node_value, wrapper: wrapper, text_node};
 
         this.setValue(name, initial_value, false);
 
-        this._container.appendChild(node);
+        this._container.appendChild(wrapper);
     }
 
     removeVariable(name) {
@@ -110,13 +122,13 @@ export default class PaneVariables {
 
 
         if (animate) {
-            this.variables[name].node.classList.add(CLASSES.ANIMATION);
+            this.variables[name].wrapper.classList.add(CLASSES.ANIMATION);
             this.variables[name].animated = true;
         }
 
         setTimeout(() => {
             if ((name in this.variables) && this.variables[name].animated) {
-                this.variables[name].node.classList.remove(CLASSES.ANIMATION);
+                this.variables[name].wrapper.classList.remove(CLASSES.ANIMATION);
                 this.variables[name].animated = false;
             }
         }, 500);
@@ -143,10 +155,10 @@ export default class PaneVariables {
 
         let node_text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
-        node_text.setAttributeNS(null, "font-size", "300");
+        node_text.setAttributeNS(null, "font-size", "450");
         node_text.setAttributeNS(null, "fill", "black");
         node_text.setAttributeNS(null, "x", "50%");
-        node_text.setAttributeNS(null, "y", "15%");
+        node_text.setAttributeNS(null, "y", "35%");
         node_text.textContent = initial_value;
 
         node_svg.appendChild(node_text);

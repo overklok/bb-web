@@ -112,7 +112,7 @@ export default class AlertifierWrapper extends Wrapper {
 
         let title = ALERTS[type].title;
 
-        let node = document.createElement(&quot;div&quot;);
+        let node_value = document.createElement(&quot;div&quot;);
 
         let html = ALERTS[type].html;
 
@@ -120,11 +120,11 @@ export default class AlertifierWrapper extends Wrapper {
             html += `&lt;br&gt;&lt;img src=&apos;${this._images_path}/${ALERTS[type].image}&apos; style=&quot;width: 200px; margin-top: 20px;&quot;&gt;`
         }
 
-        node.innerHTML = html;
+        node_value.innerHTML = html;
 
         this._alerts[type] = swal({
             title: title,
-            content: node,
+            content: node_value,
             button: false,
             closeOnClickOutside: false,
         });
