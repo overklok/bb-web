@@ -167,6 +167,12 @@ export default class PaneVariables {
         console.warn(`Tried to set value '${value}' for variable '${name}', but it\`s class cannot be handled.`);
     }
 
+    setSensorValue(sensor_number, value, animate) {
+        let sensor_name = "SNS" + sensor_number;
+
+        this.setValue(sensor_name, value, animate);
+    }
+
     setSensorPWM(sensor_number, on=false) {
         let sensor_name = "SNS" + sensor_number;
 

@@ -479,6 +479,7 @@ export default class LayoutModule extends Module {
                     },
                     south: {
                         size: .3,
+                        minSize: 150,
 
                         resizable: true,
                         fxSpeed: this._options.animSpeedSub,
