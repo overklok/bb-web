@@ -30,6 +30,11 @@ export default class PaneVariables {
     constructor() {
         this.variables = {};
 
+        this.columns = {
+            col1: undefined,
+            col2: undefined
+        };
+
         this._state = {
             included: false
         }
@@ -47,6 +52,15 @@ export default class PaneVariables {
 
         this._container = document.createElement("div");
         this._container.classList.add(CLASSES.CONTAINER_MAIN);
+
+        this.columns.col1 = document.createElement("div");
+        this.columns.col2 = document.createElement("div");
+
+        this.columns.col1.classList.add("variables-column");
+        this.columns.col2.classList.add("variables-column");
+
+        this._container.appendChild(this.columns.col1);
+        this._container.appendChild(this.columns.col2);
 
         dom_node.appendChild(this._container);
 
@@ -81,12 +95,11 @@ export default class PaneVariables {
         node_value.classList.add('variable-value');
         node_value.setAttribute('id', name);
 
-        let inner_node = null,
-            text_node = null;
+        let text_node = null;
 
         if (TEXT_CLASSES.indexOf(VARIABLES[name].class) >= 0) {
-            [inner_node, text_node] = PaneVariables._generateSVGTextNode();
-            node_value.appendChild(inner_node);
+            text_node = document.createElement('p');
+            node_value.appendChild(text_node);
         }
 
         wrapper.appendChild(node_name);
@@ -96,7 +109,9 @@ export default class PaneVariables {
 
         this.setValue(name, initial_value, false);
 
-        this._container.appendChild(wrapper);
+        console.log(wrapper);
+
+        this.columns.col1.appendChild(wrapper);
     }
 
     removeVariable(name) {
@@ -110,16 +125,17 @@ export default class PaneVariables {
     removeAllVariables() {
         this.variables = {};
 
-        while (this._container.firstChild) {
-            this._container.removeChild(this._container.firstChild);
+        while (this.columns.col1.firstChild) {
+            this.columns.col1.removeChild(this.columns.col1.firstChild);
+        }
+
+        while (this.columns.col2.firstChild) {
+            this.columns.col2.removeChild(this.columns.col2.firstChild);
         }
     }
 
     setValue(name, value, animate=true) {
-        console.log("SETVAL", name, value);
-
         if (!(name in this.variables)) return;
-
 
         if (animate) {
             this.variables[name].wrapper.classList.add(CLASSES.ANIMATION);
@@ -133,8 +149,13 @@ export default class PaneVariables {
             }
         }, 500);
 
+        if (this.variables[name].node_value_pwm) {
+            this.variables[name].text_node.innerText = value;
+            return;
+        }
+
         if (TEXT_CLASSES.indexOf(VARIABLES[name].class) >= 0) {
-            this.variables[name].text_node.textContent = value;
+            this.variables[name].text_node.innerText = value;
             return;
         }
 
@@ -146,19 +167,73 @@ export default class PaneVariables {
         console.warn(`Tried to set value '${value}' for variable '${name}', but it\`s class cannot be handled.`);
     }
 
+    setSensorPWM(sensor_number, on=false) {
+        let sensor_name = "SNS" + sensor_number;
+
+        this._setSensorPWMByName(sensor_name, on);
+    }
+
+    _setSensorPWMByName(name, on=false) {
+        if (!(name in this.variables)) return;
+
+        if (this.variables[name].node_value_pwm) {
+            this.variables[name].node_value_pwm.style.opacity = on ? 1 : 0;
+        }
+    }
+
+    addSensors() {
+        for (let i = 0; i < 9; i++) {
+            this._addSensor('SNS'+i, 'A'+i, 0);
+        }
+    }
+
+    _addSensor(name, title, initial_value) {
+        let wrapper = document.createElement("div");
+        wrapper.classList.add('sensor');
+        wrapper.classList.add('arduino-analog');
+
+        let node_name = document.createElement("div");
+        node_name.classList.add('sensor-name');
+        node_name.innerHTML = `<span>${title}</span>`;
+
+        let node_value = document.createElement("div");
+        node_value.classList.add('sensor-value');
+        node_value.setAttribute('id', name);
+
+        let node_value_pwm = document.createElement("div");
+        node_value_pwm.classList.add('sensor-value');
+        node_value_pwm.classList.add('sensor-value-pwm');
+        node_value_pwm.setAttribute('id', name + 'PWM');
+        node_value_pwm.innerText = "ШИМ";
+
+        let text_node = document.createElement('p');
+        node_value.appendChild(text_node);
+
+        wrapper.appendChild(node_name);
+        wrapper.appendChild(node_value_pwm);
+        wrapper.appendChild(node_value);
+
+        this.variables[name] = {node: node_value, wrapper: wrapper, text_node, node_value_pwm};
+
+        this.setValue(name, initial_value, false);
+        this._setSensorPWMByName(name, false);
+
+        this.columns.col2.appendChild(wrapper);
+    }
+
     static _generateSVGTextNode(initial_value="") {
         let node_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
         node_svg.setAttributeNS(null, "width", "100%");
         node_svg.setAttributeNS(null, "height", "100%");
-        node_svg.setAttributeNS(null, "viewBox", "0 -200 2000 300");
+        node_svg.setAttributeNS(null, "viewBox", "0 -200 800 500");
 
         let node_text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
         node_text.setAttributeNS(null, "font-size", "450");
         node_text.setAttributeNS(null, "fill", "black");
         node_text.setAttributeNS(null, "x", "50%");
-        node_text.setAttributeNS(null, "y", "35%");
+        node_text.setAttributeNS(null, "y", "40%");
         node_text.textContent = initial_value;
 
         node_svg.appendChild(node_text);

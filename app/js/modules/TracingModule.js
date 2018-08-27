@@ -148,7 +148,7 @@ export default class TracingModule extends Module {
     }
 
     setVariableValue(variable_name, variable_value) {
-        this._varpane.setValue(variable_name, variable_value);
+        this._varpane.setValue(variable_name, variable_value, true);
         // this._blockly.setVariableBlockValue(variable_type, variable_value);
     }
 
@@ -210,9 +210,12 @@ export default class TracingModule extends Module {
 
     _showVariables(variables) {
         for (let variable of variables) {
+            console.log(variable);
             this._varpane.addVariable(variable.name, variable.initial_value);
             // this._blockly.addVariableBlock(variable.name, variable.name, variable.initial_value);
         }
+
+        this._varpane.addSensors();
     }
 
     _subscribeToWrapperEvents() {

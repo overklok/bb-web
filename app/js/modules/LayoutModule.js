@@ -460,7 +460,7 @@ export default class LayoutModule extends Module {
             //	some pane-size settings
             east: {
                 size: .4,
-                // maxSize: 400,
+                minSize: 340,
 
                 livePaneResizing: true,
                 resizable: true,

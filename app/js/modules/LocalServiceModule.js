@@ -133,6 +133,8 @@ export default class LocalServiceModule extends Module {
         return new Promise(resolve => {
             this.emitEvent("board-status", "search");
 
+            this._ipc.send('reset-port', port);
+
             this._ipc.once('reset-port.result', (event, error) => {
                 if (error) {
                     this.emitEvent("board-status", "disconnect");
