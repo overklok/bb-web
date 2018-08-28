@@ -167,6 +167,7 @@ export default class BlocklyWrapper extends Wrapper {
             {
                 toolbox: this.toolbox,
                 readOnly: read_only,
+                sounds: false,
                 zoom: {
                     startScale: zoom_initial
                 },
