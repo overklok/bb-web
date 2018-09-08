@@ -416,7 +416,7 @@ export default class InstructorModule extends Module {
         if (verdict.status === API.STATUS_CODES.FAULT) {
             this.emitEvent(&apos;fault&apos;, {
                 message: verdict.html,
-                blocks: verdict.blocks,
+                vars: verdict.vars,
                 region: verdict.data ? verdict.data.lane : null
             });
         }

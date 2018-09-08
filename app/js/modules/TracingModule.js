@@ -27,12 +27,13 @@ export default class TracingModule extends Module {
 
         this._state = {
             areasDisp: {
-                blocks: false,
+                vars: false,
                 buttons: false
             },
         };
 
         this._vars = [];
+        this._show_sensors = false;
 
         this._blockly = new BlocklyWrapper();
         this._kbdpane = new KbdPaneWrapper();
@@ -53,7 +54,7 @@ export default class TracingModule extends Module {
                 throw new Error("Please modify this module to load Blockly block types or disable it");
             }
 
-            if (this._state.areasDisp.blocks) {
+            if (this._state.areasDisp.vars) {
                 resolve(true);
                 return;
             }
@@ -63,14 +64,14 @@ export default class TracingModule extends Module {
 
             this._showVariables(this._vars);
 
-            this._state.areasDisp.blocks = true;
+            this._state.areasDisp.vars = true;
             resolve(true);
         });
     }
 
     ejectBlocks() {
         return new Promise(resolve => {
-            if (!this._state.areasDisp.blocks) {
+            if (!this._state.areasDisp.vars) {
                 resolve(false);
                 return;
             }
@@ -80,7 +81,7 @@ export default class TracingModule extends Module {
             // this._blockly.clearVariableBlocks();
             // this._blockly.eject();
 
-            this._state.areasDisp.blocks = false;
+            this._state.areasDisp.vars = false;
 
             resolve(true);
         })
@@ -121,7 +122,7 @@ export default class TracingModule extends Module {
     }
 
     resize() {
-        if (this._state.areasDisp.blocks) {
+        if (this._state.areasDisp.vars) {
             // this._blockly._onResize();
         }
 
@@ -135,7 +136,7 @@ export default class TracingModule extends Module {
 
         this._vars = variables;
 
-        if (!this._state.areasDisp.blocks) {return false}
+        if (!this._state.areasDisp.vars) {return false}
 
         // this._blockly.clearVariableBlocks();
         this._varpane.removeAllVariables();
@@ -153,7 +154,7 @@ export default class TracingModule extends Module {
     }
 
     addHistoryBlock(block_id, workspace_src) {
-        if (!this._state.areasDisp.blocks) {return false}
+        if (!this._state.areasDisp.vars) {return false}
         // this._blockly.addHistoryBlock(block_id, workspace_src);
 
         return true;
@@ -161,7 +162,7 @@ export default class TracingModule extends Module {
 
     clearHistoryBlocks() {
         return new Promise(resolve => {
-            if (!this._state.areasDisp.blocks) {
+            if (!this._state.areasDisp.vars) {
                 resolve(false);
             }
 
@@ -178,7 +179,7 @@ export default class TracingModule extends Module {
     }
 
     switchVariables(on) {
-        if (this._state.areasDisp.blocks === on) {return true}
+        if (this._state.areasDisp.vars === on) {return true}
 
         if (on === false) {
             this._varpane.removeAllVariables();
@@ -191,7 +192,7 @@ export default class TracingModule extends Module {
     }
 
     switchCodenet(on) {
-        if (this._state.areasDisp.blocks === on) {return true}
+        if (this._state.areasDisp.vars === on) {return true}
     }
 
     switchButtons(on) {
@@ -210,12 +211,13 @@ export default class TracingModule extends Module {
 
     _showVariables(variables) {
         for (let variable of variables) {
-            console.log(variable);
-            this._varpane.addVariable(variable.name, variable.initial_value);
-            // this._blockly.addVariableBlock(variable.name, variable.name, variable.initial_value);
+            if (variable.name === 'board_sensors') {
+                this._varpane.addSensors();
+            } else {
+                this._varpane.addVariable(variable.name, variable.initial_value);
+                // this._blockly.addVariableBlock(variable.name, variable.name, variable.initial_value);
+            }
         }
-
-        this._varpane.addSensors();
     }
 
     _subscribeToWrapperEvents() {

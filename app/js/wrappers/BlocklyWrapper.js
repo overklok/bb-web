@@ -13,6 +13,29 @@ import '../../css/blockly-dimmer.css';
 
 Blockly.setLocale(Ru);
 
+Blockly.FieldDropdown.prototype.crtmenu = Blockly.FieldDropdown.prototype.createMenu_;
+
+Blockly.FieldDropdown.prototype.createMenu_ = function() {
+    let menu = this.crtmenu();
+
+    let options = this.getOptions();
+
+    for (let i in menu.element_.childNodes) {
+        if (i in options && options[i].length > 2) {
+            if (menu.element_.childNodes[i]) {
+                if (menu.element_.childNodes[i].hasChildNodes()) {
+                    menu.element_.childNodes[i].childNodes[0].style.color = options[i][2];
+                    if (i in options && options[i].length > 3) {
+                        menu.element_.childNodes[i].style.backgroundColor = options[i][3];
+                    }
+                }
+            }
+        }
+    }
+
+    return menu;
+};
+
 const VARIABLE_OFFSET_X = 5;
 const VARIABLE_OFFSET_Y = 5;
 
@@ -171,7 +194,7 @@ export default class BlocklyWrapper extends Wrapper {
                 zoom: {
                     startScale: zoom_initial
                 },
-                scrollbars: use_scrollbars
+                scrollbars: use_scrollbars,
             }
         );
 

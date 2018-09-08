@@ -475,8 +475,8 @@ class Application {
             console.log(&quot;fault&quot;, verdict);
             this._dispatcher.only([]);
             try {
-                this.ws.highlightErrorBlocks(verdict.blocks);
-                this.bb.highlightErrorPlates(verdict.blocks);
+                this.ws.highlightErrorBlocks(verdict.vars);
+                this.bb.highlightErrorPlates(verdict.vars);
                 this.bb.highlightRegion(verdict.region, true);
             } catch (err) {
                 console.error(err);

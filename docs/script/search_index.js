@@ -2,175 +2,175 @@ window.esdocSearchIndex = [
   [
     "codehour-breadboard-web/js/admin_blockly.js~adminblocklyapplication",
     "class/js/admin_blockly.js~AdminBlocklyApplication.html",
-    "<span>AdminBlocklyApplication</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/admin_blockly.js</span>",
+    "<span>AdminBlocklyApplication</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/admin_blockly.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/admin_board.js~adminboardapplication",
     "class/js/admin_board.js~AdminBoardApplication.html",
-    "<span>AdminBoardApplication</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/admin_board.js</span>",
+    "<span>AdminBoardApplication</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/admin_board.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/alertifierwrapper.js~alertifierwrapper",
     "class/js/wrappers/AlertifierWrapper.js~AlertifierWrapper.html",
-    "<span>AlertifierWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/AlertifierWrapper.js</span>",
+    "<span>AlertifierWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/AlertifierWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/index.js~application",
     "class/js/index.js~Application.html",
-    "<span>Application</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/index.js</span>",
+    "<span>Application</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/index.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/blocklywrapper.js~blocklywrapper",
     "class/js/wrappers/BlocklyWrapper.js~BlocklyWrapper.html",
-    "<span>BlocklyWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/BlocklyWrapper.js</span>",
+    "<span>BlocklyWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/BlocklyWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/breadboardmodule.js~breadboardmodule",
     "class/js/modules/BreadboardModule.js~BreadboardModule.html",
-    "<span>BreadboardModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/BreadboardModule.js</span>",
+    "<span>BreadboardModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/BreadboardModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/breadboardwrapper.js~breadboardwrapper",
     "class/js/wrappers/BreadboardWrapper.js~BreadboardWrapper.html",
-    "<span>BreadboardWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/BreadboardWrapper.js</span>",
+    "<span>BreadboardWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/BreadboardWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/core/dispatcher.js~dispatcher",
     "class/js/core/Dispatcher.js~Dispatcher.html",
-    "<span>Dispatcher</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/core/Dispatcher.js</span>",
+    "<span>Dispatcher</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/core/Dispatcher.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/electronipcwrapper.js~electronipcwrapper",
     "class/js/wrappers/ElectronIPCWrapper.js~ElectronIPCWrapper.html",
-    "<span>ElectronIPCWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/ElectronIPCWrapper.js</span>",
+    "<span>ElectronIPCWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/ElectronIPCWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/filewrapper.js~filewrapper",
     "class/js/wrappers/FileWrapper.js~FileWrapper.html",
-    "<span>FileWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/FileWrapper.js</span>",
+    "<span>FileWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/FileWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/guimodule.js~guimodule",
     "class/js/modules/GUIModule.js~GUIModule.html",
-    "<span>GUIModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/GUIModule.js</span>",
+    "<span>GUIModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/GUIModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/globalservicemodule.js~globalservicemodule",
     "class/js/modules/GlobalServiceModule.js~GlobalServiceModule.html",
-    "<span>GlobalServiceModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/GlobalServiceModule.js</span>",
+    "<span>GlobalServiceModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/GlobalServiceModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/identifierwrapper.js~identifierwrapper",
     "class/js/wrappers/IdentifierWrapper.js~IdentifierWrapper.html",
-    "<span>IdentifierWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/IdentifierWrapper.js</span>",
+    "<span>IdentifierWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/IdentifierWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/instructormodule.js~instructormodule",
     "class/js/modules/InstructorModule.js~InstructorModule.html",
-    "<span>InstructorModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/InstructorModule.js</span>",
+    "<span>InstructorModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/InstructorModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/kbdpanewrapper.js~kbdpanewrapper",
     "class/js/wrappers/KbdPaneWrapper.js~KbdPaneWrapper.html",
-    "<span>KbdPaneWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/KbdPaneWrapper.js</span>",
+    "<span>KbdPaneWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/KbdPaneWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/launchbtnwrapper.js~launchbtnwrapper",
     "class/js/wrappers/LaunchBtnWrapper.js~LaunchBtnWrapper.html",
-    "<span>LaunchBtnWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/LaunchBtnWrapper.js</span>",
+    "<span>LaunchBtnWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/LaunchBtnWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/layoutmodule.js~layoutmodule",
     "class/js/modules/LayoutModule.js~LayoutModule.html",
-    "<span>LayoutModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/LayoutModule.js</span>",
+    "<span>LayoutModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/LayoutModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/lessonpanewrapper.js~lessonpanewrapper",
     "class/js/wrappers/LessonPaneWrapper.js~LessonPaneWrapper.html",
-    "<span>LessonPaneWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/LessonPaneWrapper.js</span>",
+    "<span>LessonPaneWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/LessonPaneWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/localservicemodule.js~localservicemodule",
     "class/js/modules/LocalServiceModule.js~LocalServiceModule.html",
-    "<span>LocalServiceModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/LocalServiceModule.js</span>",
+    "<span>LocalServiceModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/LocalServiceModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/logmodule.js~logmodule",
     "class/js/modules/LogModule.js~LogModule.html",
-    "<span>LogModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/LogModule.js</span>",
+    "<span>LogModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/LogModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/core/loggable.js~loggable",
     "class/js/core/Loggable.js~Loggable.html",
-    "<span>Loggable</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/core/Loggable.js</span>",
+    "<span>Loggable</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/core/Loggable.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/core/module.js~module",
     "class/js/core/Module.js~Module.html",
-    "<span>Module</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/core/Module.js</span>",
+    "<span>Module</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/core/Module.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/socketwrapper.js~socketwrapper",
     "class/js/wrappers/SocketWrapper.js~SocketWrapper.html",
-    "<span>SocketWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/SocketWrapper.js</span>",
+    "<span>SocketWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/SocketWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/spinnerwrapper.js~spinnerwrapper",
     "class/js/wrappers/SpinnerWrapper.js~SpinnerWrapper.html",
-    "<span>SpinnerWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/SpinnerWrapper.js</span>",
+    "<span>SpinnerWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/SpinnerWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/textpanewrapper.js~textpanewrapper",
     "class/js/wrappers/TextPaneWrapper.js~TextPaneWrapper.html",
-    "<span>TextPaneWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/TextPaneWrapper.js</span>",
+    "<span>TextPaneWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/TextPaneWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/wrappers/tourwrapper.js~tourwrapper",
     "class/js/wrappers/TourWrapper.js~TourWrapper.html",
-    "<span>TourWrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/wrappers/TourWrapper.js</span>",
+    "<span>TourWrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/wrappers/TourWrapper.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/tracingmodule.js~tracingmodule",
     "class/js/modules/TracingModule.js~TracingModule.html",
-    "<span>TracingModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/TracingModule.js</span>",
+    "<span>TracingModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/TracingModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/modules/workspacemodule.js~workspacemodule",
     "class/js/modules/WorkspaceModule.js~WorkspaceModule.html",
-    "<span>WorkspaceModule</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/modules/WorkspaceModule.js</span>",
+    "<span>WorkspaceModule</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/modules/WorkspaceModule.js</span>",
     "class"
   ],
   [
     "codehour-breadboard-web/js/core/wrapper.js~wrapper",
     "class/js/core/Wrapper.js~Wrapper.html",
-    "<span>Wrapper</span> <span class=\"search-result-import-path\">codehour-breadboard-web/js/core/Wrapper.js</span>",
+    "<span>Wrapper</span> <span class=\"search-result-import-line\">codehour-breadboard-web/js/core/Wrapper.js</span>",
     "class"
   ],
   [

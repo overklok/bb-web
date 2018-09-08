@@ -155,8 +155,8 @@ export default class BlocklyWrapper extends Wrapper {
      * &#x424;&#x43E;&#x440;&#x43C;&#x430;&#x442; &#x432;&#x445;&#x43E;&#x434;&#x43D;&#x44B;&#x445; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x445; &#x441;&#x43C;. &#x432; &#x440;&#x430;&#x437;&#x434;&#x435;&#x43B;&#x430;&#x445; Block Definition &#x438; Define Blocks
      * (&#x432;&#x43E; &#x432;&#x43A;&#x43B;&#x430;&#x434;&#x43A;&#x430;&#x445; JavaScript)
      *
-     * @see https://developers.google.com/blockly/guides/configure/web/custom-blocks
-     * @see https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks
+     * @see https://developers.google.com/blockly/guides/configure/web/custom-vars
+     * @see https://developers.google.com/blockly/guides/create-custom-vars/define-vars
      *
      * @param {Object} blocksJSON &#x43E;&#x431;&#x44A;&#x435;&#x43A;&#x442; &#x444;&#x43E;&#x440;&#x43C;&#x430;&#x442;&#x430; Blockly (JavaScript), &#x437;&#x430;&#x434;&#x430;&#x44E;&#x449;&#x438;&#x439; &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x435;&#x43D;&#x438;&#x44F; &#x431;&#x43B;&#x43E;&#x43A;&#x43E;&#x432;
      */
@@ -173,7 +173,7 @@ export default class BlocklyWrapper extends Wrapper {
      *
      * &#x424;&#x43E;&#x440;&#x43C;&#x430;&#x442; &#x432;&#x445;&#x43E;&#x434;&#x43D;&#x44B;&#x445; &#x434;&#x430;&#x43D;&#x43D;&#x44B;&#x445; &#x441;&#x43C;. &#x432; &#x440;&#x430;&#x437;&#x434;&#x435;&#x43B;&#x435; Add Generator Function
      *
-     * https://developers.google.com/blockly/guides/configure/web/custom-blocks
+     * https://developers.google.com/blockly/guides/configure/web/custom-vars
      *
      * @param {Object} generatorsJS &#x43E;&#x431;&#x44A;&#x435;&#x43A;&#x442; &#x444;&#x43E;&#x440;&#x43C;&#x430;&#x442;&#x430; Blockly (JavaScript), &#x437;&#x430;&#x434;&#x430;&#x44E;&#x449;&#x438;&#x439; &#x43E;&#x43F;&#x440;&#x435;&#x434;&#x435;&#x43B;&#x435;&#x43D;&#x438;&#x44F; &#x433;&#x435;&#x43D;&#x435;&#x440;&#x430;&#x442;&#x43E;&#x440;&#x43E;&#x432;
      */
@@ -422,11 +422,11 @@ export default class BlocklyWrapper extends Wrapper {
 
         let block_count = 0;
 
-        let blocks = this.workspace.getAllBlocks();
+        let vars = this.workspace.getAllBlocks();
 
         let block_taken_ids = new Set();
 
-        for (let block of blocks) {
+        for (let block of vars) {
             if (!block_taken_ids.has(block.id)) {
                 block_count += 1;
             }

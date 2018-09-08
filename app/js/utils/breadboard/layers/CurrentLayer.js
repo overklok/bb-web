@@ -155,15 +155,15 @@ export default class CurrentLayer extends Layer {
             linecap: "round"
         });
 
-        let path_data = this._buildCurrentPath(thread);
+        let line_data = this._buildCurrentLine(thread);
 
         this._currents[current.id] = current;
 
         let weight = thread.weight > 1 ? 1 : thread.weight;
         this._weight = weight;
 
-        current.draw(path_data, weight);
-        current.activate(weight, true, spare);
+        current.draw(line_data, weight);
+        current.activate(weight);
 
         return current;
     };
@@ -175,15 +175,14 @@ export default class CurrentLayer extends Layer {
      * @returns {Array} последовательность SVG-координат
      * @private
      */
-    _buildCurrentPath(points) {
-        let full_path = [];
+    _buildCurrentLine(points) {
+        let cell_from  = this.__grid.cell(points.from.x, points.from.y),
+            cell_to    = this.__grid.cell(points.to.x, points.to.y);
 
-        let cell_from  = this.__grid.cell(points.from.x, points.from.y);
-        let cell_to    = this.__grid.cell(points.to.x, points.to.y);
-
-        CurrentLayer._appendLinePath(full_path, cell_from, cell_to);
-
-        return full_path;
+        return {
+            from: {x: cell_from.center.x, y: cell_from.center.y},
+            to: {x: cell_to.center.x, y: cell_to.center.y}
+        };
     };
 
     /**
@@ -193,6 +192,7 @@ export default class CurrentLayer extends Layer {
      * @param {Object}  cell_from   точка истока
      * @param {Object}  cell_to     точка стока
      * @private
+     * @deprecated
      */
     static _appendLinePath(path, cell_from, cell_to) {
         path.push(['M', cell_from.center.x, cell_from.center.y]);

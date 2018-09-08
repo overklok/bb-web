@@ -55,7 +55,7 @@ export default class Breadboard {
             current: undefined,
         };
 
-        this._spare = undefined;
+        this._spare = false;
         this._filters_defined = false;
     }
 
@@ -233,8 +233,8 @@ export default class Breadboard {
             id: "glow-current",
             html:
                 '<filter id="glow-current" filterUnits="userSpaceOnUse">\
-                    <feColorMatrix type="matrix" result="colorCurrentCyan" values=\
-                            "0 0 0 0   0\
+                    <feColorMatrix type="matrix" result="colorCurrent" values=\
+                            "1 0 0 0   0\
                              0 1 0 0   0\
                              0 0 1 0   0\
                              0 0 0 1   0"/>\
@@ -244,7 +244,7 @@ export default class Breadboard {
                              1 1 1 0   0\
                              0 0 0 0.5 0"/>\
                     <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
-                    <feGaussianBlur id="filter-pulse" in="colorCurrentCyan" stdDeviation="4" result="coloredBlurOut"/>'
+                    <feGaussianBlur id="filter-pulse" in="colorCurrent" stdDeviation="2" result="coloredBlurOut"/>'
                     + '<feMerge>'
                     + (on ? '' : '<feMergeNode in="coloredBlurOut"/>')
                     + '<feMergeNode in="SourceGraphic"/>'
@@ -254,7 +254,7 @@ export default class Breadboard {
                     + '</feMerge>\
                 </filter>'
                 + (on ? '' : '<animate xlink:href="#filter-pulse" attributeName="stdDeviation"\
-                values="2;20;2" dur="3s" begin="0s" repeatCount="indefinite"/>')
+                values="2;10;2" dur="3s" begin="0s" repeatCount="indefinite"/>')
             }
         );
 
@@ -550,6 +550,7 @@ export default class Breadboard {
      * @returns {Array<string>}
      */
     static getAllPlateTypes() {
+
         return PlateLayer._getAllPlateTypes();
     }
 

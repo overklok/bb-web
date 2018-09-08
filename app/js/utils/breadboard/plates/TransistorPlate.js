@@ -97,7 +97,7 @@ export default class TransistorPlate extends Plate {
             .move(line_top_2.x() + line_gap/4.8, line_top_2.y())
             .rotate(45);
 
-        // this._group.path([
+        // this._group.line([
         //     ['M', 0, 0],
         //     ['l', line_gap/2, -line_gap/2.2],
         //     ['l', line_gap/4, line_gap/1.5],

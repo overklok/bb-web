@@ -109,8 +109,6 @@ export default class PaneVariables {
 
         this.setValue(name, initial_value, false);
 
-        console.log(wrapper);
-
         this.columns.col1.appendChild(wrapper);
     }
 
@@ -131,6 +129,16 @@ export default class PaneVariables {
 
         while (this.columns.col2.firstChild) {
             this.columns.col2.removeChild(this.columns.col2.firstChild);
+        }
+    }
+
+    removeSensors() {
+        for (let name in this.variables) {
+            if (this.variables.hasOwnProperty(name)) {
+                if (this.variables[name].node_value_pwm) {
+                    this.removeVariable(name);
+                }
+            }
         }
     }
 
@@ -179,11 +187,25 @@ export default class PaneVariables {
         this._setSensorPWMByName(sensor_name, on);
     }
 
+    setSensorVoltage(sensor_number, on=false) {
+        let sensor_name = "SNS" + sensor_number;
+
+        this._setSensorVoltageByName(sensor_name, on);
+    }
+
     _setSensorPWMByName(name, on=false) {
         if (!(name in this.variables)) return;
 
         if (this.variables[name].node_value_pwm) {
             this.variables[name].node_value_pwm.style.opacity = on ? 1 : 0;
+        }
+    }
+
+    _setSensorVoltageByName(name, on=false) {
+        if (!(name in this.variables)) return;
+
+        if (this.variables[name].node_value_voltage) {
+            this.variables[name].node_value_voltage.style.opacity = on ? 1 : 0;
         }
     }
 
@@ -212,17 +234,25 @@ export default class PaneVariables {
         node_value_pwm.setAttribute('id', name + 'PWM');
         node_value_pwm.innerText = "ШИМ";
 
+        let node_value_voltage = document.createElement("div");
+        node_value_voltage.classList.add('sensor-value');
+        node_value_voltage.classList.add('sensor-value-voltage');
+        node_value_voltage.setAttribute('id', name + 'VOLTAGE');
+        node_value_voltage.innerText = "НАПР";
+
         let text_node = document.createElement('p');
         node_value.appendChild(text_node);
 
         wrapper.appendChild(node_name);
         wrapper.appendChild(node_value_pwm);
+        wrapper.appendChild(node_value_voltage);
         wrapper.appendChild(node_value);
 
-        this.variables[name] = {node: node_value, wrapper: wrapper, text_node, node_value_pwm};
+        this.variables[name] = {node: node_value, wrapper: wrapper, text_node, node_value_pwm, node_value_voltage};
 
         this.setValue(name, initial_value, false);
         this._setSensorPWMByName(name, false);
+        this._setSensorVoltageByName(name, false);
 
         this.columns.col2.appendChild(wrapper);
     }

@@ -1,7 +1,7 @@
-.current-path {
+.current-line {
      transition: stroke 500ms;
 }
 
-.current-arrow {
-    transition: fill 500ms;
+.current-particle {
+    transition: fill, animation-duration 500ms;
 }

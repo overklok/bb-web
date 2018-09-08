@@ -18,33 +18,41 @@ import thm from '../styles/current.css';
  * @constructor
  */
 export default class Current {
-    static get ColorMin() {return "#7df9ff"}
-    static get ColorMax() {return "#6cff65"}
-    static get SpeedMin() {return 600}
-    static get SpeedMax() {return 1000}
-    static get AnimationDelta() {return 100} // Расстояние между соседними стрелками, px
+    static get ColorMin() {return "#006eff"}
+    static get ColorMax() {return "#ff0006"}
+    static get DurationMin() {return 400}
+    static get DurationMax() {return 10000}
+    static get AnimationDelta() {return 200} // Расстояние между соседними частицами, px
 
     constructor(container, points, style) {
-        this.container = container;
-        this.style = style;
-        this.path = null;
-        this.arrows = [];
-        this.thread = points;
-        this._weight = 0;
-        this._time = undefined;
+        this.container  = container;        // родительский DOM-узел
+        this.style      = style;            // стиль SVG-линии
+        this.points     = points;           // координаты виртуальных точек линии тока (начало и конец)
 
-        /// Идентификатор - по умолчанию случайная строка
-        this._id = Math.floor(Math.random() * (10 ** 6));
+        this._container_anim = this.container.nested();     // родительский DOM-узел анимации
+        this._id = Math.floor(Math.random() * (10 ** 6));   // Идентификатор по умолчанию - случайная строка
 
-        this.container_anim = this.container.nested();
-        this.animators = {
-            move: [],
-            trans: []
-        };
+        // Прочие внутрение параметры
+        this._particles     = [];           // частицы тока (для анимации)
+        this._weight        = 0;            // сила тока
+        this._line          = null;         // SVG-линия тока
+        this._line_points   = undefined;    // координаты реальных точек линии тока (начало и конец)
+        this._line_length   = undefined;    // длина линии тока
+
+        // Параметры анимации
+        this._sheet             = undefined;    // CSS-контейнер
+        this._anim_timestamp    = undefined;    // временная метка начала анимации
+        this._anim_dur          = undefined;    // текущая длительность прохождения Current.AnimationDelta px
+        this._anim_delay        = undefined;    // накопленное запаздывание анимации
 
         this._visible = false;
     }
 
+    /**
+     * Возратить идентификатор
+     *
+     * @returns {number | *}
+     */
     get id() {
         return this._id;
     }
@@ -54,25 +62,29 @@ export default class Current {
      *
      * Применяется фильтр свечения.
      *
-     * @param path
+     * @param points
+     * @param weight
      */
-    draw(path, weight=0) {
+    draw(points, weight=0) {
         this.style.color = Current.pickColorFromRange(weight);
 
-        this.path = this.container
-            .path(path)
-            .addClass('current-path')
+        this._line = this.container
+            .line(points.from.x, points.from.y, points.to.x, points.to.y)
             .fill('none')
             .stroke(this.style)
-            .data('key', 'value')
-            .addClass('current-path');
+            .addClass('current-line');
 
-        this.container_anim.before(this.path);
-        this.container_anim.opacity(0);
+        // big thanks to Pythagoras for this formula
+        this._line_length = (
+            (points.from.x - points.to.x) ** 2 + (points.from.y - points.to.y) ** 2
+        ) ** 0.5;
+
+        this._container_anim.before(this._line);
+        this._container_anim.opacity(0);
 
         this.addGlow();
 
-        // this.path.opacity(0).animate('50ms').opacity(1);
+        this._line_points = points;
 
         this._visible = true;
     };
@@ -81,20 +93,15 @@ export default class Current {
      * Стереть ток
      */
     erase() {
-        if (!this.path) {
-            console.warn("An attempt to erase NULL path was made");
+        if (!this._line) {
+            console.warn("An attempt to erase NULL line was made");
             return null;
         }
 
-        this.arrows = [];
+        this._particles = [];
 
-        // this.path.animate('50ms').opacity(0);
-        // this.container_anim.animate('50ms').opacity(0);
-
-        // setTimeout(() => {
-            this.path.remove();
-            this.container_anim.remove();
-        // }, 50);
+        this._line.remove();
+        this._container_anim.remove();
 
         this._visible = false;
     };
@@ -106,123 +113,69 @@ export default class Current {
      * @returns {boolean}
      */
     hasSameThread(thread) {
-        return  thread.from.x === this.thread.from.x &&
-                thread.from.y === this.thread.from.y &&
-                thread.to.x === this.thread.to.x &&
-                thread.to.y === this.thread.to.y;
+        return  thread.from.x === this.points.from.x &&
+                thread.from.y === this.points.from.y &&
+                thread.to.x === this.points.to.x &&
+                thread.to.y === this.points.to.y;
     }
 
     /**
-     * Анимировать ток по контуру this.path
+     * Анимировать ток по контуру this._line
      *
-     * @param weight    Скорость анимации тока (движения стрелок по контуру)
-     * @param reset     Сбросить отрисованные стрелки
-     *
-     * Генерируется некоторое число стрелок - векторных объектов, изображающих ток по контуру.
-     * Каждая стрелка циклически проходит фрагмент пути длины delta с заданной скоростью speed
-     * таким образом, что путь движения каждой последующей стрелки берёт начало в том месте,
+     * Генерируется некоторое число частиц - векторных объектов, изображающих ток по контуру.
+     * Каждая частица циклически проходит фрагмент пути длины delta с заданной скоростью speed
+     * таким образом, что путь движения каждой последующей частицы берёт начало в том месте,
      * где предыдущая заканчивает итерацию цикла движения.
      *
-     * Отключение сброса стрелок необходимо в случае, когда требуется изменить свойства анимации,
-     * не перерисовывая стрелки с нуля.
+     * Отключение сброса частиц необходимо в случае, когда требуется изменить свойства анимации,
+     * не перерисовывая частицы с нуля.
+     *
+     * @param weight    Скорость анимации тока (движения частиц по контуру)
      */
-    activate(weight=0, reset=true, spare=false) {
+    activate(weight=0) {
         if (!this._visible) {
             throw new Error("Cannot activate invisible current!");
         }
 
-        if (reset) {
-            this.arrows = [];
-
-            this.animators = {
-                move: [],
-                trans: []
-            };
+        if (!this._sheet) {
+            this.deactivate();
         }
 
-        // let time = Math.ceil(Current.SpeedMax + weight * (Current.SpeedMin - Current.SpeedMax));
-        let time = Current.SpeedMin;
+        // длительность прохода Current.AnimationDelta px пути
+        let dur = Math.ceil(Current.DurationMax + weight * (Current.DurationMin - Current.DurationMax));
 
-        // Рассчитаем длину контура
-        let length = this.path.length();
+        // Число частиц на ток
+        let particles_per_line = (this._line_length / Current.AnimationDelta);
 
-        // Определим число стрелок
-        let arrows_count = Math.floor(length) / (Current.AnimationDelta);
-
-        /// Сглаживание изменения скорости движения стрелок
-        // if (!reset) {
-        //     this.container_anim.node.setCurrentTime(
-        //         this.container_anim.node.getCurrentTime() * time / this._time
-        //     );
-        // }
-
-        /// Сохраним время (для случаев, когда функция будет вызываться повторно без reset)
-        // this._time = time;
-
-        // Для каждой стрелки:
-        for (let i = 0; i < arrows_count; i++)
+        // Для каждой частицы:
+        for (let i = 0; i < particles_per_line; i++)
         {
             // Вычислить начальную и конечную позиции движения по контуру (в процентах от всей длины контура)
-            let progress_start  = (  i  ) / arrows_count;
-            let progress_end    = (i + 1) / arrows_count;
+            let progress_start  = (  i  ) * Current.AnimationDelta / this._line_length;
+            let progress_end    = (i + 1) * Current.AnimationDelta / this._line_length;
 
-            // Если стрелка - последняя, то progress_end будет больше 1
-            // Необходимо скорректировать конечную позицию для последней стрелки,
-            // так как длина всего пути может быть не кратной количеству стрелок
+            // Если частица - последняя, то progress_end будет больше 1
+            // Необходимо скорректировать конечную позицию для последней частицы,
+            // так как длина всего пути может быть не кратной количеству частиц
             if (progress_end > 1) {
                 progress_end = 1;
             }
 
-            /// Если сброс - генерируемы новую стрелку
-            if (reset) {
-                let arrow;
-
-                if (spare) {
-                    arrow = this.container_anim.polygon(
-                        "-13,-20 -13,20 13,0"
-                        // "0,0 0," + GRID_DOT_SIZE * 2 * 1.3 +  " " + GRID_DOT_SIZE * 1.3 + "," + GRID_DOT_SIZE * 1.3
-                    );
-                } else {
-                    arrow = this.container_anim.circle(
-                        GRID_DOT_SIZE * 1.8
-                    ).addClass('current-arrow');
-                }
-
-                    arrow.center(0, 0);
-
-                this.arrows.push(arrow);
-            }
+            // Сгенерировать частицу
+            this._particles[i] = this._container_anim.circle(GRID_DOT_SIZE * 1.8).addClass('current-particle');
 
             // Заливка и центрирование
-            this.arrows[i].fill(Current.pickColorFromRange(weight));
+            this._particles[i].fill(Current.pickColorFromRange(weight));
 
-            let aniMove, aniTrans;
-
-            aniMove = Current.animateArrowMove(
-                this.path.toString(), this.arrows[i], time, progress_start, progress_end, spare, this.animators.move[i]
-            );
-
-            if (i === 0) {
-                // если первая стрелка
-                aniTrans = Current.animateArrowScale(this.arrows[i], time, false, spare, this.animators.trans[i]);
-            }
-
-            if (i === arrows_count - 1) {
-                // если последняя стрелка
-                aniTrans = Current.animateArrowScale(this.arrows[i], time, true, spare, this.animators.trans[i]);
-            }
-
-            if (reset) {
-                this.animators.move.push(aniMove);
-                this.animators.trans.push(aniTrans);
-            }
+            // Анимировать частицу
+            this.animateParticle(this._particles[i], i, particles_per_line, progress_start, progress_end, dur);
         }
 
         // Это необходимо для того, чтобы дать браузеру вставить анимацию во все полигоны
         // В противном случае, на малую долю секунды будет заметна частица в положении (0,0)
         // до начала анимации
         setTimeout(() => {
-            this.container_anim.opacity(1);
+            this._container_anim.opacity(1);
         }, 0);
     };
 
@@ -230,35 +183,39 @@ export default class Current {
      * Остановить анимацию тока
      */
     deactivate() {
-        this.arrows = [];
-
-        this.animators = {
-            move: [],
-            trans: []
-        };
-
-        this.container_anim.clear();
+        this._particles = [];
+        this._container_anim.clear();
+        this._initStyleSheet();
     };
 
     /**
      * Добавить фильтр свечения к току
      */
     addGlow() {
-        this.path.attr('filter', 'url(#glow-current)');
+        this._line.attr('filter', 'url(#glow-current)');
     };
 
+    /**
+     * Изменить вес тока
+     * @param weight
+     */
     setWeight(weight=0) {
         weight = weight > 1 ? 1 : weight;
 
         if (this._weight !== weight) {
-            this.activate(weight, false);
+            // задать скорость
+            this._setParticlesSpeed(weight);
+            // определить цвет
 
-            let color = Current.pickColorFromRange(weight);
+            // изменить цвет в стиле контура
+            this.style.color = Current.pickColorFromRange(weight);
 
-            this.path.stroke({color});
+            // применить стиль к контуру
+            this._line.stroke(this.style);
 
-            for (let arw of this.arrows) {
-                arw.fill(color);
+            // изменить цвет у всех частиц
+            for (let particle of this._particles) {
+                particle.fill(this.style.color);
             }
 
         }
@@ -266,70 +223,187 @@ export default class Current {
         this._weight = weight;
     }
 
-    static animateArrowMove(path, arrow, time, progress_start, progress_end, spare=false, animator=undefined) {
-        // SVG-анимация стрелки:
-        let aniMove = animator ? animator.node : document.createElementNS("http://www.w3.org/2000/svg", "animateMotion"); // тип: перемещение
+    /**
+     * Анимировать частицу.
+     *
+     * Для анимации используется CSS Keyframes.
+     * Этот подход является наиболее оптимальным с точки зрения изменения параметров
+     * анимации в режиме реального времени, однако требует больше памяти для манипуляции
+     * таблицами стилей.
+     *
+     * Преполагается, что функция вызывается в цикле по анимированным частицам.
+     *
+     * @param particle              {SVG.Circle}    SVG-представление частицы, изображающей ток
+     * @param index                 {Number}        Порядковый номер (индекс) сгенерированной частицы
+     * @param particles_count       {Number}        Число частиц на ток
+     * @param progress_start        {Number}        Доля пути, на которой следует начать движение
+     * @param progress_end          {Number}        Доля пути, на которой следует закончить движение
+     * @param dur                   {Number}        Время, за которое частица должна пройти Current.AnimationDelta px
+     */
+    animateParticle(particle, index, particles_count, progress_start, progress_end, dur=1000) {
+        // действительная разница точек прогресса
+        let progress_diff_actual = progress_end - progress_start;
 
-        // В аниматор нужно вставить путь анимации
-        let mpath = animator ? animator.path : document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+        // нормальная разница точек прогресса, обычно равна progress_diff_actual
+        // за исключением случая с последней частицей, когда она проходит путь меньший, чем у остальных
+        let progress_diff_normal = 1 / particles_count;
 
-        if (animator === undefined) {
-            mpath.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + path.toString());
+        // Расстояние, которое требуется пройти частице по X и Y
+        let dist = {
+            x: this._line_points.to.x - this._line_points.from.x,
+            y: this._line_points.to.y - this._line_points.from.y,
+        };
 
-            aniMove.setAttribute("start", "0s");                                              // задержка
-            aniMove.setAttribute("repeatCount", "indefinite");                                // бесконечная
-            aniMove.setAttribute("rotate", "auto");                                           // автоповорот
-            aniMove.setAttribute("keyTimes", "0;1");                                          // нач. и кон. время в %
-            aniMove.setAttribute("calcMode", "linear");                                       // (!) функция перемещения
+        // Начальная точка движения частицы
+        let from = {
+            x: this._line_points.from.x + dist.x * progress_start,
+            y: this._line_points.from.y + dist.y * progress_start,
+        };
+
+        // Конечная точка движения частицы
+        let to = {
+            x: this._line_points.from.x + dist.x * progress_end,
+            y: this._line_points.from.y + dist.y * progress_end,
+        };
+
+        // Префикс правил для контрольных точек
+        let kfname_prefix = `cur-${this._id}-${index}-kfs`;
+        // Префикс правил для класса анимации
+        let animname = `animcur-${this._id}-${index}-kfs`;
+
+        // Процент окончания анимации
+        let perc = Math.floor(progress_diff_actual / progress_diff_normal * 100);
+
+        let rule_animation              = undefined,    // CSS-класс анимации
+            rule_keyframes_move         = undefined,    // контрольные точки перемещения
+            rule_keyframes_blink        = undefined,    // контрольные точки непрозрачности
+            rule_keyframes_radius       = undefined;    // контрольные точки радиуса
+
+        /// Задание контрольных точек:
+
+        // движение
+        rule_keyframes_move = `
+            @keyframes ${kfname_prefix}-move {
+                0% {cx: ${from.x}; cy: ${from.y}}
+                ${perc}% {cx: ${to.x}; cy: ${to.y}}
+                100% {cx: ${to.x}; cy: ${to.y}}
+            }
+        `;
+
+        // исчезновение - для частицы, проходящих неполный путь
+        // (как правило, последней)
+        if (perc < 100) {
+            rule_keyframes_blink = `
+                @keyframes ${kfname_prefix}-blink {
+                    0% {opacity: 1}
+                    ${perc}% {opacity: 1}
+                    100% {opacity: 0}
+                }
+            `;
         }
 
-        if (spare) {
-            aniMove.removeAttribute("dur");
-        } else {
-            aniMove.setAttribute("dur", time + "ms"); // длительность
+        if (progress_start === 0 && progress_end === 1) {
+            // уменьшение - для первой и последней частицы одновременно
+            rule_keyframes_radius = `
+                @keyframes ${kfname_prefix}-radius {
+                    0% {r: 10}
+                    ${perc*0.4}% {r: 18}
+                    ${perc*0.6}% {r: 18}
+                    ${perc}% {r: 10}
+                    100% {r: 10}
+                }
+            `;
+        } else if (progress_start === 0) {
+            // увеличение - для первой частицы
+            rule_keyframes_radius = `
+                @keyframes ${kfname_prefix}-radius {
+                    0% {r: 10}
+                    ${perc*0.4}% {r: 18}
+                    100% {r: 18}
+                }
+            `;
+        } else if (progress_end === 1) {
+            // уменьшение - для последней частицы
+            rule_keyframes_radius = `
+                @keyframes ${kfname_prefix}-radius {
+                    0% {r: 18}
+                    ${perc*0.6}% {r: 18}
+                    ${perc}% {r: 10}
+                    100% {r: 10}
+                }
+            `;
         }
 
-        aniMove.setAttribute("keyPoints", progress_start + ";" + progress_end);       // нач. и кон. позиции в %
+        /// Составление класса анимации
 
-        // Подключение в DOM
-        if (!animator) {
-            aniMove.appendChild(mpath);
-            arrow.node.appendChild(aniMove);
+        // движение
+        rule_animation = `.${animname} {animation:  ${kfname_prefix}-move ${dur}ms linear infinite`;
+        this._sheet.insertRule(rule_keyframes_move);
+
+        // исчезновение
+        if (rule_keyframes_blink) {
+           rule_animation += `, ${kfname_prefix}-blink ${dur}ms step-start infinite`;
+           this._sheet.insertRule(rule_keyframes_blink);
         }
 
-        return {node: aniMove, path: mpath};
-    };
-
-    static animateArrowScale(arrow, time, out = false, spare, animator=undefined) {
-        // SVG-анимация стрелки:
-        let aniTrans = animator ? animator : document.createElementNS("http://www.w3.org/2000/svg", "animateTransform"); // тип: трансформ.
-
-        if (animator === undefined) {
-            aniTrans.setAttribute("attributeName", "transform");                               // радиус
-            aniTrans.setAttribute("type", "scale");
-            aniTrans.setAttribute("additive", "sum");
-            aniTrans.setAttribute("begin", "0s");
-            aniTrans.setAttribute("repeatCount", "indefinite");                                // бесконечная
-            aniTrans.setAttribute("calcMode", "spline");
+        // радиус
+        if (rule_keyframes_radius) {
+            rule_animation += `, ${kfname_prefix}-radius ${dur}ms linear infinite`;
+            this._sheet.insertRule(rule_keyframes_radius);
         }
 
-        aniTrans.setAttribute("from", out ? "1 1" : "0.45 0.45");
-        aniTrans.setAttribute("to", out ? "0.45 0.45" : "1 1");
-        aniTrans.setAttribute("keySplines", out ? "0.39, 0.575, 0.565, 1" : "0.47, 0, 0.745, 0.715");
+        rule_animation += ';}';
 
-        if (spare) {
-            aniTrans.removeAttribute("dur");
-        } else {
-            aniTrans.setAttribute("dur", time + "ms"); // длительность
+        this._sheet.insertRule(rule_animation);
+
+        particle.node.classList.add(animname);
+
+        // Зафиксировать параметры времени
+        this._anim_timestamp = new Date().getTime();
+        this._anim_dur = dur;
+        this._anim_delay = 0;
+    }
+
+    _setParticlesSpeed(speed) {
+        if (!this._sheet) return;
+
+        let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
+
+        let dt = new Date().getTime() - this._anim_timestamp;
+
+        let mu = dur / this._anim_dur;
+
+        let p1d = dt % this._anim_dur,
+            p2d = dt % dur;
+
+        let p2r = p1d * mu;
+
+        this._anim_delay += (p2d - p2r);
+
+        for (let rule of this._sheet.rules) {
+            if (rule.constructor.name === "CSSStyleRule") {
+                rule.style.animationDuration = `${dur}ms, ${dur}ms`;
+                if (this._anim_delay) {
+                    rule.style.animationDelay = `${this._anim_delay}ms`
+                }
+            }
         }
 
-        // Подключение в DOM
-        if (!animator) {
-            arrow.node.appendChild(aniTrans);
+        this._anim_timestamp += (p2d - p2r);
+        this._anim_dur = dur;
+    }
+
+    _initStyleSheet() {
+        if (this._sheet) {
+            this._sheet.ownerNode.remove();
         }
 
-        return aniTrans;
-    };
+        let style = document.createElement('style');
+        style.id = this._id;
+        document.body.appendChild(style);
+
+        this._sheet = style.sheet;
+    }
 
     static pickColorFromRange(weight) {
         let w1 = weight,
@@ -353,6 +427,14 @@ export default class Current {
             Math.round(color_max[2] * w1 + color_min[2] * w2),
         ];
 
-        return '#' + Number(rgb[0]).toString(16) + Number(rgb[1]).toString(16) + Number(rgb[2]).toString(16);
+        let rs = Number(rgb[0]).toString(16),
+            gs = Number(rgb[1]).toString(16),
+            bs = Number(rgb[2]).toString(16);
+
+        if (rs.length === 1) rs = "0" + rs;
+        if (gs.length === 1) gs = "0" + gs;
+        if (bs.length === 1) bs = "0" + bs;
+
+        return '#' + rs + gs + bs;
     }
 }

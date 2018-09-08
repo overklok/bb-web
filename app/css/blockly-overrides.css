@@ -1,3 +1,7 @@
 .blocklyWidgetDiv .goog-menuitem-content {
     font: normal 13px Arial, sans-serif;
 }
+
+.blocklyText, .goog-menuitem {
+    font-family: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
+}

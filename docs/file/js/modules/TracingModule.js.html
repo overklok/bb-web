@@ -68,7 +68,7 @@
 import BlocklyWrapper from &quot;../wrappers/BlocklyWrapper&quot;;
 import KbdPaneWrapper from &quot;../wrappers/KbdPaneWrapper&quot;;
 
-import JSONBlocks       from &apos;../utils/blockly/extras/blocks&apos;;
+import JSONBlocks       from &apos;../utils/blockly/extras/vars&apos;;
 
 /**
  * &#x41C;&#x43E;&#x434;&#x443;&#x43B;&#x44C;, &#x43E;&#x442;&#x432;&#x435;&#x447;&#x430;&#x44E;&#x449;&#x438;&#x439; &#x437;&#x430; &#x43F;&#x43E;&#x432;&#x435;&#x434;&#x435;&#x43D;&#x438;&#x435; &#x43E;&#x431;&#x43B;&#x430;&#x441;&#x442;&#x438; &#x442;&#x440;&#x430;&#x441;&#x441;&#x438;&#x440;&#x43E;&#x432;&#x43A;&#x438; &#x43A;&#x43E;&#x434;&#x430;
@@ -92,7 +92,7 @@ export default class TracingModule extends Module {
 
         this._state = {
             areasDisp: {
-                blocks: false,
+                vars: false,
                 buttons: false
             },
         };
@@ -116,7 +116,7 @@ export default class TracingModule extends Module {
                 throw new Error(&quot;Please modify this module to load Blockly block types or disable it&quot;);
             }
 
-            if (this._state.areasDisp.blocks) {
+            if (this._state.areasDisp.vars) {
                 resolve(true);
                 return;
             }
@@ -125,14 +125,14 @@ export default class TracingModule extends Module {
 
             this._showVariables(this._vars);
 
-            this._state.areasDisp.blocks = true;
+            this._state.areasDisp.vars = true;
             resolve(true);
         });
     }
 
     ejectBlocks() {
         return new Promise(resolve =&gt; {
-            if (!this._state.areasDisp.blocks) {
+            if (!this._state.areasDisp.vars) {
                 resolve(true);
                 return;
             }
@@ -140,7 +140,7 @@ export default class TracingModule extends Module {
             this._blockly.clearVariableBlocks();
             this._blockly.eject();
 
-            this._state.areasDisp.blocks = false;
+            this._state.areasDisp.vars = false;
 
             resolve(true);
         })
@@ -181,7 +181,7 @@ export default class TracingModule extends Module {
     }
 
     resize() {
-        if (this._state.areasDisp.blocks) {
+        if (this._state.areasDisp.vars) {
             this._blockly._onResize();
         }
 
@@ -195,7 +195,7 @@ export default class TracingModule extends Module {
 
         this._vars = variables;
 
-        if (!this._state.areasDisp.blocks) {return true}
+        if (!this._state.areasDisp.vars) {return true}
 
         this._blockly.clearVariableBlocks();
 
@@ -215,7 +215,7 @@ export default class TracingModule extends Module {
     }
 
     switchVariables(on) {
-        if (this._state.areasDisp.blocks === on) {return true}
+        if (this._state.areasDisp.vars === on) {return true}
 
         if (on === false) {
             this._blockly.clearVariableBlocks();
@@ -227,7 +227,7 @@ export default class TracingModule extends Module {
     }
 
     switchCodenet(on) {
-        if (this._state.areasDisp.blocks === on) {return true}
+        if (this._state.areasDisp.vars === on) {return true}
     }
 
     switchButtons(on) {
