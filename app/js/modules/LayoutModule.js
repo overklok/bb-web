@@ -22,6 +22,7 @@ const ROOT_CLASS = "ui-layout-container";
 const PANE_IDS = {
     MAIN_NORTH:     "main-north",
     MAIN_CENTER:    "main-center",
+    MAIN_WEST:      "main-west",
     MAIN_EAST:      "main-east",
 
     // EAST_NORTH:         "east-north",
@@ -41,8 +42,10 @@ const PANE_IDS = {
  * @type {object}
  */
 const MODES = {
-    FULL:   "full",
-    SIMPLE: "simple",
+    FULL: "full",
+    CODE: "code",
+    BOARD: "board",
+    BOARD_VARS: "board_vars",
     HOME: "home",
 };
 
@@ -56,18 +59,33 @@ const MODES = {
 const MAPPINGS = {
     full: {
         launch_buttons: PANE_IDS.MAIN_CENTER,
-        workspace: PANE_IDS.MAIN_CENTER,
-        // breadboard: PANE_IDS.EAST_NORTH,
+        breadboard: PANE_IDS.MAIN_CENTER,
+        workspace: PANE_IDS.MAIN_WEST,
         tracing: PANE_IDS.EAST_SOUTH_CENTER,
         buttons: PANE_IDS.EAST_SOUTH_SOUTH,
         task: PANE_IDS.EAST_CENTER,
         lesson: PANE_IDS.MAIN_NORTH
     },
-    simple: {
+    code: {
+        launch_buttons: PANE_IDS.MAIN_CENTER,
+        workspace: PANE_IDS.MAIN_CENTER,
+        tracing: PANE_IDS.EAST_SOUTH_CENTER,
+        buttons: PANE_IDS.EAST_SOUTH_SOUTH,
+        task: PANE_IDS.EAST_CENTER,
+        lesson: PANE_IDS.MAIN_NORTH
+    },
+    board: {
         launch_buttons: PANE_IDS.MAIN_CENTER,
         breadboard: PANE_IDS.MAIN_CENTER,
         task: PANE_IDS.EAST_CENTER,
         lesson: PANE_IDS.MAIN_NORTH
+    },
+    board_vars: {
+        launch_buttons: PANE_IDS.MAIN_CENTER,
+        breadboard: PANE_IDS.MAIN_CENTER,
+        task: PANE_IDS.EAST_CENTER,
+        lesson: PANE_IDS.MAIN_NORTH,
+        tracing: PANE_IDS.EAST_SOUTH_CENTER,
     },
     home: {
         course: PANE_IDS.MAIN_CENTER
@@ -84,11 +102,24 @@ const MAPPINGS = {
 const FADEBLOCKINGS = {
     full: [
         PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_WEST,
         PANE_IDS.MAIN_NORTH,
         PANE_IDS.EAST_CENTER,
         PANE_IDS.EAST_SOUTH_SOUTH,
     ],
-    simple: [
+    code: [
+        PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_NORTH,
+        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_SOUTH_SOUTH,
+    ],
+    board: [
+        PANE_IDS.MAIN_EAST,
+        PANE_IDS.MAIN_NORTH,
+        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_SOUTH_SOUTH,
+    ],
+    board_vars: [
         PANE_IDS.MAIN_EAST,
         PANE_IDS.MAIN_NORTH,
         PANE_IDS.EAST_CENTER,
@@ -173,6 +204,7 @@ export default class LayoutModule extends Module {
         return new Promise(resolve => {
             /// определить DOM-узлы компоновки
             let nodes = this._transformMappingToNodes(MAPPINGS[mode]);
+            let params = this._getParamsByMode(mode);
 
             /// начальная продолжительность
             let duration = DURATION_INITIAL;
@@ -189,7 +221,7 @@ export default class LayoutModule extends Module {
                 setTimeout(() => {
                     /// сообщить о готовности компоновки
                     if (this._state.firstLaunch && mode === MODES.FULL) {
-                        this.emitEvent("compose-end", nodes);
+                        this.emitEvent("compose-end", {nodes, params});
                     }
                     /// разрешить вызов функции
                     this._busy = false;
@@ -223,9 +255,13 @@ export default class LayoutModule extends Module {
 
             /// в зависимости от режима, в который нужно перейти
             switch (mode) {
-                case MODES.SIMPLE: {
-                    // this._panes.east.hide("north");
-                    // duration += this._options.animSpeedSub;
+                case MODES.BOARD: {
+                    if (this._state.topPaneRevealed) {
+                        this.revealTopPane();
+                    }
+
+                    this._layout.hide("west");
+                    duration += this._options.animSpeedMain;
 
                     this._panes.east.hide("south");
                     duration += this._options.animSpeedSub;
@@ -240,13 +276,55 @@ export default class LayoutModule extends Module {
 
                     break;
                 }
+                case MODES.BOARD_VARS: {
+                    if (this._state.topPaneRevealed) {
+                        this.revealTopPane();
+                    }
+
+                    this._layout.hide("west");
+                    duration += this._options.animSpeedMain;
+
+                    this._panes.east.show("south");
+                    duration += this._options.animSpeedSub;
+
+                    this._layout.sizePane("east", .4);
+                    duration += this._options.animSpeedMain;
+
+                    if (this._state.buttonsPaneVisible) {
+                        this._panes._east.south.hide("south");
+                        duration += this._options.animSpeedSub;
+                    }
+
+                    break;
+                }
+                case MODES.CODE: {
+                    if (this._state.topPaneRevealed) {
+                        this.revealTopPane();
+                    }
+
+                    this._layout.hide("west");
+                    duration += this._options.animSpeedMain;
+
+                    this._panes.east.show("south");
+                    duration += this._options.animSpeedSub;
+
+                    this._layout.sizePane("east", .3);
+                    duration += this._options.animSpeedMain;
+
+                    if (this._state.buttonsPaneVisible) {
+                        this._panes._east.south.show("south");
+                        duration += this._options.animSpeedSub;
+                    }
+
+                    break;
+                }
                 case MODES.FULL: {
                     if (this._state.topPaneRevealed) {
                         this.revealTopPane();
                     }
 
-                    // this._panes.east.show("north");
-                    // duration += this._options.animSpeedSub;
+                    this._layout.show("west");
+                    duration += this._options.animSpeedMain;
 
                     this._panes.east.show("south");
                     duration += this._options.animSpeedSub;
@@ -262,7 +340,7 @@ export default class LayoutModule extends Module {
                     break;
                 }
                 case MODES.HOME: {
-                    // this._layout.hide("north");
+                    this._layout.hide("west");
                     this._layout.hide("east");
                     this.concealTopPane(true);
                     break;
@@ -277,7 +355,7 @@ export default class LayoutModule extends Module {
             /// задержка для анимации смены разметки
             setTimeout(() => {
                 /// сообщить о готовности компоновки
-                this.emitEvent("compose-end", nodes);
+                this.emitEvent("compose-end", {nodes, params});
                 /// задержка для анимации появления панелей
                 setTimeout(() => {
                     /// разрешить вызов функции
@@ -335,6 +413,8 @@ export default class LayoutModule extends Module {
      */
     hidePanes(mode) {
         for (let pane_id of Object.values(PANE_IDS)) {
+            console.log(mode);
+
             if (FADEBLOCKINGS[mode].indexOf(pane_id) >= 0) {
                 continue;
             }
@@ -394,6 +474,20 @@ export default class LayoutModule extends Module {
     }
 
     /**
+     * Получить параметры разметки в соответствии с режимом
+     *
+     * @param mode
+     * @returns {{code_read_only: boolean}}
+     * @private
+     */
+    _getParamsByMode(mode) {
+        return {
+            code_read_only: mode === MODES.FULL,
+            code_zoom_factor: mode === MODES.FULL ? 0.8 : 1
+        }
+    }
+
+    /**
      * Обработать событие "изменение размера"
      *
      * @private
@@ -402,12 +496,21 @@ export default class LayoutModule extends Module {
         if (!this._busy && !this._resizing) {
             this._resizing = true;
 
-            if (this._state.mode === "simple") {
-                this._layout.sizePane("east", .4);
-            }
-
-            if (this._state.mode === "full") {
-                this._layout.sizePane("east", .3);
+            switch (this._state.mode) {
+                case "board":
+                case "board_vars": {
+                    this._layout.sizePane("east", .4);
+                    break;
+                }
+                case "full": {
+                    this._layout.sizePane("west", .3);
+                    this._layout.sizePane("east", .3);
+                    break;
+                }
+                case "code": {
+                    this._layout.sizePane("east", .3);
+                    break;
+                }
             }
 
             setTimeout(() => {
@@ -455,6 +558,18 @@ export default class LayoutModule extends Module {
             },
 
             center: {
+            },
+
+            west: {
+                size: .3,
+                minSize: 300,
+
+                livePaneResizing: true,
+                resizable: true,
+
+                fxSpeed: this._options.animSpeedMain,
+
+                onresize: () => {try {this._onResize('west')} catch (e) {console.error(e)}},
             },
 
             //	some pane-size settings
@@ -522,6 +637,7 @@ export default class LayoutModule extends Module {
         return {
             north: this._layout.north,
             center: this._layout.center,
+            west: this._layout.west,
             east: this._layout.east.children.layout1,
 
             _east: {

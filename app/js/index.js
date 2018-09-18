@@ -694,14 +694,14 @@ class Application {
          */
         this._dispatcher.on('lay:compose-end', data => {
             if (data) {
-                this.gui.injectLaunchButtons(data.launch_buttons);
-                this.ws.inject(data.workspace);
-                this.bb.inject(data.breadboard);
-                this.trc.injectBlocks(data.tracing);
-                this.trc.injectButtons(data.buttons);
-                this.gui.injectTextPane(data.task);
-                this.gui.injectLessonPane(data.lesson);
-                this.gui.injectHomeMenu(data.course);
+                this.gui.injectLaunchButtons(data.nodes.launch_buttons);
+                this.ws.inject(data.nodes.workspace, data.params.code_read_only, data.params.code_zoom_factor);
+                this.bb.inject(data.nodes.breadboard);
+                this.trc.injectBlocks(data.nodes.tracing);
+                this.trc.injectButtons(data.nodes.buttons);
+                this.gui.injectTextPane(data.nodes.task);
+                this.gui.injectLessonPane(data.nodes.lesson);
+                this.gui.injectHomeMenu(data.nodes.course);
             }
         });
 

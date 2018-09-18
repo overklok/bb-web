@@ -66,13 +66,18 @@ export default class WorkspaceModule extends Module {
     /**
      * Встроить рабочую область в DOM-узел
      *
-     * @param {HTMLElement} dom_node DOM-узел, в который будет встроена рабочая область
+     * @param {HTMLElement} dom_node    DOM-узел, в который будет встроена рабочая область
+     * @param {Boolean}     read_only   режим только чтения
+     * @param {Number}      zoom_factor коэф. уменьшения масштаба блоков
      */
-    inject(dom_node) {
+    inject(dom_node, read_only=false, zoom_factor=1) {
         return new Promise(resolve => {
             if (!dom_node) {resolve(false)}
+            if (zoom_factor == null) {zoom_factor = 1}
 
-            this._blockly.inject(dom_node, this._options.useScrollbars, false, this._options.zoomInitial);
+            let zoom = this._options.zoomInitial * zoom_factor;
+
+            this._blockly.inject(dom_node, this._options.useScrollbars, read_only, zoom);
             this._state.display = true;
 
             if (this._options.allBlocks) {

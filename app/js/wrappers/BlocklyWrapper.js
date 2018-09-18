@@ -97,6 +97,7 @@ export default class BlocklyWrapper extends Wrapper {
         this._history_counter   = 0;            // счётчик истории
         this._history_limit     = 10;           // максимальное количество блоков в истории
         this._history_root_id   = undefined;
+        this._read_only         = undefined;
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
@@ -163,6 +164,9 @@ export default class BlocklyWrapper extends Wrapper {
     inject(dom_node, use_scrollbars=false, read_only=false, zoom_initial=0.7) {
         /// Определить узел вставки контейнера
         this.area        = dom_node;
+        /// Зафиксировать флаг режима только чтения
+        this._read_only = read_only;
+
         /// Сгенерировать контейнеры для Blockly и для типов блоков
         this.container   = document.createElement('div');
         this.toolbox     = document.createElement('xml');
@@ -286,6 +290,7 @@ export default class BlocklyWrapper extends Wrapper {
      */
     updateBlockLimit(block_limit) {
         if (!this.workspace) {return false}
+        if (this._read_only) return;
 
         block_limit = block_limit > 0 ? block_limit : 9999;
 
@@ -303,6 +308,8 @@ export default class BlocklyWrapper extends Wrapper {
      * @param {Array<Object>} block_types массив объектов типа {тип_блока: макс. кол-во}
      */
     updateBlockTypes(block_types) {
+        if (this._read_only) return;
+
         let toolbox_content = "";
 
         let block_type_array = Array.isArray(block_types) ? block_types : Object.keys(block_types);

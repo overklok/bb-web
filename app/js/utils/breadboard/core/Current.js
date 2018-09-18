@@ -422,9 +422,9 @@ export default class Current {
         ];
 
         let rgb = [
-            Math.round(color_max[0] * w1 + color_min[0] * w2),
-            Math.round(color_max[1] * w1 + color_min[1] * w2),
-            Math.round(color_max[2] * w1 + color_min[2] * w2),
+            Math.round(color_max[0] * w2 + color_min[0] * w1),
+            Math.round(color_max[1] * w2 + color_min[1] * w1),
+            Math.round(color_max[2] * w2 + color_min[2] * w1),
         ];
 
         let rs = Number(rgb[0]).toString(16),
