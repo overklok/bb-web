@@ -16,7 +16,7 @@ let BlocklyJSONGenerators = {
     arduino_out_value: block => {
         let pin = block.getFieldValue("PIN") || 0;
 
-        return [pin, Blockly.JSON.ORDER_ATOMIC]
+        return ["arduino_out_value:" + pin, Blockly.JSON.ORDER_ATOMIC]
     },
 
     arduino_out_write_logical: block => {
