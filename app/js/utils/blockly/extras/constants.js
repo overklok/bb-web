@@ -13,7 +13,8 @@ const FIELDTYPES = {
     BRIGHTNESS: "Brightness",
     LINE:       "Line",
     SECONDS:    "Seconds",
-    BOOL:       "Boolean"
+    BOOL:       "Boolean",
+    PIN:        "Pin",
 };
 
 const POSTFIXES = {
@@ -40,6 +41,12 @@ const CATEGORIES = {
     },
     LINE: {
         colour: "#a10088"
+    },
+    ARDUINO: {
+        colour: "#ff004d"
+    },
+    PWM: {
+        colour: "#890025"
     },
     WAIT: {
         colour: "#ffce75"
@@ -80,6 +87,10 @@ const BLOCK_INPUTS_CONSTRAINTS = {
     MAX_WAIT_SECONDS: 30,
     // Максимальное значение цветового компонента
     MAX_COMPONENT_VALUE: 60,
+    // Максимальное значение ШИМ
+    MAX_PWM_VALUE: 255,
+    // Максимальный номер пина
+    MAX_PIN_VALUE: 8,
     // Список цветов
     COLOURS: [
         ["белый",       "white",        "#000000",      "#ffffff"],
@@ -112,6 +123,11 @@ const BLOCK_INPUTS_CONSTRAINTS = {
             ["синего", "blue"]
         ]
     },
+
+    LOGICAL_LEVELS: [
+        ["+", "1"],
+        ["-", "0"]
+    ],
 
     // Напраления смещения цветов лампочек гирлянды
     SLIDE_DIRECTIONS: [
@@ -152,7 +168,19 @@ const BLOCK_INPUTS_CONSTRAINTS = {
         ['↓', BUTTON_CODES.DOWN],
         ['←', BUTTON_CODES.LEFT],
         ['→', BUTTON_CODES.RIGHT]
-    ]
+    ],
+
+    PINS: [
+        ['A0', '0'],
+        ['A1', '1'],
+        ['A2', '2'],
+        ['A3', '3'],
+        ['A4', '4'],
+        ['A5', '5'],
+        ['A6', '6'],
+        ['A7', '7'],
+        ['A8', '8'],
+    ],
 };
 
 export {DATATYPES, FIELDTYPES, POSTFIXES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS}

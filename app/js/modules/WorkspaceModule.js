@@ -412,7 +412,7 @@ export default class WorkspaceModule extends Module {
     generateExtraFields(on) {
         if (this._blockly.silent) {return false}
 
-        this._blockly.extra_fields = !!on;
+        this._blockly.extra_fields = on;
 
         return true;
     }

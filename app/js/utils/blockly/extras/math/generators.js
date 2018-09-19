@@ -47,5 +47,6 @@ BlocklyJSONGenerators['math_number_index'] = BlocklyJSONGenerators['math_number'
 BlocklyJSONGenerators['math_number_seconds'] = BlocklyJSONGenerators['math_number'];
 BlocklyJSONGenerators['math_number_brightness'] = BlocklyJSONGenerators['math_number'];
 BlocklyJSONGenerators['math_number_repeats'] = BlocklyJSONGenerators['math_number'];
+BlocklyJSONGenerators['math_number_pwm'] = BlocklyJSONGenerators['math_number'];
 
 export default BlocklyJSONGenerators;
