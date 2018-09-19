@@ -413,8 +413,6 @@ export default class LayoutModule extends Module {
      */
     hidePanes(mode) {
         for (let pane_id of Object.values(PANE_IDS)) {
-            console.log(mode);
-
             if (FADEBLOCKINGS[mode].indexOf(pane_id) >= 0) {
                 continue;
             }

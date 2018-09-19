@@ -7,9 +7,9 @@ const lib_dir = __dirname + '/vendor/js';
 
 module.exports = {
     entry: {
-        // bundle:             './app/js/index.js',
+        bundle:             './app/js/index.js',
         // admin_board:        './app/js/admin_board.js',
-        admin_blockly:      './app/js/admin_blockly.js',
+        // admin_blockly:      './app/js/admin_blockly.js',
     },
     devtool: 'eval-source-map', // 'source-map' for production
     output: {
@@ -86,8 +86,8 @@ module.exports = {
             {from: './app/css/spinner.css', to: '../../codehour-breadboard-server/frontend/static/frontend/app/css/spinner.css'},
             {from: './app/images/', to: '../../codehour-breadboard-server/frontend/static/frontend/app/images'},
 
-            // {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
-            {from: './dist/admin_blockly.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js'},
+            {from: './dist/bundle.js', to: '../../codehour-breadboard-server/frontend/static/frontend/app/js/bundle.js'},
+            // {from: './dist/admin_blockly.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js'},
             // {from: './dist/admin_board.js', to: '../../codehour-breadboard-server/coursesvc/static/admin/vendor/admin-board/js/admin_board.js'}
         ]),
         new webpack.WatchIgnorePlugin([

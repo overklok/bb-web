@@ -41,6 +41,16 @@ let BlocklyJSONGenerators = {
         }) + ","
     },
 
+    strip_index_set_number: block => {
+        return JSON.stringify({
+            name:       "strip_index_set_number",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "IDX", default: 1, datatype: DATATYPES.NUMBER, complex: true},
+            ])
+        }) + ","
+    },
+
     strip_index_set_rand: block => {
         return JSON.stringify({
             name:       "strip_index_set_rand",
