@@ -30,6 +30,16 @@ let BlocklyJSONGenerators = {
         }) + ","
     },
 
+    arduino_out_read_logical: block => {
+        return JSON.stringify({
+            name:       "arduino_out_read_logical",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "PIN",       default: 0, datatype: DATATYPES.NUMBER, complex: true},
+            ])
+        }) + ","
+    },
+
     arduino_out_write_pwm: block => {
         return JSON.stringify({
             name:       "arduino_out_write_pwm",
@@ -37,6 +47,16 @@ let BlocklyJSONGenerators = {
             args:       getArguments(block, [
                 {name: "PIN",       default: 0, datatype: DATATYPES.NUMBER, complex: true},
                 {name: "LVL_PWM",   default: 0, datatype: DATATYPES.NUMBER, complex: true},
+            ])
+        }) + ","
+    },
+
+    arduino_out_read_pwm: block => {
+        return JSON.stringify({
+            name:       "arduino_out_read_pwm",
+            block_id:   block.id,
+            args:       getArguments(block, [
+                {name: "PIN",       default: 0, datatype: DATATYPES.NUMBER, complex: true},
             ])
         }) + ","
     },

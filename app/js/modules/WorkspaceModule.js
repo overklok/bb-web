@@ -83,7 +83,10 @@ export default class WorkspaceModule extends Module {
             if (this._options.allBlocks) {
                 this._blockly.updateBlockTypes(JSONGenerators);
             } else {
-                this._blockly.updateBlockTypes(this._state.block_types);
+                if (this._state.block_types) {
+                    this._blockly.updateBlockTypes(this._state.block_types);
+                    this._state.block_types = [];
+                }
             }
 
             resolve();
@@ -104,16 +107,33 @@ export default class WorkspaceModule extends Module {
     }
 
     /**
+     * Обновить размер рабочей области
+     *
+     * Вызывать в случае, когда необходимо подогнать размер рабочей области
+     * под размер её контейнера
+     */
+    resize() {
+        if (this._state.display) {
+            this._blockly.resize(true);
+        }
+    }
+
+    /**
      * Установить используемые блоки
      *
      * @param {Array} block_types массив строк с названиями типов блоков
      */
     setBlockTypes(block_types) {
-        this._state.block_types = block_types;
+        if (!this._state.display) {
+            this._state.block_types = block_types;
+            return true
+        }
 
-        if (!this._state.display) {return true}
-
-        this._blockly.updateBlockTypes(block_types);
+        if (this._options.allBlocks) {
+                this._blockly.updateBlockTypes(JSONGenerators);
+        } else {
+            this._blockly.updateBlockTypes(block_types);
+        }
     }
 
     getBlockTypes() {
@@ -415,18 +435,6 @@ export default class WorkspaceModule extends Module {
         this._blockly.extra_fields = on;
 
         return true;
-    }
-
-    /**
-     * Обновить размер рабочей области
-     *
-     * Вызывать в случае, когда необходимо подогнать размер рабочей области
-     * под размер её контейнера
-     */
-    resize() {
-        if (this._state.display) {
-            this._blockly._onResize();
-        }
     }
 
     /**

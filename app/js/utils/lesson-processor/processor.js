@@ -123,6 +123,7 @@ export default class LessonPreprocessor {
         exercise.board_mode         = 'default';
         exercise.board_mode         = [1,2,3].indexOf(exercise.type) > -1 ? 'programming' : exercise.board_mode;
         exercise.board_mode         = exercise.type === 4 ? 'electronics' : exercise.board_mode;
+        exercise.board_mode         = exercise.type === 6 ? 'arduino' : exercise.board_mode;
         // exercise.board_mode         = exercise.type === 5 ? 'logic' : exercise.board_mode;
 
         return exercise;

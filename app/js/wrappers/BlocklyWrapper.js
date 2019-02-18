@@ -36,6 +36,22 @@ Blockly.FieldDropdown.prototype.createMenu_ = function() {
     return menu;
 };
 
+// Blockly.BlockSvg.prototype.rndr = Blockly.BlockSvg.prototype.render;
+//
+// Blockly.BlockSvg.prototype.render = function(a) {
+//     let result = this.rndr(a);
+//
+    // console.log("renderee", this, this.onRender);
+    //
+    // if (this.onRender) {
+    //     this.onRender();
+    //     console.log("onRender called");
+    //     this.onRender = undefined;
+    // }
+    //
+    // return result;
+// };
+
 const VARIABLE_OFFSET_X = 5;
 const VARIABLE_OFFSET_Y = 5;
 
@@ -98,6 +114,9 @@ export default class BlocklyWrapper extends Wrapper {
         this._history_limit     = 10;           // максимальное количество блоков в истории
         this._history_root_id   = undefined;
         this._read_only         = undefined;
+
+        this._flyout_width_nonzero      = undefined;
+        this._container_width             = undefined;
 
         this._state = {
             lastCodeMain: undefined,            // последнее состояние главного кода
@@ -218,8 +237,9 @@ export default class BlocklyWrapper extends Wrapper {
         // window.addEventListener('resize', this._onResize, false);
 
         /// Адаптировать размер Blockly под начальный размер контейнера
-        this._onResize();
-        Blockly.svgResize(this.workspace);
+        this.resize();
+
+        this._getFlyoutWidth(true);
 
         this._variable_blocks = [];
     }
@@ -240,6 +260,55 @@ export default class BlocklyWrapper extends Wrapper {
         this.toolbox.remove();
 
         // window.removeEventListener('resize', this._onResize, false);
+    }
+
+    /**
+     * Изменить размер графики Blockly
+     *
+     * @see https://developers.google.com/blockly/guides/configure/web/resizable
+     *
+     * @private
+     */
+    resize(shrink=false, flyout=false) {
+        this.container.style.width   = (this.area.offsetWidth - 24) + 'px';
+        this.container.style.height  = (this.area.offsetHeight - 24) + 'px';
+        Blockly.svgResize(this.workspace);
+        this._alignHistoryBlockSequence();
+
+        let container_width_new = this._getContainerWidth();
+
+        if (shrink) {
+            // console.log("CONT W", container_width_new, this._container_width);
+            this._shrinkBlocksToFit(container_width_new);
+
+            this._container_width = container_width_new;
+
+            // if (flyout) {
+            //     console.log("FLYO W", flyout_width_new, this._flyout_width);
+            //     this._shrinkBlocksToFit(container_width_new, flyout_width_new, true);
+
+                // this._flyout_width = flyout_width_new;
+            // }
+        }
+
+        // this._shrinkBlocksToFit(container_width_new, flyout_width_new);
+
+        // this._container_width = this._getContainerWidth();
+        // console.log("NEW CW", this._container_width);
+
+        // console.log(this._flyout_width);
+
+        // let container_width_new = this._getContainerWidth();
+        // let flyout_width_new = this._getFlyoutWidth();
+        //
+        // if (shrink) {
+        //     setTimeout(() => {
+        //         this._shrinkBlocksToFit(container_width_new, flyout_width_new);
+        //
+        //         this._container_width = container_width_new;
+        //         // this._flyout_width = flyout_width_new;
+        //     }, 0);
+        // }
     }
 
     /**
@@ -321,6 +390,8 @@ export default class BlocklyWrapper extends Wrapper {
         this.toolbox.innerHTML = toolbox_content;
 
         this.workspace.updateToolbox(this.toolbox);
+
+        this._getFlyoutWidth();
     }
 
     /**
@@ -404,8 +475,6 @@ export default class BlocklyWrapper extends Wrapper {
         let block_taken_ids = new Set();
 
         for (let block of blocks) {
-            console.log("Watching for block...", block.id, block.type);
-
             if (!block_taken_ids.has(block.id)) {
                 block_count += 1;
             }
@@ -1022,22 +1091,99 @@ export default class BlocklyWrapper extends Wrapper {
         return "position: absolute; width: 98%; height: 98%; z-index: 21;";
     }
 
-    /**
-     * Изменить размер графики Blockly
-     *
-     * @see https://developers.google.com/blockly/guides/configure/web/resizable
-     *
-     * @private
-     */
-    _onResize() {
-        this.container.style.width   = (this.area.offsetWidth - 24) + 'px';
-        this.container.style.height  = (this.area.offsetHeight - 24) + 'px';
-        Blockly.svgResize(this.workspace);
-        this._alignHistoryBlockSequence();
+    _getFlyoutWidth(last_nonzero=false) {
+        if (!this.workspace.flyout_) {
+            return last_nonzero ? this._flyout_width_nonzero : 0;
+        }
+
+        this._flyout_width_nonzero = this.workspace.flyout_.width_;
+
+        return this.workspace.flyout_.width_;
+    }
+
+    _getContainerWidth() {
+        // 15 is the Blockly padding
+        return this.container.offsetWidth;
     }
 
     /**
-     * Выполнить первичнкю обработку стандартных событий Blockly
+     * TODO: Experimental, refactor
+     *
+     * Расположить блоки таким образом, чтобы они вмещались в контейнер
+     *
+     * @param {integer} cw_absolute абсолютная ширина контейнера
+     * @param {integer} fw_abs абсолютная ширина меню блоков
+     * @param wait
+     *
+     * @private
+     */
+    _shrinkBlocksToFit(cw_absolute, wait=false) {
+        console.group("SHRNK");
+
+        // Корневые блоки цепочек
+        let blocks = this.workspace.getTopBlocks();
+        let coords = [];
+
+        let pos_min = Infinity;
+        let pos_max = -Infinity;
+
+        if (blocks.length === 0) {
+            return;
+        }
+
+        for (let block of blocks) {
+            // исходное положение блоков
+            let crd = block.getRelativeToSurfaceXY();
+
+            let pos_begin = crd.x,
+                pos_end = crd.x + block.width;
+
+            if (pos_begin < pos_min) pos_min = pos_begin;
+            if (pos_end > pos_max) pos_max = pos_end;
+
+            coords.push({id: block.id, crd: crd});
+        }
+
+        let cw_required = cw_absolute;
+        let cw_engaged = (pos_max - pos_min);
+
+        let squeeze = cw_required / cw_engaged;
+            squeeze = squeeze > 1 ? 1 : squeeze;
+
+        let center_required = cw_required / 2;
+        let center_engaged = pos_min + cw_engaged / 2;
+
+        // console.log("Creq", center_required, "Ceng", center_engaged);
+
+        console.log("Squeeze", squeeze, "CWreq", cw_required, "CWeng", cw_engaged);
+
+        let center_diff = (center_required - center_engaged);
+
+        console.log("Center diff", center_diff);
+
+        // console.log('Flyout width', this._getFlyoutWidth());
+        // console.log('Flyout width last nonzero', this._getFlyoutWidth(true));
+
+        setTimeout(() => {
+            for (let crd of coords) {
+                let blk = this.workspace.getBlockById(crd.id);
+                let crd_cur = blk.getRelativeToSurfaceXY();
+
+                let pos_old = crd_cur.x;
+                let pos_new = crd_cur.x * squeeze;
+
+                let diff = pos_new - pos_old + center_diff;
+
+                // Move here
+                blk.moveBy(diff, 0);
+            }
+        }, 0);
+
+        console.groupEnd("SHRNK");
+    }
+
+    /**
+     * Выполнить первичную обработку стандартных событий Blockly
      *
      * Обнаруживаются глубокие изменения для блоков-обработчиков, задаваемых
      * с помощью функции {@link setAudibles}

@@ -13,7 +13,7 @@ import styles from "../../css/layout.css";
 
 const ROOT_CLASS = "ui-layout-container";
 
-/**
+/**x
  * DOM-идентификаторы панелей
  *
  * @const
@@ -341,7 +341,10 @@ export default class LayoutModule extends Module {
                 }
                 case MODES.HOME: {
                     this._layout.hide("west");
+                    duration += this._options.animSpeedMain;
                     this._layout.hide("east");
+                    duration += this._options.animSpeedMain;
+
                     this.concealTopPane(true);
                     break;
                 }
@@ -362,7 +365,10 @@ export default class LayoutModule extends Module {
                     this._busy = false;
                     /// разрешить выполнение следующей инструкции вызывающей программы
                     resolve();
+                    /// показать панели
                     this.showPanes();
+                    /// сообщить об изменении размера панелей
+                    this.emitEvent("resize", true);
                 }, this._options.animSpeedFade); // задержка для анимации появления панелей
             }, duration); // задержка для анимации смены разметки
 
@@ -490,33 +496,39 @@ export default class LayoutModule extends Module {
      *
      * @private
      */
-    _onResize() {
+    _onResize(pane_name) {
         if (!this._busy && !this._resizing) {
             this._resizing = true;
+
+            /// начальная продолжительность
+            let duration = DURATION_INITIAL;
 
             switch (this._state.mode) {
                 case "board":
                 case "board_vars": {
                     this._layout.sizePane("east", .4);
+                    duration += this._options.animSpeedMain;
                     break;
                 }
                 case "full": {
                     this._layout.sizePane("west", .3);
+                    duration += this._options.animSpeedMain;
                     this._layout.sizePane("east", .3);
+                    duration += this._options.animSpeedMain;
                     break;
                 }
                 case "code": {
                     this._layout.sizePane("east", .3);
+                    duration += this._options.animSpeedMain;
                     break;
                 }
             }
 
             setTimeout(() => {
                 this._resizing = false;
-            }, this._options.animSpeedMain);
+                this.emitEvent("resize", true);
+            }, duration);
         }
-
-        this.emitEvent("resize");
     }
 
     /**
@@ -543,8 +555,9 @@ export default class LayoutModule extends Module {
 
             // fxSpeed_size: 1000,
 
-            animatePaneSizing: true,
-            onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+            // animatePaneSizing: true,
+            // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+            // onresize_end:   () => {try {this._onResize()} catch (e) {console.error(e)}},
 
             //	some resizing/toggling settings
             north: {
@@ -556,6 +569,8 @@ export default class LayoutModule extends Module {
             },
 
             center: {
+                // onresize:       () => {try {this._onResize('center')} catch (e) {console.error(e)}},
+                onresize_end:   () => {try {this._onResize('center', true)} catch (e) {console.error(e)}},
             },
 
             west: {
@@ -567,7 +582,8 @@ export default class LayoutModule extends Module {
 
                 fxSpeed: this._options.animSpeedMain,
 
-                onresize: () => {try {this._onResize('west')} catch (e) {console.error(e)}},
+                // onresize:       () => {try {this._onResize('west')} catch (e) {console.error(e)}},
+                onresize_end:   () => {try {this._onResize('west', true)} catch (e) {console.error(e)}},
             },
 
             //	some pane-size settings
@@ -580,7 +596,8 @@ export default class LayoutModule extends Module {
 
                 fxSpeed: this._options.animSpeedMain,
 
-                onresize: () => {try {this._onResize('east')} catch (e) {console.error(e)}},
+                // onresize:       () => {try {this._onResize('east')} catch (e) {console.error(e)}},
+                // onresize_end:   () => {try {this._onResize('east', true)} catch (e) {console.error(e)}},
 
                 childOptions: {
                     center: {
@@ -588,7 +605,7 @@ export default class LayoutModule extends Module {
 
                         resizable: true,
                         fxSpeed: this._options.animSpeedSub,
-                        onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+                        // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
                     south: {
                         size: .3,
@@ -596,7 +613,7 @@ export default class LayoutModule extends Module {
 
                         resizable: true,
                         fxSpeed: this._options.animSpeedSub,
-                        onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+                        // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
 
                         childOptions: {
                             center: {
@@ -604,7 +621,7 @@ export default class LayoutModule extends Module {
                                 spacing_closed: 0,
 
                                 resizable: true,
-                                onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+                                // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                             },
                             south: {
                                 size: .2,
@@ -614,7 +631,7 @@ export default class LayoutModule extends Module {
                                 spacing_closed: 0,
                                 slidable: false,
                                 closable: false,
-                                onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
+                                // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                             }
                         }
                     },

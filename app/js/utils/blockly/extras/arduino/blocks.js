@@ -68,6 +68,29 @@ let JSONBlocks = {
             appendShadowBlock(this, "PIN", "arduino_pin_number");
         }
     },
+
+    arduino_out_read_logical: {
+        init: function() {
+            this.jsonInit({
+                type:       "block_type",
+                message0:   "считать +/- с %1",
+                args0: [
+                    {
+                        type: "input_value",
+                        name: "PIN",
+                        check: FIELDTYPES.PIN
+                    },
+                ],
+                previousStatement: null,
+                nextStatement: null,
+                inputsInline: true,
+                colour: CATEGORIES.ARDUINO.colour,
+                tooltip: "Считывает с выхода логический 0 или 1"
+            });
+            appendShadowBlock(this, "PIN", "arduino_pin_number");
+        }
+    },
+
     arduino_out_write_pwm: {
         init: function() {
             this.jsonInit({
@@ -93,6 +116,28 @@ let JSONBlocks = {
             });
             appendShadowBlock(this, "PIN", "arduino_pin_number");
             appendShadowBlock(this, "LVL_PWM", "math_number_pwm");
+        }
+    },
+
+    arduino_out_read_pwm: {
+        init: function() {
+            this.jsonInit({
+                type:       "block_type",
+                message0:   "считать ШИМ с %1",
+                args0: [
+                    {
+                        type: "input_value",
+                        name: "PIN",
+                        check: FIELDTYPES.PIN
+                    },
+                ],
+                previousStatement: null,
+                nextStatement: null,
+                inputsInline: true,
+                colour: CATEGORIES.ARDUINO.colour,
+                tooltip: "Считывать с выхода значение ШИМ"
+            });
+            appendShadowBlock(this, "PIN", "arduino_pin_number");
         }
     },
 
