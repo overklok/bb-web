@@ -237,7 +237,7 @@ export default class BlocklyWrapper extends Wrapper {
         // window.addEventListener('resize', this._onResize, false);
 
         /// Адаптировать размер Blockly под начальный размер контейнера
-        this.resize();
+        // this.resize();
 
         this._getFlyoutWidth(true);
 
@@ -275,13 +275,14 @@ export default class BlocklyWrapper extends Wrapper {
         Blockly.svgResize(this.workspace);
         this._alignHistoryBlockSequence();
 
-        let container_width_new = this._getContainerWidth();
+        if (shrink && this._container_width_old) {
+            let container_width_new = this._getContainerWidth();
 
-        if (shrink) {
-            // console.log("CONT W", container_width_new, this._container_width);
-            this._shrinkBlocksToFit(container_width_new);
+            let frac = container_width_new / this._container_width_old;
 
-            this._container_width = container_width_new;
+            if (frac < 1) {
+                this._shrinkBlocksToFit(container_width_new);
+            }
 
             // if (flyout) {
             //     console.log("FLYO W", flyout_width_new, this._flyout_width);
@@ -290,6 +291,9 @@ export default class BlocklyWrapper extends Wrapper {
                 // this._flyout_width = flyout_width_new;
             // }
         }
+
+        this._container_width_old = this._getContainerWidth();
+
 
         // this._shrinkBlocksToFit(container_width_new, flyout_width_new);
 
@@ -1112,70 +1116,72 @@ export default class BlocklyWrapper extends Wrapper {
      * Расположить блоки таким образом, чтобы они вмещались в контейнер
      *
      * @param {integer} cw_absolute абсолютная ширина контейнера
-     * @param {integer} fw_abs абсолютная ширина меню блоков
-     * @param wait
      *
      * @private
      */
-    _shrinkBlocksToFit(cw_absolute, wait=false) {
+    _shrinkBlocksToFit(cw_absolute) {
         console.group("SHRNK");
 
         // Корневые блоки цепочек
         let blocks = this.workspace.getTopBlocks();
-        let coords = [];
 
         let pos_min = Infinity;
         let pos_max = -Infinity;
 
         if (blocks.length === 0) {
+            console.log("noblocks");
+            console.groupEnd("SHRNK");
             return;
         }
 
-        for (let block of blocks) {
-            // исходное положение блоков
-            let crd = block.getRelativeToSurfaceXY();
-
-            let pos_begin = crd.x,
-                pos_end = crd.x + block.width;
-
-            if (pos_begin < pos_min) pos_min = pos_begin;
-            if (pos_end > pos_max) pos_max = pos_end;
-
-            coords.push({id: block.id, crd: crd});
-        }
-
-        let cw_required = cw_absolute;
-        let cw_engaged = (pos_max - pos_min);
-
-        let squeeze = cw_required / cw_engaged;
-            squeeze = squeeze > 1 ? 1 : squeeze;
-
-        let center_required = cw_required / 2;
-        let center_engaged = pos_min + cw_engaged / 2;
-
-        // console.log("Creq", center_required, "Ceng", center_engaged);
-
-        console.log("Squeeze", squeeze, "CWreq", cw_required, "CWeng", cw_engaged);
-
-        let center_diff = (center_required - center_engaged);
-
-        console.log("Center diff", center_diff);
-
-        // console.log('Flyout width', this._getFlyoutWidth());
-        // console.log('Flyout width last nonzero', this._getFlyoutWidth(true));
-
+        // TODO: Проверить систематическое отклонение влево
         setTimeout(() => {
-            for (let crd of coords) {
-                let blk = this.workspace.getBlockById(crd.id);
-                let crd_cur = blk.getRelativeToSurfaceXY();
+            let blocks = this.workspace.getTopBlocks();
+
+            for (let block of blocks) {
+                // исходное положение блоков
+                let crd = block.getRelativeToSurfaceXY();
+
+                let pos_begin = crd.x,
+                    pos_end = crd.x + block.width;
+
+                if (pos_begin < pos_min) pos_min = pos_begin;
+                if (pos_end > pos_max) pos_max = pos_end;
+            }
+
+            let cw_required = cw_absolute;
+            let cw_engaged = (pos_max - pos_min);
+
+            let squeeze = cw_required / cw_engaged;
+                squeeze = squeeze > 1 ? 1 : squeeze;
+
+            let center_required = cw_required / 2;
+            let center_engaged = (pos_min + cw_engaged / 2) * squeeze;
+
+            console.log("Squeeze", squeeze);
+            console.log("CWreq", cw_required, "CWeng", cw_engaged);
+            console.log("CENreq", center_required, "CENeng", center_engaged);
+
+            let center_diff = (center_required - center_engaged);
+
+            console.log("Center diff", center_diff);
+
+            for (let block of blocks) {
+                let crd_cur = block.getRelativeToSurfaceXY();
 
                 let pos_old = crd_cur.x;
                 let pos_new = crd_cur.x * squeeze;
 
+                console.group("ITEM");
+                console.log("Pold", pos_old, "Pnew", pos_new);
+
                 let diff = pos_new - pos_old + center_diff;
 
+                console.log("Total diff", diff);
+                console.groupEnd("ITEM");
+
                 // Move here
-                blk.moveBy(diff, 0);
+                block.moveBy(diff, 0);
             }
         }, 0);
 
