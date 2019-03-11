@@ -112,9 +112,9 @@ export default class WorkspaceModule extends Module {
      * Вызывать в случае, когда необходимо подогнать размер рабочей области
      * под размер её контейнера
      */
-    resize() {
+    resize(shrink_blocks=false) {
         if (this._state.display) {
-            this._blockly.resize(true);
+            this._blockly.resize(shrink_blocks);
         }
     }
 

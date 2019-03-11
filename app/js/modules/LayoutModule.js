@@ -526,7 +526,7 @@ export default class LayoutModule extends Module {
 
             setTimeout(() => {
                 this._resizing = false;
-                this.emitEvent("resize", true);
+                this.emitEvent("resize", false);
             }, duration);
         }
     }

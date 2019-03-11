@@ -148,6 +148,8 @@ class Application {
         this.gs     = new GlobalServiceModule(this._config.gs);
 
         this.gui.registerButtonCodes(BUTTON_CODES);
+
+        this.ws.wakeUp();
     }
 
     /**
@@ -742,8 +744,8 @@ class Application {
         /**
          * Размер разметки изменён
          */
-        this._dispatcher.on('lay:resize', () => {
-            this.ws.resize();
+        this._dispatcher.on('lay:resize', shrink_blocks => {
+            this.ws.resize(shrink_blocks);
             this.trc.resize();
         });
     }
