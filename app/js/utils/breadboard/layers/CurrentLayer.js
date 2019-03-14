@@ -21,7 +21,7 @@ export default class CurrentLayer extends Layer {
      */
     compose() {
         this._cellgroup = this._container.group();
-        this._cellgroup.move(100, 170);
+        // this._cellgroup.move(100, 170);
     }
 
     /**

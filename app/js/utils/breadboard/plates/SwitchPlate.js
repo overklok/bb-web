@@ -43,16 +43,16 @@ export default class SwitchPlate extends Plate {
         let cell3 = this.__grid.cell(1, 0);
 
         let rect1 = this._group.rect(qs, qs)
-            .cx(cell1.center.x - qs / 2)
-            .y(cell1.pos.y + qs * 2);
+            .cx(cell1.center_rel.x - qs / 2)
+            .y(cell1.rel.y + qs * 2);
 
         let rect2 = this._group.rect(qs, qs)
-            .cx(cell2.center.x - qs / 2)
-            .y(cell2.pos.y + qs * 2);
+            .cx(cell2.center_rel.x - qs / 2)
+            .y(cell2.rel.y + qs * 2);
 
         let rect3 = this._group.rect(qs, qs)
-            .cx(cell3.center.x - qs / 2)
-            .y(cell3.pos.y);
+            .cx(cell3.center_rel.x - qs / 2)
+            .y(cell3.rel.y);
 
         let line_len = rect2.x() - rect1.x() - qs*2;
 

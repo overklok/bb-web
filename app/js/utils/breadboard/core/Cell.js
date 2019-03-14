@@ -21,6 +21,10 @@ export default class Cell {
                 x: undefined,
                 y: undefined,
             },
+            rel: {
+                x: undefined,
+                y: undefined,
+            },
             pos: {
                 x: undefined,
                 y: undefined,
@@ -41,6 +45,10 @@ export default class Cell {
         return this._params.size;
     }
 
+    get rel() {
+        return this._params.rel;
+    }
+
     get pos() {
         return this._params.pos;
     }
@@ -52,15 +60,27 @@ export default class Cell {
         }
     }
 
+    get center_rel() {
+        return {
+            x: this._params.rel.x + this._params.size.x / 2,
+            y: this._params.rel.y + this._params.size.y / 2
+        }
+    }
+
     _calculate() {
         this._params.size = {
             x: (this.__grid.size.x / this.__grid.dim.x) - (this.__grid.gap.x * 2),
             y: (this.__grid.size.y / this.__grid.dim.y) - (this.__grid.gap.y * 2)
         };
 
-        this._params.pos = {
+        this._params.rel = {
             x: ((this.__grid.size.x / this.__grid.dim.x) * this._params.idx.x) + this.__grid.gap.x,
             y: ((this.__grid.size.y / this.__grid.dim.y) * this._params.idx.y) + this.__grid.gap.y,
+        };
+
+        this._params.pos = {
+            x: this.__grid.pos.x + this._params.rel.x,
+            y: this.__grid.pos.y + this._params.rel.y,
         };
     };
 

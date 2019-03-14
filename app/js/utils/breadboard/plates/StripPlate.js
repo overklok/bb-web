@@ -71,8 +71,8 @@ export default class StripPlate extends Plate {
 
             this._group.rect(ls, ls)
                 .center(
-                    cell.center.x - ls / 2,
-                    cell.center.y - ls / 2
+                    cell.center_rel.x - ls / 2,
+                    cell.center_rel.y - ls / 2
                 )
                 .fill('#ffffff')
                 .stroke({color: "#e7e7e7", width: 1})
@@ -80,8 +80,8 @@ export default class StripPlate extends Plate {
 
             let led = this._group.circle(ls/1.5, ls/1.5)
                 .center(
-                    cell.center.x - ls / 2,
-                    cell.center.y - ls / 2
+                    cell.center_rel.x - ls / 2,
+                    cell.center_rel.y - ls / 2
                 )
                 .fill('#e2e2e2');
 

@@ -47,18 +47,18 @@ export default class BridgePlate extends Plate {
 
         let rect1 = this._group.rect(qs, qs)
             .center(
-                cell1.center.x - qs / 2,
-                cell1.center.y - qs / 2
+                cell1.center_rel.x - qs / 2,
+                cell1.center_rel.y - qs / 2
             );
 
         let rect2 = this._group.rect(qs, qs)
             .center(
-                cell2.center.x - qs / 2,
-                cell2.center.y - qs / 2
+                cell2.center_rel.x - qs / 2,
+                cell2.center_rel.y - qs / 2
             );
 
         this._group.rect(rect2.x() - rect1.x(), ls)
-            .x(cell1.center.x - qs / 2)
-            .cy(cell1.center.y - qs / 2);
+            .x(cell1.center_rel.x - qs / 2)
+            .cy(cell1.center_rel.y - qs / 2);
     }
 }

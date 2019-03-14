@@ -1,20 +1,11 @@
 import Current from './Current';
 import Cell from "./Cell";
 
-const GRID_DOT_SIZE = 0;           // Радиус точек
-const GRID_DOT_BEZEL_SIZE = 40;    // Размер окантовки точки
-
-//TODO: сделать градиент, по центру - белый, по бокам - синий, со свечением
-const CURRENT_COLOR_GOOD    = '#7DF9FF';    // Цвет тока здорового человека
-const CURRENT_COLOR_BAD     = '#f00';       // Цвет тока курильщика
-
-
-
 /**
  * Класс "Сетка"
  */
 export default class Grid {
-    constructor(rows, cols, width, height, gap_x=0, gap_y=0) {
+    constructor(rows, cols, width, height, pos_x=0, pos_y=0, gap_x=0, gap_y=0) {
         if (!rows || !cols || !width || !height) {
             throw new TypeError("All arguments should be defined");
         }
@@ -31,6 +22,10 @@ export default class Grid {
             gap: {
                 x: gap_x,
                 y: gap_y
+            },
+            pos: {
+                x: pos_x,
+                y: pos_y
             }
         };
         
@@ -51,6 +46,10 @@ export default class Grid {
         return this._params.gap;
     }
 
+    get pos() {
+        return this._params.pos;
+    }
+
     get cells() {
         return this._cells;
     }
@@ -59,6 +58,9 @@ export default class Grid {
         if (!Number.isInteger(i) || !Number.isInteger(j)) {
             throw new TypeError("Indices must be integers");
         }
+
+        i = (i < 0) ? this._params.dim.x + i : i;
+        j = (j < 0) ? this._params.dim.y + j : j;
 
         if (!(i in this._cells) && (!(j in this._cells[i]))) {
             throw new RangeError("Coordinates of cell is out of grid's range");

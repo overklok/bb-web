@@ -43,14 +43,14 @@ export default class InductorPlate extends Plate {
 
         let rect1 = this._group.rect(qs, qs)
             .center(
-                cell1.center.x - qs / 2,
-                cell1.center.y - qs / 2
+                cell1.center_rel.x - qs / 2,
+                cell1.center_rel.y - qs / 2
             );
 
         let rect2 = this._group.rect(qs, qs)
             .center(
-                cell2.center.x - qs / 2,
-                cell2.center.y - qs / 2
+                cell2.center_rel.x - qs / 2,
+                cell2.center_rel.y - qs / 2
             );
 
         let line_len = rect2.x() - rect1.x();

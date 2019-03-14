@@ -2,7 +2,7 @@ import Breadboard from "../Breadboard";
 import Layer from "../core/Layer";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
-import logopath from "../styles/logopath";
+import {logoSVG, leafSVG} from "../styles/paths";
 
 const LOGO_COLOR_ACTIVE     = "#6B8FFF";
 const LOGO_COLOR_DEFAULT    = "#000000";
@@ -16,9 +16,11 @@ export default class BackgroundLayer extends Layer {
         this._container.addClass(BackgroundLayer.Class);
 
         this._boardgroup    = this._container.group();
-        this._domaingroup   = this._container.group();
-        this._cellgroup     = this._container.group();
         this._logogroup     = this._container.group().id("logogroup");
+
+        this._domaingroup   = this._container.group();//.move(100, 170);
+        this._cellgroup     = this._container.group();//.move(100, 170);
+        this._decogroup     = this._container.group();//.move(100, 170);
 
         this._callbacks = {
             logoclick: () => {}
@@ -36,6 +38,7 @@ export default class BackgroundLayer extends Layer {
             .move(4, 4);
 
         this._drawLogo();
+        this._drawDeco();
         this._drawDomains();
         this._drawCells();
     }
@@ -54,16 +57,12 @@ export default class BackgroundLayer extends Layer {
         let image = this._logogroup
             .nested();
 
-        let text = this._logogroup.path(logopath());
+        let text = this._logogroup.path(logoSVG());
 
         let flower = image.group();
         let leaf = flower.symbol();
 
-        leaf.path(
-            "M54.67,33.67l-.05-.09L54.26,33l-6.21,3.58A6.55,6.55,0,0,0,46,38.44c0,.18,0,.36,0,.54h0v7.11l0," +
-            ".07.1-.06,6.16-3.56h0l.46-.29a6.5,6.5,0,0,0,1.92-8.58Zm-.74,4.56a5,5,0,0,1-2.36,3.07l-5,2.87a5.11,5.11," +
-            "0,0,1,2.17-6.38l4.92-2.84A5,5,0,0,1,53.93,38.23Z"
-        ).scale(4);
+        leaf.path(leafSVG()).scale(4);
 
         flower.use(leaf).rotate(0, 32, 65.5);
         flower.use(leaf).rotate(60, 32, 65.5);
@@ -98,14 +97,38 @@ export default class BackgroundLayer extends Layer {
         });
     }
 
+    _drawDeco() {
+        try {
+            // Voltage source line reference points
+            let cell1 = this.__grid.cell(0, 1);
+            let cell2 = this.__grid.cell(0, 5);
+            let cell3 = this.__grid.cell(0, -1);
+
+            // Line takeaway/rise
+            let rise = 40;
+
+            // Voltage source line, actually
+            this._decogroup.path([
+                ['M', cell1.pos.x, cell1.center.y],
+                ['l', -rise, 0],
+                ['L', cell2.pos.x-rise, cell2.pos.y + cell2.size.y + this.__grid.gap.y / 2],
+                ['M', cell2.pos.x-rise, cell2.pos.y + cell2.size.y + this.__grid.gap.y],
+                ['L', cell3.pos.x-rise, cell3.center.y],
+                ['l', rise, 0],
+            ])
+                .fill({opacity: 0})
+                .stroke({color: "#000", width: 2, opacity: 1});
+        } catch (re) {
+            console.error("Invalid reference cells has been selected to draw voltage source line");
+        }
+    }
+
     _drawCells() {
         for (let col of this.__grid.cells) {
             for (let cell of col) {
                 this._drawCell(this._cellgroup, cell);
             }
         }
-
-        this._cellgroup.move(100, 170);
     }
 
     _drawDomains() {
@@ -122,14 +145,12 @@ export default class BackgroundLayer extends Layer {
         }).from(1, 0.5).to(0, 0.5);
 
         for (let col of this.__grid.cells) {
-            this._drawDomain(this._domaingroup, col[1], col[4], gradient_vert);
-            this._drawDomain(this._domaingroup, col[5], col[8], gradient_vert);
+            this._drawDomain(this._domaingroup, col[2], col[5], gradient_vert);
+            this._drawDomain(this._domaingroup, col[6], col[9], gradient_vert);
         }
 
-        this._drawDomain(this._domaingroup, this.__grid.cell(0,9), this.__grid.cell(9,9), gradient_horz);
+        this._drawDomain(this._domaingroup, this.__grid.cell(0,1), this.__grid.cell(9,1), gradient_horz);
         this._drawDomain(this._domaingroup, this.__grid.cell(0,10), this.__grid.cell(9,10), gradient_horz);
-
-        this._domaingroup.move(100, 170);
     }
 
     /**

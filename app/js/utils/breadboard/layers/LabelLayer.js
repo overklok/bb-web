@@ -12,8 +12,6 @@ export default class LabelLayer extends Layer {
             thickness: 50,
             width: this.__grid.size.x,
             height: this.__grid.size.y,
-            x: 100,
-            y: 160,
         };
 
         this._panes = {
@@ -25,13 +23,13 @@ export default class LabelLayer extends Layer {
     compose() {
         this._panes.top
             .rect(this._params.width, this._params.thickness)
-            .move(this._params.x, this._params.y - this._params.thickness)
+            .dy(-this._params.thickness)
             .fill({color: "#77ff1b"})
             .opacity(0);
 
         this._panes.left
             .rect(this._params.thickness, this._params.height)
-            .move(this._params.x - this._params.thickness, this._params.y)
+            .dx(-this._params.thickness)
             .fill({color: "#ff0001"})
             .opacity(0);
 
@@ -44,16 +42,11 @@ export default class LabelLayer extends Layer {
 
         for (let col of this.__grid.cells) {
             let cell = col[0];
-            let size = this._params.thickness;
 
-            let pos_x = this._params.x + cell.center.x;
-            let pos_y = this._params.y - size / 4;
+            let pos_x = cell.center.x;
+            let pos_y = cell.pos.y - this._params.thickness / 2;
 
-            if (i >=1) {
-                this._drawLabelText("top", pos_x, pos_y, "A" + (i - 1), this._params.thickness / 2);
-            } else {
-                this._drawLabelArrows("top", pos_x, pos_y);
-            }
+            this._drawLabelText("top", pos_x, pos_y, "A" + (i), this._params.thickness / 2);
 
             i++;
         }
@@ -64,16 +57,14 @@ export default class LabelLayer extends Layer {
         let i = 0;
 
         for (let cell of this.__grid.cells[0]) {
-            let size = this._params.thickness;
-
-            let pos_x = this._params.x - size / 2;
-            let pos_y = this._params.y + cell.center.y;
+            let pos_x = cell.pos.x - this._params.thickness / 2;
+            let pos_y = cell.center.y;
 
             if (i === cell_cols) {
                 this._drawLabelText("left", pos_x, pos_y, "-", this._params.thickness);
             }
 
-            if (i === cell_cols - 1) {
+            if (i === 1) {
                 this._drawLabelText("left", pos_x, pos_y, "+", this._params.thickness);
             }
 

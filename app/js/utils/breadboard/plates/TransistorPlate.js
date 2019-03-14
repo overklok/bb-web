@@ -43,16 +43,16 @@ export default class TransistorPlate extends Plate {
         let cell3 = this.__grid.cell(1, 0);
 
         let rect1 = this._group.rect(qs, qs)
-            .cx(cell1.center.x - qs / 2)
-            .y(cell1.pos.y);
+            .cx(cell1.center_rel.x - qs / 2)
+            .y(cell1.rel.y);
 
         let rect2 = this._group.rect(qs, qs)
-            .cx(cell2.center.x - qs / 2)
-            .y(cell2.pos.y);
+            .cx(cell2.center_rel.x - qs / 2)
+            .y(cell2.rel.y);
 
         let rect3 = this._group.rect(qs, qs)
-            .cx(cell3.center.x - qs / 2)
-            .y(cell3.pos.y + qs * 2);
+            .cx(cell3.center_rel.x - qs / 2)
+            .y(cell3.rel.y + qs * 2);
 
         let line_len = rect2.x() - rect1.x() - qs*2;
 
@@ -84,8 +84,8 @@ export default class TransistorPlate extends Plate {
         ])
             .stroke({width: 2, color: "#000"})
             .fill('none')
-            .x(cell3.center.x - line_gap*2.5)
-            .y(cell1.center.y - qs/2);
+            .x(cell3.center_rel.x - line_gap*2.5)
+            .y(cell1.center_rel.y - qs/2);
 
         this._group.polyline([
                 [0, 0],

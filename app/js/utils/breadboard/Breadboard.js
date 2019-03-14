@@ -22,6 +22,9 @@ const GRID_GAP_Y = 10;
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
+const GRID_POS_X = 100;
+const GRID_POS_Y = 170;
+
 import thm from "./styles/main.css";
 
 /**
@@ -93,7 +96,12 @@ export default class Breadboard {
 
         this._brush.style({"user-select": "none"});
 
-        this.__grid = new Grid(GRID_ROWS, GRID_COLS, GRID_WIDTH, GRID_HEIGHT, GRID_GAP_X, GRID_GAP_Y);
+        this.__grid = new Grid(
+            GRID_ROWS,  GRID_COLS,
+            GRID_WIDTH, GRID_HEIGHT,
+            GRID_POS_X, GRID_POS_Y,
+            GRID_GAP_X, GRID_GAP_Y
+        );
 
         /// создать фильтры
         this._defineFilters();
