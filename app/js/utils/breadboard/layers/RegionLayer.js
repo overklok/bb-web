@@ -56,7 +56,6 @@ export default class RegionLayer extends Layer {
 
     _drawRegions() {
         this._regiongroup = this._container.group().id("regiongroup");
-
-        this._regiongroup.move(100, 170);
+        // this._regiongroup.move(100, 170);
     }
 }
