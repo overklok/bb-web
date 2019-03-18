@@ -102,22 +102,54 @@ export default class BackgroundLayer extends Layer {
             // Voltage source line reference points
             let cell1 = this.__grid.cell(0, 1);
             let cell2 = this.__grid.cell(0, 5);
-            let cell3 = this.__grid.cell(0, -1);
+            let cell3 = this.__grid.cell(0, 6);
+            let cell4 = this.__grid.cell(0, -1);
 
             // Line takeaway/rise
             let rise = 40;
+
+            let gap_begin_y = cell2.center.y + this.__grid.gap.y * 5/3,
+                gap_end_y   = cell3.center.y - this.__grid.gap.y * 5/3;
 
             // Voltage source line, actually
             this._decogroup.path([
                 ['M', cell1.pos.x, cell1.center.y],
                 ['l', -rise, 0],
-                ['L', cell2.pos.x-rise, cell2.pos.y + cell2.size.y + this.__grid.gap.y / 2],
-                ['M', cell2.pos.x-rise, cell2.pos.y + cell2.size.y + this.__grid.gap.y],
-                ['L', cell3.pos.x-rise, cell3.center.y],
+                ['L', cell2.pos.x-rise, gap_begin_y],
+                ['M', cell3.pos.x-rise, gap_end_y],
+                ['L', cell4.pos.x-rise, cell4.center.y],
                 ['l', rise, 0],
             ])
                 .fill({opacity: 0})
                 .stroke({color: "#000", width: 2, opacity: 1});
+
+            this._decogroup.path([
+                ['M', cell1.pos.x - rise * 2, gap_begin_y],
+                ['l', rise * 2, 0],
+
+                ['M', cell3.pos.x - rise * 1.5, gap_end_y],
+                ['l', rise, 0]
+            ])
+                .fill({opacity: 0})
+                .stroke({color: "#000", width: 6, opacity: 1, linecap: 'round'});
+
+            let cap_size = 42;
+
+            let cap_pos_x = cell2.pos.x - rise * 2 + cap_size / 4;
+
+            // Pole caption 1
+            this._decogroup
+                .text("+")
+                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
+                .center(cap_pos_x, gap_begin_y - cap_size / 1.5);
+
+            // Pole caption 2
+            this._decogroup
+                .text("-")
+                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
+                .center(cap_pos_x, gap_begin_y + cap_size / 1.25);
+
+
         } catch (re) {
             console.error("Invalid reference cells has been selected to draw voltage source line");
         }
@@ -190,7 +222,7 @@ export default class BackgroundLayer extends Layer {
             ['M', 0, cell.size.y * 2 / 3], ['l', cell.size.x, 0],
         ])
             .fill({opacity: 0})
-            .stroke({color: "#FFF", width: 2, opacity: 0.4})
+            .stroke({color: "#FFF", width: 2, opacity: 0.2})
             .move(cell.pos.x, cell.pos.y);
     }
 }

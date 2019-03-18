@@ -61,11 +61,11 @@ export default class LabelLayer extends Layer {
             let pos_y = cell.center.y;
 
             if (i === cell_cols) {
-                this._drawLabelText("left", pos_x, pos_y, "-", this._params.thickness);
+                // this._drawLabelText("left", pos_x, pos_y, "-", this._params.thickness);
             }
 
             if (i === 1) {
-                this._drawLabelText("left", pos_x, pos_y, "+", this._params.thickness);
+                // this._drawLabelText("left", pos_x, pos_y, "+", this._params.thickness);
             }
 
             i++;
