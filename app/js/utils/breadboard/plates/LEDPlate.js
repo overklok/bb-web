@@ -22,10 +22,10 @@ export default class LEDPlate extends Plate {
     }
 
     /**
-     * Нарисовать ленту
+     * Нарисовать диод
      *
-     * @param {Cell}   position     положение ленты
-     * @param {string}  orientation ориентация ленты
+     * @param {Cell}   position     положение диода
+     * @param {string}  orientation ориентация диода
      */
     __draw__(position, orientation) {
         this._drawPicture();
@@ -35,9 +35,9 @@ export default class LEDPlate extends Plate {
     };
 
     /**
-     * Установить состояние ленты
+     * Установить состояние диода
      *
-     * @param {object} state новое состояние ленты
+     * @param {object} state новое состояние диода
      */
     setState(state) {
         super.setState(state);
@@ -46,8 +46,8 @@ export default class LEDPlate extends Plate {
     /**
      * Переместить ленту
      *
-     * @param {int} dx смещение ленты по оси X
-     * @param {int} dy смещение ленты по оси Y
+     * @param {int} dx смещение диода по оси X
+     * @param {int} dy смещение диода по оси Y
      */
     shift(dx, dy) {
         super.shift(dx, dy);
@@ -56,7 +56,7 @@ export default class LEDPlate extends Plate {
     /**
      * Повернуть ленту
      *
-     * @param {string} orientation ориентация ленты
+     * @param {string} orientation ориентация диода
      */
     rotate(orientation) {
         super.rotate(orientation);

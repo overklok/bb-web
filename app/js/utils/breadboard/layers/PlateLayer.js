@@ -1,7 +1,9 @@
 import Layer from "../core/Layer";
-
 import Plate from "../core/Plate";
+
+import ContextMenu from "../core/ContextMenu";
 import PlateContextMenu from "../menus/PlateContextMenu";
+
 import ResistorPlate        from "../plates/ResistorPlate";
 import PhotoresistorPlate   from "../plates/PhotoresistorPlate";
 import RheostatPlate        from "../plates/RheostatPlate";
@@ -14,7 +16,7 @@ import InductorPlate        from "../plates/InductorPlate";
 import RelayPlate           from "../plates/RelayPlate";
 import StripPlate           from "../plates/StripPlate";
 import DiodePlate           from "../plates/LEDPlate";
-import ContextMenu from "../core/ContextMenu";
+import WS2801Plate          from "../plates/WS2801Plate";
 
 /**
  * Слой плашек
@@ -147,7 +149,7 @@ export default class PlateLayer extends Layer {
         try {
             plate.draw(this.__grid.cell(x, y), orientation, animate);
         } catch (err) {
-            console.error("Cannot draw the plate");
+            console.error("Cannot draw the plate", err);
             plate.dispose();
 
             return null;
@@ -646,6 +648,7 @@ export default class PlateLayer extends Layer {
             RelayPlate.Alias,
             DiodePlate.Alias,
             StripPlate.Alias,
+            WS2801Plate.Alias,
         ]
     }
 
@@ -669,8 +672,9 @@ export default class PlateLayer extends Layer {
         captions[TransistorPlate.Alias]     = 'транзистор';
         captions[InductorPlate.Alias]       = 'индуктор';
         captions[RelayPlate.Alias]          = 'реле';
-        captions[DiodePlate.Alias]          = 'диод';
+        captions[DiodePlate.Alias]          = 'светодиод';
         captions[StripPlate.Alias]          = 'лента';
+        captions[WS2801Plate.Alias]         = 'RGB-светодиод';
 
         return captions;
     }
@@ -702,6 +706,7 @@ export default class PlateLayer extends Layer {
             case RelayPlate.Alias:          {return RelayPlate}
             case DiodePlate.Alias:          {return DiodePlate}
             case StripPlate.Alias:          {return StripPlate}
+            case WS2801Plate.Alias:         {return WS2801Plate}
             default:                        {throw new RangeError(`Unknown plate type '${type}'`)}
         }
     }
