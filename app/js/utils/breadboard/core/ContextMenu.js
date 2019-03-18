@@ -60,8 +60,8 @@ export default class ContextMenu {
         this._drawItems(nested, input_values);
 
         let offset = {
-            x: use_offset ? (cell.size.x + this.__grid.gap.x) : 0,
-            y: use_offset ? (cell.size.y * 2 + this.__grid.gap.y): 0
+            x: use_offset ? (cell.size.x + this.__grid.gap.x) - this.__grid.pos.x : 0,
+            y: use_offset ? (cell.size.y * 2 + this.__grid.gap.y) - this.__grid.pos.y : 0
         };
 
         let pos = {
@@ -76,8 +76,8 @@ export default class ContextMenu {
             y: cursor_point.y - offset.y + this._size.y,
         };
 
-        if (pos_global.x > this.__grid.size.x) {nested.dx(-this._size.x)}
-        if (pos_global.y > this.__grid.size.y) {nested.dy(-this._size.y)}
+        if (pos_global.x > this.__grid.size.x + this.__grid.pos.x) {nested.dx(-this._size.x)}
+        if (pos_global.y > this.__grid.size.y + this.__grid.pos.y) {nested.dy(-this._size.y)}
 
         nested.addClass('bb-cm-fade-in');
 
