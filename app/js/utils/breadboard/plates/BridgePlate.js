@@ -41,24 +41,26 @@ export default class BridgePlate extends Plate {
      * @param {number} ls толщина линии
      * @private
      */
-    _drawPicture(qs=20, ls=8) {
+    _drawPicture(qs=Plate.QuadSizeDefault) {
+        let ls = qs / 2.5;
+
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
         let rect1 = this._group.rect(qs, qs)
             .center(
-                cell1.center_rel.x - qs / 2,
-                cell1.center_rel.y - qs / 2
+                cell1.center_rel.x,
+                cell1.center_rel.y
             );
 
         let rect2 = this._group.rect(qs, qs)
             .center(
-                cell2.center_rel.x - qs / 2,
-                cell2.center_rel.y - qs / 2
+                cell2.center_rel.x,
+                cell2.center_rel.y
             );
 
         this._group.rect(rect2.x() - rect1.x(), ls)
-            .x(cell1.center_rel.x - qs / 2)
-            .cy(cell1.center_rel.y - qs / 2);
+            .x(cell1.center_rel.x)
+            .cy(cell1.center_rel.y);
     }
 }

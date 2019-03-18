@@ -179,7 +179,7 @@ export default class BackgroundLayer extends Layer {
             .move(cell.pos.x, cell.pos.y)
             .fill({color: "#D4AF37", opacity: 1})
             .stroke({color: "#6f6f6f", opacity: 0.5})
-            .radius(10);
+            .radius(Breadboard.CellRadius);
             // .attr('filter', 'url(#inner-shadow)'); // laggy
 
         container.path([

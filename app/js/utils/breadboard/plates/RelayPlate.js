@@ -55,7 +55,7 @@ export default class RelayPlate extends Plate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=20) {
+    _drawPicture(qs=Plate.QuadSizeDefault) {
         let cells = [];
         let rects = [];
         let paths = [];
@@ -65,8 +65,8 @@ export default class RelayPlate extends Plate {
 
             let rect = this._group.rect(qs, qs)
                 .center(
-                    cell.center_rel.x - qs / 2,
-                    cell.center_rel.y - qs / 2
+                    cell.center_rel.x,
+                    cell.center_rel.y
                 );
 
             cells.push(cell);

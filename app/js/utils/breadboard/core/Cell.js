@@ -74,8 +74,8 @@ export default class Cell {
         };
 
         this._params.rel = {
-            x: ((this.__grid.size.x / this.__grid.dim.x) * this._params.idx.x) + this.__grid.gap.x,
-            y: ((this.__grid.size.y / this.__grid.dim.y) * this._params.idx.y) + this.__grid.gap.y,
+            x: ((this.__grid.size.x / this.__grid.dim.x) * this._params.idx.x),
+            y: ((this.__grid.size.y / this.__grid.dim.y) * this._params.idx.y),
         };
 
         this._params.pos = {

@@ -20,7 +20,7 @@ export default class WS2801Plate extends Plate {
         this._bezel.fill("#f09fc9");
 
         this._drawPicture();
-        this._drawLabel('вээс 2801', 20);
+        this._drawLabel('вээс 2801');
 
         // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };
@@ -58,17 +58,17 @@ export default class WS2801Plate extends Plate {
      * @param {number} ls размер светодиода
      * @private
      */
-    _drawPicture(ls=20) {
+    _drawPicture(ls=Plate.LEDSizeDefault) {
         let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._params.size.x, 0);
+        let cell2 = this.__grid.cell(this._params.size.x-1, 0);
 
-        let center_x = (cell2.pos.x - cell1.pos.x) / 2;
+        let center_x = cell1.center_rel.x + (cell2.pos.x - cell1.pos.x) / 2;
         let center_y = cell1.center_rel.y;
 
         this._group.rect(ls, ls)
             .center(
-                center_x - ls / 2,
-                center_y - ls / 2
+                center_x,
+                center_y
             )
             .fill('#ffffff')
             .stroke({color: "#e7e7e7", width: 1})
@@ -76,13 +76,13 @@ export default class WS2801Plate extends Plate {
 
         this._group.circle(ls/1.5, ls/1.5)
             .center(
-                center_x - ls / 2,
-                center_y - ls / 2
+                center_x,
+                center_y
             )
             .fill('#e2e2e2');
     }
 
-    _drawLabel(text="", size=16) {
+    _drawLabel(text="", size=Plate.LabelSizeDefault) {
         let label = this._group.text(String(text))
             .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"});
 

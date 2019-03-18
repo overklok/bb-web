@@ -28,6 +28,10 @@ export default class Plate {
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
+    static get QuadSizeDefault()    {return 16}
+    static get LEDSizeDefault()     {return 16}
+    static get LabelSizeDefault()   {return 12}
+
     constructor(container_parent, grid, id=null, extra=0) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
@@ -166,7 +170,7 @@ export default class Plate {
         this._container.size(width, height);
         this._shadow.size(width, height);
 
-        this._bezel.radius(10).fill("#fffffd");
+        this._bezel.radius(Breadboard.CellRadius).fill("#fffffd");
         this._bezel.stroke({color: "#f0eddb", width: 2});
 
         this._error_highlighter.fill({color: "#f00"}).radius(10);

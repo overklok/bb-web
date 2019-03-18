@@ -47,7 +47,7 @@ export default class StripPlate extends Plate {
      * @param {number} ls размер лампочки / высота указателя
      * @private
      */
-    _drawPicture(ls=20) {
+    _drawPicture(ls=Plate.LEDSizeDefault) {
         let pointer_offset_x = (this._group.x() - this._bezel.x()) / 2;
 
         let plpath = [
@@ -71,8 +71,8 @@ export default class StripPlate extends Plate {
 
             this._group.rect(ls, ls)
                 .center(
-                    cell.center_rel.x - ls / 2,
-                    cell.center_rel.y - ls / 2
+                    cell.center_rel.x,
+                    cell.center_rel.y
                 )
                 .fill('#ffffff')
                 .stroke({color: "#e7e7e7", width: 1})
@@ -80,8 +80,8 @@ export default class StripPlate extends Plate {
 
             let led = this._group.circle(ls/1.5, ls/1.5)
                 .center(
-                    cell.center_rel.x - ls / 2,
-                    cell.center_rel.y - ls / 2
+                    cell.center_rel.x,
+                    cell.center_rel.y
                 )
                 .fill('#e2e2e2');
 

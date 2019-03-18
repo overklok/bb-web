@@ -16,14 +16,15 @@ const WRAP_HEIGHT = 1350;             // Высота рабочей облас�
 const GRID_WIDTH = 1000;
 const GRID_HEIGHT = 1100;
 
-const GRID_GAP_X = 10;
-const GRID_GAP_Y = 10;
+const GRID_GAP_X = 24;
+const GRID_GAP_Y = 24;
 
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
 const GRID_POS_X = 100;
 const GRID_POS_Y = 170;
+
 
 import thm from "./styles/main.css";
 
@@ -32,6 +33,8 @@ import thm from "./styles/main.css";
  * Предоставляет API управления визуализацией платы внешним модулям приложений
  */
 export default class Breadboard {
+    static get CellRadius() {return 5}
+
     constructor(options) {
         if (!SVG.supported) {
             alert("SVG is not supported. Please use any modern browser.");

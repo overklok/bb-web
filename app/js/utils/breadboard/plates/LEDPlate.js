@@ -24,8 +24,8 @@ export default class LEDPlate extends Plate {
     /**
      * Нарисовать диод
      *
-     * @param {Cell}   position     положение диода
-     * @param {string}  orientation ориентация диода
+     * @param {Cell}   position     положение светодиода
+     * @param {string}  orientation ориентация светодиода
      */
     __draw__(position, orientation) {
         this._drawPicture();
@@ -35,28 +35,28 @@ export default class LEDPlate extends Plate {
     };
 
     /**
-     * Установить состояние диода
+     * Установить состояние светодиода
      *
-     * @param {object} state новое состояние диода
+     * @param {object} state новое состояние светодиода
      */
     setState(state) {
         super.setState(state);
     }
 
     /**
-     * Переместить ленту
+     * Переместить светодиод
      *
-     * @param {int} dx смещение диода по оси X
-     * @param {int} dy смещение диода по оси Y
+     * @param {int} dx смещение светодиода по оси X
+     * @param {int} dy смещение светодиода по оси Y
      */
     shift(dx, dy) {
         super.shift(dx, dy);
     }
 
     /**
-     * Повернуть ленту
+     * Повернуть светодиод
      *
-     * @param {string} orientation ориентация диода
+     * @param {string} orientation ориентация светодиода
      */
     rotate(orientation) {
         super.rotate(orientation);
@@ -67,20 +67,20 @@ export default class LEDPlate extends Plate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=20) {
+    _drawPicture(qs=QUAD_SIZE) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
         let rect1 = this._group.rect(qs, qs)
             .center(
-                cell1.center_rel.x - qs / 2,
-                cell1.center_rel.y - qs / 2
+                cell1.center_rel.x,
+                cell1.center_rel.y
             );
 
         let rect2 = this._group.rect(qs, qs)
             .center(
-                cell2.center_rel.x - qs / 2,
-                cell2.center_rel.y - qs / 2
+                cell2.center_rel.x,
+                cell2.center_rel.y
             );
 
         let line_len = rect2.x() - rect1.x();
@@ -119,7 +119,7 @@ export default class LEDPlate extends Plate {
         ptr2.move(trng.x() + trng.width() / 2 + 5, trng.y() - trng.height() / 4 + 5);
     }
 
-    _drawLabel(text="", size=16) {
+    _drawLabel(text="", size=Plate.LabelSizeDefault) {
         this._group.text(String(text))
             .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
             .cx(this._container.width() - size)

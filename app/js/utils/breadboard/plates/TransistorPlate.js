@@ -36,23 +36,25 @@ export default class TransistorPlate extends Plate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=20) {
+    _drawPicture(qs=Plate.QuadSizeDefault) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
-
         let cell3 = this.__grid.cell(1, 0);
 
+        // line_top_width
+        let ltw = 3;
+
         let rect1 = this._group.rect(qs, qs)
-            .cx(cell1.center_rel.x - qs / 2)
-            .y(cell1.rel.y);
+            .cx(cell1.center_rel.x)
+            .cy(cell1.center_rel.y - qs);
 
         let rect2 = this._group.rect(qs, qs)
-            .cx(cell2.center_rel.x - qs / 2)
-            .y(cell2.rel.y);
+            .cx(cell2.center_rel.x)
+            .cy(cell2.center_rel.y - qs);
 
         let rect3 = this._group.rect(qs, qs)
-            .cx(cell3.center_rel.x - qs / 2)
-            .y(cell3.rel.y + qs * 2);
+            .cx(cell3.center_rel.x)
+            .cy(cell1.center_rel.y + qs);
 
         let line_len = rect2.x() - rect1.x() - qs*2;
 
@@ -63,7 +65,7 @@ export default class TransistorPlate extends Plate {
             ['l', line_len/2 - line_gap, 0],
             ['l', qs, qs],
         ])
-            .stroke({width: 3})
+            .stroke({width: ltw})
             .fill('none')
             .move(rect1.cx(), rect1.cy());
 
@@ -72,7 +74,7 @@ export default class TransistorPlate extends Plate {
             ['l', qs, -qs],
             ['l', line_len/2 - line_gap, 0],
         ])
-            .stroke({width: 3})
+            .stroke({width: ltw})
             .fill('none')
             .move(rect1.cx() + line_gap*5 + qs, rect1.cy());
 
@@ -84,17 +86,17 @@ export default class TransistorPlate extends Plate {
         ])
             .stroke({width: 2, color: "#000"})
             .fill('none')
-            .x(cell3.center_rel.x - line_gap*2.5)
-            .y(cell1.center_rel.y - qs/2);
+            .x(cell3.center_rel.x - line_gap * 2)
+            .y(cell1.center_rel.y);
 
         this._group.polyline([
                 [0, 0],
-                [line_gap/1.2, 0],
-                [line_gap/2.4, -line_gap/1.5],
+                [qs, 0],
+                [qs/2, -qs/1.5],
                 [0, 0],
             ])
             .fill('#000')
-            .move(line_top_2.x() + line_gap/4.8, line_top_2.y())
+            .move(line_top_2.x() + qs/8 + ltw/2, line_top_2.y() - qs/8 + ltw/2)
             .rotate(45);
 
         // this._group.line([
