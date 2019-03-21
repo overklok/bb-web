@@ -4,6 +4,7 @@ export default class BoardContextMenu extends ContextMenu {
     // Алиасы пунктов контекстного меню
     static get CMI_EXPORT() {return "cmi_exp"}
     static get CMI_IMPORT() {return "cmi_imp"}
+    static get CMI_SNAPSH() {return "cmi_snp"}
 
     constructor(container, grid, item_height) {
         super(container, grid, item_height);
@@ -12,6 +13,11 @@ export default class BoardContextMenu extends ContextMenu {
             {
                 label: `Плата`,
                 active: false
+            },
+            {
+                alias: BoardContextMenu.CMI_SNAPSH,
+                label: 'Снимок платы (PNG)',
+                active: true
             },
             {
                 alias: BoardContextMenu.CMI_EXPORT,

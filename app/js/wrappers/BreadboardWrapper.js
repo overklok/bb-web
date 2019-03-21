@@ -1,7 +1,4 @@
 import Wrapper from "../core/Wrapper";
-
-import domtoimage from 'dom-to-image';
-
 import Breadboard from "../utils/breadboard/Breadboard";
 
 /**
@@ -95,25 +92,5 @@ export default class BreadboardWrapper extends Wrapper {
 
     onDragStart(cb) {
         this._plugin.onDragStart(cb);
-    }
-
-    _saveToImage() {
-        let svg = this._plugin.getContainer();
-
-        console.log(svg);
-
-        if (!svg) {
-            return;
-        }
-
-        domtoimage.toJpeg(svg)
-            .then(function (dataUrl) {
-                let img = new Image();
-                img.src = dataUrl;
-                document.body.appendChild(img);
-            })
-            .catch(function (error) {
-                console.error('oops, something went wrong!', error);
-            });
     }
 }

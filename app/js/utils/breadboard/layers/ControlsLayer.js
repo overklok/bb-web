@@ -30,6 +30,7 @@ export default class ControlsLayer extends Layer {
             add: () => {},
             clear: () => {},
             fullscreen: () => {},
+            capture: () => {},
             ctxmenuitemclick: () => {},
         };
 

@@ -26,6 +26,9 @@ export default class BackgroundLayer extends Layer {
             logoclick: () => {}
         };
 
+        this._logo_flower   = undefined;
+        this._logo_text     = undefined;
+
         this._is_logo_clicked = false;
     }
 
@@ -78,23 +81,40 @@ export default class BackgroundLayer extends Layer {
 
         text.scale(0.5);
 
+        this._logo_text = text;
+        this._logo_flower = flower;
+
         this._logogroup.cx(100 + this.__grid.size.x / 2);
 
         this._logogroup.style({cursor: 'pointer'});
 
         this._logogroup.click((evt) => {
-            if (this._is_logo_clicked) {
-                text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-                flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-            } else {
-                text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-                flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-            }
+            this.toggleLogoActive(!this._is_logo_clicked);
 
             this._callbacks.logoclick();
 
             this._is_logo_clicked = !this._is_logo_clicked;
         });
+    }
+
+    toggleLogoActive(on=true, animate=true) {
+        if (on) {
+            if (animate) {
+                this._logo_text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+                this._logo_flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+            } else {
+                this._logo_text.fill(LOGO_COLOR_ACTIVE);
+                this._logo_flower.fill(LOGO_COLOR_ACTIVE);
+            }
+        } else {
+            if (animate) {
+                this._logo_text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+                this._logo_flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+            } else {
+                this._logo_text.fill(LOGO_COLOR_DEFAULT);
+                this._logo_flower.fill(LOGO_COLOR_DEFAULT);
+            }
+        }
     }
 
     _drawDeco() {

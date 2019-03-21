@@ -19,4 +19,15 @@ export default class Layer {
      * @abstract
      */
     compose() {throw new TypeError("This method should be overridden by inheriting classes")}
+
+    hide() {this._container.hide()}
+    show() {this._container.show()}
+
+    toggle(on=true) {
+        if (on) {
+            this.show();
+        } else {
+            this.hide();
+        }
+    }
 }

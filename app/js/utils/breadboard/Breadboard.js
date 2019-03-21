@@ -1,4 +1,6 @@
 import SVG from 'svgjs'
+import canvg from 'canvg';
+import { saveAs } from 'file-saver';
 
 import Grid from "./core/Grid";
 import BackgroundLayer from "./layers/BackgroundLayer";
@@ -22,7 +24,7 @@ const GRID_GAP_Y = 24;
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
-const GRID_POS_X = 100;
+const GRID_POS_X = 120;
 const GRID_POS_Y = 170;
 
 
@@ -71,6 +73,12 @@ export default class Breadboard {
         }
 
         return this._brush.node;
+    }
+
+    toggleModePhoto(on=true) {
+        this._layers.region.toggle(!on);
+        this._layers.controls.toggle(!on);
+        this._layers.background.toggleLogoActive(!on, false);
     }
 
     getPlates() {
@@ -393,6 +401,9 @@ export default class Breadboard {
         /// нажатие на пункт глобального контекстного меню (платы)
         this._layers.controls.onContextMenuItemClick((alias, value) => {
             switch (alias) {
+                case BoardContextMenu.CMI_SNAPSH:
+                    this._saveToImage();
+                    break;
                 case BoardContextMenu.CMI_IMPORT:
                     this._importPlates(value);
                     break;
@@ -478,6 +489,32 @@ export default class Breadboard {
         }
     }
 
+    _saveToImage() {
+        let svg_node = this.getContainer();
+
+        if (!svg_node) {return}
+
+        let canvas = document.createElement("canvas");
+        // canvas.setAttribute('width', WRAP_WIDTH);
+        // canvas.setAttribute('height', WRAP_HEIGHT);
+        document.body.appendChild(canvas);
+
+        this.toggleModePhoto(true);
+        let svgString = new XMLSerializer().serializeToString(svg_node);
+        this.toggleModePhoto(false);
+
+        // let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+
+        // canvg(canvas, svgString, {ignoreDimensions: true});
+        canvg(canvas, svgString, {scaleWidth: 2, scaleHeight: 2});
+
+        let img = canvas.toDataURL("image/png");
+
+        saveAs(img, 'breadboard.png');
+
+        // canvas.remove();
+    }
+
     /**
      * Задать SVG-фильтры
      *
@@ -561,7 +598,6 @@ export default class Breadboard {
      * @returns {Array<string>}
      */
     static getAllPlateTypes() {
-
         return PlateLayer._getAllPlateTypes();
     }
 
