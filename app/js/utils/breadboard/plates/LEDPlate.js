@@ -67,7 +67,7 @@ export default class LEDPlate extends Plate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=QUAD_SIZE) {
+    _drawPicture(qs=Plate.QuadSizeDefault) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 

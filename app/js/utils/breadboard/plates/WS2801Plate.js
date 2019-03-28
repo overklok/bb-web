@@ -20,7 +20,7 @@ export default class WS2801Plate extends Plate {
         this._bezel.fill("#f09fc9");
 
         this._drawPicture();
-        this._drawLabel('вээс 2801');
+        this._drawLabel('вээс 2801', 40);
 
         // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };
