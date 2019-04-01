@@ -24,8 +24,8 @@ import WS2801Plate          from "../plates/WS2801Plate";
 export default class PlateLayer extends Layer {
     static get Class() {return "bb-layer-plate"}
 
-    constructor(container, grid) {
-        super(container, grid);
+    constructor(container, grid, schematic=false) {
+        super(container, grid, schematic);
 
         this._container.addClass(PlateLayer.Class);
 
@@ -136,7 +136,7 @@ export default class PlateLayer extends Layer {
             return id;
         } else {
             plate_class = PlateLayer._typeToPlateClass(type);
-            plate = new plate_class(this._cellgroup, this.__grid, id, extra);
+            plate = new plate_class(this._cellgroup, this.__grid, this.__schematic, id, extra);
         }
 
         if (this._editable) {

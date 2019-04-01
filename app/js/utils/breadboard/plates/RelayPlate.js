@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class RelayPlate extends Plate {
     static get Alias() {return "relay"}
 
-    constructor(container, grid, id) {
-        super(container, grid, id);
+    constructor(container, grid, schematic=false, id) {
+        super(container, grid, schematic, id);
 
         this._params.size = {x: 5, y: 1};
     }
@@ -63,11 +63,9 @@ export default class RelayPlate extends Plate {
         for (let i = 0; i < 5; i++) {
             let cell = this.__grid.cell(i, 0);
 
-            let rect = this._group.rect(qs, qs)
-                .center(
-                    cell.center_rel.x,
-                    cell.center_rel.y
-                );
+            let rect = this._group.rect(qs, qs);
+
+            rect.center(cell.center_rel.x, cell.center_rel.y);
 
             cells.push(cell);
             rects.push(rect);

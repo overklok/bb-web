@@ -1,5 +1,3 @@
-const GRID_DOT_SIZE = 20;           // Радиус точек
-
 import thm from '../styles/current.css';
 
 /**
@@ -20,9 +18,9 @@ import thm from '../styles/current.css';
 export default class Current {
     static get ColorMin() {return "#006eff"}
     static get ColorMax() {return "#ff0006"}
-    static get DurationMin() {return 400}
-    static get DurationMax() {return 10000}
-    static get AnimationDelta() {return 200} // Расстояние между соседними частицами, px
+    static get DurationMin() {return 1000}    // Чем больше, тем медленнее ток с минимальным весом (600)
+    static get DurationMax() {return 10000}   // Чем меньше, тем быстрее ток с максимальным весом (10000)
+    static get AnimationDelta() {return 200}  // Расстояние между соседними частицами, px
 
     constructor(container, points, style) {
         this.container  = container;        // родительский DOM-узел
@@ -162,7 +160,7 @@ export default class Current {
             }
 
             // Сгенерировать частицу
-            this._particles[i] = this._container_anim.circle(GRID_DOT_SIZE * 1.8).addClass('current-particle');
+            this._particles[i] = this._container_anim.circle(this.style.width).addClass('current-particle');
 
             // Заливка и центрирование
             this._particles[i].fill(Current.pickColorFromRange(weight));
@@ -274,6 +272,9 @@ export default class Current {
         // Процент окончания анимации
         let perc = Math.floor(progress_diff_actual / progress_diff_normal * 100);
 
+        let radius_min = this.style.width,
+            radius_max = this.style.particle_radius;
+
         let rule_animation              = undefined,    // CSS-класс анимации
             rule_keyframes_move         = undefined,    // контрольные точки перемещения
             rule_keyframes_blink        = undefined,    // контрольные точки непрозрачности
@@ -307,29 +308,29 @@ export default class Current {
             rule_keyframes_radius = `
                 @keyframes ${kfname_prefix}-radius {
                     0% {r: 10}
-                    ${perc*0.4}% {r: 18}
-                    ${perc*0.6}% {r: 18}
-                    ${perc}% {r: 10}
-                    100% {r: 10}
+                    ${perc*0.4}% {r: ${radius_max}}
+                    ${perc*0.6}% {r: ${radius_max}}
+                    ${perc}% {r: ${radius_min}}
+                    100% {r: ${radius_min}}
                 }
             `;
         } else if (progress_start === 0) {
             // увеличение - для первой частицы
             rule_keyframes_radius = `
                 @keyframes ${kfname_prefix}-radius {
-                    0% {r: 10}
-                    ${perc*0.4}% {r: 18}
-                    100% {r: 18}
+                    0% {r: ${radius_min}}
+                    ${perc*0.4}% {r: ${radius_max}}
+                    100% {r: ${radius_max}}
                 }
             `;
         } else if (progress_end === 1) {
             // уменьшение - для последней частицы
             rule_keyframes_radius = `
                 @keyframes ${kfname_prefix}-radius {
-                    0% {r: 18}
-                    ${perc*0.6}% {r: 18}
-                    ${perc}% {r: 10}
-                    100% {r: 10}
+                    0% {r: ${radius_max}}
+                    ${perc*0.6}% {r: ${radius_max}}
+                    ${perc}% {r: ${radius_min}}
+                    100% {r: ${radius_min}}
                 }
             `;
         }

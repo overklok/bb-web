@@ -10,8 +10,8 @@ const LOGO_COLOR_DEFAULT    = "#000000";
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
 
-    constructor(container, grid) {
-        super(container, grid);
+    constructor(container, grid, schematic=false) {
+        super(container, grid, schematic);
 
         this._container.addClass(BackgroundLayer.Class);
 
@@ -187,22 +187,32 @@ export default class BackgroundLayer extends Layer {
         let gradient_vert = this._domaingroup.gradient('linear', function(stop) {
             stop.at(.0, '#BB772C');
             stop.at(.7, '#DBAB1D');
-            stop.at(1, '#BB772C');
+            stop.at(1,  '#BB772C');
         }).from(0.5, 1).to(0.5, 0);
 
         let gradient_horz = this._domaingroup.gradient('linear', function(stop) {
             stop.at(.0, '#BB772C');
             stop.at(.7, '#DBAB1D');
-            stop.at(1, '#BB772C');
+            stop.at(1,  '#BB772C');
         }).from(1, 0.5).to(0, 0.5);
 
         for (let col of this.__grid.cells) {
-            this._drawDomain(this._domaingroup, col[2], col[5], gradient_vert);
-            this._drawDomain(this._domaingroup, col[6], col[9], gradient_vert);
+            this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#555' : gradient_vert);
+            this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#555' : gradient_vert);
         }
 
-        this._drawDomain(this._domaingroup, this.__grid.cell(0,1), this.__grid.cell(9,1), gradient_horz);
-        this._drawDomain(this._domaingroup, this.__grid.cell(0,10), this.__grid.cell(9,10), gradient_horz);
+        this._drawDomain(
+            this._domaingroup,
+            this.__grid.cell(0,1),
+            this.__grid.cell(9,1),
+            this.__schematic ? '#faa' : gradient_horz
+        );
+        this._drawDomain(
+            this._domaingroup,
+            this.__grid.cell(0,10),
+            this.__grid.cell(9,10),
+            this.__schematic ? '#aaf' : gradient_horz
+        );
     }
 
     /**
@@ -214,18 +224,34 @@ export default class BackgroundLayer extends Layer {
      * @private
      */
     _drawDomain(container, cell_from, cell_to, color="#D4AF37") {
-        let width = Math.abs(cell_from.pos.x - cell_to.pos.x) + cell_from.size.x;
-        let height = Math.abs(cell_from.pos.y - cell_to.pos.y) + cell_from.size.y;
+        let width = Math.abs(cell_from.pos.x - cell_to.pos.x);
+        let height = Math.abs(cell_from.pos.y - cell_to.pos.y);
 
-        container
-            .rect(width, height)
-            .move(cell_from.pos.x, cell_from.pos.y)
-            .radius(10)
-            .fill({color: color})
-            .stroke({color: color})
+        if (this.__schematic && typeof color !== 'string') {
+            console.error('String color is not supported in schematic mode');
+            return;
+        };
+
+        if (this.__schematic) {
+            width   = width >= height ? Math.max(width, height) : 0;
+            height  = width <  height ? Math.max(width, height) : 0;
+
+            container.line(0, 0, width, height)
+                .stroke({color, width: 10, linecap: 'round'})
+                .move(cell_from.center.x, cell_from.center.y)
+        } else {
+            container.rect(width + cell_from.size.x, height + cell_from.size.y)
+                .fill({color})
+                .stroke({color})
+                .move(cell_from.pos.x, cell_from.pos.y)
+                .radius(10);
+        }
+
     }
 
     _drawCell(container, cell) {
+        if (this.__schematic) return;
+
         container
             .rect(cell.size.x, cell.size.y)
             .move(cell.pos.x, cell.pos.y)

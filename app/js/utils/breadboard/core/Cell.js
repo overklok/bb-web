@@ -33,6 +33,8 @@ export default class Cell {
 
         this.__grid = grid;
 
+        this.__adj = undefined;
+
         this._validate();
         this._calculate();
     }
@@ -53,6 +55,12 @@ export default class Cell {
         return this._params.pos;
     }
 
+    get adj() {
+        let adj = this.__adj ? this.__adj : {x: 0, y: 0};
+
+        return {x: adj.x * this.size.x, y: adj.y * this.size.y}
+    }
+
     get center() {
         return {
             x: this._params.pos.x + this._params.size.x / 2,
@@ -65,6 +73,17 @@ export default class Cell {
             x: this._params.rel.x + this._params.size.x / 2,
             y: this._params.rel.y + this._params.size.y / 2
         }
+    }
+
+    get center_adj() {
+        return {
+            x: this.center.x + this.adj.x,
+            y: this.center.y + this.adj.y
+        }
+    }
+
+    reoccupy(adjustment=null) {
+        this.__adj = adjustment;
     }
 
     _calculate() {

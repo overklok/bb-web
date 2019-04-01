@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class StripPlate extends Plate {
     static get Alias() {return "strip"}
 
-    constructor(container, grid, id, length=1) {
-        super(container, grid, id, length);
+    constructor(container, grid, schematic=false, id, length=1) {
+        super(container, grid, schematic, id, length);
 
         this._params.extra = Number((length <= 0) ? 1 : length);
         this._params.size = {x: this._params.extra, y: 1};

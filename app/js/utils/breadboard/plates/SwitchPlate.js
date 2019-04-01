@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class SwitchPlate extends Plate {
     static get Alias() {return "switch"}
 
-    constructor(container, grid, id) {
-        super(container, grid, id);
+    constructor(container, grid, schematic=false, id) {
+        super(container, grid, schematic, id);
 
         this._params.size = {x: 3, y: 1};
     }
@@ -42,17 +42,13 @@ export default class SwitchPlate extends Plate {
 
         let cell3 = this.__grid.cell(1, 0);
 
-        let rect1 = this._group.rect(qs, qs)
-            .cx(cell1.center_rel.x)
-            .cy(cell1.center_rel.y + qs);
+        let rect1 = this._group.rect(qs, qs);
+        let rect2 = this._group.rect(qs, qs);
+        let rect3 = this._group.rect(qs, qs);
 
-        let rect2 = this._group.rect(qs, qs)
-            .cx(cell2.center_rel.x)
-            .cy(cell2.center_rel.y + qs);
-
-        let rect3 = this._group.rect(qs, qs)
-            .cx(cell3.center_rel.x)
-            .cy(cell3.center_rel.y - qs);
+        rect1.cx(cell1.center_rel.x).cy(cell1.center_rel.y + qs);
+        rect2.cx(cell2.center_rel.x).cy(cell2.center_rel.y + qs);
+        rect3.cx(cell3.center_rel.x).cy(cell3.center_rel.y - qs);
 
         let line_len = rect2.x() - rect1.x() - qs*2;
 

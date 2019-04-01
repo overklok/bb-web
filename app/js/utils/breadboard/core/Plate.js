@@ -28,11 +28,11 @@ export default class Plate {
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
-    static get QuadSizeDefault()    {return 16}
+    static get QuadSizeDefault()    {return 18}
     static get LEDSizeDefault()     {return 16}
     static get LabelSizeDefault()   {return 12}
 
-    constructor(container_parent, grid, id=null, extra=0) {
+    constructor(container_parent, grid, schematic=false, id=null, extra=0) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
@@ -62,7 +62,9 @@ export default class Plate {
             size:       {x: 0, y: 0},   // кол-во ячеек, занимаемое плашкой на доске
             size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
             origin:     {x: 0, y: 0},   // опорная точка плашки
-            extra:      extra           // доп. параметр
+            rels:       undefined,      // относительные позиции занимаемых ячеек
+            extra:      extra,          // доп. параметр
+            schematic:  schematic       // схематическое отображение плашки
         };
 
         /// Состояние - изменяемые свойства плашки
@@ -96,7 +98,7 @@ export default class Plate {
         /// Событие начала перетаскивания было инициировано
         this._dragstart_activated = false;
 
-        this._ctxmenu = new PlateContextMenu(this._container, this.__grid, {id: this._id});
+        this._ctxmenu = new PlateContextMenu(this._container, this.__grid, {id: this._id, schematic: this._params.schematic});
         this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
 
         this.showGroupEditable(false);
@@ -157,6 +159,52 @@ export default class Plate {
         // stub
     }
 
+    _beforeReposition() {
+        if (this._params.rels) {
+            let abs = this.state.cell.idx;
+
+            for (let _rel of this._params.rels) {
+                let rel = {};
+
+                switch (this._state.orientation) {
+                    case Plate.Orientations.West:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
+                    case Plate.Orientations.North:  {rel.x = -_rel.y;   rel.y = _rel.x;     break;}
+                    case Plate.Orientations.East:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
+                    case Plate.Orientations.South:  {rel.x = _rel.y;    rel.y = -_rel.x;    break;}
+                }
+
+                // console.log(abs.x + rel.x, abs.y + rel.y);
+
+                let cell = this.__grid.cell(abs.x + rel.x, abs.y + rel.y);
+
+                cell.reoccupy(null);
+            }
+        }
+    }
+
+    __afterReposition() {
+        if (this._params.rels) {
+            let abs = this.state.cell.idx;
+
+            for (let _rel of this._params.rels) {
+                let rel = {};
+
+                switch (this._state.orientation) {
+                    case Plate.Orientations.West:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
+                    case Plate.Orientations.North:  {rel.x = -_rel.y;   rel.y = _rel.x;     break;}
+                    case Plate.Orientations.East:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
+                    case Plate.Orientations.South:  {rel.x = _rel.y;    rel.y = -_rel.x;    break;}
+                }
+
+                // console.log(abs.x + rel.x, abs.y + rel.y);
+
+                let cell = this.__grid.cell(abs.x + rel.x, abs.y + rel.y);
+
+                cell.reoccupy(_rel.adj);
+            }
+        }
+    }
+
     /**
      * Нарисовать плашку
      *
@@ -164,6 +212,8 @@ export default class Plate {
      * @param {string}  orientation ориентация элемента относительно опорной точки
      */
     draw(cell, orientation, animate=false) {
+        this._beforeReposition();
+
         let width   = (cell.size.x * this._params.size.x) + (this.__grid.gap.x * 2 * (this._params.size.x - 1));
         let height  = (cell.size.y * this._params.size.y) + (this.__grid.gap.y * 2 * (this._params.size.y - 1));
 
@@ -172,6 +222,10 @@ export default class Plate {
 
         this._bezel.radius(Breadboard.CellRadius).fill("#fffffd");
         this._bezel.stroke({color: "#f0eddb", width: 2});
+
+        if (this._params.schematic) {
+            this._bezel.style({opacity: 0});
+        }
 
         this._error_highlighter.fill({color: "#f00"}).radius(10);
 
@@ -191,6 +245,8 @@ export default class Plate {
         if (animate) {
             this._bezel.scale(1.15).animate('100ms').scale(1);
         }
+
+        this.__afterReposition();
     };
 
     /**
@@ -253,6 +309,10 @@ export default class Plate {
             throw new Error("Cell's grid and plate's grid are not the same");
         }
 
+        if (!suppress_events) {
+            this._beforeReposition();
+        }
+
         if (this._ctxmenu.active) {return}
 
         this._state.cell = cell;
@@ -268,6 +328,8 @@ export default class Plate {
         }
 
         if (!suppress_events) {
+            this.__afterReposition();
+
             this._callbacks.change({
                 id: this._id,
                 action: 'move'
@@ -317,6 +379,10 @@ export default class Plate {
             return;
         }
 
+        if (!suppress_events) {
+            this._beforeReposition();
+        }
+
         let angle = Plate._orientationToAngle(orientation);
 
         this._group.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
@@ -325,6 +391,8 @@ export default class Plate {
         this._state.orientation = orientation;
 
         if (!suppress_events) {
+            this.__afterReposition();
+
             this._callbacks.change({
                 id: this._id,
                 action: 'rotate'
@@ -393,12 +461,16 @@ export default class Plate {
      * Удалить плашку
      */
     dispose() {
+        this._beforeReposition();
+
         // this._bezel.scale(1).animate('100ms').scale(0.85).opacity(0);
 
         // setTimeout(() => {
         this._container.node.remove();
         this._shadow.node.remove();
         // }, 100);
+
+        this.__afterReposition();
     }
 
     /**

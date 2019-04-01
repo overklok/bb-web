@@ -3,8 +3,8 @@ import Layer from "../core/Layer";
 export default class LabelLayer extends Layer {
     static get Class() {return "bb-layer-label"}
 
-    constructor(container, grid) {
-        super(container, grid);
+    constructor(container, grid, schematic=false) {
+        super(container, grid, schematic);
 
         this._container.addClass(LabelLayer.Class);
 

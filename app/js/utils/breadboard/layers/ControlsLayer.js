@@ -8,8 +8,8 @@ import ContextMenu from "../core/ContextMenu";
 export default class ControlsLayer extends Layer {
     static get Class() {return "bb-layer-controls"}
 
-    constructor(container, grid) {
-        super(container, grid);
+    constructor(container, grid, schematic=false) {
+        super(container, grid, schematic);
 
         this._container.addClass(ControlsLayer.Class);
 

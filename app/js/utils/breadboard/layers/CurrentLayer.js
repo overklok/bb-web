@@ -1,13 +1,17 @@
 import Layer from "../core/Layer";
 import Current from "../core/Current";
 
-const CURRENT_WIDTH = 20;
+const CURRENT_WIDTH = 14;
+const CURRENT_WIDTH_SCHEMATIC = 10;
+
+const PARTICLE_SIZE = 18;
+const PARTICLE_SIZE_SCHEMATIC = 16;
 
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
 
-    constructor(container, grid) {
-        super(container, grid);
+    constructor(container, grid, schematic=false) {
+        super(container, grid, schematic);
 
         this._container.addClass(CurrentLayer.Class);
 
@@ -151,8 +155,9 @@ export default class CurrentLayer extends Layer {
         if (!thread || thread.length === 0) {}
 
         let current = new Current(this._cellgroup, thread, {
-            width: CURRENT_WIDTH,
-            linecap: "round"
+            width: this.__schematic ? CURRENT_WIDTH_SCHEMATIC : CURRENT_WIDTH,
+            linecap: "round",
+            particle_radius: this.__schematic ? PARTICLE_SIZE_SCHEMATIC : PARTICLE_SIZE
         });
 
         let line_data = this._buildCurrentLine(thread);
@@ -180,8 +185,8 @@ export default class CurrentLayer extends Layer {
             cell_to    = this.__grid.cell(points.to.x, points.to.y);
 
         return {
-            from: {x: cell_from.center.x, y: cell_from.center.y},
-            to: {x: cell_to.center.x, y: cell_to.center.y}
+            from: {x: cell_from.center_adj.x , y: cell_from.center_adj.y},
+            to: {x: cell_to.center_adj.x, y: cell_to.center_adj.y}
         };
     };
 

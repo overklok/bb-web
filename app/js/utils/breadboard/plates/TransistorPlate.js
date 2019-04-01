@@ -4,10 +4,16 @@ import Cell from "../core/Cell";
 export default class TransistorPlate extends Plate {
     static get Alias() {return "transistor"}
 
-    constructor(container, grid, id) {
-        super(container, grid, id);
+    constructor(container, grid, schematic=false, id) {
+        super(container, grid, schematic, id);
 
         this._params.size = {x: 3, y: 1};
+
+        this._params.rels = [
+            {x: 0, y: 0,    adj: {x: 0, y: -1/3}},
+            {x: 1, y: 0,    adj: {x: 0, y: 0}},
+            {x: 2, y: 0,    adj: {x: 0, y: -1/3}},
+        ];
     }
 
     /**
@@ -44,17 +50,13 @@ export default class TransistorPlate extends Plate {
         // line_top_width
         let ltw = 3;
 
-        let rect1 = this._group.rect(qs, qs)
-            .cx(cell1.center_rel.x)
-            .cy(cell1.center_rel.y - qs);
+        let rect1 = this._group.rect(qs, qs);
+        let rect2 = this._group.rect(qs, qs);
+        let rect3 = this._group.rect(qs, qs);
 
-        let rect2 = this._group.rect(qs, qs)
-            .cx(cell2.center_rel.x)
-            .cy(cell2.center_rel.y - qs);
-
-        let rect3 = this._group.rect(qs, qs)
-            .cx(cell3.center_rel.x)
-            .cy(cell1.center_rel.y + qs);
+        rect1.cx(cell1.center_rel.x).cy(cell1.center_rel.y - qs);
+        rect2.cx(cell2.center_rel.x).cy(cell2.center_rel.y - qs);
+        rect3.cx(cell3.center_rel.x).cy(cell1.center_rel.y + qs);
 
         let line_len = rect2.x() - rect1.x() - qs*2;
 

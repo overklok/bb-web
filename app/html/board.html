@@ -27,23 +27,31 @@
 
         app.bb.switchSpareFilters(true);
 
+        let weight = 1;
+
         $(document).ready(() => {
             app.setData(
                 [
-                    {"id":26038,"type":"transistor","x":0,"y":0,"length":3,"orientation":"west","extra":3},
-                    {"id":54088,"type":"bridge",    "x":1,"y":1,"length":2,"orientation":"north","extra":2},
-                    {"id":134877,"type":"resistor", "x":2,"y":2,"length":2,"orientation":"west","extra":200},
-                    {"id":134878,"type":"switch",   "x":4,"y":0,"length":2,"orientation":"west","extra":200},
-                    {"id":397418,"type":"bridge",   "x":3,"y":3,"length":2,"orientation":"north","extra":2},
-                    {"id":650395,"type":"resistor", "x":4,"y":4,"length":2,"orientation":"west","extra":200},
-                    {"id":903538,"type":"bridge",   "x":5,"y":5,"length":2,"orientation":"north","extra":2},
-                    {"id":437658,"type":"ws2801",   "x":6,"y":6,"length":2,"orientation":"west","extra":2},
+                    {"id":149224,"type":"bridge","x":9,"y":9,"length":2,"orientation":"north","extra":2},
+                    {"id":308389,"type":"transistor","x":6,"y":4,"length":3,"orientation":"west","extra":0},
+                    {"id":507067,"type":"resistor","x":1,"y":4,"length":2,"orientation":"west","extra":200},
+                    {"id":596938,"type":"bridge","x":5,"y":1,"length":2,"orientation":"north","extra":2},
+                    {"id":725142,"type":"bridge","x":5,"y":5,"length":2,"orientation":"west","extra":2},
+                    {"id":800942,"type":"bridge","x":9,"y":5,"length":2,"orientation":"north","extra":2},
+                    {"id":926229,"type":"bridge","x":8,"y":3,"length":2,"orientation":"west","extra":2}
                 ],
+                {threads: [
+                    {from: {x: 9, y: 6},    to: {x: 9, y: 9},      weight: weight},
+                    {from: {x: 9, y: 3},    to: {x: 9, y: 5},      weight: weight},
+                    {from: {x: 8, y: 4},    to: {x: 8, y: 3},      weight: weight},
+                    {from: {x: 6, y: 5},    to: {x: 6, y: 4},      weight: weight},
+                    {from: {x: 5, y: 2},    to: {x: 5, y: 5},      weight: weight},
+                ]}
             );
         });
 
 
-        // $(document).ready(() => {
+        $(document).ready(() => {
         //     // app.onChange((data) => {
         //         // console.log("ONCHNG", data);
         //     // });
@@ -95,6 +103,6 @@
         //             {threads},
         //         );
         //     }, 1000);
-        // });
+        });
     </script>
 </html>

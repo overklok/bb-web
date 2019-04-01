@@ -16,7 +16,7 @@ export default class BoardContextMenu extends ContextMenu {
             },
             {
                 alias: BoardContextMenu.CMI_SNAPSH,
-                label: 'Снимок платы (PNG)',
+                label: 'Снимок платы (SVG)',
                 active: true
             },
             {

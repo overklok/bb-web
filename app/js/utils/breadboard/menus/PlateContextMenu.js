@@ -11,9 +11,11 @@ export default class PlateContextMenu extends ContextMenu {
     constructor(container, grid, extra, item_height) {
         super(container, grid, item_height);
 
+        let plate_naming = extra.schematic ? 'Элемент' : 'Плашка';
+
         this._items_data = [
             {
-                label: `Плашка #${extra.id}`,
+                label: `${plate_naming} #${extra.id}`,
                 active: false
             },
             {

@@ -1,5 +1,5 @@
 export default class Layer {
-    constructor(container, grid) {
+    constructor(container, grid, schematic=false) {
         if (!container) {
             throw new TypeError("Container is not defined");
         }
@@ -11,6 +11,8 @@ export default class Layer {
         this._container = container;
 
         this.__grid = grid;
+
+        this.__schematic = schematic;
     }
 
     /**

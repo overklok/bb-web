@@ -75,9 +75,10 @@ export default class Breadboard {
         return this._brush.node;
     }
 
-    toggleModePhoto(on=true) {
+    switchModePhoto(on=true) {
         this._layers.region.toggle(!on);
         this._layers.controls.toggle(!on);
+        // this._layers.current.toggle(!on);
         this._layers.background.toggleLogoActive(!on, false);
     }
 
@@ -261,7 +262,7 @@ export default class Breadboard {
                             "1 1 1 0   0\
                              1 1 1 0   0\
                              1 1 1 0   0\
-                             0 0 0 0.5 0"/>\
+                             0 0 0 0.2 0"/>\
                     <feGaussianBlur in="colorCurrentWhite" stdDeviation="1" result="coloredBlurIn"/>\
                     <feGaussianBlur id="filter-pulse" in="colorCurrent" stdDeviation="2" result="coloredBlurOut"/>'
                     + '<feMerge>'
@@ -323,10 +324,10 @@ export default class Breadboard {
         let controls    = this._brush.nested(); // органы управления
 
         /// инициализация слоёв
-        this._layers.background = new BackgroundLayer(background, this.__grid);
+        this._layers.background = new BackgroundLayer(background, this.__grid, true);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
-        this._layers.current    = new CurrentLayer(current, this.__grid);
-        this._layers.plate      = new PlateLayer(plate, this.__grid);
+        this._layers.current    = new CurrentLayer(current, this.__grid, true);
+        this._layers.plate      = new PlateLayer(plate, this.__grid, true);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
 
@@ -499,20 +500,21 @@ export default class Breadboard {
         // canvas.setAttribute('height', WRAP_HEIGHT);
         document.body.appendChild(canvas);
 
-        this.toggleModePhoto(true);
+        this.switchModePhoto(true);
         let svgString = new XMLSerializer().serializeToString(svg_node);
-        this.toggleModePhoto(false);
+        this.switchModePhoto(false);
 
-        // let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+        let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
 
         // canvg(canvas, svgString, {ignoreDimensions: true});
-        canvg(canvas, svgString, {scaleWidth: 2, scaleHeight: 2});
+        // canvg(canvas, svgString, {scaleWidth: 2, scaleHeight: 2});
 
-        let img = canvas.toDataURL("image/png");
+        // let img = canvas.toDataURL("image/png");
 
-        saveAs(img, 'breadboard.png');
+        // saveAs(img, 'breadboard.png');
+        saveAs(svg, 'breadboard.svg');
 
-        // canvas.remove();
+        canvas.remove();
     }
 
     /**

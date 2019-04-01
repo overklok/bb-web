@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class CapacitorPlate extends Plate {
     static get Alias() {return "capacitor"}
 
-    constructor(container, grid, id, capacity) {
-        super(container, grid, id, capacity);
+    constructor(container, grid, id, schematic=false, capacity) {
+        super(container, grid, id, schematic, capacity);
 
         this._params.size = {x: 2, y: 1};
         this._params.extra = Number(capacity) || 0.001;
@@ -41,17 +41,11 @@ export default class CapacitorPlate extends Plate {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
-        let rect1 = this._group.rect(qs, qs)
-            .center(
-                cell1.center_rel.x,
-                cell1.center_rel.y,
-            );
+        let rect1 = this._group.rect(qs, qs);
+        let rect2 = this._group.rect(qs, qs);
 
-        let rect2 = this._group.rect(qs, qs)
-            .center(
-                cell2.center_rel.x,
-                cell2.center_rel.y,
-            );
+        rect1.center(cell1.center_rel.x, cell1.center_rel.y);
+        rect2.center(cell2.center_rel.x, cell2.center_rel.y);
 
         let line_len = rect2.x() - rect1.x();
 
