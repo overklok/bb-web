@@ -35,16 +35,36 @@ export default class PlateLayer extends Layer {
         };
 
         this._plates = {};
-        this._cellgroup = undefined;
+        this._plategroup = undefined;
 
         this._plate_selected = undefined;
         this._editable = false;
     }
 
     compose() {
-        this._cellgroup = this._container.group();
+        this._initGroups();
+    }
 
-        // this._cellgroup;//.move(100, 170);
+    recompose(schematic) {
+        super.recompose(schematic);
+
+        let plates_data = this.getCurrentPlatesData();
+
+        this.removeAllPlates();
+
+        this._initGroups();
+
+        for (let plate_data of plates_data) {
+            this.addPlate(
+                plate_data.type,
+                plate_data.x,
+                plate_data.y,
+                plate_data.orientation,
+                plate_data.id,
+                plate_data.extra,
+                false
+            );
+        }
     }
 
     /**
@@ -136,7 +156,7 @@ export default class PlateLayer extends Layer {
             return id;
         } else {
             plate_class = PlateLayer._typeToPlateClass(type);
-            plate = new plate_class(this._cellgroup, this.__grid, this.__schematic, id, extra);
+            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, id, extra);
         }
 
         if (this._editable) {
@@ -303,6 +323,16 @@ export default class PlateLayer extends Layer {
         if (!cb) {this._callbacks.dragstart = () => {}}
 
         this._callbacks.dragstart = cb;
+    }
+
+    _initGroups() {
+        this._clearGroups();
+
+        this._plategroup = this._container.group();
+    }
+
+    _clearGroups() {
+        if (this._plategroup) this._plategroup.remove();
     }
 
     /**

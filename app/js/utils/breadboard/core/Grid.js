@@ -62,7 +62,7 @@ export default class Grid {
         i = (i < 0) ? this._params.dim.x + i : i;
         j = (j < 0) ? this._params.dim.y + j : j;
 
-        if (!(i in this._cells) && (!(j in this._cells[i]))) {
+        if (!(i in this._cells) || (!(j in this._cells[i]))) {
             throw new RangeError("Coordinates of cell is out of grid's range");
         }
 
@@ -86,4 +86,20 @@ export default class Grid {
             }
         }
     };
+
+    /**
+     * @returns {number}
+     * @private
+     */
+    _howMuchOccupied() {
+        let how = 0;
+
+        for (let i = 0; i < this.dim.x; i++) {
+            for (let j = 0; j < this.dim.y; j++) {
+                if (this._cells[i][j].occupied) how++;
+            }
+        }
+
+        return how;
+    }
 }

@@ -82,6 +82,10 @@ export default class Cell {
         }
     }
 
+    get occupied() {
+        return (this.__adj != null);
+    }
+
     reoccupy(adjustment=null) {
         this.__adj = adjustment;
     }

@@ -8,10 +8,10 @@ import PlateContextMenu from "../menus/PlateContextMenu";
  * @type {{West: string, North: string, East: string, South: string}}
  */
 const ORIENTATIONS = {
-    West:   'west',
-    North:  'north',
-    East:   'east',
-    South:  'south',
+    West:   'east',
+    North:  'south',
+    East:   'west',
+    South:  'north',
     Dummy:  'dummy',
 };
 
@@ -28,7 +28,7 @@ export default class Plate {
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
-    static get QuadSizeDefault()    {return 18}
+    static get QuadSizeDefault()    {return 16}
     static get LEDSizeDefault()     {return 16}
     static get LabelSizeDefault()   {return 12}
 
@@ -63,6 +63,7 @@ export default class Plate {
             size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
             origin:     {x: 0, y: 0},   // опорная точка плашки
             rels:       undefined,      // относительные позиции занимаемых ячеек
+            adjs:       undefined,      // корректировки положения плашки
             extra:      extra,          // доп. параметр
             schematic:  schematic       // схематическое отображение плашки
         };
@@ -71,7 +72,7 @@ export default class Plate {
         this._state = {
             cell:           new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
             cell_supposed:  new Cell(0, 0, this.__grid),    // ячейка, задающая предполагаемое положение опорной точки
-            orientation:    Plate.Orientations.West,        // ориентация плашки
+            orientation:    Plate.Orientations.East,        // ориентация плашки
             highlighted:    false,                          // подсвечена ли плашка
             currents:       undefined,
             voltages:       undefined,
@@ -95,6 +96,8 @@ export default class Plate {
         this._editable = false;
         /// Режим перетаскивания
         this._dragging = false;
+        /// Отрисована ли была плашка
+        this._drawed = false;
         /// Событие начала перетаскивания было инициировано
         this._dragstart_activated = false;
 
@@ -159,52 +162,6 @@ export default class Plate {
         // stub
     }
 
-    _beforeReposition() {
-        if (this._params.rels) {
-            let abs = this.state.cell.idx;
-
-            for (let _rel of this._params.rels) {
-                let rel = {};
-
-                switch (this._state.orientation) {
-                    case Plate.Orientations.West:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
-                    case Plate.Orientations.North:  {rel.x = -_rel.y;   rel.y = _rel.x;     break;}
-                    case Plate.Orientations.East:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
-                    case Plate.Orientations.South:  {rel.x = _rel.y;    rel.y = -_rel.x;    break;}
-                }
-
-                // console.log(abs.x + rel.x, abs.y + rel.y);
-
-                let cell = this.__grid.cell(abs.x + rel.x, abs.y + rel.y);
-
-                cell.reoccupy(null);
-            }
-        }
-    }
-
-    __afterReposition() {
-        if (this._params.rels) {
-            let abs = this.state.cell.idx;
-
-            for (let _rel of this._params.rels) {
-                let rel = {};
-
-                switch (this._state.orientation) {
-                    case Plate.Orientations.West:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
-                    case Plate.Orientations.North:  {rel.x = -_rel.y;   rel.y = _rel.x;     break;}
-                    case Plate.Orientations.East:   {rel.x = _rel.x;    rel.y = _rel.y;     break;}
-                    case Plate.Orientations.South:  {rel.x = _rel.y;    rel.y = -_rel.x;    break;}
-                }
-
-                // console.log(abs.x + rel.x, abs.y + rel.y);
-
-                let cell = this.__grid.cell(abs.x + rel.x, abs.y + rel.y);
-
-                cell.reoccupy(_rel.adj);
-            }
-        }
-    }
-
     /**
      * Нарисовать плашку
      *
@@ -224,7 +181,8 @@ export default class Plate {
         this._bezel.stroke({color: "#f0eddb", width: 2});
 
         if (this._params.schematic) {
-            this._bezel.style({opacity: 0});
+            this._bezel.fill({opacity: 0});
+            this._bezel.stroke({opacity: 0})
         }
 
         this._error_highlighter.fill({color: "#f00"}).radius(10);
@@ -239,6 +197,8 @@ export default class Plate {
         this.__draw__(cell, orientation);
         this.rotate(orientation, true);
 
+        this._drawed = true;
+
         this._params.size_px.x = width;
         this._params.size_px.y = height;
 
@@ -246,7 +206,7 @@ export default class Plate {
             this._bezel.scale(1.15).animate('100ms').scale(1);
         }
 
-        this.__afterReposition();
+        this._afterReposition();
     };
 
     /**
@@ -321,14 +281,16 @@ export default class Plate {
         this._shadow.x(this._state.cell.pos.x);
         this._shadow.y(this._state.cell.pos.y);
 
+        let pos = this._getPositionAdjusted();
+
         if (animate) {
-            this._container.animate('100ms', '<>').move(this._state.cell.pos.x, this._state.cell.pos.y);
+            this._container.animate('100ms', '<>').move(pos.x, pos.y);
         } else {
-            this._container.move(this._state.cell.pos.x, this._state.cell.pos.y);
+            this._container.move(pos.x, pos.y);
         }
 
         if (!suppress_events) {
-            this.__afterReposition();
+            this._afterReposition();
 
             this._callbacks.change({
                 id: this._id,
@@ -391,7 +353,7 @@ export default class Plate {
         this._state.orientation = orientation;
 
         if (!suppress_events) {
-            this.__afterReposition();
+            this._afterReposition();
 
             this._callbacks.change({
                 id: this._id,
@@ -411,10 +373,10 @@ export default class Plate {
         let orientation;
 
         switch (this._state.orientation) {
-            case Plate.Orientations.West: {orientation = Plate.Orientations.North; break}
-            case Plate.Orientations.North: {orientation = Plate.Orientations.East; break}
             case Plate.Orientations.East: {orientation = Plate.Orientations.South; break}
             case Plate.Orientations.South: {orientation = Plate.Orientations.West; break}
+            case Plate.Orientations.West: {orientation = Plate.Orientations.North; break}
+            case Plate.Orientations.North: {orientation = Plate.Orientations.East; break}
 
             default: {throw new TypeError("Current orientation is invalid")}
         }
@@ -429,9 +391,9 @@ export default class Plate {
         let orientation;
 
         switch (this._state.orientation) {
-            case Plate.Orientations.West: {orientation = Plate.Orientations.South; break}
-            case Plate.Orientations.South: {orientation = Plate.Orientations.East; break}
             case Plate.Orientations.East: {orientation = Plate.Orientations.North; break}
+            case Plate.Orientations.South: {orientation = Plate.Orientations.East; break}
+            case Plate.Orientations.West: {orientation = Plate.Orientations.South; break}
             case Plate.Orientations.North: {orientation = Plate.Orientations.West; break}
 
             default: {throw new TypeError("Current orientation is invalid")}
@@ -446,7 +408,12 @@ export default class Plate {
     select() {
         this._rearrange();
 
-        this._bezel.animate('100ms').stroke({color: "#0900fa", width: 2});
+        if (this._params.schematic) {
+            this._bezel.animate('100ms').stroke({opacity: 1, color: "#0900fa", width: 2});
+        } else {
+            this._bezel.animate('100ms').stroke({color: "#0900fa", width: 2});
+        }
+
         this.highlightError(false);
     }
 
@@ -454,7 +421,11 @@ export default class Plate {
      * Снять выделение контура плашки
      */
     deselect() {
-        this._bezel.animate('100ms').stroke({color: "#f0eddb", width: 2});
+        if (this._params.schematic) {
+            this._bezel.animate('100ms').stroke({opacity: 0, color: "#f0eddb", width: 2});
+        } else {
+            this._bezel.animate('100ms').stroke({color: "#f0eddb", width: 2});
+        }
     }
 
     /**
@@ -470,7 +441,7 @@ export default class Plate {
         this._shadow.node.remove();
         // }, 100);
 
-        this.__afterReposition();
+        this._afterReposition();
     }
 
     /**
@@ -719,8 +690,10 @@ export default class Plate {
      * @private
      */
     _dropShadowToSupposedCell() {
-        this._shadow.x(this._state.cell_supposed.pos.x);
-        this._shadow.y(this._state.cell_supposed.pos.y);
+        let pos = this._getPositionAdjusted(this._state.cell_supposed);
+
+        this._shadow.x(pos.x);
+        this._shadow.y(pos.y);
     }
 
     /**
@@ -784,7 +757,7 @@ export default class Plate {
             Oy += sy - 1;
         }
 
-        if (this._state.orientation === Plate.Orientations.East) {
+        if (this._state.orientation === Plate.Orientations.West) {
             Nx += sx - 1;
             Ox += sx - 1;
         }
@@ -835,6 +808,13 @@ export default class Plate {
         this._state.cell_supposed = nearest;
     }
 
+    /**
+     * Предотвратить выход плашки за пределы сетки
+     *
+     * Вызывается при смене положения и ориентации (как ручном, так и автоматическом)
+     *
+     * @private
+     */
     _preventOverflow() {
         /// Номер ячейки, занимаемой опорной ячейкой плашки
         let px = this._state.cell.idx.x,
@@ -852,13 +832,13 @@ export default class Plate {
             dy = 0;
 
         switch(this._state.orientation) {
-            case Plate.Orientations.West:
+            case Plate.Orientations.East:
                 if (px + sx > Nx) {dx = Nx - (px + sx)}
                 break;
             case Plate.Orientations.North:
                 if (py + sx > Ny) {dy = Ny - (py + sx)}
                 break;
-            case Plate.Orientations.East:
+            case Plate.Orientations.West:
                 if (px - sx < -1) {dx = sx - px - 1}
                 break;
             case Plate.Orientations.South:
@@ -869,7 +849,8 @@ export default class Plate {
         px += dx;
         py += dy;
 
-        this.move(this.__grid.cell(px, py), false, true);
+        // анимировать, но только не в случае незавершённой отрисовки
+        this.move(this.__grid.cell(px, py), false, this._drawed);
     }
 
     /**
@@ -885,6 +866,102 @@ export default class Plate {
         this._node_parent.appendChild(node_temp);
     }
 
+
+    /**
+     * Выполнить действия, требуемые до перемещения плашки
+     *
+     * Каждый раз, когда плашка перемещается, необходимо "освободить" ячейки,
+     * занимаемые плашкой ранее, для повторного расчёта токов.
+     *
+     * @private
+     */
+    _beforeReposition() {
+        // Освободить все ячейки, занимаемые плашкой
+        this._reoccupyCells(true);
+    }
+
+    /**
+     * Выполнить действия, требуемые после перемещения плашки
+     *
+     * Каждый раз, когда плашка перемещается, необходимо "занять" ячейки,
+     * которые будут заняты плашкой, для повторного расчёта токов.
+     *
+     * @private
+     */
+    _afterReposition() {
+        // Занять все ячейки, занимаемые плашкой
+        this._reoccupyCells();
+    }
+
+    /**
+     * Занять/освободить ячейки, занимаемые данной плашкой на данной позиции
+     * ВНЕ СХЕМАТИЧЕСКОГО РЕЖИМА: Не запускается
+     *
+     * @param {boolean} clear освободить ячейки
+     * @private
+     */
+    _reoccupyCells(clear=false) {
+        if (!this._params.schematic) return;
+
+        if (!this._params.rels) return;
+
+        let abs = this.state.cell.idx;
+
+        for (let _rel of this._params.rels) {
+            // ориентировать относительную ячейку плашки
+            let rel = Plate._orientXYObject(_rel, this._state.orientation);
+            // определить корректировку для отрисовки тока
+            let adj_cur = clear ? null : Plate._orientXYObject(_rel.adj, this._state.orientation);
+            // определить корректировку положения всей плашки
+            let adj_pos = this._params.adjs ? this._params.adjs[this._state.orientation] : null;
+
+            // учесть, что корректировка положения всей плашки может отсутствовать
+            if (adj_pos) {
+                adj_pos = {x: adj_pos.x ? adj_pos.x : 0, y: adj_pos.y ? adj_pos.y : 0}
+            } else {
+                adj_pos = {x: 0, y: 0};
+            }
+
+            // сообщить ячейке полученную корректировку
+            try {
+                let cell = this.__grid.cell(abs.x + rel.x + adj_pos.x, abs.y + rel.y + adj_pos.y);
+                cell.reoccupy(adj_cur);
+            } catch (e) {
+                console.debug("Tried to get a non-existent cell (in purpose to reoccupy)",
+                    abs.x + rel.x, abs.y + rel.y
+                );
+            }
+        }
+    }
+
+    /**
+     * Возвратить подогнанные координаты для установки плашки
+     *
+     * ВНЕ СХЕМАТИЧЕСКОГО РЕЖИМА: Координаты не подгоняются
+     *
+     * @param {Cell|null} cell Ячейка, если не указано - использовать текущую ячейку из состояния
+     *
+     * @returns {*} координаты с учётном подгонки
+     * @private
+     */
+    _getPositionAdjusted(cell=null) {
+        cell = cell || this._state.cell;
+
+        let abs = {x: cell.pos.x, y: cell.pos.y};
+
+        if (!this._params.schematic) {
+            return abs;
+        }
+
+        if (!this._params.adjs || !this._params.adjs[this._state.orientation]) {
+            return abs;
+        }
+
+        let adj = this._params.adjs[this._state.orientation];
+
+        return {x: abs.x + adj.x * cell.size.x, y: abs.y + adj.y * cell.size.y};
+    }
+
     /**
      * Перевести строку, задающую ориентацию плашки, в значение угла поворота
      *
@@ -895,11 +972,25 @@ export default class Plate {
      */
     static _orientationToAngle(orientation) {
         switch (orientation) {
-            case Plate.Orientations.West:            {return 0}
+            case Plate.Orientations.East:            {return 0}
             case Plate.Orientations.North:           {return 90}
-            case Plate.Orientations.East:            {return 180}
+            case Plate.Orientations.West:            {return 180}
             case Plate.Orientations.South:           {return 270}
             default: {throw new TypeError(`Invalid 'orientation' argument: ${orientation}`)}
         }
+    }
+
+    static _orientXYObject(xyobj, orientation) {
+        let xynew = {};
+
+        switch (orientation) {
+            case Plate.Orientations.East:   {xynew.x = xyobj.x;    xynew.y = xyobj.y;     break;}
+            case Plate.Orientations.South:  {xynew.x = xyobj.y;    xynew.y = -xyobj.x;    break;}
+            case Plate.Orientations.West:   {xynew.x = -xyobj.x;   xynew.y = -xyobj.y;    break;}
+            case Plate.Orientations.North:  {xynew.x = -xyobj.y;   xynew.y = xyobj.x;     break;}
+            default: {throw new TypeError(`Invalid 'orientation' argument: ${orientation}`)}
+        }
+
+        return xynew;
     }
 }

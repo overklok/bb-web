@@ -65,6 +65,8 @@ export default class Breadboard {
 
         this._spare = false;
         this._filters_defined = false;
+
+        this._schematic = false;
     }
 
     getContainer() {
@@ -127,6 +129,12 @@ export default class Breadboard {
     dispose() {
         this._brush.node.remove();
         this._layers = {};
+    }
+
+    redraw(schematic) {
+        this._layers.background.recompose(schematic);
+        this._layers.plate.recompose(schematic);
+        this._layers.current.recompose(schematic);
     }
 
     /**
@@ -239,6 +247,14 @@ export default class Breadboard {
         this._callbacks.dragstart = cb;
     }
 
+    switchSchematic(on) {
+        if (this._schematic === on) return;
+
+        this._schematic = on;
+
+        this.redraw(on);
+    }
+
     switchSpareFilters(on) {
         this._spare = on;
 
@@ -324,10 +340,10 @@ export default class Breadboard {
         let controls    = this._brush.nested(); // органы управления
 
         /// инициализация слоёв
-        this._layers.background = new BackgroundLayer(background, this.__grid, true);
+        this._layers.background = new BackgroundLayer(background, this.__grid, false);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
-        this._layers.current    = new CurrentLayer(current, this.__grid, true);
-        this._layers.plate      = new PlateLayer(plate, this.__grid, true);
+        this._layers.current    = new CurrentLayer(current, this.__grid, false);
+        this._layers.plate      = new PlateLayer(plate, this.__grid, false);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
 
@@ -410,6 +426,9 @@ export default class Breadboard {
                     break;
                 case BoardContextMenu.CMI_EXPORT:
                     this._exportPlates();
+                    break;
+                case BoardContextMenu.CMI_SCHEMA:
+                    this.switchSchematic(!this._schematic);
                     break;
             }
         });

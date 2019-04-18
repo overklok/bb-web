@@ -22,6 +22,10 @@ export default class Layer {
      */
     compose() {throw new TypeError("This method should be overridden by inheriting classes")}
 
+    recompose(schematic) {
+        this.__schematic = schematic;
+    }
+
     hide() {this._container.hide()}
     show() {this._container.show()}
 

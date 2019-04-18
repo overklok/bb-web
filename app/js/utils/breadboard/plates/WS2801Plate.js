@@ -5,7 +5,7 @@ export default class WS2801Plate extends Plate {
     static get Alias() {return "ws2801"}
 
     constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+        super(container, grid, false, id);
 
         this._params.size = {x: 4, y: 1};
     }

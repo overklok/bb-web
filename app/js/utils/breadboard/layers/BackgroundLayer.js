@@ -15,12 +15,12 @@ export default class BackgroundLayer extends Layer {
 
         this._container.addClass(BackgroundLayer.Class);
 
-        this._boardgroup    = this._container.group();
-        this._logogroup     = this._container.group().id("logogroup");
+        this._boardgroup    = undefined;
+        this._logogroup     = undefined;
 
-        this._domaingroup   = this._container.group();//.move(100, 170);
-        this._cellgroup     = this._container.group();//.move(100, 170);
-        this._decogroup     = this._container.group();//.move(100, 170);
+        this._domaingroup   = undefined;
+        this._currentgroup     = undefined;
+        this._decogroup     = undefined;
 
         this._callbacks = {
             logoclick: () => {}
@@ -30,6 +30,8 @@ export default class BackgroundLayer extends Layer {
         this._logo_text     = undefined;
 
         this._is_logo_clicked = false;
+
+        this._initGroups();
     }
 
     compose() {
@@ -46,6 +48,16 @@ export default class BackgroundLayer extends Layer {
         this._drawCells();
     }
 
+    recompose(schematic) {
+        super.recompose(schematic);
+
+        this._initGroups();
+        this.compose();
+
+        // re-click
+        this.toggleLogoActive(this._is_logo_clicked);
+    }
+
     clickLogo() {
         this._logogroup.fire('click');
     }
@@ -54,6 +66,24 @@ export default class BackgroundLayer extends Layer {
         if (!cb) {this._callbacks.logoclick = () => {}}
 
         this._callbacks.logoclick = cb;
+    }
+
+    _initGroups() {
+        this._clearGroups();
+
+        this._boardgroup    = this._container.group();
+        this._logogroup     = this._container.group().id("logogroup");
+        this._domaingroup   = this._container.group();
+        this._currentgroup     = this._container.group();
+        this._decogroup     = this._container.group();
+    }
+
+    _clearGroups() {
+        if (this._boardgroup)   this._boardgroup.remove();
+        if (this._logogroup)    this._logogroup.remove();
+        if (this._domaingroup)  this._domaingroup.remove();
+        if (this._currentgroup)    this._currentgroup.remove();
+        if (this._decogroup)    this._decogroup.remove();
     }
 
     _drawLogo() {
@@ -178,7 +208,7 @@ export default class BackgroundLayer extends Layer {
     _drawCells() {
         for (let col of this.__grid.cells) {
             for (let cell of col) {
-                this._drawCell(this._cellgroup, cell);
+                this._drawCell(this._currentgroup, cell);
             }
         }
     }

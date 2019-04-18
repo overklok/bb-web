@@ -16,16 +16,30 @@ export default class CurrentLayer extends Layer {
         this._container.addClass(CurrentLayer.Class);
 
         this._currents = {};
+        this._threads = {};
 
-        this._cellgroup = undefined;
+        this._spare = undefined;
+
+        this._currentgroup = undefined;
     }
 
     /**
      * Организовать структуру SVG-слоя
      */
     compose() {
-        this._cellgroup = this._container.group();
-        // this._cellgroup.move(100, 170);
+        this._initGroups();
+    }
+
+    recompose(schematic) {
+        super.recompose(schematic);
+
+        let threads = Object.assign([], this._threads);
+
+        this.removeAllCurrents();
+
+        this._initGroups();
+
+        this.setCurrents(threads, this._spare);
     }
 
     /**
@@ -65,6 +79,8 @@ export default class CurrentLayer extends Layer {
         for (let current_id in this._currents) {
             this.removeCurrent(current_id);
         }
+
+        this._threads = {};
     };
 
     /**
@@ -95,6 +111,9 @@ export default class CurrentLayer extends Layer {
      * @param {boolean}         spare       щадящий режим (для слабых машин)
      */
     setCurrents(threads, spare) {
+        this._threads = threads;
+        this._spare = spare;
+
         /// снять возможную пометку с локальных токов
         for (let current_id in this._currents) {
             this._currents[current_id].___touched = undefined;
@@ -143,6 +162,16 @@ export default class CurrentLayer extends Layer {
         }
     }
 
+    _initGroups() {
+        this._clearGroups();
+
+        this._currentgroup = this._container.group();
+    }
+
+    _clearGroups() {
+        if (this._currentgroup) this._currentgroup.remove();
+    }
+
     /**
      * Добавить ток
      *
@@ -154,7 +183,7 @@ export default class CurrentLayer extends Layer {
     _addCurrent(thread, spare) {
         if (!thread || thread.length === 0) {}
 
-        let current = new Current(this._cellgroup, thread, {
+        let current = new Current(this._currentgroup, thread, {
             width: this.__schematic ? CURRENT_WIDTH_SCHEMATIC : CURRENT_WIDTH,
             linecap: "round",
             particle_radius: this.__schematic ? PARTICLE_SIZE_SCHEMATIC : PARTICLE_SIZE

@@ -58,4 +58,16 @@ export default class RegionLayer extends Layer {
         this._regiongroup = this._container.group().id("regiongroup");
         // this._regiongroup.move(100, 170);
     }
+
+    _highlightOccupiedCells() {
+        this._regiongroup.clear();
+
+        for (let col of this.__grid.cells) {
+            for (let cell of col) {
+                if (cell.occupied) {
+                    this.highlightRegion(cell.idx, cell.idx)
+                }
+            }
+        }
+    }
 }

@@ -7,13 +7,22 @@ export default class TransistorPlate extends Plate {
     constructor(container, grid, schematic=false, id) {
         super(container, grid, schematic, id);
 
+        // Размер плашки в стандартной ориентации
         this._params.size = {x: 3, y: 1};
 
+        // Относительные точки плашки (координаты в стандартной ориентации)
+        // Единица - размер ячейки (в кадом измерении)
         this._params.rels = [
             {x: 0, y: 0,    adj: {x: 0, y: -1/3}},
             {x: 1, y: 0,    adj: {x: 0, y: 0}},
             {x: 2, y: 0,    adj: {x: 0, y: -1/3}},
         ];
+
+        // Подгонка позиции плашки для каждой ориентации
+        // Единица - размер ячейки (в кадом измерении)
+        this._params.adjs = {};
+        this._params.adjs[Plate.Orientations.North] = {x: -1/3, y: 0};
+        this._params.adjs[Plate.Orientations.South] = {x: 1/3, y: 0};
     }
 
     /**

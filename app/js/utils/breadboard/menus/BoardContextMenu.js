@@ -5,6 +5,7 @@ export default class BoardContextMenu extends ContextMenu {
     static get CMI_EXPORT() {return "cmi_exp"}
     static get CMI_IMPORT() {return "cmi_imp"}
     static get CMI_SNAPSH() {return "cmi_snp"}
+    static get CMI_SCHEMA() {return "cmi_sch"}
 
     constructor(container, grid, item_height) {
         super(container, grid, item_height);
@@ -31,6 +32,11 @@ export default class BoardContextMenu extends ContextMenu {
                 input: {
                     type: "file",
                 }
+            },
+            {
+                alias: BoardContextMenu.CMI_SCHEMA,
+                label: 'Вкл./Выкл. схематический режим',
+                active: true,
             },
         ];
     }
