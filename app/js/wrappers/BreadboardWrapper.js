@@ -25,7 +25,7 @@ export default class BreadboardWrapper extends Wrapper {
         }
 
         this._plugin.inject(dom_node, {
-            readOnly: read_only,
+            readOnly: read_only
         });
     }
 
@@ -84,6 +84,10 @@ export default class BreadboardWrapper extends Wrapper {
 
     switchSpareFilters(on) {
         this._plugin.switchSpareFilters(on);
+    }
+
+    switchSchematic(on) {
+        this._plugin.switchSchematic(on);
     }
 
     onChange(cb) {

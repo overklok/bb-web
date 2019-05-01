@@ -4,7 +4,7 @@ import base from "intro.js/introjs.css";
 // import thm from "intro.js/themes/introjs-flattener.css";
 import thm from "../../css/intro.css";
 
-let introJS = require('intro.js').introJs;
+let introJS = require('intro.js');
 // window.introJS = introJS;
 
 const CLASS_NAMES = {

@@ -12,6 +12,7 @@ export default class BreadboardModule extends Module {
     static defaults() {
         return {
             modeAdmin: false,
+            schematic: false,
         }
     }
 
@@ -21,6 +22,7 @@ export default class BreadboardModule extends Module {
         this._state = {
             display: false,
             spare: undefined,
+            schematic: this._options.schematic,
         };
 
         this._board = new BreadboardWrapper();
@@ -43,6 +45,10 @@ export default class BreadboardModule extends Module {
 
                 if (this._state.spare != null) {
                     this.switchSpareFilters(this._state.spare);
+                }
+
+                if (this._state.schematic != null) {
+                    this.switchSchematic(this._state.schematic);
                 }
             }
 
@@ -144,6 +150,15 @@ export default class BreadboardModule extends Module {
         }
 
         this._board.switchSpareFilters(on);
+    }
+
+    switchSchematic(on) {
+        if (!this._state.display) {
+            this._state.schematic = on;
+            return false
+        }
+
+        this._board.switchSchematic(on);
     }
 
     _subscribeToWrapperEvents() {

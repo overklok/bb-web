@@ -75,6 +75,7 @@ class Application {
             },
             bb: {
                 modeAdmin: config.isAdmin,
+                schematic: config.schematic,
             },
             gs: {
                 origin: config.origin,

@@ -6,9 +6,15 @@ import Cell from "./Cell";
  */
 export default class Grid {
     constructor(rows, cols, width, height, pos_x=0, pos_y=0, gap_x=0, gap_y=0) {
-        if (!rows || !cols || !width || !height) {
-            throw new TypeError("All arguments should be defined");
+        if (rows == null || cols == null || width == null || height == null) {
+            throw new TypeError("All required arguments should be defined");
         }
+
+        if (rows <= 0 || cols <= 0)     throw new RangeError("Row/Column count should be positive values");
+        if (width <= 0 || height <= 0)  throw new RangeError("Width/Height should be positive values");
+        if (pos_x < 0 || pos_y < 0)     throw new RangeError("Position X/Y should be non-negative values");
+        if (gap_x < 0 || gap_y< 0)      throw new RangeError("Gap X/Y should be non-negative values");
+
         /// Размер сетки
         this._params = {
             dim: {
