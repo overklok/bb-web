@@ -60,7 +60,7 @@ class Application {
                 emphasize: config.isStrip,
             },
             lay: {
-
+                enableProgrammingWithBoard: config.enableProgrammingWithBoard,
             },
             ins: {
                 lessonID: config.lessonID,

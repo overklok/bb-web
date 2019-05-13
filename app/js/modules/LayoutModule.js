@@ -157,7 +157,9 @@ export default class LayoutModule extends Module {
             animSpeedMain: 500,     // скорость анимации главных элементов
             animSpeedSub: 100,      // скорость анимации мелких элементов
             animSpeedFade: 200,     // скорость анимации перехода
-            delayBeforeEnd: 100     // задержка для прогрузки внутренностей
+            delayBeforeEnd: 100,    // задержка для прогрузки внутренностей
+
+            enableProgrammingWithBoard: false,
         }
     }
 
@@ -486,7 +488,7 @@ export default class LayoutModule extends Module {
      */
     _getParamsByMode(mode) {
         return {
-            code_read_only: mode === MODES.FULL,
+            code_read_only: this._options.enableProgrammingWithBoard ? false : mode === MODES.FULL,
             code_zoom_factor: mode === MODES.FULL ? 0.8 : 1
         }
     }
