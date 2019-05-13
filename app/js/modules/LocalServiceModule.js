@@ -240,6 +240,12 @@ export default class LocalServiceModule extends Module {
         });
     }
 
+    /**
+     * @deprecated
+     *
+     * @param vectable
+     * @returns {Promise<any>}
+     */
     sendVectorTable(vectable) {
         if (!vectable) throw new TypeError("Parameter `vectable` is not defined");
 

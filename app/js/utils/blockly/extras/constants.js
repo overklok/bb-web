@@ -180,6 +180,7 @@ const BLOCK_INPUTS_CONSTRAINTS = {
         ['A6', '6'],
         ['A7', '7'],
         ['A8', '8'],
+        ['A9', '9'],
     ],
 };
 

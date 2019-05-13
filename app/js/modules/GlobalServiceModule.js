@@ -215,6 +215,11 @@ export default class GlobalServiceModule extends Module {
             });
     }
 
+    /**
+     * @deprecated
+     * @param plates
+     * @returns {Promise<any>}
+     */
     getVectorTable(plates) {
         if (this._options.modeDummy) {return new Promise(resolve => {resolve([])})}
 
