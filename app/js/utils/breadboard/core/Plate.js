@@ -9,9 +9,9 @@ import PlateContextMenu from "../menus/PlateContextMenu";
  */
 const ORIENTATIONS = {
     West:   'east',
-    North:  'south',
+    North:  'north',
     East:   'west',
-    South:  'north',
+    South:  'south',
     Dummy:  'dummy',
 };
 

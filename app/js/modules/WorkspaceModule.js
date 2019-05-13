@@ -315,9 +315,9 @@ export default class WorkspaceModule extends Module {
 
         let code = WorkspaceModule._preprocessCode(handlers.main);
 
-        for (let command of code) {
-            command.block_id = "unforgiven";
-        }
+        // for (let command of code) {
+        //     command.block_id = "unforgiven";
+        // }
 
         return {commands: code, button: "None", pause: this._state.pause};
     }
