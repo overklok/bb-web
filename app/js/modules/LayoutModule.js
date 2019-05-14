@@ -1,8 +1,11 @@
 import Module from "../core/Module";
 
-require("jquery-ui/ui/widgets/resizable");
-require("jquery-ui-bundle");
 import layout   from "../../vendor/js/jquery.layout.js";
+require("jquery-ui-bundle");
+require("jquery-ui/ui/widgets/resizable");
+
+import 'jquery-ui/ui/widgets/resizable';
+import 'jquery-ui/ui/widgets/draggable';
 
 // console.log("JQR", jQuery.easing);
 
@@ -181,7 +184,7 @@ export default class LayoutModule extends Module {
 
         this._layout_options = this._getFullLayout();
 
-        this._layout = $("." + ROOT_CLASS).layout(this._layout_options);
+        this._layout = jQuery("." + ROOT_CLASS).layout(this._layout_options);
 
         this._panes = this._getPanes();
 
@@ -331,7 +334,7 @@ export default class LayoutModule extends Module {
                     this._panes.east.show("south");
                     duration += this._options.animSpeedSub;
 
-                    this._layout.sizePane("east", .3);
+                    this._layout.sizePane("east", .5);
                     duration += this._options.animSpeedMain;
 
                     if (this._state.buttonsPaneVisible) {
@@ -505,32 +508,36 @@ export default class LayoutModule extends Module {
             /// начальная продолжительность
             let duration = DURATION_INITIAL;
 
-            switch (this._state.mode) {
-                case "board":
-                case "board_vars": {
-                    this._layout.sizePane("east", .4);
-                    duration += this._options.animSpeedMain;
-                    break;
-                }
-                case "full": {
-                    this._layout.sizePane("west", .3);
-                    duration += this._options.animSpeedMain;
-                    this._layout.sizePane("east", .3);
-                    duration += this._options.animSpeedMain;
-                    break;
-                }
-                case "code": {
-                    this._layout.sizePane("east", .3);
-                    duration += this._options.animSpeedMain;
-                    break;
-                }
-            }
+            // switch (this._state.mode) {
+            //     case "board":
+            //     case "board_vars": {
+            //         this._layout.sizePane("east", .4);
+            //         duration += this._options.animSpeedMain;
+            //         break;
+            //     }
+            //     case "full": {
+            //         this._layout.sizePane("west", .3);
+            //         duration += this._options.animSpeedMain;
+            //         this._layout.sizePane("east", .5);
+            //         duration += this._options.animSpeedMain;
+            //         break;
+            //     }
+            //     case "code": {
+            //         this._layout.sizePane("east", .3);
+            //         duration += this._options.animSpeedMain;
+            //         break;
+            //     }
+            // }
 
             setTimeout(() => {
-                this._resizing = false;
                 this.emitEvent("resize", false);
+                this._resizing = false;
             }, duration);
         }
+    }
+
+    _onDrag(pane_name) {
+        console.log("ONDRG", pane_name, this._layout.west.size)
     }
 
     /**
@@ -544,11 +551,9 @@ export default class LayoutModule extends Module {
     _getFullLayout() {
         return {
             closable: true,	    // pane can open & close
-            resizable: true,	// when open, pane can be resized
+            // resizable: true,	// when open, pane can be resized
             slidable: true,	    // when closed, pane can 'slide' open over other panes - closes on mouse-out
-            // livePaneResizing: true,
             fxSpeed: this._options.animSpeedMain,
-            // resizeWhileDragging: true,
 
             fxName:     "slide",
             fxSettings: { duration: this._options.animSpeedMain, easing: "easeInOutCirc" },
@@ -564,6 +569,7 @@ export default class LayoutModule extends Module {
             //	some resizing/toggling settings
             north: {
                 slidable: false,	            // OVERRIDE the pane-default of 'slidable=true'
+                resizable: false,
                 closable: false,
                 spacing_closed: 20,		        // big resizer-bar when open (zero height)
                 size: 55,
@@ -577,15 +583,19 @@ export default class LayoutModule extends Module {
 
             west: {
                 size: .3,
-                minSize: 300,
+                minSize: 200,
+
+                resizable:             true,
+                slidable:              true,
 
                 livePaneResizing: true,
-                resizable: true,
 
                 fxSpeed: this._options.animSpeedMain,
 
                 // onresize:       () => {try {this._onResize('west')} catch (e) {console.error(e)}},
-                onresize_end:   () => {try {this._onResize('west', true)} catch (e) {console.error(e)}},
+                // onresize_end:   () => {try {this._onResize('west', true)} catch (e) {console.error(e)}},
+
+                ondrag_end: () => {this._onDrag('west')}
             },
 
             //	some pane-size settings
@@ -593,8 +603,9 @@ export default class LayoutModule extends Module {
                 size: .4,
                 minSize: 340,
 
-                livePaneResizing: true,
                 resizable: true,
+
+                livePaneResizing: true,
 
                 fxSpeed: this._options.animSpeedMain,
 
@@ -605,7 +616,7 @@ export default class LayoutModule extends Module {
                     center: {
                         size: .7,
 
-                        resizable: true,
+                        // resizable: true,
                         fxSpeed: this._options.animSpeedSub,
                         // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                     },
@@ -613,7 +624,7 @@ export default class LayoutModule extends Module {
                         size: .3,
                         minSize: 150,
 
-                        resizable: true,
+                        // resizable: true,
                         fxSpeed: this._options.animSpeedSub,
                         // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
 
@@ -622,7 +633,6 @@ export default class LayoutModule extends Module {
                                 spacing_open: 0,
                                 spacing_closed: 0,
 
-                                resizable: true,
                                 // onresize: () => {try {this._onResize()} catch (e) {console.error(e)}},
                             },
                             south: {
