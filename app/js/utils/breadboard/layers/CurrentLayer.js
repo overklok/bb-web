@@ -160,6 +160,8 @@ export default class CurrentLayer extends Layer {
                 cur.___touched = true;
             }
         }
+
+        console.log(this._currents);
     }
 
     _initGroups() {

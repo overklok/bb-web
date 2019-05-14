@@ -160,7 +160,7 @@ export default class Current {
             }
 
             // Сгенерировать частицу
-            this._particles[i] = this._container_anim.circle(this.style.width).addClass('current-particle');
+            this._particles[i] = this._container_anim.circle(this.style.particle_radius * 2).addClass('current-particle');
 
             // Заливка и центрирование
             this._particles[i].fill(Current.pickColorFromRange(weight));
@@ -272,7 +272,7 @@ export default class Current {
         // Процент окончания анимации
         let perc = Math.floor(progress_diff_actual / progress_diff_normal * 100);
 
-        let radius_min = this.style.width,
+        let radius_min = this.style.width / 2,
             radius_max = this.style.particle_radius;
 
         let rule_animation              = undefined,    // CSS-класс анимации
