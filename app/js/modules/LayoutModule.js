@@ -334,7 +334,7 @@ export default class LayoutModule extends Module {
                     this._panes.east.show("south");
                     duration += this._options.animSpeedSub;
 
-                    this._layout.sizePane("east", .5);
+                    this._layout.sizePane("east", .3);
                     duration += this._options.animSpeedMain;
 
                     if (this._state.buttonsPaneVisible) {
@@ -508,6 +508,8 @@ export default class LayoutModule extends Module {
             /// начальная продолжительность
             let duration = DURATION_INITIAL;
 
+            // TODO: Need to restore proportions after dragging
+
             // switch (this._state.mode) {
             //     case "board":
             //     case "board_vars": {
@@ -536,9 +538,9 @@ export default class LayoutModule extends Module {
         }
     }
 
-    _onDrag(pane_name) {
-        console.log("ONDRG", pane_name, this._layout.west.size)
-    }
+    // _onDrag(pane_name) {
+        // console.log("ONDRG", pane_name, this._layout.west.size)
+    // }
 
     /**
      * Получить полную разметку
@@ -582,7 +584,7 @@ export default class LayoutModule extends Module {
             },
 
             west: {
-                size: .3,
+                size: .4,
                 minSize: 200,
 
                 resizable:             true,
@@ -595,12 +597,12 @@ export default class LayoutModule extends Module {
                 // onresize:       () => {try {this._onResize('west')} catch (e) {console.error(e)}},
                 // onresize_end:   () => {try {this._onResize('west', true)} catch (e) {console.error(e)}},
 
-                ondrag_end: () => {this._onDrag('west')}
+                // ondrag_end: () => {this._onDrag('west')}
             },
 
             //	some pane-size settings
             east: {
-                size: .4,
+                size: .3,
                 minSize: 340,
 
                 resizable: true,
