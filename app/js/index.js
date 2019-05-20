@@ -746,6 +746,8 @@ class Application {
          * Размер разметки изменён
          */
         this._dispatcher.on('lay:resize', shrink_blocks => {
+            console.log('rs', shrink_blocks);
+
             this.ws.resize(shrink_blocks);
             this.trc.resize();
         });

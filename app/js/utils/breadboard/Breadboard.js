@@ -261,7 +261,7 @@ export default class Breadboard {
         if (!this._filters_defined) {return}
 
         // Фильтры должны храниться в этом узле
-        let defs_elem = document.getElementsByTagName("defs")[0];
+        let defs_elem = app.bb._board._plugin._brush.defs().node;
 
         let defs = [];
 
@@ -602,7 +602,7 @@ export default class Breadboard {
         );
 
         // Фильтры должны храниться в этом узле
-        let defs_elem = document.getElementsByTagName("defs")[0];
+        let defs_elem = app.bb._board._plugin._brush.defs().node;
 
         for (let def of defs) {
             defs_elem.insertAdjacentHTML('beforeend', def);

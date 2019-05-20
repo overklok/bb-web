@@ -157,8 +157,8 @@ export default class LayoutModule extends Module {
 
     static defaults() {
         return {
-            animSpeedMain: 500,     // скорость анимации главных элементов
-            animSpeedSub: 100,      // скорость анимации мелких элементов
+            animSpeedMain: 0, //500,     // скорость анимации главных элементов
+            animSpeedSub: 0, //100,      // скорость анимации мелких элементов
             animSpeedFade: 200,     // скорость анимации перехода
             delayBeforeEnd: 100,    // задержка для прогрузки внутренностей
 
@@ -227,6 +227,7 @@ export default class LayoutModule extends Module {
                     /// сообщить о готовности компоновки
                     if (this._state.firstLaunch && mode === MODES.FULL) {
                         this.emitEvent("compose-end", {nodes, params});
+                        this.emitEvent("resize");
                     }
                     /// разрешить вызов функции
                     this._busy = false;
@@ -374,6 +375,7 @@ export default class LayoutModule extends Module {
                     this.showPanes();
                     /// сообщить об изменении размера панелей
                     this.emitEvent("resize", true);
+                    console.log('rsemit');
                 }, this._options.animSpeedFade); // задержка для анимации появления панелей
             }, duration); // задержка для анимации смены разметки
 
@@ -557,10 +559,10 @@ export default class LayoutModule extends Module {
             slidable: true,	    // when closed, pane can 'slide' open over other panes - closes on mouse-out
             fxSpeed: this._options.animSpeedMain,
 
-            fxName:     "slide",
-            fxSettings: { duration: this._options.animSpeedMain, easing: "easeInOutCirc" },
-            fxSettings_open: { duration: this._options.animSpeedMain, easing: "easeOutCirc" },
-            fxSettings_close: { duration: this._options.animSpeedMain, easing: "easeOutCirc" },
+            // fxName:     "slide",
+            // fxSettings: { duration: this._options.animSpeedMain, easing: "easeInOutCirc" },
+            // fxSettings_open: { duration: this._options.animSpeedMain, easing: "easeOutCirc" },
+            // fxSettings_close: { duration: this._options.animSpeedMain, easing: "easeOutCirc" },
 
             // fxSpeed_size: 1000,
 
