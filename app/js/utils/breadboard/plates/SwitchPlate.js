@@ -7,7 +7,12 @@ export default class SwitchPlate extends Plate {
     constructor(container, grid, schematic=false, id) {
         super(container, grid, schematic, id);
 
-        this._params.size = {x: 3, y: 1};
+        this._params.size = {x: 3, y: 2};
+
+        this._params.surface = [
+                            {x: 1, y:-1},
+            {x: 0, y: 0},   {x: 1, y: 0},   {x: 2, y: 0},
+        ];
     }
 
     /**

@@ -37,6 +37,8 @@ export default class Plate {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
 
+        this.__grid = grid;
+
         this._node_parent = container_parent.node;
 
         /// Кодовое имя плашки
@@ -50,8 +52,8 @@ export default class Plate {
         this._container     = container_parent.nested();        // для масштабирования
         this._shadowgroup   = this._shadow.group();             // для поворота тени
         this._group         = this._container.group();          // для поворота
-        this._bezel     = this._group.rect("100%", "100%");     // для окантовки
-        this.__grid     = grid;
+
+        this._bezel         = undefined; // окантовка
 
         /// Дополнительные контейнеры
         this._group_editable = this._group.group();                     // для режима редактирования
@@ -62,6 +64,7 @@ export default class Plate {
             size:       {x: 0, y: 0},   // кол-во ячеек, занимаемое плашкой на доске
             size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
             origin:     {x: 0, y: 0},   // опорная точка плашки
+            surface:    undefined,      // контур плашки
             rels:       undefined,      // относительные позиции занимаемых ячеек
             adjs:       undefined,      // корректировки положения плашки
             extra:      extra,          // доп. параметр
@@ -177,7 +180,15 @@ export default class Plate {
         this._container.size(width, height);
         this._shadow.size(width, height);
 
-        this._bezel.radius(Breadboard.CellRadius).fill("#fffffd");
+        let surf_path = this._generateSurfacePath(cell);
+
+        if (surf_path) {
+            this._bezel = this._group.path(surf_path);
+        } else {
+            this._bezel = this._group.rect("100%", "100%");
+            this._bezel.radius(Breadboard.CellRadius).fill("#fffffd");
+        }
+
         this._bezel.stroke({color: "#f0eddb", width: 2});
 
         if (this._params.schematic) {
@@ -960,6 +971,63 @@ export default class Plate {
         let adj = this._params.adjs[this._state.orientation];
 
         return {x: abs.x + adj.x * cell.size.x, y: abs.y + adj.y * cell.size.y};
+    }
+
+    _generateSurfacePath(cell) {
+        if (!cell) throw new TypeError("Cell is undefined");
+
+        if (this._params.surface) {
+            let path = [];
+
+            let surface = this._convertSurfaceToArray(this._params.surface);
+
+            // console.log(surface);
+
+            if (!surface) return;
+
+            for (let point of this._params.surface) {
+                // TODO: Check Neighbors
+                // TODO: Gaps
+                // TODO: Radius
+
+                path.push(['M', point.x * cell.size.x, point.y * cell.size.y]);
+                path.push(['l', cell.size.x, 0]);
+                path.push(['l', 0, cell.size.y]);
+                path.push(['l', -cell.size.x, 0]);
+                path.push(['l', 0, -cell.size.y]);
+            }
+
+            return path;
+        }
+    }
+
+    /**
+     *
+     * @param surface Array<object>
+     * @private
+     */
+    _convertSurfaceToArray(surface) {
+        let arr = [];
+
+        for (let item of surface) {
+            let key = item.x;
+
+            if (!arr.hasOwnProperty(key)) arr[key] = [];
+
+            arr[key].push(item.y);
+
+            if (arr[key].length > this._params.size.y) {
+                console.error("Invalid surface for Y size, skipping custom bezel");
+                return;
+            }
+
+            if (arr.length > this._params.size.x) {
+                console.error("Invalid surface for X size, skipping custom bezel");
+                return;
+            }
+        }
+
+        return arr;
     }
 
     /**
