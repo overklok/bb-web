@@ -984,6 +984,8 @@ export default class Plate {
         if (this._params.surface) {
             let path = [];
 
+            // TODO: Verify closed surfaces
+
             let surfcnt = this._convertSurfaceToArray(this._params.surface);
 
             if (!surfcnt) return;
@@ -1033,8 +1035,48 @@ export default class Plate {
                 // skip to suppress redundant deepening
                 if (surfcnt[nb.idx.x][nb.idx.y] > 0) continue;
 
+                // TODO: push gap
+                switch (dir) {
+                    case Cell.Directions.Up: {
+                        // draw up
+                        path.push(['l', 0, -(this.__grid.gap.y * 2)]); break;
+                    }
+                    case Cell.Directions.Right: {
+                        // draw right
+                        path.push(['l', +(this.__grid.gap.x * 2), 0]); break;
+                    }
+                    case Cell.Directions.Down: {
+                        // draw down
+                        path.push(['l', 0, +(this.__grid.gap.y * 2)]); break;
+                    }
+                    case Cell.Directions.Left: {
+                        // draw left
+                        path.push(['l', -(this.__grid.gap.x * 2), 0]); break;
+                    }
+                }
+
                 // if neighbor exists for this direction, draw from it
                 path = path.concat(this._buildSurfacePathForCell(nb, surfcnt, dir_idx - 1, stak));
+
+                // TODO: pull gap
+                switch (dir) {
+                    case Cell.Directions.Up: {
+                        // draw down
+                        path.push(['l', 0, +(this.__grid.gap.y * 2)]); break;
+                    }
+                    case Cell.Directions.Right: {
+                        // draw left
+                        path.push(['l', -(this.__grid.gap.x * 2), 0]); break;
+                    }
+                    case Cell.Directions.Down: {
+                        // draw up
+                        path.push(['l', 0, -(this.__grid.gap.y * 2)]); break;
+                    }
+                    case Cell.Directions.Left: {
+                        // draw right
+                        path.push(['l', +(this.__grid.gap.x * 2), 0]); break;
+                    }
+                }
             } else {
                 surfcnt[cell.idx.x][cell.idx.y] += 1;
                 // otherwise we can draw the edge of this direction
