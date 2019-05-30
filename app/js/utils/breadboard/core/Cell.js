@@ -95,6 +95,36 @@ export default class Cell {
         return (this.__adj != null);
     }
 
+    neighbor(dir) {
+        let point = {};
+
+        switch (dir) {
+            case Cell.Directions.Up: {
+                point = {x: this.idx.x, y: this.idx.y - 1}; break;
+            }
+            case Cell.Directions.Down: {
+                point = {x: this.idx.x, y: this.idx.y + 1}; break;
+            }
+            case Cell.Directions.Right: {
+                point = {x: this.idx.x + 1, y: this.idx.y}; break;
+            }
+            case Cell.Directions.Left: {
+                point = {x: this.idx.x - 1, y: this.idx.y}; break;
+            }
+            default: {
+                throw new RangeError("Invalid direction");
+            }
+        }
+
+        try {
+            return this.__grid.cell(point.x, point.y);
+        } catch (err) {
+            return null;
+        }
+
+        return null;
+    }
+
     reoccupy(adjustment=null) {
         this.__adj = adjustment;
     }

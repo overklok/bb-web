@@ -2,6 +2,10 @@ import Breadboard from "../Breadboard";
 import Cell from "./Cell";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
+function mod(n, m) {
+  return ((n % m) + m) % m;
+}
+
 /**
  * Коды ориентаций
  *
@@ -180,7 +184,7 @@ export default class Plate {
         this._container.size(width, height);
         this._shadow.size(width, height);
 
-        let surf_path = this._generateSurfacePath(cell);
+        let surf_path = this._generateSurfacePath();
 
         if (surf_path) {
             this._bezel = this._group.path(surf_path);
@@ -195,6 +199,9 @@ export default class Plate {
             this._bezel.fill({opacity: 0});
             this._bezel.stroke({opacity: 0})
         }
+
+        // this._bezel.fill({opacity: 0});
+        this._bezel.stroke({color: "#00ff00"});
 
         this._error_highlighter.fill({color: "#f00"}).radius(10);
 
@@ -973,131 +980,97 @@ export default class Plate {
         return {x: abs.x + adj.x * cell.size.x, y: abs.y + adj.y * cell.size.y};
     }
 
-    _generateSurfacePath(cell) {
-        if (!cell) throw new TypeError("Cell is undefined");
-
+    _generateSurfacePath() {
         if (this._params.surface) {
             let path = [];
 
             let surface = this._convertSurfaceToArray(this._params.surface);
 
-            // console.log(surface);
+            console.log(surface);
 
             if (!surface) return;
 
-            for (let point of this._params.surface) {
-                // TODO: Check Neighbors
-                // TODO: Gaps
-                // TODO: Radius
+            let surf_point = this._params.surface_from;
+            let cell = this.__grid.cell(surf_point.x, surf_point.y);
 
-                // Starting point coordinates - top left corner
-                let mv_x = point.x * (cell.size.x + this.__grid.gap.x * 2),
-                    mv_y = point.y * (cell.size.y + this.__grid.gap.y * 2);
+            let mv_x = surf_point.x * (cell.size.x + this.__grid.gap.x * 2),
+                mv_y = surf_point.y * (cell.size.y + this.__grid.gap.y * 2);
 
-                // Move to starting point
-                path.push(['M', mv_x, mv_y]);
+            path.push(['M', mv_x, mv_y]);
 
-                let neighbor_cells = [
-                    {x: point.x, y: point.y - 1, dir: Cell.Directions.Up},
-                    {x: point.x, y: point.y + 1, dir: Cell.Directions.Down},
-                    {x: point.x - 1, y: point.y, dir: Cell.Directions.Left},
-                    {x: point.x + 1, y: point.y, dir: Cell.Directions.Right},
-                ];
+            return path.concat(this._buildSurfacePathForCell(cell, surface));
+        }
+    }
 
-                let dirs_unbuilt = {up: true, down: true, left: true, right: true};
+    _buildSurfacePathForCell(cell, surface_arr, from=null, dir_idx=0, stak=0) {
+        let path = [];
 
-                for (let n_cell of neighbor_cells) {
-                    if (surface[n_cell.x] && surface[n_cell.x][n_cell.y]) {
-                        // Move to starting point
-                        path.push(['M', mv_x, mv_y]);
+        stak += 1;
 
-                        // cell has neighbour at [n_cell.x, n_cell.y]
-                        switch (n_cell.dir) {
-                            case Cell.Directions.Up: {
-                                // build up
-                                path.push(['l', 0, -(this.__grid.gap.y * 2)]);
-                                // then jump right
-                                path.push(['m', cell.size.x, 0]);
-                                // then build down
-                                path.push(['l', 0, +(this.__grid.gap.y * 2)]);
+        // clockwise dir sequence
+        let dirs = [
+            Cell.Directions.Up,
+            Cell.Directions.Right,
+            Cell.Directions.Down,
+            Cell.Directions.Left
+        ];
 
-                                dirs_unbuilt.up = false;
-                                break;
-                            }
-                            case Cell.Directions.Down: {
-                                // move to bottom left corner
-                                path.push(['m', 0, cell.size.y]);
-                                // build down
-                                path.push(['l', 0, +(this.__grid.gap.y * 2)]);
-                                // then jump right
-                                path.push(['m', cell.size.x, 0]);
-                                // then build up
-                                path.push(['l', 0, -(this.__grid.gap.y * 2)]);
+        if (stak > 50) throw new Error("Пiйшов нахуй");
 
-                                dirs_unbuilt.down = false;
-                                break;
-                            }
-                            case Cell.Directions.Left: {
-                                // build left
-                                path.push(['l', -(this.__grid.gap.x * 2), 0]);
-                                // then jump down
-                                path.push(['m', 0, +cell.size.y]);
-                                // build right
-                                path.push(['l', +(this.__grid.gap.x * 2), 0]);
+        // if (cell.idx.x === this._params.surface_from.x && cell.idx.y === this._params.surface_from.y) {
+        //
+        // }
 
-                                dirs_unbuilt.left = false;
-                                break;
-                            }
-                            case Cell.Directions.Right: {
-                                // move to top right corner
-                                path.push(['m', cell.size.x, 0]);
-                                // build right
-                                path.push(['l', +(this.__grid.gap.x * 2), 0]);
-                                // then jump down
-                                path.push(['m', 0, +cell.size.y]);
-                                // build left
-                                path.push(['l', -(this.__grid.gap.x * 2), 0]);
+        console.group('hook');
 
-                                dirs_unbuilt.right = false;
-                                break;
-                            }
-                        }
+        // main drawing procedure
+        while (surface_arr[cell.idx.x][cell.idx.y] < dirs.length) {
+        // for (let times = surface_arr[cell.idx.x][cell.idx.y]; times < dirs.length; times++) {
+            dir_idx = mod(dir_idx, dirs.length);
+
+            let dir = dirs[dir_idx % dirs.length];
+
+            // get neighbor cell for current direction
+            let nb = cell.neighbor(dir);
+
+            // if (nb == from) continue;
+
+            if (nb && surface_arr[nb.idx.x] && surface_arr[nb.idx.x].hasOwnProperty(nb.idx.y)) {
+                console.log('skip', dir, dir_idx, cell.idx, 'to', nb.idx, 'times', surface_arr[cell.idx.x][cell.idx.y]);
+                surface_arr[cell.idx.x][cell.idx.y] += 1;
+                // if neighbor exists for this direction, draw from it
+                path = path.concat(this._buildSurfacePathForCell(nb, surface_arr, cell, dir_idx - 1, stak));
+            } else {
+                surface_arr[cell.idx.x][cell.idx.y] += 1;
+                // otherwise we can draw the edge of this direction
+                console.log('edge', dir, dir_idx, cell.idx, 'times', surface_arr[cell.idx.x][cell.idx.y]);
+
+                switch (dir) {
+                    case Cell.Directions.Up: {
+                        // draw right
+                        path.push(['l', cell.size.x, 0]); break;
                     }
-                }
-
-                console.log(dirs_unbuilt, 'for', point);
-
-                if (dirs_unbuilt.up) {
-                    // move to starting point again
-                    path.push(['M', mv_x, mv_y]);
-                    // build right
-                    path.push(['l', cell.size.x, 0]);
-                }
-
-                if (dirs_unbuilt.down) {
-                    // move to left bottom corner
-                    path.push(['M', mv_x, mv_y + cell.size.y]);
-                    // build right
-                    path.push(['l', cell.size.x, 0]);
-                }
-
-                if (dirs_unbuilt.right) {
-                    // move to right top corner
-                    path.push(['M', mv_x + cell.size.x, mv_y]);
-                    // build down
-                    path.push(['l', 0, cell.size.y]);
-                }
-
-                if (dirs_unbuilt.left) {
-                    // move to starting point
-                    path.push(['M', mv_x, mv_y]);
-                    // build down
-                    path.push(['l', 0, cell.size.y]);
+                    case Cell.Directions.Right: {
+                        // draw down
+                        path.push(['l', 0, cell.size.y]); break;
+                    }
+                    case Cell.Directions.Down: {
+                        // draw left
+                        path.push(['l', -cell.size.x, 0]); break;
+                    }
+                    case Cell.Directions.Left: {
+                        // draw up
+                        path.push(['l', 0, -cell.size.y]); break;
+                    }
                 }
             }
 
-            return path;
+            dir_idx++;
         }
+
+        console.groupEnd('hook');
+
+        return path;
     }
 
     /**
@@ -1111,9 +1084,7 @@ export default class Plate {
         for (let item of surface) {
             if (!arr.hasOwnProperty(item.x)) arr[item.x] = [];
 
-            arr[item.x].push(item.y);
-
-            arr[item.x][item.y] = {dirs_unbuilt: {up: true, down: true, left: true, right: true}};
+            arr[item.x][item.y] = 0;
 
             if (arr[item.x].length > this._params.size.y) {
                 console.error("Invalid surface for Y size, skipping custom bezel");
