@@ -1,4 +1,13 @@
+const DIRECTIONS = {
+    Up:   'up',
+    Down:  'down',
+    Left:   'left',
+    Right:  'right',
+};
+
 export default class Cell {
+    static get Directions() {return DIRECTIONS}
+
     constructor(x, y, grid) {
         if (typeof x === "undefined") {
             throw new TypeError("X is not defined");

@@ -990,11 +990,110 @@ export default class Plate {
                 // TODO: Gaps
                 // TODO: Radius
 
-                path.push(['M', point.x * cell.size.x, point.y * cell.size.y]);
-                path.push(['l', cell.size.x, 0]);
-                path.push(['l', 0, cell.size.y]);
-                path.push(['l', -cell.size.x, 0]);
-                path.push(['l', 0, -cell.size.y]);
+                // Starting point coordinates - top left corner
+                let mv_x = point.x * (cell.size.x + this.__grid.gap.x * 2),
+                    mv_y = point.y * (cell.size.y + this.__grid.gap.y * 2);
+
+                // Move to starting point
+                path.push(['M', mv_x, mv_y]);
+
+                let neighbor_cells = [
+                    {x: point.x, y: point.y - 1, dir: Cell.Directions.Up},
+                    {x: point.x, y: point.y + 1, dir: Cell.Directions.Down},
+                    {x: point.x - 1, y: point.y, dir: Cell.Directions.Left},
+                    {x: point.x + 1, y: point.y, dir: Cell.Directions.Right},
+                ];
+
+                let dirs_unbuilt = {up: true, down: true, left: true, right: true};
+
+                for (let n_cell of neighbor_cells) {
+                    if (surface[n_cell.x] && surface[n_cell.x][n_cell.y]) {
+                        // Move to starting point
+                        path.push(['M', mv_x, mv_y]);
+
+                        // cell has neighbour at [n_cell.x, n_cell.y]
+                        switch (n_cell.dir) {
+                            case Cell.Directions.Up: {
+                                // build up
+                                path.push(['l', 0, -(this.__grid.gap.y * 2)]);
+                                // then jump right
+                                path.push(['m', cell.size.x, 0]);
+                                // then build down
+                                path.push(['l', 0, +(this.__grid.gap.y * 2)]);
+
+                                dirs_unbuilt.up = false;
+                                break;
+                            }
+                            case Cell.Directions.Down: {
+                                // move to bottom left corner
+                                path.push(['m', 0, cell.size.y]);
+                                // build down
+                                path.push(['l', 0, +(this.__grid.gap.y * 2)]);
+                                // then jump right
+                                path.push(['m', cell.size.x, 0]);
+                                // then build up
+                                path.push(['l', 0, -(this.__grid.gap.y * 2)]);
+
+                                dirs_unbuilt.down = false;
+                                break;
+                            }
+                            case Cell.Directions.Left: {
+                                // build left
+                                path.push(['l', -(this.__grid.gap.x * 2), 0]);
+                                // then jump down
+                                path.push(['m', 0, +cell.size.y]);
+                                // build right
+                                path.push(['l', +(this.__grid.gap.x * 2), 0]);
+
+                                dirs_unbuilt.left = false;
+                                break;
+                            }
+                            case Cell.Directions.Right: {
+                                // move to top right corner
+                                path.push(['m', cell.size.x, 0]);
+                                // build right
+                                path.push(['l', +(this.__grid.gap.x * 2), 0]);
+                                // then jump down
+                                path.push(['m', 0, +cell.size.y]);
+                                // build left
+                                path.push(['l', -(this.__grid.gap.x * 2), 0]);
+
+                                dirs_unbuilt.right = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                console.log(dirs_unbuilt, 'for', point);
+
+                if (dirs_unbuilt.up) {
+                    // move to starting point again
+                    path.push(['M', mv_x, mv_y]);
+                    // build right
+                    path.push(['l', cell.size.x, 0]);
+                }
+
+                if (dirs_unbuilt.down) {
+                    // move to left bottom corner
+                    path.push(['M', mv_x, mv_y + cell.size.y]);
+                    // build right
+                    path.push(['l', cell.size.x, 0]);
+                }
+
+                if (dirs_unbuilt.right) {
+                    // move to right top corner
+                    path.push(['M', mv_x + cell.size.x, mv_y]);
+                    // build down
+                    path.push(['l', 0, cell.size.y]);
+                }
+
+                if (dirs_unbuilt.left) {
+                    // move to starting point
+                    path.push(['M', mv_x, mv_y]);
+                    // build down
+                    path.push(['l', 0, cell.size.y]);
+                }
             }
 
             return path;
@@ -1010,13 +1109,13 @@ export default class Plate {
         let arr = [];
 
         for (let item of surface) {
-            let key = item.x;
+            if (!arr.hasOwnProperty(item.x)) arr[item.x] = [];
 
-            if (!arr.hasOwnProperty(key)) arr[key] = [];
+            arr[item.x].push(item.y);
 
-            arr[key].push(item.y);
+            arr[item.x][item.y] = {dirs_unbuilt: {up: true, down: true, left: true, right: true}};
 
-            if (arr[key].length > this._params.size.y) {
+            if (arr[item.x].length > this._params.size.y) {
                 console.error("Invalid surface for Y size, skipping custom bezel");
                 return;
             }
