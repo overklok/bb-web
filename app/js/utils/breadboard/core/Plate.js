@@ -984,13 +984,11 @@ export default class Plate {
         if (this._params.surface) {
             let path = [];
 
-            let surface = this._convertSurfaceToArray(this._params.surface);
+            let surfcnt = this._convertSurfaceToArray(this._params.surface);
 
-            console.log(surface);
+            if (!surfcnt) return;
 
-            if (!surface) return;
-
-            let surf_point = this._params.surface_from;
+            let surf_point = this._params.surface[0];
             let cell = this.__grid.cell(surf_point.x, surf_point.y);
 
             let mv_x = surf_point.x * (cell.size.x + this.__grid.gap.x * 2),
@@ -998,11 +996,11 @@ export default class Plate {
 
             path.push(['M', mv_x, mv_y]);
 
-            return path.concat(this._buildSurfacePathForCell(cell, surface));
+            return path.concat(this._buildSurfacePathForCell(cell, surfcnt));
         }
     }
 
-    _buildSurfacePathForCell(cell, surface_arr, from=null, dir_idx=0, stak=0) {
+    _buildSurfacePathForCell(cell, surfcnt, dir_idx=0, stak=0) {
         let path = [];
 
         stak += 1;
@@ -1017,15 +1015,10 @@ export default class Plate {
 
         if (stak > 50) throw new Error("Пiйшов нахуй");
 
-        // if (cell.idx.x === this._params.surface_from.x && cell.idx.y === this._params.surface_from.y) {
-        //
-        // }
-
         console.group('hook');
 
         // main drawing procedure
-        while (surface_arr[cell.idx.x][cell.idx.y] < dirs.length) {
-        // for (let times = surface_arr[cell.idx.x][cell.idx.y]; times < dirs.length; times++) {
+        while (surfcnt[cell.idx.x][cell.idx.y] < dirs.length) {
             dir_idx = mod(dir_idx, dirs.length);
 
             let dir = dirs[dir_idx % dirs.length];
@@ -1033,17 +1026,19 @@ export default class Plate {
             // get neighbor cell for current direction
             let nb = cell.neighbor(dir);
 
-            // if (nb == from) continue;
+            if (nb && surfcnt[nb.idx.x] && surfcnt[nb.idx.x].hasOwnProperty(nb.idx.y)) {
+                console.log('skip', dir, dir_idx, cell.idx, 'to', nb.idx, 'times', surfcnt[cell.idx.x][cell.idx.y]);
+                surfcnt[cell.idx.x][cell.idx.y] += 1;
 
-            if (nb && surface_arr[nb.idx.x] && surface_arr[nb.idx.x].hasOwnProperty(nb.idx.y)) {
-                console.log('skip', dir, dir_idx, cell.idx, 'to', nb.idx, 'times', surface_arr[cell.idx.x][cell.idx.y]);
-                surface_arr[cell.idx.x][cell.idx.y] += 1;
+                // skip to suppress redundant deepening
+                if (surfcnt[nb.idx.x][nb.idx.y] > 0) continue;
+
                 // if neighbor exists for this direction, draw from it
-                path = path.concat(this._buildSurfacePathForCell(nb, surface_arr, cell, dir_idx - 1, stak));
+                path = path.concat(this._buildSurfacePathForCell(nb, surfcnt, dir_idx - 1, stak));
             } else {
-                surface_arr[cell.idx.x][cell.idx.y] += 1;
+                surfcnt[cell.idx.x][cell.idx.y] += 1;
                 // otherwise we can draw the edge of this direction
-                console.log('edge', dir, dir_idx, cell.idx, 'times', surface_arr[cell.idx.x][cell.idx.y]);
+                console.log('edge', dir, dir_idx, cell.idx, 'times', surfcnt[cell.idx.x][cell.idx.y]);
 
                 switch (dir) {
                     case Cell.Directions.Up: {

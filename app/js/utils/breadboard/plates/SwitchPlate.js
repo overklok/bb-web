@@ -11,10 +11,8 @@ export default class SwitchPlate extends Plate {
 
         this._params.surface = [
                             {x: 1, y: 0},
-            {x: 0, y: 1},   {x: 1, y: 1},   {x: 2, y: 1},
+            {x: 0, y: 1},   {x: 1, y: 1},   {x: 2, y: 1}
         ];
-
-        this._params.surface_from = {x: 0, y: 1};
     }
 
     /**
