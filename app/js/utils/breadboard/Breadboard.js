@@ -418,8 +418,11 @@ export default class Breadboard {
         /// нажатие на пункт глобального контекстного меню (платы)
         this._layers.controls.onContextMenuItemClick((alias, value) => {
             switch (alias) {
-                case BoardContextMenu.CMI_SNAPSH:
+                case BoardContextMenu.CMI_SNAPSH_SVG:
                     this._saveToImage();
+                    break;
+                case BoardContextMenu.CMI_SNAPSH_PNG:
+                    this._saveToImage(true);
                     break;
                 case BoardContextMenu.CMI_IMPORT:
                     this._importPlates(value);
@@ -509,14 +512,18 @@ export default class Breadboard {
         }
     }
 
-    _saveToImage() {
+    _saveToImage(rasterize=false) {
         let svg_node = this.getContainer();
 
         if (!svg_node) {return}
 
         let canvas = document.createElement("canvas");
-        // canvas.setAttribute('width', WRAP_WIDTH);
-        // canvas.setAttribute('height', WRAP_HEIGHT);
+        canvas.style.minWidth = WRAP_WIDTH;
+        canvas.style.minHeight = WRAP_HEIGHT;
+
+        canvas.setAttribute('width', WRAP_WIDTH);
+        canvas.setAttribute('height', WRAP_HEIGHT);
+
         document.body.appendChild(canvas);
 
         this.switchModePhoto(true);
@@ -525,13 +532,15 @@ export default class Breadboard {
 
         let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
 
-        // canvg(canvas, svgString, {ignoreDimensions: true});
-        // canvg(canvas, svgString, {scaleWidth: 2, scaleHeight: 2});
+        if (rasterize) {
+            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: WRAP_HEIGHT});
 
-        // let img = canvas.toDataURL("image/png");
+            let img = canvas.toDataURL("image/png");
 
-        // saveAs(img, 'breadboard.png');
-        saveAs(svg, 'breadboard.svg');
+            saveAs(img, 'breadboard.png');
+        } else {
+            saveAs(svg, 'breadboard.svg');
+        }
 
         canvas.remove();
     }
