@@ -1,12 +1,33 @@
 const DIRECTIONS = {
-    Up:   'up',
-    Down:  'down',
+    Up:     'up',
+    Down:   'down',
     Left:   'left',
     Right:  'right',
 };
 
+const DIRS_CW = [DIRECTIONS.Up, DIRECTIONS.Right, DIRECTIONS.Down, DIRECTIONS.Left];
+
 export default class Cell {
     static get Directions() {return DIRECTIONS}
+
+    static IsDirHorizontal(dir) {
+        return (dir === Cell.Directions.Up || dir === Cell.Directions.Down);
+    }
+
+    static IsDirVertical(dir) {
+        return (dir === Cell.Directions.Left || dir === Cell.Directions.Right);
+    }
+
+    static IsDirsClockwise(dir1, dir2) {
+        let dir_idx_1 = DIRS_CW.indexOf(dir1),
+            dir_idx_2 = DIRS_CW.indexOf(dir2);
+
+        if (dir_idx_1 === -1 || dir_idx_2 === -1) {
+            throw new RangeError("Invalid direction(s)");
+        }
+
+        return ((dir_idx_2 - dir_idx_1 === 1) || (dir_idx_1 === (DIRS_CW.length - 1) && dir_idx_2 === 0));
+    }
 
     constructor(x, y, grid) {
         if (typeof x === "undefined") {

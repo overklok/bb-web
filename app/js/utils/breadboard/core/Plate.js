@@ -982,6 +982,8 @@ export default class Plate {
     }
 
     _generateSurfacePath() {
+        this._dir_prev = null;
+
         if (this._params.surface) {
             let path = [];
 
@@ -993,11 +995,6 @@ export default class Plate {
 
             let surf_point = this._params.surface[0];
             let cell = this.__grid.cell(surf_point.x, surf_point.y);
-
-            let mv_x = surf_point.x * (cell.size.x + this.__grid.gap.x * 2),
-                mv_y = surf_point.y * (cell.size.y + this.__grid.gap.y * 2);
-
-            path.push(['M', mv_x, mv_y]);
 
             return path.concat(this._buildSurfacePath(cell, surfcnt));
         }
@@ -1014,8 +1011,6 @@ export default class Plate {
             Cell.Directions.Left
         ];
 
-        console.group('hook');
-
         // main drawing procedure
         while (surfcnt[cell.idx.x][cell.idx.y] < dirs.length) {
             dir_idx = mod(dir_idx, dirs.length);
@@ -1026,52 +1021,43 @@ export default class Plate {
             let nb = cell.neighbor(dir);
 
             if (nb && surfcnt[nb.idx.x] && surfcnt[nb.idx.x].hasOwnProperty(nb.idx.y)) {
-                console.log('skip', dir, dir_idx, cell.idx, 'to', nb.idx, 'times', surfcnt[cell.idx.x][cell.idx.y]);
                 surfcnt[cell.idx.x][cell.idx.y] += 1;
 
                 // skip to suppress redundant deepening
-                if (surfcnt[nb.idx.x][nb.idx.y] > 0) {
-                    dir_idx++;
-                    continue;
+                if (surfcnt[nb.idx.x][nb.idx.y] <= 0) {
+                    // push gap
+                    // path = path.concat(this._buildSurfacePathGapPush(dir));
+                    // if neighbor exists for this direction, draw from it
+                    path = path.concat(this._buildSurfacePath(nb, surfcnt, dir_idx - 1));
+                    // pull gap
+                    // path = path.concat(this._buildSurfacePathGapPull(dir));
                 }
-
-                // push gap
-                path.push(this._buildSurfacePathGapPush(dir));
-
-                // if neighbor exists for this direction, draw from it
-                path = path.concat(this._buildSurfacePath(nb, surfcnt, dir_idx - 1));
-
-                // pull gap
-                path.push(this._buildSurfacePathGapPull(dir));
             } else {
-                surfcnt[cell.idx.x][cell.idx.y] += 1;
                 // otherwise we can draw the edge of this direction
-                console.log('edge', dir, dir_idx, cell.idx, 'times', surfcnt[cell.idx.x][cell.idx.y]);
+                surfcnt[cell.idx.x][cell.idx.y] += 1;
 
-                path.push(this._buildSurfacePathEdge(dir));
+                path = path.concat(this._buildSurfacePathEdge(cell, dir));
             }
 
             dir_idx++;
         }
 
-        console.groupEnd('hook');
-
         return path;
     }
 
-    _buildSurfacePathGapPush(dir) {
+    _buildSurfacePathGapPush(dir, radius=10) {
         switch (dir) {
             case Cell.Directions.Up: {
-                return ['l', 0, -(this.__grid.gap.y * 2)]; // draw up
+                return [['v', -(this.__grid.gap.y * 2)]]; // draw up
             }
             case Cell.Directions.Right: {
-                return ['l', +(this.__grid.gap.x * 2), 0]; // draw right
+                return [['h', +(this.__grid.gap.x * 2)]]; // draw right
             }
             case Cell.Directions.Down: {
-                return ['l', 0, +(this.__grid.gap.y * 2)]; // draw down
+                return [['v', +(this.__grid.gap.y * 2)]]; // draw down
             }
             case Cell.Directions.Left: {
-                return ['l', -(this.__grid.gap.x * 2), 0]; // draw left
+                return [['h', -(this.__grid.gap.x * 2)]]; // draw left
             }
             default: {
                 throw new RangeError("Invalid direction");
@@ -1079,19 +1065,19 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePathGapPull(dir) {
+    _buildSurfacePathGapPull(dir, radius=10) {
         switch (dir) {
             case Cell.Directions.Up: {
-                return ['l', 0, +(this.__grid.gap.y * 2)]; // draw down
+                return [['v', +(this.__grid.gap.y * 2)]]; // draw down
             }
             case Cell.Directions.Right: {
-                return ['l', -(this.__grid.gap.x * 2), 0]; // draw left
+                return [['h', -(this.__grid.gap.x * 2)]]; // draw left
             }
             case Cell.Directions.Down: {
-                return ['l', 0, -(this.__grid.gap.y * 2)]; // draw up
+                return [['v', -(this.__grid.gap.y * 2)]]; // draw up
             }
             case Cell.Directions.Left: {
-                return ['l', +(this.__grid.gap.x * 2), 0]; // draw right
+                return [['h', +(this.__grid.gap.x * 2)]]; // draw right
             }
             default: {
                 throw new RangeError("Invalid direction");
@@ -1099,21 +1085,68 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePathEdge(dir) {
-        let cell = this.__grid.cell(0, 0);
+    _buildSurfacePathEdge(cell, dir_curr) {
+        let dir_prev = this._dir_prev;
 
-        switch (dir) {
+        let rx = null,
+            ry = null;
+
+        let radius = 10;
+
+        let mov = [];
+        let arc = [];
+
+        // FIXME: Problems with unexpected offset (maybe related with stroke-width)
+        // TODO: Refactor
+        // TODO: Enclosure
+        // TODO: Gaps
+
+        if (this._dir_prev === null) {
+            let mv_x = (cell.idx.x * (cell.size.x + this.__grid.gap.x * 2)),
+                mv_y = (cell.idx.y * (cell.size.y + this.__grid.gap.y * 2));
+
+            mov = ['M', mv_x + radius, mv_y];
+        }
+
+        if (Cell.IsDirHorizontal(dir_prev) && Cell.IsDirVertical(dir_curr)) {
+            rx = (dir_prev === Cell.Directions.Up)      ? radius : -radius;
+            ry = (dir_curr === Cell.Directions.Right)    ? radius : -radius;
+        }
+
+        if (Cell.IsDirHorizontal(dir_curr) && Cell.IsDirVertical(dir_prev)) {
+            rx = (dir_curr === Cell.Directions.Up)      ? radius : -radius;
+            ry = (dir_prev === Cell.Directions.Right)    ? radius : -radius;
+        }
+
+        console.log(dir_prev, 'to', dir_curr);
+
+        if (rx !== null && ry !== null) {
+            let cw = Cell.IsDirsClockwise(dir_prev, dir_curr) ? 1 : 0;
+
+            console.log(cw, rx, ry);
+            // arc = ['a', radius, radius, 0, 0, cw, rx, ry];
+            arc = ['l', rx, ry];
+        } else if (dir_prev !== null) {
+            radius = 0;
+            console.log("radius is 0!");
+        }
+
+        this._dir_prev = dir_curr;
+
+        console.log(cell.size.x, (cell.size.x - radius*2));
+
+        switch (dir_curr) {
             case Cell.Directions.Up: {
-                return ['l', +cell.size.x, 0]; // draw right
+                return [mov, arc, ['h', +(cell.size.x - radius*2)]]; // draw right
             }
             case Cell.Directions.Right: {
-                return ['l', 0, +cell.size.y]; // draw down
+                return [mov, arc, ['v', +(cell.size.y - radius*2)]]; // draw down
             }
             case Cell.Directions.Down: {
-                return ['l', -cell.size.x, 0]; // draw left
+                return [mov, arc, ['h', -(cell.size.x - radius*2)]]; // draw left
             }
             case Cell.Directions.Left: {
-                return ['l', 0, -cell.size.y]; // draw up
+                return [mov, arc, ['v', -(cell.size.y - radius*2)]]; // draw up
             }
             default: {
                 throw new RangeError("Invalid direction");

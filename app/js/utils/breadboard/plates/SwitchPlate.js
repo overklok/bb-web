@@ -24,7 +24,7 @@ export default class SwitchPlate extends Plate {
      * @param {string}  orientation ориентация перемычки
      */
     __draw__(position, orientation) {
-        this._drawPicture();
+        // this._drawPicture();
 
         // this._group.text(`Button`).font({size: 20});
     };
