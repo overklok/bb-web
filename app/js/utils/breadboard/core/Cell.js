@@ -9,6 +9,7 @@ const DIRS_CW = [DIRECTIONS.Up, DIRECTIONS.Right, DIRECTIONS.Down, DIRECTIONS.Le
 
 export default class Cell {
     static get Directions() {return DIRECTIONS}
+    static get DirectionsClockwise() {return DIRS_CW}
 
     static IsDirHorizontal(dir) {
         return (dir === Cell.Directions.Up || dir === Cell.Directions.Down);

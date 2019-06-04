@@ -982,8 +982,6 @@ export default class Plate {
     }
 
     _generateSurfacePath() {
-        this._dir_prev = null;
-
         if (this._params.surface) {
             let path = [];
 
@@ -1000,16 +998,11 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePath(cell, surfcnt, dir_idx=0) {
+    _buildSurfacePath(cell, surfcnt, dir_idx=0, is_root=true) {
         let path = [];
 
         // clockwise dir sequence
-        let dirs = [
-            Cell.Directions.Up,
-            Cell.Directions.Right,
-            Cell.Directions.Down,
-            Cell.Directions.Left
-        ];
+        let dirs = Cell.DirectionsClockwise;
 
         // main drawing procedure
         while (surfcnt[cell.idx.x][cell.idx.y] < dirs.length) {
@@ -1028,7 +1021,7 @@ export default class Plate {
                     // push gap
                     // path = path.concat(this._buildSurfacePathGapPush(dir));
                     // if neighbor exists for this direction, draw from it
-                    path = path.concat(this._buildSurfacePath(nb, surfcnt, dir_idx - 1));
+                    path = path.concat(this._buildSurfacePath(nb, surfcnt, dir_idx - 1, false));
                     // pull gap
                     // path = path.concat(this._buildSurfacePathGapPull(dir));
                 }
@@ -1040,6 +1033,10 @@ export default class Plate {
             }
 
             dir_idx++;
+        }
+
+        if (is_root) {
+            path.push(this._buildSurfacePathClosure(dirs[0]));
         }
 
         return path;
@@ -1096,12 +1093,10 @@ export default class Plate {
         let mov = [];
         let arc = [];
 
-        // FIXME: Problems with unexpected offset (maybe related with stroke-width)
         // TODO: Refactor
-        // TODO: Enclosure
         // TODO: Gaps
 
-        if (this._dir_prev === null) {
+        if (this._dir_prev == null) {
             let mv_x = (cell.idx.x * (cell.size.x + this.__grid.gap.x * 2)),
                 mv_y = (cell.idx.y * (cell.size.y + this.__grid.gap.y * 2));
 
@@ -1124,9 +1119,9 @@ export default class Plate {
             let cw = Cell.IsDirsClockwise(dir_prev, dir_curr) ? 1 : 0;
 
             console.log(cw, rx, ry);
-            // arc = ['a', radius, radius, 0, 0, cw, rx, ry];
-            arc = ['l', rx, ry];
-        } else if (dir_prev !== null) {
+            arc = ['a', radius, radius, 0, 0, cw, rx, ry];
+            // arc = ['l', rx, ry];
+        } else if (dir_prev != null) {
             radius = 0;
             console.log("radius is 0!");
         }
@@ -1152,6 +1147,40 @@ export default class Plate {
                 throw new RangeError("Invalid direction");
             }
         }
+    }
+
+    _buildSurfacePathClosure(dir_curr) {
+        if (this._dir_prev == null) return [];
+
+        let dir_prev = this._dir_prev;
+
+        this._dir_prev = null;
+
+        let rx = null,
+            ry = null;
+
+        let radius = 10;
+
+        if (Cell.IsDirHorizontal(dir_prev) && Cell.IsDirVertical(dir_curr)) {
+            rx = (dir_prev === Cell.Directions.Up)      ? radius : -radius;
+            ry = (dir_curr === Cell.Directions.Right)    ? radius : -radius;
+        }
+
+        if (Cell.IsDirHorizontal(dir_curr) && Cell.IsDirVertical(dir_prev)) {
+            rx = (dir_curr === Cell.Directions.Up)      ? radius : -radius;
+            ry = (dir_prev === Cell.Directions.Right)    ? radius : -radius;
+        }
+
+        if (rx !== null && ry !== null) {
+            let cw = Cell.IsDirsClockwise(dir_prev, dir_curr) ? 1 : 0;
+
+            console.log(cw, rx, ry);
+            return ['a', radius, radius, 0, 0, cw, rx, ry];
+        }
+    }
+
+    _buildSurfacePathCorner() {
+
     }
 
     /**
