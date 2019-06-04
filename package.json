@@ -16,6 +16,7 @@
     "socket.io-client": "^2.0.4",
     "svgjs": "^2.6.2",
     "sweetalert": "^2.1.0",
+    "ts-loader": "^6.0.2",
     "webpack": "^4.29.6"
   },
   "devDependencies": {
