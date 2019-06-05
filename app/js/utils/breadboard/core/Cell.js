@@ -11,25 +11,6 @@ export default class Cell {
     static get Directions() {return DIRECTIONS}
     static get DirectionsClockwise() {return DIRS_CW}
 
-    static IsDirHorizontal(dir) {
-        return (dir === Cell.Directions.Up || dir === Cell.Directions.Down);
-    }
-
-    static IsDirVertical(dir) {
-        return (dir === Cell.Directions.Left || dir === Cell.Directions.Right);
-    }
-
-    static IsDirsClockwise(dir1, dir2) {
-        let dir_idx_1 = DIRS_CW.indexOf(dir1),
-            dir_idx_2 = DIRS_CW.indexOf(dir2);
-
-        if (dir_idx_1 === -1 || dir_idx_2 === -1) {
-            throw new RangeError("Invalid direction(s)");
-        }
-
-        return ((dir_idx_2 - dir_idx_1 === 1) || (dir_idx_1 === (DIRS_CW.length - 1) && dir_idx_2 === 0));
-    }
-
     constructor(x, y, grid) {
         if (typeof x === "undefined") {
             throw new TypeError("X is not defined");
@@ -172,5 +153,24 @@ export default class Cell {
         if (this._x < 0 || this._y < 0 || this._x >= this.__grid.dim.x || this._y >= this.__grid.dim.y) {
             throw new RangeError("This cell is not valid: coordinates is out of grid's range");
         }
+    }
+
+    static IsDirHorizontal(dir) {
+        return (dir === Cell.Directions.Up || dir === Cell.Directions.Down);
+    }
+
+    static IsDirVertical(dir) {
+        return (dir === Cell.Directions.Left || dir === Cell.Directions.Right);
+    }
+
+    static IsDirsClockwise(dir1, dir2) {
+        let dir_idx_1 = DIRS_CW.indexOf(dir1),
+            dir_idx_2 = DIRS_CW.indexOf(dir2);
+
+        if (dir_idx_1 === -1 || dir_idx_2 === -1) {
+            throw new RangeError("Invalid direction(s)");
+        }
+
+        return ((dir_idx_2 - dir_idx_1 === 1) || (dir_idx_1 === (DIRS_CW.length - 1) && dir_idx_2 === 0));
     }
 }

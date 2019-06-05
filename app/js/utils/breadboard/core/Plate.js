@@ -81,7 +81,6 @@ export default class Plate {
         /// Состояние - изменяемые свойства плашки
         this._state = {
             cell:           new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
-            cell_supposed:  new Cell(0, 0, this.__grid),    // ячейка, задающая предполагаемое положение опорной точки
             orientation:    Plate.Orientations.East,        // ориентация плашки
             highlighted:    false,                          // подсвечена ли плашка
             currents:       undefined,
@@ -295,7 +294,6 @@ export default class Plate {
         if (this._ctxmenu.active) {return}
 
         this._state.cell = cell;
-        this._state.cell_supposed = cell;
 
         this._shadow.x(this._state.cell.pos.x);
         this._shadow.y(this._state.cell.pos.y);
@@ -498,6 +496,8 @@ export default class Plate {
 
         let cursor_point_last = undefined;
 
+        let cell_supposed = undefined;
+
         /// обработчик перетаскивания плашки
         let onmove = (evt) => {
             let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
@@ -509,8 +509,8 @@ export default class Plate {
 
             cursor_point_last = cursor_point;
 
-            this._calcSupposedCell();
-            this._dropShadowToSupposedCell();
+            cell_supposed = this._calcSupposedCell();
+            this._dropShadowToCell(cell_supposed);
 
             if (dx > 0 || dy > 0) {
                 this._dragging = true;
@@ -528,7 +528,8 @@ export default class Plate {
                 document.body.removeEventListener('mousemove', onmove, false);
                 document.body.removeEventListener('mouseup', onmouseup, false);
 
-                this._snapToSupposedCell();
+                // Snap
+                this.move(cell_supposed, false, true);
                 this._hideShadow();
 
                 this._dragging = false;
@@ -702,21 +703,12 @@ export default class Plate {
     }
 
     /**
-     * Прикрепить плашку к предполагаемой ближайшей ячейке
-     *
-     * @private
-     */
-    _snapToSupposedCell() {
-        this.move(this._state.cell_supposed, false, true);
-    }
-
-    /**
      * Отобразить тень на предполагаемой ближайшей ячейке
      *
      * @private
      */
-    _dropShadowToSupposedCell() {
-        let pos = this._getPositionAdjusted(this._state.cell_supposed);
+    _dropShadowToCell(cell) {
+        let pos = this._getPositionAdjusted(cell);
 
         this._shadow.x(pos.x);
         this._shadow.y(pos.y);
@@ -758,6 +750,8 @@ export default class Plate {
         let Nx = this.__grid.dim.x,
             Ny = this.__grid.dim.y;
 
+        // TODO: Consider Origin
+
         /// Номер ячейки, над которой в данный момент находится центр опорной ячейки плашки
         let px = Math.floor(x / w * Nx),
             py = Math.floor(y / h * Ny);
@@ -766,13 +760,12 @@ export default class Plate {
         let sx = this._params.size.x,
             sy = this._params.size.y;
 
-        /// Нуль (мин. допустимый номера ячейки, куда может встать плашка)
+        /// Нуль (мин. допустимый номер ячейки, куда может встать плашка)
         let Ox = 0,
             Oy = 0;
 
-        /// Ориентации плашки, обратные стандартным, требуют преобразований
-        if (this._state.orientation === Plate.Orientations.North ||
-            this._state.orientation === Plate.Orientations.South) {
+        /// В вертикальной (нестандартной) ориентации оси размерности должны быть взаимозаменены
+        if (Plate.IsOrientationVertical(this._state.orientation)) {
             sx = this._params.size.y;
             sy = this._params.size.x;
         }
@@ -831,7 +824,7 @@ export default class Plate {
             }
         }
 
-        this._state.cell_supposed = nearest;
+        return nearest;
     }
 
     /**
@@ -1162,8 +1155,6 @@ export default class Plate {
 
         if (dir_curr === dir_prev) return null;
 
-        console.log(dir_prev, 'to', dir_curr);
-
         let rx = null,
             ry = null;
 
@@ -1216,6 +1207,14 @@ export default class Plate {
         }
 
         return arr;
+    }
+
+    static IsOrientationHorizontal(orientation) {
+        return (orientation === Plate.Orientations.West || orientation === Plate.Orientations.East);
+    }
+
+    static IsOrientationVertical(orientation) {
+        return (orientation === Plate.Orientations.North || orientation === Plate.Orientations.South);
     }
 
     /**
