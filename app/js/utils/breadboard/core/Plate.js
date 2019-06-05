@@ -64,6 +64,7 @@ export default class Plate {
         this._error_highlighter = this._group.rect("100%", "100%");     // для подсветки
 
         // TODO: Highlight Error for Path Plates
+        // FIXME: Supposed Cell calculation errors
 
         /// Параметры - постоянные свойства плашки
         this._params = {
@@ -365,8 +366,15 @@ export default class Plate {
 
         let angle = Plate._orientationToAngle(orientation);
 
-        this._group.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
-        this._shadowgroup.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
+        let cell = this._state.cell;
+
+        let anchor_point = {
+            x: (this._params.origin.x * (this.__grid.gap.x * 2 + cell.size.x)) + (cell.size.x / 2),
+            y: (this._params.origin.y * (this.__grid.gap.y * 2 + cell.size.y)) + (cell.size.y / 2),
+        };
+
+        this._group.transform({rotation: angle, cx: anchor_point.x, cy: anchor_point.y});
+        this._shadowgroup.transform({rotation: angle, cx: anchor_point.x, cy: anchor_point.y});
 
         this._state.orientation = orientation;
 
@@ -1046,8 +1054,6 @@ export default class Plate {
 
         if (is_root) {
             path.push(this._buildSurfacePathClosure(dirs[0], radius));
-
-            console.log(path);
         }
 
         return path;
