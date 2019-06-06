@@ -298,7 +298,7 @@ export default class Plate {
         this._shadow.x(this._state.cell.pos.x);
         this._shadow.y(this._state.cell.pos.y);
 
-        let pos = this._getPositionAdjusted();
+        let pos = this._getPositionAdjusted(cell);
 
         if (animate) {
             this._container.animate('100ms', '<>').move(pos.x, pos.y);
@@ -739,6 +739,7 @@ export default class Plate {
      */
     _calcSupposedCell() {
         /// Реальные координаты плашки
+        // FIXME: Values depends on orientation
         let x = this._container.x(),
             y = this._container.y();
 
@@ -753,8 +754,10 @@ export default class Plate {
         // TODO: Consider Origin
 
         /// Номер ячейки, над которой в данный момент находится центр опорной ячейки плашки
-        let px = Math.floor(x / w * Nx),
-            py = Math.floor(y / h * Ny);
+        let px = Math.floor(x / w * Nx) - 1,
+            py = Math.floor(y / h * Ny) - 1;
+
+        console.log('y/w', y/w * Nx);
 
         /// Количество ячеек, занимаемое плашкой
         let sx = this._params.size.x,
@@ -765,28 +768,59 @@ export default class Plate {
             Oy = 0;
 
         /// В вертикальной (нестандартной) ориентации оси размерности должны быть взаимозаменены
-        if (Plate.IsOrientationVertical(this._state.orientation)) {
-            sx = this._params.size.y;
-            sy = this._params.size.x;
+        // if (Plate.IsOrientationVertical(this._state.orientation)) {
+        //     sx = this._params.size.y;
+        //     sy = this._params.size.x;
+        // }
+
+        // Nx -= sx;
+        // Ny -= sy;
+
+        switch (this._state.orientation) {
+            case Plate.Orientations.East: {
+                Nx = Nx - sx;
+                Ny = Ny - sy;
+                break;
+            }
+            case Plate.Orientations.North: {
+                Nx = Nx - sy;
+                Ny = Ny - sx;
+                break;
+            }
+            case Plate.Orientations.West: {
+                Nx = Nx - 1;    Ox = Ox + (sx - 1);
+                Ny = Ny - sy;
+                break;
+            }
+            case Plate.Orientations.South: {
+                Nx = Nx - 1;    Ox = Ox + (sy - 1);
+                Ny = Ny - 1;   Oy = Oy + (sx - 1);
+                break;
+            }
         }
+
+        console.log(`x: [${Ox} ... ${px} ... ${Nx}]`, `y: [${Oy} ... ${py} ... ${Ny}]`);
 
         /// Смещение нуля и номера последней ячейки, необходимое в некоторых случаях
-        if (this._state.orientation === Plate.Orientations.South) {
-            Ny += sy - 1;
-            Oy += sy - 1;
-        }
-
-        if (this._state.orientation === Plate.Orientations.West) {
-            Nx += sx - 1;
-            Ox += sx - 1;
-        }
+        // if (this._state.orientation === Plate.Orientations.South) {
+        //     Ny += sy - 1;
+        //     Oy += sy - 1;
+        // }
+        //
+        // if (this._state.orientation === Plate.Orientations.West) {
+        //     Nx += sx - 1;
+        //     Ox += sx - 1;
+        // }
 
         /// Проверка на выход за границы сетки ячеек
-        if (px + sx >= Nx)  {px = Nx - sx - 1}
-        if (px < Ox)        {px = Ox}
+        if (px >= Nx)   {px = Nx}
+        if (px <= Ox)   {px = Ox}
 
-        if (py + sy >= Ny)  {py = Ny - sy - 1}
-        if (py < Oy)        {py = Oy}
+        if (py >= Ny)   {py = Ny}
+        if (py <= Oy)   {py = Oy}
+
+        px += this._params.origin.x;
+        py += this._params.origin.y;
 
         /// Массив соседей ячейки, над которой находится плашка
         let neighbors = [];
@@ -806,23 +840,25 @@ export default class Plate {
         /// Ближайший сосед
         let nearest = this.__grid.cell(px, py);
 
+        console.log('nearest', nearest.idx);
+
         /// Расстояния от точки до ближайшего соседа
         let ndx = Math.abs(x - nearest.pos.x);
         let ndy = Math.abs(y - nearest.pos.y);
 
-        for (let neighbor of neighbors) {
-            /// Расстояния от точки до соседа
-            let dx = Math.abs(x - neighbor.pos.x);
-            let dy = Math.abs(y - neighbor.pos.y);
-
-            if (dx < ndx || dy < ndy) {
-                // если хотя бы по одному измерению расстояние меньше,
-                // взять нового ближайшего соседа
-                nearest = neighbor;
-                ndx = Math.abs(x - nearest.pos.x);
-                ndy = Math.abs(y - nearest.pos.y);
-            }
-        }
+        // for (let neighbor of neighbors) {
+        //     /// Расстояния от точки до соседа
+        //     let dx = Math.abs(x - neighbor.pos.x);
+        //     let dy = Math.abs(y - neighbor.pos.y);
+        //
+        //     if (dx < ndx || dy < ndy) {
+        //         // если хотя бы по одному измерению расстояние меньше,
+        //         // взять нового ближайшего соседа
+        //         nearest = neighbor;
+        //         ndx = Math.abs(x - nearest.pos.x);
+        //         ndy = Math.abs(y - nearest.pos.y);
+        //     }
+        // }
 
         return nearest;
     }
@@ -966,7 +1002,10 @@ export default class Plate {
     _getPositionAdjusted(cell=null) {
         cell = cell || this._state.cell;
 
-        let abs = {x: cell.pos.x, y: cell.pos.y};
+        let dx = this._params.origin.x * (cell.size.x + this.__grid.gap.x * 2),
+            dy = this._params.origin.y * (cell.size.y + this.__grid.gap.y * 2);
+
+        let abs = {x: cell.pos.x - dx, y: cell.pos.y - dy};
 
         if (!this._params.schematic) {
             return abs;
