@@ -60,6 +60,19 @@ export default class Grid {
         return this._cells;
     }
 
+    getCellByPos(x, y) {
+        let ix = Math.floor((x - this.pos.x) / this.size.x * this.dim.x);
+        let iy = Math.floor((y - this.pos.y) / this.size.y * this.dim.y);
+
+        if (ix < 0) ix = 0;
+        if (ix > this.dim.x - 1) ix = this.dim.x - 1;
+
+        if (iy < 0) iy = 0;
+        if (iy > this.dim.y - 1) iy = this.dim.y - 1;
+
+        return this.cell(ix, iy);
+    }
+
     cell(i, j) {
         if (!Number.isInteger(i) || !Number.isInteger(j)) {
             throw new TypeError("Indices must be integers");
