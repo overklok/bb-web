@@ -1,10 +1,19 @@
 import Current from './Current';
 import Cell from "./Cell";
 
+const BORDER_TYPES = {
+    None: 'none',
+    Replicate: 'replicate',
+    Reflect: 'reflect',
+    Wrap: 'wrap',
+};
+
 /**
  * Класс "Сетка"
  */
 export default class Grid {
+    static get BorderTypes() {return BORDER_TYPES}
+
     constructor(rows, cols, width, height, pos_x=0, pos_y=0, gap_x=0, gap_y=0) {
         if (rows == null || cols == null || width == null || height == null) {
             throw new TypeError("All required arguments should be defined");
@@ -60,7 +69,7 @@ export default class Grid {
         return this._cells;
     }
 
-    getCellByPos(x, y) {
+    getCellByPos(x, y, border_type) {
         let ix = Math.floor((x - this.pos.x) / this.size.x * this.dim.x);
         let iy = Math.floor((y - this.pos.y) / this.size.y * this.dim.y);
 
@@ -70,19 +79,49 @@ export default class Grid {
         if (iy < 0) iy = 0;
         if (iy > this.dim.y - 1) iy = this.dim.y - 1;
 
-        return this.cell(ix, iy);
+        return this.cell(ix, iy, border_type);
     }
 
-    cell(i, j) {
+    /**
+     * Выдать конкретную ячейку из сетки
+     *
+     * @param i номер строки
+     * @param j номре столбца
+     * @param border_type тип границы
+     *
+     * Доступно несколько типов границ, устанавливающих поведение функции при выходе за границы сетки:
+     *  - Grid.BorderType.None      (выход за границы запрещён)
+     *  - Grid.BorderType.Replicate (индексы элементов равны граничным)
+     *  - Grid.BorderType.Reflect   (индексы элементов зеркально отражаются)
+     *  - Grid.BorderType.Wrap      (индексы элементов циклически повторяются)
+     *
+     * @returns {Cell}
+     */
+    cell(i, j, border_type=Grid.BorderTypes.None) {
         if (!Number.isInteger(i) || !Number.isInteger(j)) {
             throw new TypeError("Indices must be integers");
         }
 
-        i = (i < 0) ? this._params.dim.x + i : i;
-        j = (j < 0) ? this._params.dim.y + j : j;
+        switch (border_type) {
+            case Grid.BorderTypes.Replicate: {
+                i = (i < 0) ? i = 0 : i;    i = (i >= this._params.dim.x) ? (this._params.dim.x - 1) : i;
+                j = (j < 0) ? j = 0 : j;    j = (j >= this._params.dim.y) ? (this._params.dim.y - 1) : j;
+                break;
+            }
+            case Grid.BorderTypes.Reflect: {
+                // TODO: Not needed yet
+                break;
+            }
+            case Grid.BorderTypes.Wrap: {
+                // FIXME: Invalid formulae
+                i = (i < 0) ? this._params.dim.x + i : i;
+                j = (j < 0) ? this._params.dim.y + j : j;
+                break;
+            }
+        }
 
         if (!(i in this._cells) || (!(j in this._cells[i]))) {
-            throw new RangeError("Coordinates of cell is out of grid's range");
+            throw new RangeError("Coordinates of cell is out of grid's range" + `: ${i}, ${j}`);
         }
 
         return this._cells[i][j];

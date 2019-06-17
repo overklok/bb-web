@@ -1,5 +1,6 @@
 import Breadboard from "../Breadboard";
 import Layer from "../core/Layer";
+import Grid from "../core/Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
 import {logoSVG, leafSVG} from "../styles/paths";
@@ -150,10 +151,10 @@ export default class BackgroundLayer extends Layer {
     _drawDeco() {
         try {
             // Voltage source line reference points
-            let cell1 = this.__grid.cell(0, 1);
-            let cell2 = this.__grid.cell(0, 5);
-            let cell3 = this.__grid.cell(0, 6);
-            let cell4 = this.__grid.cell(0, -1);
+            let cell1 = this.__grid.cell(0, 1, Grid.BorderTypes.Wrap);
+            let cell2 = this.__grid.cell(0, 5, Grid.BorderTypes.Wrap);
+            let cell3 = this.__grid.cell(0, 6, Grid.BorderTypes.Wrap);
+            let cell4 = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
 
             // Line takeaway/rise
             let rise = 40;

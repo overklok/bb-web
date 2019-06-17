@@ -1,5 +1,6 @@
 import Breadboard from "../Breadboard";
 import Cell from "./Cell";
+import Grid from "../core/Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
 function mod(n, m) {
@@ -740,6 +741,9 @@ export default class Plate {
      * @private
      */
     _calcSupposedCell() {
+        let sx = this._params.size.x,
+            sy = this._params.size.y;
+
         let orx = this._params.origin.x,
             ory = this._params.origin.y;
 
@@ -765,8 +769,12 @@ export default class Plate {
         }
 
         /// Количество ячеек
-        let Nx = this.__grid.dim.x,
-            Ny = this.__grid.dim.y;
+        let Nx = this.__grid.dim.x - (sx - orx),
+            Ny = this.__grid.dim.y - (sy - ory);
+
+        /// Нуль (мин. допустимый номер ячейки, куда может встать плашка)
+        let Ox = 0,
+            Oy = 0;
 
         // switch (this._state.orientation) {
         //     case Plate.Orientations.North:  {Nx += break;}
@@ -774,18 +782,16 @@ export default class Plate {
         //     case Plate.Orientations.South:  {break;}
         // }
 
-        let cell = this.__grid.getCellByPos(x, y);
+        let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
         let cell_orig = this._getCellOriginal(cell);
 
         let ix = cell_orig.idx.x,
             iy = cell_orig.idx.y;
 
+        console.log(`x: ${Ox} < ${cell.idx.x} < ${Nx}`, `y: ${Oy} < ${cell.idx.y} < ${Ny}`);
+
         let px = cell_orig.pos.x,// + cell_orig.size.x / 2,
             py = cell_orig.pos.y;// + cell_orig.size.y / 2;
-
-        /// Нуль (мин. допустимый номер ячейки, куда может встать плашка)
-        let Ox = 0,
-            Oy = 0;
 
         /// Проверка на выход за границы сетки ячеек
         if (ix >= Nx)   {ix = Nx}
@@ -833,14 +839,14 @@ export default class Plate {
         return nearest;
     }
 
-    _getCellNormal(cell) {
+    _getCellNormal(cell, border_type) {
         let ix = cell.idx.x,
             iy = cell.idx.y;
 
         let orx = this._params.origin.x,
             ory = this._params.origin.y;
 
-        return this.__grid.cell(ix - orx, iy - ory);
+        return this.__grid.cell(ix - orx, iy - ory, Grid.BorderTypes.Replicate);
     }
 
     _getCellOriginal(cell) {
@@ -864,7 +870,7 @@ export default class Plate {
             case Plate.Orientations.South:  {dix = ory;             diy = ory;              break;}
         }
 
-        return this.__grid.cell(ix + dix, iy + diy);
+        return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
     }
 
     /**
