@@ -14,7 +14,7 @@ export default class SwitchPlate extends Plate {
             {x: 0, y: 1},   {x: 1, y: 1},   {x: 2, y: 1},   {x: 3, y: 1}
         ];
 
-        this._params.origin = {x: 3, y: 0};
+        this._params.origin = {x: 0, y: 0};
     }
 
     /**

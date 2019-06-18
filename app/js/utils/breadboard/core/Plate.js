@@ -299,7 +299,6 @@ export default class Plate {
         let orx = this._params.origin.x,
             ory = this._params.origin.y;
 
-        // let cell_norm = this._getCellNormal(cell);
         let pos = this._getPositionAdjusted(cell);
 
         this._shadow.x(pos.x - orx * (cell.size.x + this.__grid.gap.x * 2));
@@ -755,6 +754,8 @@ export default class Plate {
      * @private
      */
     _calcSupposedCell() {
+        let dim = this.__grid.dim;
+
         let sx = this._params.size.x,
             sy = this._params.size.y;
 
@@ -782,12 +783,20 @@ export default class Plate {
             case Plate.Orientations.South:  {x = cx + gx;           y = cy + gy - spx;  break;}
         }
 
-        /// Количество ячеек
+        /// Предельное количество ячеек по осям
         let Nx = 0,
             Ny = 0;
 
-        Nx = this.__grid.dim.x - (sx - orx);
-        Ny = this.__grid.dim.y - (sy - ory);
+        switch (this._state.orientation) {
+            // x goes to Nx, y goes to Ny
+            case Plate.Orientations.East:   {Nx = dim.x - (sx - orx);   Ny = dim.y - (sy - ory);    break;}
+            // -y goes to Nx, x goes to Ny
+            case Plate.Orientations.North:  {Nx = dim.x - ory;          Ny = dim.y - (sx - orx);    break;}
+            // -x goes to Nx, -y goes to Ny
+            case Plate.Orientations.West:   {Nx = dim.x - orx;          Ny = dim.y - ory;           break;}
+            // y goes to Nx, -x goes to Ny
+            case Plate.Orientations.South:  {Nx = dim.x - (sy - ory);   Ny = dim.y - orx;           break;}
+        }
 
         /// Нуль (мин. допустимый номер ячейки, куда может встать плашка)
         let Ox = 0,
@@ -798,10 +807,6 @@ export default class Plate {
 
         let ix = cell_orig.idx.x,
             iy = cell_orig.idx.y;
-
-        console.log(ix, iy);
-
-        // console.log(`x: ${Ox} < ${cell.idx.x} < ${Nx}`, `y: ${Oy} < ${cell.idx.y} < ${Ny}`);
 
         let px = cell_orig.pos.x,// + cell_orig.size.x / 2,
             py = cell_orig.pos.y;// + cell_orig.size.y / 2;
@@ -894,30 +899,6 @@ export default class Plate {
         }
 
         return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
-    }
-
-    _getCellOriginal2(cell) {
-        let ix = cell.idx.x,
-            iy = cell.idx.y;
-
-        let orx = this._params.origin.x,
-            ory = this._params.origin.y;
-
-        /// Количество ячеек, занимаемое плашкой
-        let sx = this._params.size.x,
-            sy = this._params.size.y;
-
-        let dix = 0,
-            diy = 0;
-
-        switch (this._state.orientation) {
-            case Plate.Orientations.East:   {dix = orx;             diy = ory;              break;}
-            case Plate.Orientations.North:  {dix = sy - ory - 1;    diy = orx;              break;}
-            case Plate.Orientations.West:   {dix = orx - 1;         diy = sy - ory - 1;     break;}
-            case Plate.Orientations.South:  {dix = ory;             diy = ory;              break;}
-        }
-
-        return this.__grid.cell(ix - dix, iy - diy, Grid.BorderTypes.Replicate);
     }
 
     /**
