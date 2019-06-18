@@ -71,9 +71,7 @@ export default class Plate {
 
         /// Дополнительные контейнеры
         this._group_editable = this._group.group();                     // для режима редактирования
-        this._error_highlighter = this._group.rect("100%", "100%");     // для подсветки
-
-        // TODO: Highlight Error for Path Plates
+        this._error_highlighter = undefined;
 
         /// Параметры - постоянные свойства плашки
         this._params = {
@@ -187,6 +185,8 @@ export default class Plate {
      * @param {string}  orientation ориентация элемента относительно опорной точки
      */
     draw(cell, orientation, animate=false) {
+        this._checkParams();
+
         this._beforeReposition();
 
         let width   = (cell.size.x * this._params.size.x) + (this.__grid.gap.x * 2 * (this._params.size.x - 1));
@@ -198,21 +198,20 @@ export default class Plate {
         let surf_path = this._generateSurfacePath(Breadboard.CellRadius);
 
         if (surf_path) {
-            this._bezel = this._group.path(surf_path).fill("#fffffd");
-            // this._bezel.fill({opacity: 0});
+            this._bezel = this._group.path(surf_path);
+            this._error_highlighter = this._group.path(surf_path);
         } else {
-            this._bezel = this._group.rect("100%", "100%");
-            this._bezel.radius(Breadboard.CellRadius).fill("#fffffd");
+            this._bezel = this._group.rect("100%", "100%").radius(Breadboard.CellRadius);
+            this._error_highlighter = this._group.rect("100%", "100%").radius(Breadboard.CellRadius);
         }
-
-        this._bezel.stroke({color: "#f0eddb", width: 2});
 
         if (this._params.schematic) {
-            this._bezel.fill({opacity: 0});
-            this._bezel.stroke({opacity: 0})
+            this._bezel.fill({opacity: 0}).stroke({opacity: 0});
+        } else {
+            this._bezel.fill("#fffffd").stroke({color: "#f0eddb", width: 2});
         }
 
-        this._error_highlighter.fill({color: "#f00"}).radius(10);
+        this._error_highlighter.fill({color: "#f00"});
 
         this._shadowimg = this._shadowgroup.rect(width, height); // изображение тени
         this._shadowimg.fill({color: "#51ff1e"}).radius(10).opacity(0.4);
@@ -693,6 +692,18 @@ export default class Plate {
     }
 
     /**
+     * Инициализировать плашку
+     *
+     * @private
+     */
+    _checkParams() {
+        if (this._params.origin.x >= this._params.size.x || this._params.origin.y >= this._params.size.y) {
+            this._params.origin = {x: 0, y: 0};
+            console.debug(`Invalid origin for plate type '${this._alias}'`);
+        }
+    }
+
+    /**
      * Отобразить тень на предполагаемой ближайшей ячейке
      *
      * @private
@@ -812,14 +823,9 @@ export default class Plate {
     }
 
     _getPlacementConstraints(orientation) {
-        console.log("GPC");
-
         if (!REGISTRY.PLACEMENT_CONSTRAINTS[this._alias]) {
             REGISTRY.PLACEMENT_CONSTRAINTS[this._alias] = this._calcPlacementConstraints();
-            console.log("CPC CALL");
         }
-
-        console.log(REGISTRY.PLACEMENT_CONSTRAINTS[this._alias]);
 
         return REGISTRY.PLACEMENT_CONSTRAINTS[this._alias][orientation];
     }
@@ -1031,8 +1037,6 @@ export default class Plate {
     }
 
     _generateSurfacePath(radius=5) {
-        // TODO: Verify origin
-
         if (this._params.surface) {
             let path = [];
 
