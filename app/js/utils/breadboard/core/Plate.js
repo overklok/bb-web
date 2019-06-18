@@ -784,32 +784,38 @@ export default class Plate {
         }
 
         /// Предельное количество ячеек по осям
-        let Nx = 0,
-            Ny = 0;
-
-        switch (this._state.orientation) {
-            // x goes to Nx, y goes to Ny
-            case Plate.Orientations.East:   {Nx = dim.x - (sx - orx);   Ny = dim.y - (sy - ory);    break;}
-            // -y goes to Nx, x goes to Ny
-            case Plate.Orientations.North:  {Nx = dim.x - ory;          Ny = dim.y - (sx - orx);    break;}
-            // -x goes to Nx, -y goes to Ny
-            case Plate.Orientations.West:   {Nx = dim.x - orx;          Ny = dim.y - ory;           break;}
-            // y goes to Nx, -x goes to Ny
-            case Plate.Orientations.South:  {Nx = dim.x - (sy - ory);   Ny = dim.y - orx;           break;}
-        }
+        let Nx = dim.x,
+            Ny = dim.y;
 
         /// Нуль (мин. допустимый номер ячейки, куда может встать плашка)
         let Ox = 0,
             Oy = 0;
 
+        switch (this._state.orientation) {
+            // x goes to Nx, y goes to Ny
+            case Plate.Orientations.East:   {Nx -= sx - orx;        Ny -= sy - ory;
+                                             Ox = orx;              Oy = ory;           break;}
+            // -y goes to Nx, x goes to Ny
+            case Plate.Orientations.North:  {Nx -= ory + 1;         Ny -= sx - orx;
+                                             Ox = sy - ory - 1;     Oy = orx;           break;}
+            // -x goes to Nx, -y goes to Ny
+            case Plate.Orientations.West:   {Nx -= orx + 1;         Ny -= ory + 1;
+                                             Ox = sx - orx - 1;     Oy = sy - ory - 1;  break;}
+            // y goes to Nx, -x goes to Ny
+            case Plate.Orientations.South:  {Nx -= sy - ory;        Ny -= orx + 1;
+                                             Ox = ory;              Oy = sx - orx - 1;  break;}
+        }
+
         let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
         let cell_orig = this._getCellOriginal(cell);
 
+        /// Индекс ячейки, находящейся под опорной ячейкой плашки
         let ix = cell_orig.idx.x,
             iy = cell_orig.idx.y;
 
-        let px = cell_orig.pos.x,// + cell_orig.size.x / 2,
-            py = cell_orig.pos.y;// + cell_orig.size.y / 2;
+        /// Точное положение опорной точки плашки в системе координат
+        let px = x - cell.pos.x + cell_orig.pos.x,
+            py = y - cell.pos.y + cell_orig.pos.y;
 
         /// Проверка на выход за границы сетки ячеек
         if (ix >= Nx)   {ix = Nx}
@@ -836,25 +842,25 @@ export default class Plate {
         /// Ближайший сосед
         let nearest = this.__grid.cell(ix, iy);
 
-        /// Расстояния от точки до ближайшего соседа
-        // let ndx = Math.abs(px - nearest.pos.x);
-        // let ndy = Math.abs(py - nearest.pos.y);
-        //
-        // for (let neighbor of neighbors) {
-        //     /// Расстояния от точки до соседа
-        //     let dx = Math.abs(px - neighbor.pos.x);
-        //     let dy = Math.abs(py - neighbor.pos.y);
-        //
-        //     if (dx < ndx || dy < ndy) {
-        //         // если хотя бы по одному измерению расстояние меньше,
-        //         // взять нового ближайшего соседа
-        //         nearest = neighbor;
-        //         ndx = Math.abs(px - nearest.pos.x);
-        //         ndy = Math.abs(py - nearest.pos.y);
-        //     }
-        // }
+        // Расстояния от точки до ближайшего соседа
+        let ndx = Math.abs(px - nearest.pos.x);
+        let ndy = Math.abs(py - nearest.pos.y);
 
-        // console.log(nearest.idx);
+        for (let neighbor of neighbors) {
+            /// Расстояния от точки до соседа
+            let dx = Math.abs(px - neighbor.pos.x);
+            let dy = Math.abs(py - neighbor.pos.y);
+
+            if (dx < ndx || dy < ndy) {
+                // если хотя бы по одному измерению расстояние меньше,
+                // взять нового ближайшего соседа
+                nearest = neighbor;
+                ndx = Math.abs(px - nearest.pos.x);
+                ndy = Math.abs(py - nearest.pos.y);
+            }
+        }
+
+        console.log(nearest.idx);
 
         return nearest;
     }
