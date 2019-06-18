@@ -296,15 +296,25 @@ export default class Plate {
 
         this._state.cell = cell;
 
-        let cell_norm = this._getCellNormal(cell);
-        let pos = this._getPositionAdjusted(cell_norm);
+        let orx = this._params.origin.x,
+            ory = this._params.origin.y;
 
-        this._shadow.move(pos.x, pos.y);
+        // let cell_norm = this._getCellNormal(cell);
+        let pos = this._getPositionAdjusted(cell);
+
+        this._shadow.x(pos.x - orx * (cell.size.x + this.__grid.gap.x * 2));
+        this._shadow.y(pos.y - ory * (cell.size.y + this.__grid.gap.y * 2));
 
         if (animate) {
-            this._container.animate('100ms', '<>').move(pos.x, pos.y);
+            this._container.animate('100ms', '<>').move(
+                pos.x - orx * (cell.size.x + this.__grid.gap.x * 2),
+                pos.y - ory * (cell.size.y + this.__grid.gap.y * 2)
+            );
         } else {
-            this._container.move(pos.x, pos.y);
+            this._container.move(
+                pos.x - orx * (cell.size.x + this.__grid.gap.x * 2),
+                pos.y - ory * (cell.size.y + this.__grid.gap.y * 2)
+            );
         }
 
         if (!suppress_events) {
@@ -709,12 +719,16 @@ export default class Plate {
      * @private
      */
     _dropShadowToCell(cell) {
-        let cell_norm = this._getCellNormal(cell);
+        let sx = this._params.size.x,
+            sy = this._params.size.y;
 
-        let pos = this._getPositionAdjusted(cell_norm);
+        let orx = this._params.origin.x,
+            ory = this._params.origin.y;
 
-        this._shadow.x(pos.x);
-        this._shadow.y(pos.y);
+        let pos = this._getPositionAdjusted(cell);
+
+        this._shadow.x(pos.x - orx * (cell.size.x + this.__grid.gap.x * 2));
+        this._shadow.y(pos.y - ory * (cell.size.y + this.__grid.gap.y * 2));
     }
 
     /**
@@ -769,18 +783,15 @@ export default class Plate {
         }
 
         /// Количество ячеек
-        let Nx = this.__grid.dim.x - (sx - orx),
-            Ny = this.__grid.dim.y - (sy - ory);
+        let Nx = 0,
+            Ny = 0;
+
+        Nx = this.__grid.dim.x - (sx - orx);
+        Ny = this.__grid.dim.y - (sy - ory);
 
         /// Нуль (мин. допустимый номер ячейки, куда может встать плашка)
         let Ox = 0,
             Oy = 0;
-
-        // switch (this._state.orientation) {
-        //     case Plate.Orientations.North:  {Nx += break;}
-        //     case Plate.Orientations.West:   {break;}
-        //     case Plate.Orientations.South:  {break;}
-        // }
 
         let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
         let cell_orig = this._getCellOriginal(cell);
@@ -788,7 +799,9 @@ export default class Plate {
         let ix = cell_orig.idx.x,
             iy = cell_orig.idx.y;
 
-        console.log(`x: ${Ox} < ${cell.idx.x} < ${Nx}`, `y: ${Oy} < ${cell.idx.y} < ${Ny}`);
+        console.log(ix, iy);
+
+        // console.log(`x: ${Ox} < ${cell.idx.x} < ${Nx}`, `y: ${Oy} < ${cell.idx.y} < ${Ny}`);
 
         let px = cell_orig.pos.x,// + cell_orig.size.x / 2,
             py = cell_orig.pos.y;// + cell_orig.size.y / 2;
@@ -819,37 +832,71 @@ export default class Plate {
         let nearest = this.__grid.cell(ix, iy);
 
         /// Расстояния от точки до ближайшего соседа
-        let ndx = Math.abs(px - nearest.pos.x);
-        let ndy = Math.abs(py - nearest.pos.y);
+        // let ndx = Math.abs(px - nearest.pos.x);
+        // let ndy = Math.abs(py - nearest.pos.y);
+        //
+        // for (let neighbor of neighbors) {
+        //     /// Расстояния от точки до соседа
+        //     let dx = Math.abs(px - neighbor.pos.x);
+        //     let dy = Math.abs(py - neighbor.pos.y);
+        //
+        //     if (dx < ndx || dy < ndy) {
+        //         // если хотя бы по одному измерению расстояние меньше,
+        //         // взять нового ближайшего соседа
+        //         nearest = neighbor;
+        //         ndx = Math.abs(px - nearest.pos.x);
+        //         ndy = Math.abs(py - nearest.pos.y);
+        //     }
+        // }
 
-        for (let neighbor of neighbors) {
-            /// Расстояния от точки до соседа
-            let dx = Math.abs(px - neighbor.pos.x);
-            let dy = Math.abs(py - neighbor.pos.y);
-
-            if (dx < ndx || dy < ndy) {
-                // если хотя бы по одному измерению расстояние меньше,
-                // взять нового ближайшего соседа
-                nearest = neighbor;
-                ndx = Math.abs(px - nearest.pos.x);
-                ndy = Math.abs(py - nearest.pos.y);
-            }
-        }
+        // console.log(nearest.idx);
 
         return nearest;
     }
 
-    _getCellNormal(cell, border_type) {
+    _getCellNormal(cell) {
         let ix = cell.idx.x,
             iy = cell.idx.y;
 
         let orx = this._params.origin.x,
             ory = this._params.origin.y;
 
-        return this.__grid.cell(ix - orx, iy - ory, Grid.BorderTypes.Replicate);
+        return this.__grid.cell(ix - orx, iy - ory);
     }
 
+    /**
+     * Определить ячейку, над которой находится опорная точка плашки
+     *
+     * @param cell          ячейка, над которой находится верхняя левая точка плашки
+     * @returns {Cell|*}    ячейка, над которой находится опорная точка плашки
+     *
+     * @private
+     */
     _getCellOriginal(cell) {
+        let ix = cell.idx.x,
+            iy = cell.idx.y;
+
+        let orx = this._params.origin.x,
+            ory = this._params.origin.y;
+
+        /// Количество ячеек, занимаемое плашкой
+        let sx = this._params.size.x,
+            sy = this._params.size.y;
+
+        let dix = 0,
+            diy = 0;
+
+        switch (this._state.orientation) {
+            case Plate.Orientations.East:   {dix = orx;             diy = ory;              break;}
+            case Plate.Orientations.North:  {dix = sy - ory - 1;    diy = orx;              break;}
+            case Plate.Orientations.West:   {dix = sx - orx - 1;    diy = sy - ory - 1;     break;}
+            case Plate.Orientations.South:  {dix = ory;             diy = sx - orx - 1;     break;}
+        }
+
+        return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
+    }
+
+    _getCellOriginal2(cell) {
         let ix = cell.idx.x,
             iy = cell.idx.y;
 
@@ -870,7 +917,7 @@ export default class Plate {
             case Plate.Orientations.South:  {dix = ory;             diy = ory;              break;}
         }
 
-        return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
+        return this.__grid.cell(ix - dix, iy - diy, Grid.BorderTypes.Replicate);
     }
 
     /**
