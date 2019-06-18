@@ -21,6 +21,15 @@ const ORIENTATIONS = {
 };
 
 /**
+ * Кэш вычисляемых параметров типов плашек
+ *
+ * @type {{PLACEMENT_CONSTRAINTS: {}}}
+ */
+const REGISTRY = {
+    PLACEMENT_CONSTRAINTS: {},
+};
+
+/**
  * Класс плашки доски
  */
 export default class Plate {
@@ -65,7 +74,6 @@ export default class Plate {
         this._error_highlighter = this._group.rect("100%", "100%");     // для подсветки
 
         // TODO: Highlight Error for Path Plates
-        // FIXME: Supposed Cell calculation errors
 
         /// Параметры - постоянные свойства плашки
         this._params = {
@@ -296,24 +304,14 @@ export default class Plate {
 
         this._state.cell = cell;
 
-        let orx = this._params.origin.x,
-            ory = this._params.origin.y;
-
         let pos = this._getPositionAdjusted(cell);
 
-        this._shadow.x(pos.x - orx * (cell.size.x + this.__grid.gap.x * 2));
-        this._shadow.y(pos.y - ory * (cell.size.y + this.__grid.gap.y * 2));
+        this._shadow.move(pos.x, pos.y);
 
         if (animate) {
-            this._container.animate('100ms', '<>').move(
-                pos.x - orx * (cell.size.x + this.__grid.gap.x * 2),
-                pos.y - ory * (cell.size.y + this.__grid.gap.y * 2)
-            );
+            this._container.animate('100ms', '<>').move(pos.x, pos.y);
         } else {
-            this._container.move(
-                pos.x - orx * (cell.size.x + this.__grid.gap.x * 2),
-                pos.y - ory * (cell.size.y + this.__grid.gap.y * 2)
-            );
+            this._container.move(pos.x, pos.y);
         }
 
         if (!suppress_events) {
@@ -329,21 +327,12 @@ export default class Plate {
     /**
      * Сместить плашку на (dx, dy) позиций по осям X и Y соответственно
      *
-     * @param {int} dx смещение по оси X
-     * @param {int} dy смещение по оси Y
+     * @param {int}     dx                  смещение по оси X
+     * @param {int}     dy                  смещение по оси Y
+     * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
      */
     shift(dx, dy, prevent_overflow=true) {
-        let px = this._state.cell.idx.x,
-            py = this._state.cell.idx.y;
-
-        let Nx = this.__grid.dim.x,
-            Ny = this.__grid.dim.y;
-
-        if (px + dx < 0 || px + dx >= Nx || py + dy < 0 || py + dy >= Ny) {
-            return;
-        }
-
-        this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy));
+        this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy, Grid.BorderTypes.Replicate));
 
         if (prevent_overflow) {
             this._preventOverflow();
@@ -609,8 +598,6 @@ export default class Plate {
 
     /**
      * Установить обработчик события вращения колёсика мыши на плашке
-     *
-     * @param {function} cb обработчик события вращения колёсика мыши на плашке
      */
     onWheel() {
         if (this._onwheel) {
@@ -682,13 +669,6 @@ export default class Plate {
      */
     hideContextMenu() {
         this._ctxmenu.dispose();
-
-        // if (!this._ctx_menu_active) return;
-        //
-        // this._ctx_menu_group.clear();
-        // this._ctx_menu_group.opacity(0);
-        //
-        // this._ctx_menu_active = false;
     }
 
     /**
@@ -718,16 +698,10 @@ export default class Plate {
      * @private
      */
     _dropShadowToCell(cell) {
-        let sx = this._params.size.x,
-            sy = this._params.size.y;
-
-        let orx = this._params.origin.x,
-            ory = this._params.origin.y;
-
         let pos = this._getPositionAdjusted(cell);
 
-        this._shadow.x(pos.x - orx * (cell.size.x + this.__grid.gap.x * 2));
-        this._shadow.y(pos.y - ory * (cell.size.y + this.__grid.gap.y * 2));
+        this._shadow.x(pos.x);
+        this._shadow.y(pos.y);
     }
 
     /**
@@ -754,24 +728,19 @@ export default class Plate {
      * @private
      */
     _calcSupposedCell() {
-        let dim = this.__grid.dim;
-
-        let sx = this._params.size.x,
-            sy = this._params.size.y;
-
-        let orx = this._params.origin.x,
-            ory = this._params.origin.y;
-
-        /// Реальные координаты плашки
+        /// Положениие группы плашки (изм. при вращении)
         let gx = this._group.x(),
             gy = this._group.y();
 
+        /// Положение контейнера плашки (изм. при перемещении)
         let cx = this._container.x(),
             cy = this._container.y();
 
+        /// Размер контейнера плашки
         let spx = this._params.size_px.x,
             spy = this._params.size_px.y;
 
+        /// Координаты верхнего левого угла контейнера
         let x = 0,
             y = 0;
 
@@ -783,31 +752,10 @@ export default class Plate {
             case Plate.Orientations.South:  {x = cx + gx;           y = cy + gy - spx;  break;}
         }
 
-        /// Предельное количество ячеек по осям
-        let Nx = dim.x,
-            Ny = dim.y;
-
-        /// Нуль (мин. допустимый номер ячейки, куда может встать плашка)
-        let Ox = 0,
-            Oy = 0;
-
-        switch (this._state.orientation) {
-            // x goes to Nx, y goes to Ny
-            case Plate.Orientations.East:   {Nx -= sx - orx;        Ny -= sy - ory;
-                                             Ox = orx;              Oy = ory;           break;}
-            // -y goes to Nx, x goes to Ny
-            case Plate.Orientations.North:  {Nx -= ory + 1;         Ny -= sx - orx;
-                                             Ox = sy - ory - 1;     Oy = orx;           break;}
-            // -x goes to Nx, -y goes to Ny
-            case Plate.Orientations.West:   {Nx -= orx + 1;         Ny -= ory + 1;
-                                             Ox = sx - orx - 1;     Oy = sy - ory - 1;  break;}
-            // y goes to Nx, -x goes to Ny
-            case Plate.Orientations.South:  {Nx -= sy - ory;        Ny -= orx + 1;
-                                             Ox = ory;              Oy = sx - orx - 1;  break;}
-        }
-
         let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
         let cell_orig = this._getCellOriginal(cell);
+
+        let [Ox, Oy, Nx, Ny] = this._getPlacementConstraints(this._state.orientation);
 
         /// Индекс ячейки, находящейся под опорной ячейкой плашки
         let ix = cell_orig.idx.x,
@@ -818,11 +766,11 @@ export default class Plate {
             py = y - cell.pos.y + cell_orig.pos.y;
 
         /// Проверка на выход за границы сетки ячеек
-        if (ix >= Nx)   {ix = Nx}
         if (ix <= Ox)   {ix = Ox}
-
-        if (iy >= Ny)   {iy = Ny}
         if (iy <= Oy)   {iy = Oy}
+
+        if (ix >= Nx)   {ix = Nx}
+        if (iy >= Ny)   {iy = Ny}
 
         /// Массив соседей ячейки, над которой находится плашка
         let neighbors = [];
@@ -860,19 +808,49 @@ export default class Plate {
             }
         }
 
-        console.log(nearest.idx);
-
         return nearest;
     }
 
-    _getCellNormal(cell) {
-        let ix = cell.idx.x,
-            iy = cell.idx.y;
+    _getPlacementConstraints(orientation) {
+        console.log("GPC");
 
-        let orx = this._params.origin.x,
-            ory = this._params.origin.y;
+        if (!REGISTRY.PLACEMENT_CONSTRAINTS[this._alias]) {
+            REGISTRY.PLACEMENT_CONSTRAINTS[this._alias] = this._calcPlacementConstraints();
+            console.log("CPC CALL");
+        }
 
-        return this.__grid.cell(ix - orx, iy - ory);
+        console.log(REGISTRY.PLACEMENT_CONSTRAINTS[this._alias]);
+
+        return REGISTRY.PLACEMENT_CONSTRAINTS[this._alias][orientation];
+    }
+
+    _calcPlacementConstraints() {
+        /// Размерность доски
+        let Dx = this.__grid.dim.x,
+            Dy = this.__grid.dim.y;
+
+        /// Размерность плашки
+        let Sx = this._params.size.x,
+            Sy = this._params.size.y;
+
+        /// Опорная точка плашки
+        let orn = this._params.origin;
+
+        /// Количество точек от опорной до края
+        let rem = {x: Sx - orn.x, y: Sy - orn.y};
+
+        let constraints = [];
+
+        // x goes to Nx, y goes to Ny
+        constraints[Plate.Orientations.East] =  [orn.x,          orn.y,         Dx - rem.x,        Dy - rem.y];
+        // -y goes to Nx, x goes to Ny
+        constraints[Plate.Orientations.North] = [rem.y - 1,      orn.x,         Dx - orn.y - 1,    Dy - rem.x];
+        // -x goes to Nx, -y goes to Ny
+        constraints[Plate.Orientations.West] =  [rem.x - 1,      rem.y - 1,     Dx - orn.x - 1,    Dy - orn.y - 1];
+        // y goes to Nx, -x goes to Ny
+        constraints[Plate.Orientations.South] = [orn.y,          rem.x - 1,     Dx - rem.y,        Dy - orn.x - 1];
+
+        return constraints;
     }
 
     /**
@@ -887,8 +865,7 @@ export default class Plate {
         let ix = cell.idx.x,
             iy = cell.idx.y;
 
-        let orx = this._params.origin.x,
-            ory = this._params.origin.y;
+        let orn = this._params.origin;
 
         /// Количество ячеек, занимаемое плашкой
         let sx = this._params.size.x,
@@ -898,10 +875,10 @@ export default class Plate {
             diy = 0;
 
         switch (this._state.orientation) {
-            case Plate.Orientations.East:   {dix = orx;             diy = ory;              break;}
-            case Plate.Orientations.North:  {dix = sy - ory - 1;    diy = orx;              break;}
-            case Plate.Orientations.West:   {dix = sx - orx - 1;    diy = sy - ory - 1;     break;}
-            case Plate.Orientations.South:  {dix = ory;             diy = sx - orx - 1;     break;}
+            case Plate.Orientations.East:   {dix = orn.x;             diy = orn.y;              break;}
+            case Plate.Orientations.North:  {dix = sy - orn.y - 1;    diy = orn.x;              break;}
+            case Plate.Orientations.West:   {dix = sx - orn.x - 1;    diy = sy - orn.y - 1;     break;}
+            case Plate.Orientations.South:  {dix = orn.y;             diy = sx - orn.x - 1;     break;}
         }
 
         return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
@@ -919,34 +896,16 @@ export default class Plate {
         let ix = this._state.cell.idx.x,
             iy = this._state.cell.idx.y;
 
-        /// Количество ячеек, занимаемое плашкой
-        let sx = this._params.size.x,
-            sy = this._params.size.y;
-
-        let orx = this._params.origin.x,
-            ory = this._params.origin.y;
-
-        /// Количество ячеек
-        let Nx = this.__grid.dim.x,
-            Ny = this.__grid.dim.y;
+        let [Ox, Oy, Nx, Ny] = this._getPlacementConstraints(this._state.orientation);
 
         let dx = 0,
             dy = 0;
 
-        switch(this._state.orientation) {
-            case Plate.Orientations.East:
-                if (ix + sx > Nx) {dx = Nx - (ix + sx)}
-                break;
-            case Plate.Orientations.North:
-                if (iy + sx > Ny) {dy = Ny - (iy + sx)}
-                break;
-            case Plate.Orientations.West:
-                if (ix - sx < -1) {dx = sx - ix - 1}
-                break;
-            case Plate.Orientations.South:
-                if (iy - sx < -1) {dy = sx - iy - 1}
-                break;
-        }
+        if (ix >= Nx) {dx = Nx - ix}
+        if (iy >= Ny) {dy = Ny - iy}
+
+        if (ix <= Ox) {dx = Ox - ix}
+        if (iy <= Oy) {dy = Oy - iy}
 
         ix += dx;
         iy += dy;
@@ -1049,7 +1008,14 @@ export default class Plate {
     _getPositionAdjusted(cell=null) {
         cell = cell || this._state.cell;
 
-        let abs = {x: cell.pos.x, y: cell.pos.y};
+        /// Опорная точка плашки
+        let orn = this._params.origin;
+
+        /// Абсолютное положение плашки с учётом того, что ячейка лежит над опорной точкой плашки
+        let abs = {
+            x: cell.pos.x - orn.x * (cell.size.x + this.__grid.gap.x * 2),
+            y: cell.pos.y - orn.y * (cell.size.y + this.__grid.gap.y * 2)
+        };
 
         if (!this._params.schematic) {
             return abs;
