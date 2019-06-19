@@ -1,6 +1,11 @@
 import Breadboard from "../Breadboard";
 import Cell from "./Cell";
+import Grid from "../core/Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
+
+function mod(n, m) {
+  return ((n % m) + m) % m;
+}
 
 /**
  * Коды ориентаций
@@ -16,6 +21,15 @@ const ORIENTATIONS = {
 };
 
 /**
+ * Кэш вычисляемых параметров типов плашек
+ *
+ * @type {{PLACEMENT_CONSTRAINTS: {}}}
+ */
+const REGISTRY = {
+    PLACEMENT_CONSTRAINTS: {},
+};
+
+/**
  * Класс плашки доски
  */
 export default class Plate {
@@ -28,7 +42,7 @@ export default class Plate {
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
-    static get QuadSizeDefault()    {return 16}
+    static get QuadSizeDefault()    {return 20}
     static get LEDSizeDefault()     {return 16}
     static get LabelSizeDefault()   {return 12}
 
@@ -36,6 +50,8 @@ export default class Plate {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
+
+        this.__grid = grid;
 
         this._node_parent = container_parent.node;
 
@@ -50,18 +66,19 @@ export default class Plate {
         this._container     = container_parent.nested();        // для масштабирования
         this._shadowgroup   = this._shadow.group();             // для поворота тени
         this._group         = this._container.group();          // для поворота
-        this._bezel     = this._group.rect("100%", "100%");     // для окантовки
-        this.__grid     = grid;
+
+        this._bezel         = undefined; // окантовка
 
         /// Дополнительные контейнеры
         this._group_editable = this._group.group();                     // для режима редактирования
-        this._error_highlighter = this._group.rect("100%", "100%");     // для подсветки
+        this._error_highlighter = undefined;
 
         /// Параметры - постоянные свойства плашки
         this._params = {
             size:       {x: 0, y: 0},   // кол-во ячеек, занимаемое плашкой на доске
             size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
             origin:     {x: 0, y: 0},   // опорная точка плашки
+            surface:    undefined,      // контур плашки
             rels:       undefined,      // относительные позиции занимаемых ячеек
             adjs:       undefined,      // корректировки положения плашки
             extra:      extra,          // доп. параметр
@@ -71,7 +88,6 @@ export default class Plate {
         /// Состояние - изменяемые свойства плашки
         this._state = {
             cell:           new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
-            cell_supposed:  new Cell(0, 0, this.__grid),    // ячейка, задающая предполагаемое положение опорной точки
             orientation:    Plate.Orientations.East,        // ориентация плашки
             highlighted:    false,                          // подсвечена ли плашка
             currents:       undefined,
@@ -167,8 +183,11 @@ export default class Plate {
      *
      * @param {Cell}    cell        положение элемента относительно опорной точки
      * @param {string}  orientation ориентация элемента относительно опорной точки
+     * @param {boolean} animate     анимировать появление плашки
      */
     draw(cell, orientation, animate=false) {
+        this._checkParams();
+
         this._beforeReposition();
 
         let width   = (cell.size.x * this._params.size.x) + (this.__grid.gap.x * 2 * (this._params.size.x - 1));
@@ -177,15 +196,23 @@ export default class Plate {
         this._container.size(width, height);
         this._shadow.size(width, height);
 
-        this._bezel.radius(Breadboard.CellRadius).fill("#fffffd");
-        this._bezel.stroke({color: "#f0eddb", width: 2});
+        let surf_path = this._generateSurfacePath(Breadboard.CellRadius);
 
-        if (this._params.schematic) {
-            this._bezel.fill({opacity: 0});
-            this._bezel.stroke({opacity: 0})
+        if (surf_path) {
+            this._bezel = this._group.path(surf_path);
+            this._error_highlighter = this._group.path(surf_path);
+        } else {
+            this._bezel = this._group.rect("100%", "100%").radius(Breadboard.CellRadius);
+            this._error_highlighter = this._group.rect("100%", "100%").radius(Breadboard.CellRadius);
         }
 
-        this._error_highlighter.fill({color: "#f00"}).radius(10);
+        if (this._params.schematic) {
+            this._bezel.fill({opacity: 0}).stroke({opacity: 0});
+        } else {
+            this._bezel.fill("#fffffd").stroke({color: "#f0eddb", width: 2});
+        }
+
+        this._error_highlighter.fill({color: "#f00"});
 
         this._shadowimg = this._shadowgroup.rect(width, height); // изображение тени
         this._shadowimg.fill({color: "#51ff1e"}).radius(10).opacity(0.4);
@@ -194,8 +221,8 @@ export default class Plate {
 
         this.highlightError(false);
         this.move(cell, true);
-        this.__draw__(cell, orientation);
         this.rotate(orientation, true);
+        this.__draw__(cell, orientation);
 
         this._drawed = true;
 
@@ -276,12 +303,10 @@ export default class Plate {
         if (this._ctxmenu.active) {return}
 
         this._state.cell = cell;
-        this._state.cell_supposed = cell;
 
-        this._shadow.x(this._state.cell.pos.x);
-        this._shadow.y(this._state.cell.pos.y);
+        let pos = this._getPositionAdjusted(cell);
 
-        let pos = this._getPositionAdjusted();
+        this._shadow.move(pos.x, pos.y);
 
         if (animate) {
             this._container.animate('100ms', '<>').move(pos.x, pos.y);
@@ -302,21 +327,12 @@ export default class Plate {
     /**
      * Сместить плашку на (dx, dy) позиций по осям X и Y соответственно
      *
-     * @param {int} dx смещение по оси X
-     * @param {int} dy смещение по оси Y
+     * @param {int}     dx                  смещение по оси X
+     * @param {int}     dy                  смещение по оси Y
+     * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
      */
     shift(dx, dy, prevent_overflow=true) {
-        let px = this._state.cell.idx.x,
-            py = this._state.cell.idx.y;
-
-        let Nx = this.__grid.dim.x,
-            Ny = this.__grid.dim.y;
-
-        if (px + dx < 0 || px + dx >= Nx || py + dy < 0 || py + dy >= Ny) {
-            return;
-        }
-
-        this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy));
+        this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy, Grid.BorderTypes.Replicate));
 
         if (prevent_overflow) {
             this._preventOverflow();
@@ -347,8 +363,15 @@ export default class Plate {
 
         let angle = Plate._orientationToAngle(orientation);
 
-        this._group.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
-        this._shadowgroup.transform({rotation: angle, cx: this._state.cell.size.x / 2, cy: this._state.cell.size.y / 2});
+        let cell = this._state.cell;
+
+        let anchor_point = {
+            x: (this._params.origin.x * (this.__grid.gap.x * 2 + cell.size.x)) + (cell.size.x / 2),
+            y: (this._params.origin.y * (this.__grid.gap.y * 2 + cell.size.y)) + (cell.size.y / 2),
+        };
+
+        this._group.transform({rotation: angle, cx: anchor_point.x, cy: anchor_point.y});
+        this._shadowgroup.transform({rotation: angle, cx: anchor_point.x, cy: anchor_point.y});
 
         this._state.orientation = orientation;
 
@@ -472,6 +495,8 @@ export default class Plate {
 
         let cursor_point_last = undefined;
 
+        let cell_supposed = undefined;
+
         /// обработчик перетаскивания плашки
         let onmove = (evt) => {
             let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
@@ -483,8 +508,8 @@ export default class Plate {
 
             cursor_point_last = cursor_point;
 
-            this._calcSupposedCell();
-            this._dropShadowToSupposedCell();
+            cell_supposed = this._calcSupposedCell();
+            this._dropShadowToCell(cell_supposed);
 
             if (dx > 0 || dy > 0) {
                 this._dragging = true;
@@ -502,7 +527,8 @@ export default class Plate {
                 document.body.removeEventListener('mousemove', onmove, false);
                 document.body.removeEventListener('mouseup', onmouseup, false);
 
-                this._snapToSupposedCell();
+                // Snap
+                this.move(cell_supposed, false, true);
                 this._hideShadow();
 
                 this._dragging = false;
@@ -572,8 +598,6 @@ export default class Plate {
 
     /**
      * Установить обработчик события вращения колёсика мыши на плашке
-     *
-     * @param {function} cb обработчик события вращения колёсика мыши на плашке
      */
     onWheel() {
         if (this._onwheel) {
@@ -645,13 +669,6 @@ export default class Plate {
      */
     hideContextMenu() {
         this._ctxmenu.dispose();
-
-        // if (!this._ctx_menu_active) return;
-        //
-        // this._ctx_menu_group.clear();
-        // this._ctx_menu_group.opacity(0);
-        //
-        // this._ctx_menu_active = false;
     }
 
     /**
@@ -676,12 +693,15 @@ export default class Plate {
     }
 
     /**
-     * Прикрепить плашку к предполагаемой ближайшей ячейке
+     * Инициализировать плашку
      *
      * @private
      */
-    _snapToSupposedCell() {
-        this.move(this._state.cell_supposed, false, true);
+    _checkParams() {
+        if (this._params.origin.x >= this._params.size.x || this._params.origin.y >= this._params.size.y) {
+            this._params.origin = {x: 0, y: 0};
+            console.debug(`Invalid origin for plate type '${this._alias}'`);
+        }
     }
 
     /**
@@ -689,8 +709,8 @@ export default class Plate {
      *
      * @private
      */
-    _dropShadowToSupposedCell() {
-        let pos = this._getPositionAdjusted(this._state.cell_supposed);
+    _dropShadowToCell(cell) {
+        let pos = this._getPositionAdjusted(cell);
 
         this._shadow.x(pos.x);
         this._shadow.y(pos.y);
@@ -720,92 +740,155 @@ export default class Plate {
      * @private
      */
     _calcSupposedCell() {
-        /// Реальные координаты плашки
-        let x = this._container.x(),
-            y = this._container.y();
+        /// Положениие группы плашки (изм. при вращении)
+        let gx = this._group.x(),
+            gy = this._group.y();
 
-        /// Реальные размеры поля
-        let w = this.__grid.size.x,
-            h = this.__grid.size.y;
+        /// Положение контейнера плашки (изм. при перемещении)
+        let cx = this._container.x(),
+            cy = this._container.y();
 
-        /// Количество ячеек
-        let Nx = this.__grid.dim.x,
-            Ny = this.__grid.dim.y;
+        /// Размер контейнера плашки
+        let spx = this._params.size_px.x,
+            spy = this._params.size_px.y;
 
-        /// Номер ячейки, над которой в данный момент находится центр опорной ячейки плашки
-        let px = Math.floor(x / w * Nx),
-            py = Math.floor(y / h * Ny);
+        /// Координаты верхнего левого угла контейнера
+        let x = 0,
+            y = 0;
 
-        /// Количество ячеек, занимаемое плашкой
-        let sx = this._params.size.x,
-            sy = this._params.size.y;
-
-        /// Нуль (мин. допустимый номера ячейки, куда может встать плашка)
-        let Ox = 0,
-            Oy = 0;
-
-        /// Ориентации плашки, обратные стандартным, требуют преобразований
-        if (this._state.orientation === Plate.Orientations.North ||
-            this._state.orientation === Plate.Orientations.South) {
-            sx = this._params.size.y;
-            sy = this._params.size.x;
+        // Учесть влияние вращения на систему координат
+        switch (this._state.orientation) {
+            case Plate.Orientations.East:   {x = cx;                y = cy;             break;}
+            case Plate.Orientations.North:  {x = cx + gx - spy;     y = cy + gy;        break;}
+            case Plate.Orientations.West:   {x = cx + gx - spx;     y = cy + gy - spy;  break;}
+            case Plate.Orientations.South:  {x = cx + gx;           y = cy + gy - spx;  break;}
         }
 
-        /// Смещение нуля и номера последней ячейки, необходимое в некоторых случаях
-        if (this._state.orientation === Plate.Orientations.South) {
-            Ny += sy - 1;
-            Oy += sy - 1;
-        }
+        let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
+        let cell_orig = this._getCellOriginal(cell);
 
-        if (this._state.orientation === Plate.Orientations.West) {
-            Nx += sx - 1;
-            Ox += sx - 1;
-        }
+        let [Ox, Oy, Nx, Ny] = this._getPlacementConstraints(this._state.orientation);
+
+        /// Индекс ячейки, находящейся под опорной ячейкой плашки
+        let ix = cell_orig.idx.x,
+            iy = cell_orig.idx.y;
+
+        /// Точное положение опорной точки плашки в системе координат
+        let px = x - cell.pos.x + cell_orig.pos.x,
+            py = y - cell.pos.y + cell_orig.pos.y;
 
         /// Проверка на выход за границы сетки ячеек
-        if (px + sx >= Nx)  {px = Nx - sx - 1}
-        if (px < Ox)        {px = Ox}
+        if (ix <= Ox)   {ix = Ox}
+        if (iy <= Oy)   {iy = Oy}
 
-        if (py + sy >= Ny)  {py = Ny - sy - 1}
-        if (py < Oy)        {py = Oy}
+        if (ix >= Nx)   {ix = Nx}
+        if (iy >= Ny)   {iy = Ny}
 
         /// Массив соседей ячейки, над которой находится плашка
         let neighbors = [];
 
         /// Соседи по краям
-        if (px + 1 < Nx)    neighbors.push(this.__grid.cell(px + 1, py));
-        if (px - 1 >= Ox)   neighbors.push(this.__grid.cell(px - 1, py));
-        if (py + 1 < Ny)    neighbors.push(this.__grid.cell(px, py + 1));
-        if (py - 1 >= Oy)   neighbors.push(this.__grid.cell(px, py - 1));
+        if (ix + 1 < Nx)    neighbors.push(this.__grid.cell(ix + 1, iy));
+        if (ix - 1 >= Ox)   neighbors.push(this.__grid.cell(ix - 1, iy));
+        if (iy + 1 < Ny)    neighbors.push(this.__grid.cell(ix, iy + 1));
+        if (iy - 1 >= Oy)   neighbors.push(this.__grid.cell(ix, iy - 1));
 
         /// Соседи по диагоналям
-        if (px + 1 < Nx && py + 1 < Ny)     neighbors.push(this.__grid.cell(px + 1, py + 1));
-        if (px + 1 < Nx && py - 1 >= Oy)    neighbors.push(this.__grid.cell(px + 1, py - 1));
-        if (px - 1 >= Ox && py + 1 < Ny)    neighbors.push(this.__grid.cell(px - 1, py + 1));
-        if (px - 1 >= Ox && py - 1 >= Oy)   neighbors.push(this.__grid.cell(px - 1, py - 1));
+        if (ix + 1 < Nx && iy + 1 < Ny)     neighbors.push(this.__grid.cell(ix + 1, iy + 1));
+        if (ix + 1 < Nx && iy - 1 >= Oy)    neighbors.push(this.__grid.cell(ix + 1, iy - 1));
+        if (ix - 1 >= Ox && iy + 1 < Ny)    neighbors.push(this.__grid.cell(ix - 1, iy + 1));
+        if (ix - 1 >= Ox && iy - 1 >= Oy)   neighbors.push(this.__grid.cell(ix - 1, iy - 1));
 
         /// Ближайший сосед
-        let nearest = this.__grid.cell(px, py);
+        let nearest = this.__grid.cell(ix, iy);
 
-        /// Расстояния от точки до ближайшего соседа
-        let ndx = Math.abs(x - nearest.pos.x);
-        let ndy = Math.abs(y - nearest.pos.y);
+        // Расстояния от точки до ближайшего соседа
+        let ndx = Math.abs(px - nearest.pos.x);
+        let ndy = Math.abs(py - nearest.pos.y);
 
         for (let neighbor of neighbors) {
             /// Расстояния от точки до соседа
-            let dx = Math.abs(x - neighbor.pos.x);
-            let dy = Math.abs(y - neighbor.pos.y);
+            let dx = Math.abs(px - neighbor.pos.x);
+            let dy = Math.abs(py - neighbor.pos.y);
 
             if (dx < ndx || dy < ndy) {
                 // если хотя бы по одному измерению расстояние меньше,
                 // взять нового ближайшего соседа
                 nearest = neighbor;
-                ndx = Math.abs(x - nearest.pos.x);
-                ndy = Math.abs(y - nearest.pos.y);
+                ndx = Math.abs(px - nearest.pos.x);
+                ndy = Math.abs(py - nearest.pos.y);
             }
         }
 
-        this._state.cell_supposed = nearest;
+        return nearest;
+    }
+
+    _getPlacementConstraints(orientation) {
+        if (!REGISTRY.PLACEMENT_CONSTRAINTS[this._alias]) {
+            REGISTRY.PLACEMENT_CONSTRAINTS[this._alias] = this._calcPlacementConstraints();
+        }
+
+        return REGISTRY.PLACEMENT_CONSTRAINTS[this._alias][orientation];
+    }
+
+    _calcPlacementConstraints() {
+        /// Размерность доски
+        let Dx = this.__grid.dim.x,
+            Dy = this.__grid.dim.y;
+
+        /// Размерность плашки
+        let Sx = this._params.size.x,
+            Sy = this._params.size.y;
+
+        /// Опорная точка плашки
+        let orn = this._params.origin;
+
+        /// Количество точек от опорной до края
+        let rem = {x: Sx - orn.x, y: Sy - orn.y};
+
+        let constraints = [];
+
+        // x goes to Nx, y goes to Ny
+        constraints[Plate.Orientations.East] =  [orn.x,          orn.y,         Dx - rem.x,        Dy - rem.y];
+        // -y goes to Nx, x goes to Ny
+        constraints[Plate.Orientations.North] = [rem.y - 1,      orn.x,         Dx - orn.y - 1,    Dy - rem.x];
+        // -x goes to Nx, -y goes to Ny
+        constraints[Plate.Orientations.West] =  [rem.x - 1,      rem.y - 1,     Dx - orn.x - 1,    Dy - orn.y - 1];
+        // y goes to Nx, -x goes to Ny
+        constraints[Plate.Orientations.South] = [orn.y,          rem.x - 1,     Dx - rem.y,        Dy - orn.x - 1];
+
+        return constraints;
+    }
+
+    /**
+     * Определить ячейку, над которой находится опорная точка плашки
+     *
+     * @param cell          ячейка, над которой находится верхняя левая точка плашки
+     * @returns {Cell|*}    ячейка, над которой находится опорная точка плашки
+     *
+     * @private
+     */
+    _getCellOriginal(cell) {
+        let ix = cell.idx.x,
+            iy = cell.idx.y;
+
+        let orn = this._params.origin;
+
+        /// Количество ячеек, занимаемое плашкой
+        let sx = this._params.size.x,
+            sy = this._params.size.y;
+
+        let dix = 0,
+            diy = 0;
+
+        switch (this._state.orientation) {
+            case Plate.Orientations.East:   {dix = orn.x;             diy = orn.y;              break;}
+            case Plate.Orientations.North:  {dix = sy - orn.y - 1;    diy = orn.x;              break;}
+            case Plate.Orientations.West:   {dix = sx - orn.x - 1;    diy = sy - orn.y - 1;     break;}
+            case Plate.Orientations.South:  {dix = orn.y;             diy = sx - orn.x - 1;     break;}
+        }
+
+        return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
     }
 
     /**
@@ -817,40 +900,25 @@ export default class Plate {
      */
     _preventOverflow() {
         /// Номер ячейки, занимаемой опорной ячейкой плашки
-        let px = this._state.cell.idx.x,
-            py = this._state.cell.idx.y;
+        let ix = this._state.cell.idx.x,
+            iy = this._state.cell.idx.y;
 
-        /// Количество ячеек, занимаемое плашкой
-        let sx = this._params.size.x,
-            sy = this._params.size.y;
-
-        /// Количество ячеек
-        let Nx = this.__grid.dim.x,
-            Ny = this.__grid.dim.y;
+        let [Ox, Oy, Nx, Ny] = this._getPlacementConstraints(this._state.orientation);
 
         let dx = 0,
             dy = 0;
 
-        switch(this._state.orientation) {
-            case Plate.Orientations.East:
-                if (px + sx > Nx) {dx = Nx - (px + sx)}
-                break;
-            case Plate.Orientations.North:
-                if (py + sx > Ny) {dy = Ny - (py + sx)}
-                break;
-            case Plate.Orientations.West:
-                if (px - sx < -1) {dx = sx - px - 1}
-                break;
-            case Plate.Orientations.South:
-                if (py - sx < -1) {dy = sx - py - 1}
-                break;
-        }
+        if (ix >= Nx) {dx = Nx - ix}
+        if (iy >= Ny) {dy = Ny - iy}
 
-        px += dx;
-        py += dy;
+        if (ix <= Ox) {dx = Ox - ix}
+        if (iy <= Oy) {dy = Oy - iy}
+
+        ix += dx;
+        iy += dy;
 
         // анимировать, но только не в случае незавершённой отрисовки
-        this.move(this.__grid.cell(px, py), false, this._drawed);
+        this.move(this.__grid.cell(ix, iy), false, this._drawed);
     }
 
     /**
@@ -947,7 +1015,14 @@ export default class Plate {
     _getPositionAdjusted(cell=null) {
         cell = cell || this._state.cell;
 
-        let abs = {x: cell.pos.x, y: cell.pos.y};
+        /// Опорная точка плашки
+        let orn = this._params.origin;
+
+        /// Абсолютное положение плашки с учётом того, что ячейка лежит над опорной точкой плашки
+        let abs = {
+            x: cell.pos.x - orn.x * (cell.size.x + this.__grid.gap.x * 2),
+            y: cell.pos.y - orn.y * (cell.size.y + this.__grid.gap.y * 2)
+        };
 
         if (!this._params.schematic) {
             return abs;
@@ -960,6 +1035,242 @@ export default class Plate {
         let adj = this._params.adjs[this._state.orientation];
 
         return {x: abs.x + adj.x * cell.size.x, y: abs.y + adj.y * cell.size.y};
+    }
+
+    _generateSurfacePath(radius=5) {
+        if (this._params.surface) {
+            let path = [];
+
+            // TODO: Verify closed surfaces
+
+            let surfcnt = this._convertSurfaceToArray(this._params.surface);
+
+            if (!surfcnt) return;
+
+            let surf_point = this._params.surface[0];
+            let cell = this.__grid.cell(surf_point.x, surf_point.y);
+
+            return path.concat(this._buildSurfacePath(cell, surfcnt, radius));
+        }
+    }
+
+    _buildSurfacePath(cell, surfcnt, radius, dir_idx=0, is_root=true) {
+        let path = [];
+
+        // clockwise dir sequence
+        let dirs = Cell.DirectionsClockwise;
+
+        if (is_root) {
+            path = path.concat(this._buildSurfacePathOffset(cell, radius));
+        }
+
+        // main drawing procedure
+        while (surfcnt[cell.idx.x][cell.idx.y] < dirs.length) {
+            dir_idx = mod(dir_idx, dirs.length);
+
+            let dir = dirs[dir_idx % dirs.length];
+
+            // get neighbor cell for current direction
+            let nb = cell.neighbor(dir);
+
+            if (nb && surfcnt[nb.idx.x] && surfcnt[nb.idx.x].hasOwnProperty(nb.idx.y)) {
+                surfcnt[cell.idx.x][cell.idx.y] += 1;
+
+                // skip to suppress redundant deepening
+                if (surfcnt[nb.idx.x][nb.idx.y] <= 0) {
+                    let dir_idx_prev = mod(dir_idx-1, dirs.length);
+                    let dir_prev = dirs[dir_idx_prev % dirs.length];
+
+                    let dir_idx_next = mod(dir_idx+1, dirs.length);
+                    let dir_next = dirs[dir_idx_next % dirs.length];
+
+                    // push gap
+                    path = path.concat(this._buildSurfacePathGapPush(dir, dir_prev, radius));
+                    // if neighbor exists for this direction, draw from it
+                    path = path.concat(this._buildSurfacePath(nb, surfcnt, radius, dir_idx - 1, false));
+                    // pull gap
+                    path = path.concat(this._buildSurfacePathGapPull(dir, dir_next, radius));
+                }
+            } else {
+                // otherwise we can draw the edge of this direction
+                surfcnt[cell.idx.x][cell.idx.y] += 1;
+
+                path = path.concat(this._buildSurfacePathEdge(cell, dir, radius));
+            }
+
+            dir_idx++;
+        }
+
+        if (is_root) {
+            path.push(this._buildSurfacePathClosure(dirs[0], radius));
+        }
+
+        return path;
+    }
+
+    _buildSurfacePathGapPush(dir, dir_corner, radius) {
+        let corner = this._buildSurfacePathCorner(dir_corner, radius);
+
+        if (corner === null) {
+            radius = 0;
+            corner = [];
+        }
+
+        switch (dir) {
+            case Cell.Directions.Up: {
+                return [corner, ['v', -(this.__grid.gap.y * 2 - radius*2)]]; // draw up
+            }
+            case Cell.Directions.Right: {
+                return [corner, ['h', +(this.__grid.gap.x * 2 - radius*2)]]; // draw right
+            }
+            case Cell.Directions.Down: {
+                return [corner, ['v', +(this.__grid.gap.y * 2 - radius*2)]]; // draw down
+            }
+            case Cell.Directions.Left: {
+                return [corner, ['h', -(this.__grid.gap.x * 2 - radius*2)]]; // draw left
+            }
+            default: {
+                throw new RangeError("Invalid direction");
+            }
+        }
+    }
+
+    _buildSurfacePathGapPull(dir, dir_corner, radius) {
+        let corner = this._buildSurfacePathCorner(dir_corner, radius);
+
+        if (corner === null) {
+            radius = 0;
+            corner = [];
+        }
+
+        switch (dir) {
+            case Cell.Directions.Up: {
+                return [corner, ['v', +(this.__grid.gap.y * 2 - radius*2)]]; // draw down
+            }
+            case Cell.Directions.Right: {
+                return [corner, ['h', -(this.__grid.gap.x * 2 - radius*2)]]; // draw left
+            }
+            case Cell.Directions.Down: {
+                return [corner, ['v', -(this.__grid.gap.y * 2 - radius*2)]]; // draw up
+            }
+            case Cell.Directions.Left: {
+                return [corner, ['h', +(this.__grid.gap.x * 2 - radius*2)]]; // draw right
+            }
+            default: {
+                throw new RangeError("Invalid direction");
+            }
+        }
+    }
+
+    _buildSurfacePathEdge(cell, dir, radius) {
+        let corner = this._buildSurfacePathCorner(dir, radius);
+
+        if (corner === null) {
+            radius = 0;
+            corner = [];
+        }
+
+        switch (dir) {
+            case Cell.Directions.Up: {
+                return [corner, ['h', +(cell.size.x - radius*2)]]; // draw right
+            }
+            case Cell.Directions.Right: {
+                return [corner, ['v', +(cell.size.y - radius*2)]]; // draw down
+            }
+            case Cell.Directions.Down: {
+                return [corner, ['h', -(cell.size.x - radius*2)]]; // draw left
+            }
+            case Cell.Directions.Left: {
+                return [corner, ['v', -(cell.size.y - radius*2)]]; // draw up
+            }
+            default: {
+                throw new RangeError("Invalid direction");
+            }
+        }
+    }
+
+    _buildSurfacePathOffset(cell, radius) {
+        let mv_x = (cell.idx.x * (cell.size.x + this.__grid.gap.x * 2)),
+            mv_y = (cell.idx.y * (cell.size.y + this.__grid.gap.y * 2));
+
+        return [['M', mv_x + radius, mv_y]];
+    }
+
+    _buildSurfacePathClosure(dir_curr, radius) {
+        if (this._dir_prev == null) return [];
+
+        let closure = this._buildSurfacePathCorner(dir_curr, radius);
+
+        this._dir_prev = null;
+
+        return closure;
+    }
+
+    _buildSurfacePathCorner(dir_curr, radius) {
+        let dir_prev = this._dir_prev;
+
+        if (dir_curr === dir_prev) return null;
+
+        let rx = null,
+            ry = null;
+
+        let arc = null;
+
+        if (Cell.IsDirHorizontal(dir_prev) && Cell.IsDirVertical(dir_curr)) {
+            rx = (dir_prev === Cell.Directions.Up)      ? radius : -radius;
+            ry = (dir_curr === Cell.Directions.Right)    ? radius : -radius;
+        }
+
+        if (Cell.IsDirHorizontal(dir_curr) && Cell.IsDirVertical(dir_prev)) {
+            rx = (dir_curr === Cell.Directions.Up)      ? radius : -radius;
+            ry = (dir_prev === Cell.Directions.Right)    ? radius : -radius;
+        }
+
+        if (rx !== null && ry !== null) {
+            let cw = Cell.IsDirsClockwise(dir_prev, dir_curr) ? 1 : 0;
+            arc = ['a', radius, radius, 0, 0, cw, rx, ry];
+        }
+
+        let is_first = this._dir_prev == null;
+
+        this._dir_prev = dir_curr;
+
+        return is_first ? [] : arc;
+    }
+
+    /**
+     *
+     * @param surface Array<object>
+     * @private
+     */
+    _convertSurfaceToArray(surface) {
+        let arr = [];
+
+        for (let item of surface) {
+            if (!arr.hasOwnProperty(item.x)) arr[item.x] = [];
+
+            arr[item.x][item.y] = 0;
+
+            if (arr[item.x].length > this._params.size.y) {
+                console.error("Invalid surface for Y size, skipping custom bezel");
+                return;
+            }
+
+            if (arr.length > this._params.size.x) {
+                console.error("Invalid surface for X size, skipping custom bezel");
+                return;
+            }
+        }
+
+        return arr;
+    }
+
+    static IsOrientationHorizontal(orientation) {
+        return (orientation === Plate.Orientations.West || orientation === Plate.Orientations.East);
+    }
+
+    static IsOrientationVertical(orientation) {
+        return (orientation === Plate.Orientations.North || orientation === Plate.Orientations.South);
     }
 
     /**

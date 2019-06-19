@@ -32,13 +32,17 @@
         $(document).ready(() => {
             app.setData(
                 [
+                    {"id":208310,"type":"switch",   "x":2,"y":3,"length":3,"orientation":"west","extra":0},
+
+                    // old:
+
                     // {"id":149224,"type":"bridge",       "x":9,"y":9,"length":2,"orientation":"north","extra":2},
 
-                    {"id":308389,"type":"transistor",   "x":8,"y":4,"length":3,"orientation":"east","extra":0},
-                    {"id":308388,"type":"transistor",   "x":6,"y":8,"length":3,"orientation":"west","extra":0},
+                    // {"id":308389,"type":"transistor",   "x":8,"y":4,"length":3,"orientation":"east","extra":0},
+                    // {"id":308388,"type":"transistor",   "x":6,"y":8,"length":3,"orientation":"west","extra":0},
 
-                    {"id":308310,"type":"transistor",   "x":2,"y":3,"length":3,"orientation":"south","extra":0},
-                    {"id":308311,"type":"transistor",   "x":2,"y":8,"length":3,"orientation":"north","extra":0},
+                    // {"id":308310,"type":"transistor",   "x":2,"y":3,"length":3,"orientation":"south","extra":0},
+                    // {"id":308311,"type":"transistor",   "x":2,"y":8,"length":3,"orientation":"north","extra":0},
 
                     // {"id":507067,"type":"resistor",     "x":1,"y":4,"length":2,"orientation":"east","extra":200},
                     // {"id":596938,"type":"bridge",       "x":5,"y":1,"length":2,"orientation":"north","extra":2},
@@ -47,18 +51,22 @@
                     // {"id":926229,"type":"bridge",       "x":8,"y":3,"length":2,"orientation":"west","extra":2}
                 ],
                 {threads: [
-                    // {from: {x: 9, y: 6},    to: {x: 9, y: 9},      weight: weight},
-                    // {from: {x: 9, y: 3},    to: {x: 9, y: 5},      weight: weight},
-                    // {from: {x: 5, y: 2},    to: {x: 5, y: 5},      weight: weight},
-                    {from: {x: 8, y: 4},    to: {x: 8, y: 3},      weight: weight},
-                    {from: {x: 6, y: 5},    to: {x: 6, y: 4},      weight: weight},
-                    {from: {x: 8, y: 7},    to: {x: 8, y: 8},      weight: weight},
-                    {from: {x: 6, y: 8},    to: {x: 6, y: 9},      weight: weight},
+                    // {from: {x: 2, y: 5},    to: {x: 2, y: 3},      weight: weight},
+                    // {from: {x: 4, y: 5},    to: {x: 4, y: 3},      weight: weight},
+                    //
+                    // {from: {x: 3, y: 3},    to: {x: 3, y: 1},      weight: weight},
 
-                    {from: {x: 2, y: 3},    to: {x: 0, y: 3},      weight: weight},
-                    {from: {x: 4, y: 5},    to: {x: 2, y: 5},      weight: weight},
-                    {from: {x: 0, y: 6},    to: {x: 2, y: 6},      weight: weight},
-                    {from: {x: 2, y: 8},    to: {x: 4, y: 8},      weight: weight},
+                    // old:
+
+                    // {from: {x: 8, y: 4},    to: {x: 8, y: 3},      weight: weight},
+                    // {from: {x: 6, y: 5},    to: {x: 6, y: 4},      weight: weight},
+                    // {from: {x: 8, y: 7},    to: {x: 8, y: 8},      weight: weight},
+                    // {from: {x: 6, y: 8},    to: {x: 6, y: 9},      weight: weight},
+                    //
+                    // {from: {x: 2, y: 3},    to: {x: 0, y: 3},      weight: weight},
+                    // {from: {x: 4, y: 5},    to: {x: 2, y: 5},      weight: weight},
+                    // {from: {x: 0, y: 6},    to: {x: 2, y: 6},      weight: weight},
+                    // {from: {x: 2, y: 8},    to: {x: 4, y: 8},      weight: weight},
                 ]}
             );
         });
