@@ -42,7 +42,7 @@ export default class Plate {
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
-    static get QuadSizeDefault()    {return 16}
+    static get QuadSizeDefault()    {return 20}
     static get LEDSizeDefault()     {return 16}
     static get LabelSizeDefault()   {return 12}
 
@@ -183,6 +183,7 @@ export default class Plate {
      *
      * @param {Cell}    cell        положение элемента относительно опорной точки
      * @param {string}  orientation ориентация элемента относительно опорной точки
+     * @param {boolean} animate     анимировать появление плашки
      */
     draw(cell, orientation, animate=false) {
         this._checkParams();
