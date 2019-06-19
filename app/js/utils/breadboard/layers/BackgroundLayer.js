@@ -269,48 +269,44 @@ export default class BackgroundLayer extends Layer {
 
     }
 
-    _drawContact(container, cell_from, cell_to, color="#000") {
-        let len = {
-            x: math.sqrt(cell_from.pos.x * cell_from.pos.x - cell_to.pos.x * cell_to.pos.x),
-            y: math.sqrt(cell_from.pos.y * cell_from.pos.y - cell_to.pos.y * cell_to.pos.y),
-        };
-
-        if (this.__schematic && typeof color !== 'string') {
-            console.error('String color is not supported in schematic mode');
-            return;
-        };
-    }
+    // _drawContact(container, cell_from, cell_to, color="#000") {
+    //     let len = {
+    //         x: math.sqrt(cell_from.pos.x * cell_from.pos.x - cell_to.pos.x * cell_to.pos.x),
+    //         y: math.sqrt(cell_from.pos.y * cell_from.pos.y - cell_to.pos.y * cell_to.pos.y),
+    //     };
+    //
+    //     if (this.__schematic && typeof color !== 'string') {
+    //         console.error('String color is not supported in schematic mode');
+    //         return;
+    //     };
+    // }
 
     _drawCell(container, cell) {
         if (this.__schematic) return;
 
-        container
-            .circle(cell.size.x)
-            // .rect(cell.size.x, cell.size.y)
-            .move(cell.pos.x, cell.pos.y)
-            .fill({color: GRADIENTS.GOLD.RADIAL, opacity: 1})
-            // .fill({color: "#D4AF37", opacity: 1})
-            .stroke({color: "#6f6f6f", opacity: 0.5});
-            // .radius(Breadboard.CellRadius);
-            // .attr('filter', 'url(#inner-shadow)'); // laggy
-
-        // quad style
         // container
         //     .circle(cell.size.x)
-        //     .rect(cell.size.x, cell.size.y)
-        //     .fill({color: "#D4AF37", opacity: 1})
-        //     .radius(Breadboard.CellRadius);
+        //     .move(cell.pos.x, cell.pos.y)
+        //     .fill({color: GRADIENTS.GOLD.RADIAL, opacity: 1})
+        //     .stroke({color: "#6f6f6f", opacity: 0.5});
+
+        // quad style
+        container
+            .rect(cell.size.x, cell.size.y)
+            .move(cell.pos.x, cell.pos.y)
+            .fill({color: "#D4AF37", opacity: 1})
+            .radius(Breadboard.CellRadius);
 
         // [quad] lines
-        // container.path([
-        //     ['M', 0, 0],
-        //     ['M', cell.size.x * 1 / 3, 0], ['l', 0, cell.size.y],
-        //     ['M', cell.size.x * 2 / 3, 0], ['l', 0, cell.size.y],
-        //     ['M', 0, cell.size.y * 1 / 3], ['l', cell.size.x, 0],
-        //     ['M', 0, cell.size.y * 2 / 3], ['l', cell.size.x, 0],
-        // ])
-        //     .fill({opacity: 0})
-        //     .stroke({color: "#FFF", width: 2, opacity: 0.2})
-        //     .move(cell.pos.x, cell.pos.y);
+        container.path([
+            ['M', 0, 0],
+            ['M', cell.size.x * 1 / 3, 0], ['l', 0, cell.size.y],
+            ['M', cell.size.x * 2 / 3, 0], ['l', 0, cell.size.y],
+            ['M', 0, cell.size.y * 1 / 3], ['l', cell.size.x, 0],
+            ['M', 0, cell.size.y * 2 / 3], ['l', cell.size.x, 0],
+        ])
+            .fill({opacity: 0})
+            .stroke({color: "#FFF", width: 2, opacity: 0.2})
+            .move(cell.pos.x, cell.pos.y);
     }
 }
