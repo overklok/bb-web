@@ -42,7 +42,7 @@ export default class Plate {
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
-    static get QuadSizeDefault()    {return 20}
+    static get QuadSizeDefault()    {return 24}
     static get LEDSizeDefault()     {return 16}
     static get LabelSizeDefault()   {return 12}
 

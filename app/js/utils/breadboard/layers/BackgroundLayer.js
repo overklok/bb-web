@@ -4,6 +4,7 @@ import Grid from "../core/Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
 import {logoSVG, leafSVG} from "../styles/paths";
+import {GRADIENTS} from "../styles/gradients";
 
 const LOGO_COLOR_ACTIVE     = "#6B8FFF";
 const LOGO_COLOR_DEFAULT    = "#000000";
@@ -215,34 +216,22 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawDomains() {
-        let gradient_vert = this._domaingroup.gradient('linear', function(stop) {
-            stop.at(.0, '#BB772C');
-            stop.at(.7, '#DBAB1D');
-            stop.at(1,  '#BB772C');
-        }).from(0.5, 1).to(0.5, 0);
-
-        let gradient_horz = this._domaingroup.gradient('linear', function(stop) {
-            stop.at(.0, '#BB772C');
-            stop.at(.7, '#DBAB1D');
-            stop.at(1,  '#BB772C');
-        }).from(1, 0.5).to(0, 0.5);
-
         for (let col of this.__grid.cells) {
-            this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#555' : gradient_vert);
-            this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#555' : gradient_vert);
+            this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#555' : GRADIENTS.GOLD.VERT);
+            this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#555' : GRADIENTS.GOLD.VERT);
         }
 
         this._drawDomain(
             this._domaingroup,
             this.__grid.cell(0,1),
             this.__grid.cell(9,1),
-            this.__schematic ? '#faa' : gradient_horz
+            this.__schematic ? '#faa' : GRADIENTS.GOLD.HORZ
         );
         this._drawDomain(
             this._domaingroup,
             this.__grid.cell(0,10),
             this.__grid.cell(9,10),
-            this.__schematic ? '#aaf' : gradient_horz
+            this.__schematic ? '#aaf' : GRADIENTS.GOLD.HORZ
         );
     }
 
@@ -280,26 +269,48 @@ export default class BackgroundLayer extends Layer {
 
     }
 
+    _drawContact(container, cell_from, cell_to, color="#000") {
+        let len = {
+            x: math.sqrt(cell_from.pos.x * cell_from.pos.x - cell_to.pos.x * cell_to.pos.x),
+            y: math.sqrt(cell_from.pos.y * cell_from.pos.y - cell_to.pos.y * cell_to.pos.y),
+        };
+
+        if (this.__schematic && typeof color !== 'string') {
+            console.error('String color is not supported in schematic mode');
+            return;
+        };
+    }
+
     _drawCell(container, cell) {
         if (this.__schematic) return;
 
         container
-            .rect(cell.size.x, cell.size.y)
+            .circle(cell.size.x)
+            // .rect(cell.size.x, cell.size.y)
             .move(cell.pos.x, cell.pos.y)
-            .fill({color: "#D4AF37", opacity: 1})
-            .stroke({color: "#6f6f6f", opacity: 0.5})
-            .radius(Breadboard.CellRadius);
+            .fill({color: GRADIENTS.GOLD.RADIAL, opacity: 1})
+            // .fill({color: "#D4AF37", opacity: 1})
+            .stroke({color: "#6f6f6f", opacity: 0.5});
+            // .radius(Breadboard.CellRadius);
             // .attr('filter', 'url(#inner-shadow)'); // laggy
 
-        container.path([
-            ['M', 0, 0],
-            ['M', cell.size.x * 1 / 3, 0], ['l', 0, cell.size.y],
-            ['M', cell.size.x * 2 / 3, 0], ['l', 0, cell.size.y],
-            ['M', 0, cell.size.y * 1 / 3], ['l', cell.size.x, 0],
-            ['M', 0, cell.size.y * 2 / 3], ['l', cell.size.x, 0],
-        ])
-            .fill({opacity: 0})
-            .stroke({color: "#FFF", width: 2, opacity: 0.2})
-            .move(cell.pos.x, cell.pos.y);
+        // quad style
+        // container
+        //     .circle(cell.size.x)
+        //     .rect(cell.size.x, cell.size.y)
+        //     .fill({color: "#D4AF37", opacity: 1})
+        //     .radius(Breadboard.CellRadius);
+
+        // [quad] lines
+        // container.path([
+        //     ['M', 0, 0],
+        //     ['M', cell.size.x * 1 / 3, 0], ['l', 0, cell.size.y],
+        //     ['M', cell.size.x * 2 / 3, 0], ['l', 0, cell.size.y],
+        //     ['M', 0, cell.size.y * 1 / 3], ['l', cell.size.x, 0],
+        //     ['M', 0, cell.size.y * 2 / 3], ['l', cell.size.x, 0],
+        // ])
+        //     .fill({opacity: 0})
+        //     .stroke({color: "#FFF", width: 2, opacity: 0.2})
+        //     .move(cell.pos.x, cell.pos.y);
     }
 }

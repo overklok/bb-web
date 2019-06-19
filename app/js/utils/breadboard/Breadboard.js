@@ -18,8 +18,8 @@ const WRAP_HEIGHT = 1350;             // Высота рабочей облас�
 const GRID_WIDTH = 1000;
 const GRID_HEIGHT = 1100;
 
-const GRID_GAP_X = 24;
-const GRID_GAP_Y = 24;
+const GRID_GAP_X = 20;
+const GRID_GAP_Y = 20;
 
 const GRID_ROWS = 11;                // Количество рядов в сетке точек
 const GRID_COLS = 10;                // Количество колонок в сетке точек
@@ -29,6 +29,7 @@ const GRID_POS_Y = 170;
 
 
 import thm from "./styles/main.css";
+import {initGradients} from "./styles/gradients";
 
 /**
  * Основной класс платы.
@@ -119,6 +120,8 @@ export default class Breadboard {
 
         /// создать фильтры
         this._defineFilters();
+        /// создать градиенты
+        this._defineGradients();
         /// инициализировать слои
         this._composeLayers();
     };
@@ -621,6 +624,10 @@ export default class Breadboard {
 
         this.switchSpareFilters(this._spare);
     };
+
+    _defineGradients() {
+        initGradients(this._brush.group("gradients"));
+    }
 
     /**
      * Возвратить список всех типов плашек
