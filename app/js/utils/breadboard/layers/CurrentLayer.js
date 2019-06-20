@@ -19,6 +19,7 @@ export default class CurrentLayer extends Layer {
         this._threads = {};
 
         this._spare = undefined;
+        this._show_source = undefined;
 
         this._currentgroup = undefined;
     }
@@ -30,7 +31,7 @@ export default class CurrentLayer extends Layer {
         this._initGroups();
     }
 
-    recompose(schematic) {
+    recompose(schematic, show_source=true) {
         super.recompose(schematic);
 
         let threads = Object.assign([], this._threads);
@@ -39,7 +40,7 @@ export default class CurrentLayer extends Layer {
 
         this._initGroups();
 
-        this.setCurrents(threads, this._spare);
+        this.setCurrents(threads, this._spare, show_source);
     }
 
     /**
@@ -109,10 +110,12 @@ export default class CurrentLayer extends Layer {
      *
      * @param {Array<Object>}   threads     список контуров токов, которые должны отображаться на слое
      * @param {boolean}         spare       щадящий режим (для слабых машин)
+     * @param {boolean}         show_source показывать путь тока от источника напряжения
      */
-    setCurrents(threads, spare) {
+    setCurrents(threads, spare, show_source=true) {
         this._threads = threads;
         this._spare = spare;
+        this._show_source = show_source;
 
         /// снять возможную пометку с локальных токов
         for (let current_id in this._currents) {
@@ -175,12 +178,13 @@ export default class CurrentLayer extends Layer {
     /**
      * Добавить ток
      *
-     * @param {Object} thread контур тока
-     * @param {boolean} spare щадящий режим
+     * @param {Object} thread       контур тока
+     * @param {boolean} spare       щадящий режим
+     * @param {boolean} show_source показывать путь тока от источника напряжения
      * @returns {Current}
      * @private
      */
-    _addCurrent(thread, spare) {
+    _addCurrent(thread, spare, show_source=true) {
         if (!thread || thread.length === 0) {}
 
         let current = new Current(this._currentgroup, thread, {
@@ -189,7 +193,7 @@ export default class CurrentLayer extends Layer {
             particle_radius: this.__schematic ? PARTICLE_SIZE_SCHEMATIC : PARTICLE_SIZE
         });
 
-        let line_data = this._buildCurrentLine(thread);
+        let line_data = this._buildCurrentLine(thread, show_source);
 
         this._currents[current.id] = current;
 
@@ -205,18 +209,31 @@ export default class CurrentLayer extends Layer {
     /**
      * Построить путь прохождения тока
      *
-     * @param   {Object} points контур - объект, содержащий точки прохождения тока
+     * @param   {Object}    points      контур - объект, содержащий точки прохождения тока
+     * @param   {boolean}   show_source строить путь тока от источника напряжения
      * @returns {Array} последовательность SVG-координат
      * @private
      */
-    _buildCurrentLine(points) {
+    _buildCurrentLine(points, show_source=true) {
         let cell_from  = this.__grid.cell(points.from.x, points.from.y),
             cell_to    = this.__grid.cell(points.to.x, points.to.y);
 
-        return {
-            from: {x: cell_from.center_adj.x , y: cell_from.center_adj.y},
-            to: {x: cell_to.center_adj.x, y: cell_to.center_adj.y}
-        };
+        let coords = [];
+
+        coords.push({x: cell_from.center_adj.x,   y: cell_from.center_adj.y});
+        coords.push({x: cell_to.center_adj.x,     y: cell_to.center_adj.y});
+
+        if (show_source && cell_from.isExtreme(false, false)) {
+            // add 2 coords from PLUS
+        }
+
+        if (show_source && cell_to.isExtreme(false, true)) {
+            // add 2 coords from PLUS
+        }
+
+        // TODO: Modify Current.draw() to draw polylines
+
+        return coords;
     };
 
     /**

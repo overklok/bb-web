@@ -98,6 +98,16 @@ export default class Cell {
         return (this.__adj != null);
     }
 
+    isExtreme(x=false, y=false) {
+        let x0 = 0, xN = this.__grid.dim.x - 1,
+            y0 = 0, yN = this.__grid.dim.y - 1;
+
+        let is_x_extreme = x === false ? (this.idx.x === x0) : (this.idx.x === xN);
+        let is_y_extreme = y === false ? (this.idx.y === y0) : (this.idx.y === yN);
+
+        return is_x_extreme && is_y_extreme;
+    }
+
     neighbor(dir) {
         let point = {};
 

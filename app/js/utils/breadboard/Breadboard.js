@@ -199,7 +199,7 @@ export default class Breadboard {
      */
     setCurrents(threads) {
         // this._layers.current.setCurrents(threads, this._spare);
-        this._layers.current.setCurrents(threads, false);
+        this._layers.current.setCurrents(threads, false, this._options.showSourceCurrents);
     }
 
     /**
@@ -383,7 +383,8 @@ export default class Breadboard {
 
         this._options = {
             readOnly: (options.readOnly === undefined) ? true : options.readOnly,
-            showControlsDefault: (options.showControlsDefault === undefined ? true : options.showControlsDefault)
+            showControlsDefault: (options.showControlsDefault === undefined ? true : options.showControlsDefault),
+            showSourceCurrents: (options.showSourceCurrents === undefined ? true : options.showSourceCurrents)
         }
     }
 
