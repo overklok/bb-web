@@ -690,6 +690,8 @@ class Application {
             this.gui.ejectTextPane();
             this.gui.ejectLaunchButtons();
             this.gui.ejectHomeMenu();
+
+            console.log('cbeg');
         });
 
         /**
@@ -698,14 +700,16 @@ class Application {
         this._dispatcher.on('lay:compose-end', data => {
             if (data) {
                 this.gui.injectLaunchButtons(data.nodes.launch_buttons);
-                this.ws.inject(data.nodes.workspace, data.params.code_read_only, data.params.code_zoom_factor);
                 this.bb.inject(data.nodes.breadboard);
+                this.ws.inject(data.nodes.workspace, data.params.code_read_only, data.params.code_zoom_factor);
                 this.trc.injectBlocks(data.nodes.tracing);
                 this.trc.injectButtons(data.nodes.buttons);
                 this.gui.injectTextPane(data.nodes.task);
                 this.gui.injectLessonPane(data.nodes.lesson);
                 this.gui.injectHomeMenu(data.nodes.course);
             }
+
+            console.log('cend');
         });
 
         /**
@@ -746,8 +750,7 @@ class Application {
          * Размер разметки изменён
          */
         this._dispatcher.on('lay:resize', shrink_blocks => {
-            console.log('rs', shrink_blocks);
-
+            // console.log('rs', shrink_blocks);
             this.ws.resize(shrink_blocks);
             this.trc.resize();
         });

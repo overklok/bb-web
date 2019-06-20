@@ -83,13 +83,13 @@ const MAPPINGS = {
         task: PANE_IDS.EAST_CENTER,
         lesson: PANE_IDS.MAIN_NORTH
     },
-    board_vars: {
-        launch_buttons: PANE_IDS.MAIN_CENTER,
-        breadboard: PANE_IDS.MAIN_CENTER,
-        task: PANE_IDS.EAST_CENTER,
-        lesson: PANE_IDS.MAIN_NORTH,
-        tracing: PANE_IDS.EAST_SOUTH_CENTER,
-    },
+    // board_vars: {
+    //     launch_buttons: PANE_IDS.MAIN_CENTER,
+    //     breadboard: PANE_IDS.MAIN_CENTER,
+    //     task: PANE_IDS.EAST_CENTER,
+    //     lesson: PANE_IDS.MAIN_NORTH,
+    //     tracing: PANE_IDS.EAST_SOUTH_CENTER,
+    // },
     home: {
         course: PANE_IDS.MAIN_CENTER
     }
@@ -157,10 +157,10 @@ export default class LayoutModule extends Module {
 
     static defaults() {
         return {
-            animSpeedMain: 0, //500,     // скорость анимации главных элементов
-            animSpeedSub: 0, //100,      // скорость анимации мелких элементов
-            animSpeedFade: 200,     // скорость анимации перехода
-            delayBeforeEnd: 100,    // задержка для прогрузки внутренностей
+            animSpeedMain: 50,     // скорость анимации главных элементов
+            animSpeedSub: 0,      // скорость анимации мелких элементов
+            animSpeedFade: 200,     // скорость анимации появления/исчезновения
+            delayBeforeEnd: 0,    // задержка для прогрузки внутренностей
 
             enableProgrammingWithBoard: false,
         }
@@ -282,27 +282,27 @@ export default class LayoutModule extends Module {
 
                     break;
                 }
-                case MODES.BOARD_VARS: {
-                    if (this._state.topPaneRevealed) {
-                        this.revealTopPane();
-                    }
-
-                    this._layout.hide("west");
-                    duration += this._options.animSpeedMain;
-
-                    this._panes.east.show("south");
-                    duration += this._options.animSpeedSub;
-
-                    this._layout.sizePane("east", .4);
-                    duration += this._options.animSpeedMain;
-
-                    if (this._state.buttonsPaneVisible) {
-                        this._panes._east.south.hide("south");
-                        duration += this._options.animSpeedSub;
-                    }
-
-                    break;
-                }
+                // case MODES.BOARD_VARS: {
+                //     if (this._state.topPaneRevealed) {
+                //         this.revealTopPane();
+                //     }
+                //
+                //     this._layout.hide("west");
+                //     duration += this._options.animSpeedMain;
+                //
+                //     this._panes.east.show("south");
+                //     duration += this._options.animSpeedSub;
+                //
+                //     this._layout.sizePane("east", .4);
+                //     duration += this._options.animSpeedMain;
+                //
+                //     if (this._state.buttonsPaneVisible) {
+                //         this._panes._east.south.hide("south");
+                //         duration += this._options.animSpeedSub;
+                //     }
+                //
+                //     break;
+                // }
                 case MODES.CODE: {
                     if (this._state.topPaneRevealed) {
                         this.revealTopPane();
@@ -329,13 +329,15 @@ export default class LayoutModule extends Module {
                         this.revealTopPane();
                     }
 
-                    this._layout.show("west");
+                    this._layout.open("west");
+
+                    this._layout.sizePane("west", .4);
                     duration += this._options.animSpeedMain;
 
                     this._panes.east.show("south");
                     duration += this._options.animSpeedSub;
 
-                    this._layout.sizePane("east", .3);
+                    this._layout.sizePane("east", .2);
                     duration += this._options.animSpeedMain;
 
                     if (this._state.buttonsPaneVisible) {
@@ -371,12 +373,14 @@ export default class LayoutModule extends Module {
                     this._busy = false;
                     /// разрешить выполнение следующей инструкции вызывающей программы
                     resolve();
-                    /// показать панели
-                    this.showPanes();
-                    /// сообщить об изменении размера панелей
-                    this.emitEvent("resize", true);
-                    console.log('rsemit');
-                }, this._options.animSpeedFade); // задержка для анимации появления панелей
+
+                    setTimeout(() => {
+                        /// показать панели
+                        this.showPanes();
+                        /// сообщить об изменении размера панелей
+                        this.emitEvent("resize", true);
+                    }, this._options.animSpeedFade); // задержка для анимации появления панелей
+                }, this._options.delayBeforeEnd); // задержка для прогрузки содержимого
             }, duration); // задержка для анимации смены разметки
 
             this._state.firstLaunch = false;
@@ -604,8 +608,8 @@ export default class LayoutModule extends Module {
 
             //	some pane-size settings
             east: {
-                size: .3,
-                minSize: 340,
+                size: .2,
+                minSize: 200,
 
                 resizable: true,
 

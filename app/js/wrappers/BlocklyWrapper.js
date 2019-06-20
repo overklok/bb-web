@@ -281,10 +281,6 @@ export default class BlocklyWrapper extends Wrapper {
 
             let frac = container_width_new / this._container_width_old;
 
-            console.log("FRAC", frac);
-
-            // if (frac > 0 && frac <= 1) {
-            // if (frac > 0 && frac <= 1) {
             if (frac > 0) {
                 this._shrinkBlocksToFit(container_width_new);
             }
