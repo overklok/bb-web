@@ -98,14 +98,16 @@ export default class Cell {
         return (this.__adj != null);
     }
 
-    isExtreme(x=false, y=false) {
-        let x0 = 0, xN = this.__grid.dim.x - 1,
-            y0 = 0, yN = this.__grid.dim.y - 1;
+    isAt(x=null, y=null) {
+        if (x === null && y === null) throw new TypeError("One of (x, y) must be no null");
 
-        let is_x_extreme = x === false ? (this.idx.x === x0) : (this.idx.x === xN);
-        let is_y_extreme = y === false ? (this.idx.y === y0) : (this.idx.y === yN);
+        if (x === -1) x = this.__grid.dim.x - 1;
+        if (y === -1) y = this.__grid.dim.y - 1;
 
-        return is_x_extreme && is_y_extreme;
+        if (x === null) return this.idx.y === y;
+        if (y === null) return this.idx.x === x;
+
+        return (this.idx.x === x && this.idx.y === y);
     }
 
     neighbor(dir) {

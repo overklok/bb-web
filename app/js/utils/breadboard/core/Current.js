@@ -23,6 +23,8 @@ export default class Current {
     static get AnimationDelta() {return 200}  // Расстояние между соседними частицами, px
 
     constructor(container, points, style) {
+        this.__aux = false;                 // является ли ток вспомогательным
+
         this.container  = container;        // родительский DOM-узел
         this.style      = style;            // стиль SVG-линии
         this.points     = points;           // координаты виртуальных точек линии тока (начало и конец)
@@ -66,16 +68,18 @@ export default class Current {
     draw(points, weight=0) {
         this.style.color = Current.pickColorFromRange(weight);
 
-        this._line = this.container
-            .line(points.from.x, points.from.y, points.to.x, points.to.y)
-            .fill('none')
-            .stroke(this.style)
-            .addClass('current-line');
+        let coords = "";
 
         // big thanks to Pythagoras for this formula
         this._line_length = (
             (points.from.x - points.to.x) ** 2 + (points.from.y - points.to.y) ** 2
         ) ** 0.5;
+
+        this._line = this.container
+            .line(points.from.x, points.from.y, points.to.x, points.to.y)
+            .fill('none')
+            .stroke(this.style)
+            .addClass('current-line');
 
         this._container_anim.before(this._line);
         this._container_anim.opacity(0);
@@ -111,6 +115,8 @@ export default class Current {
      * @returns {boolean}
      */
     hasSameThread(thread) {
+        if (!this.points) return false;
+
         return  thread.from.x === this.points.from.x &&
                 thread.from.y === this.points.from.y &&
                 thread.to.x === this.points.to.x &&
@@ -166,7 +172,7 @@ export default class Current {
             this._particles[i].fill(Current.pickColorFromRange(weight));
 
             // Анимировать частицу
-            this.animateParticle(this._particles[i], i, particles_per_line, progress_start, progress_end, dur);
+            this._animateParticle(this._particles[i], i, particles_per_line, progress_start, progress_end, dur);
         }
 
         // Это необходимо для того, чтобы дать браузеру вставить анимацию во все полигоны
@@ -238,7 +244,7 @@ export default class Current {
      * @param progress_end          {Number}        Доля пути, на которой следует закончить движение
      * @param dur                   {Number}        Время, за которое частица должна пройти Current.AnimationDelta px
      */
-    animateParticle(particle, index, particles_count, progress_start, progress_end, dur=1000) {
+    _animateParticle(particle, index, particles_count, progress_start, progress_end, dur=1000) {
         // действительная разница точек прогресса
         let progress_diff_actual = progress_end - progress_start;
 
@@ -283,25 +289,15 @@ export default class Current {
         /// Задание контрольных точек:
 
         // движение
-        rule_keyframes_move = `
-            @keyframes ${kfname_prefix}-move {
-                0% {cx: ${from.x}; cy: ${from.y}}
-                ${perc}% {cx: ${to.x}; cy: ${to.y}}
-                100% {cx: ${to.x}; cy: ${to.y}}
-            }
-        `;
+        rule_keyframes_move = this._generateKeyframeRuleMove(kfname_prefix, from, to, perc);
 
         // исчезновение - для частицы, проходящих неполный путь
         // (как правило, последней)
         if (perc < 100) {
-            rule_keyframes_blink = `
-                @keyframes ${kfname_prefix}-blink {
-                    0% {opacity: 1}
-                    ${perc}% {opacity: 1}
-                    100% {opacity: 0}
-                }
-            `;
+            rule_keyframes_blink = this._generateKeyframeRuleExit(kfname_prefix, perc);
         }
+
+        // TODO: Decompose rule assembly process
 
         if (progress_start === 0 && progress_end === 1) {
             // уменьшение - для первой и последней частицы одновременно
@@ -347,7 +343,7 @@ export default class Current {
            this._sheet.insertRule(rule_keyframes_blink);
         }
 
-        // радиус
+        // радиус (только не для вспомогательных токов)
         if (rule_keyframes_radius) {
             rule_animation += `, ${kfname_prefix}-radius ${dur}ms linear infinite`;
             this._sheet.insertRule(rule_keyframes_radius);
@@ -363,6 +359,26 @@ export default class Current {
         this._anim_timestamp = new Date().getTime();
         this._anim_dur = dur;
         this._anim_delay = 0;
+    }
+
+    _generateKeyframeRuleMove(kfname_prefix, from, to, perc) {
+        return `
+            @keyframes ${kfname_prefix}-move {
+                0% {cx: ${from.x}; cy: ${from.y}}
+                ${perc}% {cx: ${to.x}; cy: ${to.y}}
+                100% {cx: ${to.x}; cy: ${to.y}}
+            }
+        `;
+    }
+
+    _generateKeyframeRuleExit(kfname_prefix, perc) {
+        return `
+            @keyframes ${kfname_prefix}-blink {
+                0% {opacity: 1}
+                ${perc}% {opacity: 1}
+                100% {opacity: 0}
+            }
+        `;
     }
 
     _setParticlesSpeed(speed) {

@@ -234,7 +234,7 @@ class Application {
                 .then(() => this.gui.hideSpinner())
                 .then(() => this.ins.tourIntro(exercise.popovers))
                 .then(() => this.trc.clearButtons())
-                .then(() => this.gui.listenButtons(exercise.check_buttons))
+                .then(() => this.gui.listenBсутвuttons(exercise.check_buttons))
                 .then(() => this.ins.setButtonsModel(exercise.buttons_model))
                 .then(() => {
                     if (exercise.check_buttons) {
@@ -690,8 +690,6 @@ class Application {
             this.gui.ejectTextPane();
             this.gui.ejectLaunchButtons();
             this.gui.ejectHomeMenu();
-
-            console.log('cbeg');
         });
 
         /**
@@ -708,8 +706,6 @@ class Application {
                 this.gui.injectLessonPane(data.nodes.lesson);
                 this.gui.injectHomeMenu(data.nodes.course);
             }
-
-            console.log('cend');
         });
 
         /**

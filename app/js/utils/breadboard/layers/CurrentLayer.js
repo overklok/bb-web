@@ -1,5 +1,6 @@
 import Layer from "../core/Layer";
 import Current from "../core/Current";
+import AuxiliaryCurrent from "../core/AuxiliaryCurrent";
 
 const CURRENT_WIDTH = 14;
 const CURRENT_WIDTH_SCHEMATIC = 10;
@@ -187,11 +188,7 @@ export default class CurrentLayer extends Layer {
     _addCurrent(thread, spare, show_source=true) {
         if (!thread || thread.length === 0) {}
 
-        let current = new Current(this._currentgroup, thread, {
-            width: this.__schematic ? CURRENT_WIDTH_SCHEMATIC : CURRENT_WIDTH,
-            linecap: "round",
-            particle_radius: this.__schematic ? PARTICLE_SIZE_SCHEMATIC : PARTICLE_SIZE
-        });
+        let current = new Current(this._currentgroup, thread, this._getCurrentOptions());
 
         let line_data = this._buildCurrentLine(thread, show_source);
 
@@ -206,11 +203,22 @@ export default class CurrentLayer extends Layer {
         return current;
     };
 
+    _addSourceCurrents() {
+        let plus_begin  = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
+        let plus_middle = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
+        let plus_end    = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
+
+        let current = new AuxiliaryCurrent(this._currentgroup, null, this._getCurrentOptions());
+
+        current.draw(plus_begin, 1);
+        current.activate(weight);
+    }
+
     /**
-     * Построить путь прохождения тока
+     * Построить пути прохождения тока
      *
-     * @param   {Object}    points      контур - объект, содержащий точки прохождения тока
-     * @param   {boolean}   show_source строить путь тока от источника напряжения
+     * @param   {Object}    points          контур - объект, содержащий точки прохождения тока
+     * @param {boolean}     show_source     показывать путь тока от источника напряжения
      * @returns {Array} последовательность SVG-координат
      * @private
      */
@@ -218,23 +226,29 @@ export default class CurrentLayer extends Layer {
         let cell_from  = this.__grid.cell(points.from.x, points.from.y),
             cell_to    = this.__grid.cell(points.to.x, points.to.y);
 
-        let coords = [];
-
-        coords.push({x: cell_from.center_adj.x,   y: cell_from.center_adj.y});
-        coords.push({x: cell_to.center_adj.x,     y: cell_to.center_adj.y});
-
-        if (show_source && cell_from.isExtreme(false, false)) {
+        if (show_source && cell_from.isAt(0, 1)) {
+            console.log('src +');
             // add 2 coords from PLUS
         }
 
-        if (show_source && cell_to.isExtreme(false, true)) {
+        if (show_source && cell_to.isAt(0, -1)) {
+            console.log('src -');
             // add 2 coords from PLUS
         }
 
-        // TODO: Modify Current.draw() to draw polylines
-
-        return coords;
+        return {
+            from: {x: cell_from.center_adj.x, y: cell_from.center_adj.y},
+            to: {x: cell_to.center_adj.x, y: cell_to.center_adj.y},
+        };
     };
+
+    _getCurrentOptions() {
+        return {
+            width: this.__schematic ? CURRENT_WIDTH_SCHEMATIC : CURRENT_WIDTH,
+            linecap: "round",
+            particle_radius: this.__schematic ? PARTICLE_SIZE_SCHEMATIC : PARTICLE_SIZE
+        }
+    }
 
     /**
      * Достроить путь тока SVG-координатами
