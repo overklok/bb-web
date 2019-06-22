@@ -23,14 +23,14 @@ export default class Current {
     static get AnimationDelta() {return 200}  // Расстояние между соседними частицами, px
 
     constructor(container, points, style) {
-        this.__aux = false;                 // является ли ток вспомогательным
-
         this.container  = container;        // родительский DOM-узел
         this.style      = style;            // стиль SVG-линии
         this.points     = points;           // координаты виртуальных точек линии тока (начало и конец)
 
         this._container_anim = this.container.nested();     // родительский DOM-узел анимации
         this._id = Math.floor(Math.random() * (10 ** 6));   // Идентификатор по умолчанию - случайная строка
+
+        this._aux = []; // вспомогательные токи
 
         // Прочие внутрение параметры
         this._particles     = [];           // частицы тока (для анимации)
@@ -45,6 +45,10 @@ export default class Current {
         this._anim_dur          = undefined;    // текущая длительность прохождения Current.AnimationDelta px
         this._anim_delay        = undefined;    // накопленное запаздывание анимации
 
+        // Прочие параметры анимации
+        this._radius_min = this.style.width / 2;        // минимальный радиус частицы
+        this._radius_max = this.style.particle_radius;  // максимальный радиус частицы
+
         this._visible = false;
     }
 
@@ -55,6 +59,15 @@ export default class Current {
      */
     get id() {
         return this._id;
+    }
+
+    /**
+     * Является ли ток вспомогательным
+     *
+     * @returns {boolean}
+     */
+    get is_aux() {
+        return !!this.__is_aux;
     }
 
     /**
@@ -84,9 +97,13 @@ export default class Current {
         this._container_anim.before(this._line);
         this._container_anim.opacity(0);
 
-        this.addGlow();
+        this._addGlowFilter();
 
         this._line_points = points;
+
+        for (let aux of this._aux) {
+            aux.current.draw(aux.points, weight);
+        }
 
         this._visible = true;
     };
@@ -104,6 +121,12 @@ export default class Current {
 
         this._line.remove();
         this._container_anim.remove();
+
+        for (let aux of this._aux) {
+            aux.erase();
+        }
+
+        this._aux = [];
 
         this._visible = false;
     };
@@ -181,6 +204,10 @@ export default class Current {
         setTimeout(() => {
             this._container_anim.opacity(1);
         }, 0);
+
+        for (let aux of this._aux) {
+            aux.current.activate(weight);
+        }
     };
 
     /**
@@ -190,13 +217,10 @@ export default class Current {
         this._particles = [];
         this._container_anim.clear();
         this._initStyleSheet();
-    };
 
-    /**
-     * Добавить фильтр свечения к току
-     */
-    addGlow() {
-        this._line.attr('filter', 'url(#glow-current)');
+        for (let aux of this._aux) {
+            aux.current.deactivate();
+        }
     };
 
     /**
@@ -224,8 +248,30 @@ export default class Current {
 
         }
 
+        for (let aux of this._aux) {
+            aux.current.setWeight(weight);
+        }
+
         this._weight = weight;
     }
+
+    /**
+     * Подключить вспомогательный ток
+     *
+     * @param {AuxiliaryCurrent} current вспомогательный ток
+     * @param {Object} points координаты начала и конца линии
+     */
+    connectAuxiliary(current, points) {
+        if (!current.is_aux) throw new TypeError("Non-auxiliary currents cannot be connected");
+        this._aux.push({current, points});
+    }
+
+    /**
+     * Добавить фильтр свечения к току
+     */
+    _addGlowFilter() {
+        this._line.attr('filter', 'url(#glow-current)');
+    };
 
     /**
      * Анимировать частицу.
@@ -270,16 +316,11 @@ export default class Current {
             y: this._line_points.from.y + dist.y * progress_end,
         };
 
-        // Префикс правил для контрольных точек
-        let kfname_prefix = `cur-${this._id}-${index}-kfs`;
         // Префикс правил для класса анимации
-        let animname = `animcur-${this._id}-${index}-kfs`;
+        let animname = `cur-${this._id}-${index}-anim`;
 
         // Процент окончания анимации
         let perc = Math.floor(progress_diff_actual / progress_diff_normal * 100);
-
-        let radius_min = this.style.width / 2,
-            radius_max = this.style.particle_radius;
 
         let rule_animation              = undefined,    // CSS-класс анимации
             rule_keyframes_move         = undefined,    // контрольные точки перемещения
@@ -289,63 +330,41 @@ export default class Current {
         /// Задание контрольных точек:
 
         // движение
-        rule_keyframes_move = this._generateKeyframeRuleMove(kfname_prefix, from, to, perc);
+        rule_keyframes_move = this._generateKeyframeRuleMove(index, from, to, perc);
 
         // исчезновение - для частицы, проходящих неполный путь
         // (как правило, последней)
         if (perc < 100) {
-            rule_keyframes_blink = this._generateKeyframeRuleExit(kfname_prefix, perc);
+            rule_keyframes_blink = this._generateKeyframeRuleBlink(index, perc);
         }
 
-        // TODO: Decompose rule assembly process
-
+        // масштабирование
         if (progress_start === 0 && progress_end === 1) {
             // уменьшение - для первой и последней частицы одновременно
-            rule_keyframes_radius = `
-                @keyframes ${kfname_prefix}-radius {
-                    0% {r: 10}
-                    ${perc*0.4}% {r: ${radius_max}}
-                    ${perc*0.6}% {r: ${radius_max}}
-                    ${perc}% {r: ${radius_min}}
-                    100% {r: ${radius_min}}
-                }
-            `;
+            rule_keyframes_radius = this._generateKeyframeRuleScaleUpDown(index, perc);
         } else if (progress_start === 0) {
             // увеличение - для первой частицы
-            rule_keyframes_radius = `
-                @keyframes ${kfname_prefix}-radius {
-                    0% {r: ${radius_min}}
-                    ${perc*0.4}% {r: ${radius_max}}
-                    100% {r: ${radius_max}}
-                }
-            `;
+            rule_keyframes_radius = this._generateKeyframeRuleScaleUp(index, perc);
         } else if (progress_end === 1) {
             // уменьшение - для последней частицы
-            rule_keyframes_radius = `
-                @keyframes ${kfname_prefix}-radius {
-                    0% {r: ${radius_max}}
-                    ${perc*0.6}% {r: ${radius_max}}
-                    ${perc}% {r: ${radius_min}}
-                    100% {r: ${radius_min}}
-                }
-            `;
+            rule_keyframes_radius = this._generateKeyframeRuleScaleDown(index, perc);
         }
 
         /// Составление класса анимации
 
         // движение
-        rule_animation = `.${animname} {animation:  ${kfname_prefix}-move ${dur}ms linear infinite`;
+        rule_animation = `.${animname} {animation:  ${this._generateAnimationRuleMove(index, dur)}`;
         this._sheet.insertRule(rule_keyframes_move);
 
         // исчезновение
         if (rule_keyframes_blink) {
-           rule_animation += `, ${kfname_prefix}-blink ${dur}ms step-start infinite`;
+           rule_animation += `, ${this._generateAnimationRuleBlink(index, dur)}`;
            this._sheet.insertRule(rule_keyframes_blink);
         }
 
         // радиус (только не для вспомогательных токов)
         if (rule_keyframes_radius) {
-            rule_animation += `, ${kfname_prefix}-radius ${dur}ms linear infinite`;
+            rule_animation += `, ${this._generateAnimationRuleScale(index, dur)}`;
             this._sheet.insertRule(rule_keyframes_radius);
         }
 
@@ -361,9 +380,9 @@ export default class Current {
         this._anim_delay = 0;
     }
 
-    _generateKeyframeRuleMove(kfname_prefix, from, to, perc) {
+    _generateKeyframeRuleMove(index, from, to, perc) {
         return `
-            @keyframes ${kfname_prefix}-move {
+            @keyframes cur-${this._id}-${index}-kfs-move {
                 0% {cx: ${from.x}; cy: ${from.y}}
                 ${perc}% {cx: ${to.x}; cy: ${to.y}}
                 100% {cx: ${to.x}; cy: ${to.y}}
@@ -371,14 +390,59 @@ export default class Current {
         `;
     }
 
-    _generateKeyframeRuleExit(kfname_prefix, perc) {
+    _generateKeyframeRuleBlink(index, perc) {
         return `
-            @keyframes ${kfname_prefix}-blink {
+            @keyframes cur-${this._id}-${index}-kfs-blink {
                 0% {opacity: 1}
                 ${perc}% {opacity: 1}
                 100% {opacity: 0}
             }
         `;
+    }
+
+    _generateKeyframeRuleScaleUp(index, perc) {
+        return `
+            @keyframes cur-${this._id}-${index}-kfs-radius {
+                0% {r: ${this._radius_min}}
+                ${perc*0.4}% {r: ${this._radius_max}}
+                100% {r: ${this._radius_max}}
+                }
+        `;
+    }
+
+    _generateKeyframeRuleScaleDown(index, perc) {
+        return `
+            @keyframes cur-${this._id}-${index}-kfs-radius {
+                0% {r: ${this._radius_max}}
+                ${perc*0.6}% {r: ${this._radius_max}}
+                ${perc}% {r: ${this._radius_min}}
+                100% {r: ${this._radius_min}}
+            }
+        `;
+    }
+
+    _generateKeyframeRuleScaleUpDown(index, perc) {
+        return `
+            @keyframes cur-${this._id}-${index}-kfs-radius {
+                0% {r: 10}
+                ${perc*0.4}% {r: ${this._radius_max}}
+                ${perc*0.6}% {r: ${this._radius_max}}
+                ${perc}% {r: ${this._radius_min}}
+                100% {r: ${this._radius_min}}
+            }
+        `;
+    }
+
+    _generateAnimationRuleMove(index, duration) {
+        return `cur-${this._id}-${index}-kfs-move ${duration}ms linear infinite`;
+    }
+
+    _generateAnimationRuleBlink(index, duration) {
+        return `cur-${this._id}-${index}-kfs-blink ${duration}ms step-start infinite`;
+    }
+
+    _generateAnimationRuleScale(index, duration) {
+        return `cur-${this._id}-${index}-kfs-radius ${duration}ms linear infinite`;
     }
 
     _setParticlesSpeed(speed) {

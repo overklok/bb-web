@@ -197,21 +197,24 @@ export default class CurrentLayer extends Layer {
         let weight = thread.weight > 1 ? 1 : thread.weight;
         this._weight = weight;
 
+        this._connectSourceCurrents(current);
+
         current.draw(line_data, weight);
         current.activate(weight);
 
         return current;
     };
 
-    _addSourceCurrents() {
-        let plus_begin  = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
+    _connectSourceCurrents(current_main) {
+        let plus_begin  = {from: {x: 80, y: 300}, to: {x: 140, y: 300}};
         let plus_middle = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
         let plus_end    = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
 
         let current = new AuxiliaryCurrent(this._currentgroup, null, this._getCurrentOptions());
 
-        current.draw(plus_begin, 1);
-        current.activate(weight);
+        current._line_length = current_main._line_length;
+
+        current_main.connectAuxiliary(current, plus_begin);
     }
 
     /**
@@ -225,16 +228,6 @@ export default class CurrentLayer extends Layer {
     _buildCurrentLine(points, show_source=true) {
         let cell_from  = this.__grid.cell(points.from.x, points.from.y),
             cell_to    = this.__grid.cell(points.to.x, points.to.y);
-
-        if (show_source && cell_from.isAt(0, 1)) {
-            console.log('src +');
-            // add 2 coords from PLUS
-        }
-
-        if (show_source && cell_to.isAt(0, -1)) {
-            console.log('src -');
-            // add 2 coords from PLUS
-        }
 
         return {
             from: {x: cell_from.center_adj.x, y: cell_from.center_adj.y},

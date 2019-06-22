@@ -5,9 +5,9 @@ import Current from "./Current"
  */
 export default class AuxiliaryCurrent extends Current {
     constructor(container, points, style) {
-        super();
+        super(container, undefined, style);
 
-        this.__aux = false;
+        this.__is_aux = true;
         this._points = undefined;
     }
 
@@ -19,5 +19,9 @@ export default class AuxiliaryCurrent extends Current {
      */
     hasSameThread(thread) {
         return false;
+    }
+
+    _generateAnimationRuleScale() {
+        return null;
     }
 }
