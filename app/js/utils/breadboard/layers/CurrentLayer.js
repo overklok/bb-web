@@ -214,9 +214,10 @@ export default class CurrentLayer extends Layer {
         let c_from  = this.__grid.cell(points.from.x, points.from.y),
             c_to    = this.__grid.cell(points.to.x, points.to.y);
 
-        // if (c_from.isAt(1, 0)) {
+        // if (c_from.isAt(0, 1)) {
         //     return [
-        //         ['M', c_from.center_adj.x, c_from.center_adj.y],
+        //         ['M', 10, 10],
+        //         ['L', c_from.center_adj.x, c_from.center_adj.y],
         //         ['L', c_to.center_adj.x, c_to.center_adj.y]
         //     ];
         // }

@@ -196,7 +196,7 @@ export default class Current {
 
         if (this._weight !== weight) {
             // задать скорость
-            this._setParticlesSpeed(weight);
+            this._setParticleSpeed(weight);
             // определить цвет
 
             // изменить цвет в стиле контура
@@ -381,32 +381,49 @@ export default class Current {
         return `cur-${this._id}-${index}-kfs-radius ${duration}ms linear infinite`;
     }
 
-    _setParticlesSpeed(speed) {
+    _setParticleSpeed(speed) {
         if (!this._sheet) return;
 
+        // новая длительность цикла анимации (ДЦА), мс
         let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
 
-        let dt = new Date().getTime() - this._anim_timestamp;
-
+        // коэффициент изменения скорости анимации
         let mu = dur / this._anim_dur;
 
+        // время, прошедшее с начала запуска анимации
+        // let dt = new Date().getTime() - this._anim_timestamp;
+        let dt = this._container_anim.node.getCurrentTime() + this._anim_delay;
+
+        // время, прошеднее с начала текущего цикла анимации до данного момента
+        // при старой и новой ДЦА
         let p1d = dt % this._anim_dur,
             p2d = dt % dur;
 
-        let p2r = p1d * mu;
+        // время с начала цикла до текущего момента при новой ДЦА,
+        // соответствующего тому же моменту при текущей ДЦА
+        // let p2r = p1d * mu;
 
-        this._anim_delay += (p2d - p2r);
+        let perc2 = p2d / dur,
+            perc1 = p1d / this._anim_dur;
+
+        let dp = perc2 - perc1;
+
+        let delay = dp * dur;
+
+        // console.log(dp * dur);
+
+        this._anim_delay = delay;
+
+        // console.log(dur, this._anim_delay);
 
         for (let rule of this._sheet.rules) {
             if (rule.constructor.name === "CSSStyleRule") {
                 rule.style.animationDuration = `${dur}ms, ${dur}ms`;
-                if (this._anim_delay) {
-                    rule.style.animationDelay = `${this._anim_delay}ms`
-                }
+                rule.style.animationDelay = `${delay}ms`
             }
         }
 
-        this._anim_timestamp += (p2d - p2r);
+        // this._anim_timestamp += (p2d - p2r);
         this._anim_dur = dur;
     }
 
