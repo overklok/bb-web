@@ -1,6 +1,5 @@
 import Layer from "../core/Layer";
 import Current from "../core/Current";
-import AuxiliaryCurrent from "../core/AuxiliaryCurrent";
 
 const CURRENT_WIDTH = 14;
 const CURRENT_WIDTH_SCHEMATIC = 10;
@@ -190,32 +189,18 @@ export default class CurrentLayer extends Layer {
 
         let current = new Current(this._currentgroup, thread, this._getCurrentOptions());
 
-        let line_data = this._buildCurrentLine(thread, show_source);
+        let line_path = this._buildCurrentLinePath(thread, show_source);
 
         this._currents[current.id] = current;
 
         let weight = thread.weight > 1 ? 1 : thread.weight;
         this._weight = weight;
 
-        this._connectSourceCurrents(current);
-
-        current.draw(line_data, weight);
+        current.draw(line_path, weight);
         current.activate(weight);
 
         return current;
     };
-
-    _connectSourceCurrents(current_main) {
-        let plus_begin  = {from: {x: 80, y: 300}, to: {x: 140, y: 300}};
-        let plus_middle = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
-        let plus_end    = {from: {x: 10, y: 10}, to: {x: 100, y: 100}};
-
-        let current = new AuxiliaryCurrent(this._currentgroup, null, this._getCurrentOptions());
-
-        current._line_length = current_main._line_length;
-
-        current_main.connectAuxiliary(current, plus_begin);
-    }
 
     /**
      * Построить пути прохождения тока
@@ -225,14 +210,21 @@ export default class CurrentLayer extends Layer {
      * @returns {Array} последовательность SVG-координат
      * @private
      */
-    _buildCurrentLine(points, show_source=true) {
-        let cell_from  = this.__grid.cell(points.from.x, points.from.y),
-            cell_to    = this.__grid.cell(points.to.x, points.to.y);
+    _buildCurrentLinePath(points, show_source=true) {
+        let c_from  = this.__grid.cell(points.from.x, points.from.y),
+            c_to    = this.__grid.cell(points.to.x, points.to.y);
 
-        return {
-            from: {x: cell_from.center_adj.x, y: cell_from.center_adj.y},
-            to: {x: cell_to.center_adj.x, y: cell_to.center_adj.y},
-        };
+        // if (c_from.isAt(1, 0)) {
+        //     return [
+        //         ['M', c_from.center_adj.x, c_from.center_adj.y],
+        //         ['L', c_to.center_adj.x, c_to.center_adj.y]
+        //     ];
+        // }
+
+        return [
+            ['M', c_from.center_adj.x, c_from.center_adj.y],
+            ['L', c_to.center_adj.x, c_to.center_adj.y]
+        ];
     };
 
     _getCurrentOptions() {

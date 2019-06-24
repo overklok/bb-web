@@ -30,13 +30,11 @@ export default class Current {
         this._container_anim = this.container.nested();     // родительский DOM-узел анимации
         this._id = Math.floor(Math.random() * (10 ** 6));   // Идентификатор по умолчанию - случайная строка
 
-        this._aux = []; // вспомогательные токи
-
         // Прочие внутрение параметры
         this._particles     = [];           // частицы тока (для анимации)
         this._weight        = 0;            // сила тока
         this._line          = null;         // SVG-линия тока
-        this._line_points   = undefined;    // координаты реальных точек линии тока (начало и конец)
+        this._line_path   = undefined;    // координаты реальных точек линии тока (начало и конец)
         this._line_length   = undefined;    // длина линии тока
 
         // Параметры анимации
@@ -62,34 +60,22 @@ export default class Current {
     }
 
     /**
-     * Является ли ток вспомогательным
-     *
-     * @returns {boolean}
-     */
-    get is_aux() {
-        return !!this.__is_aux;
-    }
-
-    /**
      * Отрисовать контур тока по заданному пути
      *
      * Применяется фильтр свечения.
      *
-     * @param points
+     * @param path
      * @param weight
      */
-    draw(points, weight=0) {
+    draw(path, weight=0) {
         this.style.color = Current.pickColorFromRange(weight);
 
-        let coords = "";
-
         // big thanks to Pythagoras for this formula
-        this._line_length = (
-            (points.from.x - points.to.x) ** 2 + (points.from.y - points.to.y) ** 2
-        ) ** 0.5;
+        this._line_path = Current._pathArrayToString(path);
+        this._line_length = Current.getPathLength(this._line_path);
 
         this._line = this.container
-            .line(points.from.x, points.from.y, points.to.x, points.to.y)
+            .path(this._line_path)
             .fill('none')
             .stroke(this.style)
             .addClass('current-line');
@@ -98,12 +84,6 @@ export default class Current {
         this._container_anim.opacity(0);
 
         this._addGlowFilter();
-
-        this._line_points = points;
-
-        for (let aux of this._aux) {
-            aux.current.draw(aux.points, weight);
-        }
 
         this._visible = true;
     };
@@ -121,12 +101,6 @@ export default class Current {
 
         this._line.remove();
         this._container_anim.remove();
-
-        for (let aux of this._aux) {
-            aux.erase();
-        }
-
-        this._aux = [];
 
         this._visible = false;
     };
@@ -160,9 +134,7 @@ export default class Current {
      * @param weight    Скорость анимации тока (движения частиц по контуру)
      */
     activate(weight=0) {
-        if (!this._visible) {
-            throw new Error("Cannot activate invisible current!");
-        }
+        if (!this._visible) throw new Error("Cannot activate invisible current");
 
         if (!this._sheet) {
             this.deactivate();
@@ -204,10 +176,6 @@ export default class Current {
         setTimeout(() => {
             this._container_anim.opacity(1);
         }, 0);
-
-        for (let aux of this._aux) {
-            aux.current.activate(weight);
-        }
     };
 
     /**
@@ -217,10 +185,6 @@ export default class Current {
         this._particles = [];
         this._container_anim.clear();
         this._initStyleSheet();
-
-        for (let aux of this._aux) {
-            aux.current.deactivate();
-        }
     };
 
     /**
@@ -248,22 +212,7 @@ export default class Current {
 
         }
 
-        for (let aux of this._aux) {
-            aux.current.setWeight(weight);
-        }
-
         this._weight = weight;
-    }
-
-    /**
-     * Подключить вспомогательный ток
-     *
-     * @param {AuxiliaryCurrent} current вспомогательный ток
-     * @param {Object} points координаты начала и конца линии
-     */
-    connectAuxiliary(current, points) {
-        if (!current.is_aux) throw new TypeError("Non-auxiliary currents cannot be connected");
-        this._aux.push({current, points});
     }
 
     /**
@@ -291,30 +240,14 @@ export default class Current {
      * @param dur                   {Number}        Время, за которое частица должна пройти Current.AnimationDelta px
      */
     _animateParticle(particle, index, particles_count, progress_start, progress_end, dur=1000) {
+        if (!this._line_path) {throw new Error("Cannot animate current which hasn't been drawn")}
+
         // действительная разница точек прогресса
         let progress_diff_actual = progress_end - progress_start;
 
         // нормальная разница точек прогресса, обычно равна progress_diff_actual
         // за исключением случая с последней частицей, когда она проходит путь меньший, чем у остальных
         let progress_diff_normal = 1 / particles_count;
-
-        // Расстояние, которое требуется пройти частице по X и Y
-        let dist = {
-            x: this._line_points.to.x - this._line_points.from.x,
-            y: this._line_points.to.y - this._line_points.from.y,
-        };
-
-        // Начальная точка движения частицы
-        let from = {
-            x: this._line_points.from.x + dist.x * progress_start,
-            y: this._line_points.from.y + dist.y * progress_start,
-        };
-
-        // Конечная точка движения частицы
-        let to = {
-            x: this._line_points.from.x + dist.x * progress_end,
-            y: this._line_points.from.y + dist.y * progress_end,
-        };
 
         // Префикс правил для класса анимации
         let animname = `cur-${this._id}-${index}-anim`;
@@ -330,7 +263,7 @@ export default class Current {
         /// Задание контрольных точек:
 
         // движение
-        rule_keyframes_move = this._generateKeyframeRuleMove(index, from, to, perc);
+        rule_keyframes_move = this._generateKeyframeRuleMove(index, progress_start*100, progress_end*100, perc);
 
         // исчезновение - для частицы, проходящих неполный путь
         // (как правило, последней)
@@ -362,11 +295,14 @@ export default class Current {
            this._sheet.insertRule(rule_keyframes_blink);
         }
 
-        // радиус (только не для вспомогательных токов)
+        // радиус
         if (rule_keyframes_radius) {
             rule_animation += `, ${this._generateAnimationRuleScale(index, dur)}`;
             this._sheet.insertRule(rule_keyframes_radius);
         }
+
+        rule_animation += `; offset-path: path('${this._line_path}')`;
+        rule_animation += `; transform: translate(-${this.style.particle_radius}px, -${this.style.particle_radius}px)`;
 
         rule_animation += ';}';
 
@@ -383,10 +319,10 @@ export default class Current {
     _generateKeyframeRuleMove(index, from, to, perc) {
         return `
             @keyframes cur-${this._id}-${index}-kfs-move {
-                0% {cx: ${from.x}; cy: ${from.y}}
-                ${perc}% {cx: ${to.x}; cy: ${to.y}}
-                100% {cx: ${to.x}; cy: ${to.y}}
-            }
+                0% {offset-distance: ${from}%}
+                ${perc}% {offset-distance: ${to}%}
+                100% {offset-distance: ${to}%}
+            } 
         `;
     }
 
@@ -484,6 +420,27 @@ export default class Current {
         document.body.appendChild(style);
 
         this._sheet = style.sheet;
+    }
+
+    static getPathLength(path) {
+        let path_node = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path_node.innerHTML = path;
+        path_node.setAttributeNS(null, "d", path);
+
+        return path_node.getTotalLength();
+    }
+
+    static _pathArrayToString(path_arr) {
+        let str = "";
+
+        for (let path_item of path_arr) {
+            switch (path_item.length) {
+                case 3: {str += `${path_item[0]} ${path_item[1]},${path_item[2]} `; break;}
+                default: throw new Error("Invalid path array");
+            }
+        }
+
+        return str;
     }
 
     static pickColorFromRange(weight) {
