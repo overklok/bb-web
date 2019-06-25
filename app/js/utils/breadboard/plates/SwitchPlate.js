@@ -58,7 +58,7 @@ export default class SwitchPlate extends Plate {
         rect2.cx(cell2.center_rel.x).cy(cell2.center_rel.y);
         rect3.cx(cell3.center_rel.x).cy(cell3.center_rel.y);
 
-        let contact_node = {
+        let contact_point = {
             x: cell3.center_rel.x,
             y: cell1.rel.y + cell1.size.y
         };
@@ -72,12 +72,12 @@ export default class SwitchPlate extends Plate {
         let line_left = this._group.path([
             ['M', cell2.center_rel.x, cell2.center_rel.y],
             ['H', cell3.rel.x + cell3.size.x],
-            ['L', contact_node.x, contact_node.y],
+            ['L', contact_point.x, contact_point.y],
         ]);
 
         let line_middle = this._group.path([
             ['M', cell3.center_rel.x, cell3.center_rel.y],
-            ['V', contact_node.y]
+            ['V', contact_point.y]
         ]);
 
         line_right.stroke({width: 3}).fill('none');

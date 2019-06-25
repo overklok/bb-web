@@ -225,13 +225,13 @@ export default class BackgroundLayer extends Layer {
             this._domaingroup,
             this.__grid.cell(0,1),
             this.__grid.cell(9,1),
-            this.__schematic ? '#faa' : GRADIENTS.GOLD.HORZ
+            this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
         );
         this._drawDomain(
             this._domaingroup,
             this.__grid.cell(0,10),
             this.__grid.cell(9,10),
-            this.__schematic ? '#aaf' : GRADIENTS.GOLD.HORZ
+            this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
         );
     }
 
@@ -257,8 +257,9 @@ export default class BackgroundLayer extends Layer {
             height  = width <  height ? Math.max(width, height) : 0;
 
             container.line(0, 0, width, height)
-                .stroke({color, width: 10, linecap: 'round'})
+                .stroke({color, width: 6, linecap: 'round'})
                 .move(cell_from.center.x, cell_from.center.y)
+                .opacity(0.5)
         } else {
             container.rect(width + cell_from.size.x, height + cell_from.size.y)
                 .fill({color})

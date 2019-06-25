@@ -205,9 +205,9 @@ export default class Current {
             this._line.stroke(this.style);
 
             // изменить цвет у всех частиц
-            // for (let particle of this._particles) {
-            //     particle.fill(this.style.color);
-            // }
+            for (let particle of this._particles) {
+                particle.fill(this.style.color);
+            }
 
         }
 
@@ -400,17 +400,14 @@ export default class Current {
         let p1 = (dt % dur1),
             p2 = (dt % dur2);
 
-        let p1r = p1 / dur1,
-            p2r = p2 / dur2;
+        let p1r = p1 / dur1;
 
-        let delay = dur2 - p2 + dur2 * p1r;
-
-        this._anim_delay -= delay;
+        this._anim_delay -= dur2 - p2 + dur2 * p1r;
 
         for (let rule of this._getSheetRules()) {
             if (rule.constructor.name === "CSSStyleRule") {
-                rule.style.animationDelay = `${this._anim_delay}ms`
                 rule.style.animationDuration = `${dur2}ms, ${dur2}ms`;
+                rule.style.animationDelay = `${this._anim_delay}ms`;
             }
         }
         this._anim_dur = dur2;

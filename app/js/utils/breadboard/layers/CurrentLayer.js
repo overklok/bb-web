@@ -159,7 +159,7 @@ export default class CurrentLayer extends Layer {
         /// создать токи для непомеченных контуров
         for (let thread of threads) {
             if (!thread.___touched) {
-                let cur = this._addCurrent(thread, spare);
+                let cur = this._addCurrent(thread, spare, show_source);
                 cur.___touched = true;
             }
         }
@@ -214,14 +214,25 @@ export default class CurrentLayer extends Layer {
         let c_from  = this.__grid.cell(points.from.x, points.from.y),
             c_to    = this.__grid.cell(points.to.x, points.to.y);
 
-        // if (c_from.isAt(0, 1)) {
-        //     return [
-        //         ['M', 80, 730],
-        //         ['L', 80, c_from.center_adj.y],
-        //         ['L', c_from.center_adj.x, c_from.center_adj.y],
-        //         ['L', c_to.center_adj.x, c_to.center_adj.y]
-        //     ];
-        // }
+        if (show_source) {
+            if (c_from.isAt(0, 1)) {
+                return [
+                    ['M', 80, 720],
+                    ['L', 80, c_from.center_adj.y],
+                    ['L', c_from.center_adj.x, c_from.center_adj.y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y]
+                ];
+            }
+
+            if (c_from.isAt(0, -1)) {
+                return [
+                    ['M', 80, 780],
+                    ['L', 80, c_from.center_adj.y],
+                    ['L', c_from.center_adj.x, c_from.center_adj.y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y]
+                ];
+            }
+        }
 
         return [
             ['M', c_from.center_adj.x, c_from.center_adj.y],

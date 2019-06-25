@@ -7,7 +7,14 @@ export default class RheostatPlate extends Plate {
     constructor(container, grid, schematic=false, id) {
         super(container, grid, schematic, id);
 
-        this._params.size = {x: 3, y: 1};
+        this._params.size = {x: 3, y: 2};
+
+        this._params.surface = [
+            {x: 0, y: 0},   {x: 1, y: 0},   {x: 2, y: 0},
+                            {x: 1, y: 1}
+        ];
+
+        this._params.origin = {x: 0, y: 0};
     }
 
     /**
@@ -57,44 +64,62 @@ export default class RheostatPlate extends Plate {
      */
     _drawPicture(qs=Plate.QuadSizeDefault) {
         let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
+        let cell2 = this.__grid.cell(2, 0);
+        let cell3 = this.__grid.cell(1, 1);
 
         let rect1 = this._group.rect(qs, qs);
         let rect2 = this._group.rect(qs, qs);
+        let rect3 = this._group.rect(qs, qs);
 
-        rect1.center(cell1.center_rel.x, cell1.center_rel.y);
-        rect2.center(cell2.center_rel.x, cell2.center_rel.y);
+        rect1.cx(cell1.center_rel.x).cy(cell1.center_rel.y);
+        rect2.cx(cell2.center_rel.x).cy(cell2.center_rel.y);
+        rect3.cx(cell3.center_rel.x).cy(cell3.center_rel.y);
 
-        let line_len = rect2.x() - rect1.x();
+        let contact_point = {
+            x: cell3.center_rel.x,
+            y: cell1.center_rel.y
+        };
 
-        this._group.polyline([
-            [0, 0],
-            [line_len, 0]
-        ])
-            .stroke({width: 1})
-            .fill('none')
-            .move(rect1.cx(), rect2.cy());
+        let line_right = this._group.path([
+            ['M', cell1.center_rel.x, cell1.center_rel.y],
+            ['H', cell3.rel.x],
+            ['L', contact_point.x, contact_point.y],
+        ]);
+
+        let line_left = this._group.path([
+            ['M', cell2.center_rel.x, cell2.center_rel.y],
+            ['H', cell3.rel.x + cell3.size.x],
+            ['L', contact_point.x, contact_point.y],
+        ]);
+
+        let line_middle = this._group.path([
+            ['M', cell3.center_rel.x, cell3.center_rel.y],
+            ['V', contact_point.y + qs / 2]
+        ]);
+
+        line_right.stroke({width: 3}).fill('none');
+        line_left.stroke({width: 3}).fill('none');
+        line_middle.stroke({width: 3}).fill('none');
 
         let body = this._group.rect(qs * 2, qs / 1.5)
-            .stroke({width: 1})
+            .stroke({width: 3})
             .fill("#fffffd")
-            .cx(rect1.cx() + line_len / 2)
-            .cy(rect1.cy());
+            .center(contact_point.x, cell1.center_rel.y);
 
-        let arrow_height = qs;
-        let arrow_width = qs * 2;
+        // let arrow_height = qs * 1.5;
+        // let arrow_width = qs * 2;
+        //
+        // let arrow = this._group.polyline([
+        //     [arrow_width, -arrow_height],
+        //     [0, -arrow_height],
+        //     [0, 0],
+        // ])
+        //     .stroke({width: 3})
+        //     .fill("none")
+        //     .x(body.cx())
+        //     .y(body.y() - arrow_height);
 
-        let arrow = this._group.polyline([
-            [arrow_width, -arrow_height],
-            [0, -arrow_height],
-            [0, 0],
-        ])
-            .stroke({width: 2})
-            .fill("none")
-            .x(body.cx())
-            .y(body.y() - arrow_height);
-
-        arrow.marker('end', qs/2, qs/2, function(add) {
+        line_middle.marker('end', qs/2, qs/2, function(add) {
             add.path([
                 ['M', 0, 0],
                 ['l', -qs/2, -qs/4],
