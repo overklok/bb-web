@@ -39,7 +39,6 @@ export default class Current {
 
         // Параметры анимации
         this._sheet             = undefined;    // CSS-контейнер
-        this._anim_timestamp    = undefined;    // временная метка начала анимации
         this._anim_dur          = undefined;    // текущая длительность прохождения Current.AnimationDelta px
         this._anim_delay        = undefined;    // накопленное запаздывание анимации
 
@@ -206,9 +205,9 @@ export default class Current {
             this._line.stroke(this.style);
 
             // изменить цвет у всех частиц
-            for (let particle of this._particles) {
-                particle.fill(this.style.color);
-            }
+            // for (let particle of this._particles) {
+            //     particle.fill(this.style.color);
+            // }
 
         }
 
@@ -311,7 +310,6 @@ export default class Current {
         particle.node.classList.add(animname);
 
         // Зафиксировать параметры времени
-        this._anim_timestamp = new Date().getTime();
         this._anim_dur = dur;
         this._anim_delay = 0;
     }
@@ -384,47 +382,43 @@ export default class Current {
     _setParticleSpeed(speed) {
         if (!this._sheet) return;
 
+        // "Not many, not much"
+
         // новая длительность цикла анимации (ДЦА), мс
-        let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
+        let dur2 = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax)),
+            dur1 = this._anim_dur;
 
         // коэффициент изменения скорости анимации
-        let mu = dur / this._anim_dur;
+        let mu = dur2 / dur1;
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;
-        let dt = this._container_anim.node.getCurrentTime() + this._anim_delay;
+        let dt = this._container_anim.node.getCurrentTime() * 1000;
 
         // время, прошеднее с начала текущего цикла анимации до данного момента
         // при старой и новой ДЦА
-        let p1d = dt % this._anim_dur,
-            p2d = dt % dur;
+        let p1 = (dt % dur1),
+            p2 = (dt % dur2);
 
-        // время с начала цикла до текущего момента при новой ДЦА,
-        // соответствующего тому же моменту при текущей ДЦА
-        // let p2r = p1d * mu;
+        let p1r = p1 / dur1,
+            p2r = p2 / dur2;
 
-        let perc2 = p2d / dur,
-            perc1 = p1d / this._anim_dur;
+        let delay = dur2 - p2 + dur2 * p1r;
 
-        let dp = perc2 - perc1;
+        this._anim_delay -= delay;
 
-        let delay = dp * dur;
-
-        // console.log(dp * dur);
-
-        this._anim_delay = delay;
-
-        // console.log(dur, this._anim_delay);
-
-        for (let rule of this._sheet.rules) {
+        for (let rule of this._getSheetRules()) {
             if (rule.constructor.name === "CSSStyleRule") {
-                rule.style.animationDuration = `${dur}ms, ${dur}ms`;
-                rule.style.animationDelay = `${delay}ms`
+                rule.style.animationDelay = `${this._anim_delay}ms`
+                rule.style.animationDuration = `${dur2}ms, ${dur2}ms`;
             }
         }
+        this._anim_dur = dur2;
+    }
 
-        // this._anim_timestamp += (p2d - p2r);
-        this._anim_dur = dur;
+    _getSheetRules() {
+        // firefox compat
+        return this._sheet.rules ? this._sheet.rules : this._sheet.cssRules;
     }
 
     _initStyleSheet() {

@@ -216,7 +216,8 @@ export default class CurrentLayer extends Layer {
 
         // if (c_from.isAt(0, 1)) {
         //     return [
-        //         ['M', 10, 10],
+        //         ['M', 80, 730],
+        //         ['L', 80, c_from.center_adj.y],
         //         ['L', c_from.center_adj.x, c_from.center_adj.y],
         //         ['L', c_to.center_adj.x, c_to.center_adj.y]
         //     ];
