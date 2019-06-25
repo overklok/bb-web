@@ -178,12 +178,16 @@ export default class BackgroundLayer extends Layer {
             this._decogroup.path([
                 ['M', cell1.pos.x - rise * 2, gap_begin_y],
                 ['l', rise * 2, 0],
+            ])
+                .stroke({color: "#f00", width: 6, opacity: 1, linecap: 'round'});
+            ;
 
+            this._decogroup.path([
                 ['M', cell3.pos.x - rise * 1.5, gap_end_y],
                 ['l', rise, 0]
             ])
                 .fill({opacity: 0})
-                .stroke({color: "#000", width: 6, opacity: 1, linecap: 'round'});
+                .stroke({color: "#00f", width: 6, opacity: 1, linecap: 'round'});
 
             let cap_size = 42;
 
@@ -192,14 +196,16 @@ export default class BackgroundLayer extends Layer {
             // Pole caption 1
             this._decogroup
                 .text("+")
+                .fill({color: "#f00"})
                 .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
                 .center(cap_pos_x, gap_begin_y - cap_size / 1.5);
 
             // Pole caption 2
             this._decogroup
                 .text("-")
+                .fill({color: "#00f"})
                 .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
-                .center(cap_pos_x, gap_begin_y + cap_size / 1.25);
+                .center(cap_pos_x, gap_begin_y + cap_size);
 
 
         } catch (re) {
@@ -283,7 +289,16 @@ export default class BackgroundLayer extends Layer {
     // }
 
     _drawCell(container, cell) {
-        if (this.__schematic) return;
+        if (this.__schematic) {
+            if (cell.isAt(null, 0)) {
+                container
+                    .circle(6, 6)
+                    .center(cell.center.x, cell.center.y)
+                    .fill({color: "#555"})
+            }
+
+            return;
+        };
 
         // container
         //     .circle(cell.size.x)
