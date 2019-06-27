@@ -74,8 +74,9 @@ class Application {
                 zoomInitial: config.zoomBlocks,
             },
             bb: {
-                modeAdmin: config.isAdmin,
-                schematic: config.schematic,
+                modeAdmin:  config.isAdmin,
+                schematic:  config.schematic,
+                spare:      config.boardSpare,
             },
             gs: {
                 origin: config.origin,
@@ -234,7 +235,7 @@ class Application {
                 .then(() => this.gui.hideSpinner())
                 .then(() => this.ins.tourIntro(exercise.popovers))
                 .then(() => this.trc.clearButtons())
-                .then(() => this.gui.listenBсутвuttons(exercise.check_buttons))
+                .then(() => this.gui.listenButtons(exercise.check_buttons))
                 .then(() => this.ins.setButtonsModel(exercise.buttons_model))
                 .then(() => {
                     if (exercise.check_buttons) {

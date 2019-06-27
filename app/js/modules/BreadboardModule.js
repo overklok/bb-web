@@ -11,8 +11,9 @@ export default class BreadboardModule extends Module {
 
     static defaults() {
         return {
-            modeAdmin: false,
-            schematic: false,
+            modeAdmin:  false,
+            schematic:  false,
+            spare:      false,
         }
     }
 
@@ -21,7 +22,7 @@ export default class BreadboardModule extends Module {
 
         this._state = {
             display: false,
-            spare: undefined,
+            spare: this._options.spare,
             schematic: this._options.schematic,
         };
 
