@@ -190,7 +190,7 @@ export default class PlateLayer extends Layer {
      */
     setPlates(plates) {
         /// есть ли изменения
-        is_dirty = false;
+        let is_dirty = false;
 
         /// снять возможную метку с локальных плашек
         for (let plate_id in this._plates) {
@@ -204,7 +204,7 @@ export default class PlateLayer extends Layer {
             if (!plate) continue;
 
             // проверить, есть ли изменения
-            if (plate.id in this._plates) {is_dirty = true;}
+            if (!(plate.id in this._plates)) {is_dirty = true;}
 
             /// ИД новой/текущей плашки
             let id;
@@ -236,7 +236,7 @@ export default class PlateLayer extends Layer {
             }
         }
 
-        return dirty;
+        return is_dirty;
     }
 
     /**
