@@ -30,12 +30,19 @@ export default class LogModule extends Module {
 
         this._client_data = {};
 
+        this._userbuf = {};
+
+        this._collectClientData();
+
         if (this._options.modeDummy) {
             this._debug.log('Working in DUMMY mode');
         } else {
-            this._collectClientData();
             this.runTicker(true);
         }
+    }
+
+    get client_data() {
+        return this._client_data;
     }
 
     /**
@@ -81,6 +88,33 @@ export default class LogModule extends Module {
         }, this._options.tickerInterval);
     }
 
+    addUserAction(channel, data) {
+        if (!this._userbuf[channel]) {
+            this._userbuf[channel] = [];
+        }
+
+        let dt = new Date();
+
+        this._userbuf[channel].push({data, time: dt.getTime()});
+    }
+
+    clearUserActions(channel=null) {
+        if (channel) {
+            delete this._userbuf[channel];
+            return;
+        }
+
+        this._userbuf = {};
+    }
+
+    getUserActions(channel) {
+        if (channel) {
+            return this._userbuf[channel];
+        }
+
+        return this._userbuf;
+    }
+
     /**
      * Собрать данные о клиенте
      *
@@ -90,7 +124,7 @@ export default class LogModule extends Module {
      * @private
      */
     _collectClientData() {
-        if (this._options.modeDummy) {return true}
+        // if (this._options.modeDummy) {return true}
 
         let identifier = new IdentifierWrapper();
 

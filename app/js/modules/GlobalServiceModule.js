@@ -18,6 +18,7 @@ export default class GlobalServiceModule extends Module {
                 lesson: '/coursesvc/lesson/',
                 firmware: '/fwsvc/geturls/last/',
                 log_bunch: '/logsvc/logbunch/',
+                log_useracts: '/logsvc/useracts/',
                 check_handlers: '/coursesvc/check/',
                 calc_currents: '/coursesvc/calc/',
                 vector_table: '/coursesvc/vectable/',
@@ -149,6 +150,46 @@ export default class GlobalServiceModule extends Module {
 
 
             return fetch(this._options.origin + this._options.api.check_handlers + exercise_id + '/', request)
+                .then(response => {
+                    if (response.error) {
+                        reject(response.error())
+                    }
+
+                    resolve(response.json());
+                }).catch(err => {
+                    this._debug.error(err);
+                    reject(err);
+                });
+        });
+    }
+
+    reportUserActions(exercise_id, status, client, actions) {
+        if (this._options.modeDummy) {return Promise.resolve()}
+
+        if (typeof exercise_id !== "number") {return Promise.reject(new TypeError("Exercise ID is not a number"))}
+
+        if (!actions || !client || !status) {return Promise.resolve()}
+
+        return new Promise((resolve, reject) => {
+            let packet = {actions, client, status};
+
+            let request = {
+                // mode: 'no-cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    // 'Access-Control-Allow-Origin': this._options.origin,
+                    // 'Access-Control-Allow-Credentials': true,
+                    // 'Access-Control-Allow-Methods': 'POST',
+                    'X-CSRFToken': this._csrfToken
+                },
+                method: "POST",
+                body: JSON.stringify(packet),
+                credentials: 'same-origin',
+            };
+
+
+            return fetch(this._options.origin + this._options.api.log_useracts + exercise_id + '/', request)
                 .then(response => {
                     if (response.error) {
                         reject(response.error())

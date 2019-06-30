@@ -499,6 +499,7 @@ class Application {
             this._dispatcher.only([]);
             this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX);
             this.ws.saveProgram(verdict.missionIDX, verdict.exerciseIDX+1);
+
             this.ins.tourPass(verdict.skip)
                 .then(
                     onResolve => this.ins.launchExerciseNext(),
@@ -620,7 +621,11 @@ class Application {
          */
         this._dispatcher.on('ls:plates', data => {
             this.bb.clearCurrents();
-            this.bb.updatePlates(data);
+            let is_dirty = this.bb.updatePlates(data);
+
+            if (is_dirty) {
+                this.log.addUserAction('board', data);
+            }
 
             if (this.ls.getMode() === 'electronics') {
                 this.gs.getVectorTable(data)
@@ -726,6 +731,7 @@ class Application {
 
         this._dispatcher.on('bb:change', () => {
             this.bb.clearCurrents();
+
         });
 
         this._dispatcher.on('bb:drag-start', () => {
@@ -761,6 +767,9 @@ class Application {
         /// очистить ошибочные блоки
         this.ws.clearErrorBlocks();
 
+        // данные о действиях пользователя
+        let user_acts = this.log.getUserActions('board');
+
         if (exercise.is_sandbox) {
              this.ins.applyVerdict({
                  missionIDX: exercise.missionIDX,
@@ -769,6 +778,11 @@ class Application {
              });
 
              this.gui.affirmLaunchButtonStarted('check', false);
+
+             // сообщить о действиях пользователя
+             this.gs.reportUserActions(exercise.pk, 'sandbox', this.log.client_data, user_acts);
+
+             this.log.clearUserActions('board');
 
              return new Promise(resolve => {resolve()});
         }
@@ -780,7 +794,13 @@ class Application {
         ])
             .then(results   => {return {handlers: results[0], board: results[1]}})
             .then(data      => this.gs.commitSolution(exercise.pk, data))
-            .then(verdict   => this.ins.applyVerdict(verdict))
+            .then(verdict   => {
+                this.ins.applyVerdict(verdict);
+
+                // сообщить о действиях пользователя
+                this.gs.reportUserActions(exercise.pk, verdict.status, this.log.client_data, user_acts);
+                this.log.clearUserActions('board');
+            })
             .then(()        => this.gui.affirmLaunchButtonStarted('check', false));
 
         return chain;
