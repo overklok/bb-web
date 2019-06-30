@@ -224,12 +224,30 @@ export default class CurrentLayer extends Layer {
                 ];
             }
 
+            if (c_to.isAt(0, 1)) {
+                return [
+                    ['M', c_from.center_adj.x, c_from.center_adj.y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y],
+                    ['L', 80, c_from.center_adj.y],
+                    ['L', 80, 720]
+                ];
+            }
+
             if (c_from.isAt(0, -1)) {
                 return [
                     ['M', 80, 780],
                     ['L', 80, c_from.center_adj.y],
                     ['L', c_from.center_adj.x, c_from.center_adj.y],
                     ['L', c_to.center_adj.x, c_to.center_adj.y]
+                ];
+            }
+
+            if (c_to.isAt(0, -1)) {
+                return [
+                    ['M', c_from.center_adj.x, c_from.center_adj.y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y],
+                    ['L', 80, c_to.center_adj.y],
+                    ['L', 80, 780]
                 ];
             }
         }
