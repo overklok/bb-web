@@ -382,35 +382,40 @@ export default class Current {
     _setParticleSpeed(speed) {
         if (!this._sheet) return;
 
-        // "Not many, not much"
+        let delay = 0;
 
         // новая длительность цикла анимации (ДЦА), мс
-        let dur2 = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax)),
-            dur1 = this._anim_dur;
-
-        // коэффициент изменения скорости анимации
-        let mu = dur2 / dur1;
+        let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;
         let dt = this._container_anim.node.getCurrentTime() * 1000;
 
-        // время, прошеднее с начала текущего цикла анимации до данного момента
-        // при старой и новой ДЦА
-        let p1 = (dt % dur1),
-            p2 = (dt % dur2);
+        // сколько прошло времени для того, чтобы частица попала в текущее положение
+        let togo_now = (dt - this._anim_delay) % this._anim_dur; // при текщущей ДЦА, учитывая предыдущую задержку
+        let togo_willbe = dt % dur; // при новой ДЦА
 
-        let p1r = p1 / dur1;
+        // процент положения частицы на пути
+        let pct_now = togo_now / this._anim_dur; // при текущей ДЦА
+        let pct_willbe = togo_willbe / dur; // при новой ДЦА
 
-        this._anim_delay -= dur2 - p2 + dur2 * p1r;
+        // разница в положении частицы при разных ДЦА:
+        // положительная, если происходит ускорение
+        // отрицательная, если происходит замедление
+        let pct_diff = pct_willbe - pct_now;
+
+        // отрицательная задержка - анимация будет "перематываться" вперёд
+        // при новой ДЦА на ту же точку, на которой она была при старой ДЦА
+        delay = -(dur - (pct_diff * dur));
 
         for (let rule of this._getSheetRules()) {
             if (rule.constructor.name === "CSSStyleRule") {
-                rule.style.animationDuration = `${dur2}ms, ${dur2}ms`;
-                rule.style.animationDelay = `${this._anim_delay}ms`;
+                rule.style.animationDuration = `${dur}ms, ${dur}ms`;
+                rule.style.animationDelay = `${delay}ms`;
             }
         }
-        this._anim_dur = dur2;
+        this._anim_dur = dur;
+        this._anim_delay = delay;
     }
 
     _getSheetRules() {

@@ -87,21 +87,21 @@
         //         // console.log("ONCHNG", data);
         //     // });
         //
-        //     let weight = 1;
-        //     let iter = 0;
+            let weight = 1;
+            let iter = 0;
         //
-        //     setInterval(() => {
+            setInterval(() => {
 
-                // if (weight >= 1) weight = 0;
-                // weight += 0.2;
+                if (weight >= 1) weight = 0;
+                weight += 0.2;
 
                 // weight = weight === 0 ? 1 : 0;
                 //
-                // let threads = [
-                //     {from: {x: 0, y: 1},    to: {x: 7, y: 1},   weight: weight},
-                //
-                //     {from: {x: 0, y: 3},    to: {x: 7, y: 3},   weight: 1},
-                //     {from: {x: 0, y: 5},    to: {x: 7, y: 5},   weight: 0},
+                let threads = [
+                    {from: {x: 0, y: 1},    to: {x: 7, y: 1},   weight: weight},
+
+                    {from: {x: 0, y: 3},    to: {x: 7, y: 3},   weight: 1},
+                    {from: {x: 0, y: 5},    to: {x: 7, y: 5},   weight: 0},
                 //
                 //     {from: {x: 0, y: 10}, to: {x: 4, y: 10},    weight: weight},
                     // {from: {x: 4, y: 8}, to: {x: 4, y: 5}, weight: weight},
@@ -112,9 +112,9 @@
         //             // {from: {x: 3, y: 8}, to: {x: 3, y: 6}, weight: 1},
         //             // {from: {x: 3, y: 6}, to: {x: 3, y: 5}, weight: 1},
         //             // {from: {x: 3, y: 4}, to: {x: 3, y: 1}, weight: 1},
-        //         ];
+                ];
 
-                // iter++;
+                iter++;
 
         //
         //         // let xplate = (iter % 2) ? {type: 'resistor', x: 2, y: 2, orientation: 'west'} : undefined;
@@ -129,18 +129,18 @@
         //         //     threads.pop();
         //         // }
         //
-        //         app.setData(
-        //             [
+                app.setData(
+                    [
         //                 {"id":26038,"type":"bridge","x":4,"y":8,"length":3,"orientation":"north","extra":3},
         //                 {"id":54088,"type":"bridge","x":4,"y":4,"length":2,"orientation":"north","extra":2},
         //                 {"id":134877,"type":"resistor","x":3,"y":6,"length":2,"orientation":"west","extra":200},
         //                 {"id":397418,"type":"bridge","x":3,"y":8,"length":2,"orientation":"north","extra":2},
         //                 {"id":650395,"type":"resistor","x":3,"y":1,"length":2,"orientation":"west","extra":200},
         //                 {"id":903538,"type":"bridge","x":3,"y":4,"length":2,"orientation":"north","extra":2}
-        //             ],
-        //             {threads},
-        //         );
-        //     }, 1000);
+                    ],
+                    {threads},
+                );
+            }, 1000);
         });
     </script>
 </html>
