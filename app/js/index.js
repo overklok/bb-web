@@ -768,7 +768,7 @@ class Application {
         this.ws.clearErrorBlocks();
 
         // данные о действиях пользователя
-        let user_acts = this.log.getUserActions('board');
+        let user_acts = this.log.getUserActions();
 
         if (exercise.is_sandbox) {
              this.ins.applyVerdict({
@@ -782,7 +782,7 @@ class Application {
              // сообщить о действиях пользователя
              this.gs.reportUserActions(exercise.pk, 'sandbox', this.log.client_data, user_acts);
 
-             this.log.clearUserActions('board');
+             this.log.clearUserActions();
 
              return new Promise(resolve => {resolve()});
         }
@@ -799,7 +799,7 @@ class Application {
 
                 // сообщить о действиях пользователя
                 this.gs.reportUserActions(exercise.pk, verdict.status, this.log.client_data, user_acts);
-                this.log.clearUserActions('board');
+                this.log.clearUserActions();
             })
             .then(()        => this.gui.affirmLaunchButtonStarted('check', false));
 
