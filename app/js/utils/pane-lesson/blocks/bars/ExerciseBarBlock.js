@@ -14,6 +14,8 @@ export default class ExerciseBarBlock extends BarBlock {
         this._callbacks = {
             onclick: (idx) => {console.warn("Unhandled event 'click' was triggered with data:", idx)}
         };
+
+        this._exercises = undefined;
     }
 
     include(dom_node) {
@@ -29,11 +31,13 @@ export default class ExerciseBarBlock extends BarBlock {
             idx++;
         }
         this._attachCallbacks();
+
+        this._exercises = exercises;
     }
 
     addExercise(exercise_data, ex_number) {
         let ex_name = `${ex_number}: ${exercise_data.name}`
-        let exercise = new ExerciseBarItemBlock(ex_name);
+        let exercise = new ExerciseBarItemBlock(exercise_data.mission, ex_name);
         this.addItem(exercise);
     }
 
@@ -47,8 +51,8 @@ export default class ExerciseBarBlock extends BarBlock {
         for (let item of this._items) {
             let _idx = idx;
 
-            item.onClick(() => {
-                this._callbacks.onclick(_idx);
+            item.onClick((mission_id) => {
+                this._callbacks.onclick(mission_id, this._idx);
             });
 
             idx++;

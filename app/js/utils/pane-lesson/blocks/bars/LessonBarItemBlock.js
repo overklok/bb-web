@@ -19,8 +19,6 @@ export default class LessonBarItemBlock extends BarItemBlock {
 
         this._link = new LessonBarLinkBlock(number, this._level_count, exercises);
 
-        // TODO: Допилить
-
         this._callbacks = {
             onclick: () => {console.warn("Unhandled event 'click' was triggered")},
             onexerciseclick: () => {console.warn("Unhandled event 'exerciseclick' was triggered")}
@@ -90,9 +88,8 @@ export default class LessonBarItemBlock extends BarItemBlock {
         this._link.onClick(() => {this._callbacks.onclick()});
         // this._link.onExerciseClick((idx) => {this._callbacks.onexerciseclick(idx)});
 
-
-        this._list.onClick = (idx) => {
-            this._callbacks.onexerciseclick(idx);
+        this._list.onClick = (mission_id, lesson_idx) => {
+            this._callbacks.onexerciseclick(mission_id, lesson_idx);
         };
     }
 }

@@ -6,10 +6,11 @@ import "../../styles/bars/exercise-bar/__item/exercise-bar__item.css";
 export default class ExerciseBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "exercise-bar__item"}
 
-    constructor(name) {
+    constructor(mission_id, name) {
         super();
 
         this._name = name;
+        this._mission_id = mission_id;
 
         this._callbacks = {
             onclick: () => {console.warn("Unhandled event 'click' was triggered")}
@@ -36,7 +37,7 @@ export default class ExerciseBarItemBlock extends BarItemBlock {
 
     _attachCallbacks() {
         this._container.onclick = () => {
-            this._callbacks.onclick();
+            this._callbacks.onclick(this._mission_id);
         };
     }
 }

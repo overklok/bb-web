@@ -78,6 +78,7 @@ export default class PaneLesson {
             onmenuclick: () => {},
             onreturnclick: () => {},
             onexerciseclick: (id) => {},
+            onuserexersizeclick: (mission_id, lesson_idx) => {},
             onstatusclick: () => {},
         };
 
@@ -303,6 +304,10 @@ export default class PaneLesson {
         this._callbacks.onexerciseclick = cb;
     }
 
+    onUserExerciseClick(cb) {
+        this._callbacks.onuserexerciseclick = cb;
+    }
+
     onStatusClick(cb) {
         this._callbacks.onstatusclick = cb;
     }
@@ -350,8 +355,8 @@ export default class PaneLesson {
             this._callbacks.onmissionclick(data);
         });
 
-        this._blocks.bars.lesson.onExerciseClick(data => {
-            this._callbacks.onuserexersizeclick(data);
+        this._blocks.bars.lesson.onExerciseClick(mission_id, exercise_idx => {
+            this._callbacks.onuserexersizeclick(mission_id, exercise_idx);
         });
 
         this._blocks.chips.ret.onClick(() => {
