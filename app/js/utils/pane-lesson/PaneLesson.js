@@ -59,7 +59,7 @@ export default class PaneLesson {
             bars: {
                 lesson: new LessonBarBlock(),
                 menu: new MenuBarBlock(),
-                mission: new MissionBarBlock(),
+                mission: new MissionBarBlock()
             },
 
             chips: {
@@ -348,6 +348,10 @@ export default class PaneLesson {
 
         this._blocks.bars.lesson.onClick(data => {
             this._callbacks.onmissionclick(data);
+        });
+
+        this._blocks.bars.lesson.onExerciseClick(data => {
+            this._callbacks.onuserexersizeclick(data);
         });
 
         this._blocks.chips.ret.onClick(() => {

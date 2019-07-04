@@ -34,7 +34,6 @@ export default class LessonBarLinkBlock extends Block {
 
         this._createElements();
         this._elements.num.innerHTML = this._number;
-
         this._attachCallbacks();
     }
 

@@ -1,0 +1,8 @@
+.exercise-bar {
+    position: absolute;
+    color: black;
+    background-color: white;
+    top: 35px;
+    z-index: 1;
+    display: none;
+}

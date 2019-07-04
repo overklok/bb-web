@@ -1,12 +1,15 @@
 import BarItemBlock from "../../core/blocks/BarItemBlock";
+import "../../styles/bars/exercise-bar/__item/exercise-bar__item.css";
 
 // TODO: Допилить
 
 export default class ExerciseBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "exercise-bar__item"}
 
-    constructor() {
+    constructor(name) {
         super();
+
+        this._name = name;
 
         this._callbacks = {
             onclick: () => {console.warn("Unhandled event 'click' was triggered")}
@@ -17,6 +20,7 @@ export default class ExerciseBarItemBlock extends BarItemBlock {
         super.include(dom_node);
 
         let container = document.createElement("div");
+        container.innerHTML = this._name;
         this._container.appendChild(container);
 
         this._attachCallbacks();
@@ -31,6 +35,8 @@ export default class ExerciseBarItemBlock extends BarItemBlock {
     }
 
     _attachCallbacks() {
-        this._link.onClick(() => {this._callbacks.onclick()});
+        this._container.onclick = () => {
+            this._callbacks.onclick();
+        };
     }
 }

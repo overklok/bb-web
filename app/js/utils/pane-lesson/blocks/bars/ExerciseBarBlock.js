@@ -1,4 +1,5 @@
 import BarBlock from "../../core/blocks/BarBlock";
+import "../../styles/bars/exercise-bar/exercise-bar.css";
 
 // TODO: Допилить
 
@@ -17,6 +18,23 @@ export default class ExerciseBarBlock extends BarBlock {
 
     include(dom_node) {
         super.include(dom_node);
+        // TODO: create container
+    }
+
+    setExercises(exercises) {
+        this.clearItems();
+        let idx = 1;
+        for (let ex of exercises) {
+            this.addExercise(ex, idx);
+            idx++;
+        }
+        this._attachCallbacks();
+    }
+
+    addExercise(exercise_data, ex_number) {
+        let ex_name = `${ex_number}: ${exercise_data.name}`
+        let exercise = new ExerciseBarItemBlock(ex_name);
+        this.addItem(exercise);
     }
 
     onClick(cb) {

@@ -2,26 +2,31 @@ import BarItemBlock from "../../core/blocks/BarItemBlock";
 
 import LessonBarLinkBlock from "./LessonBarLinkBlock";
 import ExerciseBarBlock from "./ExerciseBarBlock";
+import exerciseBarStyle from "../../styles/bars/exercise-bar/exercise-bar.js"
+
+
+let counter = 0;
 
 export default class LessonBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "lesson-bar__item"}
     static get ModifierClassesDOM() {return ["leading"]}
 
-    constructor(number, level_count) {
+    constructor(number, exercises) {
         super();
 
         this._number = number;
-        this._level_count = level_count;
+        this._level_count = Object.keys(exercises).length;
 
-        this._link = new LessonBarLinkBlock(number, level_count);
+        this._link = new LessonBarLinkBlock(number, this._level_count, exercises);
 
         // TODO: Допилить
-        // this._list = new ExerciseBarBlock(exercises);
 
         this._callbacks = {
             onclick: () => {console.warn("Unhandled event 'click' was triggered")},
-            onexerciseclick: () => {console.warn("Unhandled event 'exerciseclick' was triggered")},
+            onexerciseclick: () => {console.warn("Unhandled event 'exerciseclick' was triggered")}
         }
+        this._exercises = exercises;
+        this._list = new ExerciseBarBlock(exercises);
     }
 
     include(dom_node) {
@@ -32,8 +37,14 @@ export default class LessonBarItemBlock extends BarItemBlock {
 
         this._link.include(container);
 
-        // TODO: Допилить
-        // this._list.include(container);
+        let list_container = document.createElement("div");
+        list_container.id = `exercise-bar-${++counter}`;
+
+        this._list.include(list_container);
+        this._list.setExercises(this._exercises);
+
+        document.body.appendChild(list_container);
+        exerciseBarStyle(this._container, list_container.id);
 
         this._attachCallbacks();
     }
@@ -64,7 +75,6 @@ export default class LessonBarItemBlock extends BarItemBlock {
         if (this._link) {
             this._link.dispose();
         }
-
         super.dispose();
     }
 
@@ -78,6 +88,11 @@ export default class LessonBarItemBlock extends BarItemBlock {
 
     _attachCallbacks() {
         this._link.onClick(() => {this._callbacks.onclick()});
-        this._list.onClick(() => {this._callbacks.onexerciseclick()});
+        // this._link.onExerciseClick((idx) => {this._callbacks.onexerciseclick(idx)});
+
+
+        this._list.onClick = (idx) => {
+            this._callbacks.onexerciseclick(idx);
+        };
     }
 }

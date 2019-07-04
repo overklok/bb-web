@@ -9,14 +9,15 @@ export default class LessonBarBlock extends BarBlock {
     static get ClassDOM() {return "lesson-bar"}
 
     static runStyle() {
-        lessonBarStyle()
+        lessonBarStyle();
     }
 
     constructor() {
         super();
 
         this._callbacks = {
-            onclick: (idx) => {console.warn("Unhandled event 'click' was triggered with data:", idx)}
+            onclick: (idx) => {console.warn("Unhandled event 'click' was triggered with data:", idx)},
+            onexerciseclick: (idx) => {console.warn("Unhandled event 'exerciseclick' was triggered with data:", idx)}
         };
 
         this._state.missionActiveIDX = undefined;
@@ -68,13 +69,17 @@ export default class LessonBarBlock extends BarBlock {
     addMission(mission_data) {
         let idx_new = this._items.length + 1;
 
-        let mission = new LessonBarItemBlock(idx_new, mission_data.exercises.length);
+        let mission = new LessonBarItemBlock(idx_new, mission_data.exercises);
 
         this.addItem(mission);
     }
 
     onClick(cb) {
         this._callbacks.onclick = cb;
+    }
+
+    onExerciseClick(cb) {
+        this._callbacks.onexerciseclick = cb;
     }
 
     _attachCallbacks() {
@@ -85,6 +90,10 @@ export default class LessonBarBlock extends BarBlock {
 
             item.onClick(() => {
                 this._callbacks.onclick(_idx);
+            });
+
+            item.onExerciseClick(() => {
+                this._callbacks.onexerciseclick(_idx);
             });
 
             idx++;
