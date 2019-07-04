@@ -38,7 +38,7 @@ export default class ExerciseBarBlock extends BarBlock {
     }
 
     setExerciseActive(exercise_idx) {
-        if (this._state.exerciseActiveIDX != null) {
+        if (this._state.exerciseActiveIDX !== undefined) {
             this._items[this._state.exerciseActiveIDX].highlightLeading(false);
         }
 
@@ -57,14 +57,11 @@ export default class ExerciseBarBlock extends BarBlock {
         for (let i = 0; i < level+1; i++) {
             this._items[i].setPassed(true);
         }
-
-        this._items[level+1].highlightLeading(true);
     }
 
     clearProgress() {
         for (let item of this._items) {
             item.setPassed(false);
-            item.highlightLeading(false);
         }
     }
 

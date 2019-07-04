@@ -24,7 +24,9 @@ export default class LessonBarItemBlock extends BarItemBlock {
             onexerciseclick: () => {console.warn("Unhandled event 'exerciseclick' was triggered")}
         }
         this._exercises = exercises;
+
         this._list = new ExerciseBarBlock(exercises);
+        this._list_container = undefined;
     }
 
     include(dom_node) {
@@ -35,14 +37,14 @@ export default class LessonBarItemBlock extends BarItemBlock {
 
         this._link.include(container);
 
-        let list_container = document.createElement("div");
-        list_container.id = `exercise-bar-${++counter}`;
+        this._list_container = document.createElement("div");
+        this._list_container.id = `exercise-bar-${++counter}`;
 
-        this._list.include(list_container);
+        this._list.include(this._list_container);
         this._list.setExercises(this._exercises);
 
-        document.body.appendChild(list_container);
-        exerciseBarStyle(this._container, list_container.id);
+        document.body.appendChild(this._list_container);
+        exerciseBarStyle(this._container, this._list_container.id);
 
         this._attachCallbacks();
     }
@@ -94,6 +96,8 @@ export default class LessonBarItemBlock extends BarItemBlock {
         // this._link.onExerciseClick((idx) => {this._callbacks.onexerciseclick(idx)});
 
         this._list.onClick((idx) => {
+            // TODO: Animate
+            // this._list_container.fadeOut(100);
             this._callbacks.onexerciseclick(idx);
         });
     }

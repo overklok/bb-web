@@ -5,11 +5,18 @@
 
   background-color: @bgcolor_default;
 
+  padding: 5px 10px;
+
   &.highlighted {
-    background-color: @bgcolor_highlighted !important;
+    background-color: @bgcolor_highlighted;
 
     font-weight: bolder !important;
     font-size: @font_size + 4 !important;
+  }
+
+  &:hover {
+    background-color: #90c3fb;
+    cursor: pointer;
   }
 }
 
