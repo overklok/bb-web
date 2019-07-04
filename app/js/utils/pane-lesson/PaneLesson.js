@@ -78,7 +78,7 @@ export default class PaneLesson {
             onmenuclick: () => {},
             onreturnclick: () => {},
             onexerciseclick: (id) => {},
-            onuserexersizeclick: (mission_id, lesson_idx) => {},
+            onuserexerciseclick: (mission_idx, lesson_idx) => {},
             onstatusclick: () => {},
         };
 
@@ -161,6 +161,7 @@ export default class PaneLesson {
     setExerciseActive(exercise_idx) {
         if (!this._state.included) {throw new NotIncludedError("Cannot set active exercise, include first")}
 
+        this._blocks.bars.lesson.setExerciseActive(exercise_idx);
         this._blocks.bars.mission.setExerciseActive(exercise_idx);
         this._blocks.bars.mission.displayProgress(exercise_idx);
     }
@@ -355,8 +356,8 @@ export default class PaneLesson {
             this._callbacks.onmissionclick(data);
         });
 
-        this._blocks.bars.lesson.onExerciseClick(mission_id, exercise_idx => {
-            this._callbacks.onuserexersizeclick(mission_id, exercise_idx);
+        this._blocks.bars.lesson.onExerciseClick((mission_idx, exercise_idx) => {
+            this._callbacks.onuserexerciseclick(mission_idx, exercise_idx);
         });
 
         this._blocks.chips.ret.onClick(() => {

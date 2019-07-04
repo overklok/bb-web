@@ -47,6 +47,10 @@ export default class LessonBarItemBlock extends BarItemBlock {
         this._attachCallbacks();
     }
 
+    setExerciseActive(exercise_idx) {
+        this._list.setExerciseActive(exercise_idx);
+    }
+
     setLeading(on=false) {
         this.setModifierBoolean('leading', on);
 
@@ -63,6 +67,7 @@ export default class LessonBarItemBlock extends BarItemBlock {
         let percent = (level+1) / (this._level_count) * 100;
 
         this._link.setProgress(percent);
+        this._list.setProgress(level);
     }
 
     setSkidding(on=false) {
@@ -88,8 +93,8 @@ export default class LessonBarItemBlock extends BarItemBlock {
         this._link.onClick(() => {this._callbacks.onclick()});
         // this._link.onExerciseClick((idx) => {this._callbacks.onexerciseclick(idx)});
 
-        this._list.onClick = (mission_id, lesson_idx) => {
-            this._callbacks.onexerciseclick(mission_id, lesson_idx);
-        };
+        this._list.onClick((idx) => {
+            this._callbacks.onexerciseclick(idx);
+        });
     }
 }

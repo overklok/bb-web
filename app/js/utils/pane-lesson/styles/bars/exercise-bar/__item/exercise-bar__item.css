@@ -1,3 +1,20 @@
+.exercise-bar {
+  position: absolute;
+  color: black;
+  background-color: white;
+  top: 35px;
+  z-index: 1;
+  display: none;
+}
 .exercise-bar__item {
-    white-space: nowrap;
+  white-space: nowrap;
+  background-color: #ffffff;
+}
+.exercise-bar__item.highlighted {
+  background-color: #fff6af !important;
+  font-weight: bolder !important;
+  font-size: 18px !important;
+}
+.exercise-bar__item_passed {
+  background-color: #a6ff82;
 }

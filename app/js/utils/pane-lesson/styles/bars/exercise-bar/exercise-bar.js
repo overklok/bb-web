@@ -6,8 +6,6 @@ let exerciseBarStyle = (container, bar_id) => {
     let $exercise = $(`#${bar_id}`);
 
     $container.on("contextmenu", function(evt) {
-        //if (evt.which !== 3) return;
-
         evt.preventDefault();
 
         let offset = $container.offset();
@@ -19,15 +17,15 @@ let exerciseBarStyle = (container, bar_id) => {
         $exercise.css({
             top: offset.top + $container.height() + BAR_OFFSET_Y,
             left: offset.left
-        })
+        });
 
-        $(`.exercise-bar:not(#${bar_id})`).hide();
+        // $(`.exercise-bar:not(#${bar_id})`).hide();
         $exercise.fadeIn(100);
     });
 
     $(document).on("mousedown", function(evt) {
         // if the target of the click isn't the container nor a descendant of the container
-        if (!$container.is(evt.target) && $container.has(evt.target).length === 0)
+        if (!$exercise.is(evt.target) && $exercise.has(evt.target).length === 0)
         {
             $exercise.fadeOut(100);
         }

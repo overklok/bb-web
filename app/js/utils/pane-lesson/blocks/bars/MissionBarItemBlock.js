@@ -1,6 +1,6 @@
 import BarItemBlock from "../../core/blocks/BarItemBlock";
 
-import thm from "../../styles/bars/mission-bar/__item/mission-bar__item.css";
+import "../../styles/bars/mission-bar/__item/mission-bar__item.css";
 
 export default class MissionBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "mission-bar__item"}
@@ -37,7 +37,7 @@ export default class MissionBarItemBlock extends BarItemBlock {
         }
     }
 
-    displayPassed(on=false) {
+    setPassed(on=false) {
         this.setModifierBoolean('passed', on);
     }
 

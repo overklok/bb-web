@@ -44,7 +44,7 @@ export default class MissionBarBlock extends BarBlock {
         }
 
         for (let i = 0; i <= exercise_count; i++) {
-            this._items[i].displayPassed(true);
+            this._items[i].setPassed(true);
         }
     }
 

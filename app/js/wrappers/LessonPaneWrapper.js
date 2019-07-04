@@ -223,6 +223,10 @@ export default class LessonPaneWrapper extends Wrapper {
         this._plugin.onExerciseClick(cb);
     }
 
+    onUserExerciseClick(cb) {
+        this._plugin.onUserExerciseClick(cb);
+    }
+
     onStatusClick(cb) {
         this._plugin.onStatusClick(cb);
     }

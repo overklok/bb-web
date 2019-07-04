@@ -1,16 +1,15 @@
 import BarItemBlock from "../../core/blocks/BarItemBlock";
 import "../../styles/bars/exercise-bar/__item/exercise-bar__item.css";
 
-// TODO: Допилить
-
+// TODO: Rename (exercise -> ?)
 export default class ExerciseBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "exercise-bar__item"}
+    static get ModifierClassesDOM() {return ["leading", "passed"]}
 
-    constructor(mission_id, name) {
+    constructor(name) {
         super();
 
         this._name = name;
-        this._mission_id = mission_id;
 
         this._callbacks = {
             onclick: () => {console.warn("Unhandled event 'click' was triggered")}
@@ -31,13 +30,25 @@ export default class ExerciseBarItemBlock extends BarItemBlock {
         super.dispose();
     }
 
+    highlightLeading(on=false) {
+        if (on) {
+            this._container.classList.add('highlighted');
+        } else {
+            this._container.classList.remove('highlighted');
+        }
+    }
+
+    setPassed(on=false) {
+        this.setModifierBoolean('passed', on);
+    }
+
     onClick(cb) {
         this._callbacks.onclick = cb;
     }
 
     _attachCallbacks() {
         this._container.onclick = () => {
-            this._callbacks.onclick(this._mission_id);
+            this._callbacks.onclick();
         };
     }
 }

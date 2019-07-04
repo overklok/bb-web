@@ -1,0 +1,18 @@
+@import "../exercise-bar";
+
+.exercise-bar__item {
+  white-space: nowrap;
+
+  background-color: @bgcolor_default;
+
+  &.highlighted {
+    background-color: @bgcolor_highlighted !important;
+
+    font-weight: bolder !important;
+    font-size: @font_size + 4 !important;
+  }
+}
+
+.exercise-bar__item_passed {
+  background-color: @bgcolor_passed;
+}

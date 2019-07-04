@@ -261,6 +261,10 @@ class Application {
             this.gs.goToExerciseAdminPage(exercise_id);
         });
 
+        this._dispatcher.on('gui:user_exercise', data => {
+            this.ins.launchLesson(data.mission_idx, data.exercise_idx);
+        });
+
         this._dispatcher.on('gui:ready', () => {
             // setTimeout(() => {
             //     let status = this.ls.getBoardStatus();

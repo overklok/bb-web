@@ -40,6 +40,12 @@ export default class LessonBarBlock extends BarBlock {
         this._state.missionActiveIDX = mission_idx;
     }
 
+    setExerciseActive(exercise_idx) {
+        if (this._state.missionActiveIDX !== undefined) {
+            this._items[this._state.missionActiveIDX].setExerciseActive(exercise_idx);
+        }
+    }
+
     setMissionSkidding(mission_idx, is_skidding) {
         if (!(mission_idx in this._items)) {
             throw new RangeError(`Lesson bar doesn't have an item with number ${mission_idx}`)
@@ -92,8 +98,8 @@ export default class LessonBarBlock extends BarBlock {
                 this._callbacks.onclick(_idx);
             });
 
-            item.onExerciseClick(() => {
-                this._callbacks.onexerciseclick(_idx);
+            item.onExerciseClick((lesson_idx) => {
+                this._callbacks.onexerciseclick(_idx, lesson_idx);
             });
 
             idx++;
