@@ -1,6 +1,7 @@
 import BarItemBlock from "../../core/blocks/BarItemBlock";
 
 import LessonBarLinkBlock from "./LessonBarLinkBlock";
+import ExerciseBarBlock from "./ExerciseBarBlock";
 
 export default class LessonBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "lesson-bar__item"}
@@ -14,8 +15,12 @@ export default class LessonBarItemBlock extends BarItemBlock {
 
         this._link = new LessonBarLinkBlock(number, level_count);
 
+        // TODO: Допилить
+        // this._list = new ExerciseBarBlock(exercises);
+
         this._callbacks = {
-            onclick: () => {console.warn("Unhandled event 'click' was triggered")}
+            onclick: () => {console.warn("Unhandled event 'click' was triggered")},
+            onexerciseclick: () => {console.warn("Unhandled event 'exerciseclick' was triggered")},
         }
     }
 
@@ -26,6 +31,9 @@ export default class LessonBarItemBlock extends BarItemBlock {
         this._container.appendChild(container);
 
         this._link.include(container);
+
+        // TODO: Допилить
+        // this._list.include(container);
 
         this._attachCallbacks();
     }
@@ -64,7 +72,12 @@ export default class LessonBarItemBlock extends BarItemBlock {
         this._callbacks.onclick = cb;
     }
 
+    onExerciseClick(cb) {
+        this._callbacks.onexerciseclick = cb;
+    }
+
     _attachCallbacks() {
         this._link.onClick(() => {this._callbacks.onclick()});
+        this._list.onClick(() => {this._callbacks.onexerciseclick()});
     }
 }
