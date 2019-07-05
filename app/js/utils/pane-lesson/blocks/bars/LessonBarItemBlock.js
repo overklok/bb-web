@@ -96,8 +96,7 @@ export default class LessonBarItemBlock extends BarItemBlock {
         // this._link.onExerciseClick((idx) => {this._callbacks.onexerciseclick(idx)});
 
         this._list.onClick((idx) => {
-            // TODO: Animate
-            // this._list_container.fadeOut(100);
+            this._list_container.display = 'none';
             this._callbacks.onexerciseclick(idx);
         });
     }
