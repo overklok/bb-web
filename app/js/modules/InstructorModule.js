@@ -92,6 +92,18 @@ export default class InstructorModule extends Module {
         });
     }
 
+
+    /**
+     * Задать режим работы (Админ/пользователь)
+     *
+     * @param isAdmin {boolean}
+     *
+     * @returns {none}
+     */
+    setAdminMode(isAdmin) {
+        this._options.isAdmin = isAdmin;
+    }
+
     /**
      * Запустить урок
      *
