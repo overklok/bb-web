@@ -65,6 +65,7 @@ class Application {
             ins: {
                 lessonID: config.lessonID,
                 silent: config.noIntros,
+                isAdmin: config.isAdmin
             },
             trc: {
 
