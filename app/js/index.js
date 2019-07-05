@@ -446,9 +446,14 @@ class Application {
                     if (data.state) {
                         this.gui.switchDeveloperMode(true);
                         this.lay.revealTopPane();
+                        this.isAdmin = true;
+                        this.ins.setAdminMode(true);
+
                     } else {
                         this.gui.switchDeveloperMode(false);
                         this.lay.concealTopPane();
+                        this.isAdmin = false;
+                        this.ins.setAdminMode(false);
                     }
                     break;
                 }
