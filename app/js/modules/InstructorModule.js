@@ -22,6 +22,7 @@ export default class InstructorModule extends Module {
         return {
             lessonID: 1,
             silent: false,
+            isAdmin: false,
         }
     }
 
@@ -94,7 +95,7 @@ export default class InstructorModule extends Module {
     /**
      * Запустить урок
      *
-     * Запускает урок с первго упражнения первой миссии
+     * Запускает урок с первого упражнения первой миссии
      *
      * @returns {boolean}
      */
@@ -249,6 +250,13 @@ export default class InstructorModule extends Module {
      * @returns {Promise<Object>}
      */
     forceExercise(mission_idx, exercise_idx) {
+        if (!this._options.isAdmin) {
+            if (exercise_idx > this._state.missions[mission_idx].exerciseIDXLast) {
+                // throw new Error(`Exercise ${exercise_idx} in mission ${mission_idx} is not completed`);
+                return Promise.resolve(exercise_idx);
+            }
+        }
+
         if (mission_idx === undefined || Number.isNaN(mission_idx)) {
             mission_idx = this._state.missionIDX
         }
