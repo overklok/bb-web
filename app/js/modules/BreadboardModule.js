@@ -75,7 +75,7 @@ export default class BreadboardModule extends Module {
     updatePlates(plates) {
         if (!this._state.display) {return true}
 
-        this._board.setPlates(plates);
+        return this._board.setPlates(plates);
     }
 
     updatePlateState(plate_id, state) {

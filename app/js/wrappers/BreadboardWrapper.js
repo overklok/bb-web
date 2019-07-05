@@ -49,7 +49,7 @@ export default class BreadboardWrapper extends Wrapper {
 
         this._plugin.clearRegions();
 
-        this._plugin.setPlates(plates);
+        return this._plugin.setPlates(plates);
     }
 
     highlightErrorPlates(plate_ids) {

@@ -189,6 +189,9 @@ export default class PlateLayer extends Layer {
      * @param {Array<Object>} plates список плашек, которые должны отображаться на слое
      */
     setPlates(plates) {
+        /// есть ли изменения
+        let is_dirty = false;
+
         /// снять возможную метку с локальных плашек
         for (let plate_id in this._plates) {
             this._plates[plate_id].___touched = undefined;
@@ -199,6 +202,9 @@ export default class PlateLayer extends Layer {
         for (let plate of plates) {
             /// если плашки нет, пропустить итерацию
             if (!plate) continue;
+
+            // проверить, есть ли изменения
+            if (!(plate.id in this._plates)) {is_dirty = true;}
 
             /// ИД новой/текущей плашки
             let id;
@@ -229,6 +235,8 @@ export default class PlateLayer extends Layer {
                 this.removePlate(plate_id);
             }
         }
+
+        return is_dirty;
     }
 
     /**
