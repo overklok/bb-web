@@ -251,7 +251,7 @@ export default class InstructorModule extends Module {
      */
     forceExercise(mission_idx, exercise_idx) {
         if (!this._options.isAdmin) {
-            if (exercise_idx > this._state.missions[mission_idx].exerciseIDXLast) {
+            if (exercise_idx !== 0 && exercise_idx > this._state.missions[mission_idx].exerciseIDXLast) {
                 // throw new Error(`Exercise ${exercise_idx} in mission ${mission_idx} is not completed`);
                 return Promise.resolve(exercise_idx);
             }
