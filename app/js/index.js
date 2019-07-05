@@ -244,7 +244,12 @@ class Application {
                     } else {
                         this._dispatcher.only(['gui:*']);
                     }
-                })
+                });
+
+            // очистить
+            this.log.clearUserActions();
+            // первая (пустая) метка - начало задания
+            this.log.addUserAction('board', []);
         });
 
         /**

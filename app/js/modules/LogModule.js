@@ -2,6 +2,9 @@ import Module from '../core/Module';
 
 import IdentifierWrapper from "../wrappers/IdentifierWrapper";
 
+// Уникальный ключ сессии
+const SESSION_SEED = Math.floor(Math.random() * 1e10);
+
 /**
  * Модуль логирования
  *
@@ -129,6 +132,8 @@ export default class LogModule extends Module {
         let identifier = new IdentifierWrapper();
 
         this._client_data = {
+            sessionSeed:    SESSION_SEED,
+
             fingerprint:    identifier.fingerprint,
             userAgent:      identifier.userAgent,
             browser:        identifier.browser,

@@ -233,6 +233,8 @@ export default class PlateLayer extends Layer {
         for (let plate_id in this._plates) {
             if (!this._plates[plate_id].___touched) {
                 this.removePlate(plate_id);
+
+                is_dirty = true;
             }
         }
 
