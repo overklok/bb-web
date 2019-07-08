@@ -210,7 +210,7 @@ export default class PaneVariables {
     }
 
     addSensors() {
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 10; i++) {
             this._addSensor('SNS'+i, 'A'+i, 0);
         }
     }

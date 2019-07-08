@@ -25,10 +25,10 @@ const ROOT_CLASS = "ui-layout-container";
 const PANE_IDS = {
     MAIN_NORTH:     "main-north",
     MAIN_CENTER:    "main-center",
-    MAIN_WEST:      "main-west",
+    // MAIN_WEST:      "main-west",
     MAIN_EAST:      "main-east",
 
-    // EAST_NORTH:         "east-north",
+    EAST_NORTH:         "east-north",
     EAST_CENTER:    "east-center",
 
     EAST_SOUTH_CENTER: "east-south-center",
@@ -62,11 +62,11 @@ const MODES = {
 const MAPPINGS = {
     full: {
         launch_buttons: PANE_IDS.MAIN_CENTER,
-        breadboard: PANE_IDS.MAIN_CENTER,
-        workspace: PANE_IDS.MAIN_WEST,
+        breadboard: PANE_IDS.EAST_CENTER,
+        workspace: PANE_IDS.MAIN_CENTER,
         tracing: PANE_IDS.EAST_SOUTH_CENTER,
         buttons: PANE_IDS.EAST_SOUTH_SOUTH,
-        task: PANE_IDS.EAST_CENTER,
+        task: PANE_IDS.EAST_NORTH,
         lesson: PANE_IDS.MAIN_NORTH
     },
     code: {
@@ -105,27 +105,30 @@ const MAPPINGS = {
 const FADEBLOCKINGS = {
     full: [
         PANE_IDS.MAIN_EAST,
-        PANE_IDS.MAIN_WEST,
         PANE_IDS.MAIN_NORTH,
-        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_NORTH,
+        // PANE_IDS.EAST_CENTER,
         PANE_IDS.EAST_SOUTH_SOUTH,
     ],
     code: [
         PANE_IDS.MAIN_EAST,
         PANE_IDS.MAIN_NORTH,
-        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_NORTH,
+        // PANE_IDS.EAST_CENTER,
         PANE_IDS.EAST_SOUTH_SOUTH,
     ],
     board: [
         PANE_IDS.MAIN_EAST,
         PANE_IDS.MAIN_NORTH,
-        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_NORTH,
+        // PANE_IDS.EAST_CENTER,
         PANE_IDS.EAST_SOUTH_SOUTH,
     ],
     board_vars: [
         PANE_IDS.MAIN_EAST,
         PANE_IDS.MAIN_NORTH,
-        PANE_IDS.EAST_CENTER,
+        PANE_IDS.EAST_NORTH,
+        // PANE_IDS.EAST_CENTER,
         PANE_IDS.EAST_SOUTH_SOUTH,
     ],
     home: []
@@ -266,7 +269,10 @@ export default class LayoutModule extends Module {
                         this.revealTopPane();
                     }
 
-                    this._layout.hide("west");
+                    // this._layout.hide("west");
+                    // duration += this._options.animSpeedMain;
+
+                    this._panes.east.hide("north");
                     duration += this._options.animSpeedMain;
 
                     this._panes.east.hide("south");
@@ -308,7 +314,10 @@ export default class LayoutModule extends Module {
                         this.revealTopPane();
                     }
 
-                    this._layout.hide("west");
+                    // this._layout.hide("west");
+                    // duration += this._options.animSpeedMain;
+
+                    this._panes.east.hide("north");
                     duration += this._options.animSpeedMain;
 
                     this._panes.east.show("south");
@@ -329,15 +338,18 @@ export default class LayoutModule extends Module {
                         this.revealTopPane();
                     }
 
-                    this._layout.open("west");
+                    // this._layout.open("west");
 
-                    this._layout.sizePane("west", .4);
+                    // this._layout.sizePane("west", .4);
+                    // duration += this._options.animSpeedMain;
+
+                    this._panes.east.show("north");
                     duration += this._options.animSpeedMain;
 
                     this._panes.east.show("south");
                     duration += this._options.animSpeedSub;
 
-                    this._layout.sizePane("east", .2);
+                    this._layout.sizePane("east", .3);
                     duration += this._options.animSpeedMain;
 
                     if (this._state.buttonsPaneVisible) {
@@ -589,22 +601,22 @@ export default class LayoutModule extends Module {
                 onresize_end:   () => {try {this._onResize('center', true)} catch (e) {console.error(e)}},
             },
 
-            west: {
-                size: .4,
-                minSize: 200,
-
-                resizable:             true,
-                slidable:              true,
-
-                livePaneResizing: true,
-
-                fxSpeed: this._options.animSpeedMain,
-
-                // onresize:       () => {try {this._onResize('west')} catch (e) {console.error(e)}},
-                // onresize_end:   () => {try {this._onResize('west', true)} catch (e) {console.error(e)}},
-
-                // ondrag_end: () => {this._onDrag('west')}
-            },
+            // west: {
+            //     size: .4,
+            //     minSize: 200,
+            //
+            //     resizable:             true,
+            //     slidable:              true,
+            //
+            //     livePaneResizing: true,
+            //
+            //     fxSpeed: this._options.animSpeedMain,
+            //
+            //     // onresize:       () => {try {this._onResize('west')} catch (e) {console.error(e)}},
+            //     // onresize_end:   () => {try {this._onResize('west', true)} catch (e) {console.error(e)}},
+            //
+            //     // ondrag_end: () => {this._onDrag('west')}
+            // },
 
             //	some pane-size settings
             east: {
@@ -621,8 +633,14 @@ export default class LayoutModule extends Module {
                 // onresize_end:   () => {try {this._onResize('east', true)} catch (e) {console.error(e)}},
 
                 childOptions: {
+                    north: {
+                        size: .3,
+                        minSize: 150,
+
+                        fxSpeed: this._options.animSpeedSub,
+                    },
                     center: {
-                        size: .7,
+                        size: .4,
 
                         // resizable: true,
                         fxSpeed: this._options.animSpeedSub,
@@ -672,7 +690,7 @@ export default class LayoutModule extends Module {
         return {
             north: this._layout.north,
             center: this._layout.center,
-            west: this._layout.west,
+            // west: this._layout.west,
             east: this._layout.east.children.layout1,
 
             _east: {
