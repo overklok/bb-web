@@ -126,6 +126,23 @@ export default class Breadboard {
         this._composeLayers();
     };
 
+
+    /**
+     * Задать запрет на создание/движение плашек
+     *
+     * @param {boolean}
+     */
+    setReadOnly(readOnly) {
+        this._options.readOnly = readOnly;
+        this._setLayersReadOnly(readOnly);
+        // this.redraw(this._schematic);
+
+        // this._options.showControlsDefault = !readOnly;
+
+        // this.redraw(this._schematic);
+        // this._attachControlsEvents();
+    }
+
     /**
      * Удалить графическую составляющую платы
      */
@@ -138,6 +155,7 @@ export default class Breadboard {
         this._layers.background.recompose(schematic);
         this._layers.plate.recompose(schematic);
         this._layers.current.recompose(schematic);
+        this._layers.controls.recompose(schematic);
     }
 
     /**
@@ -356,6 +374,7 @@ export default class Breadboard {
         this._layers.current.compose();
         this._layers.plate.compose();
         this._layers.region.compose();
+        this._layers.controls.compose(Breadboard.getAllPlateTypes(), Breadboard.getAllPlateCaptions());
 
         /// если не режим только чтения, подключить обработчик изменения состояния платы
         if (!this._options.readOnly) {
@@ -363,13 +382,24 @@ export default class Breadboard {
         }
 
         /// включение / отключение режима только чтения
-        if (this._options.readOnly) {
-            this._layers.plate.setEditable(false);
-        } else {
-            this._layers.plate.setEditable(true);
-            this._layers.controls.compose(Breadboard.getAllPlateTypes(), Breadboard.getAllPlateCaptions());
-            this._attachControlsEvents();
-        }
+        this._setLayersReadOnly(this._options.readOnly);
+        this._attachControlsEvents();
+
+        /// выполнить нажатие вручную, если требуется показать органы управления при запуске
+        //if (this._options.showControlsDefault) {
+            //this._layers.background.clickLogo();
+        //}
+    }
+
+    /**
+     * Задать опции платы
+     *
+     * @param {boolean}
+     */
+    _setLayersReadOnly(readOnly) {
+        this._layers.plate.setEditable(!readOnly);
+        this._layers.controls.setVisibility(!readOnly);
+        this._layers.controls.setVisibilityBlocking(readOnly);
     }
 
     /**
@@ -444,11 +474,6 @@ export default class Breadboard {
         this._layers.background.onLogoClick(() => {
             this._layers.controls.switchVisibility();
         });
-
-        /// выполнить нажатие вручную, если требуется показать органы управления при запуске
-        if (this._options.showControlsDefault) {
-            this._layers.background.clickLogo();
-        }
 
         /// начало перетаскивания плашки
         this._layers.plate.onDragStart(() => {

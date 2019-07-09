@@ -38,6 +38,10 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.dispose();
     }
 
+    setReadOnly(readOnly) {
+        this._plugin.setReadOnly(readOnly);
+    }
+
     getPlates() {
         return this._plugin.getPlates();
     }

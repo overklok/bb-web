@@ -16,8 +16,10 @@ export default class LessonPaneWrapper extends Wrapper {
         this._mission_active_deferred   = undefined;
         this._exercise_active_deferred  = undefined;
         this._menu_structure_deferred = undefined;
-        this._task_on_deferred = undefined;
+        this._click_menu_bar_item_deferred = undefined;
+        this._dev_mode_deferred = undefined;
         this._status_deferred = undefined;
+
         this._logo_text = undefined;
         this._lesson_text = undefined;
     }
@@ -52,8 +54,12 @@ export default class LessonPaneWrapper extends Wrapper {
             this.setMenuStructure(this._menu_structure_deferred);
         }
 
-        if (!(this._task_on_deferred === undefined)) {
-            this.switchTask(this._task_on_deferred);
+        if (!(this._dev_mode_deferred === undefined)) {
+            this.switchDevMode(this._dev_mode_deferred);
+        }
+
+        if (!(this._click_menu_bar_item_deferred === undefined)) {
+            this.clickMenuBarItem(this._click_menu_bar_item_deferred);
         }
 
         return true;
@@ -152,7 +158,20 @@ export default class LessonPaneWrapper extends Wrapper {
         }
     }
 
-    switchTask(on) {
+    clickMenuBarItem(data) {
+        try {
+            this._plugin.clickMenuBarItem(data.item_name, data.on);
+        } catch (err) {
+            if (err.code === "ENOCON") {
+                // console.warn("setMenuStructure: called too early; setting deferred value");
+                this._click_menu_bar_item_deferred = data;
+            } else {
+                throw err;
+            }
+        }
+    }
+
+    switchDevMode(on) {
         try {
             if (on) {
                 this._plugin.showTask();
@@ -162,7 +181,7 @@ export default class LessonPaneWrapper extends Wrapper {
         } catch (err) {
             if (err.code === "ENOCON") {
                 // console.warn("setMenuStructure: called too early; setting deferred value");
-                this._task_on_deferred = on;
+                this._dev_mode_deferred = on;
             } else {
                 throw err;
             }

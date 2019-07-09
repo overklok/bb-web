@@ -16,16 +16,13 @@ export default class MenuBarBlock extends BarBlock {
         super.include(dom_node);
     }
 
-    setStructure(items) {
+    setStructure(items_data) {
         this._removeItems();
+        this._menu_items = {};
 
-        for (let _menu_item_key in items) {
-            if (items.hasOwnProperty(_menu_item_key)) {
-                this.addMenuItem(items[_menu_item_key]);
-            }
+        for (let item_data of items_data) {
+            this.addMenuItem(item_data);
         }
-
-        this._menu_items = items;
     }
 
     addMenuItem(item_data) {
@@ -39,5 +36,13 @@ export default class MenuBarBlock extends BarBlock {
          );
 
          this.addItem(item);
+         this._menu_items[item_data.name] = item;
+    }
+
+    clickItem(item_name, on) {
+        if (!(item_name in this._menu_items)) {
+            throw new RangeError(`Item ${item_name} does not exist`);
+        }
+        this._menu_items[item_name].click(on);
     }
 }
