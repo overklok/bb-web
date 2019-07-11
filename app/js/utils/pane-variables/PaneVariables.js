@@ -211,11 +211,11 @@ export default class PaneVariables {
 
     addSensors() {
         for (let i = 0; i < 10; i++) {
-            this._addSensor('SNS'+i, 'A'+i, 0);
+            this._addSensor('SNS'+i, 'A'+i, 0, i < 5 ? 1 : 2);
         }
     }
 
-    _addSensor(name, title, initial_value) {
+    _addSensor(name, title, initial_value, col_num=1) {
         let wrapper = document.createElement("div");
         wrapper.classList.add('sensor');
         wrapper.classList.add('arduino-analog');
@@ -254,7 +254,11 @@ export default class PaneVariables {
         this._setSensorPWMByName(name, false);
         this._setSensorVoltageByName(name, false);
 
-        this.columns.col2.appendChild(wrapper);
+        // if (col_num === 1) {
+            this.columns.col1.appendChild(wrapper);
+        // } else {
+        //     this.columns.col2.appendChild(wrapper);
+        // }
     }
 
     static _generateSVGTextNode(initial_value="") {
