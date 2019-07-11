@@ -42,21 +42,28 @@ export default class MenuBarItemBlock extends BarItemBlock {
         this._attachCallbacks();
     }
 
+    click(on=true) {
+        if (this._type === TYPES.RADIO) {
+            if (on) {
+                this._container.classList.add('pressed');
+            } else {
+                this._container.classList.remove('pressed');
+            }
+        }
+
+        this._state.pressed = on;
+
+        if (typeof this._handler === 'function') {
+            this._handler(this._name, this._state.pressed);
+        }
+    }
+
     _attachCallbacks() {
         this._container.onclick = () => {
             if (this._type === TYPES.RADIO) {
                 this._state.pressed = !this._state.pressed;
-
-                if (this._state.pressed) {
-                    this._container.classList.add('pressed');
-                } else {
-                    this._container.classList.remove('pressed');
-                }
             }
-
-            if (typeof this._handler === 'function') {
-                this._handler(this._name, this._state.pressed);
-            }
+            this.click(this._state.pressed);
         };
     }
 }

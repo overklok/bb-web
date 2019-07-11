@@ -36,6 +36,7 @@ export default class ControlsLayer extends Layer {
 
         this._is_fullscreen = false;
         this._is_visible = false;
+        this._is_visibility_blocked = false;
     }
 
     compose(plate_types, plate_captions) {
@@ -44,10 +45,20 @@ export default class ControlsLayer extends Layer {
         this._hide();
     }
 
-    switchVisibility() {
-        this._is_visible ? this._hide() : this._show();
+    setVisibility(is_visible) {
+        if (this._is_visibility_blocked) {
+            return;
+        }
+        this._is_visible = is_visible;
+        is_visible ? this._show() : this._hide();
+    }
 
-        this._is_visible = !this._is_visible;
+    switchVisibility() {
+        this.setVisibility(!this._is_visible);
+    }
+
+    setVisibilityBlocking(blocked) {
+        this._is_visibility_blocked = blocked;
     }
 
     onAdd(cb) {

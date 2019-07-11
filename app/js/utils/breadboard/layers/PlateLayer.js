@@ -199,7 +199,9 @@ export default class PlateLayer extends Layer {
         }
 
         /// выполнить основной цикл
+        console.log(typeof(plates));
         for (let plate of plates) {
+            console.log(plate);
             /// если плашки нет, пропустить итерацию
             if (!plate) continue;
 
@@ -355,16 +357,14 @@ export default class PlateLayer extends Layer {
      * @private
      */
     _setCurrentPlatesEditable(editable=false) {
-        if (editable === this._editable) {
-            return true;
-        }
-
         if (editable === false) {
             if (this._plate_selected) {
                 this._plate_selected.deselect(); // снять выделение
             }
+
             this._plate_selected = null;     // удалить ссылку на выделенный элемент
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
+
             document.removeEventListener('click', this._onClick(), false);
             document.removeEventListener('keydown', this._onKey(), false);
             document.removeEventListener('contextmenu', this._onContextMenu(), false);
@@ -374,6 +374,7 @@ export default class PlateLayer extends Layer {
 
                 /// скрыть на плашке группу, отвечающую за информацию в состоянии редактируемости
                 plate.showGroupEditable(false);
+                plate.setEditable();
             }
 
             return true;

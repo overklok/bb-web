@@ -81,9 +81,11 @@ export default class GUIModule extends Module {
         this._setMenuStructure();
 
         if (this._options.devMode) {
-            this.switchDeveloperMode(true);
+            //this.switchDeveloperMode(true);
+            this.clickDeveloperMenuBarItem(true);
         } else {
-            this.switchDeveloperMode(false);
+            //this.switchDeveloperMode(false);
+            this.clickDeveloperMenuBarItem(false);
         }
 
         if (this._options.testMode) {
@@ -440,7 +442,11 @@ export default class GUIModule extends Module {
     }
 
     switchDeveloperMode(on) {
-        this._lesson_pane.switchTask(on);
+        this._lesson_pane.switchDevMode(on);
+    }
+
+    clickDeveloperMenuBarItem(on) {
+        this._lesson_pane.clickMenuBarItem({item_name: "developer", on});
     }
 
     switchTestMode(on) {

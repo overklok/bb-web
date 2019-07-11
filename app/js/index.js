@@ -55,7 +55,7 @@ class Application {
                 anyKey: config.anyKey,
                 logoText: config.logoText,
                 imagesPath: config.imagesPath,
-                devMode: config.showDebugInfo,
+                devMode: config.isAdmin,
                 testMode: config.testMode,
                 emphasize: config.isStrip,
             },
@@ -119,6 +119,13 @@ class Application {
             'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready', 'gui:reconnect',
             'bb:change', 'bb:drag-start'
         ]);
+    }
+
+    setAdmin(isAdmin) {
+        this.isAdmin = isAdmin;
+        this.ins.setAdminMode(isAdmin);
+        this.bb.setAdminMode(isAdmin);
+        //this.bb.setAdminMode(isAdmin);
     }
 
     /**
@@ -451,14 +458,12 @@ class Application {
                     if (data.state) {
                         this.gui.switchDeveloperMode(true);
                         this.lay.revealTopPane();
-                        this.isAdmin = true;
-                        this.ins.setAdminMode(true);
+                        this.setAdmin(true);
 
                     } else {
                         this.gui.switchDeveloperMode(false);
                         this.lay.concealTopPane();
-                        this.isAdmin = false;
-                        this.ins.setAdminMode(false);
+                        this.setAdmin(false);
                     }
                     break;
                 }

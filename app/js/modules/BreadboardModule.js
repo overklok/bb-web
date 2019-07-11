@@ -31,6 +31,15 @@ export default class BreadboardModule extends Module {
         this._subscribeToWrapperEvents();
     }
 
+    setAdminMode(isAdmin) {
+        this._options.modeAdmin = isAdmin;
+        this._board.setReadOnly(!isAdmin);
+        //let plates = this.getPlates();
+        // пересоздание
+        //this.setPlates(plates);
+        // this._board.setReadOnly(!isAdmin);
+    }
+
     inject(dom_node) {
         return new Promise(resolve => {
             if (this._state.display) {

@@ -235,6 +235,36 @@ export default class PaneLesson {
         this._blocks.bars.mission.stretch();
     }
 
+    clickMenuBarItem(item_name, on) {
+        if (!this._state.included) {throw new NotIncludedError("Cannot click menu item, set structure first")}
+
+        this._blocks.bars.menu.clickItem(item_name, on);
+    }
+
+    onMissionClick(cb) {
+        this._callbacks.onmissionclick = cb;
+    }
+
+    onMenuClick(cb) {
+        this._callbacks.onmenuclick = cb;
+    }
+
+    onReturnClick(cb) {
+        this._callbacks.onreturnclick = cb;
+    }
+
+    onExerciseClick(cb) {
+        this._callbacks.onexerciseclick = cb;
+    }
+
+    onUserExerciseClick(cb) {
+        this._callbacks.onuserexerciseclick = cb;
+    }
+
+    onStatusClick(cb) {
+        this._callbacks.onstatusclick = cb;
+    }
+
     /**
      * Скомпоновать дерево контейнеров
      *
@@ -287,30 +317,6 @@ export default class PaneLesson {
                 break;
             }
         }
-    }
-
-    onMissionClick(cb) {
-        this._callbacks.onmissionclick = cb;
-    }
-
-    onMenuClick(cb) {
-        this._callbacks.onmenuclick = cb;
-    }
-
-    onReturnClick(cb) {
-        this._callbacks.onreturnclick = cb;
-    }
-
-    onExerciseClick(cb) {
-        this._callbacks.onexerciseclick = cb;
-    }
-
-    onUserExerciseClick(cb) {
-        this._callbacks.onuserexerciseclick = cb;
-    }
-
-    onStatusClick(cb) {
-        this._callbacks.onstatusclick = cb;
     }
 
     _switchMenuButton(on) {
