@@ -240,6 +240,10 @@ export default class LocalServiceModule extends Module {
         });
     }
 
+    sendPlates(plates) {
+        console.log("splates", plates);
+    }
+
     /**
      * @deprecated
      *
@@ -254,16 +258,16 @@ export default class LocalServiceModule extends Module {
         }
 
         return new Promise(resolve => {
-            this._ipc.send('vec-update', vectable);
+            // this._ipc.send('vec-update', vectable);
 
-            this._ipc.once('vec-update.result', (event, error) => {
-                if (error) {
-                   this._debug.error(error);
-                   throw error;
-                } else {
-                   resolve();
-                }
-           });
+            // this._ipc.once('vec-update.result', (event, error) => {
+            //     if (error) {
+            //        this._debug.error(error);
+            //        throw error;
+            //     } else {
+            //        resolve();
+            //     }
+           // });
         });
     }
 

@@ -30,8 +30,8 @@ export default class ResistorPlate extends Plate {
      *
      * @param {object} state новое состояние резистора
      */
-    setState(state) {
-        super.setState(state);
+    setState(state, suppress_events) {
+        super.setState(state, suppress_events);
     }
 
     /**

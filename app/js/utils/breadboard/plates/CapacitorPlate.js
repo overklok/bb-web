@@ -28,8 +28,8 @@ export default class CapacitorPlate extends Plate {
      *
      * @param {object} state новое состояние конденсатора
      */
-    setState(state) {
-        super.setState(state);
+    setState(state, suppress_events) {
+        super.setState(state, suppress_events);
     }
 
     /**

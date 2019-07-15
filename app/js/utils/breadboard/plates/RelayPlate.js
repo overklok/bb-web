@@ -27,8 +27,8 @@ export default class RelayPlate extends Plate {
      *
      * @param {object} state новое состояние реле
      */
-    setState(state) {
-        super.setState(state);
+    setState(state, suppress_events) {
+        super.setState(state, suppress_events);
     }
 
     /**

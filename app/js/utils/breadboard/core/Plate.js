@@ -117,7 +117,7 @@ export default class Plate {
         /// Событие начала перетаскивания было инициировано
         this._dragstart_activated = false;
 
-        this._ctxmenu = new PlateContextMenu(this._container, this.__grid, {id: this._id, schematic: this._params.schematic});
+        this._ctxmenu = new (this.__cm_class__())(this._container, this.__grid, {id: this._id, schematic: this._params.schematic});
         this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
 
         this.showGroupEditable(false);
@@ -165,6 +165,10 @@ export default class Plate {
      */
     get container() {
         return this._container;
+    }
+
+    __cm_class__() {
+        return PlateContextMenu;
     }
 
     /**
@@ -241,10 +245,14 @@ export default class Plate {
      *
      * @param {object} state новое состояние плашки, которое требуется отобразить
      */
-    setState(state) {
+    setState(state, suppress_events=false) {
+        let is_dirty = false;
+
         for (let state_param in this._state) {
             if (state_param in state) {
                 this._state[state_param] = state[state_param];
+
+                is_dirty = true;
             }
         }
 
@@ -252,6 +260,15 @@ export default class Plate {
             this._bezel.attr('filter', 'url(#glow-plate)');
         } else {
             this._bezel.attr('filter', null);
+        }
+
+        if (!suppress_events) {
+            if (is_dirty) {
+                this._callbacks.change({
+                    id: this._id,
+                    action: 'state'
+                });
+            }
         }
     }
 
@@ -320,7 +337,7 @@ export default class Plate {
             this._callbacks.change({
                 id: this._id,
                 action: 'move'
-            })
+            });
         }
     }
 

@@ -87,8 +87,8 @@ export default class PlateLayer extends Layer {
                 orientation:    plate._state.orientation,
                 extra:          plate._params.extra,
                 adc:            plate._state.adc,
-                cell_num:       plate._state.cell_num,
-                contr_num:      plate._state.contr_num,
+                // cell_num:       plate._state.cell_num,
+                // contr_num:      plate._state.contr_num,
                 // currents:       plate._state.currents,
                 // voltages:       plate._state.voltages,
             });
@@ -199,9 +199,9 @@ export default class PlateLayer extends Layer {
         }
 
         /// выполнить основной цикл
-        console.log(typeof(plates));
+        // console.log(typeof(plates));
         for (let plate of plates) {
-            console.log(plate);
+            // console.log(plate);
             /// если плашки нет, пропустить итерацию
             if (!plate) continue;
 
@@ -224,8 +224,8 @@ export default class PlateLayer extends Layer {
 
                 /// обновить состояние
                 this.setPlateState(id, {
-                    cell_num: plate.cell_num,
-                    contr_num: plate.contr_num,
+                    // cell_num: plate.cell_num,
+                    // contr_num: plate.contr_num,
                     adc: plate.adc,
                 });
             }
@@ -303,7 +303,7 @@ export default class PlateLayer extends Layer {
 
         let plate = this._plates[plate_id];
 
-        plate.setState(state);
+        plate.setState(state, true);
     }
 
     /**
@@ -510,7 +510,7 @@ export default class PlateLayer extends Layer {
             } else if (this._plate_selected) {
                 this._plate_selected.hideContextMenu();
             }
-        }
+        };
 
         return this._oncontextmenu;
     }
@@ -521,7 +521,7 @@ export default class PlateLayer extends Layer {
      * Если обработчик события был сгенерирован ранее, возвращается точно тот же обработчик.
      * Это можно использовать для открепления обработчика с помощью функции removeEventListener.
      *
-     * @returns {function(evt: Object)): undefined} обработчик события нажатия клавиши
+     * @returns {function} обработчик события нажатия клавиши
      *
      * @private
      */
@@ -533,38 +533,32 @@ export default class PlateLayer extends Layer {
         /// Когда нажата кнопка клавиатуры
         this._onkey = (evt) => {
             if (this._plate_selected) {
+                evt.preventDefault();
+
                 /// Если есть выделенная плашка
                 switch (evt.code) {
                     case "BracketLeft":
-                        evt.preventDefault();
                         this._plate_selected.rotateClockwise();
                         break;
                     case "BracketRight":
-                        evt.preventDefault();
                         this._plate_selected.rotateCounterClockwise();
                         break;
                     case "ArrowLeft":
-                        evt.preventDefault();
                         this._plate_selected.shift(-1, 0);
                         break;
                     case "ArrowRight":
-                        evt.preventDefault();
                         this._plate_selected.shift(1, 0);
                         break;
                     case "ArrowUp":
-                        evt.preventDefault();
                         this._plate_selected.shift(0, -1);
                         break;
                     case "ArrowDown":
-                        evt.preventDefault();
                         this._plate_selected.shift(0, 1);
                         break;
                     case "KeyD":
-                        evt.preventDefault();
                         this._duplicatePlate(this._plate_selected);
                         break;
                     case "Delete":
-                        evt.preventDefault();
                         /// Удалить её
                         this.removePlate(this._plate_selected.id);
                         this._plate_selected = null;

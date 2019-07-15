@@ -176,7 +176,7 @@ export default class ContextMenu {
                     input_node.addEventListener("change", evt => {
                         let value = evt.target.files[0];
 
-                        this._callbacks.itemclick(item_data.alias, value);
+                        this._itemClick(item_data, value);
                     });
                 }
 
@@ -185,10 +185,29 @@ export default class ContextMenu {
                 this.dispose();
 
                 if (!(input && input.type === 'file')) {
-                    this._callbacks.itemclick(item_data.alias, value);
+                    this._itemClick(item_data, value);
                 }
             }, 100);
         });
+    }
+
+    /**
+     * Вызвать обработчик события "нажат пункт конеткстного меню"
+     *
+     * @param item_data
+     * @param value
+     * @private
+     */
+    _itemClick(item_data, value) {
+        let as = item_data.as;
+
+        let alias = as && as.alias ? as.alias : item_data.alias;
+
+        if (as && as.beforeClick) {
+            value = as.beforeClick(value);
+        }
+
+        this._callbacks.itemclick(alias, value);
     }
 
     _resizeItems() {

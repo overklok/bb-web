@@ -647,10 +647,10 @@ class Application {
                 this.log.addUserAction('board', data);
             }
 
-            if (this.ls.getMode() === 'electronics') {
-                this.gs.getVectorTable(data)
-                    .then(vectable => this.ls.sendVectorTable(vectable));
-            }
+            // if (this.ls.getMode() === 'electronics') {
+            //     this.gs.getVectorTable(data)
+            //         .then(vectable => this.ls.sendVectorTable(vectable));
+            // }
         });
 
         /**
@@ -752,7 +752,7 @@ class Application {
         this._dispatcher.on('bb:change', data => {
             this.bb.clearCurrents();
 
-            console.log('bbdata', data);
+            this.ls.sendPlates(this.bb.getPlates());
         });
 
         this._dispatcher.on('bb:drag-start', () => {

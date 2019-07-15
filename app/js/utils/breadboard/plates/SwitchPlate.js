@@ -2,6 +2,7 @@ import Breadboard from "../Breadboard";
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 import {GRADIENTS} from "../styles/gradients";
+import SwitchPlateContextMenu from "../menus/plate/SwitchPlateContextMenu";
 
 export default class SwitchPlate extends Plate {
     static get Alias() {return "switch"}
@@ -17,6 +18,12 @@ export default class SwitchPlate extends Plate {
         ];
 
         this._params.origin = {x: 0, y: 0};
+
+
+    }
+
+    __cm_class__() {
+        return SwitchPlateContextMenu;
     }
 
     /**
@@ -36,8 +43,8 @@ export default class SwitchPlate extends Plate {
      *
      * @param {object} state новое состояние перемычки
      */
-    setState(state) {
-        super.setState(state);
+    setState(state, suppress_events) {
+        super.setState(state, suppress_events);
     }
 
     /**
