@@ -591,7 +591,7 @@ export default class Plate {
      * @param {function} cb обработчик события изменения плашки
      */
     onChange(cb) {
-        if (!cb) {this._callbacks.change = () => {}}
+        if (!cb) {cb = () => {}};
 
         this._callbacks.change = cb;
     }

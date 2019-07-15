@@ -134,7 +134,7 @@ export default class Breadboard {
      */
     setReadOnly(readOnly) {
         this._options.readOnly = readOnly;
-        this._setLayersReadOnly(readOnly);
+        this._setLayersReadOnly(this._options.readOnly);
         // this.redraw(this._schematic);
 
         // this._options.showControlsDefault = !readOnly;
@@ -376,11 +376,6 @@ export default class Breadboard {
         this._layers.region.compose();
         this._layers.controls.compose(Breadboard.getAllPlateTypes(), Breadboard.getAllPlateCaptions());
 
-        /// если не режим только чтения, подключить обработчик изменения состояния платы
-        if (!this._options.readOnly) {
-            this._layers.plate.onChange((data) => {this._callbacks.change(data)});
-        }
-
         /// включение / отключение режима только чтения
         this._setLayersReadOnly(this._options.readOnly);
         this._attachControlsEvents();
@@ -394,12 +389,20 @@ export default class Breadboard {
     /**
      * Задать опции платы
      *
-     * @param {boolean}
+     * @param {boolean} readOnly
      */
     _setLayersReadOnly(readOnly) {
         this._layers.plate.setEditable(!readOnly);
-        this._layers.controls.setVisibility(!readOnly);
+        this._layers.background.toggleLogoActive(!readOnly);
         this._layers.controls.setVisibilityBlocking(readOnly);
+        this._layers.controls.setVisibility(!readOnly);
+
+        /// если не режим только чтения, подключить обработчик изменения состояния платы
+        if (!readOnly) {
+            this._layers.plate.onChange((data) => {this._callbacks.change(data)});
+        } else {
+            this._layers.plate.onChange();
+        }
     }
 
     /**

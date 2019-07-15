@@ -124,8 +124,6 @@ export default class BackgroundLayer extends Layer {
             this.toggleLogoActive(!this._is_logo_clicked);
 
             this._callbacks.logoclick();
-
-            this._is_logo_clicked = !this._is_logo_clicked;
         });
     }
 
@@ -147,6 +145,8 @@ export default class BackgroundLayer extends Layer {
                 this._logo_flower.fill(LOGO_COLOR_DEFAULT);
             }
         }
+
+        this._is_logo_clicked = on;
     }
 
     _drawDeco() {

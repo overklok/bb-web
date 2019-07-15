@@ -321,7 +321,7 @@ export default class PlateLayer extends Layer {
      * @param {function} cb фукнция, вызывающаяся при изменении содержимого слоя
      */
     onChange(cb) {
-        if (!cb) {this._callbacks.change = () => {}}
+        if (!cb) {cb = () => {}}
 
         this._callbacks.change = cb;
     }
@@ -425,7 +425,7 @@ export default class PlateLayer extends Layer {
 
             /// Обрабатывать её события
             plate.setEditable(this._container.node);
-            plate.onChange((data) => this._callbacks.change(data));
+            plate.onChange(data => this._callbacks.change(data));
             plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
             plate.onDragFinish(() => this._onPlateDragFinish(plate));
             plate.onDragStart(() => {

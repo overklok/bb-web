@@ -46,14 +46,13 @@ export default class ControlsLayer extends Layer {
     }
 
     setVisibility(is_visible) {
-        if (this._is_visibility_blocked) {
-            return;
-        }
         this._is_visible = is_visible;
         is_visible ? this._show() : this._hide();
     }
 
     switchVisibility() {
+        if (this._is_visibility_blocked) {return;}
+
         this.setVisibility(!this._is_visible);
     }
 

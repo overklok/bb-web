@@ -749,9 +749,10 @@ class Application {
             this.ws.loadTree(tree);
         });
 
-        this._dispatcher.on('bb:change', () => {
+        this._dispatcher.on('bb:change', data => {
             this.bb.clearCurrents();
 
+            console.log('bbdata', data);
         });
 
         this._dispatcher.on('bb:drag-start', () => {
