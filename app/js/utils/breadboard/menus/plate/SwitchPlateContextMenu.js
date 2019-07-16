@@ -14,10 +14,13 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
 
         this._items_data.push({
             alias: SwitchPlateContextMenu.CMI_SWITCH,
-            label: 'Переключить',
+            label: () => {return this._getLabel()},
             // shortcut: 'Q',
             active: true,
-            as: {alias: PlateContextMenu.CMI_SETADC, beforeClick: this._beforeClick}
+            as: {
+                alias: PlateContextMenu.CMI_SETADC,
+                beforeClick: () => {return this._beforeClick()}
+            }
         });
 
         this._on = false;
@@ -27,5 +30,9 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
         this._on = !this._on;
 
         return this._on ? 1 : 0;
+    }
+
+    _getLabel() {
+        return this._on ? '[ВКЛ] Выключить' : '[ВЫКЛ] Включить';
     }
 }

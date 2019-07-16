@@ -115,43 +115,20 @@ export default class ContextMenu {
     }
 
     _drawItem(container, item_data, input_value=null) {
-        let rect = container.rect(0, this._item_height)
-                .fill("#e7e4ff")
-                .stroke({color: "#e7e4ff", width: 2, linejoin: "round"})
-                .x(-ITEM_TEXT_PADDING)
-                .y(this._size.y);
-
         let label = item_data.label ? item_data.label : item_data.alias;
         let shortcut = item_data.shortcut;
         let active = item_data.active;
         let input = item_data.input;
         let input_node = undefined;
 
-        let text = container.text(label).y(this._size.y).font({size: 24});
-
-        let item_length = 0;
-
-        text.build(true);
-
-        if (shortcut) {
-            text.plain(' (');
-            text.tspan(shortcut).font({style: 'italic', weight: 'bolder'});
-            text.plain(')');
+        if (typeof label === "function") {
+            label = label();
         }
 
-        rect.addClass(ContextMenu.ItemClass);
-        text.addClass(ContextMenu.ItemTextClass);
-
-        if (!active) {
-            rect.addClass(ContextMenu.ItemDisabledClass);
-            text.addClass(ContextMenu.ItemDisabledTextClass);
-        }
+        let rect = this._drawItemRect(container, active);
+        let item_length = this._drawItemText(container, label, shortcut, active);
 
         this._items.push({rect});
-
-        item_length += text.length();
-
-        text.build(false);
 
         if (input) {
             item_length += 10;
@@ -167,6 +144,50 @@ export default class ContextMenu {
         this._size.x = Math.max(this._size.x, item_length + ITEM_TEXT_PADDING * 2);
         this._size.y += this._item_height;
 
+        this._attachItemEvents(rect, item_data, input, input_node);
+    }
+
+    _drawItemRect(container, active) {
+        let rect = container.rect(0, this._item_height)
+            .fill("#e7e4ff")
+            .stroke({color: "#e7e4ff", width: 2, linejoin: "round"})
+            .x(-ITEM_TEXT_PADDING)
+            .y(this._size.y);
+
+        rect.addClass(ContextMenu.ItemClass);
+
+        if (!active) {
+            rect.addClass(ContextMenu.ItemDisabledClass);
+        }
+
+        return rect;
+    }
+
+    _drawItemText(container, label, shortcut, active) {
+        let text = container.text(label).y(this._size.y).font({size: 24});
+
+        text.build(true);
+
+        if (shortcut) {
+            text.plain(' (');
+            text.tspan(shortcut).font({style: 'italic', weight: 'bolder'});
+            text.plain(')');
+        }
+
+        text.addClass(ContextMenu.ItemTextClass);
+
+        if (!active) {
+            text.addClass(ContextMenu.ItemDisabledTextClass);
+        }
+
+        let text_length = text.length();
+
+        text.build(false);
+
+        return text_length;
+    }
+
+    _attachItemEvents(rect, item_data, input, input_node) {
         rect.mousedown(() => {
             rect.addClass('bb-cm-item-flash');
 

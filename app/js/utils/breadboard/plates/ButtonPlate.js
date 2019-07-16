@@ -1,5 +1,6 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import SwitchPlateContextMenu from "../menus/plate/SwitchPlateContextMenu";
 
 export default class ButtonPlate extends Plate {
     static get Alias() {return "button"}
@@ -8,6 +9,10 @@ export default class ButtonPlate extends Plate {
         super(container, grid, schematic, id);
 
         this._params.size = {x: 2, y: 1};
+    }
+
+    __cm_class__() {
+        return SwitchPlateContextMenu;
     }
 
     /**
