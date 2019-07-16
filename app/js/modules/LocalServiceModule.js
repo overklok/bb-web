@@ -241,7 +241,7 @@ export default class LocalServiceModule extends Module {
     }
 
     sendPlates(plates) {
-        console.log("splates", plates);
+        this._ipc.send('plates', plates);
     }
 
     /**
