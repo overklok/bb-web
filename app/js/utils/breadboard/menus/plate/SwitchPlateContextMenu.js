@@ -18,7 +18,7 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
             // shortcut: 'Q',
             active: true,
             as: {
-                alias: PlateContextMenu.CMI_SETADC,
+                alias: PlateContextMenu.CMI_INPUT,
                 beforeClick: () => {return this._beforeClick()}
             }
         });

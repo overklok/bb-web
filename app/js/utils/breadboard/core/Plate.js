@@ -92,7 +92,7 @@ export default class Plate {
             highlighted:    false,                          // подсвечена ли плашка
             currents:       undefined,
             voltages:       undefined,
-            adc:            undefined,
+            input:          undefined,
             cell_num:       undefined,
             contr_num:      undefined,
         };
@@ -678,7 +678,7 @@ export default class Plate {
 
         let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
 
-        this._ctxmenu.draw(cursor_point, true, [this._state.adc]);
+        this._ctxmenu.draw(cursor_point, true, [this._state.input]);
     }
 
     /**

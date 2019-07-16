@@ -86,7 +86,7 @@ export default class PlateLayer extends Layer {
                 length:         plate._params.size.x,
                 orientation:    plate._state.orientation,
                 extra:          plate._params.extra,
-                adc:            plate._state.adc,
+                input:            plate._state.input,
                 // cell_num:       plate._state.cell_num,
                 // contr_num:      plate._state.contr_num,
                 // currents:       plate._state.currents,
@@ -226,7 +226,7 @@ export default class PlateLayer extends Layer {
                 this.setPlateState(id, {
                     // cell_num: plate.cell_num,
                     // contr_num: plate.contr_num,
-                    adc: plate.adc,
+                    input: plate.input,
                 });
             }
         }
@@ -595,8 +595,8 @@ export default class PlateLayer extends Layer {
                 this._duplicatePlate(this._plate_selected);
                 break;
             }
-            case PlateContextMenu.CMI_SETADC: {
-                this._plate_selected.setState({adc: Number(value)});
+            case PlateContextMenu.CMI_INPUT: {
+                this._plate_selected.setState({input: Number(value)});
                 break;
             }
         }

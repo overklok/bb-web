@@ -3,7 +3,7 @@ import ContextMenu from "../core/ContextMenu"
 export default class PlateContextMenu extends ContextMenu {
     // Алиасы пунктов контекстного меню
     static get CMI_REMOVE() {return "cmi_rm"}
-    static get CMI_SETADC() {return "cmi_adc"}
+    static get CMI_INPUT()  {return "cmi_inp"}
     static get CMI_ROTCW()  {return "cmi_rcw"}
     static get CMI_ROTCCW() {return "cmi_rccw"}
     static get CMI_DUPLIC() {return "cmi_dupl"}
@@ -25,8 +25,8 @@ export default class PlateContextMenu extends ContextMenu {
                 active: true
             },
             {
-                alias: PlateContextMenu.CMI_SETADC,
-                label: 'Установить АЦП:',
+                alias: PlateContextMenu.CMI_INPUT,
+                label: 'Ввод:',
                 active: true,
                 input: {
                     type: "number",
