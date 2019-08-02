@@ -56,6 +56,10 @@ body {
 	padding: 0;
 }
 
+#east-center {
+	overflow-y: scroll !important;
+}
+
 /*
  *	PANES & CONTENT-DIVs
  */

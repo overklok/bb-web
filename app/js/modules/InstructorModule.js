@@ -247,6 +247,13 @@ export default class InstructorModule extends Module {
                 this.emitEvent("start", exercise_data);
             }
 
+            /// если переход осуществляется вручную в режиме администратора, рассматривать это
+            /// как пробуксовку
+            if (forced && this._options.isAdmin) {
+                this._state.missions[this._state.missionIDX].skidding = true;
+                this._state.missions[this._state.missionIDX].exerciseIDXSkidding = exercise_idx;
+            }
+
             /// сообщить вызывающей программе о запуске упражнения
             return Promise.resolve(exercise_data);
         } else {

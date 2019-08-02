@@ -468,8 +468,8 @@ class Application {
                     break;
                 }
                 case 'currents': {
-                    this.gs.calcCurrents()
-                        .then((currents) => this.bb.updateCurrents(currents));
+                    // this.gs.calcCurrents()
+                    //     .then((currents) => this.bb.updateCurrents(currents));
 
                     break;
                 }
