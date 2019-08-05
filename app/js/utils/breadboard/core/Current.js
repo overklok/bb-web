@@ -101,6 +101,8 @@ export default class Current {
         this._line.remove();
         this._container_anim.remove();
 
+        this._sheet.ownerNode.remove();
+
         this._visible = false;
     };
 
