@@ -54,13 +54,23 @@ export default class LinearPlate extends Plate {
             let didx = undefined;
 
             if (this._params.size.x !== 1) {
-                didx = Plate._orientXYObject({x: this.__length__ - 1, y: 0});
+                didx = Plate._orientXYObject({x: this.__length__ - 1, y: 0}, this.state.orientation);
             } else {
-                didx = Plate._orientXYObject({x: 0, y: this.__length__ - 1});
+                didx = Plate._orientXYObject({x: 0, y: this.__length__ - 1}, this.state.orientation);
             }
 
-            return this.__grid.cell(cell_main.pos.x + didx.x, cell_main.pos.y  + didx.y);
-        } else {
+            return this.__grid.cell(cell_main.idx.x + didx.x, cell_main.idx.y  + didx.y);
+        }
+
+        let didx = Plate._orientXYObject(
+            {x: this._params.size.x - 1, y: this._params.size.y - 1},
+            this.state.orientation
+        );
+
+        let cell_last =
+            this.__grid.cell(cell_main.idx.x + didx.x - 1, cell_main.idx.y + didx.y - 1);
+
+        if (cell === cell_last) {
             return cell_main;
         }
     }

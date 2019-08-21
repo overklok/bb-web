@@ -214,15 +214,39 @@ export default class CurrentLayer extends Layer {
         let c_from  = this.__grid.cell(points.from.x, points.from.y),
             c_to    = this.__grid.cell(points.to.x, points.to.y);
 
+        let path = undefined;
+
         if (show_source) {
-            if (c_from.isAt(0, 1))  return this._getTopCurrentLinePath(c_from, c_to, false);
-            if (c_to.isAt(0, 1))    return this._getTopCurrentLinePath(c_from, c_to, true);
-            if (c_from.isAt(0, -1)) return this._getBottomCurrentLinePath(c_from, c_to, false);
-            if (c_to.isAt(0, -1))   return this._getBottomCurrentLinePath(c_from, c_to, true);
+            if      (c_from.isAt(0, 1))     path = this._getTopCurrentLinePath(c_from, c_to, false);
+            else if (c_to.isAt(0, 1))       path = this._getTopCurrentLinePath(c_from, c_to, true);
+            else if (c_from.isAt(0, -1))    path = this._getBottomCurrentLinePath(c_from, c_to, false);
+            else if (c_to.isAt(0, -1))      path = this._getBottomCurrentLinePath(c_from, c_to, true);
+
+            else                            path = this._getArbitraryLinePath(c_from, c_to);
+        } else {
+            path = this._getArbitraryLinePath(c_from, c_to);
         }
 
-        return this._getArbitraryLinePath(c_from, c_to);
+        if (this.__detailed) {
+            return this._appendLinePathTail(path, c_from, c_to);
+        } else {
+            return path;
+        }
     };
+
+    _appendLinePathTail(path, c_from, c_to) {
+        if (c_from.opp) {
+            // TODO: Reverse direction is not working
+            console.log("from", c_from.idx, "to", c_from.opp.idx);
+            // path.push(['L', c_from.opp.center_adj.x, c_from.opp.center_adj.y]);
+        }
+
+        if (c_to.opp) {
+            path.push(['L', c_to.opp.center_adj.x, c_to.opp.center_adj.y]);
+        }
+
+        return path;
+    }
 
     _getArbitraryLinePath(c_from, c_to) {
         let needs_bias = this.__schematic && this.__detailed;
@@ -235,20 +259,6 @@ export default class CurrentLayer extends Layer {
                 ['L', c_to.center_adj.x, c_to.center_adj.y]
             ];
         } else {
-            console.log(c_from.track, c_to.track);
-            console.log(c_from.idx, c_from.opp.idx);
-            console.log(c_from.opp, c_to.opp);
-            // FIXME: c_to is null in all cases
-
-            if (c_from.opp) {
-                return [
-                    ['M', c_from.center_adj.x, c_from.center_adj.y],
-                    ['L', c_from.center_adj.x + bias_x, c_from.center_adj.y],
-                    ['L', c_to.center_adj.x + bias_x, c_to.center_adj.y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y]
-                ];
-            }
-
             return [
                 ['M', c_from.center_adj.x, c_from.center_adj.y],
                 ['L', c_from.center_adj.x + bias_x, c_from.center_adj.y],
