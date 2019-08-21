@@ -1,13 +1,12 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class PhotoresistorPlate extends Plate {
+export default class PhotoresistorPlate extends LinearPlate {
     static get Alias() {return "photoresistor"}
 
     constructor(container, grid, id, schematic=false) {
         super(container, grid, id, schematic);
-
-        this._params.size = {x: 2, y: 1};
     }
 
     /**

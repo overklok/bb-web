@@ -43,7 +43,7 @@ export default class Grid {
                 y: pos_y
             }
         };
-        
+
         /// Ячейки сетки
         this._cells = [];
         this._createCells();
@@ -140,10 +140,26 @@ export default class Grid {
             this._cells[i] = [];
 
             for (let j = 0; j < this.dim.y; j++) {
-                this._cells[i][j] = new Cell(i, j, this);
+                this._cells[i][j] = new Cell(i, j, this, this._getTrackOfCell(i, j));
             }
         }
     };
+
+    /**
+     * Определить дорожку, на которой установлена ячейка
+     *
+     * @param i
+     * @param j
+     * @returns {string}
+     * @private
+     */
+    _getTrackOfCell(i, j) {
+        if (j === 1)                return "h0";
+        if (j === this.dim.y-1)     return "h1";
+
+        if (j >= 2 && j <= 5) {return "vt" + i;}
+        if (j >= 6 && j <= 9) {return "vb" + i;}
+    }
 
     /**
      * @returns {number}

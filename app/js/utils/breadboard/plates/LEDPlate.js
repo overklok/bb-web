@@ -1,7 +1,8 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class LEDPlate extends Plate {
+export default class LEDPlate extends LinearPlate {
     static get Alias() {return "LED"}
 
     constructor(container, grid, id, schematic=false, colour=0) {
@@ -17,7 +18,6 @@ export default class LEDPlate extends Plate {
             console.error("Colour of LED must be one of R, G, 0, 1. Fall back to 0");
         }
 
-        this._params.size = {x: 2, y: 1};
         this._params.extra = colour;
     }
 

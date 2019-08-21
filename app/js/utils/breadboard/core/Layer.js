@@ -1,5 +1,5 @@
 export default class Layer {
-    constructor(container, grid, schematic=false) {
+    constructor(container, grid, schematic=false, detailed=false) {
         if (!container) {
             throw new TypeError("Container is not defined");
         }
@@ -13,6 +13,7 @@ export default class Layer {
         this.__grid = grid;
 
         this.__schematic = schematic;
+        this.__detailed = detailed;
     }
 
     /**
@@ -22,8 +23,9 @@ export default class Layer {
      */
     compose() {throw new TypeError("This method should be overridden by inheriting classes")}
 
-    recompose(schematic) {
+    recompose(schematic, detailed=false) {
         this.__schematic = schematic;
+        this.__detailed = detailed;
     }
 
     hide() {this._container.hide()}

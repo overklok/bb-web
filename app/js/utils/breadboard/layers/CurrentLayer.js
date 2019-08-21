@@ -10,8 +10,8 @@ const PARTICLE_SIZE_SCHEMATIC = 16;
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    constructor(container, grid, schematic=false, detailed=false) {
+        super(container, grid, schematic, detailed);
 
         this._container.addClass(CurrentLayer.Class);
 
@@ -31,8 +31,8 @@ export default class CurrentLayer extends Layer {
         this._initGroups();
     }
 
-    recompose(schematic, show_source=true) {
-        super.recompose(schematic);
+    recompose(schematic, detailed, show_source=true) {
+        super.recompose(schematic, detailed);
 
         let threads = Object.assign([], this._threads);
 
@@ -215,48 +215,94 @@ export default class CurrentLayer extends Layer {
             c_to    = this.__grid.cell(points.to.x, points.to.y);
 
         if (show_source) {
-            if (c_from.isAt(0, 1)) {
-                return [
-                    ['M', 80, 720],
-                    ['L', 80, c_from.center_adj.y],
-                    ['L', c_from.center_adj.x, c_from.center_adj.y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y]
-                ];
-            }
-
-            if (c_to.isAt(0, 1)) {
-                return [
-                    ['M', c_from.center_adj.x, c_from.center_adj.y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y],
-                    ['L', 80, c_from.center_adj.y],
-                    ['L', 80, 720]
-                ];
-            }
-
-            if (c_from.isAt(0, -1)) {
-                return [
-                    ['M', 80, 780],
-                    ['L', 80, c_from.center_adj.y],
-                    ['L', c_from.center_adj.x, c_from.center_adj.y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y]
-                ];
-            }
-
-            if (c_to.isAt(0, -1)) {
-                return [
-                    ['M', c_from.center_adj.x, c_from.center_adj.y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y],
-                    ['L', 80, c_to.center_adj.y],
-                    ['L', 80, 780]
-                ];
-            }
+            if (c_from.isAt(0, 1))  return this._getTopCurrentLinePath(c_from, c_to, false);
+            if (c_to.isAt(0, 1))    return this._getTopCurrentLinePath(c_from, c_to, true);
+            if (c_from.isAt(0, -1)) return this._getBottomCurrentLinePath(c_from, c_to, false);
+            if (c_to.isAt(0, -1))   return this._getBottomCurrentLinePath(c_from, c_to, true);
         }
 
-        return [
-            ['M', c_from.center_adj.x, c_from.center_adj.y],
-            ['L', c_to.center_adj.x, c_to.center_adj.y]
-        ];
+        return this._getArbitraryLinePath(c_from, c_to);
     };
+
+    _getArbitraryLinePath(c_from, c_to) {
+        let needs_bias = this.__schematic && this.__detailed;
+
+        let bias_x = needs_bias ? (this.__grid.cell(1, 0).pos.x - this.__grid.cell(0, 0).pos.x) / 2 : 0;
+
+        if (!needs_bias) {
+            return [
+                ['M', c_from.center_adj.x, c_from.center_adj.y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y]
+            ];
+        } else {
+            console.log(c_from.track, c_to.track);
+            console.log(c_from.idx, c_from.opp.idx);
+            console.log(c_from.opp, c_to.opp);
+            // FIXME: c_to is null in all cases
+
+            if (c_from.opp) {
+                return [
+                    ['M', c_from.center_adj.x, c_from.center_adj.y],
+                    ['L', c_from.center_adj.x + bias_x, c_from.center_adj.y],
+                    ['L', c_to.center_adj.x + bias_x, c_to.center_adj.y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y]
+                ];
+            }
+
+            return [
+                ['M', c_from.center_adj.x, c_from.center_adj.y],
+                ['L', c_from.center_adj.x + bias_x, c_from.center_adj.y],
+                ['L', c_to.center_adj.x + bias_x, c_to.center_adj.y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y]
+            ];
+        }
+    }
+
+    _getTopCurrentLinePath(c_from, c_to, reversed=false) {
+        let needs_bias = this.__schematic && this.__detailed;
+        let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
+
+        if (!reversed) {
+            return [
+                ['M', 80, 720],
+                ['L', 80, c_from.center_adj.y - bias_y],
+                ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y]
+            ];
+        } else {
+            return [
+                ['M', c_from.center_adj.x, c_from.center_adj.y],
+                ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
+                ['L', 80, c_from.center_adj.y - bias_y],
+                ['L', 80, 720]
+            ];
+        }
+    }
+
+    _getBottomCurrentLinePath(c_from, c_to, reversed=false) {
+        let needs_bias = this.__schematic && this.__detailed;
+        let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
+
+        if (!reversed) {
+            return [
+                ['M', 80, 780],
+                ['L', 80, c_from.center_adj.y + bias_y],
+                ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y]
+            ];
+        } else {
+            return [
+                ['M', c_from.center_adj.x, c_from.center_adj.y],
+                ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
+                ['L', 80, c_to.center_adj.y + bias_y],
+                ['L', 80, 780]
+            ];
+        }
+    }
 
     _getCurrentOptions() {
         return {

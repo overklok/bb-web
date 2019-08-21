@@ -11,7 +11,7 @@ export default class Cell {
     static get Directions() {return DIRECTIONS}
     static get DirectionsClockwise() {return DIRS_CW}
 
-    constructor(x, y, grid) {
+    constructor(x, y, grid, track=null) {
         if (typeof x === "undefined") {
             throw new TypeError("X is not defined");
         }
@@ -40,11 +40,13 @@ export default class Cell {
             pos: {
                 x: undefined,
                 y: undefined,
-            }
+            },
+            track: track
         };
 
         this.__grid = grid;
 
+        this.__opp = undefined;
         this.__adj = undefined;
 
         this._validate();
@@ -63,6 +65,10 @@ export default class Cell {
         return this._params.rel;
     }
 
+    get track() {
+        return this._params.track;
+    }
+
     get pos() {
         return this._params.pos;
     }
@@ -71,6 +77,10 @@ export default class Cell {
         let adj = this.__adj ? this.__adj : {x: 0, y: 0};
 
         return {x: adj.x * this.size.x, y: adj.y * this.size.y}
+    }
+
+    get opp() {
+        return this.__opp;
     }
 
     get center() {
@@ -95,7 +105,7 @@ export default class Cell {
     }
 
     get occupied() {
-        return (this.__adj != null);
+        return (this.__adj != null || this.__opp != null);
     }
 
     isAt(x=null, y=null) {
@@ -136,12 +146,11 @@ export default class Cell {
         } catch (err) {
             return null;
         }
-
-        return null;
     }
 
-    reoccupy(adjustment=null) {
+    reoccupy(adjustment=null, opp=null) {
         this.__adj = adjustment;
+        this.__opp = opp;
     }
 
     _calculate() {

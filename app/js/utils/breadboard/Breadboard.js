@@ -68,6 +68,7 @@ export default class Breadboard {
         this._filters_defined = false;
 
         this._schematic = false;
+        this._detailed = false;
     }
 
     getContainer() {
@@ -151,10 +152,10 @@ export default class Breadboard {
         this._layers = {};
     }
 
-    redraw(schematic) {
+    redraw(schematic, detailed) {
         this._layers.background.recompose(schematic);
         this._layers.plate.recompose(schematic);
-        this._layers.current.recompose(schematic);
+        this._layers.current.recompose(schematic, detailed);
         this._layers.controls.recompose(schematic);
     }
 
@@ -268,12 +269,13 @@ export default class Breadboard {
         this._callbacks.dragstart = cb;
     }
 
-    switchSchematic(on) {
-        if (this._schematic === on) return;
+    switchSchematic(on, detailed) {
+        if (this._schematic === on && this._detailed === detailed) return;
 
         this._schematic = on;
+        this._detailed = detailed;
 
-        this.redraw(on);
+        this.redraw(this._schematic, this._detailed);
     }
 
     switchSpareFilters(on) {
@@ -363,7 +365,7 @@ export default class Breadboard {
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid, false);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
-        this._layers.current    = new CurrentLayer(current, this.__grid, false);
+        this._layers.current    = new CurrentLayer(current, this.__grid, this._schematic, this._detailed);
         this._layers.plate      = new PlateLayer(plate, this.__grid, false);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);

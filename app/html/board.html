@@ -25,44 +25,32 @@
         app.run();
 
         app.bb.switchSpareFilters(true);
-        // app.bb.switchSchematic(true);
+        app.bb.switchSchematic(true, true);
 
         let weight = 1;
 
         $(document).ready(() => {
             app.setData(
                 [
-                    {"id":249224,"type":"rheostat", "x":3,"y":5,"length":2,"orientation":"west","extra":2},
-
-                    // {"id":109268,"type":"LED","x":5,"y":0,"length":2,"orientation":"west","extra":0},{"id":208310,"type":"switch","x":2,"y":3,"length":3,"orientation":"west","extra":0},{"id":904583,"type":"relay","x":3,"y":3,"length":5,"orientation":"west","extra":0},{"id":997906,"type":"transistor","x":0,"y":0,"length":3,"orientation":"west","extra":0}
-
-                    // {"id":208310,"type":"switch",   "x":2,"y":3,"length":3,"orientation":"west","extra":0},
-
-                    // old:
-
-                    // {"id":149224,"type":"bridge",       "x":9,"y":9,"length":2,"orientation":"north","extra":2},
-
-                    // {"id":308389,"type":"transistor",   "x":8,"y":4,"length":3,"orientation":"east","extra":0},
-                    // {"id":308388,"type":"transistor",   "x":6,"y":8,"length":3,"orientation":"west","extra":0},
-                    //
-                    // {"id":308310,"type":"transistor",   "x":2,"y":3,"length":3,"orientation":"north","extra":0},
-                    // {"id":308311,"type":"transistor",   "x":2,"y":8,"length":3,"orientation":"south","extra":0},
-
-                    // {"id":507067,"type":"resistor",     "x":1,"y":4,"length":2,"orientation":"east","extra":200},
-                    // {"id":596938,"type":"bridge",       "x":5,"y":1,"length":2,"orientation":"north","extra":2},
-                    // {"id":725142,"type":"bridge",       "x":5,"y":5,"length":2,"orientation":"west","extra":2},
-                    // {"id":800942,"type":"bridge",       "x":9,"y":5,"length":2,"orientation":"north","extra":2},
-                    // {"id":926229,"type":"bridge",       "x":8,"y":3,"length":2,"orientation":"west","extra":2}
+                    {"id":163716,"type":"LED","x":3,"y":5,"length":2,"orientation":"north","extra":0},
+                    {"id":302987,"type":"LED","x":3,"y":1,"length":2,"orientation":"north","extra":0},
+                    {"id":387516,"type":"bridge","x":3,"y":9,"length":2,"orientation":"north","extra":2},
+                    {"id":742643,"type":"LED","x":3,"y":3,"length":2,"orientation":"north","extra":0}
                 ],
                 {threads: [
-                    // {from: {x: 0, y: 1},    to: {x: 7, y: 1},   weight: weight},
-                    {from: {x: 7, y: 1},    to: {x: 0, y: 1},   weight: weight},
+                    {from: {x: 0, y: 1},    to: {x: 3, y: 1},   weight: weight},
 
-                    {from: {x: 0, y: 3},    to: {x: 7, y: 3},   weight: 1},
-                    {from: {x: 0, y: 5},    to: {x: 7, y: 5},   weight: 0},
+                    {from: {x: 3, y: 2},    to: {x: 3, y: 5},   weight: weight},
+                    {from: {x: 3, y: 6},    to: {x: 3, y: 9},   weight: weight},
+
+                    {from: {x: 3, y: 10},    to: {x: 0, y: 10},   weight: weight},
+                    // {from: {x: 7, y: 1},    to: {x: 0, y: 1},   weight: weight},
+
+                    // {from: {x: 0, y: 3},    to: {x: 7, y: 3},   weight: 1},
+                    // {from: {x: 0, y: 5},    to: {x: 7, y: 5},   weight: 0},
 
                     // {from: {x: 0, y: 10}, to: {x: 4, y: 10},    weight: weight},
-                    {from: {x: 4, y: 10}, to: {x: 0, y: 10},    weight: weight},
+                    // {from: {x: 4, y: 10}, to: {x: 0, y: 10},    weight: weight},
 
                     // {from: {x: 3, y: 3},    to: {x: 3, y: 1},      weight: weight},
 

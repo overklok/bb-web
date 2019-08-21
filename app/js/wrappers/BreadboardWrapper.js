@@ -90,8 +90,8 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.switchSpareFilters(on);
     }
 
-    switchSchematic(on) {
-        this._plugin.switchSchematic(on);
+    switchSchematic(on, detailed=false) {
+        this._plugin.switchSchematic(on, detailed);
     }
 
     onChange(cb) {

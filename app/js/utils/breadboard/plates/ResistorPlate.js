@@ -1,15 +1,14 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class ResistorPlate extends Plate {
+export default class ResistorPlate extends LinearPlate {
     static get Alias() {return "resistor"}
 
     constructor(container, grid, schematic=false, id, resistance) {
         super(container, grid, schematic, id, resistance);
 
         this._params.extra = (resistance <= 0) ? 200 : resistance;
-
-        this._params.size = {x: 2, y: 1};
     }
 
     /**

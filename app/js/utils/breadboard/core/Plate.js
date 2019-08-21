@@ -31,6 +31,9 @@ const REGISTRY = {
 
 /**
  * Класс плашки доски
+ *
+ * @class
+ * @abstract
  */
 export default class Plate {
     // Ориентации плашки
@@ -179,7 +182,21 @@ export default class Plate {
      * @private
      */
     __draw__() {
-        // stub
+        throw new Error("Method should be implemented");
+    }
+
+    /**
+     * Выдать "противоположную" ячейку
+     *
+     * Если cell - вход элемента, то, что выдаёт функция - выход элемента
+     *
+     * @param cell
+     *
+     * @abstract
+     * @private
+     */
+    __getOppositeCell__(cell) {
+        throw new Error("Method should be implemented");
     }
 
     /**
@@ -482,6 +499,10 @@ export default class Plate {
         // }, 100);
 
         this._afterReposition();
+    }
+
+    getOppositeCell(cell) {
+        return this.__getOppositeCell__(cell);
     }
 
     /**
@@ -1010,7 +1031,10 @@ export default class Plate {
             // сообщить ячейке полученную корректировку
             try {
                 let cell = this.__grid.cell(abs.x + rel.x + adj_pos.x, abs.y + rel.y + adj_pos.y);
-                cell.reoccupy(adj_cur);
+
+                let opposite = clear ? null : this.getOppositeCell(cell);
+
+                cell.reoccupy(adj_cur, opposite);
             } catch (e) {
                 console.debug("Tried to get a non-existent cell (in purpose to reoccupy)",
                     abs.x + rel.x, abs.y + rel.y

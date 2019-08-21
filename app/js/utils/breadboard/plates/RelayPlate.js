@@ -1,13 +1,16 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class RelayPlate extends Plate {
+export default class RelayPlate extends LinearPlate {
     static get Alias() {return "relay"}
 
     constructor(container, grid, schematic=false, id) {
         super(container, grid, schematic, id);
+    }
 
-        this._params.size = {x: 5, y: 1};
+    get __length__() {
+        return 5;
     }
 
     /**

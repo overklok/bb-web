@@ -1,7 +1,8 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class BridgePlate extends Plate {
+export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}
 
     constructor(container, grid, schematic=false, id, length=2) {
@@ -11,7 +12,10 @@ export default class BridgePlate extends Plate {
         length = Number.isInteger(length) ? length : 2;
 
         this._params.extra = (length < 2) ? 2 : length;
-        this._params.size = {x: this._params.extra, y: 1};
+    }
+
+    get __length__() {
+        return this._params.extra;
     }
 
     /**

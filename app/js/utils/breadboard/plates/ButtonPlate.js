@@ -1,14 +1,13 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 import SwitchPlateContextMenu from "../menus/plate/SwitchPlateContextMenu";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class ButtonPlate extends Plate {
+export default class ButtonPlate extends LinearPlate {
     static get Alias() {return "button"}
 
     constructor(container, grid, schematic=false, id) {
         super(container, grid, schematic, id);
-
-        this._params.size = {x: 2, y: 1};
     }
 
     __cm_class__() {

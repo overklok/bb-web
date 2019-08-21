@@ -1,13 +1,13 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class InductorPlate extends Plate {
+export default class InductorPlate extends LinearPlate {
     static get Alias() {return "inductor"}
 
     constructor(container, grid, id, schematic=false, inductance) {
         super(container, grid, id, schematic, inductance);
 
-        this._params.size = {x: 2, y: 1};
         this._params.extra = Number(inductance) || 100;
     }
 

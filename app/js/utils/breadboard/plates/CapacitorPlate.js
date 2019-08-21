@@ -1,13 +1,13 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class CapacitorPlate extends Plate {
+export default class CapacitorPlate extends LinearPlate {
     static get Alias() {return "capacitor"}
 
     constructor(container, grid, id, schematic=false, capacity) {
         super(container, grid, id, schematic, capacity);
 
-        this._params.size = {x: 2, y: 1};
         this._params.extra = Number(capacity) || 0.001;
     }
 
