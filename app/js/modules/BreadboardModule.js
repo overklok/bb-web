@@ -13,7 +13,7 @@ export default class BreadboardModule extends Module {
         return {
             modeAdmin:  false,
             schematic:  false,
-            detailed:   false, // works only with 'schematic'
+            detailed:   false,
             spare:      false,
         }
     }
@@ -60,6 +60,9 @@ export default class BreadboardModule extends Module {
                 }
 
                 if (this._state.schematic != null) {
+                    this.switchSchematic(this._state.schematic, this._state.detailed);
+                } else if (this._state.detailed === true) {
+                    this._state.schematic = true;
                     this.switchSchematic(this._state.schematic, this._state.detailed);
                 }
             }

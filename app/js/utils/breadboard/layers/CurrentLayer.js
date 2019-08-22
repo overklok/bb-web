@@ -227,11 +227,11 @@ export default class CurrentLayer extends Layer {
             path = this._getArbitraryLinePath(c_from, c_to);
         }
 
-        if (this.__schematic && this.__detailed) {
-            return this._appendLinePathTail(path, c_from, c_to);
-        } else {
-            return path;
-        }
+        // if (this.__schematic && this.__detailed) {
+        //     return this._appendLinePathTail(path, c_from, c_to);
+        // } else {
+        return path;
+        // }
     };
 
     _appendLinePathTail(path, c_from, c_to) {
@@ -252,28 +252,30 @@ export default class CurrentLayer extends Layer {
     }
 
     _getArbitraryLinePath(c_from, c_to) {
-        let needs_bias = this.__schematic && this.__detailed;
+        let needs_bias = false;
 
-        let bias_x = needs_bias ? (this.__grid.cell(1, 0).pos.x - this.__grid.cell(0, 0).pos.x) / 2 : 0;
-
-        if (!needs_bias) {
-            return [
-                ['M', c_from.center_adj.x, c_from.center_adj.y],
-                ['L', c_to.center_adj.x, c_to.center_adj.y]
-            ];
-        } else {
-            return [
-                ['M', c_from.center_adj.x, c_from.center_adj.y],
-                ['L', c_from.center_adj.x + bias_x, c_from.center_adj.y],
-                ['L', c_to.center_adj.x + bias_x, c_to.center_adj.y],
-                ['L', c_to.center_adj.x, c_to.center_adj.y]
-            ];
+        if (this.__schematic && this.__detailed) {
+            // if (c_to.opp && c_to.track === c_to.opp.track) {
+                needs_bias = true;
+            // }
         }
+
+        // let bias_x = needs_bias ? (this.__grid.cell(1, 0).pos.x - this.__grid.cell(0, 0).pos.x) / 2 : 0;
+        let bias_x = (needs_bias && c_from.idx.x === c_to.idx.x) ? 20 : 0;
+        let bias_y = (needs_bias && c_from.idx.y === c_to.idx.y) ? 20 : 0;
+
+        return [
+            ['M', c_from.center_adj.x, c_from.center_adj.y],
+            ['L', c_from.center_adj.x + bias_x, c_from.center_adj.y + bias_y],
+            ['L', c_to.center_adj.x + bias_x, c_to.center_adj.y + bias_y],
+            ['L', c_to.center_adj.x, c_to.center_adj.y]
+        ];
     }
 
     _getTopCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
+        // let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
+        let bias_y = needs_bias ? 20 : 0;
 
         if (!reversed) {
             return [
@@ -294,7 +296,8 @@ export default class CurrentLayer extends Layer {
 
     _getBottomCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
+        // let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
+        let bias_y = needs_bias ? 20 : 0;
 
         if (!reversed) {
             return [

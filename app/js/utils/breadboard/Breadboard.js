@@ -469,8 +469,14 @@ export default class Breadboard {
                 case BoardContextMenu.CMI_EXPORT:
                     this._exportPlates();
                     break;
-                case BoardContextMenu.CMI_SCHEMA:
-                    this.switchSchematic(!this._schematic);
+                case BoardContextMenu.CMI_MOD_PHOTO:
+                    this.switchSchematic(false);
+                    break;
+                case BoardContextMenu.CMI_MOD_SCHEMA:
+                    this.switchSchematic(true, false);
+                    break;
+                case BoardContextMenu.CMI_MOD_DETAIL:
+                    this.switchSchematic(true, true);
                     break;
             }
         });

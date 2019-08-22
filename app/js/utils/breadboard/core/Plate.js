@@ -219,6 +219,8 @@ export default class Plate {
 
         let surf_path = this._generateSurfacePath(Breadboard.CellRadius);
 
+        // TODO: Move surface generation to ComplexPlate and LinearPlate
+
         if (surf_path) {
             this._bezel = this._group.path(surf_path);
             this._error_highlighter = this._group.path(surf_path);

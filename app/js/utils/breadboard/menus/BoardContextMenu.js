@@ -6,7 +6,9 @@ export default class BoardContextMenu extends ContextMenu {
     static get CMI_IMPORT()     {return "cmi_imp"}
     static get CMI_SNAPSH_SVG() {return "cmi_snp_svg"}
     static get CMI_SNAPSH_PNG() {return "cmi_snp_png"}
-    static get CMI_SCHEMA()     {return "cmi_sch"}
+    static get CMI_MOD_PHOTO()  {return "cmi_mod_pht"}
+    static get CMI_MOD_SCHEMA() {return "cmi_mod_sch"}
+    static get CMI_MOD_DETAIL() {return "cmi_mod_det"}
 
     constructor(container, grid, item_height) {
         super(container, grid, item_height);
@@ -40,8 +42,18 @@ export default class BoardContextMenu extends ContextMenu {
                 }
             },
             {
-                alias: BoardContextMenu.CMI_SCHEMA,
-                label: 'Вкл./Выкл. схематический режим',
+                alias: BoardContextMenu.CMI_MOD_PHOTO,
+                label: 'Вкл. фотографический режим',
+                active: true,
+            },
+            {
+                alias: BoardContextMenu.CMI_MOD_SCHEMA,
+                label: 'Вкл. схематический режим',
+                active: true,
+            },
+            {
+                alias: BoardContextMenu.CMI_MOD_DETAIL,
+                label: 'Вкл. подробный схематический режим',
                 active: true,
             },
         ];

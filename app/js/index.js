@@ -77,6 +77,7 @@ class Application {
             bb: {
                 modeAdmin:  config.isAdmin,
                 schematic:  config.schematic,
+                detailed:   config.detailed,
                 spare:      config.boardSpare,
             },
             gs: {

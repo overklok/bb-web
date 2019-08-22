@@ -13,7 +13,7 @@ export default class LinearPlate extends Plate {
         this._params.size = {x: this.__length__, y: 1};
 
         // Относительные точки плашки (координаты в стандартной ориентации)
-        // Единица - размер ячейки (в кадом измерении)
+        // Единица - размер ячейки (в каждом измерении)
 
         this._params.rels = [];
 

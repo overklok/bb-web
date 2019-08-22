@@ -12,6 +12,17 @@ export default class BridgePlate extends LinearPlate {
         length = Number.isInteger(length) ? length : 2;
 
         this._params.extra = (length < 2) ? 2 : length;
+
+        this._params.size = {x: this.__length__, y: 1};
+
+        // Относительные точки плашки (координаты в стандартной ориентации)
+        // Единица - размер ячейки (в каждом измерении)
+
+        this._params.rels = [];
+
+        for (let i = 0; i < this.__length__; i++) {
+            this._params.rels.push({x: i, y: 0, adj: {x: 0, y: 0}});
+        }
     }
 
     get __length__() {
