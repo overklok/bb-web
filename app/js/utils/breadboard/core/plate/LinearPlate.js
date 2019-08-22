@@ -68,7 +68,7 @@ export default class LinearPlate extends Plate {
         );
 
         let cell_last =
-            this.__grid.cell(cell_main.idx.x + didx.x - 1, cell_main.idx.y + didx.y - 1);
+            this.__grid.cell(cell_main.idx.x + didx.x, cell_main.idx.y + didx.y);
 
         if (cell === cell_last) {
             return cell_main;

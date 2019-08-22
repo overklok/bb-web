@@ -227,7 +227,7 @@ export default class CurrentLayer extends Layer {
             path = this._getArbitraryLinePath(c_from, c_to);
         }
 
-        if (this.__detailed) {
+        if (this.__schematic && this.__detailed) {
             return this._appendLinePathTail(path, c_from, c_to);
         } else {
             return path;
@@ -235,14 +235,17 @@ export default class CurrentLayer extends Layer {
     };
 
     _appendLinePathTail(path, c_from, c_to) {
-        if (c_from.opp) {
-            // TODO: Reverse direction is not working
-            console.log("from", c_from.idx, "to", c_from.opp.idx);
-            // path.push(['L', c_from.opp.center_adj.x, c_from.opp.center_adj.y]);
-        }
+        // if (!c_from.opp && !c_to.opp) {
+        //     console.log("this path", path);
+        // }
 
         if (c_to.opp) {
             path.push(['L', c_to.opp.center_adj.x, c_to.opp.center_adj.y]);
+        } else if (c_from.opp && !c_to.isAt(0,-1) && !c_to.isAt(0,1)) {
+            // When current directed to POWER SOURCE (which is at (0,-1) and (0,1)),
+            // it means that the last point of the PATH indicates to the source,
+            // and pushing a line to the path leads to unexpected artifact.
+            path.push(['L', c_from.opp.center_adj.x, c_from.opp.center_adj.y]);
         }
 
         return path;
@@ -276,7 +279,6 @@ export default class CurrentLayer extends Layer {
             return [
                 ['M', 80, 720],
                 ['L', 80, c_from.center_adj.y - bias_y],
-                ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
                 ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
                 ['L', c_to.center_adj.x, c_to.center_adj.y]
             ];
@@ -284,7 +286,6 @@ export default class CurrentLayer extends Layer {
             return [
                 ['M', c_from.center_adj.x, c_from.center_adj.y],
                 ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
-                ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
                 ['L', 80, c_from.center_adj.y - bias_y],
                 ['L', 80, 720]
             ];
@@ -299,7 +300,6 @@ export default class CurrentLayer extends Layer {
             return [
                 ['M', 80, 780],
                 ['L', 80, c_from.center_adj.y + bias_y],
-                ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
                 ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
                 ['L', c_to.center_adj.x, c_to.center_adj.y]
             ];
@@ -307,7 +307,6 @@ export default class CurrentLayer extends Layer {
             return [
                 ['M', c_from.center_adj.x, c_from.center_adj.y],
                 ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
-                ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
                 ['L', 80, c_to.center_adj.y + bias_y],
                 ['L', 80, 780]
             ];
