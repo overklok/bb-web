@@ -227,40 +227,16 @@ export default class CurrentLayer extends Layer {
             path = this._getArbitraryLinePath(c_from, c_to);
         }
 
-        // if (this.__schematic && this.__detailed) {
-        //     return this._appendLinePathTail(path, c_from, c_to);
-        // } else {
         return path;
-        // }
     };
-
-    _appendLinePathTail(path, c_from, c_to) {
-        // if (!c_from.opp && !c_to.opp) {
-        //     console.log("this path", path);
-        // }
-
-        if (c_to.opp) {
-            path.push(['L', c_to.opp.center_adj.x, c_to.opp.center_adj.y]);
-        } else if (c_from.opp && !c_to.isAt(0,-1) && !c_to.isAt(0,1)) {
-            // When current directed to POWER SOURCE (which is at (0,-1) and (0,1)),
-            // it means that the last point of the PATH indicates to the source,
-            // and pushing a line to the path leads to unexpected artifact.
-            path.push(['L', c_from.opp.center_adj.x, c_from.opp.center_adj.y]);
-        }
-
-        return path;
-    }
 
     _getArbitraryLinePath(c_from, c_to) {
         let needs_bias = false;
 
         if (this.__schematic && this.__detailed) {
-            // if (c_to.opp && c_to.track === c_to.opp.track) {
-                needs_bias = true;
-            // }
+            needs_bias = true;
         }
 
-        // let bias_x = needs_bias ? (this.__grid.cell(1, 0).pos.x - this.__grid.cell(0, 0).pos.x) / 2 : 0;
         let bias_x = (needs_bias && c_from.idx.x === c_to.idx.x) ? 20 : 0;
         let bias_y = (needs_bias && c_from.idx.y === c_to.idx.y) ? 20 : 0;
 
@@ -274,7 +250,6 @@ export default class CurrentLayer extends Layer {
 
     _getTopCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
-        // let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
         let bias_y = needs_bias ? 20 : 0;
 
         if (!reversed) {
@@ -296,7 +271,6 @@ export default class CurrentLayer extends Layer {
 
     _getBottomCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
-        // let bias_y = needs_bias ? (this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y) / 2 : 0;
         let bias_y = needs_bias ? 20 : 0;
 
         if (!reversed) {
