@@ -120,8 +120,6 @@ class Application {
             'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready', 'gui:reconnect',
             'bb:change', 'bb:drag-start'
         ]);
-
-        console.log("autodeploy test 4");
     }
 
     setAdmin(isAdmin) {
