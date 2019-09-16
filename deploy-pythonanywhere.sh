@@ -1,5 +1,4 @@
 #!/bin/bash
-touch itworks.txt
 
 source /home/overklok/.bashrc
 
@@ -9,11 +8,11 @@ git pull
 npm run build
 
 # For PythonAnywhere servers
-cp ./dist/index.js ../srv-main/frontend/static/frontend/app/js/
-cp ./dist/admin_blockly.js ../srv-main/coursesvc/static/admin/vendor/admin-blockly/js/
-cp ./dist/admin_board.js ../srv-main/coursesvc/static/admin/vendor/admin-board/js/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/index.js /home/overklok/tapanda/ch-board/srv-main/frontend/static/frontend/app/js/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-blockly/js/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-board/js/
 
-cd ../srv-main
+cd /home/overklok/tapanda/ch-board
 workon ch-board-srv-main
 
 python ./manage.py collectstatic --no-input
