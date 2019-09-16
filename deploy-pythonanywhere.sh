@@ -14,10 +14,9 @@ cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/c
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-blockly/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-board/js/
 
-cd /home/overklok/tapanda/ch-board
 workon ch-board-srv-main
 
-python ./manage.py collectstatic --no-input
+python /home/overklok/tapanda/ch-board/srv-main/manage.py collectstatic --no-input
 touch /var/www/board_tapanda_ru_wsgi.py
 
 deactivate
