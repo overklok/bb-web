@@ -4,6 +4,8 @@ source /home/overklok/.bashrc
 
 GIT_WORK_TREE=/home/overklok/tapanda/ch-board/jsapp git checkout -f
 
+cd /home/overklok/tapanda/ch-board/jsapp
+
 npm install
 npm run build
 
