@@ -1,4 +1,6 @@
 #!/bin/bash
+touch itworks.txt
+
 source ~/.bashrc
 
 git checkout -f
