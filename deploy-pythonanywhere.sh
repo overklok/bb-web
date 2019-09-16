@@ -4,6 +4,7 @@ source /home/overklok/.bashrc
 
 GIT_WORK_TREE=/home/overklok/tapanda/ch-board/jsapp git checkout -f
 
+npm install
 npm run build
 
 # For PythonAnywhere servers
