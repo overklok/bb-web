@@ -41,16 +41,12 @@ deactivate
 workon ch-board-srv-alpha1
 python /home/overklok/tapanda/ch-board/srv-alpha1/manage.py collectstatic --no-input
 touch /var/www/alpha1_tapanda_ru_wsgi.py
-deactivate
 
 # srv-alpha2
-workon ch-board-srv-alpha2
 python /home/overklok/tapanda/ch-board/srv-alpha2/manage.py collectstatic --no-input
 touch /var/www/alpha2_tapanda_ru_wsgi.py
-deactivate
 
 # srv-alpha3
-workon ch-board-srv-alpha3
 python /home/overklok/tapanda/ch-board/srv-alpha3/manage.py collectstatic --no-input
 touch /var/www/alpha3_tapanda_ru_wsgi.py
 deactivate
