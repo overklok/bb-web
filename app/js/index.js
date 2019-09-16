@@ -121,7 +121,7 @@ class Application {
             'bb:change', 'bb:drag-start'
         ]);
 
-        console.log("autodeploy test");
+        console.log("autodeploy test 2");
     }
 
     setAdmin(isAdmin) {
