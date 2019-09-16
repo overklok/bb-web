@@ -2,8 +2,7 @@
 
 source /home/overklok/.bashrc
 
-git checkout -f
-git pull
+GIT_WORK_TREE=/home/overklok/tapanda/ch-board/jsapp git checkout -f
 
 npm run build
 
