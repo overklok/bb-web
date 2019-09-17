@@ -153,7 +153,7 @@ export default class Breadboard {
     }
 
     redraw(schematic, detailed) {
-        this._layers.background.recompose(schematic);
+        this._layers.background.recompose(schematic, detailed);
         this._layers.plate.recompose(schematic);
         this._layers.current.recompose(schematic, detailed);
         this._layers.controls.recompose(schematic);
@@ -363,7 +363,7 @@ export default class Breadboard {
         let controls    = this._brush.nested(); // органы управления
 
         /// инициализация слоёв
-        this._layers.background = new BackgroundLayer(background, this.__grid, false);
+        this._layers.background = new BackgroundLayer(background, this.__grid, this._schematic, this._detailed);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
         this._layers.current    = new CurrentLayer(current, this.__grid, this._schematic, this._detailed);
         this._layers.plate      = new PlateLayer(plate, this.__grid, false);

@@ -104,8 +104,11 @@ export default class Grid {
 
         switch (border_type) {
             case Grid.BorderTypes.Replicate: {
-                i = (i < 0) ? i = 0 : i;    i = (i >= this._params.dim.x) ? (this._params.dim.x - 1) : i;
-                j = (j < 0) ? j = 0 : j;    j = (j >= this._params.dim.y) ? (this._params.dim.y - 1) : j;
+                i = (i < 0) ? (i % this._params.dim.x) + this._params.dim.x : (i % this._params.dim.x);
+                j = (j < 0) ? (j % this._params.dim.y) + this._params.dim.y : (j % this._params.dim.y);
+
+                // i = (i < 0) ? 0 : i;    i = (i >= this._params.dim.x) ? (this._params.dim.x - 1) : i;
+                // j = (j < 0) ? 0 : j;    j = (j >= this._params.dim.y) ? (this._params.dim.y - 1) : j;
                 break;
             }
             case Grid.BorderTypes.Reflect: {

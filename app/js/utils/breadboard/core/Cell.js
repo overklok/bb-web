@@ -176,6 +176,18 @@ export default class Cell {
         }
     }
 
+    static IsLineAt(cell_from, cell_to, x=null, y=null) {
+        if ((x !== null && y !== null) || (x === null && y === null)) {
+            throw new RangeError("Either 'x' or 'y' should be defined only");
+        }
+
+        return cell_from.isAt(x, y) && cell_to.isAt(x, y);
+    }
+
+    static IsLineHorizontal(cell_from, cell_to) {
+        return cell_from.idx.y === cell_to.idx.y;
+    }
+
     static IsDirHorizontal(dir) {
         return (dir === Cell.Directions.Up || dir === Cell.Directions.Down);
     }

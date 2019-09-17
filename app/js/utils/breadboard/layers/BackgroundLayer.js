@@ -1,6 +1,7 @@
 import Breadboard from "../Breadboard";
 import Layer from "../core/Layer";
 import Grid from "../core/Grid";
+import Cell from "../core/Cell";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
 import {logoSVG, leafSVG} from "../styles/paths";
@@ -12,8 +13,10 @@ const LOGO_COLOR_DEFAULT    = "#000000";
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    static get DomainSchematicBias() {return 20}
+
+    constructor(container, grid, schematic=false, detailed=false) {
+        super(container, grid, schematic, detailed);
 
         this._container.addClass(BackgroundLayer.Class);
 
@@ -50,8 +53,8 @@ export default class BackgroundLayer extends Layer {
         this._drawCells();
     }
 
-    recompose(schematic) {
-        super.recompose(schematic);
+    recompose(schematic, detailed) {
+        super.recompose(schematic, detailed);
 
         this._initGroups();
         this.compose();
@@ -163,13 +166,20 @@ export default class BackgroundLayer extends Layer {
             let gap_begin_y = cell2.center.y + this.__grid.gap.y * 5/3,
                 gap_end_y   = cell3.center.y - this.__grid.gap.y * 5/3;
 
+            // Top/bottom bias (detailed schematic view only)
+            let bias = 0;
+
+            if (this.__schematic && this.__detailed) {
+                bias = BackgroundLayer.DomainSchematicBias;
+            }
+
             // Voltage source line, actually
             this._decogroup.path([
-                ['M', cell1.pos.x, cell1.center.y],
+                ['M', cell1.pos.x, cell1.center.y - bias],
                 ['l', -rise, 0],
                 ['L', cell2.pos.x-rise, gap_begin_y],
                 ['M', cell3.pos.x-rise, gap_end_y],
-                ['L', cell4.pos.x-rise, cell4.center.y],
+                ['L', cell4.pos.x-rise, cell4.center.y + bias],
                 ['l', rise, 0],
             ])
                 .fill({opacity: 0})
@@ -223,8 +233,8 @@ export default class BackgroundLayer extends Layer {
 
     _drawDomains() {
         for (let col of this.__grid.cells) {
-            this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#555' : GRADIENTS.GOLD.VERT);
-            this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#555' : GRADIENTS.GOLD.VERT);
+            this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
+            this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
         }
 
         this._drawDomain(
@@ -235,8 +245,8 @@ export default class BackgroundLayer extends Layer {
         );
         this._drawDomain(
             this._domaingroup,
-            this.__grid.cell(0,10),
-            this.__grid.cell(9,10),
+            this.__grid.cell(0,-1, Grid.BorderTypes.Replicate),
+            this.__grid.cell(9,-1, Grid.BorderTypes.Replicate),
             this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
         );
     }
@@ -256,24 +266,16 @@ export default class BackgroundLayer extends Layer {
         if (this.__schematic && typeof color !== 'string') {
             console.error('String color is not supported in schematic mode');
             return;
-        };
+        }
 
         if (this.__schematic) {
             width   = width >= height ? Math.max(width, height) : 0;
             height  = width <  height ? Math.max(width, height) : 0;
 
-            container.line(0, 0, width, height)
-                .stroke({color, width: 6, linecap: 'round'})
-                .move(cell_from.center.x, cell_from.center.y)
-                .opacity(0.5)
+            this._drawDomainLine(container, cell_from, cell_to, width, height, color);
         } else {
-            container.rect(width + cell_from.size.x, height + cell_from.size.y)
-                .fill({color})
-                .stroke({color})
-                .move(cell_from.pos.x, cell_from.pos.y)
-                .radius(10);
+            this._drawDomainRect(container, cell_from, cell_to, width, height, color);
         }
-
     }
 
     // _drawContact(container, cell_from, cell_to, color="#000") {
@@ -290,15 +292,17 @@ export default class BackgroundLayer extends Layer {
 
     _drawCell(container, cell) {
         if (this.__schematic) {
-            if (cell.isAt(null, 0)) {
+            // в простом    схематическом режиме отображать точки только в 0 ряду
+            // в детальном  схематическом режиме отображать точки везде
+            if (cell.isAt(null, 0) || this.__detailed) {
                 container
-                    .circle(6, 6)
+                    .circle(10, 10)
                     .center(cell.center.x, cell.center.y)
                     .fill({color: "#555"})
             }
 
             return;
-        };
+        }
 
         // container
         //     .circle(cell.size.x)
@@ -324,5 +328,67 @@ export default class BackgroundLayer extends Layer {
             .fill({opacity: 0})
             .stroke({color: "#FFF", width: 2, opacity: 0.2})
             .move(cell.pos.x, cell.pos.y);
+    }
+
+    _drawDomainLine(container, cell_from, cell_to, len_x, len_y, color) {
+        let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
+            is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
+
+        if (this.__detailed) {
+            // дорисовать засечки
+            this._drawDomainLineNotches(container, cell_from, cell_to, color);
+        }
+
+        let bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias,
+            bias_y = !is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+
+        if (is_top) bias_y *= -1;
+
+        container.line(0, 0, len_x, len_y)
+            .stroke({color, width: 6, linecap: 'round'})
+            .move(cell_from.center.x + bias_x, cell_from.center.y + bias_y)
+            .opacity(0.5);
+    }
+
+    /**
+     * Только для детального схематического режима
+     *
+     * @param container
+     * @param cell_from
+     * @param cell_to
+     * @param color
+     * @private
+     */
+    _drawDomainLineNotches(container, cell_from, cell_to, color) {
+        let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
+            is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
+
+        let pos_from  = is_horizontal ? cell_from.idx.x : cell_from.idx.y;
+        let pos_to    = is_horizontal ? cell_to.idx.x   : cell_to.idx.y;
+
+        // swap
+        if (pos_from > pos_to) {pos_to = [pos_from, pos_from = pos_to]}
+
+        for (let pos = pos_from; pos <= pos_to; pos++) {
+            let cell = is_horizontal ? this.__grid.cell(pos, cell_from.idx.y) : this.__grid.cell(cell_from.idx.x, pos);
+
+            let bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+            let bias_y = !is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+
+            let corr_y = (is_top) ? -BackgroundLayer.DomainSchematicBias : 0;
+
+            container.line(0, 0, bias_x, bias_y)
+                .stroke({color, width: 6, linecap: 'round'})
+                .move(cell.center.x, cell.center.y + corr_y)
+                .opacity(0.5);
+        }
+    }
+
+    _drawDomainRect(container, cell_from, cell_to, width, height, color) {
+        container.rect(width + cell_from.size.x, height + cell_from.size.y)
+            .fill({color})
+            .stroke({color})
+            .move(cell_from.pos.x, cell_from.pos.y)
+            .radius(10);
     }
 }

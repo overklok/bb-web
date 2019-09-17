@@ -1,5 +1,7 @@
+import Cell from "../core/Cell";
 import Layer from "../core/Layer";
 import Current from "../core/Current";
+import BackgroundLayer from "../layers/BackgroundLayer";
 
 const CURRENT_WIDTH = 14;
 const CURRENT_WIDTH_SCHEMATIC = 10;
@@ -217,8 +219,8 @@ export default class CurrentLayer extends Layer {
         let path = undefined;
 
         if (show_source) {
-            if      (c_from.isAt(0, 1))     path = this._getTopCurrentLinePath(c_from, c_to, false);
-            else if (c_to.isAt(0, 1))       path = this._getTopCurrentLinePath(c_from, c_to, true);
+            if      (c_from.isAt(null, 1))  path = this._getTopCurrentLinePath(c_from, c_to, false);
+            else if (c_to.isAt(null, 1))    path = this._getTopCurrentLinePath(c_from, c_to, true);
             else if (c_from.isAt(0, -1))    path = this._getBottomCurrentLinePath(c_from, c_to, false);
             else if (c_to.isAt(0, -1))      path = this._getBottomCurrentLinePath(c_from, c_to, true);
 
@@ -237,8 +239,8 @@ export default class CurrentLayer extends Layer {
             needs_bias = true;
         }
 
-        let bias_x = (needs_bias && c_from.idx.x === c_to.idx.x) ? 20 : 0;
-        let bias_y = (needs_bias && c_from.idx.y === c_to.idx.y) ? 20 : 0;
+        let bias_x = (needs_bias && !Cell.IsLineHorizontal(c_from, c_to)) ? BackgroundLayer.DomainSchematicBias : 0;
+        let bias_y = (needs_bias &&  Cell.IsLineHorizontal(c_from, c_to)) ? BackgroundLayer.DomainSchematicBias : 0;
 
         return [
             ['M', c_from.center_adj.x, c_from.center_adj.y],
@@ -250,7 +252,7 @@ export default class CurrentLayer extends Layer {
 
     _getTopCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? 20 : 0;
+        let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
         if (!reversed) {
             return [
@@ -271,7 +273,7 @@ export default class CurrentLayer extends Layer {
 
     _getBottomCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? 20 : 0;
+        let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
         if (!reversed) {
             return [
