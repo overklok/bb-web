@@ -63,6 +63,8 @@ export default class RelayPlate extends LinearPlate {
         let rects = [];
         let paths = [];
 
+        let block = undefined;
+
         for (let i = 0; i < 5; i++) {
             let cell = this.__grid.cell(i, 0);
 
@@ -74,41 +76,55 @@ export default class RelayPlate extends LinearPlate {
             rects.push(rect);
         }
 
+        block = this._group.rect(qs*0.8, qs*1.6);
+        block.center((cells[0].center_rel.x / 2) + (cells[1].center_rel.x / 2), cells[0].center_rel.y);
+
+        block.fill({color: 'transparent'});
+        block.stroke({color: 'black', width: 2});
+
         paths[0] = this._group.polyline([
             [cells[0].center_rel.x, cells[0].center_rel.y],
-            [cells[0].center_rel.x, qs/2],
-            [cells[1].rel.x - cells[0].rel.x + qs, qs/2]
+            [cells[0].center_rel.x, cells[0].center_rel.y + qs],
+            [block.cx(), cells[0].center_rel.y + qs],
+            [block.cx(), block.y() + block.height()]
         ])
             .stroke({width: 2, color: "#000"}).fill('none');
 
         paths[1] = this._group.polyline([
-            [0, 0],
-            [0, qs/2],
-            [qs, qs/2]
+            [block.cx(), block.y()],
+            [block.cx(), cells[1].center_rel.y - qs],
+            [cells[1].center_rel.x, cells[1].center_rel.y - qs],
+            [cells[1].center_rel.x, cells[1].center_rel.y],
         ])
-            .move(rects[1].cx(), rects[1].y() + rects[1].height())
             .stroke({width: 2, color: "#000"}).fill('none');
 
-        let p2_pos = {
-            x: rects[2].x() - rects[2].width() / 2,
-            y: rects[2].y() + qs*1.2
-        };
+        let cells_32x_one_thirds = (cells[3].center_rel.x - cells[2].center_rel.x) / 3;
+        let cells_32x_two_thirds = cells_32x_one_thirds * 2;
 
-        paths[2] = this._group.path([
-            ['M', p2_pos.x, p2_pos.y],
-            ['l', qs, 0],
-            ['l', 0, -(rects[4].height() + qs*0.6)],
-            ['l', cells[3].rel.x - cells[2].rel.x - qs/2.2, 0],
+        let cells_32x_half = (cells[3].center_rel.x - cells[2].center_rel.x) / 2;
 
-            ['M', p2_pos.x, p2_pos.y + qs*0.2],
-            ['l', qs + cells[3].rel.x - cells[2].rel.x, 0],
-            ['l', 0, -qs*1.7],
-            ['l', -qs/3, -qs/3],
+        paths[2] = this._group.polyline([
+            [cells[2].center_rel.x, cells[2].center_rel.y],
 
-            ['M', p2_pos.x, p2_pos.y + qs*0.42],
-            ['l', cells[4].rel.x - cells[2].rel.x + qs, 0],
-            ['l', 0, -(rects[4].height() + qs*1.05)],
-            ['l', -(cells[4].rel.x - cells[3].rel.x) + qs/2, 0],
+            [cells[2].center_rel.x + cells_32x_one_thirds, cells[2].center_rel.y],
+            [cells[2].center_rel.x + cells_32x_two_thirds, cells[3].center_rel.y - qs/2],
+        ])
+            .stroke({width: 2, color: "#000"}).fill('none');
+
+        paths[3] = this._group.polyline([
+            [cells[3].center_rel.x, cells[3].center_rel.y],
+            [cells[3].center_rel.x, cells[3].center_rel.y + qs],
+            [cells[3].center_rel.x - cells_32x_half, cells[3].center_rel.y + qs],
+            [cells[3].center_rel.x - cells_32x_half, cells[3].center_rel.y + qs/2],
+        ])
+            .stroke({width: 2, color: "#000"}).fill('none');
+
+        paths[4] = this._group.polyline([
+            [cells[2].center_rel.x + cells_32x_half, cells[2].center_rel.y - qs/3],
+            [cells[2].center_rel.x + cells_32x_half, cells[2].center_rel.y - qs],
+
+            [cells[4].center_rel.x, cells[4].center_rel.y - qs],
+            [cells[4].center_rel.x, cells[4].center_rel.y],
         ])
             .stroke({width: 2, color: "#000"}).fill('none');
     }

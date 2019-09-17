@@ -32,23 +32,24 @@
         $(document).ready(() => {
             app.setData(
                 [
-                    {"id":63790,    "type":"bridge",    "x":1,"y":6, "length":2, "orientation":"south", "extra":2},
-                    {"id":543539,   "type":"resistor",  "x":4,"y":1, "length":2, "orientation":"north", "extra":200},
-                    {"id":601040,   "type":"resistor",  "x":4,"y":9, "length":2, "orientation":"north", "extra":200},
-                    {"id":641049,   "type":"resistor",  "x":1,"y":9, "length":2, "orientation":"north", "extra":200},
-                    {"id":656223,   "type":"bridge",    "x":1,"y":1, "length":2, "orientation":"north", "extra":2},
-                    {"id":880737,   "type":"resistor",  "x":4,"y":5, "length":2, "orientation":"north", "extra":200}
+                    {"id":63790,    "type":"relay",    "x":1,"y":6, "length":5, "orientation":"west", "extra":2},
+                    // {"id":63790,    "type":"bridge",    "x":1,"y":6, "length":2, "orientation":"south", "extra":2},
+                    // {"id":543539,   "type":"resistor",  "x":4,"y":1, "length":2, "orientation":"north", "extra":200},
+                    // {"id":601040,   "type":"resistor",  "x":4,"y":9, "length":2, "orientation":"north", "extra":200},
+                    // {"id":641049,   "type":"resistor",  "x":1,"y":9, "length":2, "orientation":"north", "extra":200},
+                    // {"id":656223,   "type":"bridge",    "x":1,"y":1, "length":2, "orientation":"north", "extra":2},
+                    // {"id":880737,   "type":"resistor",  "x":4,"y":5, "length":2, "orientation":"north", "extra":200}
                 ],
 
                 {threads: [
-                    {"from": {"x":1,"y":6},  "to":      {"x":1,"y":9},    "weight":0.99},
-                    {"from": {"x":1,"y":2},  "to":      {"x":1,"y":5},    "weight":0.99},
-                    {"from": {"x":1,"y":1},  "to":      {"x":4,"y":1},    "weight":0.33},
-                    {"from": {"x":0,"y":1},  "to":      {"x":1,"y":1},    "weight":1.32},
-                    {"from": {"x":4,"y":2},  "to":      {"x":4,"y":5},    "weight":0.33},
-                    {"from": {"x":4,"y":6},  "to":      {"x":4,"y":9},    "weight":0.33},
-                    {"to":   {"x":1,"y":10}, "from":    {"x":4,"y":10},   "weight":0.33},
-                    {"to":   {"x":0,"y":10}, "from":    {"x":1,"y":10},   "weight":1.32}
+                    // {"from": {"x":1,"y":6},  "to":      {"x":1,"y":9},    "weight":0.99},
+                    // {"from": {"x":1,"y":2},  "to":      {"x":1,"y":5},    "weight":0.99},
+                    // {"from": {"x":1,"y":1},  "to":      {"x":4,"y":1},    "weight":0.33},
+                    // {"from": {"x":0,"y":1},  "to":      {"x":1,"y":1},    "weight":1.32},
+                    // {"from": {"x":4,"y":2},  "to":      {"x":4,"y":5},    "weight":0.33},
+                    // {"from": {"x":4,"y":6},  "to":      {"x":4,"y":9},    "weight":0.33},
+                    // {"to":   {"x":1,"y":10}, "from":    {"x":4,"y":10},   "weight":0.33},
+                    // {"to":   {"x":0,"y":10}, "from":    {"x":1,"y":10},   "weight":1.32}
 
                     // {from: {x: 0, y: 10},    to: {x: 3, y: 10},   weight: weight},
                     //
