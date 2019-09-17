@@ -334,15 +334,18 @@ export default class BackgroundLayer extends Layer {
         let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
             is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
 
+        let bias_x = 0,
+            bias_y = 0;
+
         if (this.__detailed) {
             // дорисовать засечки
             this._drawDomainLineNotches(container, cell_from, cell_to, color);
-        }
 
-        let bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias,
+            bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias,
             bias_y = !is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
 
-        if (is_top) bias_y *= -1;
+            if (is_top) bias_y *= -1;
+        }
 
         container.line(0, 0, len_x, len_y)
             .stroke({color, width: 6, linecap: 'round'})

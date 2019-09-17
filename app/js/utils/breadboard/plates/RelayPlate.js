@@ -63,8 +63,6 @@ export default class RelayPlate extends LinearPlate {
         let rects = [];
         let paths = [];
 
-        let block = undefined;
-
         for (let i = 0; i < 5; i++) {
             let cell = this.__grid.cell(i, 0);
 
@@ -76,7 +74,7 @@ export default class RelayPlate extends LinearPlate {
             rects.push(rect);
         }
 
-        block = this._group.rect(qs*0.8, qs*1.6);
+        let block = this._group.rect(qs*0.8, qs*1.6);
         block.center((cells[0].center_rel.x / 2) + (cells[1].center_rel.x / 2), cells[0].center_rel.y);
 
         block.fill({color: 'transparent'});
