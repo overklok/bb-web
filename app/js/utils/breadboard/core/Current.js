@@ -16,8 +16,16 @@ import thm from '../styles/current.css';
  * @constructor
  */
 export default class Current {
-    static get ColorMin() {return "#006eff"}
-    static get ColorMax() {return "#ff0006"}
+    static get Colors() {return [
+        "#cd1800",
+        "#f65200",
+        "#ff8602",
+        "#ced601",
+        "#01c231",
+        "#00c282",
+        "#00b5c2",
+        "#006ec2",
+    ]}
     static get DurationMin() {return 1000}    // Чем больше, тем медленнее ток с минимальным весом (600)
     static get DurationMax() {return 10000}   // Чем меньше, тем быстрее ток с максимальным весом (10000)
     static get AnimationDelta() {return 200}  // Расстояние между соседними частицами, px
@@ -459,27 +467,60 @@ export default class Current {
     }
 
     static pickColorFromRange(weight) {
-        let w1 = weight,
-            w2 = 1 - w1;
+        // вес не может превышать 1
+        weight = weight > 1 ? 1 : weight;
 
-        let color_min = [
-            parseInt(Current.ColorMin.slice(1,3), 16),
-            parseInt(Current.ColorMin.slice(3,5), 16),
-            parseInt(Current.ColorMin.slice(5,7), 16)
+        // размер секции перехода цветов (secsize <= 1)
+        let secsize = 1 / Current.Colors.length;
+        // номер секции перехода цветов (section <= кол-во цветов)
+        let section = Math.ceil(weight / secsize);
+        section = section > 0 ? section -1 : 0;
+
+        // вес в рамках секции (0 <= subweight <= 1)
+        let subweight = weight - secsize * section;
+
+        let color_min = undefined,
+            color_max = undefined;
+
+        switch (Current.Colors.length) {
+            case 0: {
+                color_min = color_max = "#000000";
+                break;
+            }
+            case 1: {
+                color_min = color_max = Current.Colors[0];
+                break;
+            }
+            default: {
+                if (section === Current.Colors.length - 1) {
+                    color_min = Current.Colors[section-1];
+                    color_max = Current.Colors[section];
+                } else {
+                    color_min = Current.Colors[section];
+                    color_max = Current.Colors[section+1];
+                }
+            }
+        }
+
+        color_min = this.convertHexToRGB(color_min);
+        color_max = this.convertHexToRGB(color_max);
+
+        // FIXME: Color jumping
+
+        let rgb = this.pickHex(color_max, color_min, subweight);
+
+        return this.convertRGBToHex(rgb);
+    }
+
+    static convertHexToRGB(hex) {
+        return [
+            parseInt(hex.slice(1,3), 16),
+            parseInt(hex.slice(3,5), 16),
+            parseInt(hex.slice(5,7), 16)
         ];
+    }
 
-        let color_max = [
-            parseInt(Current.ColorMax.slice(1,3), 16),
-            parseInt(Current.ColorMax.slice(3,5), 16),
-            parseInt(Current.ColorMax.slice(5,7), 16)
-        ];
-
-        let rgb = [
-            Math.round(color_max[0] * w2 + color_min[0] * w1),
-            Math.round(color_max[1] * w2 + color_min[1] * w1),
-            Math.round(color_max[2] * w2 + color_min[2] * w1),
-        ];
-
+    static convertRGBToHex(rgb) {
         let rs = Number(rgb[0]).toString(16),
             gs = Number(rgb[1]).toString(16),
             bs = Number(rgb[2]).toString(16);
@@ -489,5 +530,16 @@ export default class Current {
         if (bs.length === 1) bs = "0" + bs;
 
         return '#' + rs + gs + bs;
+    }
+
+    static pickHex(color1, color2, weight) {
+        let w1 = weight,
+            w2 = 1 - w1;
+
+        return [
+            Math.round(color1[0] * w1 + color2[0] * w2),
+            Math.round(color1[1] * w1 + color2[1] * w2),
+            Math.round(color1[2] * w1 + color2[2] * w2)
+        ];
     }
 }
