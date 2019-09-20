@@ -366,7 +366,7 @@ export default class Breadboard {
         this._layers.background = new BackgroundLayer(background, this.__grid, this._schematic, this._detailed);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
         this._layers.current    = new CurrentLayer(current, this.__grid, this._schematic, this._detailed);
-        this._layers.plate      = new PlateLayer(plate, this.__grid, false);
+        this._layers.plate      = new PlateLayer(plate, this.__grid, this._schematic);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
 
