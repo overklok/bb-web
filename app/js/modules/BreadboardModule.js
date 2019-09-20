@@ -55,7 +55,9 @@ export default class BreadboardModule extends Module {
 
                 this._state.display = true;
 
-                if (this._state.spare !== null) {
+                console.log("INJ SPAR", this._state.spare);
+
+                if (this._state.spare != null) {
                     this.switchSpareFilters(this._state.spare);
                 }
 
@@ -77,7 +79,7 @@ export default class BreadboardModule extends Module {
         this._board.eject();
 
         this._state.display = false;
-        this._state.spare = false;
+        // this._state.spare = false;
     }
 
     highlightErrorPlates(plate_ids) {
@@ -159,8 +161,9 @@ export default class BreadboardModule extends Module {
     }
 
     switchSpareFilters(on) {
+        this._state.spare = on;
+
         if (!this._state.display) {
-            this._state.spare = on;
             return false
         }
 
