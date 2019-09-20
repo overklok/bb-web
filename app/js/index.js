@@ -575,11 +575,11 @@ class Application {
                 this.gui.emphasize(data.is_socket);
             }
 
-            if (data && data.dev_type === 3) {
-                this.bb.switchSpareFilters(true);
-            } else {
-                this.bb.switchSpareFilters(false);
-            }
+            // if (data && data.dev_type === 3) {
+            //     this.bb.switchSpareFilters(true);
+            // } else {
+            //     this.bb.switchSpareFilters(false);
+            // }
 
             /// Запросить ссылки для прошивки
             // this.gs.getUpgradeURLs()
