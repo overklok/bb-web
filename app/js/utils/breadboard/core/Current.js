@@ -17,14 +17,16 @@ import thm from '../styles/current.css';
  */
 export default class Current {
     static get Colors() {return [
-        "#cd1800",
-        "#f65200",
-        "#ff8602",
-        "#ced601",
-        "#01c231",
-        "#00c282",
-        "#00b5c2",
-        "#006ec2",
+        "#006eff",
+        "#ff0006"
+        // "#cd1800",
+        // "#f65200",
+        // "#ff8602",
+        // "#ced601",
+        // "#01c231",
+        // "#00c282",
+        // "#00b5c2",
+        // "#006ec2",
     ]}
     static get DurationMin() {return 1000}    // Чем больше, тем медленнее ток с минимальным весом (600)
     static get DurationMax() {return 10000}   // Чем меньше, тем быстрее ток с максимальным весом (10000)
@@ -202,6 +204,8 @@ export default class Current {
      */
     setWeight(weight=0) {
         weight = weight > 1 ? 1 : weight;
+
+        // weight = Math.log(weight);
 
         if (this._weight !== weight) {
             // задать скорость

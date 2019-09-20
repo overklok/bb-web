@@ -281,8 +281,6 @@ export default class Breadboard {
     switchSpareFilters(on) {
         this._spare = on;
 
-        console.trace("SPAR", on);
-
         if (!this._filters_defined) {return}
 
         // Фильтры должны храниться в этом узле

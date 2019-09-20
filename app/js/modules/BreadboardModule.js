@@ -55,8 +55,6 @@ export default class BreadboardModule extends Module {
 
                 this._state.display = true;
 
-                console.log("INJ SPAR", this._state.spare);
-
                 if (this._state.spare != null) {
                     this.switchSpareFilters(this._state.spare);
                 }
