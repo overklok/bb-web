@@ -450,6 +450,7 @@ export default class LocalServiceModule extends Module {
         });
 
         this._ipc.on('var_change', (evt, data) => {
+            console.log("VARCH", data);
             this.emitEvent('variable', data);
         });
 

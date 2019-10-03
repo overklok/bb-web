@@ -221,10 +221,10 @@ export default class CurrentLayer extends Layer {
         if (show_source) {
             if      (c_from.isAt(null, 1))  path = this._getTopCurrentLinePath(c_from, c_to, false);
             else if (c_to.isAt(null, 1))    path = this._getTopCurrentLinePath(c_from, c_to, true);
-            else if (c_from.isAt(0, -1))    path = this._getBottomCurrentLinePath(c_from, c_to, false);
             else if (c_to.isAt(0, -1))      path = this._getBottomCurrentLinePath(c_from, c_to, true);
+            else if (c_from.isAt(0, -1))    path = this._getBottomCurrentLinePath(c_from, c_to, false);
 
-            else                            path = this._getArbitraryLinePath(c_from, c_to);
+            else path = this._getArbitraryLinePath(c_from, c_to);
         } else {
             path = this._getArbitraryLinePath(c_from, c_to);
         }
@@ -258,6 +258,8 @@ export default class CurrentLayer extends Layer {
             return [
                 ['M', 80, 720],
                 ['L', 80, c_from.center_adj.y - bias_y],
+                ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+
                 ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
                 ['L', c_to.center_adj.x, c_to.center_adj.y]
             ];
@@ -265,6 +267,7 @@ export default class CurrentLayer extends Layer {
             return [
                 ['M', c_from.center_adj.x, c_from.center_adj.y],
                 ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+
                 ['L', 80, c_from.center_adj.y - bias_y],
                 ['L', 80, 720]
             ];
