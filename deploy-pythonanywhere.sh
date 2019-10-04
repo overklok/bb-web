@@ -11,6 +11,11 @@ npm run build
 
 # For PythonAnywhere servers
 
+# srv-dev
+cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-dev/frontend/static/frontend/app/js/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-blockly/js/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-board/js/
+
 # srv-main
 cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-main/frontend/static/frontend/app/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-blockly/js/
@@ -30,6 +35,12 @@ cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapa
 cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-alpha3/frontend/static/frontend/app/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-blockly/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
+
+# srv-dev
+workon ch-board-srv-dev
+python /home/overklok/tapanda/ch-board/srv-dev/manage.py collectstatic --no-input
+touch /var/www/dev_tapanda_ru_wsgi.py
+deactivate
 
 # srv-main
 workon ch-board-srv-main
