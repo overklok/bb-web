@@ -241,6 +241,8 @@ export default class LocalServiceModule extends Module {
     }
 
     sendPlates(plates) {
+        if (this._options.modeDummy) {return}
+
         this._ipc.send('plates', plates);
     }
 
