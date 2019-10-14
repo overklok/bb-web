@@ -207,6 +207,8 @@ export default class CurrentLayer extends Layer {
     /**
      * Построить пути прохождения тока
      *
+     * TODO: Refactor
+     *
      * @param   {Object}    points          контур - объект, содержащий точки прохождения тока
      * @param {boolean}     show_source     показывать путь тока от источника напряжения
      * @returns {Array} последовательность SVG-координат
@@ -221,8 +223,8 @@ export default class CurrentLayer extends Layer {
         if (show_source) {
             if      (c_from.isAt(null, 1))  path = this._getTopCurrentLinePath(c_from, c_to, false);
             else if (c_to.isAt(null, 1))    path = this._getTopCurrentLinePath(c_from, c_to, true);
-            else if (c_to.isAt(0, -1))      path = this._getBottomCurrentLinePath(c_from, c_to, true);
-            else if (c_from.isAt(0, -1))    path = this._getBottomCurrentLinePath(c_from, c_to, false);
+            else if (c_to.isAt(null, -1))      path = this._getBottomCurrentLinePath(c_from, c_to, true);
+            else if (c_from.isAt(null, -1))    path = this._getBottomCurrentLinePath(c_from, c_to, false);
 
             else path = this._getArbitraryLinePath(c_from, c_to);
         } else {
@@ -250,11 +252,31 @@ export default class CurrentLayer extends Layer {
         ];
     }
 
+    /**
+     * TODO: Refactor
+     *
+     * @param c_from
+     * @param c_to
+     * @param reversed
+     * @returns {*[]}
+     * @private
+     */
     _getTopCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
         if (!reversed) {
+            if (c_from.idx.x !== 0) {
+                // if the path is going from arbitrary 'x' to arbitrary 'x'
+                // FIXME: Temporary solution! Do not use in final production!
+                return [
+                    ['M', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y]
+                ]
+            }
+
+            // if the path is going from source 'x' (0) to arbitrary 'x'
             return [
                 ['M', 80, 720],
                 ['L', 80, c_from.center_adj.y - bias_y],
@@ -274,6 +296,15 @@ export default class CurrentLayer extends Layer {
         }
     }
 
+    /**
+     * TODO: Refactor
+     *
+     * @param c_from
+     * @param c_to
+     * @param reversed
+     * @returns {*[]}
+     * @private
+     */
     _getBottomCurrentLinePath(c_from, c_to, reversed=false) {
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
@@ -286,6 +317,17 @@ export default class CurrentLayer extends Layer {
                 ['L', c_to.center_adj.x, c_to.center_adj.y]
             ];
         } else {
+            if (c_to.idx.x !== 0) {
+                // if the path is going from arbitrary 'x' to arbitrary 'x'
+                // FIXME: Temporary solution! Do not use in final production!
+                return [
+                    ['M', c_from.center_adj.x, c_from.center_adj.y],
+                    ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
+                    ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
+                ]
+            }
+
+            // if the path is going from arbitrary 'x' to source 'x' (0)
             return [
                 ['M', c_from.center_adj.x, c_from.center_adj.y],
                 ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
