@@ -804,7 +804,7 @@ export default class Plate {
             case Plate.Orientations.South:  {x = cx + gx;           y = cy + gy - spx;  break;}
         }
 
-        let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
+        let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Edge);
         let cell_orig = this._getCellOriginal(cell);
 
         let [Ox, Oy, Nx, Ny] = this._getPlacementConstraints(this._state.orientation);
@@ -928,7 +928,7 @@ export default class Plate {
             case Plate.Orientations.South:  {dix = orn.y;             diy = sx - orn.x - 1;     break;}
         }
 
-        return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
+        return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Edge);
     }
 
     /**
