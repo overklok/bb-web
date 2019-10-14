@@ -245,8 +245,8 @@ export default class BackgroundLayer extends Layer {
         );
         this._drawDomain(
             this._domaingroup,
-            this.__grid.cell(0,-1, Grid.BorderTypes.Replicate),
-            this.__grid.cell(9,-1, Grid.BorderTypes.Replicate),
+            this.__grid.cell(0,-1, Grid.BorderTypes.Wrap),
+            this.__grid.cell(9,-1, Grid.BorderTypes.Wrap),
             this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
         );
     }
