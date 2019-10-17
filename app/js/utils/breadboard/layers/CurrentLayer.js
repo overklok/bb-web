@@ -1,3 +1,4 @@
+import Grid from "../core/Grid";
 import Cell from "../core/Cell";
 import Layer from "../core/Layer";
 import Current from "../core/Current";
@@ -191,7 +192,7 @@ export default class CurrentLayer extends Layer {
 
         let current = new Current(this._currentgroup, thread, this._getCurrentOptions());
 
-        let line_path = this._buildCurrentLinePath(thread, show_source);
+        let line_path = this._buildCurrentLinePath(thread);
 
         this._currents[current.id] = current;
 
@@ -207,34 +208,30 @@ export default class CurrentLayer extends Layer {
     /**
      * Построить пути прохождения тока
      *
-     * TODO: Refactor
-     *
      * @param   {Object}    points          контур - объект, содержащий точки прохождения тока
-     * @param {boolean}     show_source     показывать путь тока от источника напряжения
      * @returns {Array} последовательность SVG-координат
      * @private
      */
-    _buildCurrentLinePath(points, show_source=true) {
-        let c_from  = this.__grid.cell(points.from.x, points.from.y),
-            c_to    = this.__grid.cell(points.to.x, points.to.y);
+    _buildCurrentLinePath(points) {
+        let path;
 
-        let path = undefined;
-
-        if (show_source) {
-            if      (c_from.isAt(null, 1))  path = this._getTopCurrentLinePath(c_from, c_to, false);
-            else if (c_to.isAt(null, 1))    path = this._getTopCurrentLinePath(c_from, c_to, true);
-            else if (c_to.isAt(null, -1))      path = this._getBottomCurrentLinePath(c_from, c_to, true);
-            else if (c_from.isAt(null, -1))    path = this._getBottomCurrentLinePath(c_from, c_to, false);
-
-            else path = this._getArbitraryLinePath(c_from, c_to);
+        if (points.from.x === -1) {
+            let c_to = this.__grid.cell(points.to.x, points.to.y);
+            path = this._getLinePathSourceOut(c_to);
+        } else if (points.to.x === -1) {
+            let c_from = this.__grid.cell(points.from.x, points.from.y);
+            path = this._getLinePathSourceIn(c_from);
         } else {
-            path = this._getArbitraryLinePath(c_from, c_to);
+            let c_from  = this.__grid.cell(points.from.x, points.from.y),
+                c_to    = this.__grid.cell(points.to.x, points.to.y)
+
+            path = this._getLinePathArbitrary(c_from, c_to);
         }
 
         return path;
     };
 
-    _getArbitraryLinePath(c_from, c_to) {
+    _getLinePathArbitrary(c_from, c_to) {
         let needs_bias = false;
 
         if (this.__schematic && this.__detailed) {
@@ -244,6 +241,28 @@ export default class CurrentLayer extends Layer {
         let bias_x = (needs_bias && !Cell.IsLineHorizontal(c_from, c_to)) ? BackgroundLayer.DomainSchematicBias : 0;
         let bias_y = (needs_bias &&  Cell.IsLineHorizontal(c_from, c_to)) ? BackgroundLayer.DomainSchematicBias : 0;
 
+        if (Cell.IsLineAt(c_from, c_to, null, 1)) {
+            // cells at the "+" line
+
+            // FIXME: Temporary solution! Do not use in final production!
+            return [
+                ['M', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y]
+            ]
+        }
+
+        if (Cell.IsLineAt(c_from, c_to, null, -1)) {
+            // cells at the "-" line
+
+            // FIXME: Temporary solution! Do not use in final production!
+            return [
+                ['M', c_from.center_adj.x, c_from.center_adj.y],
+                ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
+                ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
+            ]
+        }
+
         return [
             ['M', c_from.center_adj.x, c_from.center_adj.y],
             ['L', c_from.center_adj.x + bias_x, c_from.center_adj.y + bias_y],
@@ -252,89 +271,37 @@ export default class CurrentLayer extends Layer {
         ];
     }
 
-    /**
-     * TODO: Refactor
-     *
-     * @param c_from
-     * @param c_to
-     * @param reversed
-     * @returns {*[]}
-     * @private
-     */
-    _getTopCurrentLinePath(c_from, c_to, reversed=false) {
+    _getLinePathSourceOut(c_to) {
+        // "out" (from "+") means this is top current
+        let c_from = this.__grid.cell(0, 1);
+
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
-        if (!reversed) {
-            if (c_from.idx.x !== 0) {
-                // if the path is going from arbitrary 'x' to arbitrary 'x'
-                // FIXME: Temporary solution! Do not use in final production!
-                return [
-                    ['M', c_from.center_adj.x, c_from.center_adj.y - bias_y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y]
-                ]
-            }
+        return [
+            ['M', 80, 720],
+            ['L', 80, c_from.center_adj.y - bias_y],
+            ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
 
-            // if the path is going from source 'x' (0) to arbitrary 'x'
-            return [
-                ['M', 80, 720],
-                ['L', 80, c_from.center_adj.y - bias_y],
-                ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
-
-                ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
-                ['L', c_to.center_adj.x, c_to.center_adj.y]
-            ];
-        } else {
-            return [
-                ['M', c_from.center_adj.x, c_from.center_adj.y],
-                ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
-
-                ['L', 80, c_from.center_adj.y - bias_y],
-                ['L', 80, 720]
-            ];
-        }
+            ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
+            ['L', c_to.center_adj.x, c_to.center_adj.y]
+        ];
     }
 
-    /**
-     * TODO: Refactor
-     *
-     * @param c_from
-     * @param c_to
-     * @param reversed
-     * @returns {*[]}
-     * @private
-     */
-    _getBottomCurrentLinePath(c_from, c_to, reversed=false) {
+    _getLinePathSourceIn(c_from) {
+        // "in" (to "-") means this is bottom current
+        let c_to = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
+
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
-        if (!reversed) {
-            return [
-                ['M', 80, 780],
-                ['L', 80, c_from.center_adj.y + bias_y],
-                ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
-                ['L', c_to.center_adj.x, c_to.center_adj.y]
-            ];
-        } else {
-            if (c_to.idx.x !== 0) {
-                // if the path is going from arbitrary 'x' to arbitrary 'x'
-                // FIXME: Temporary solution! Do not use in final production!
-                return [
-                    ['M', c_from.center_adj.x, c_from.center_adj.y],
-                    ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
-                    ['L', c_to.center_adj.x, c_to.center_adj.y + bias_y],
-                ]
-            }
+        return [
+            ['M', c_from.center_adj.x, c_from.center_adj.y],
+            ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
 
-            // if the path is going from arbitrary 'x' to source 'x' (0)
-            return [
-                ['M', c_from.center_adj.x, c_from.center_adj.y],
-                ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
-                ['L', 80, c_to.center_adj.y + bias_y],
-                ['L', 80, 780]
-            ];
-        }
+            ['L', 80, c_to.center_adj.y + bias_y],
+            ['L', 80, 780]
+        ];
     }
 
     _getCurrentOptions() {
