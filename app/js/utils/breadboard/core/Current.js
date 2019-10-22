@@ -232,7 +232,7 @@ export default class Current {
      * Добавить фильтр свечения к току
      */
     _addGlowFilter() {
-        this._line.attr('filter', 'url(#glow-current)');
+        // this._line.attr('filter', 'url(#glow-current)');
     };
 
     /**

@@ -22,19 +22,19 @@ cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/ta
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-board/js/
 
 # srv-alpha1
-cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-alpha1/frontend/static/frontend/app/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-blockly/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-board/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-alpha1/frontend/static/frontend/app/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-blockly/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-board/js/
 
 # srv-alpha2
-cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-alpha2/frontend/static/frontend/app/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-alpha2/coursesvc/static/admin/vendor/admin-blockly/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-alpha2/frontend/static/frontend/app/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-alpha2/coursesvc/static/admin/vendor/admin-blockly/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
 
 # srv-alpha3
-cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-alpha3/frontend/static/frontend/app/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-blockly/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-alpha3/frontend/static/frontend/app/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-blockly/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
 
 # srv-dev
 workon ch-board-srv-dev
@@ -49,18 +49,18 @@ touch /var/www/board_tapanda_ru_wsgi.py
 deactivate
 
 # srv-alpha1
-workon ch-board-srv-alpha1
-python /home/overklok/tapanda/ch-board/srv-alpha1/manage.py collectstatic --no-input
-touch /var/www/alpha1_tapanda_ru_wsgi.py
+#workon ch-board-srv-alpha1
+#python /home/overklok/tapanda/ch-board/srv-alpha1/manage.py collectstatic --no-input
+#touch /var/www/alpha1_tapanda_ru_wsgi.py
 
 # srv-alpha2
-python /home/overklok/tapanda/ch-board/srv-alpha2/manage.py collectstatic --no-input
-touch /var/www/alpha2_tapanda_ru_wsgi.py
+#python /home/overklok/tapanda/ch-board/srv-alpha2/manage.py collectstatic --no-input
+#touch /var/www/alpha2_tapanda_ru_wsgi.py
 
 # srv-alpha3
-python /home/overklok/tapanda/ch-board/srv-alpha3/manage.py collectstatic --no-input
-touch /var/www/alpha3_tapanda_ru_wsgi.py
-deactivate
+#python /home/overklok/tapanda/ch-board/srv-alpha3/manage.py collectstatic --no-input
+#touch /var/www/alpha3_tapanda_ru_wsgi.py
+#deactivate
 
 # hooks/post-receive (+x):
 

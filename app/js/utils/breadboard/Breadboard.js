@@ -281,6 +281,8 @@ export default class Breadboard {
     switchSpareFilters(on) {
         this._spare = on;
 
+        return;
+
         if (!this._filters_defined) {return}
 
         // Фильтры должны храниться в этом узле
@@ -591,6 +593,8 @@ export default class Breadboard {
      * @private
      */
     _defineFilters() {
+        return;
+
         let defs = [];
 
         // Тень вовнутрь
