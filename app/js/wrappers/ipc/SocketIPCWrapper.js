@@ -1,10 +1,9 @@
-import Wrapper from '../core/Wrapper'
+import Wrapper from '../../core/Wrapper'
 
 import io from 'socket.io-client'
+import IPCWrapper from "../IPCWrapper";
 
-export default class SocketIPCWrapper extends Wrapper {
-// public:
-
+export default class SocketIPCWrapper extends IPCWrapper {
     constructor(addr='127.0.0.1', port=8080) {
         super();
 
@@ -36,8 +35,6 @@ export default class SocketIPCWrapper extends Wrapper {
     disconnect() {
         this._socket.disconnect();
     }
-
-// private:
 
     _getFullAddr() {
         return 'http://' + this._addr + ':' + this._port;

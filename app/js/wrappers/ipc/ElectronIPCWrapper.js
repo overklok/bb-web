@@ -1,4 +1,5 @@
-import Wrapper from '../core/Wrapper'
+import Wrapper from '../../core/Wrapper'
+import IPCWrapper from "../IPCWrapper";
 
 let ipcRenderer = undefined;
 
@@ -6,10 +7,9 @@ if (require('electron') !== undefined) {
     ipcRenderer = require('electron').ipcRenderer;
 }
 
-export default class ElectronIPCWrapper extends Wrapper {
-// public:
-    constructor() {
-        super();
+export default class ElectronIPCWrapper extends IPCWrapper {
+    constructor(options) {
+        super(options);
 
         if (!window || !window.process || !window.process.type) {
             throw new Error("You cannot use an Electron's IPC in regular browser. Please use another wrapper for IPC.");
@@ -38,7 +38,4 @@ export default class ElectronIPCWrapper extends Wrapper {
             ipcRenderer.removeAllListeners(channel);
         }
     }
-
-// private:
-
 }

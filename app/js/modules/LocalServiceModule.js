@@ -1,7 +1,8 @@
 import Module from '../core/Module';
 
-import SocketIPCWrapper from '../wrappers/SocketIPCWrapper';
-import ElectronIPCWrapper from '../wrappers/ElectronIPCWrapper';
+import SocketIPCWrapper from '../wrappers/ipc/SocketIPCWrapper';
+import ElectronIPCWrapper from '../wrappers/ipc/ElectronIPCWrapper';
+import QtIPCWrapper from "../wrappers/ipc/QtIPCWrapper";
 
 const DEVICE_TYPES = {
     UNKNOWN: 0,
@@ -13,8 +14,9 @@ const DEVICE_TYPES = {
 /**
  * Модуль взаимодействия с локальным сервисом
  *
- * Работает в двух режимах:
+ * Работает в трёх режимах:
  *      - Electron IPC (при запуске в среде Electron)
+ *      - Qt Web Channel (при запуске в Qt-приложении)
  *      - Socket.IO (при запуске в браузере)
  */
 export default class LocalServiceModule extends Module {
@@ -342,7 +344,9 @@ export default class LocalServiceModule extends Module {
             this._ipc.disconnect();
         }
 
-        if (window && window.process && window.process.type) {
+        if (window && window.isQt) {
+            this._useIPCQt();
+        } else if (window && window.process && window.process.type) {
             this._useIPCElectron();
         } else {
             this._useIPCSocket(socket_addr, socket_port);
@@ -354,6 +358,12 @@ export default class LocalServiceModule extends Module {
 
         this._options.socketAddress = socket_addr ? socket_addr : this._options.socketAddress;
         this._options.socketPort = socket_port ? socket_port : this._options.socketPort;
+    }
+
+    _useIPCQt() {
+        this._debug.log("Swtiching to QtIPCWrapper");
+
+        this._ipc = new QtIPCWrapper();
     }
 
     _useIPCElectron() {
