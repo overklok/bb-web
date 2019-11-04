@@ -100,9 +100,11 @@ export default class LocalServiceModule extends Module {
     break(ignore_dummy) {
         if (!this._options.modeDummy || ignore_dummy) {
             if (this._ipc) {
-                this._ipc.disconnect();
+                return this._ipc.disconnect();
             }
         }
+
+        return Promise.resolve();
     }
 
     getBoardStatus() {
@@ -308,6 +310,14 @@ export default class LocalServiceModule extends Module {
 
     setIPC(ipc_alias, socket_addr, socket_port) {
         switch (ipc_alias) {
+            case 'qt': {
+                if (window.qt) {
+                    this._useIPCQt();
+                } else {
+                    throw new Error('Cannot use Qt IPC');
+                }
+                break;
+            }
             case 'electron': {
                 if (window && window.process && window.process.type) {
                     this._useIPCElectron();
@@ -344,7 +354,7 @@ export default class LocalServiceModule extends Module {
             this._ipc.disconnect();
         }
 
-        if (window && window.isQt) {
+        if (window.qt) {
             this._useIPCQt();
         } else if (window && window.process && window.process.type) {
             this._useIPCElectron();
@@ -352,12 +362,14 @@ export default class LocalServiceModule extends Module {
             this._useIPCSocket(socket_addr, socket_port);
         }
 
-        this._ipc.send('connect');
+        this._ipc.init().then(() => {
+            this._ipc.send('connect');
 
-        this._checkConnection();
+            this._checkConnection();
 
-        this._options.socketAddress = socket_addr ? socket_addr : this._options.socketAddress;
-        this._options.socketPort = socket_port ? socket_port : this._options.socketPort;
+            this._options.socketAddress = socket_addr ? socket_addr : this._options.socketAddress;
+            this._options.socketPort = socket_port ? socket_port : this._options.socketPort;
+        });
     }
 
     _useIPCQt() {
