@@ -21,15 +21,6 @@ const ORIENTATIONS = {
 };
 
 /**
- * Кэш вычисляемых параметров типов плашек
- *
- * @type {{PLACEMENT_CONSTRAINTS: {}}}
- */
-const REGISTRY = {
-    PLACEMENT_CONSTRAINTS: {},
-};
-
-/**
  * Класс плашки доски
  *
  * @class
@@ -864,11 +855,11 @@ export default class Plate {
     }
 
     _getPlacementConstraints(orientation) {
-        if (!REGISTRY.PLACEMENT_CONSTRAINTS[this._alias]) {
-            REGISTRY.PLACEMENT_CONSTRAINTS[this._alias] = this._calcPlacementConstraints();
+        if (!this._constraints) {
+            this._constraints = this._calcPlacementConstraints();
         }
 
-        return REGISTRY.PLACEMENT_CONSTRAINTS[this._alias][orientation];
+        return this._constraints[orientation];
     }
 
     _calcPlacementConstraints() {
