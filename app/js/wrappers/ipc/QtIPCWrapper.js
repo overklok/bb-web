@@ -12,7 +12,7 @@ export default class QtIPCWrapper extends IPCWrapper {
     constructor(options) {
         super(options);
 
-        if (!window.qt || !QWebChannel) {
+        if (!window.QWebChannel) {
             throw new Error("You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC.");
         }
 
@@ -58,12 +58,20 @@ export default class QtIPCWrapper extends IPCWrapper {
 
     _connect() {
         return new Promise(resolve => {
-            new QWebChannel(qt.webChannelTransport, channel => {
-                G_CONNECTOR = channel.objects.connector;
-                G_CONNECTOR.event_sig.connect(this._onEventSig.bind(this));
-                G_CONNECTOR.initConnection();
-                resolve();
-            });
+            let rep = setInterval(() => {
+                if (!window.qt) {
+                    console.log("waiting for window.qt to appear");
+                } else {
+                    new QWebChannel(window.qt.webChannelTransport, channel => {
+                        G_CONNECTOR = channel.objects.connector;
+                        G_CONNECTOR.event_sig.connect(this._onEventSig.bind(this));
+                        // G_CONNECTOR.send('connect');
+                        // G_CONNECTOR.initConnection();
+                        clearInterval(rep);
+                        resolve();
+                    });
+                }
+            }, 500);
         });
     }
 

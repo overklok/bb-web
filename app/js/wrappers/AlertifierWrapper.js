@@ -62,9 +62,7 @@ export default class AlertifierWrapper extends Wrapper {
     alertIndelible(type) {
         if (!(type in ALERTS)) {throw new RangeError(`Type '${type}' does not exist`)}
 
-        if (!this._state.closed) {
-            this.closeAll();
-        }
+        this.closeAll();
 
         let title = ALERTS[type].title;
         let html = ALERTS[type].html;
@@ -114,9 +112,10 @@ export default class AlertifierWrapper extends Wrapper {
     }
 
     closeAll() {
-        if (!this._state.closed) {
+        try {
             swal.close();
-            this._state.closed = true;
+        } catch (e) {
+            this._debug.debug("Nothing to close, skipping...");
         }
     }
 

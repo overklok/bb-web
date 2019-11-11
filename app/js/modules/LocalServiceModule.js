@@ -354,7 +354,7 @@ export default class LocalServiceModule extends Module {
             this._ipc.disconnect();
         }
 
-        if (window.qt) {
+        if (window.QWebChannel) {
             this._useIPCQt();
         } else if (window && window.process && window.process.type) {
             this._useIPCElectron();
