@@ -92,8 +92,8 @@ export default class LocalServiceModule extends Module {
                 this.resetPort(this._options.portUrgent);
             }
 
-            this._launchIPC(socket_addr, socket_port);
-            this._subscribeToWrapperEvents();
+            this._launchIPC(socket_addr, socket_port)
+                .then(() => this._subscribeToWrapperEvents());
         }
     }
 
@@ -346,6 +346,7 @@ export default class LocalServiceModule extends Module {
      * Запустить механизм межпроцессной коммуникации
      *
      * @private
+     * @return Promise
      */
     _launchIPC(socket_addr, socket_port) {
         if (this._options.modeDummy) {return true}
@@ -354,42 +355,23 @@ export default class LocalServiceModule extends Module {
             this._ipc.disconnect();
         }
 
-        if (window.QWebChannel) {
-            this._useIPCQt();
-        } else if (window && window.process && window.process.type) {
-            this._useIPCElectron();
-        } else {
-            this._useIPCSocket(socket_addr, socket_port);
-        }
-
-        this._ipc.init().then(() => {
-            this._ipc.send('connect');
-
-            this._checkConnection();
-
-            this._options.socketAddress = socket_addr ? socket_addr : this._options.socketAddress;
-            this._options.socketPort = socket_port ? socket_port : this._options.socketPort;
-        });
-    }
-
-    _useIPCQt() {
-        this._debug.log("Swtiching to QtIPCWrapper");
-
-        this._ipc = new QtIPCWrapper();
-    }
-
-    _useIPCElectron() {
-        this._debug.log("Swtiching to ElectronIPCWrapper");
-
-        this._ipc = new ElectronIPCWrapper();
-    }
-
-    _useIPCSocket(socket_addr, socket_port) {
         let saddr = socket_addr ? socket_addr : this._options.socketAddress,
             sport = socket_port ? socket_port : this._options.socketPort;
 
-        this._debug.log("Swtiching to SocketIPCWrapper", saddr, sport);
-        this._ipc = new SocketIPCWrapper(saddr, sport);
+        return new QtIPCWrapper().init()
+            .then(ipc => ipc, err => new ElectronIPCWrapper().init())
+            .then(ipc => ipc, err => new SocketIPCWrapper(saddr, sport).init())
+            .then(ipc => {
+                this._ipc = ipc;
+
+                this._ipc.send('connect');
+                this._checkConnection();
+
+                this._options.socketAddress = ipc.addr ? ipc.addr : this._options.socketAddress;
+                this._options.socketPort = ipc.port ? ipc.port : this._options.socketPort;
+
+                return ipc;
+            });
     }
 
     /**

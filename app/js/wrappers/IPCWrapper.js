@@ -8,8 +8,15 @@ export default class IPCWrapper extends Wrapper {
     /**
      * @abstract
      */
+    canBeUsed() {
+        throw new Error("Method is not implemented");
+    }
+
+    /**
+     * @abstract
+     */
     init() {
-        return Promise.resolve();
+        return this.canBeUsed() ? Promise.resolve(this) : Promise.reject();
     }
 
     /**

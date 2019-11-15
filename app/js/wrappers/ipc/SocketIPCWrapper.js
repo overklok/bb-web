@@ -15,6 +15,18 @@ export default class SocketIPCWrapper extends IPCWrapper {
         this.is_socket = true;
     }
 
+    get addr() {
+        return this._addr;
+    }
+
+    get port() {
+        return this._port;
+    }
+
+    canBeUsed() {
+        return true;
+    }
+
     on(channel, handler) {
         channel = (channel === 'connect') ? 'xconnect' : channel;
         channel = (channel === 'command') ? 'xcommand' : channel;

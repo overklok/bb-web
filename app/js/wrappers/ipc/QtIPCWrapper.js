@@ -12,14 +12,20 @@ export default class QtIPCWrapper extends IPCWrapper {
     constructor(options) {
         super(options);
 
-        if (!window.QWebChannel) {
-            throw new Error("You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC.");
-        }
-
         this._handlers = {};
     }
 
+    canBeUsed() {
+        return window.QWebChannel;
+    }
+
     init() {
+        if (!this.canBeUsed()) {
+            return Promise.reject(
+                "You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC."
+            );
+        }
+
         return this.disconnect()
             .then(() => this._connect());
     }
@@ -41,7 +47,7 @@ export default class QtIPCWrapper extends IPCWrapper {
 
     disconnect() {
         return new Promise(resolve => {
-            if (G_CONNECTOR && !G_IS_DISCONNECTING) {
+            if (G_CONNECTOR && G_CONNECTOR.event_sig && !G_IS_DISCONNECTING) {
                 G_IS_DISCONNECTING = true;
 
                 G_CONNECTOR.event_sig.disconnect(() => {
@@ -57,18 +63,23 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     _connect() {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             let rep = setInterval(() => {
                 if (!window.qt) {
                     console.log("waiting for window.qt to appear");
                 } else {
                     new QWebChannel(window.qt.webChannelTransport, channel => {
                         G_CONNECTOR = channel.objects.connector;
-                        G_CONNECTOR.event_sig.connect(this._onEventSig.bind(this));
-                        // G_CONNECTOR.send('connect');
-                        // G_CONNECTOR.initConnection();
-                        clearInterval(rep);
-                        resolve();
+
+                        if (G_CONNECTOR && G_CONNECTOR.event_sig) {
+                            G_CONNECTOR.event_sig.connect(this._onEventSig.bind(this));
+
+                            clearInterval(rep);
+                            resolve(this);
+                        } else {
+                            clearInterval(rep);
+                            reject();
+                        }
                     });
                 }
             }, 500);

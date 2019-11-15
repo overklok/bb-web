@@ -11,11 +11,21 @@ export default class ElectronIPCWrapper extends IPCWrapper {
     constructor(options) {
         super(options);
 
-        if (!window || !window.process || !window.process.type) {
-            throw new Error("You cannot use an Electron's IPC in regular browser. Please use another wrapper for IPC.");
-        }
-
         this._channels = new Set();
+    }
+
+    init() {
+        if (!this.canBeUsed()) {
+            return Promise.reject(
+                "You cannot use an Electron's IPC in regular browser. Please use another wrapper for IPC."
+            );
+        } else {
+            return Promise.resolve(this);
+        }
+    }
+
+    canBeUsed() {
+        return window && window.process && window.process.type;
     }
 
     on(channel, handler) {
