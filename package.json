@@ -1,7 +1,7 @@
 {
-  "name": "codehour-breadboard-web",
+  "name": "tapanda-board-web",
   "version": "0.0.2",
-  "description": "A Codehour web application for bread board",
+  "description": "A Tapanda project's web GUI module",
   "main": "index.js",
   "dependencies": {
     "canvg": "^1.5.3",
@@ -24,10 +24,13 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
+    "build-number-generator": "0.0.6",
     "chai": "^4.1.2",
     "chai-spies": "^0.7.1",
     "copy-webpack-plugin": "^4.3.1",
     "css-loader": "^0.28.9",
+    "dotenv": "^8.2.0",
+    "dotenv-webpack": "^1.7.0",
     "esdoc": "^1.0.4",
     "esdoc-standard-plugin": "^1.0.0",
     "expose-loader": "^0.7.4",
@@ -59,15 +62,24 @@
     "webpack-cli": "^3.3.0"
   },
   "scripts": {
-    "build": "webpack -p",
-    "watch": "webpack --watch --mode development",
-    "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
-    "test:watch": "karma start karma.conf.js --browsers Chrome",
-    "docs": "./node_modules/.bin/esdoc"
+    "build":          "webpack -p --env.main --env.board --env.blockly" ,
+    "build:main":     "webpack -p --env.main",
+    "build:board":    "webpack -p --env.board",
+    "build:blockly":  "webpack -p --env.blockly",
+
+    "watch":          "webpack --watch --mode development --env.main --env.board --env.blockly",
+    "watch:main":     "webpack --watch --mode development --env.main",
+    "watch:board":    "webpack --watch --mode development --env.board",
+    "watch:blockly":  "webpack --watch --mode development --env.blockly",
+
+    "test:single":    "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
+    "test:watch":     "karma start karma.conf.js --browsers Chrome",
+
+    "docs":           "./node_modules/.bin/esdoc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/makeitlab/codehour-breadboard-web.git"
+    "url": "git+https://bitbucket.org/tapanda/bb-web.git"
   },
   "keywords": [
     "codehour",
@@ -78,5 +90,5 @@
   ],
   "author": "Alexander Molodykh",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/makeitlab/codehour-breadboard-web#readme"
+  "homepage": "https://bitbucket.org/tapanda/bb-web#readme"
 }

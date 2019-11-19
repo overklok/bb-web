@@ -11,13 +11,14 @@ export default class MenuBarItemBlock extends BarItemBlock {
     static get ClassDOM() {return "menu-bar__item"}
     static get ModifierClassesDOM() {return ["leading"]}
 
-    constructor(name, text=ITEM_TEXT_DEFAULT, type=null, handler, right=false) {
+    constructor(name, text=ITEM_TEXT_DEFAULT, text_sub=null, type=null, handler, right=false) {
         super();
 
         if (!name) {throw new TypeError("Parameter `name` is not defined")}
 
         this._name = name;
         this._text = text;
+        this._text_sub = text_sub;
         this._type = type;
         this._handler = handler;
         this._right = right;
@@ -28,7 +29,13 @@ export default class MenuBarItemBlock extends BarItemBlock {
     include(dom_node) {
         super.include(dom_node);
 
+        // let sub = this._text_sub ? null : `<div class="${MenuBarItemBlock.ClassDOM}_text">${this._text}</div>`;
+
         this._container.innerHTML = `<div class="${MenuBarItemBlock.ClassDOM}_text">${this._text}</div>`;
+
+        if (this._text_sub) {
+            this._container.innerHTML += `<div class="${MenuBarItemBlock.ClassDOM}_text-sub">${this._text_sub}</div>`;
+        }
 
         if (this._right) {
             this._container.classList.add('right');

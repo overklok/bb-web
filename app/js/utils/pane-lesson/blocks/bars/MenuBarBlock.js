@@ -29,6 +29,7 @@ export default class MenuBarBlock extends BarBlock {
          let item = new MenuBarItemBlock(
              item_data.name,
              item_data.text,
+             item_data.text_sub,
              item_data.type,
              item_data.handler,
              item_data.right,

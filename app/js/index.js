@@ -18,6 +18,8 @@ const BUTTON_CODES = [
     38, 40, 37, 39                          // arrows
 ];
 
+console.info('Loaded version', __VERSION__);
+
 /**
  * Пользовательский интерфейс клиентской стороны web-приложения "Макетная плата"
  *

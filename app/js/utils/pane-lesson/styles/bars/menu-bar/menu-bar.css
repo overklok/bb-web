@@ -16,7 +16,13 @@
   color: #ffffff;
   background-color: #1DA1F2;
 }
-.menu-bar__item .menu-bar__item_text {
+.menu-bar__item .menu-bar__item_text-sub {
+  float: right;
+  color: #a8a8a8;
+  font-size: 10px;
+}
+.menu-bar__item .menu-bar__item_text,
+.menu-bar__item .menu-bar__item_text-sub {
   transition: all 200ms ease-in-out 0ms;
 }
 .menu-bar__item:not(.disabled):hover {

@@ -520,6 +520,7 @@ export default class GUIModule extends Module {
                 type: 'disabled',
                 name: "origin",
                 text: window.location.host,
+                text_sub: __VERSION__,
                 right: true
             },
         ]);

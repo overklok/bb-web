@@ -49,4 +49,6 @@ fabric.properties
 node_modules/
 /dist/*
 tmp/
-webpack.config.js
+
+# Environment files
+.env
