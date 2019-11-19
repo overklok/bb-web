@@ -12,12 +12,12 @@ npm run build
 # For PythonAnywhere servers
 
 # srv-dev
-cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-dev/frontend/static/frontend/app/js/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-dev/frontend/static/frontend/app/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-blockly/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-board/js/
 
 # srv-main
-cp /home/overklok/tapanda/ch-board/jsapp/dist/bundle.js /home/overklok/tapanda/ch-board/srv-main/frontend/static/frontend/app/js/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-main/frontend/static/frontend/app/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_blockly.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-blockly/js/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/admin_board.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-board/js/
 
