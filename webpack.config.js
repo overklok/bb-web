@@ -68,9 +68,9 @@ module.exports = (env, argv) => {
             })()
         ],
         plugins: [
+            new Dotenv(),
             ...getHtmlCopyPluginInstances(env),
             new CopyWebpackPlugin(getCopypaths(env)),
-            new Dotenv(),
             new webpack.DefinePlugin({
                 // 'process.env.NODE_ENV': '"production"',
                 '__VERSION__': `'${VERSION}'`,
@@ -121,6 +121,11 @@ function getEntries(env) {
 }
 
 function getCopypaths(env) {
+    if (!dotenv.parsed) {
+        console.warn("Nothing to copy.");
+        return [];
+    }
+
     // Copy paths
     let copypaths = [];
     if (env.main === true && dotenv.parsed.PATH_DIST_MAIN) {
