@@ -35,6 +35,7 @@ export default class MenuBarItemBlock extends BarItemBlock {
 
         if (this._text_sub) {
             this._container.innerHTML += `<div class="${MenuBarItemBlock.ClassDOM}_text-sub">${this._text_sub}</div>`;
+            this._container.classList.add('multiline-sub');
         }
 
         if (this._right) {
