@@ -1,6 +1,6 @@
 {
   "name": "codehour-breadboard-web",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A Codehour web application for bread board",
   "main": "index.js",
   "dependencies": {
