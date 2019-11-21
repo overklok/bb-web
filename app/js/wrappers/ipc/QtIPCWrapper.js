@@ -16,7 +16,7 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     canBeUsed() {
-        return window.QWebChannel;
+        return !!window.QWebChannel;
     }
 
     init() {

@@ -1,6 +1,9 @@
 import Dispatcher from "./core/Dispatcher";
 
 import BreadboardModule      from "./modules/BreadboardModule";
+import LocalServiceModule from "./modules/LocalServiceModule";
+
+console.info('Loaded version', __VERSION__);
 
 /**
  * Модуль "Редактор платы" административного интерфейса web-приложения "Макетная плата"
@@ -23,6 +26,8 @@ class AdminBoardApplication {
         this._on_change_callback = function() {};
 
         this._defineChains();
+
+        this.version = __VERSION__;
     }
 
     /**
@@ -48,7 +53,7 @@ class AdminBoardApplication {
         this._initModules();
         this._subscribeToModules();
 
-        this._dispatcher.always(['bb:*']);
+        this._dispatcher.always(['bb:*', 'ls:*']);
     }
 
     /**
@@ -97,6 +102,7 @@ class AdminBoardApplication {
 
         /** @type {BreadboardModule} модуль отображения макетной платы */
         this.bb = new BreadboardModule({modeAdmin: true}); // Breadboard
+        this.ls = new LocalServiceModule(); // Local Service
     }
 
     /**
@@ -106,6 +112,7 @@ class AdminBoardApplication {
      */
     _subscribeToModules() {
         this._dispatcher.subscribe(this.bb);
+        this._dispatcher.subscribe(this.ls);
     }
 
     /**
@@ -121,9 +128,25 @@ class AdminBoardApplication {
         this._dispatcher.on("bb:change", data => {
             this._on_change_callback(data);
         })
+
+        /**
+         * Изменены плашки
+         */
+        this._dispatcher.on('ls:plates', data => {
+            this.bb.clearCurrents();
+            this.bb.updatePlates(data);
+        });
+
+        /**
+         * Изменены токи
+         */
+        this._dispatcher.on('ls:currents', data => {
+            this.bb.updateCurrents(data);
+        });
     }
 }
 
 window.AdminBoardApplication = AdminBoardApplication;
+window.BOARD_VERSION = __VERSION__;
 
 export default AdminBoardApplication;

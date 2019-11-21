@@ -128,6 +128,7 @@ function getCopypaths(env) {
 
     // Copy paths
     let copypaths = [];
+
     if (env.main === true && dotenv.parsed.PATH_DIST_MAIN) {
         copypaths = [...copypaths,
             {from: './app/fonts/',          to: './fonts'},
@@ -138,14 +139,21 @@ function getCopypaths(env) {
             {from: './dist/bundle.js',      to: dotenv.parsed.PATH_DIST_MAIN + '/js/bundle.js'},
         ];
     }
+
     if (env.board === true && dotenv.parsed.PATH_DIST_BOARD) {
         copypaths = [...copypaths,
-            {from: './dist/admin_board.js',     to: dotenv.parsed.PATH_DIST_BOARD + '/js/admin_board.js'}
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD + '/js/admin_board.js'}
         ];
     }
+    if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR) {
+        copypaths = [...copypaths,
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/board.js'}
+        ];
+    }
+
     if (env.blockly === true && dotenv.parsed.PATH_DIST_BLOCKLY) {
         copypaths = [...copypaths,
-            {from: './dist/admin_blockly.js',   to: dotenv.parsed.PATH_DIST_BLOCKLY + '/js/admin_blockly.js'},
+            {from: './dist/blockly.js',   to: dotenv.parsed.PATH_DIST_BLOCKLY + '/js/admin_blockly.js'},
         ];
     }
 

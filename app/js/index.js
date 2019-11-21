@@ -38,6 +38,8 @@ class Application {
         this._config = {};
 
         this._defineChains();
+
+        this.version = this.__VERSION__;
     }
 
     /**
