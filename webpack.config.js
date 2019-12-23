@@ -1,3 +1,11 @@
+/**
+ * HOWTO:
+ *
+ * npm run <watch|build>:<main|board|blockly> <--mode=development>
+ *
+ * @type {module:path}
+ */
+
 const path = require('path');
 const webpack = require('webpack');
 const dotenv = require('dotenv').config();
@@ -136,7 +144,7 @@ function getCopypaths(env) {
             {from: './app/css/spinner.css', to: './spinner.css'},
             {from: './app/css/spinner.css', to: dotenv.parsed.PATH_DIST_MAIN + '/css/spinner.css'},
             {from: './app/images/',         to: dotenv.parsed.PATH_DIST_MAIN + '/images'},
-            {from: './dist/bundle.js',      to: dotenv.parsed.PATH_DIST_MAIN + '/js/bundle.js'},
+            {from: './dist/main.js',      to: dotenv.parsed.PATH_DIST_MAIN + '/js/main.js'},
         ];
     }
 

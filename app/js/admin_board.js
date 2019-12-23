@@ -42,6 +42,7 @@ class AdminBoardApplication {
         if (!config) {return true}
 
         this._container_id = config.containerId || "";
+        this._mode_admin = config.modeAdmin;
     }
 
     /**
@@ -101,7 +102,7 @@ class AdminBoardApplication {
         /// Модули
 
         /** @type {BreadboardModule} модуль отображения макетной платы */
-        this.bb = new BreadboardModule({modeAdmin: true}); // Breadboard
+        this.bb = new BreadboardModule({modeAdmin: this._mode_admin}); // Breadboard
         this.ls = new LocalServiceModule(); // Local Service
     }
 
@@ -142,6 +143,15 @@ class AdminBoardApplication {
          */
         this._dispatcher.on('ls:currents', data => {
             this.bb.updateCurrents(data);
+        });
+
+        /**
+         * Обновлена доска
+         */
+        this._dispatcher.on('bb:change', data => {
+            this.bb.clearCurrents();
+
+            this.ls.sendPlates(this.bb.getPlates());
         });
     }
 }

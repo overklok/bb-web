@@ -360,6 +360,7 @@ export default class LocalServiceModule extends Module {
 
         return new QtIPCWrapper().init()
             .then(ipc => ipc, err => new ElectronIPCWrapper().init())
+            .then(ipc => ipc, err => new QtIPCWrapper().init())
             .then(ipc => ipc, err => new SocketIPCWrapper(saddr, sport).init())
             .then(ipc => {
                 this._ipc = ipc;
@@ -371,6 +372,9 @@ export default class LocalServiceModule extends Module {
                 this._options.socketPort = ipc.port ? ipc.port : this._options.socketPort;
 
                 return ipc;
+            }, err => {
+                this._debug.panic("IPC panic: no working wrappers found");
+                this._options.modeDummy = true;
             });
     }
 

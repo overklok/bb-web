@@ -240,6 +240,10 @@ export default class PlateLayer extends Layer {
             }
         }
 
+        if (is_dirty) {
+            this._callbacks.change(this._plates);
+        }
+
         return is_dirty;
     }
 

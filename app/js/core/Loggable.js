@@ -69,6 +69,10 @@ export default class Loggable {
                 this._debug[cfn] = window.console[cfn].bind(window.console, "[" + this.constructor.name + "]");
             }
         }
+
+        this._debug.panic = (message) => {
+            alert(message);
+        }
     }
 
     /**
@@ -94,6 +98,18 @@ export default class Loggable {
                 /// Стандартное логирование
                 window.console[cfn].bind(window.console, "[" + this.constructor.name + "]")();
             }
+        }
+
+        this._debug.panic = (message) => {
+            /// Запись в буфер
+            this._debug_buffer.push({
+                module: this.constructor.name,
+                type:   'panic',
+                data:   message
+            });
+
+            /// Стандартное логирование
+            alert(message);
         }
     }
 }
