@@ -109,13 +109,15 @@ function getVersionMode(mode) {
 }
 
 function getVersionTarget(env, mode=null) {
-    let matches = [env.main, env.board, env.blockly].reduce((total, v_curr) => total += (v_curr === true), 0);
+    let matches = [env.main, env.board, env.blockly, env.timeline]
+        .reduce((total, v_curr) => total += (v_curr === true), 0);
 
     if (matches > 1) return `mixed`;
 
     if (env.main === true)      return `main`;
     if (env.board === true)     return `board`;
     if (env.blockly === true)   return `blockly`;
+    if (env.timeline === true)  return `timeline`;
 }
 
 function getEntries(env) {
@@ -124,6 +126,7 @@ function getEntries(env) {
     if (env.main === true)      entries['main'] = './app/js/index.js';
     if (env.board === true)     entries['board'] = './app/js/admin_board.js';
     if (env.blockly === true)   entries['blockly'] = './app/js/admin_blockly.js';
+    if (env.timeline === true)  entries['timeline'] = './app/js/timeline.js';
 
     return entries;
 }
@@ -156,6 +159,12 @@ function getCopypaths(env) {
     if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR) {
         copypaths = [...copypaths,
             {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/board.js'}
+        ];
+    }
+
+    if (env.timeline === true && dotenv.parsed.PATH_DIST_MONITOR) {
+        copypaths = [...copypaths,
+            {from: './dist/timeline.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/timeline.js'}
         ];
     }
 
@@ -194,6 +203,15 @@ function getHtmlCopyPluginInstances(env) {
                 template: './app/html/admin.html',
                 inject: 'body',
                 filename: 'admin.html'
+            }),
+        ];
+    }
+    if (env.timeline === true) {
+        htmls = [...htmls,
+            new HtmlWebpackPlugin({
+                template: './app/html/timeline.html',
+                inject: 'body',
+                filename: 'timeline.html'
             }),
         ];
     }

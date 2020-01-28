@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Webpack App</title>
+    </head>
+    <body style="width: 100vw; height: 100vh;">
+        <div id="timeline" style="width: 100%; height: 100%;">
+        </div>
+
+
+<!--         <img> -->
+<!--             <svg id="workspace" viewBox="0 0 600 680" style="width: 100%; height: 100%;"> -->
+<!--             </svg> -->
+<!--         </img> -->
+
+    </body>
+    <script>
+        var app = new Timeline();
+
+        app.configure({
+            containerId: "timeline",
+        });
+
+        app.run();
+
+        // window.BOARD_VERSION;
+    </script>
+</html>

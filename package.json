@@ -17,6 +17,7 @@
     "svgjs": "^2.6.2",
     "sweetalert": "^2.1.0",
     "ts-loader": "^6.0.2",
+    "vis-timeline": "^6.5.2",
     "webpack": "^4.29.6"
   },
   "devDependencies": {
@@ -62,20 +63,22 @@
     "webpack-cli": "^3.3.0"
   },
   "scripts": {
-    "build":          "webpack -p --env.main --env.board --env.blockly" ,
+    "build": "webpack -p --env.main --env.board --env.blockly --env.timeline",
     "build:main":     "webpack -p --env.main",
     "build:board":    "webpack -p --env.board",
     "build:blockly":  "webpack -p --env.blockly",
+    "build:timeline": "webpack -p --env.timeline",
 
-    "watch":          "webpack --watch --mode development --env.main --env.board --env.blockly",
+    "watch":          "webpack --watch --mode development --env.main --env.board --env.blockly --env.timeline",
     "watch:main":     "webpack --watch --mode development --env.main",
     "watch:board":    "webpack --watch --mode development --env.board",
     "watch:blockly":  "webpack --watch --mode development --env.blockly",
+    "watch:timeline": "webpack --watch --mode development --env.timeline",
 
-    "test:single":    "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
-    "test:watch":     "karma start karma.conf.js --browsers Chrome",
+    "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
+    "test:watch": "karma start karma.conf.js --browsers Chrome",
 
-    "docs":           "./node_modules/.bin/esdoc"
+    "docs": "./node_modules/.bin/esdoc"
   },
   "repository": {
     "type": "git",
