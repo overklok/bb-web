@@ -44,6 +44,11 @@ module.exports = (env, argv) => {
                     exclude: /node_modules/
                 },
                 {
+                    use: 'ts-loader',
+                    test: /\.ts?$/,
+                    exclude: /node_modules/
+                },
+                {
                     loaders: ['style-loader', 'css-loader'],
                     test: /\.css/,
                     include: [
@@ -61,6 +66,9 @@ module.exports = (env, argv) => {
                     ]
                 }
             ]
+        },
+        resolve: {
+            extensions: [ '.tsx', '.ts', '.js' ]
         },
         externals: [
             (function () {

@@ -4,6 +4,8 @@
   "description": "A Tapanda project's web GUI module",
   "main": "index.js",
   "dependencies": {
+    "@types/chai": "^4.2.8",
+    "@types/mocha": "^7.0.1",
     "canvg": "^1.5.3",
     "clientjs": "^0.1.11",
     "file-saver": "^2.0.1",
@@ -17,6 +19,7 @@
     "svgjs": "^2.6.2",
     "sweetalert": "^2.1.0",
     "ts-loader": "^6.0.2",
+    "typescript": "^3.7.5",
     "vis-timeline": "^6.5.2",
     "webpack": "^4.29.6"
   },
@@ -52,6 +55,7 @@
     "karma-opera-launcher": "^1.0.0",
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-sourcemap-loader": "^0.3.7",
+    "karma-typescript-preprocessor": "^0.4.0",
     "karma-webpack": "^2.0.7",
     "less": "^3.0.1",
     "less-loader": "^4.0.5",
@@ -64,20 +68,17 @@
   },
   "scripts": {
     "build": "webpack -p --env.main --env.board --env.blockly --env.timeline",
-    "build:main":     "webpack -p --env.main",
-    "build:board":    "webpack -p --env.board",
-    "build:blockly":  "webpack -p --env.blockly",
+    "build:main": "webpack -p --env.main",
+    "build:board": "webpack -p --env.board",
+    "build:blockly": "webpack -p --env.blockly",
     "build:timeline": "webpack -p --env.timeline",
-
-    "watch":          "webpack --watch --mode development --env.main --env.board --env.blockly --env.timeline",
-    "watch:main":     "webpack --watch --mode development --env.main",
-    "watch:board":    "webpack --watch --mode development --env.board",
-    "watch:blockly":  "webpack --watch --mode development --env.blockly",
+    "watch": "webpack --watch --mode development --env.main --env.board --env.blockly --env.timeline",
+    "watch:main": "webpack --watch --mode development --env.main",
+    "watch:board": "webpack --watch --mode development --env.board",
+    "watch:blockly": "webpack --watch --mode development --env.blockly",
     "watch:timeline": "webpack --watch --mode development --env.timeline",
-
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",
-
     "docs": "./node_modules/.bin/esdoc"
   },
   "repository": {

@@ -9,7 +9,7 @@ describe('Dispatcher', function() {
     let Instance = new Dispatcher();
 
     // формальная проверка на тип возвращаемой переменной
-    it('Should be an function', function() {
+    it('Should be a function', function() {
         expect(Dispatcher).to.be.an('function');
     });
 

@@ -17,13 +17,15 @@ config.set({
     },
     // spec файлы, условимся называть по маске **_*.spec.js_**
     files: [
-        'app/js/**/__tests__/*.spec.js'
+        // 'app/js/**/__tests__/*.spec.js',
+        'app/js/**/__tests__/*.spec.ts'
     ],
     frameworks: [ 'chai', 'jasmine' ],
     // репортеры необходимы для  наглядного отображения результатов
     reporters: ['mocha', 'coverage'],
     preprocessors: {
-        'app/js/**/__tests__/*.spec.js': ['webpack', 'sourcemap', 'coverage']
+        // 'app/js/**/__tests__/*.spec.js': ['webpack', 'sourcemap', 'coverage'],
+        'app/js/**/__tests__/*.spec.ts': ['webpack',  'sourcemap', 'coverage', 'typescript'],
     },
     plugins: [
         'karma-jasmine', 'karma-mocha',
@@ -32,6 +34,8 @@ config.set({
         'karma-mocha-reporter', 'karma-sourcemap-loader',
         'karma-junit-reporter', 'karma-chrome-launcher', 'karma-firefox-launcher',
         'karma-opera-launcher', 'karma-ie-launcher',
+
+        'karma-typescript-preprocessor',
 
         'chai-spies'
     ],
