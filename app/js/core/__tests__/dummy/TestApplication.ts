@@ -1,10 +1,10 @@
-import Application from "../Application";
+import Application from "../../Application";
 import TestServiceProvider from "./TestServiceProvider";
 
 export default class TestApplication extends Application {
-    protected providers(): Array<String> {
+    protected providers(): Array<Function> {
         return [
-            TestServiceProvider.name
+            TestServiceProvider.constructor
         ];
     }
 }

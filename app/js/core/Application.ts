@@ -6,7 +6,7 @@ export default class Application {
     /**
      * Поставщики Служб
      */
-    protected providers(): Array<String> {
+    protected providers(): Array<Function> {
         return [];
     }
 
@@ -15,8 +15,10 @@ export default class Application {
      */
     protected init() {
         for (const provider of this.providers()) {
-
+            this.services.push(provider())
         }
+
+        console.log(this.services);
 
         // регистрация всех Служб
         // создание их экземпляров

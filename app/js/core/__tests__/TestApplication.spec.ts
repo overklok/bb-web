@@ -1,5 +1,6 @@
-import TestApplication from "./TestApplication";
 import { expect } from "chai";
+
+import TestApplication from "./dummy/TestApplication";
 import Application from "../Application";
 
 describe('TestApplication', function() {
@@ -7,5 +8,7 @@ describe('TestApplication', function() {
 
     it('Should be inherited from Application', function() {
         expect(instance).to.be.instanceof(Application);
-    })
+    });
+
+    instance.init();
 });

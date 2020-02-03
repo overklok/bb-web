@@ -5,6 +5,7 @@ var webpackConfig = require('./webpack.config.test.js');
 module.exports=function(config) {
 config.set({
     // logLevel: config.LOG_DEBUG,
+    logLevel: config.LOG_LOG,
 
     // конфигурация репортов о покрытии кода тестами
     coverageReporter: {
@@ -43,6 +44,13 @@ config.set({
     ],
     karmaTypescriptConfig: {
         tsconfig: "tsconfig.json",
+    },
+    client: {
+        captureConsole: true,
+    },
+    browserConsoleLogOptions: {
+        terminal: true,
+        level: ""
     },
     // передаем конфигурацию webpack
     webpack: webpackConfig,
