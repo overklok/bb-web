@@ -8,13 +8,6 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const dotenv = require('dotenv').config();
-const { generate } = require('build-number-generator');
-
-const Dotenv                = require('dotenv-webpack');
-const HtmlWebpackPlugin     = require('html-webpack-plugin');
-const CopyWebpackPlugin     = require('copy-webpack-plugin');
-// const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const lib_dir = __dirname + '/vendor/js';
 
@@ -29,26 +22,10 @@ module.exports = {
             },
             {
                 use: 'ts-loader',
-                test: /\.ts?$/,
+                test: /\.tsx?$/,
                 exclude: /node_modules/
             },
-            {
-                loaders: ['style-loader', 'css-loader'],
-                test: /\.css/,
-                include: [
-                    path.resolve(__dirname, "node_modules/intro.js/"),
-                    path.resolve(__dirname, "app"),
-                ]
-            },
-            {
-                test: require.resolve('jquery'),
-                use: [
-                    {
-                        loader: 'expose-loader',
-                        options: '$'
-                    },
-                ]
-            }
+
         ]
     },
     resolve: {

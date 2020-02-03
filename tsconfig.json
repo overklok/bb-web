@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "*": [
+        "types/*"
+      ]
+    },
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "downlevelIteration": true,
+    "module": "es6",
+    "target": "es5",
+    "jsx": "react",
+    "moduleResolution": "node",
+    "allowJs": true
+  },
+  "include": [
+    "app/js/**/*.ts",
+    "app/js/**/*.tsx"
+  ],
+  "exclude": [
+      "node_modules"
+  ]
+}

@@ -49,6 +49,7 @@ fabric.properties
 node_modules/
 /dist/*
 tmp/
+coverage
 
 # Environment files
 .env
