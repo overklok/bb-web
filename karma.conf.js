@@ -1,6 +1,6 @@
 // karma.conf.js
 
-var webpackConfig = require('./webpack.config.js');
+var webpackConfig = require('./webpack.config.test.js');
 
 module.exports=function(config) {
 config.set({
