@@ -10,5 +10,7 @@ describe('TestApplication', function() {
         expect(instance).to.be.instanceof(Application);
     });
 
-    instance.init();
+    it('Should instantiate TestServiceProvider', function() {
+        expect(instance)
+    })
 });

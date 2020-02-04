@@ -1,6 +1,10 @@
+import Application from "../Application";
+
 export default class ServiceProvider {
-    constructor() {
-        console.log('tt');
+    private app: Application;
+
+    constructor(app: Application) {
+        this.app = app;
     }
 
     public boot() {

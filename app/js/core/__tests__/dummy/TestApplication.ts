@@ -1,10 +1,11 @@
 import Application from "../../Application";
 import TestServiceProvider from "./TestServiceProvider";
+import ServiceProvider from "../../support/ServiceProvider";
 
 export default class TestApplication extends Application {
-    protected providers(): Array<Function> {
+    protected providerClasses(): Array<typeof ServiceProvider> {
         return [
-            TestServiceProvider.constructor
+            TestServiceProvider
         ];
     }
 }
