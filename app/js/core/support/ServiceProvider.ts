@@ -1,7 +1,7 @@
 import Application from "../Application";
 
 export default class ServiceProvider {
-    private app: Application;
+    protected app: Application;
 
     constructor(app: Application) {
         this.app = app;
