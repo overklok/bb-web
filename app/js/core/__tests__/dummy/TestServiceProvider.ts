@@ -1,16 +1,16 @@
 import ServiceProvider from "../../support/ServiceProvider";
 import Application from "../../Application";
-import IEventService from "../../service/IEventService";
-import RealEventService from "../../service/RealEventService";
+import IEventService from "../../service/interfaces/IEventService";
+import EventService from "../../service/EventService";
 
 export default class TestServiceProvider extends ServiceProvider {
-    boot() {
+    register() {
         this.app.bind('test', function (app: Application): any {
             return 'tester contains';
         });
 
         this.app.bind(IEventService, function (app: Application): any {
-            return new RealEventService();
+            return new EventService();
         });
     }
 }

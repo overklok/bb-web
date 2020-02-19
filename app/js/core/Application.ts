@@ -1,7 +1,7 @@
 import ServiceProvider from "./support/ServiceProvider";
 import IBindable from "./helpers/IBindable";
 
-export default class Application {
+export default abstract class Application {
     private bindings:   Map<string|IBindable, Function> = new Map();
     private instances:  Map<string|IBindable, any>      = new Map();
 
@@ -9,7 +9,9 @@ export default class Application {
 
     constructor() {
         this.init();
+        this.afterInit();
         this.boot();
+        this.afterBoot();
     }
 
     /**
@@ -29,6 +31,8 @@ export default class Application {
             this.providers.push(provider);
             provider.register();
         }
+
+        this.build();
     }
 
     /**
@@ -40,10 +44,13 @@ export default class Application {
             provider.boot();
         }
 
-        this.build();
-
         delete this.providers;
     }
+
+    protected afterInit(): void {};
+    protected afterBoot(): void {};
+
+    public abstract run(): void;
 
     /**
      * Зарегистрировать обвязку

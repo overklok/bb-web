@@ -234,7 +234,7 @@ body {
 	height:		100% !important;
 }
 div.ui-layout-mask {}		/* standard mask for iframes */
-iframe.ui-layout-mask {}	/* extra mask for objects/applets */
+iframe.ui-layout-mask {}	/* extra mask for interfaces/applets */
 
 /*
  *	Default printing styles

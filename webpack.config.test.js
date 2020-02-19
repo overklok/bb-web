@@ -13,6 +13,7 @@ const lib_dir = __dirname + '/vendor/js';
 
 module.exports = {
     devtool: 'eval-source-map',
+    mode: 'development',
     module: {
         rules: [
             {

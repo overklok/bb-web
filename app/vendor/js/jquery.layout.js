@@ -746,7 +746,7 @@ $.layout.defaults = {
 	,	resizerDragOpacity:		1			// option for ui.draggable
 	//,	resizerCursor:			""			// MUST be pane-specific - cursor when over resizer-bar
 	,	maskContents:			false		// true = add DIV-mask over-or-inside this pane so can 'drag' over IFRAMES
-	,	maskObjects:			false		// true = add IFRAME-mask over-or-inside this pane to cover objects/applets - content-mask will overlay this mask
+	,	maskObjects:			false		// true = add IFRAME-mask over-or-inside this pane to cover interfaces/applets - content-mask will overlay this mask
 	,	maskZindex:				null		// will override zIndexes.content_mask if specified - not applicable to iframe-panes
 	,	resizingGrid:			false		// grid size that the resizers will snap-to during resizing, eg: [20,20]
 	,	livePaneResizing:		false		// true = LIVE Resizing as resizer is dragged
@@ -2153,7 +2153,7 @@ $.fn.layout = function (opts) {
 	}
 
 	/**
-	 * Initialize module objects, styling, size and position for all panes
+	 * Initialize module interfaces, styling, size and position for all panes
 	 *
 	 * @see  _initElements()
 	 * @param {string}	pane		The pane to process
@@ -2447,7 +2447,7 @@ $.fn.layout = function (opts) {
 	}
 
 	/**
-	 * Initialize module objects, styling, size and position for all resize bars and toggler buttons
+	 * Initialize module interfaces, styling, size and position for all resize bars and toggler buttons
 	 *
 	 * @see  _create()
 	 * @param {string=}	[panes=""]	The edge(s) to process
@@ -2785,7 +2785,7 @@ $.fn.layout = function (opts) {
 				if (false !== _runCallbacks("ondrag_end", pane))
 					manualSizePane(pane, newSize, false, true); // true = noAnimation
 				hideMasks(true); // true = force hiding all masks even if one is 'sliding'
-				if (s.isSliding) // RE-SHOW 'object-masks' so objects won't show through sliding pane
+				if (s.isSliding) // RE-SHOW 'object-masks' so interfaces won't show through sliding pane
 					showMasks( pane, { resizing: true });
 			}
 		};
@@ -3537,7 +3537,7 @@ $.fn.layout = function (opts) {
 			if (isShowing) s.isHidden = false;
 
 			if (doFX) { // ANIMATE
-				// mask adjacent panes with objects
+				// mask adjacent panes with interfaces
 				lockPaneForFX(pane, true);	// need to set left/top so animation will work
 					$P.show( o.fxName_open, o.fxSettings_open, o.fxSpeed_open, function() {
 					lockPaneForFX(pane, false); // undo
@@ -4750,7 +4750,7 @@ $.fn.layout = function (opts) {
 		move( oPane1, pane2 );
 		move( oPane2, pane1 );
 
-		// cleanup objects
+		// cleanup interfaces
 		oPane1 = oPane2 = sizes = null;
 
 		// make panes 'visible' again
@@ -5975,7 +5975,7 @@ $.layout.onReady.push( $.layout.browserZoom._init );
 /**
  *	UI Layout Plugin: Slide-Offscreen Animation
  *
- *	Prevent panes from being 'hidden' so that an iframes/objects 
+ *	Prevent panes from being 'hidden' so that an iframes/interfaces
  *	does not reload/refresh when pane 'opens' again.
  *	This plug-in adds a new animation called "slideOffscreen".
  *	It is identical to the normal "slide" effect, but avoids hiding the element

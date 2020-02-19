@@ -7,11 +7,6 @@ export default class ServiceProvider {
         this.app = app;
     }
 
-    public boot() {
-
-    }
-
-    public register() {
-
-    }
+    public boot(): void {};
+    public register(): void {};
 }
