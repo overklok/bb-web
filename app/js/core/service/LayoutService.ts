@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 
 import Layout from "../layout/components/Layout";
 import ILayoutService from "./interfaces/ILayoutService";
-import LayoutConfiguration from "../layout/interfaces/LayoutConfiguration";
+import {LayoutConfiguration} from "../layout/types";
 
 export default class LayoutService implements ILayoutService {
     private root: Layout;

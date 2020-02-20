@@ -1,5 +1,4 @@
-import IBindable from "../../helpers/IBindable";
-import LayoutConfiguration from "../../layout/interfaces/LayoutConfiguration";
+import {LayoutConfiguration} from "../../layout/types";
 
 /**
  * @abstract

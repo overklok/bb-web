@@ -6,10 +6,10 @@ import ILayoutService from "../../service/interfaces/ILayoutService";
 import ConfigServiceProvider from "../../providers/ConfigServiceProvider";
 import IConfigService from "../../service/interfaces/IConfigService";
 
+import {LayoutConfiguration} from "../../layout/types";
 import layouts from './configs/layouts';
-import LayoutConfiguration from "../../layout/interfaces/LayoutConfiguration";
 
-export default class TestApplication extends Application {
+class TestApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             TestServiceProvider,
@@ -18,7 +18,7 @@ export default class TestApplication extends Application {
         ];
     }
 
-    protected afterInit() {
+    protected setup() {
         this.instance(IConfigService).configure(LayoutConfiguration, layouts);
     }
 
@@ -26,3 +26,13 @@ export default class TestApplication extends Application {
         this.instance(ILayoutService).compose();
     }
 }
+
+declare global {
+  interface Window {
+    Application: typeof Application;
+  }
+}
+
+window.Application = TestApplication;
+
+export default TestApplication;

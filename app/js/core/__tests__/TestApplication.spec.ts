@@ -10,6 +10,11 @@ import IConfigService from "../service/interfaces/IConfigService";
 import ConfigService from "../service/ConfigService";
 
 describe('TestApplication', function() {
+    let elem = document.createElement('div');
+    elem.setAttribute('id', '1234');
+
+    document.body.appendChild(elem);
+
     let application = new TestApplication();
 
     it('Should be inherited from Application', function() {

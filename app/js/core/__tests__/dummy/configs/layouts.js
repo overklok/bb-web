@@ -1,11 +1,11 @@
 export default {
     modes: {
         default: {
+            policy: 'horizontal',
             panes: [
-                {
-                    orientation: 'horizontal',
-                    panes: [{orientation: 'vertical'}, {orientation: 'vertical'}]
-                }
+                {name: 'p1', panes: [{name: 's1'}, {name: 's2'}]},
+                {name: 'p2', panes: [{name: 's1'}, {name: 's2'}]},
+                {name: 'p3', panes: [{name: 's1'}, {name: 's2'}]}
             ]
         }
     }

@@ -11,7 +11,12 @@ const webpack = require('webpack');
 
 const lib_dir = __dirname + '/vendor/js';
 
+const HtmlWebpackPlugin     = require('html-webpack-plugin');
+
 module.exports = {
+    entry: {
+        'test': './app/js/core/__tests__/dummy/TestApplication.ts',
+    },
     devtool: 'eval-source-map',
     mode: 'development',
     module: {
@@ -32,4 +37,11 @@ module.exports = {
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ]
     },
+    plugins: [
+         new HtmlWebpackPlugin({
+             template: './app/html/test.html',
+             inject: 'body',
+             filename: 'test.html'
+         }),
+    ]
 };

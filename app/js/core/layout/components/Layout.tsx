@@ -1,7 +1,6 @@
 import * as React from "react";
 import Pane from "./Pane";
-import ILayoutPane from "../interfaces/ILayoutPane";
-import LayoutConfiguration from "../interfaces/LayoutConfiguration";
+import {ILayoutPane, LayoutConfiguration, PaneOrientation} from "../types";
 
 interface ILayoutProps {
     config: LayoutConfiguration,
@@ -20,21 +19,21 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
         }
     }
 
-    renderPane(index: number, data: ILayoutPane) {
+    renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane) {
         return (
             <Pane key={index} panes={data.panes} orientation={data.orientation} />
         );
     }
 
     render() {
-        console.log(JSON.stringify(this.props));
+        const orientation = this.props.config.modes[this.state.mode_name].policy;
 
         const panes = this.props.config.modes[this.state.mode_name].panes.map(
-            (pane, index) => this.renderPane(index, pane)
+            (pane, index) => this.renderPane(index, orientation, pane)
         );
 
         return (
-            <div className="t_layout-container">
+            <div className="layout">
                 {panes}
             </div>
         );

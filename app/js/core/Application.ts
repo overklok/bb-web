@@ -9,9 +9,8 @@ export default abstract class Application {
 
     constructor() {
         this.init();
-        this.afterInit();
+        this.setup();
         this.boot();
-        this.afterBoot();
     }
 
     /**
@@ -35,6 +34,8 @@ export default abstract class Application {
         this.build();
     }
 
+    protected setup(): void {};
+
     /**
      * Запустить Приложение
      */
@@ -46,9 +47,6 @@ export default abstract class Application {
 
         delete this.providers;
     }
-
-    protected afterInit(): void {};
-    protected afterBoot(): void {};
 
     public abstract run(): void;
 
