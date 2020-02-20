@@ -13,10 +13,9 @@ export default class LayoutService implements ILayoutService {
         this.modes = modes_config;
     }
 
-    public compose() {
+    public compose(element: HTMLElement) {
         const layout_props = {config: this.modes};
-        this.render(Layout, layout_props, document.body, null);
-        console.log('composed');
+        this.render(Layout, layout_props, element, null);
     }
 
     protected render(component: any, props: any, target_node: any, callback: any) {

@@ -22,8 +22,10 @@ class TestApplication extends Application {
         this.instance(IConfigService).configure(LayoutConfiguration, layouts);
     }
 
-    run() {
-        this.instance(ILayoutService).compose();
+    run(element: HTMLElement) {
+        if (element == null) throw new Error("Please pass a valid DOM element to run an application");
+
+        this.instance(ILayoutService).compose(element);
     }
 }
 
