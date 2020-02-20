@@ -1,6 +1,5 @@
 import { expect } from "chai";
 
-import TestApplication from "./dummy/TestApplication";
 import Application from "../Application";
 import IEventService from "../service/interfaces/IEventService";
 import EventService from "../service/EventService";
@@ -8,13 +7,9 @@ import ILayoutService from "../service/interfaces/ILayoutService";
 import LayoutService from "../service/LayoutService";
 import IConfigService from "../service/interfaces/IConfigService";
 import ConfigService from "../service/ConfigService";
+import TestApplication from "./TestApplication";
 
 describe('TestApplication', function() {
-    let elem = document.createElement('div');
-    elem.setAttribute('id', '1234');
-
-    document.body.appendChild(elem);
-
     let application = new TestApplication();
 
     it('Should be inherited from Application', function() {
@@ -39,5 +34,8 @@ describe('TestApplication', function() {
         expect(application.instance(ILayoutService)).to.be.an.instanceof(LayoutService);
     });
 
-    application.run();
+    let elem = document.createElement('div');
+    elem.setAttribute('id', 'app');
+    document.body.appendChild(elem);
+    application.run(document.getElementById('app'));
 });

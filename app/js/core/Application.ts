@@ -48,7 +48,7 @@ export default abstract class Application {
         delete this.providers;
     }
 
-    public abstract run(): void;
+    public abstract run(settings: any): void;
 
     /**
      * Зарегистрировать обвязку

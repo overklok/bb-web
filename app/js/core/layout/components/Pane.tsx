@@ -4,6 +4,7 @@ import {ILayoutPane, PaneOrientation} from "../types";
 
 interface IProps {
     name: string,
+    is_root: boolean,
     panes?: ILayoutPane[],
     orientation: PaneOrientation
 }
@@ -14,8 +15,9 @@ interface IState {
 
 export default class Pane extends React.Component<IProps, IState> {
     static defaultProps = {
-        panes: [],
+        panes: [] as ILayoutPane[],
         name: 'unnamed',
+        is_root: false,
         orientation: PaneOrientation.Horizontal
     };
 
@@ -37,6 +39,7 @@ export default class Pane extends React.Component<IProps, IState> {
         const orientation = Pane.inverseOrientation(this.props.orientation);
 
         let klass = classNames({
+            'root': this.props.is_root,
             'pane': true,
             'pane-h': this.props.orientation == PaneOrientation.Horizontal,
             'pane-v': this.props.orientation == PaneOrientation.Vertical,

@@ -1,12 +1,12 @@
-import Application from "../../Application";
+import Application from "../Application";
 import TestServiceProvider from "./TestServiceProvider";
-import ServiceProvider from "../../support/ServiceProvider";
-import LayoutServiceProvider from "../../providers/LayoutServiceProvider";
-import ILayoutService from "../../service/interfaces/ILayoutService";
-import ConfigServiceProvider from "../../providers/ConfigServiceProvider";
-import IConfigService from "../../service/interfaces/IConfigService";
+import ServiceProvider from "../support/ServiceProvider";
+import LayoutServiceProvider from "../providers/LayoutServiceProvider";
+import ILayoutService from "../service/interfaces/ILayoutService";
+import ConfigServiceProvider from "../providers/ConfigServiceProvider";
+import IConfigService from "../service/interfaces/IConfigService";
 
-import {LayoutConfiguration} from "../../layout/types";
+import {LayoutConfiguration} from "../layout/types";
 import layouts from './configs/layouts';
 
 class TestApplication extends Application {

@@ -15,7 +15,7 @@ const HtmlWebpackPlugin     = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
-        'test': './app/js/core/__tests__/dummy/TestApplication.ts',
+        'test': './app/js/core/__tests__/TestApplication.ts',
     },
     devtool: 'eval-source-map',
     mode: 'development',
@@ -31,11 +31,19 @@ module.exports = {
                 test: /\.tsx?$/,
                 exclude: /node_modules/
             },
-
+            {
+                loaders: ['style-loader', 'css-loader', 'less-loader'],
+                test: /\.less/,
+                include: [
+                    path.resolve(__dirname, "node_modules/intro.js/"),
+                    path.resolve(__dirname, "app"),
+                ]
+            },
         ]
     },
     resolve: {
-        extensions: [ '.tsx', '.ts', '.js' ]
+        extensions: [ '.tsx', '.ts', '.js' ],
+        modules: [path.resolve(__dirname, './app'), 'node_modules']
     },
     plugins: [
          new HtmlWebpackPlugin({
