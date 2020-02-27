@@ -31,6 +31,39 @@ body {
   }
 }
 
+.handler {
+  padding: 0;
+  flex: 0 0 auto;
+
+  &::before {
+    content: '';
+    display: block;
+    background: red;
+  }
+
+  &.handler-h {
+    height: 20px;
+    cursor: ew-resize;
+    margin: auto 0;
+
+    &::before {
+      width: 4px;
+      height: 100%;
+    }
+  }
+
+  &.handler-v {
+    width: 20px;
+    cursor: ns-resize;
+    margin: 0 auto;
+
+    &::before {
+      width: 100%;
+      height: 4px;
+    }
+  }
+}
+
 // Theme
 .pane {
   border: 1px solid black;
