@@ -31,7 +31,10 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     on(channel, handler) {
-        this._handlers[channel] = handler;
+        this._handlers[channel] = (data) => {
+            console.debug('on', channel);
+            handler(data);
+        }
     }
 
     once(channel, handler) {
@@ -42,6 +45,7 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     send(channel, data) {
+        console.debug('send', channel, data);
         G_CONNECTOR.emit(channel, data);
     }
 
