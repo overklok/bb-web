@@ -34,25 +34,37 @@ export default class Pane extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        this.handleDragFinish   = this.handleDragFinish.bind(this);
+        this.handleDragFinish = this.handleDragFinish.bind(this);
         this.handleDragStart = this.handleDragStart.bind(this);
         this.handleDragging = this.handleDragging.bind(this);
     }
 
     componentDidMount() {
-        this.recalcSize();
+        // this.recalcSize();
     }
 
-    recalcSize() {
-        if (!this.props.is_root) {
-            if (this.props.orientation === PaneOrientation.Horizontal) {
-                this.divElement.style.width = this.divElement.offsetWidth + 'px';
-            } else {
-                this.divElement.style.height = this.divElement.offsetHeight + 'px';
-            }
+    recalcSize(allow_grow: boolean = false) {
+        if (this.props.is_root) return;
 
-            // Разблокировать изменения
-            this.divElement.style.flexGrow = "0";
+        // this.divElement.style.width = null;
+        // this.divElement.style.height = null;
+        //
+        // this.divElement.style.flexGrow = "1";
+
+        if (this.props.orientation === PaneOrientation.Horizontal) {
+            this.divElement.style.width = this.divElement.offsetWidth + 'px';
+        } else {
+            this.divElement.style.height = this.divElement.offsetHeight + 'px';
+        }
+
+        // Разблокировать изменения
+        this.divElement.style.flexGrow = allow_grow ? "1" : "0";
+    }
+
+    recalcChild(allow_grow: boolean = false) {
+        for (const ref of this.panes) {
+            const pane = ref.current;
+            pane.recalcSize(allow_grow);
         }
     }
 
@@ -115,6 +127,9 @@ export default class Pane extends React.Component<IProps, IState> {
         const ss_prev = pane_prev.divElement.style;
         const ss_next = pane_next.divElement.style;
 
+        // TODO: Normalize sizes (keep ratio with same sum)
+        // TODO: Докручивать до минимума при овердраге
+
         if (this.props.orientation === PaneOrientation.Vertical) {
             // Новый предполагаемый размер панели
             const size_new_prev = Number(ss_prev.width.slice(0, -2)) + movement;
@@ -162,23 +177,14 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
 
-        // Разблокировать панель
-        pane_next.divElement.style.flexGrow = "1";
-        pane_prev.divElement.style.flexGrow = "1";
+        this.recalcChild(false);
     }
 
     handleDragFinish(pane_num_prev: number, pane_num_next: number) {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
 
-        // Заблокировать панель
-        pane_next.divElement.style.flexGrow = "0";
-        pane_prev.divElement.style.flexGrow = "0";
-
-        for (const ref of this.panes) {
-            const pane = ref.current;
-            pane.recalcSize();
-        }
+        this.recalcChild(true);
     }
 
     static inverseOrientation(orientation: PaneOrientation) {
