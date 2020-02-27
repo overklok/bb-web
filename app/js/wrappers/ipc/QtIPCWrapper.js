@@ -31,22 +31,23 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     on(channel, handler) {
-        this._handlers[channel] = (...data) => {
+        this._handlers[channel] = (evt, data) => {
+            data = JSON.parse(data);
             console.debug('QtIPC:on', channel, data);
-            handler(...data);
+            handler(channel, data);
         }
     }
 
     once(channel, handler) {
         this._handlers[channel] = (data) => {
-            handler(data);
+            handler(JSON.parse(data));
             delete this._handlers[channel];
         };
     }
 
     send(channel, data) {
         console.debug('QtIPC:send', channel, data);
-        G_CONNECTOR.emit(channel, data);
+        G_CONNECTOR.emit(channel, JSON.stringify(data));
     }
 
     disconnect() {
