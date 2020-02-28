@@ -12,6 +12,7 @@ const webpack = require('webpack');
 const lib_dir = __dirname + '/vendor/js';
 
 const HtmlWebpackPlugin     = require('html-webpack-plugin');
+const BuildNotifierPlugin   = require('webpack-build-notifier');
 
 module.exports = {
     entry: {
@@ -51,5 +52,9 @@ module.exports = {
              inject: 'body',
              filename: 'test.html'
          }),
+        new BuildNotifierPlugin({
+            title: "Tapanda Test",
+            logo: path.resolve("./img/favicon.png"),
+        }),
     ]
 };

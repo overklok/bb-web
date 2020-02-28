@@ -25,11 +25,11 @@ export default class Pane extends React.Component<IProps, IState> {
         is_root: false,
         orientation: PaneOrientation.Horizontal,
 
-        size_min: 0
+        size_min: 1
     };
 
     private panes: RefObject<Pane>[] = [];
-    private divElement: HTMLDivElement;
+    private div_element: HTMLDivElement;
 
     constructor(props: IProps) {
         super(props);
@@ -40,7 +40,7 @@ export default class Pane extends React.Component<IProps, IState> {
     }
 
     componentDidMount() {
-        // this.recalcSize();
+        // this.recalcChild(true);
     }
 
     recalcSize(allow_grow: boolean = false) {
@@ -52,13 +52,13 @@ export default class Pane extends React.Component<IProps, IState> {
         // this.divElement.style.flexGrow = "1";
 
         if (this.props.orientation === PaneOrientation.Horizontal) {
-            this.divElement.style.width = this.divElement.offsetWidth + 'px';
+            this.div_element.style.width = this.div_element.offsetWidth + 'px';
         } else {
-            this.divElement.style.height = this.divElement.offsetHeight + 'px';
+            this.div_element.style.height = this.div_element.offsetHeight + 'px';
         }
 
         // Разблокировать изменения
-        this.divElement.style.flexGrow = allow_grow ? "1" : "0";
+        this.div_element.style.flexGrow = allow_grow ? "1" : "0";
     }
 
     recalcChild(allow_grow: boolean = false) {
@@ -76,7 +76,7 @@ export default class Pane extends React.Component<IProps, IState> {
 
     renderHandler(index: number, orientation: PaneOrientation, pane_prev: number, pane_next: number) {
         return (
-            <Handler key={`h${index}`} orientation={orientation} pane_prev={pane_prev} pane_next={pane_next}
+            <Handler key={`h${index}`} orientation={orientation} pane_prev_num={pane_prev} pane_next_num={pane_next}
                      handleDragStart={this.handleDragStart}
                      handleDragFinish={this.handleDragFinish}
                      handleDragging={this.handleDragging}
@@ -110,7 +110,7 @@ export default class Pane extends React.Component<IProps, IState> {
         }
 
         return (
-            <div className={klass} ref={divElement => {this.divElement = divElement}}>
+            <div className={klass} ref={div_element => {this.div_element = div_element}}>
                 {elements}
             </div>
         );
@@ -124,53 +124,39 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_prev = this.panes[pane_prev_num].current;
         const pane_next = this.panes[pane_next_num].current;
 
-        const ss_prev = pane_prev.divElement.style;
-        const ss_next = pane_next.divElement.style;
+        const ss_prev = pane_prev.div_element.style;
+        const ss_next = pane_next.div_element.style;
+
+        const size_prev_old = this.is_vertical ? Number(ss_prev.width.slice(0, -2)) : Number(ss_prev.height.slice(0, -2)),
+              size_next_old = this.is_vertical ? Number(ss_next.width.slice(0, -2)) : Number(ss_next.height.slice(0, -2));
+
+        let overdrag = null;
 
         // TODO: Normalize sizes (keep ratio with same sum)
-        // TODO: Докручивать до минимума при овердраге
 
-        if (this.props.orientation === PaneOrientation.Vertical) {
-            // Новый предполагаемый размер панели
-            const size_new_prev = Number(ss_prev.width.slice(0, -2)) + movement;
-            const size_new_next = Number(ss_next.width.slice(0, -2)) - movement;
-
-            // Разница между новым и предельно мнимальным размерами панели
-            const diff_min_prev = size_new_prev - pane_prev.props.size_min;
-            const diff_min_next = size_new_next - pane_next.props.size_min;
-
-            if (diff_min_prev >= 0 && diff_min_next >= 0) {
-                // Положительная разница означает, что есть куда уменьшать панель
-                ss_prev.width = size_new_prev + 'px';
-                ss_next.width = size_new_next + 'px';
-            } else {
-                // Отрицательная разница означает, что движение мыши слишком велико для изменения размера
-                // Эту разницу возвращаем ручке
-                if (diff_min_prev < 0) return -diff_min_prev;
-                if (diff_min_next < 0) return diff_min_next;
-            }
-        } else {
-            // Новый предполагаемый размер панели
-            const size_new_prev = Number(ss_prev.height.slice(0, -2)) + movement;
-            const size_new_next = Number(ss_next.height.slice(0, -2)) - movement;
-
-            // Разница между новым и предельно мнимальным размерами панели
-            const diff_min_prev = size_new_prev - pane_prev.props.size_min;
-            const diff_min_next = size_new_next - pane_next.props.size_min;
-
-            if (diff_min_prev >= 0 && diff_min_next >= 0) {
-                // Положительная разница означает, что есть куда уменьшать панель
-                ss_prev.height = size_new_prev + 'px';
-                ss_next.height = size_new_next + 'px';
-            } else {
-                // Отрицательная разница означает, что движение мыши слишком велико для изменения размера
-                // Эту разницу возвращаем ручке
-                if (diff_min_prev < 0) return -diff_min_prev;
-                if (diff_min_next < 0) return diff_min_next;
-            }
+        if (size_next_old - movement < pane_next.props.size_min) {
+            movement = size_next_old - pane_next.props.size_min;
+            overdrag = 1;
         }
 
-        return 0;
+        if (size_prev_old + movement < pane_prev.props.size_min) {
+            movement = -(size_prev_old - pane_prev.props.size_min);
+            overdrag = -1;
+        }
+
+        // Новый предполагаемый размер панели
+        let size_prev_new = size_prev_old + movement,
+            size_next_new = size_next_old - movement;
+
+        if (this.is_vertical) {
+            ss_prev.width = size_prev_new + 'px';
+            ss_next.width = size_next_new + 'px';
+        } else {
+            ss_prev.height = size_prev_new + 'px';
+            ss_next.height = size_next_new + 'px';
+        }
+
+        return overdrag;
     }
 
     handleDragStart(pane_num_prev: number, pane_num_next: number) {
@@ -185,6 +171,10 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_next = this.panes[pane_num_next].current;
 
         this.recalcChild(true);
+    }
+
+    get is_vertical() {
+        return this.props.orientation === PaneOrientation.Vertical;
     }
 
     static inverseOrientation(orientation: PaneOrientation) {

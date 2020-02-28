@@ -5,8 +5,8 @@ import Pane from "./Pane";
 
 interface IProps {
     orientation: PaneOrientation,
-    pane_prev: number,
-    pane_next: number,
+    pane_prev_num: number,
+    pane_next_num: number,
     handleDragStart:    Function,
     handleDragFinish:   Function,
     handleDragging:     Function,
@@ -18,8 +18,8 @@ interface IState {
 
 export default class Handler extends React.Component<IProps, IState> {
     private moving: boolean = false;
-    private overdrag_position:     number = 0;
     private overdrag_sign_pos:  boolean = false;
+    private div_element: HTMLDivElement;
 
     constructor(props: IProps) {
         super(props);
@@ -49,19 +49,20 @@ export default class Handler extends React.Component<IProps, IState> {
         return (
             <div className={klass}
                  onMouseDown={this.handleMouseDown}
+                 ref={div_element => {this.div_element = div_element}}
             />
         );
     }
 
-    handleMouseDown(evt: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    handleMouseDown() {
         this.moving = true;
 
-        this.props.handleDragStart(this.props.pane_prev, this.props.pane_next);
+        this.props.handleDragStart(this.props.pane_prev_num, this.props.pane_next_num);
     }
 
     handleMouseUp() {
         if (this.moving === true) {
-            this.props.handleDragFinish(this.props.pane_prev, this.props.pane_next);
+            this.props.handleDragFinish(this.props.pane_prev_num, this.props.pane_next_num);
         }
 
         this.moving = false;
@@ -71,23 +72,40 @@ export default class Handler extends React.Component<IProps, IState> {
         if (this.moving === false) return;
 
         let movement = this.props.orientation == PaneOrientation.Horizontal ? evt.movementX : evt.movementY;
-        let position = this.props.orientation == PaneOrientation.Horizontal ? evt.pageX : evt.pageY;
+        let cur_position = this.props.orientation == PaneOrientation.Horizontal ? evt.pageX : evt.pageY;
+        let hdr_position = this.props.orientation == PaneOrientation.Horizontal ? this.div_element.offsetLeft : this.div_element.offsetTop;
 
         // Овердраг - состояние, в котором о движении курсора в данном положении не следует сообщать.
         // По умолчанию сообщать о перетаскивании ручки
         let allowed = true;
 
-        if (this.overdrag_position !== 0) {
+        if (this.overdrag_sign_pos !== null) {
             // Не сообщать о перетаскивании ручки, если ранее был зафиксирован овердраг
             allowed = false;
+
+            // console.log("pos", cur_position, hdr_position, this.overdrag_sign_pos);
 
             /* Если курсор возвращён обратно за позицию овердрага, можно считать, что овердрага больше нет.
              * Для того, чтобы выйти из овердрага, курсор нужно вернуть НАЗАД
              * (т.е. переместить его в обратном направлении ЗА позицию овердрага)
              */
-            if ((this.overdrag_sign_pos && position > this.overdrag_position) ||
-                (!this.overdrag_sign_pos && position <= this.overdrag_position)
-            ) allowed = true;
+            if (this.overdrag_sign_pos && cur_position <= hdr_position) {
+                // console.log(movement)
+
+                // console.log("unlock", this.overdrag_sign_pos, movement);
+                // console.groupEnd();
+
+                allowed = true;
+            }
+
+            if (!this.overdrag_sign_pos && cur_position >= hdr_position) {
+                // console.log(movement)
+
+                // console.log("unlock", this.overdrag_sign_pos, movement);
+                // console.groupEnd();
+
+                allowed = true;
+            }
         }
 
         if (allowed) {
@@ -98,18 +116,19 @@ export default class Handler extends React.Component<IProps, IState> {
              * При этом фиксируется, на сколько пискелей движение превышает максимально допустимое.
              * Это значение и возвращается следующей функцией.
              */
-            const overdrag_movement = this.props.handleDragging(movement, this.props.pane_prev, this.props.pane_next);
+            const overdrag_sign_pos = this.props.handleDragging(movement, this.props.pane_prev_num, this.props.pane_next_num);
 
             /* Если было зафиксировано избыточное движение курсора, нужно запомнить положение овердрага.
              * Оно определяется по положению курсора, зарегистрированному в предыдущий раз.
              * Также фиксируется направление овердрага,
              * т.к. для его последующего снятия нужно учитывать знак при сравнении позиций.
              */
-            if (overdrag_movement !== 0) {
-                this.overdrag_position = position - movement;
-                this.overdrag_sign_pos = overdrag_movement > 0;
+            if (overdrag_sign_pos !== null) {
+                this.overdrag_sign_pos = overdrag_sign_pos > 0;
+                // console.group("od");
+                // console.log("lock", cur_position, movement, overdrag_sign_pos);
             } else {
-                this.overdrag_position = 0;
+                this.overdrag_sign_pos = null;
             }
         }
     }

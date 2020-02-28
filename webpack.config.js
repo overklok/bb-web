@@ -15,6 +15,7 @@ const Dotenv                = require('dotenv-webpack');
 const HtmlWebpackPlugin     = require('html-webpack-plugin');
 const CopyWebpackPlugin     = require('copy-webpack-plugin');
 // const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BuildNotifierPlugin   = require('webpack-build-notifier');
 
 const lib_dir = __dirname + '/vendor/js';
 
@@ -98,6 +99,10 @@ module.exports = (env, argv) => {
             new webpack.WatchIgnorePlugin([
                 /\.d\.ts$/
             ]),
+            new BuildNotifierPlugin({
+              title: "My Project Webpack Build",
+              logo: path.resolve("./img/favicon.png"),
+            }),
             // new BundleAnalyzerPlugin({
             //     analyzerMode: 'static',
             //     openAnalyzer: true,
