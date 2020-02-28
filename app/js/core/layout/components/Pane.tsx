@@ -25,7 +25,7 @@ export default class Pane extends React.Component<IProps, IState> {
         is_root: false,
         orientation: PaneOrientation.Horizontal,
 
-        size_min: 1
+        size_min: 0
     };
 
     private panes: RefObject<Pane>[] = [];
@@ -43,28 +43,44 @@ export default class Pane extends React.Component<IProps, IState> {
         // this.recalcChild(true);
     }
 
-    recalcSize(allow_grow: boolean = false) {
+    recalcSize() {
         if (this.props.is_root) return;
 
-        // this.divElement.style.width = null;
-        // this.divElement.style.height = null;
-        //
-        // this.divElement.style.flexGrow = "1";
-
         if (this.props.orientation === PaneOrientation.Horizontal) {
-            this.div_element.style.width = this.div_element.offsetWidth + 'px';
+            this.div_element.style.width = this.div_element.clientWidth + 'px';
         } else {
-            this.div_element.style.height = this.div_element.offsetHeight + 'px';
+            this.div_element.style.height = this.div_element.clientHeight + 'px';
         }
-
-        // Разблокировать изменения
-        this.div_element.style.flexGrow = allow_grow ? "1" : "0";
     }
 
     recalcChild(allow_grow: boolean = false) {
+        let sizes = [];
+
         for (const ref of this.panes) {
             const pane = ref.current;
-            pane.recalcSize(allow_grow);
+
+            if (this.is_vertical) {
+                sizes.push(pane.div_element.offsetWidth);
+            } else {
+                sizes.push(pane.div_element.offsetHeight);
+            }
+        }
+
+        let overall_size = sizes.reduce((a, b) => a + b, 0);
+
+        sizes = sizes.map(normalize(0, overall_size));
+
+        for (const [i, ref] of this.panes.entries()) {
+            const pane = ref.current;
+
+            if (this.is_vertical) {
+                pane.div_element.style.width = sizes[i] * 100 + '%';
+            } else {
+                pane.div_element.style.height = sizes[i] * 100 + '%';
+            }
+
+            // Разблокировать изменения
+            pane.div_element.style.flexGrow = "1";
         }
     }
 
@@ -124,15 +140,26 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_prev = this.panes[pane_prev_num].current;
         const pane_next = this.panes[pane_next_num].current;
 
-        const ss_prev = pane_prev.div_element.style;
-        const ss_next = pane_next.div_element.style;
+        const div_prev = pane_prev.div_element;
+        const div_next = pane_next.div_element;
 
-        const size_prev_old = this.is_vertical ? Number(ss_prev.width.slice(0, -2)) : Number(ss_prev.height.slice(0, -2)),
-              size_next_old = this.is_vertical ? Number(ss_next.width.slice(0, -2)) : Number(ss_next.height.slice(0, -2));
+        const ss_prev = div_prev.style;
+        const ss_next = div_next.style;
+
+        const size_prev_old = this.is_vertical ? Number(ss_prev.width.slice(0, -1)) : Number(ss_prev.height.slice(0, -1)),
+              size_next_old = this.is_vertical ? Number(ss_next.width.slice(0, -1)) : Number(ss_next.height.slice(0, -1));
+
+        const size_prev_old_px = this.is_vertical ? div_prev.clientWidth : div_prev.clientHeight,
+              size_next_old_px = this.is_vertical ? div_next.clientWidth : div_next.clientHeight;
 
         let overdrag = null;
 
-        // TODO: Normalize sizes (keep ratio with same sum)
+        // percents per pixel
+        const ppp = (size_next_old + size_prev_old) / (size_prev_old_px + size_next_old_px);
+
+        movement *= ppp;
+
+        // TODO: Use percent as the main measure unit
 
         if (size_next_old - movement < pane_next.props.size_min) {
             movement = size_next_old - pane_next.props.size_min;
@@ -149,11 +176,11 @@ export default class Pane extends React.Component<IProps, IState> {
             size_next_new = size_next_old - movement;
 
         if (this.is_vertical) {
-            ss_prev.width = size_prev_new + 'px';
-            ss_next.width = size_next_new + 'px';
+            ss_prev.width = size_prev_new + '%';
+            ss_next.width = size_next_new + '%';
         } else {
-            ss_prev.height = size_prev_new + 'px';
-            ss_next.height = size_next_new + 'px';
+            ss_prev.height = size_prev_new + '%';
+            ss_next.height = size_next_new + '%';
         }
 
         return overdrag;
@@ -180,4 +207,11 @@ export default class Pane extends React.Component<IProps, IState> {
     static inverseOrientation(orientation: PaneOrientation) {
         return orientation === PaneOrientation.Horizontal ? PaneOrientation.Vertical : PaneOrientation.Horizontal;
     }
+}
+
+function normalize(min: number, max: number) {
+    const delta = max - min;
+    return function (val: number) {
+        return (val - min) / delta;
+    };
 }
