@@ -39,32 +39,12 @@ export default class Pane extends React.Component<IProps, IState> {
         this.handleDragging = this.handleDragging.bind(this);
     }
 
-    componentDidMount() {
-        // this.recalcChild(true);
-    }
+    componentDidMount() {}
 
-    recalcSize() {
-        if (this.props.is_root) return;
-
-        if (this.props.orientation === PaneOrientation.Horizontal) {
-            this.div_element.style.width = this.div_element.clientWidth + 'px';
-        } else {
-            this.div_element.style.height = this.div_element.clientHeight + 'px';
-        }
-    }
-
-    recalcChild(allow_grow: boolean = false) {
-        let sizes = [];
-
-        for (const ref of this.panes) {
-            const pane = ref.current;
-
-            if (this.is_vertical) {
-                sizes.push(pane.div_element.offsetWidth);
-            } else {
-                sizes.push(pane.div_element.offsetHeight);
-            }
-        }
+    recalcChild() {
+        let sizes = this.panes.map(
+            ref => this.is_vertical ? ref.current.div_element.offsetWidth : ref.current.div_element.offsetHeight
+        );
 
         let overall_size = sizes.reduce((a, b) => a + b, 0);
 
@@ -78,9 +58,6 @@ export default class Pane extends React.Component<IProps, IState> {
             } else {
                 pane.div_element.style.height = sizes[i] * 100 + '%';
             }
-
-            // Разблокировать изменения
-            pane.div_element.style.flexGrow = "1";
         }
     }
 
@@ -143,11 +120,8 @@ export default class Pane extends React.Component<IProps, IState> {
         const div_prev = pane_prev.div_element;
         const div_next = pane_next.div_element;
 
-        const ss_prev = div_prev.style;
-        const ss_next = div_next.style;
-
-        const size_prev_old = this.is_vertical ? Number(ss_prev.width.slice(0, -1)) : Number(ss_prev.height.slice(0, -1)),
-              size_next_old = this.is_vertical ? Number(ss_next.width.slice(0, -1)) : Number(ss_next.height.slice(0, -1));
+        const size_prev_old = Number((this.is_vertical ? div_prev.style.width : div_prev.style.height).slice(0, -1)),
+              size_next_old = Number((this.is_vertical ? div_next.style.width : div_next.style.height).slice(0, -1));
 
         const size_prev_old_px = this.is_vertical ? div_prev.clientWidth : div_prev.clientHeight,
               size_next_old_px = this.is_vertical ? div_next.clientWidth : div_next.clientHeight;
@@ -157,9 +131,10 @@ export default class Pane extends React.Component<IProps, IState> {
         // percents per pixel
         const ppp = (size_next_old + size_prev_old) / (size_prev_old_px + size_next_old_px);
 
-        movement *= ppp;
+        // TODO: ручка может сдвинуть соседнюю на 1 px
+        // TODO: работа с пиксельными ограничениями
 
-        // TODO: Use percent as the main measure unit
+        movement *= ppp;
 
         if (size_next_old - movement < pane_next.props.size_min) {
             movement = size_next_old - pane_next.props.size_min;
@@ -176,11 +151,11 @@ export default class Pane extends React.Component<IProps, IState> {
             size_next_new = size_next_old - movement;
 
         if (this.is_vertical) {
-            ss_prev.width = size_prev_new + '%';
-            ss_next.width = size_next_new + '%';
+            div_prev.style.width = size_prev_new + '%';
+            div_next.style.width = size_next_new + '%';
         } else {
-            ss_prev.height = size_prev_new + '%';
-            ss_next.height = size_next_new + '%';
+            div_prev.style.height = size_prev_new + '%';
+            div_next.style.height = size_next_new + '%';
         }
 
         return overdrag;
@@ -190,14 +165,14 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
 
-        this.recalcChild(false);
+        this.recalcChild();
     }
 
     handleDragFinish(pane_num_prev: number, pane_num_next: number) {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
 
-        this.recalcChild(true);
+        this.recalcChild();
     }
 
     get is_vertical() {
