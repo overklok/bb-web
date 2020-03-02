@@ -31,6 +31,8 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     on(channel, handler) {
+        channel = (channel === 'command') ? 'xcommand' : channel;
+
         this._handlers[channel] = (evt, data) => {
             data = JSON.parse(data);
             console.debug('QtIPC:on', channel, data);

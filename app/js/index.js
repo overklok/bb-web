@@ -694,7 +694,7 @@ class Application {
          */
         this._dispatcher.on('ls:disconnect', () => {
             console.log("IPC DISCONNECTED");
-            this.gui.setBoardStatus('default');
+            this.gui.setBoardStatus('default222');
 
             this.gui.showAlert("no_server");
         });

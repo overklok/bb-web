@@ -149,7 +149,11 @@ export default class TracingModule extends Module {
     }
 
     setVariableValue(variable_name, variable_value) {
-        this._varpane.setValue(variable_name, variable_value, true);
+        if (variable_name == 'arduino_out_value') {
+            this._varpane.setSensorValues(variable_value, true);
+        } else {
+            this._varpane.setValue(variable_name, variable_value, true);
+        }
         // this._blockly.setVariableBlockValue(variable_type, variable_value);
     }
 

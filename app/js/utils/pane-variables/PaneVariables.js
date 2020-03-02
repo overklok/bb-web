@@ -142,6 +142,12 @@ export default class PaneVariables {
         }
     }
 
+    setSensorValues(values, animate=true) {
+        for (const [i, value] of values.entries()) {
+            this.setValue("SNS"+i, value);
+        }
+    }
+
     setValue(name, value, animate=true) {
         if (!(name in this.variables)) return;
 
