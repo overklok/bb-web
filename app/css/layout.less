@@ -19,7 +19,8 @@ body {
 .pane {
   display: flex;
   justify-content: space-between;
-  box-sizing: border-box;
+  // WARNING: It's vital to NOT use border-box sizing here!
+  //box-sizing: border-box;
   flex-grow: 1;
 
   &.pane-h {
@@ -66,5 +67,5 @@ body {
 
 // Theme
 .pane {
-  border: 1px solid black;
+  border: 3px solid black;
 }

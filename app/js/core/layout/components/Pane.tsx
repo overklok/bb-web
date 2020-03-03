@@ -43,12 +43,19 @@ export default class Pane extends React.Component<IProps, IState> {
 
     recalcChild() {
         let sizes = this.panes.map(
-            ref => this.is_vertical ? ref.current.div_element.offsetWidth : ref.current.div_element.offsetHeight
+            // Подсчёт размеров без учёта border
+            ref => this.is_vertical ?
+                ref.current.div_element.clientWidth :
+                ref.current.div_element.clientHeight
         );
+
+        console.log('sizes-b', sizes);
 
         let overall_size = sizes.reduce((a, b) => a + b, 0);
 
         sizes = sizes.map(normalize(0, overall_size));
+
+        console.log('sizes-a', sizes);
 
         for (const [i, ref] of this.panes.entries()) {
             const pane = ref.current;
@@ -113,15 +120,15 @@ export default class Pane extends React.Component<IProps, IState> {
         console.log(test);
     }
 
-    handleDragging(movement: number, pane_prev_num: number, pane_next_num: number) {
+    handleDragging(movement_px: number, pane_prev_num: number, pane_next_num: number) {
         const pane_prev = this.panes[pane_prev_num].current;
         const pane_next = this.panes[pane_next_num].current;
 
         const div_prev = pane_prev.div_element;
         const div_next = pane_next.div_element;
 
-        const size_prev_old = Number((this.is_vertical ? div_prev.style.width : div_prev.style.height).slice(0, -1)),
-              size_next_old = Number((this.is_vertical ? div_next.style.width : div_next.style.height).slice(0, -1));
+        const size_prev_old_perc = Number((this.is_vertical ? div_prev.style.width : div_prev.style.height).slice(0, -1)),
+              size_next_old_perc = Number((this.is_vertical ? div_next.style.width : div_next.style.height).slice(0, -1));
 
         const size_prev_old_px = this.is_vertical ? div_prev.clientWidth : div_prev.clientHeight,
               size_next_old_px = this.is_vertical ? div_next.clientWidth : div_next.clientHeight;
@@ -129,26 +136,28 @@ export default class Pane extends React.Component<IProps, IState> {
         let overdrag = null;
 
         // percents per pixel
-        const ppp = (size_next_old + size_prev_old) / (size_prev_old_px + size_next_old_px);
+        const ppp = (size_next_old_perc + size_prev_old_perc) / (size_prev_old_px + size_next_old_px);
 
         // TODO: ручка может сдвинуть соседнюю на 1 px
         // TODO: работа с пиксельными ограничениями
 
-        movement *= ppp;
+        // console.log(movement_px, ppp, movement_px * ppp);
 
-        if (size_next_old - movement < pane_next.props.size_min) {
-            movement = size_next_old - pane_next.props.size_min;
+        let movement_perc = movement_px * ppp;
+
+        if (size_next_old_px - movement_px <= pane_next.props.size_min) {
+            movement_perc = size_next_old_perc - pane_next.props.size_min;
             overdrag = 1;
         }
 
-        if (size_prev_old + movement < pane_prev.props.size_min) {
-            movement = -(size_prev_old - pane_prev.props.size_min);
+        if (size_prev_old_px + movement_px <= pane_prev.props.size_min) {
+            movement_perc = -(size_prev_old_perc - pane_prev.props.size_min);
             overdrag = -1;
         }
 
         // Новый предполагаемый размер панели
-        let size_prev_new = size_prev_old + movement,
-            size_next_new = size_next_old - movement;
+        let size_prev_new = size_prev_old_perc + movement_perc,
+            size_next_new = size_next_old_perc - movement_perc;
 
         if (this.is_vertical) {
             div_prev.style.width = size_prev_new + '%';
