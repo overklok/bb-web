@@ -1,8 +1,9 @@
 import * as React from "react";
 import {RefObject} from "react";
 import classNames from "classnames";
-import {ILayoutPane, PaneOrientation} from "../types";
 import Handler from "./Handler";
+import {ILayoutPane} from "../../configuration/LayoutConfiguration";
+import {PaneOrientation} from "../types";
 
 interface IProps {
     name: string,

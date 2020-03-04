@@ -1,7 +1,7 @@
 import * as React from "react";
 import Pane from "./Pane";
-import {ILayoutPane, LayoutConfiguration, PaneOrientation} from "../types";
-import classNames from "classnames";
+
+import {LayoutConfiguration} from "../../configuration/LayoutConfiguration";
 
 require('css/layout.less');
 

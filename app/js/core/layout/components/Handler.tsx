@@ -1,7 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
-import {ILayoutPane, PaneOrientation} from "../types";
-import Pane from "./Pane";
+import {PaneOrientation} from "../types";
 
 interface IProps {
     orientation: PaneOrientation,

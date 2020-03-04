@@ -6,8 +6,8 @@ import ILayoutService from "../service/interfaces/ILayoutService";
 import ConfigServiceProvider from "../providers/ConfigServiceProvider";
 import IConfigService from "../service/interfaces/IConfigService";
 
-import {LayoutConfiguration} from "../layout/types";
 import layouts from './configs/layouts';
+import {LayoutConfiguration} from "../configuration/LayoutConfiguration";
 
 class TestApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -19,6 +19,7 @@ class TestApplication extends Application {
     }
 
     protected setup() {
+        // @ts-ignore
         this.instance(IConfigService).configure(LayoutConfiguration, layouts);
     }
 
