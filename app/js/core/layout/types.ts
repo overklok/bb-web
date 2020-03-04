@@ -7,6 +7,7 @@ export enum PaneOrientation {
 
 export interface ILayoutPane {
     name: string,
+    size: number,
     panes: ILayoutPane[];
 }
 

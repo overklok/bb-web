@@ -10,6 +10,8 @@ interface IProps {
     panes?: ILayoutPane[],
     orientation: PaneOrientation,
 
+    size_unit: string,
+
     // начальный размер: PX / %
     size: string|number
     // минимальный размер: PX / %
@@ -44,8 +46,8 @@ interface IState {
 // 5. С помощью параметра (size_max) пользователь задаёт максимальный размер панели (PX).
 //  5.1. Для свободных панелей задание size_min невозможно.
 //  5.2. Если size_max не задан, максимальный размер панели не ограничен.
-//  5.3. size_max не может быть меньше size, если size задан в PX
-//  5.4. size_max не может быть меньше size_min
+//  5.3. size_max не может быть меньше size, если size задан в PX.
+//  5.4. size_max не может быть меньше size_min.
 
 export default class Pane extends React.Component<IProps, IState> {
     static defaultProps = {
@@ -55,6 +57,7 @@ export default class Pane extends React.Component<IProps, IState> {
         orientation: PaneOrientation.Horizontal,
 
         size: 0,
+        size_unit: '%',
 
         size_min: 0,
         size_max: 0,
@@ -71,7 +74,17 @@ export default class Pane extends React.Component<IProps, IState> {
         this.handleDragging = this.handleDragging.bind(this);
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+        if (this.props.size == 0) return;
+
+        // TODO: Recalc siblings or deal with flex
+
+        if (this.is_vertical) {
+            this.div_element.style.height = this.props.size + this.props.size_unit;
+        } else {
+            this.div_element.style.width = this.props.size + this.props.size_unit;
+        }
+    }
 
     recalcChild() {
         let sizes = this.panes.map(
@@ -81,13 +94,9 @@ export default class Pane extends React.Component<IProps, IState> {
                 ref.current.div_element.clientHeight
         );
 
-        console.log('sizes-b', sizes);
-
         let overall_size = sizes.reduce((a, b) => a + b, 0);
 
         sizes = sizes.map(normalize(0, overall_size));
-
-        console.log('sizes-a', sizes);
 
         for (const [i, ref] of this.panes.entries()) {
             const pane = ref.current;
@@ -102,7 +111,7 @@ export default class Pane extends React.Component<IProps, IState> {
 
     renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
         return (
-            <Pane key={index} name={data.name} panes={data.panes} orientation={orientation} ref={ref} />
+            <Pane key={index} name={data.name} size={data.size} panes={data.panes} orientation={orientation} ref={ref} />
         );
     }
 
