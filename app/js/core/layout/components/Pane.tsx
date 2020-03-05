@@ -26,15 +26,16 @@ interface IState {
     locked: boolean
 }
 
-// PoC Completed! Add new features to finish this module.
-
 // TODO:
-// 0. Refactor configuration
-// 1. Shorthand for size_max and size_min
-// 2. Add `resizable` option
-// 3. Refactor Pane
-// 4. Animation
-// 5. Transition
+// 0. Deal with pane content overflow
+// === PoC Completed ===
+// 1. Refactor configuration
+// 2. Add `fixed` shorthand for size_max and size_min
+// 3. Add `resizable` option
+// 4. Add resizing limits (px/%)
+// 5. Refactor Pane
+// 6. Animation
+// 7. Transition
 
 export default class Pane extends React.Component<IProps, IState> {
     static defaultProps = {
