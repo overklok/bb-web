@@ -9,6 +9,8 @@ const UNITS_ALLOWED = [
 export interface ILayoutPane {
     name: string,
     size: number,
+    size_min: number,
+    size_max: number,
     size_unit: string;
     panes: ILayoutPane[];
 }
@@ -43,7 +45,6 @@ export class LayoutConfiguration implements IConfiguration {
         const has_free = panes.some(element => !element.size);
 
         if (!has_free) {
-            console.log(panes, panes.map(x => x.size));
             throw new ConfigurationError("Each pane should contain at least one free-sized sub-pane")
         };
 
@@ -62,12 +63,38 @@ export class LayoutConfiguration implements IConfiguration {
             }
         }
 
-        if (pane.size == null) pane.size = 0;
+        if (pane.size == null)      pane.size = 0;
+        if (pane.size_min == null)  pane.size_min = 0;
+        if (pane.size_max == null)  pane.size_max = 0;
+
+        if (pane.size_min !== 0) {
+            if (typeof pane.size_min === "string") {
+                const matches = /^(\d+)(\D+)/gm.exec(pane.size_min);
+
+                if (!(matches && matches.length == 3 && matches[2] == 'px')) throw new Error(`Min size should have a 'px' unit`);
+
+                pane.size_min = Number(matches[1]);
+            } else {
+                throw new Error(`Min size should be a string`);
+            }
+        }
+
+        if (pane.size_max !== 0) {
+            if (typeof pane.size_max === "string") {
+                const matches = /^(\d+)(\D+)/gm.exec(pane.size_max);
+
+                if (!(matches && matches.length == 3 && matches[2] == 'px')) throw new Error(`Max size should have a 'px' unit`);
+
+                pane.size_max = Number(matches[1]);
+            } else {
+                throw new Error(`Max size should be a string`);
+            }
+        }
 
         if (typeof pane.size === "string") {
             const matches = /^(\d+)(\D+)/gm.exec(pane.size);
 
-            if (matches.length == 3) {
+            if (matches && matches.length == 3) {
                 if (!(UNITS_ALLOWED.includes(matches[2]))) throw new Error(`Invalid size unit: ${matches[2]}`);
 
                 pane.size_unit = matches[2];
