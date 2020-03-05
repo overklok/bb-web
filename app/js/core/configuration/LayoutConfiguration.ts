@@ -28,12 +28,16 @@ export class LayoutConfiguration implements IConfiguration {
         }
     }
 
-    preprocess (): void {
+    preprocess(): void {
         for (const mode of Object.values(this.modes)) {
             for (const pane of mode.panes) {
                 this.processSizeUnits(pane);
             }
         }
+    }
+
+    normalizeSizes(panes: []) {
+
     }
 
     // TODO: Refactor
