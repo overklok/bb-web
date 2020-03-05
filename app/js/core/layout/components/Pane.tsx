@@ -28,6 +28,7 @@ interface IState {
 
 // size_min может быть только в PX. % не имеют значения
 // size_min не может быть больше size, если size задан в PX
+// Свободная панель - это филлер (у него flex-grow = 1)
 
 // Правила задания размеров:
 // 1. В любой момент времени все панели должны занимать 100% всей родительской панели.
@@ -49,8 +50,6 @@ interface IState {
 //  5.2. Если size_max не задан, максимальный размер панели не ограничен.
 //  5.3. size_max не может быть меньше size, если size задан в PX.
 //  5.4. size_max не может быть меньше size_min.
-
-// TODO: Реализовать "свободные" панели - для них flex-grow = 0
 
 export default class Pane extends React.Component<IProps, IState> {
     static defaultProps = {
@@ -80,13 +79,15 @@ export default class Pane extends React.Component<IProps, IState> {
     componentDidMount() {
         if (this.props.size == 0) return;
 
-        // TODO: Recalc siblings or deal with flex
+        console.log(this.props.size + this.props.size_unit);
 
         if (this.is_vertical) {
             this.div_element.style.height = this.props.size + this.props.size_unit;
         } else {
             this.div_element.style.width = this.props.size + this.props.size_unit;
         }
+
+        this.div_element.style.flexGrow = "0";
     }
 
     recalcChild() {
@@ -114,7 +115,15 @@ export default class Pane extends React.Component<IProps, IState> {
 
     renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
         return (
-            <Pane key={index} name={data.name} size={data.size} panes={data.panes} orientation={orientation} ref={ref} />
+            <Pane
+                key={index}
+                name={data.name}
+                size={data.size}
+                size_unit={data.size_unit}
+                panes={data.panes}
+                orientation={orientation}
+                ref={ref}
+            />
         );
     }
 

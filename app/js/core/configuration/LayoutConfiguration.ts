@@ -1,5 +1,6 @@
 import IConfiguration from "../helpers/IConfiguration";
 import {PaneOrientation} from "../layout/types";
+import {ConfigurationError} from "../exceptions/configuration";
 
 const UNITS_ALLOWED = [
     "px", '%'
@@ -31,39 +32,50 @@ export class LayoutConfiguration implements IConfiguration {
     preprocess(): void {
         for (const mode of Object.values(this.modes)) {
             for (const pane of mode.panes) {
-                this.processSizeUnits(pane);
+                LayoutConfiguration.processSizeUnits(pane);
+            }
+
+            LayoutConfiguration.validateSizes(mode.panes);
+        }
+    }
+
+    static validateSizes(panes: {size?: string|number, panes?: any[]}[]) {
+        const has_free = panes.some(element => !element.size);
+
+        if (!has_free) {
+            console.log(panes, panes.map(x => x.size));
+            throw new ConfigurationError("Each pane should contain at least one free-sized sub-pane")
+        };
+
+        for (const pane of panes) {
+            if (pane.panes) {
+                this.validateSizes(pane.panes);
             }
         }
     }
 
-    normalizeSizes(panes: []) {
-
-    }
-
     // TODO: Refactor
-    processSizeUnits(pane: ILayoutPane): void {
+    static processSizeUnits(pane: ILayoutPane): void {
         if (pane.panes) {
             for (const subpane of pane.panes) {
                 this.processSizeUnits(subpane);
             }
         }
 
-        if (pane.size == null) return;
+        if (pane.size == null) pane.size = 0;
 
         if (typeof pane.size === "string") {
             const matches = /^(\d+)(\D+)/gm.exec(pane.size);
 
             if (matches.length == 3) {
-                if (!(matches[2] in UNITS_ALLOWED)) throw new Error(`Invalid size unit: ${matches[2]}`);
+                if (!(UNITS_ALLOWED.includes(matches[2]))) throw new Error(`Invalid size unit: ${matches[2]}`);
 
                 pane.size_unit = matches[2];
                 pane.size = Number(matches[1]);
             } else {
-                pane.size_unit = "px";
                 pane.size = Number(pane.size);
             }
         } else {
-            pane.size_unit = "px";
             pane.size = Number(pane.size);
         }
     }
