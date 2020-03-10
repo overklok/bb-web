@@ -3,13 +3,6 @@ import Cell from "../core/Cell";
 import Layer from "../core/Layer";
 import Current from "../core/Current";
 import BackgroundLayer from "../layers/BackgroundLayer";
-
-const CURRENT_WIDTH = 14;
-const CURRENT_WIDTH_SCHEMATIC = 10;
-
-const PARTICLE_SIZE = 18;
-const PARTICLE_SIZE_SCHEMATIC = 16;
-
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
 
@@ -190,17 +183,13 @@ export default class CurrentLayer extends Layer {
     _addCurrent(thread, spare, show_source=true) {
         if (!thread || thread.length === 0) {}
 
-        let current = new Current(this._currentgroup, thread, this._getCurrentOptions());
-
         let line_path = this._buildCurrentLinePath(thread);
+        let current = new Current(this._currentgroup, thread, this.__schematic);
 
         this._currents[current.id] = current;
 
-        let weight = thread.weight > 1 ? 1 : thread.weight;
-        this._weight = weight;
-
-        current.draw(line_path, weight);
-        current.activate(weight);
+        current.draw(line_path);
+        current.activate();
 
         return current;
     };
@@ -302,14 +291,6 @@ export default class CurrentLayer extends Layer {
             ['L', 80, c_to.center_adj.y + bias_y],
             ['L', 80, 780]
         ];
-    }
-
-    _getCurrentOptions() {
-        return {
-            width: this.__schematic ? CURRENT_WIDTH_SCHEMATIC : CURRENT_WIDTH,
-            linecap: "round",
-            particle_radius: this.__schematic ? PARTICLE_SIZE_SCHEMATIC : PARTICLE_SIZE
-        }
     }
 
     /**
