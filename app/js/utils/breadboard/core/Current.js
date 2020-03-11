@@ -239,21 +239,10 @@ export default class Current {
         weight = Number(weight);
 
         // Держать значение в интервале [0..1]
-        // weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
-        // weight = weight < 0 ? 0 : weight;
-
-        // Normalize between [0..1]
-        const k = 1;
+        const k = 1.6;
         weight = 1 - 1 / (1 + k * weight);
 
-        // Ease in-out weight redistribution
-        const w = weight;
-        const w2 = w * w;
-        const res = w2 / (2 * (w2 - w) + 1);
-
-        console.log('norm', res);
-
-        return res;
+        return EasingFunctions.easeOutQuad(weight);
     }
 
     /**
@@ -511,10 +500,11 @@ export default class Current {
         const width_max = this._schematic ? Current.WidthSchematicMax : Current.WidthMax,
               radii_max = this._schematic ? Current.RadiusSchematicMax : Current.RadiusMax;
 
-        const alpha = (weight - 1) / (0.1 - 1);
+        // const alpha = weight / 0.1;
+        const alpha = 1;
 
-        const width = weight >= 0.1 ? width_max : Math.floor(alpha * width_max),
-              radii = weight >= 0.1 ? radii_max : Math.floor(alpha * radii_max);
+        const width = weight > 0.1 ? width_max : Math.floor( alpha * width_max),
+              radii = weight > 0.1 ? radii_max : Math.floor(alpha * radii_max);
 
         let style = {
             linecap: "round",
@@ -603,4 +593,33 @@ export default class Current {
             Math.round(color1[2] * w1 + color2[2] * w2)
         ];
     }
+}
+
+const EasingFunctions = {
+  // no easing, no acceleration
+  linear: t => t,
+  // accelerating from zero velocity
+  easeInQuad: t => t*t,
+  // decelerating to zero velocity
+  easeOutQuad: t => t*(2-t),
+  // acceleration until halfway, then deceleration
+  easeInOutQuad: t => t<.5 ? 2*t*t : -1+(4-2*t)*t,
+  // accelerating from zero velocity
+  easeInCubic: t => t*t*t,
+  // decelerating to zero velocity
+  easeOutCubic: t => (--t)*t*t+1,
+  // acceleration until halfway, then deceleration
+  easeInOutCubic: t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1,
+  // accelerating from zero velocity
+  easeInQuart: t => t*t*t*t,
+  // decelerating to zero velocity
+  easeOutQuart: t => 1-(--t)*t*t*t,
+  // acceleration until halfway, then deceleration
+  easeInOutQuart: t => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t,
+  // accelerating from zero velocity
+  easeInQuint: t => t*t*t*t*t,
+  // decelerating to zero velocity
+  easeOutQuint: t => 1+(--t)*t*t*t*t,
+  // acceleration until halfway, then deceleration
+  easeInOutQuint: t => t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t
 }
