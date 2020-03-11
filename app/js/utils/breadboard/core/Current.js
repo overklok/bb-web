@@ -29,7 +29,7 @@ export default class Current {
         // "#006ec2",
     ]}
 
-    static get DurationMin() {return 300}       // Длительность цикла анимации частиц тока при минимальном весе
+    static get DurationMin() {return 200}       // Длительность цикла анимации частиц тока при минимальном весе
     static get DurationMax() {return 10000}     // Длительность цикла анимации частиц тока при максимальном весе
     static get AnimationDelta() {return 200}    // Расстояние между соседними частицами, px
 
@@ -240,9 +240,18 @@ export default class Current {
 
         // Держать значение в интервале [0..1]
         // weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
-        weight = weight < 0 ? 0 : weight;
+        // weight = weight < 0 ? 0 : weight;
 
-        const res = 1 - 1 / (1 + 10 * weight);
+        // Normalize between [0..1]
+        const k = 1;
+        weight = 1 - 1 / (1 + k * weight);
+
+        // Ease in-out weight redistribution
+        const w = weight;
+        const w2 = w * w;
+        const res = w2 / (2 * (w2 - w) + 1);
+
+        console.log('norm', res);
 
         return res;
     }
@@ -498,18 +507,18 @@ export default class Current {
         return str;
     }
 
-    _getStyle(weight_anim) {
+    _getStyle(weight) {
         const width_max = this._schematic ? Current.WidthSchematicMax : Current.WidthMax,
               radii_max = this._schematic ? Current.RadiusSchematicMax : Current.RadiusMax;
 
-        const alpha = (weight_anim - 1) / (0.1 - 1);
+        const alpha = (weight - 1) / (0.1 - 1);
 
-        const width = weight_anim >= 0.1 ? width_max : Math.floor(alpha * width_max),
-              radii = weight_anim >= 0.1 ? radii_max : Math.floor(alpha * radii_max);
+        const width = weight >= 0.1 ? width_max : Math.floor(alpha * width_max),
+              radii = weight >= 0.1 ? radii_max : Math.floor(alpha * radii_max);
 
         let style = {
             linecap: "round",
-            color: Current.pickColorFromRange(weight_anim),
+            color: Current.pickColorFromRange(weight),
             width: width,
             particle_radius: radii
         };
@@ -518,11 +527,12 @@ export default class Current {
     }
 
     static pickColorFromRange(weight) {
-        // вес не может превышать 1
-        weight = weight > 1 ? 1 : weight;
+        // вес должен быть в пределах [0..1]
+        weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
 
         // размер секции перехода цветов (secsize <= 1)
-        let secsize = 1 / Current.Colors.length;
+        let secsize = 1 / (Current.Colors.length - 1);
+
         // номер секции перехода цветов (section <= кол-во цветов)
         let section = Math.ceil(weight / secsize);
         section = section > 0 ? section -1 : 0;
