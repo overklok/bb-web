@@ -205,11 +205,15 @@ export default class CurrentLayer extends Layer {
         let path;
 
         if (points.from.x === -1) {
+            // Ток идёт из/в ПЛЮС источника питания
+            // TODO: Подать второй параметр в 211
             let c_to = this.__grid.cell(points.to.x, points.to.y);
-            path = this._getLinePathSourceOut(c_to);
+            path = this._getLinePathSourcePlus(c_to, );
         } else if (points.to.x === -1) {
+            // Ток идёт из/в МИНУС источника питания
+            // TODO: Подать второй параметр в 216
             let c_from = this.__grid.cell(points.from.x, points.from.y);
-            path = this._getLinePathSourceIn(c_from);
+            path = this._getLinePathSourceMinus(c_from);
         } else {
             let c_from  = this.__grid.cell(points.from.x, points.from.y),
                 c_to    = this.__grid.cell(points.to.x, points.to.y)
@@ -260,35 +264,39 @@ export default class CurrentLayer extends Layer {
         ];
     }
 
-    _getLinePathSourceOut(c_to) {
+    _getLinePathSourcePlus(c_arb, to_source=false) {
         // "out" (from "+") means this is top current
-        let c_from = this.__grid.cell(0, 1);
+        let c_zero = this.__grid.cell(0, 1);
 
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
+
+        if (to_source) [c_arb, c_zero] = [c_zero, c_arb];
 
         return [
             ['M', 80, 720],
-            ['L', 80, c_from.center_adj.y - bias_y],
-            ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+            ['L', 80, c_zero.center_adj.y - bias_y],
+            ['L', c_zero.center_adj.x, c_zero.center_adj.y - bias_y],
 
-            ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
-            ['L', c_to.center_adj.x, c_to.center_adj.y]
+            ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
+            ['L', c_arb.center_adj.x, c_arb.center_adj.y]
         ];
     }
 
-    _getLinePathSourceIn(c_from) {
+    _getLinePathSourceMinus(c_arb, to_source=false) {
         // "in" (to "-") means this is bottom current
-        let c_to = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
+        let c_zero = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
 
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
-        return [
-            ['M', c_from.center_adj.x, c_from.center_adj.y],
-            ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
+        if (to_source) [c_arb, c_zero] = [c_zero, c_arb];
 
-            ['L', 80, c_to.center_adj.y + bias_y],
+        return [
+            ['M', c_arb.center_adj.x, c_arb.center_adj.y],
+            ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
+
+            ['L', 80, c_zero.center_adj.y + bias_y],
             ['L', 80, 780]
         ];
     }
