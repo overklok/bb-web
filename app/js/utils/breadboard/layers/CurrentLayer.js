@@ -204,17 +204,31 @@ export default class CurrentLayer extends Layer {
     _buildCurrentLinePath(points) {
         let path;
 
-        if (points.from.x === -1) {
-            // Ток идёт из/в ПЛЮС источника питания
-            // TODO: Подать второй параметр в 211
-            let c_to = this.__grid.cell(points.to.x, points.to.y);
-            path = this._getLinePathSourcePlus(c_to, );
-        } else if (points.to.x === -1) {
-            // Ток идёт из/в МИНУС источника питания
-            // TODO: Подать второй параметр в 216
-            let c_from = this.__grid.cell(points.from.x, points.from.y);
-            path = this._getLinePathSourceMinus(c_from);
-        } else {
+        // Ток идёт ИЗ ПЛЮСА
+        if (points.from.x === -1 && points.from.y === 1) {
+            let c_arb = this.__grid.cell(points.to.x, points.to.y);
+            path = this._getLinePathSourcePlus(c_arb, false);
+        }
+
+        // Ток идёт ИЗ МИНУСА
+        else if (points.from.x === - 1 && points.from.y === 10) {
+            let c_arb = this.__grid.cell(points.to.x, points.to.y);
+            path = this._getLinePathSourceMinus(c_arb, true);
+        }
+
+        // Ток идёт В ПЛЮС
+        else if (points.to.x === - 1 && points.to.y === 1) {
+            let c_arb = this.__grid.cell(points.from.x, points.from.y);
+            path = this._getLinePathSourcePlus(c_arb, true);
+        }
+
+        // Ток идёт В МИНУС
+        else if (points.to.x === - 1 && points.to.y === 10) {
+            let c_arb = this.__grid.cell(points.from.x, points.from.y);
+            path = this._getLinePathSourceMinus(c_arb, false);
+        }
+
+        else {
             let c_from  = this.__grid.cell(points.from.x, points.from.y),
                 c_to    = this.__grid.cell(points.to.x, points.to.y)
 
@@ -271,16 +285,25 @@ export default class CurrentLayer extends Layer {
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
-        if (to_source) [c_arb, c_zero] = [c_zero, c_arb];
+        if (to_source) {
+            return [
+                ['M', c_arb.center_adj.x, c_arb.center_adj.y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
+                ['L', c_zero.center_adj.x, c_zero.center_adj.y - bias_y],
 
-        return [
-            ['M', 80, 720],
-            ['L', 80, c_zero.center_adj.y - bias_y],
-            ['L', c_zero.center_adj.x, c_zero.center_adj.y - bias_y],
+                ['L', 80, c_zero.center_adj.y - bias_y],
+                ['L', 80, 720]
+            ];
+        } else {
+            return [
+                ['M', 80, 720],
+                ['L', 80, c_zero.center_adj.y - bias_y],
+                ['L', c_zero.center_adj.x, c_zero.center_adj.y - bias_y],
 
-            ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
-            ['L', c_arb.center_adj.x, c_arb.center_adj.y]
-        ];
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y]
+            ];
+        }
     }
 
     _getLinePathSourceMinus(c_arb, to_source=false) {
@@ -290,15 +313,23 @@ export default class CurrentLayer extends Layer {
         let needs_bias = this.__schematic && this.__detailed;
         let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
 
-        if (to_source) [c_arb, c_zero] = [c_zero, c_arb];
+        if (to_source) {
+            return [
+                ['M', 80, 780],
+                ['L', 80, c_zero.center_adj.y + bias_y],
 
-        return [
-            ['M', c_arb.center_adj.x, c_arb.center_adj.y],
-            ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y]
+            ];
+        } else {
+            return [
+                ['M', c_arb.center_adj.x, c_arb.center_adj.y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
 
-            ['L', 80, c_zero.center_adj.y + bias_y],
-            ['L', 80, 780]
-        ];
+                ['L', 80, c_zero.center_adj.y + bias_y],
+                ['L', 80, 780]
+            ];
+        };
     }
 
     /**
