@@ -202,6 +202,7 @@ export default class CurrentLayer extends Layer {
      * @private
      */
     _buildCurrentLinePath(points) {
+        const last_coord_y = this.grid.dim.y - 1;
         let path;
 
         // Ток идёт ИЗ ПЛЮСА
@@ -211,7 +212,7 @@ export default class CurrentLayer extends Layer {
         }
 
         // Ток идёт ИЗ МИНУСА
-        else if (points.from.x === - 1 && points.from.y === 10) {
+        else if (points.from.x === - 1 && points.from.y === last_coord_y) {
             let c_arb = this.__grid.cell(points.to.x, points.to.y);
             path = this._getLinePathSourceMinus(c_arb, true);
         }
@@ -223,7 +224,7 @@ export default class CurrentLayer extends Layer {
         }
 
         // Ток идёт В МИНУС
-        else if (points.to.x === - 1 && points.to.y === 10) {
+        else if (points.to.x === - 1 && points.to.y === last_coord_y) {
             let c_arb = this.__grid.cell(points.from.x, points.from.y);
             path = this._getLinePathSourceMinus(c_arb, false);
         }
