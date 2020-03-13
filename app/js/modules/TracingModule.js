@@ -150,11 +150,15 @@ export default class TracingModule extends Module {
 
     setVariableValue(variable_name, variable_value) {
         if (variable_name == 'arduino_out_value') {
-            this._varpane.setSensorValues(variable_value, true);
+
         } else {
             this._varpane.setValue(variable_name, variable_value, true);
         }
         // this._blockly.setVariableBlockValue(variable_type, variable_value);
+    }
+
+    setPinsValues(values) {
+        this._varpane.setSensorValues(values, true);
     }
 
     addHistoryBlock(block_id, workspace_src) {

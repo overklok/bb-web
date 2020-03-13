@@ -25,7 +25,7 @@ export default class LocalServiceModule extends Module {
     static get eventspace_name()    {return "ls"}
     static get event_types()        {return [
         "connect", "disconnect", "client_swap", "command", "variable",
-        "terminate", "plates", "currents", "board-status", "timeout", "error",
+        "terminate", "plates", "currents", "pins_values", "board-status", "timeout", "error",
         // "request_calc",
     ]};
 
@@ -476,7 +476,18 @@ export default class LocalServiceModule extends Module {
         });
 
         this._ipc.on('draw_currents', (evt, data) => {
-           this.emitEvent('currents', data);
+            let arduino_pins = undefined;
+
+            if (data.hasOwnProperty('arduino_pins')) {
+                arduino_pins = data.arduino_pins;
+                delete data.arduino_pins;
+            }
+
+            this.emitEvent('currents', data);
+
+            if (arduino_pins) {
+                this.emitEvent('pins_values', arduino_pins);
+            }
         });
 
         // this._ipc.on('request_calc', (evt, data) => {

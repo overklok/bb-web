@@ -603,14 +603,6 @@ class Application {
         });
 
         /**
-         * Изменено значение переменной
-         */
-        this._dispatcher.on('ls:variable', data => {
-            console.log(data);
-            this.trc.setVariableValue(data.id, data.value);
-        });
-
-        /**
          * Когда программа завершится
          */
         this._dispatcher.on('ls:terminate', check_needed => {
@@ -642,6 +634,14 @@ class Application {
         });
 
         /**
+         * Изменено значение переменной
+         */
+        this._dispatcher.on('ls:variable', data => {
+            // For Arduino pins, see `ls:pin_values` event handler
+            this.trc.setVariableValue(data.id, data.value);
+        });
+
+        /**
          * Изменены плашки
          */
         this._dispatcher.on('ls:plates', data => {
@@ -663,6 +663,13 @@ class Application {
          */
         this._dispatcher.on('ls:currents', data => {
             this.bb.updateCurrents(data);
+        });
+
+        /**
+         * Изменены значения пинов
+         */
+        this._dispatcher.on('ls:pins_values', data => {
+            this.trc.setPinsValues(data);
         });
 
         /**
