@@ -26,29 +26,19 @@ interface IState {
     locked: boolean
 }
 
-// size_min может быть только в PX. % не имеют значения
-// size_min не может быть больше size, если size задан в PX
-
-// Правила задания размеров:
-// 1. В любой момент времени все панели должны занимать 100% всей родительской панели.
-// 2. По умолчанию размер панели можно изменять.
-// 3. С помощью параметра (size) пользователь задаёт соотношение панели или её начальный размер:
-//  3.1. Если size не задан, панель счиается свободной.
-//  3.2. Если задаются соотношения (%):
-//      3.2.1. Если все под-панели несвободны, сумма их размеров составлять ровно 100%
-//      3.2.2. Если есть как минимум одна свободная под-панель, сумма размеров несвободных панелей не должна превышать 100%.
-//  3.3. Если задаются начальные размеры (PX), то в панели должна быть как минимум одна свободная под-панель.
-//  3.4. При наличии свободных под-панелей:
-//      3.4.1. Устанавливается минимальный размер корневой панели, равный сумме минимальных размеров всех под-панелей.
-// 4. С помощью параметра (size_min) пользователь задаёт минимальный размер панели (PX).
-//  4.1. Для свободных панелей задание size_min невозможно.
-//  4.2. Если size_min не задан, минимальный размер панели принимается равным нулю.
-//  4.3. size_min не может быть больше size, если size задан в PX
-// 5. С помощью параметра (size_max) пользователь задаёт максимальный размер панели (PX).
-//  5.1. Для свободных панелей задание size_min невозможно.
-//  5.2. Если size_max не задан, максимальный размер панели не ограничен.
-//  5.3. size_max не может быть меньше size, если size задан в PX.
-//  5.4. size_max не может быть меньше size_min.
+// TODO:
+// === PoC Completed ===
+// 1. Refactor configuration
+// 2. Add `fixed` shorthand for size_max and size_min
+// 3. Add `resizable` option
+// 4. Add resizing limits (px/%)
+// 5. Refactor Pane
+// 6. Animation
+// 7. Transition
+// === Base Completed ===
+// 8. Dynamic Configuration
+// 9. Drag & Drop
+// 10. Tabs
 
 export default class Pane extends React.Component<IProps, IState> {
     static defaultProps = {
@@ -76,15 +66,31 @@ export default class Pane extends React.Component<IProps, IState> {
     }
 
     componentDidMount() {
-        if (this.props.size == 0) return;
+        if (this.props.size_min) {
+            if (this.is_vertical) {
+                this.div_element.style.minHeight = this.props.size_min + 'px';
+            } else {
+                this.div_element.style.minWidth = this.props.size_min + 'px';
+            }
+        }
 
-        // TODO: Recalc siblings or deal with flex
+        if (this.props.size_max) {
+            if (this.is_vertical) {
+                this.div_element.style.maxHeight = this.props.size_max + 'px';
+            } else {
+                this.div_element.style.maxWidth = this.props.size_max + 'px';
+            }
+        }
+
+        if (this.props.size == 0) return;
 
         if (this.is_vertical) {
             this.div_element.style.height = this.props.size + this.props.size_unit;
         } else {
             this.div_element.style.width = this.props.size + this.props.size_unit;
         }
+
+        this.div_element.style.flexGrow = "0";
     }
 
     recalcChild() {
@@ -112,7 +118,17 @@ export default class Pane extends React.Component<IProps, IState> {
 
     renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
         return (
-            <Pane key={index} name={data.name} size={data.size} panes={data.panes} orientation={orientation} ref={ref} />
+            <Pane
+                key={index}
+                name={data.name}
+                size={data.size}
+                size_min={data.size_min}
+                size_max={data.size_max}
+                size_unit={data.size_unit}
+                panes={data.panes}
+                orientation={orientation}
+                ref={ref}
+            />
         );
     }
 
@@ -180,20 +196,26 @@ export default class Pane extends React.Component<IProps, IState> {
         // percents per pixel
         const ppp = (size_next_old_perc + size_prev_old_perc) / (size_prev_old_px + size_next_old_px);
 
-        // TODO: работа с пиксельными ограничениями
-
-        // console.log(movement_px, ppp, movement_px * ppp);
-
         let movement_perc = movement_px * ppp;
 
         if (size_next_old_px - movement_px <= pane_next.props.size_min) {
-            movement_perc = size_next_old_perc - pane_next.props.size_min;
+            movement_perc = size_next_old_perc - pane_next.props.size_min * ppp;
             overdrag = 1;
         }
 
         if (size_prev_old_px + movement_px <= pane_prev.props.size_min) {
-            movement_perc = -(size_prev_old_perc - pane_prev.props.size_min);
+            movement_perc = -(size_prev_old_perc - pane_prev.props.size_min * ppp);
             overdrag = -1;
+        }
+
+        if (pane_next.props.size_max && size_next_old_px - movement_px >= pane_next.props.size_max) {
+            movement_perc = (size_next_old_perc - pane_next.props.size_max * ppp);
+            overdrag = -1;
+        }
+
+        if (pane_prev.props.size_max && size_prev_old_px + movement_px >= pane_prev.props.size_max) {
+            movement_perc = -(size_prev_old_perc - pane_prev.props.size_max * ppp);
+            overdrag = 1;
         }
 
         // Новый предполагаемый размер панели
