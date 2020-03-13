@@ -1,5 +1,5 @@
-import IConfiguration from "../helpers/IConfiguration";
 import {PaneOrientation} from "../layout/types";
+import {ConfigurationConstructor, IConfiguration} from "../helpers/IConfiguration";
 
 const UNITS_ALLOWED = [
     "px", '%'

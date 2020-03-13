@@ -14,7 +14,6 @@ export default class LayoutServiceProvider extends ServiceProvider {
 
     public boot() {
         const config_service = this.app.instance(IConfigService);
-        // @ts-ignore
         const config = config_service.configuration(LayoutConfiguration);
 
         this.app.instance(ILayoutService).setup(config);
