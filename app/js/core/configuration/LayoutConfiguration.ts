@@ -114,7 +114,7 @@ export class LayoutConfiguration implements IConfiguration {
             const matches = /^(\d+)(\D+)/gm.exec(pane.size);
 
             if (matches.length == 3) {
-                if (!(matches[2] in UNITS_ALLOWED)) throw new Error(`Invalid size unit: ${matches[2]}`);
+                if (UNITS_ALLOWED.indexOf(matches[2]) == -1) throw new Error(`Invalid size unit: ${matches[2]}`);
 
                 size = Number(matches[1]);
                 size_unit = matches[2];
