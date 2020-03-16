@@ -68,4 +68,19 @@ body {
 // Theme
 .pane {
   border: 2px solid black;
+
+
+  &.pane-animated {
+    &.pane-h {
+      transition: width     0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  min-width 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  max-width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
+    &.pane-v {
+      transition: height      0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  min-height  0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  max-height  0.6s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+  }
 }

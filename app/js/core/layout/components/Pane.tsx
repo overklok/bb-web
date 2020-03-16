@@ -1,6 +1,8 @@
 import * as React from "react";
 import {RefObject} from "react";
 import classNames from "classnames";
+// import ReactCSSTransitionGroup from 'react-transition-group';
+
 import Handle from "./Handle";
 import {ILayoutPane} from "../../configuration/LayoutConfiguration";
 import {PaneOrientation} from "../types";
@@ -97,32 +99,37 @@ export default class Pane extends React.Component<IProps, IState> {
 
     /**
      * Выполнить действия после монтажа компонента в документ
-     *
-     * Выполняется назначение начальных значений CSS-атрибутов для div-комопнента.
      */
     componentDidMount() {
-        if (this.props.size_min) {
-            if (this.is_vertical) {
-                this.div_element.style.minHeight = this.props.size_min + 'px';
-            } else {
-                this.div_element.style.minWidth = this.props.size_min + 'px';
-            }
+        this.setInitialCss();
+    }
+
+    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
+        this.setInitialCss();
+    }
+
+    /**
+     * Назначить начальные значения CSS-атрибутов для div-комопнента.
+     */
+    setInitialCss() {
+        if (this.is_vertical) {
+            this.div_element.style.minHeight    = this.props.size_min ? this.props.size_min + 'px' : null;
+        } else {
+            this.div_element.style.minWidth     = this.props.size_min ? this.props.size_min + 'px' : null;
         }
 
-        if (this.props.size_max) {
-            if (this.is_vertical) {
-                this.div_element.style.maxHeight = this.props.size_max + 'px';
-            } else {
-                this.div_element.style.maxWidth = this.props.size_max + 'px';
-            }
+        if (this.is_vertical) {
+            this.div_element.style.maxHeight    = this.props.size_max ? this.props.size_max + 'px' : null;
+        } else {
+            this.div_element.style.maxWidth     = this.props.size_max ? this.props.size_max + 'px' : null;
         }
 
         if (this.props.size == 0) return;
 
         if (this.is_vertical) {
-            this.div_element.style.height = this.props.size + this.props.size_unit;
+            this.div_element.style.height   = this.props.size ? this.props.size + this.props.size_unit : null;
         } else {
-            this.div_element.style.width = this.props.size + this.props.size_unit;
+            this.div_element.style.width    = this.props.size ? this.props.size + this.props.size_unit : null;
         }
 
         this.div_element.style.flexGrow = "0";
@@ -172,7 +179,7 @@ export default class Pane extends React.Component<IProps, IState> {
     renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
         return (
             <Pane
-                key={index}
+                key={data.name || index}
                 name={data.name}
                 size={data.size}
                 size_min={data.size_min}
@@ -193,7 +200,7 @@ export default class Pane extends React.Component<IProps, IState> {
      * Впоследствии эти номера будут передаваться обработчикам событий изменения положения рукоятки
      * в родительской панели.
      *
-     * @param {number}          index       номер хэндлера (для идентификации React'ом)
+     * @param {number}          index       номер рукоятки (для идентификации React'ом)
      * @param {PaneOrientation} orientation ориентация родительской панели
      * @param {number}          pane_prev   номер предыдущей панели
      * @param {number}          pane_next   номер следующей панели
@@ -228,6 +235,7 @@ export default class Pane extends React.Component<IProps, IState> {
             'pane': true,
             'pane-h': this.props.orientation == PaneOrientation.Horizontal,
             'pane-v': this.props.orientation == PaneOrientation.Vertical,
+            'pane-animated': true,
         });
 
         // Компоненты, лежащие внутри Pane
@@ -350,6 +358,9 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
 
+        pane_prev.div_element.classList.remove('pane-animated');
+        pane_next.div_element.classList.remove('pane-animated');
+
         this.recalcChild();
     }
 
@@ -364,6 +375,9 @@ export default class Pane extends React.Component<IProps, IState> {
     handleDragFinish(pane_num_prev: number, pane_num_next: number) {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
+
+        pane_prev.div_element.classList.add('pane-animated');
+        pane_next.div_element.classList.add('pane-animated');
 
         this.recalcChild();
     }
