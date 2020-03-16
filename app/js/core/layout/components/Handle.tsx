@@ -15,7 +15,7 @@ interface IState {
 
 }
 
-export default class Handler extends React.Component<IProps, IState> {
+export default class Handle extends React.Component<IProps, IState> {
     private moving: boolean = false;
     private overdrag_sign_pos:  boolean = false;
     private div_element: HTMLDivElement;

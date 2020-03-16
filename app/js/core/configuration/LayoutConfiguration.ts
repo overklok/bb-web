@@ -13,11 +13,13 @@ const UNITS_ALLOWED = [
  * так как может содержать в себе другие панели, т.е. эта модель является рекурсивной.
  */
 export interface ILayoutPane {
-    name: string,
-    size: number,
-    size_min: number,
-    size_max: number,
+    name: string;
+    size: number;
+    size_min: number;
+    size_max: number;
     size_unit: string;
+    fixed: number;
+    resizable: boolean;
     panes: ILayoutPane[];
 }
 
@@ -77,6 +79,8 @@ export class LayoutConfiguration implements IConfiguration {
         }
 
         this.processPaneSize(pane);
+        this.processPaneLimits(pane);
+        this.processPaneResizability(pane);
     }
 
     /**
@@ -123,5 +127,43 @@ export class LayoutConfiguration implements IConfiguration {
         if (Number.isNaN(size)) size = null;
 
         [pane.size, pane.size_unit] = [size, size_unit];
+    }
+
+    processPaneLimits(pane: ILayoutPane): void {
+        if (pane.fixed) {
+            pane.size_min = pane.fixed;
+            pane.size_max = pane.fixed;
+        }
+
+        pane.size_min = this.processSizeLimitValue(pane.size_min);
+        pane.size_max = this.processSizeLimitValue(pane.size_max);
+    }
+
+    processPaneResizability(pane: ILayoutPane): void {
+        if (pane.resizable == null) {
+            pane.resizable = true;
+        }
+
+        if (pane.size_min == pane.size_max && pane.size_max != null) {
+            pane.resizable = false;
+        }
+    }
+
+    processSizeLimitValue(value: any): number {
+        if (value == null) return null;
+
+        if (typeof value === 'string') {
+            if (value.slice(-2)) {
+                value = value.slice(0, -2);
+            }
+
+            value = Number(value);
+        }
+
+        if (!Number.isInteger(value)) {
+            throw new Error(`Invalid size limit format: ${value}`);
+        }
+
+        return value;
     }
 }
