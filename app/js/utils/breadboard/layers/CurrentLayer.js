@@ -6,6 +6,8 @@ import BackgroundLayer from "../layers/BackgroundLayer";
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
 
+    static get MeaningfulnessThreshold() {return 1e-8}
+
     constructor(container, grid, schematic=false, detailed=false) {
         super(container, grid, schematic, detailed);
 
@@ -127,7 +129,11 @@ export default class CurrentLayer extends Layer {
             let same = false;
 
             /// цикл по новым контурам
-            for (let thread of threads) {
+            for (let [i, thread] of threads.entries()) {
+                if (thread.weight < CurrentLayer.MeaningfulnessThreshold) {
+                    delete threads[i];
+                }
+
                 /// если у данного локального тока контур совпадает
                 if (current.hasSameThread(thread)) {
                     /// записать контур
