@@ -39,6 +39,8 @@ export default class Current {
     static get RadiusMax() {return 18};           // Радиус частиц при максимальном весе
     static get RadiusSchematicMax() {return 16};  // Радиус частиц при максимальном весе (в схематическом режиме)
 
+    static get FullOpacityThreshold() {return 0.07} // Граница веса, при которой ток ещё полностью непрозрачности
+
     constructor(container, thread, schematic) {
         this.container  = container;        // родительский DOM-узел
         this.thread     = thread;           // координаты виртуальных точек линии тока (начало и конец)
@@ -182,7 +184,10 @@ export default class Current {
             this._particles[i] = this._container_anim.circle(this._style.particle_radius * 2).addClass('current-particle');
 
             // Заливка и центрирование
-            this._particles[i].fill(Current.pickColorFromRange(this._weight));
+            this._particles[i].fill({
+                color: Current.pickColorFromRange(this._weight),
+                opacity: Current.pickOpacityFromRange(this._weight),
+            });
 
             // Анимировать частицу
             this._animateParticle(this._particles[i], i, particles_per_line, progress_start, progress_end, dur);
@@ -226,7 +231,7 @@ export default class Current {
 
             // изменить цвет у всех частиц
             for (let particle of this._particles) {
-                particle.fill(this._style.color);
+                particle.fill({color: this._style.color, opacity: this._style.opacity});
             }
 
         }
@@ -510,10 +515,22 @@ export default class Current {
             linecap: "round",
             color: Current.pickColorFromRange(weight),
             width: width,
-            particle_radius: radii
+            particle_radius: radii,
+            opacity: Current.pickOpacityFromRange(weight),
         };
 
         return style;
+    }
+
+    static pickOpacityFromRange(weight) {
+        weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
+
+        const max = Current.FullOpacityThreshold,
+              min = 0;
+
+        weight = weight > max ? 1 : (weight - min) / (max - min);
+
+        return weight;
     }
 
     static pickColorFromRange(weight) {
