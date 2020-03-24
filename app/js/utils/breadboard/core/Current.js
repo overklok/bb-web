@@ -45,7 +45,8 @@ export default class Current {
         this.container  = container;        // родительский DOM-узел
         this.thread     = thread;           // координаты виртуальных точек линии тока (начало и конец)
 
-        this._container_anim = this.container.nested();     // родительский DOM-узел анимации
+        this._container_anim    = this.container.nested();     // родительский DOM-узел анимации
+        this._group_debug       = this.container.group();      // DOM-узел для отладки
         this._id = Math.floor(Math.random() * (10 ** 6));   // Идентификатор по умолчанию - случайная строка
 
         // Прочие внутрение параметры
@@ -99,6 +100,13 @@ export default class Current {
         this._container_anim.before(this._line);
         this._container_anim.opacity(0);
 
+        this._group_debug.move(
+            this._line.x() + Current.WidthMax,
+            this._line.y() + Current.WidthMax
+        );
+
+        // this._group_debug.style({background})
+
         this._addGlowFilter();
 
         this._visible = true;
@@ -117,6 +125,7 @@ export default class Current {
 
         this._line.remove();
         this._container_anim.remove();
+        this._group_debug.remove();
 
         this._sheet.ownerNode.remove();
 
@@ -193,6 +202,8 @@ export default class Current {
             this._animateParticle(this._particles[i], i, particles_per_line, progress_start, progress_end, dur);
         }
 
+        this._updateDebugInfo();
+
         // Это необходимо для того, чтобы дать браузеру вставить анимацию во все полигоны
         // В противном случае, на малую долю секунды будет заметна частица в положении (0,0)
         // до начала анимации
@@ -238,6 +249,8 @@ export default class Current {
 
         this._weight = _weight;
         this.thread.weight = weight;
+
+        this._updateDebugInfo();
     }
 
     _normalizeWeight(weight) {
@@ -520,6 +533,18 @@ export default class Current {
         };
 
         return style;
+    }
+
+    _updateDebugInfo() {
+        const wght_anim = Number.parseFloat(this._weight).toPrecision(4);
+        const wght_thrd = Number.parseFloat(this.thread.weight).toPrecision(4);
+
+        if (this._group_debug) {
+            this._group_debug.clear();
+            this._group_debug.text(`aw:  ${wght_anim}\ntw:  ${wght_thrd}`)
+                             .font({'line-height': '1em', weight: 'bold'})
+                             .style({color: 'blue'})
+        }
     }
 
     static pickOpacityFromRange(weight) {
