@@ -130,10 +130,6 @@ export default class CurrentLayer extends Layer {
 
             /// цикл по новым контурам
             for (let [i, thread] of threads.entries()) {
-                if (thread.weight < CurrentLayer.MeaningfulnessThreshold) {
-                    delete threads[i];
-                }
-
                 /// если у данного локального тока контур совпадает
                 if (current.hasSameThread(thread)) {
                     /// записать контур
@@ -147,7 +143,13 @@ export default class CurrentLayer extends Layer {
             }
 
             if (same) {
-                current.setWeight(same.weight);
+                if (same.weight < CurrentLayer.MeaningfulnessThreshold) {
+                    // удалить ток, если он недостаточно весомый
+                    this.removeCurrent(current_id);
+                } else {
+                    // обновить вес тока
+                    current.setWeight(same.weight);
+                }
             }
         }
 
@@ -159,10 +161,16 @@ export default class CurrentLayer extends Layer {
         }
 
         /// создать токи для непомеченных контуров
-        for (let thread of threads) {
+        for (let [i, thread] of threads.entries()) {
             if (!thread.___touched) {
-                let cur = this._addCurrent(thread, spare, show_source);
-                cur.___touched = true;
+                if (thread.weight < CurrentLayer.MeaningfulnessThreshold) {
+                    // удалить путь тока, если он недостаточно весомый
+                    delete threads[i];
+                } else {
+                    // добавить новый ток
+                    let cur = this._addCurrent(thread, spare, show_source);
+                    cur.___touched = true;
+                }
             }
         }
     }
