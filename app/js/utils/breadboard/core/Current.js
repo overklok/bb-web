@@ -46,7 +46,7 @@ export default class Current {
         this.thread     = thread;           // координаты виртуальных точек линии тока (начало и конец)
 
         this._container_anim    = this.container.nested();     // родительский DOM-узел анимации
-        this._group_debug       = this.container.group();      // DOM-узел для отладки
+        // this._group_debug       = this.container.group();      // DOM-узел для отладки
         this._id = Math.floor(Math.random() * (10 ** 6));   // Идентификатор по умолчанию - случайная строка
 
         // Прочие внутрение параметры
@@ -100,12 +100,12 @@ export default class Current {
         this._container_anim.before(this._line);
         this._container_anim.opacity(0);
 
-        this._group_debug.move(
-            this._line.x() + Current.WidthMax,
-            this._line.y() + Current.WidthMax
-        );
-
-        // this._group_debug.style({background})
+        if (this._group_debug) {
+            this._group_debug.move(
+                this._line.x() + Current.WidthMax,
+                this._line.y() + Current.WidthMax
+            );
+        }
 
         this._addGlowFilter();
 
@@ -125,9 +125,12 @@ export default class Current {
 
         this._line.remove();
         this._container_anim.remove();
-        this._group_debug.remove();
 
         this._sheet.ownerNode.remove();
+
+        if (this._group_debug) {
+            this._group_debug.remove();
+        }
 
         this._visible = false;
         this._activated = false;
@@ -550,10 +553,9 @@ export default class Current {
     static pickOpacityFromRange(weight) {
         weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
 
-        const max = Current.FullOpacityThreshold,
-              min = 0;
+        const max = Current.FullOpacityThreshold;
 
-        weight = weight > max ? 1 : (weight - min) / (max - min);
+        weight = weight > max ? 1 : 1 - Math.exp(-10 * weight / max);
 
         return weight;
     }
