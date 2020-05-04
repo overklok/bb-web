@@ -123,7 +123,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:       "block_type",
-                message0:   "считать ШИМ с %1",
+                message0:   "аналоговое чтение с %1",
                 args0: [
                     {
                         type: "input_value",

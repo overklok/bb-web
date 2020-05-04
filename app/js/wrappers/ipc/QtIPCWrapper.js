@@ -1,6 +1,8 @@
 import IPCWrapper from "../IPCWrapper";
 
 const HANDLERS_LIMIT = 20;
+const ATTEMPT_LIMIT = 10;
+const ATTEMPT_PERIOD = 100; // ms
 
 let G_CONNECTOR = undefined;
 let G_IS_DISCONNECTING = true;
@@ -20,13 +22,30 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     init() {
-        if (!this.canBeUsed()) {
-            return Promise.reject(
-                "You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC."
-            );
-        }
+        let attempts = 0;
 
-        return this.disconnect()
+        let waiter = new Promise((resolve, reject) => {
+            let si = setInterval(() => {
+                attempts += 1;
+
+                if (this.canBeUsed()) {
+                    clearInterval(si);
+
+                    resolve();
+                }
+
+                if (attempts > ATTEMPT_LIMIT) {
+                    clearInterval(si);
+                    attempts = 0;
+
+                    reject("You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC.");
+                }
+
+            }, ATTEMPT_PERIOD);
+        });
+
+        return waiter
+            .then(() => this.disconnect())
             .then(() => this._connect());
     }
 
