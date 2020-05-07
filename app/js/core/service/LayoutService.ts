@@ -18,9 +18,13 @@ export default class LayoutService implements ILayoutService {
         this.render(Layout, layout_props, element, null);
     }
 
+    public setMode(mode: string) {
+        this.root.setMode(mode);
+    }
+
     protected render(component: any, props: any, target_node: any, callback: any) {
         const react_element = React.createElement(component, props, null);
-        ReactDOM.render(react_element, target_node, callback);
+        this.root = ReactDOM.render(react_element, target_node, callback) as Layout;
 
         return react_element;
     }

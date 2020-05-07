@@ -22,6 +22,12 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
         }
     }
 
+    setMode(mode: string) {
+        this.setState({
+            mode_name: mode
+        });
+    }
+
     render() {
         const orientation = this.props.config.modes[this.state.mode_name].policy;
 
