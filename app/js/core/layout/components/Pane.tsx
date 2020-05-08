@@ -106,10 +106,12 @@ export default class Pane extends React.Component<IProps, IState> {
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
         this.setInitialCss();
+        this.recalcChild();
+        // console.log(this.props.name, this.props);
     }
 
     /**
-     * Назначить начальные значения CSS-атрибутов для div-комопнента.
+     * Назначить начальные значения CSS-атрибутов для div-компонента.
      */
     setInitialCss() {
         if (this.is_vertical) {
@@ -124,7 +126,11 @@ export default class Pane extends React.Component<IProps, IState> {
             this.div_element.style.maxWidth     = this.props.size_max ? this.props.size_max + 'px' : null;
         }
 
-        if (this.props.size == 0) return;
+        if (this.props.size == 0) {
+            // this.div_element.style.width = 'auto';
+            // this.div_element.style.height = 'auto';
+            return;
+        }
 
         if (this.is_vertical) {
             this.div_element.style.height   = this.props.size ? this.props.size + this.props.size_unit : null;
