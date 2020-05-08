@@ -104,10 +104,15 @@ export default class Pane extends React.Component<IProps, IState> {
         this.setInitialCss();
     }
 
+    shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
+        // this.recalcChild();
+
+        return true;
+    }
+
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
         this.setInitialCss();
-        this.recalcChild();
-        // console.log(this.props.name, this.props);
+        // this.recalcChild();
     }
 
     /**
@@ -127,8 +132,8 @@ export default class Pane extends React.Component<IProps, IState> {
         }
 
         if (this.props.size == 0) {
-            // this.div_element.style.width = 'auto';
-            // this.div_element.style.height = 'auto';
+            this.div_element.style.width = null;
+            this.div_element.style.flexGrow = null;
             return;
         }
 

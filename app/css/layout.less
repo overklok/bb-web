@@ -20,7 +20,7 @@ body {
   display: flex;
   justify-content: space-between;
   // WARNING: It's vital to NOT use border-box sizing here!
-  //box-sizing: border-box;
+  box-sizing: content-box;
   flex-grow: 1;
 
   &.pane-h {
@@ -48,7 +48,7 @@ body {
     margin: auto 0;
 
     &::before {
-      width: 4px;
+      width: 6px;
       height: 100%;
     }
   }
@@ -60,7 +60,7 @@ body {
 
     &::before {
       width: 100%;
-      height: 4px;
+      height: 6px;
     }
   }
 }
