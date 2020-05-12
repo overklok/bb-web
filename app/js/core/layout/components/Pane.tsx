@@ -7,14 +7,22 @@ import Handle from "./Handle";
 import {ILayoutPane} from "../../configuration/LayoutConfiguration";
 import {PaneOrientation} from "../types";
 
+/**
+ * Свойства панели разметки
+ */
 interface IProps {
+    // уникальное название панели
     name: string,
+    // является ли панель корневой в иерархии
     is_root: boolean,
+    // внутренние панели
     panes?: ILayoutPane[],
+
+    // ориентация панели
     orientation: PaneOrientation,
 
+    // единица измерения размера панели
     size_unit: string,
-
     // начальный размер: PX / %
     size: string|number
     // минимальный размер: PX / %
@@ -22,12 +30,17 @@ interface IProps {
     // максимальный размер: PX / %
     size_max: number
 
-    // возможно ли изменять размер
+    // возможно ли изменять размер панели
     resizable: boolean
 }
 
+/**
+ * Состояние панели разметки
+ */
 interface IState {
+    // текущий размер панели
     size: number,
+    // заблокирована ли панель
     locked: boolean
 }
 
@@ -37,8 +50,8 @@ interface IState {
 // 2. [OK] Add `fixed` shorthand for size_max and size_min
 // 3. [OK] Add `resizable` option
 // 4. [OK] Refactor Pane
-// 5. Mode switching
-// 6. Animation
+// 5. [OK] Mode switching
+// 6. [OK] Animation
 // 7. Transition
 // === Base Completed ===
 // 8. Add resizing limits (px/%)
@@ -104,19 +117,22 @@ export default class Pane extends React.Component<IProps, IState> {
         this.setInitialCss();
     }
 
-    shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
-        // this.recalcChild();
 
-        return true;
-    }
-
+    /**
+     * Выполнить действия после обновления свойств компонента
+     *
+     * @param prevProps свойства до обновления
+     * @param prevState свойства после обновления
+     * @param snapshot  некоторая информация до обновления компонента, определяемая в getSnapshotBeforeUpdate()
+     */
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
         this.setInitialCss();
-        // this.recalcChild();
     }
 
     /**
      * Назначить начальные значения CSS-атрибутов для div-компонента.
+     *
+     * Этот метод актуализирует выбранные параметры размеров в разметке документа.
      */
     setInitialCss() {
         if (this.is_vertical) {
@@ -369,6 +385,7 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
 
+        // Отключить анимацию на время перетаскивания
         pane_prev.div_element.classList.remove('pane-animated');
         pane_next.div_element.classList.remove('pane-animated');
 
@@ -387,6 +404,7 @@ export default class Pane extends React.Component<IProps, IState> {
         const pane_prev = this.panes[pane_num_prev].current;
         const pane_next = this.panes[pane_num_next].current;
 
+        // Включить анимацию на время перетаскивания
         pane_prev.div_element.classList.add('pane-animated');
         pane_next.div_element.classList.add('pane-animated');
 

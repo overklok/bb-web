@@ -5,14 +5,29 @@ import {LayoutConfiguration} from "../../configuration/LayoutConfiguration";
 
 require('css/layout.less');
 
+/**
+ * Свойства разметки
+ */
 interface ILayoutProps {
+    // конифгурация режимов разметки
     config: LayoutConfiguration,
 }
 
+/**
+ * Состояние разметки
+ */
 interface ILayoutState {
+    // название текущего режима разметки
     mode_name: string
 }
 
+/**
+ * React-компонент "Разметка"
+ *
+ * Разметка определяет расположение внутренних модулей приложения,
+ * компонуя панели в соответствии с выбранным режимом разметки.
+ * Режимы разметки заданются в конфигурационном объекте `LayoutConfiguration`.
+ */
 export default class Layout extends React.Component<ILayoutProps, ILayoutState> {
     constructor(props: ILayoutProps) {
         super(props);
@@ -22,6 +37,11 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
         }
     }
 
+    /**
+     * Установить режим разметки
+     *
+     * @param mode название режима разметки из конифгурации
+     */
     setMode(mode: string) {
         this.setState({
             mode_name: mode
