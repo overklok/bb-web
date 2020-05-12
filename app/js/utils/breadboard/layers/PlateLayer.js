@@ -227,6 +227,7 @@ export default class PlateLayer extends Layer {
                     // cell_num: plate.cell_num,
                     // contr_num: plate.contr_num,
                     input: plate.input,
+                    output: plate.output,
                 });
             }
         }

@@ -87,6 +87,7 @@ export default class Plate {
             currents:       undefined,
             voltages:       undefined,
             input:          undefined,
+            output:         undefined,
             cell_num:       undefined,
             contr_num:      undefined,
         };
@@ -137,6 +138,10 @@ export default class Plate {
 
     get pos() {
         return this._state.cell.idx;
+    }
+
+    get output() {
+        return this._state.output;
     }
 
     get extra() {
