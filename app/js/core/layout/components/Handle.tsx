@@ -2,22 +2,43 @@ import * as React from "react";
 import classNames from "classnames";
 import {PaneOrientation} from "../types";
 
+/**
+ * Свойства рукоятки
+ */
 interface IProps {
+    // ориентация
     orientation: PaneOrientation,
+    // номер панели слева от рукоятки
     pane_prev_num: number,
+    // номер панели справа от рукоятки
     pane_next_num: number,
+    // обработчик события "захват рукоятки"
     handleDragStart:    Function,
+    // обработчик события "освобождение рукоятки"
     handleDragFinish:   Function,
+    // обработчик события "перемещение рукоятки"
     handleDragging:     Function,
 }
 
+/**
+ * Состояние рукоятки
+ */
 interface IState {
 
 }
 
-export default class Handler extends React.Component<IProps, IState> {
+/**
+ * React-компонент "Рукоятка"
+ *
+ * Рукоятка позволяет изменять размер панелей, которые её окружают, путём
+ * перемещения её в стороны.
+ */
+export default class Handle extends React.Component<IProps, IState> {
+    // выполняется ли перемещение в данный момент
     private moving: boolean = false;
+    // является ли знак овердрага положительным
     private overdrag_sign_pos:  boolean = false;
+    // основной html-элемент, который генерирует этот компонент
     private div_element: HTMLDivElement;
 
     constructor(props: IProps) {

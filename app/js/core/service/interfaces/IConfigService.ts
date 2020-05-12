@@ -1,15 +1,14 @@
-import IConfiguration from "../../helpers/IConfiguration";
-import IBindable from "../../helpers/IBindable";
-
 /**
  * @abstract
  */
+import {ConfigurationConstructor, IConfiguration} from "../../helpers/IConfiguration";
+
 export default class IConfigService {
-    configure<V extends IConfiguration & IBindable>(abstrakt: string|V, concrete: object) {
+    configure(abstrakt: ConfigurationConstructor, concrete: object) {
         throw new Error('abstract')
     }
 
-    configuration<V extends IConfiguration & IBindable>(abstrakt: string|V): InstanceType<V> {
+    configuration<V extends ConfigurationConstructor>(abstrakt: V): InstanceType<V> {
         throw new Error('abstract');
     }
 }

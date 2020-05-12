@@ -28,6 +28,10 @@ class TestApplication extends Application {
 
         this.instance(ILayoutService).compose(element);
     }
+
+    setMode(mode: string) {
+        this.instance(ILayoutService).switch(mode);
+    }
 }
 
 declare global {
