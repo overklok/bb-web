@@ -45,6 +45,7 @@ export default class SwitchPlate extends Plate {
      */
     setState(state, suppress_events) {
         super.setState(state, suppress_events);
+        this._ctxmenu.setValue(state.input);
     }
 
     /**
