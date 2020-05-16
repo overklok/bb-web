@@ -54,8 +54,6 @@ export default class LocalServiceModule extends Module {
             mode: undefined,
             dev_type: undefined,
         };
-
-        this.launch();
     }
 
     switchDummyMode(on) {
@@ -87,12 +85,13 @@ export default class LocalServiceModule extends Module {
                 this.emitEvent("board-status", "default");
             // }, 1000);
 
+            return Promise.resolve();
         } else {
             if (this._options.portUrgent) {
                 this.resetPort(this._options.portUrgent);
             }
 
-            this._launchIPC(socket_addr, socket_port)
+            return this._launchIPC(socket_addr, socket_port)
                 .then(() => this._subscribeToWrapperEvents());
         }
     }

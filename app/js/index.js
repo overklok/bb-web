@@ -235,6 +235,7 @@ class Application {
 
             /// Скомпоновать разметку, убрать спиннер и разблокировать события GUI
             this.lay.compose(exercise.layout_mode)
+                .then(() => this.ls.launch())
                 .then(() => this.ls.setMode(exercise.board_mode))
                 .then(() => this.ws.loadProgram(exercise.missionIDX, exercise.exerciseIDX))
                 .then(() => this.ws.setMaxBlockLimit(exercise.max_blocks))
