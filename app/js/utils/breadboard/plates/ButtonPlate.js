@@ -32,7 +32,10 @@ export default class ButtonPlate extends LinearPlate {
      * @param {object} state новое состояние перемычки
      */
     setState(state, suppress_events) {
+        state.input = !!state.input;
+
         super.setState(state, suppress_events);
+        this._ctxmenu.setValue(state.input);
     }
 
     /**

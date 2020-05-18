@@ -538,35 +538,41 @@ export default class PlateLayer extends Layer {
         /// Когда нажата кнопка клавиатуры
         this._onkey = (evt) => {
             if (this._plate_selected) {
-                evt.preventDefault();
-
                 /// Если есть выделенная плашка
                 switch (evt.code) {
                     case "BracketLeft":
                         this._plate_selected.rotateClockwise();
+                        evt.preventDefault();
                         break;
                     case "BracketRight":
                         this._plate_selected.rotateCounterClockwise();
+                        evt.preventDefault();
                         break;
                     case "ArrowLeft":
                         this._plate_selected.shift(-1, 0);
+                        evt.preventDefault();
                         break;
                     case "ArrowRight":
                         this._plate_selected.shift(1, 0);
+                        evt.preventDefault();
                         break;
                     case "ArrowUp":
                         this._plate_selected.shift(0, -1);
+                        evt.preventDefault();
                         break;
                     case "ArrowDown":
                         this._plate_selected.shift(0, 1);
+                        evt.preventDefault();
                         break;
                     case "KeyD":
                         this._duplicatePlate(this._plate_selected);
+                        evt.preventDefault();
                         break;
                     case "Delete":
                         /// Удалить её
                         this.removePlate(this._plate_selected.id);
                         this._plate_selected = null;
+                        evt.preventDefault();
                         break;
                 }
             }

@@ -272,6 +272,7 @@ export default class ContextMenu {
         fo.setAttribute("height", height);
         fo.setAttribute("x", x);
         fo.setAttribute("y", y);
+        fo.setAttribute("contentEditable", "true");
 
         container.node.appendChild(fo);
 

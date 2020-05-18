@@ -18,8 +18,6 @@ export default class SwitchPlate extends Plate {
         ];
 
         this._params.origin = {x: 0, y: 0};
-
-
     }
 
     __cm_class__() {
@@ -44,6 +42,8 @@ export default class SwitchPlate extends Plate {
      * @param {object} state новое состояние перемычки
      */
     setState(state, suppress_events) {
+        state.input = !!state.input;
+
         super.setState(state, suppress_events);
         this._ctxmenu.setValue(state.input);
     }
