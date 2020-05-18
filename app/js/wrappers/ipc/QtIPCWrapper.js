@@ -5,6 +5,7 @@ const ATTEMPT_LIMIT = 10;
 const ATTEMPT_PERIOD = 100; // ms
 
 let G_CONNECTOR = undefined;
+let G_IS_CONNECTING = false;
 let G_IS_DISCONNECTING = true;
 
 // TODO: Move _connect() routine to global scope
@@ -89,6 +90,8 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     _connect() {
+        G_IS_CONNECTING = true;
+
         return new Promise((resolve, reject) => {
             let rep = setInterval(() => {
                 if (!window.qt) {
@@ -99,6 +102,8 @@ export default class QtIPCWrapper extends IPCWrapper {
 
                         if (G_CONNECTOR && G_CONNECTOR.event_sig) {
                             G_CONNECTOR.event_sig.connect(this._onEventSig.bind(this));
+
+                            G_IS_CONNECTING = false;
 
                             clearInterval(rep);
                             resolve(this);

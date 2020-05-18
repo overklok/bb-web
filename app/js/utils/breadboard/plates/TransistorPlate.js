@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class TransistorPlate extends Plate {
     static get Alias() {return "transistor"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
 
         // Размер плашки в стандартной ориентации
         this._params.size = {x: 3, y: 1};

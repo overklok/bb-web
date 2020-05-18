@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class RelayPlate extends LinearPlate {
     static get Alias() {return "relay"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
     }
 
     get __length__() {

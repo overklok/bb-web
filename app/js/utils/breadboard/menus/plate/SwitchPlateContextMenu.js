@@ -26,10 +26,14 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
         this._on = false;
     }
 
+    setValue(value) {
+        this._on = !!value;
+    }
+
     _beforeClick(value) {
         this._on = !this._on;
 
-        return this._on ? 1 : 0;
+        return !!this._on;
     }
 
     _getLabel() {

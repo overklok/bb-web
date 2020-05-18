@@ -6,8 +6,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class ButtonPlate extends LinearPlate {
     static get Alias() {return "button"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
     }
 
     __cm_class__() {
@@ -23,6 +23,10 @@ export default class ButtonPlate extends LinearPlate {
     __draw__(position, orientation) {
         this._drawPicture();
 
+        if (this._params.verbose) {
+            this._redrawInput(this._state.input);
+        }
+
         // this._group.text(`Button`).font({size: 20});
     };
 
@@ -32,7 +36,25 @@ export default class ButtonPlate extends LinearPlate {
      * @param {object} state новое состояние перемычки
      */
     setState(state, suppress_events) {
+        state.input = Number(state.input);
+
         super.setState(state, suppress_events);
+        this._ctxmenu.setValue(state.input);
+
+        if (this._params.verbose) {
+            this._redrawInput(state.input);
+        }
+    }
+
+    _redrawInput(input_value) {
+        if (!this._svginp) {
+            let cell = this.__grid.cell(0, 0);
+            this._svginp = this._group.text('0')
+                .center(cell.center_rel.x, cell.center_rel.y)
+                .style({fill: '#FFF', size: 18});
+        }
+
+        this._svginp.text(input_value ? '1' : '0');
     }
 
     /**

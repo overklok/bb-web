@@ -104,6 +104,8 @@ class AdminBoardApplication {
         /** @type {BreadboardModule} модуль отображения макетной платы */
         this.bb = new BreadboardModule({modeAdmin: this._mode_admin}); // Breadboard
         this.ls = new LocalServiceModule(); // Local ServiceProvider
+
+        this.ls.launch();
     }
 
     /**

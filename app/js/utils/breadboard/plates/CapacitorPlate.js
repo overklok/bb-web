@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class CapacitorPlate extends LinearPlate {
     static get Alias() {return "capacitor"}
 
-    constructor(container, grid, id, schematic=false, capacity) {
-        super(container, grid, id, schematic, capacity);
+    constructor(container, grid, schematic=false, verbose=false, id, capacity) {
+        super(container, grid, schematic, verbose, id, capacity);
 
         this._params.extra = Number(capacity) || 0.001;
     }

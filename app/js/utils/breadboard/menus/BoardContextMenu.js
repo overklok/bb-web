@@ -1,4 +1,5 @@
 import ContextMenu from "../core/ContextMenu"
+import PlateContextMenu from "./PlateContextMenu";
 
 export default class BoardContextMenu extends ContextMenu {
     // Алиасы пунктов контекстного меню
@@ -9,6 +10,8 @@ export default class BoardContextMenu extends ContextMenu {
     static get CMI_MOD_PHOTO()  {return "cmi_mod_pht"}
     static get CMI_MOD_SCHEMA() {return "cmi_mod_sch"}
     static get CMI_MOD_DETAIL() {return "cmi_mod_det"}
+    static get CMI_MOD_VERBOS() {return "cmi_mod_vbs"}
+    static get CMI_MOD_VERBOS_INP() {return "cmi_mod_vbs_inp"}
 
     constructor(container, grid, item_height) {
         super(container, grid, item_height);
@@ -46,16 +49,37 @@ export default class BoardContextMenu extends ContextMenu {
                 label: 'Вкл. фотографический режим',
                 active: true,
             },
+            // {
+            //     alias: BoardContextMenu.CMI_MOD_SCHEMA,
+            //     label: 'Вкл. схематический режим',
+            //     active: true,
+            // },
             {
-                alias: BoardContextMenu.CMI_MOD_SCHEMA,
+                alias: BoardContextMenu.CMI_MOD_DETAIL,
                 label: 'Вкл. схематический режим',
                 active: true,
             },
             {
-                alias: BoardContextMenu.CMI_MOD_DETAIL,
-                label: 'Вкл. подробный схематический режим',
+                alias: BoardContextMenu.CMI_MOD_VERBOS,
+                label: () => {return this._getVerboseLabel()},
                 active: true,
+                as: {
+                    alias: BoardContextMenu.CMI_MOD_VERBOS_INP,
+                    beforeClick: () => {return this._beforeVerboseClick()}
+                }
             },
         ];
+
+        this._verbose_on = false;
+    }
+
+    _beforeVerboseClick() {
+        this._verbose_on = !this._verbose_on;
+
+        return !!this._verbose_on;
+    }
+
+    _getVerboseLabel() {
+        return this._verbose_on ? 'Выкл. подробности' : 'Вкл. подробности';
     }
 }

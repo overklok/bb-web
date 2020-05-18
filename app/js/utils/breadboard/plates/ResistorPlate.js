@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class ResistorPlate extends LinearPlate {
     static get Alias() {return "resistor"}
 
-    constructor(container, grid, schematic=false, id, resistance) {
-        super(container, grid, schematic, id, resistance);
+    constructor(container, grid, schematic=false, verbose=false, id, resistance) {
+        super(container, grid, schematic, verbose, id, resistance);
 
         this._params.extra = (resistance <= 0) ? 200 : resistance;
     }

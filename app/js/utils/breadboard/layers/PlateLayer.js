@@ -24,8 +24,8 @@ import WS2801Plate          from "../plates/WS2801Plate";
 export default class PlateLayer extends Layer {
     static get Class() {return "bb-layer-plate"}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    constructor(container, grid, schematic=false, verbose=false) {
+        super(container, grid, schematic, verbose);
 
         this._container.addClass(PlateLayer.Class);
 
@@ -45,8 +45,8 @@ export default class PlateLayer extends Layer {
         this._initGroups();
     }
 
-    recompose(schematic) {
-        super.recompose(schematic);
+    recompose(schematic, verbose) {
+        super.recompose(schematic, false, verbose);
 
         let plates_data = this.getCurrentPlatesData();
 
@@ -156,7 +156,7 @@ export default class PlateLayer extends Layer {
             return id;
         } else {
             plate_class = PlateLayer._typeToPlateClass(type);
-            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, id, extra);
+            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, extra);
         }
 
         if (this._editable) {
@@ -227,6 +227,7 @@ export default class PlateLayer extends Layer {
                     // cell_num: plate.cell_num,
                     // contr_num: plate.contr_num,
                     input: plate.input,
+                    output: plate.output,
                 });
             }
         }
@@ -537,35 +538,41 @@ export default class PlateLayer extends Layer {
         /// Когда нажата кнопка клавиатуры
         this._onkey = (evt) => {
             if (this._plate_selected) {
-                evt.preventDefault();
-
                 /// Если есть выделенная плашка
                 switch (evt.code) {
                     case "BracketLeft":
                         this._plate_selected.rotateClockwise();
+                        evt.preventDefault();
                         break;
                     case "BracketRight":
                         this._plate_selected.rotateCounterClockwise();
+                        evt.preventDefault();
                         break;
                     case "ArrowLeft":
                         this._plate_selected.shift(-1, 0);
+                        evt.preventDefault();
                         break;
                     case "ArrowRight":
                         this._plate_selected.shift(1, 0);
+                        evt.preventDefault();
                         break;
                     case "ArrowUp":
                         this._plate_selected.shift(0, -1);
+                        evt.preventDefault();
                         break;
                     case "ArrowDown":
                         this._plate_selected.shift(0, 1);
+                        evt.preventDefault();
                         break;
                     case "KeyD":
                         this._duplicatePlate(this._plate_selected);
+                        evt.preventDefault();
                         break;
                     case "Delete":
                         /// Удалить её
                         this.removePlate(this._plate_selected.id);
                         this._plate_selected = null;
+                        evt.preventDefault();
                         break;
                 }
             }

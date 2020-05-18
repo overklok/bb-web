@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class PhotoresistorPlate extends LinearPlate {
     static get Alias() {return "photoresistor"}
 
-    constructor(container, grid, id, schematic=false) {
-        super(container, grid, id, schematic);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
     }
 
     /**

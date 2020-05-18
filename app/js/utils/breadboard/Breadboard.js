@@ -69,6 +69,7 @@ export default class Breadboard {
 
         this._schematic = false;
         this._detailed = false;
+        this._verbose = false;
     }
 
     getContainer() {
@@ -152,9 +153,9 @@ export default class Breadboard {
         this._layers = {};
     }
 
-    redraw(schematic, detailed) {
+    redraw(schematic, detailed, verbose) {
         this._layers.background.recompose(schematic, detailed);
-        this._layers.plate.recompose(schematic);
+        this._layers.plate.recompose(schematic, verbose);
         this._layers.current.recompose(schematic, detailed);
         this._layers.controls.recompose(schematic);
     }
@@ -270,12 +271,21 @@ export default class Breadboard {
     }
 
     switchSchematic(on, detailed) {
+        // TODO: Merge detailed and schematic modes
         if (this._schematic === on && this._detailed === detailed) return;
 
         this._schematic = on;
         this._detailed = detailed;
 
-        this.redraw(this._schematic, this._detailed);
+        this.redraw(this._schematic, this._detailed, this._verbose);
+    }
+
+    switchVerbose(on) {
+        if (this._verbose === on) return;
+
+        this._verbose = on;
+
+        this.redraw(this._schematic, this._detailed, this._verbose);
     }
 
     switchSpareFilters(on) {
@@ -368,7 +378,7 @@ export default class Breadboard {
         this._layers.background = new BackgroundLayer(background, this.__grid, this._schematic, this._detailed);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
         this._layers.current    = new CurrentLayer(current, this.__grid, this._schematic, this._detailed);
-        this._layers.plate      = new PlateLayer(plate, this.__grid, this._schematic);
+        this._layers.plate      = new PlateLayer(plate, this.__grid, this._schematic, this._verbose);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
 
@@ -479,6 +489,9 @@ export default class Breadboard {
                     break;
                 case BoardContextMenu.CMI_MOD_DETAIL:
                     this.switchSchematic(true, true);
+                    break;
+                case BoardContextMenu.CMI_MOD_VERBOS_INP:
+                    this.switchVerbose(value);
                     break;
             }
         });
