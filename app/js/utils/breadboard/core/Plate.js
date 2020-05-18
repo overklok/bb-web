@@ -40,7 +40,7 @@ export default class Plate {
     static get LEDSizeDefault()     {return 16}
     static get LabelSizeDefault()   {return 12}
 
-    constructor(container_parent, grid, schematic=false, id=null, extra=0) {
+    constructor(container_parent, grid, schematic=false, verbose=false, id=null, extra=0) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
@@ -76,7 +76,8 @@ export default class Plate {
             rels:       undefined,      // относительные позиции занимаемых ячеек
             adjs:       undefined,      // корректировки положения плашки
             extra:      extra,          // доп. параметр
-            schematic:  schematic       // схематическое отображение плашки
+            schematic:  schematic,       // схематическое отображение плашки
+            verbose:    verbose,       // схематическое отображение плашки
         };
 
         /// Состояние - изменяемые свойства плашки

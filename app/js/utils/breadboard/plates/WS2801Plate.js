@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class WS2801Plate extends Plate {
     static get Alias() {return "ws2801"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, false, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, false, verbose, id);
 
         this._params.size = {x: 4, y: 1};
     }

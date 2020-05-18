@@ -14,6 +14,7 @@ export default class BreadboardModule extends Module {
             modeAdmin:  false,
             schematic:  false,
             detailed:   false,
+            verbose:    false,
             spare:      false,
         }
     }
@@ -26,6 +27,7 @@ export default class BreadboardModule extends Module {
             spare: this._options.spare,
             schematic: this._options.schematic,
             detailed: this._options.detailed,
+            verbose: this._options.verbose,
         };
 
         this._board = new BreadboardWrapper();
@@ -175,7 +177,16 @@ export default class BreadboardModule extends Module {
             return false
         }
 
-        this._board.switchSchematic(on, this._state.detailed);
+        this._board.switchSchematic(on, this._state.detailed, this._state.verbose);
+    }
+
+    switchVerbose(on) {
+        if (!this._state.display) {
+            this._state.verbose = on;
+            return false
+        }
+
+        this._board.switchVerbose(this._state.verbose);
     }
 
     _subscribeToWrapperEvents() {

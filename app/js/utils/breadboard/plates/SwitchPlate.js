@@ -3,12 +3,13 @@ import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 import {GRADIENTS} from "../styles/gradients";
 import SwitchPlateContextMenu from "../menus/plate/SwitchPlateContextMenu";
+import ButtonPlate from "./ButtonPlate";
 
-export default class SwitchPlate extends Plate {
+export default class SwitchPlate extends ButtonPlate {
     static get Alias() {return "switch"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
 
         this._params.size = {x: 3, y: 2};
 
@@ -20,10 +21,6 @@ export default class SwitchPlate extends Plate {
         this._params.origin = {x: 0, y: 0};
     }
 
-    __cm_class__() {
-        return SwitchPlateContextMenu;
-    }
-
     /**
      * Нарисовать перемычку
      *
@@ -33,20 +30,12 @@ export default class SwitchPlate extends Plate {
     __draw__(position, orientation) {
         this._drawPicture();
 
+        if (this._params.verbose) {
+            this._redrawInput(this._state.input);
+        }
+
         // this._group.text(`Switch`).font({size: 20});
     };
-
-    /**
-     * Установить состояние перемычки
-     *
-     * @param {object} state новое состояние перемычки
-     */
-    setState(state, suppress_events) {
-        state.input = !!state.input;
-
-        super.setState(state, suppress_events);
-        this._ctxmenu.setValue(state.input);
-    }
 
     /**
      *

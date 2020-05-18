@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class LEDPlate extends LinearPlate {
     static get Alias() {return "LED"}
 
-    constructor(container, grid, id, schematic=false, colour=0) {
-        super(container, grid, id, schematic, colour);
+    constructor(container, grid, schematic=false, verbose=false, id, colour=0) {
+        super(container, grid, schematic, verbose, id, colour);
 
         if (colour === 'R') {colour = 0}
         if (colour === 'G') {colour = 1}
@@ -31,6 +31,10 @@ export default class LEDPlate extends LinearPlate {
         this._drawPicture();
         this._drawLabel(this._params.extra === 0 ? 'R' : 'G');
 
+        if (this._params.verbose) {
+            this._redrawOutput(this._state.output);
+        }
+
         // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };
 
@@ -40,7 +44,24 @@ export default class LEDPlate extends LinearPlate {
      * @param {object} state новое состояние светодиода
      */
     setState(state, suppress_events) {
+        state.output = Number(state.input);
+
         super.setState(state, suppress_events);
+
+        if (this._params.verbose) {
+            this._redrawOutput(state.output);
+        }
+    }
+
+    _redrawOutput(output_value) {
+        if (!this._svgout) {
+            let cell = this.__grid.cell(0, 0);
+            this._svgout = this._group.text('0')
+                .center(cell.center_rel.x, cell.center_rel.y)
+                .style({fill: '#FFF', size: 18});
+        }
+
+        this._svgout.text(output_value ? '1' : '0');
     }
 
     /**

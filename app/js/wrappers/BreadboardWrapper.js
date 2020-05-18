@@ -94,6 +94,10 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.switchSchematic(on, detailed);
     }
 
+    switchVerbose(on) {
+        this._plugin.switchVerbose(on);
+    }
+
     onChange(cb) {
         this._plugin.onChange(cb);
     }

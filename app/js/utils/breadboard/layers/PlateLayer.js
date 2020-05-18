@@ -24,8 +24,8 @@ import WS2801Plate          from "../plates/WS2801Plate";
 export default class PlateLayer extends Layer {
     static get Class() {return "bb-layer-plate"}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    constructor(container, grid, schematic=false, verbose=false) {
+        super(container, grid, schematic, verbose);
 
         this._container.addClass(PlateLayer.Class);
 
@@ -45,8 +45,8 @@ export default class PlateLayer extends Layer {
         this._initGroups();
     }
 
-    recompose(schematic) {
-        super.recompose(schematic);
+    recompose(schematic, verbose) {
+        super.recompose(schematic, false, verbose);
 
         let plates_data = this.getCurrentPlatesData();
 
@@ -156,7 +156,7 @@ export default class PlateLayer extends Layer {
             return id;
         } else {
             plate_class = PlateLayer._typeToPlateClass(type);
-            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, id, extra);
+            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, extra);
         }
 
         if (this._editable) {
