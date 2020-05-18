@@ -17,6 +17,7 @@ import RelayPlate           from "../plates/RelayPlate";
 import StripPlate           from "../plates/StripPlate";
 import DiodePlate           from "../plates/LEDPlate";
 import WS2801Plate          from "../plates/WS2801Plate";
+import MotorPlate from "../plates/MotorPlate";
 
 /**
  * Слой плашек
@@ -695,6 +696,7 @@ export default class PlateLayer extends Layer {
             DiodePlate.Alias,
             StripPlate.Alias,
             WS2801Plate.Alias,
+            MotorPlate.Alias,
         ]
     }
 
@@ -721,6 +723,7 @@ export default class PlateLayer extends Layer {
         captions[DiodePlate.Alias]          = 'светодиод';
         captions[StripPlate.Alias]          = 'лента';
         captions[WS2801Plate.Alias]         = 'RGB-светодиод';
+        captions[MotorPlate.Alias]          = 'электромотор';
 
         return captions;
     }
@@ -753,6 +756,7 @@ export default class PlateLayer extends Layer {
             case DiodePlate.Alias:          {return DiodePlate}
             case StripPlate.Alias:          {return StripPlate}
             case WS2801Plate.Alias:         {return WS2801Plate}
+            case MotorPlate.Alias:          {return MotorPlate}
             default:                        {throw new RangeError(`Unknown plate type '${type}'`)}
         }
     }
