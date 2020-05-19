@@ -82,12 +82,12 @@ export default class PlateLayer extends Layer {
             data.push({
                 id:             plate.id,
                 type:           plate.alias,
-                x:              plate._state.cell.idx.x,
-                y:              plate._state.cell.idx.y,
-                length:         plate._params.size.x,
-                orientation:    plate._state.orientation,
-                extra:          plate._params.extra,
-                input:            plate._state.input,
+                x:              plate.pos.x,
+                y:              plate.pos.y,
+                extra:          plate.extra,
+                length:         plate.length,
+                orientation:    plate.state.orientation,
+                input:          plate.state.input,
                 // cell_num:       plate._state.cell_num,
                 // contr_num:      plate._state.contr_num,
                 // currents:       plate._state.currents,
@@ -608,7 +608,7 @@ export default class PlateLayer extends Layer {
                 break;
             }
             case PlateContextMenu.CMI_INPUT: {
-                this._plate_selected.setState({input: Number(value)});
+                this._plate_selected.setState({input: value});
                 break;
             }
         }

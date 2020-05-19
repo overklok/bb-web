@@ -141,12 +141,12 @@ export default class Plate {
         return this._state.cell.idx;
     }
 
-    get output() {
-        return this._state.output;
-    }
-
     get extra() {
         return this._params.extra;
+    }
+
+    get length() {
+        return this._params.size.x;
     }
 
     /**
@@ -286,6 +286,8 @@ export default class Plate {
                 });
             }
         }
+
+        console.log(this._state);
     }
 
     /**

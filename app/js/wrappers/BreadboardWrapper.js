@@ -63,6 +63,7 @@ export default class BreadboardWrapper extends Wrapper {
     }
 
     setPlateState(plate_id, state) {
+        console.log(state);
         this._plugin.setPlateState(plate_id, state);
     }
 

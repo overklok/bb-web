@@ -37,6 +37,6 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
     }
 
     _getLabel() {
-        return this._on ? '[ВКЛ] Выключить' : '[ВЫКЛ] Включить';
+        return this._on ? '[РАЗ.] Замкнуть' : '[ЗАМК.] Разомкнуть';
     }
 }
