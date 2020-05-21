@@ -28,6 +28,8 @@ class AdminBoardApplication {
         this._defineChains();
 
         this.version = __VERSION__;
+
+        console.log("HELO");
     }
 
     /**
