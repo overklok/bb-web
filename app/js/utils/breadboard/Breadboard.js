@@ -532,6 +532,13 @@ export default class Breadboard {
                     // volatges: plate.volatges,
                 })
             }
+
+            if (plates.length > 0) {
+                this._callbacks.change({
+                    id: null,
+                    action: 'imported'
+                });
+            }
         };
     }
 
