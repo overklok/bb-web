@@ -30,6 +30,10 @@ export default class PhotoresistorPlate extends LinearPlate {
         super.setState(state, suppress_events);
     }
 
+    get input() {
+        return Number(this._state.input);
+    }
+
     /**
      * Переместить фоторезистор
      *

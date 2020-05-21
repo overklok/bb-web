@@ -158,6 +158,10 @@ export default class Plate {
         return this._state;
     }
 
+    get input() {
+        return this._state.input;
+    }
+
     /**
      * Возвратить HTML-элемент, содержащий плашку
      *

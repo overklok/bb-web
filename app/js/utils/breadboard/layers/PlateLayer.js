@@ -87,7 +87,7 @@ export default class PlateLayer extends Layer {
                 extra:          plate.extra,
                 length:         plate.length,
                 orientation:    plate.state.orientation,
-                input:          plate.state.input,
+                input:          plate.input,
                 // cell_num:       plate._state.cell_num,
                 // contr_num:      plate._state.contr_num,
                 // currents:       plate._state.currents,

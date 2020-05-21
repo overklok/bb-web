@@ -29,6 +29,10 @@ export default class RheostatPlate extends Plate {
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
 
+    get input() {
+        return Number(this._state.input);
+    }
+
     /**
      * Установить состояние резистора
      *
