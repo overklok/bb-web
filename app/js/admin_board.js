@@ -43,6 +43,7 @@ class AdminBoardApplication {
 
         this._container_id = config.containerId || "";
         this._mode_admin = config.modeAdmin;
+        this._passive = config.passive || false;
     }
 
     /**
@@ -103,7 +104,7 @@ class AdminBoardApplication {
 
         /** @type {BreadboardModule} модуль отображения макетной платы */
         this.bb = new BreadboardModule({modeAdmin: this._mode_admin}); // Breadboard
-        this.ls = new LocalServiceModule(); // Local ServiceProvider
+        this.ls = new LocalServiceModule({modeDummy:this._passive}); // Local ServiceProvider
 
         this.ls.launch();
     }
@@ -128,10 +129,6 @@ class AdminBoardApplication {
             this.bb.inject(document.getElementById(this._container_id));
         });
 
-        this._dispatcher.on("bb:change", data => {
-            this._on_change_callback(data);
-        })
-
         /**
          * Изменены плашки
          */
@@ -154,6 +151,8 @@ class AdminBoardApplication {
             this.bb.clearCurrents();
 
             this.ls.sendPlates(this.bb.getPlates());
+
+            this._on_change_callback(data);
         });
     }
 }

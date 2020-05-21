@@ -286,8 +286,6 @@ export default class Plate {
                 });
             }
         }
-
-        console.log(this._state);
     }
 
     /**
