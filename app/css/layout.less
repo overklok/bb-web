@@ -50,7 +50,7 @@ body {
   }
 
   &.handler-h {
-    height: 20px;
+    height: 30px;
     cursor: ew-resize;
     margin: auto 0;
 
@@ -61,7 +61,7 @@ body {
   }
 
   &.handler-v {
-    width: 20px;
+    width: 30px;
     cursor: ns-resize;
     margin: 0 auto;
 
@@ -72,7 +72,8 @@ body {
   }
 }
 
-.nest {
+.frame {
+  box-sizing: border-box;
   position: absolute;
 
   width: 100%;
@@ -84,7 +85,7 @@ body {
 
 // Theme
 .pane {
-  border: 2px solid black;
+  border: 1px solid black;
 
   &.pane-animated {
     &.pane-h {
@@ -99,4 +100,8 @@ body {
                   max-height  0.6s cubic-bezier(0.33, 1, 0.68, 1);
     }
   }
+}
+
+.frame {
+  
 }

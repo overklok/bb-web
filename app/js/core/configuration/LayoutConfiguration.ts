@@ -7,6 +7,9 @@ const UNITS_ALLOWED = [
     "px", '%'
 ];
 
+export type ViewOptionRaw = {alias: string, label: string};
+export type ViewOption = {type: typeof View, label: string};
+
 /**
  * Модель панели разметки
  *
@@ -23,8 +26,8 @@ export interface ILayoutPane {
     fixed: number;
     resizable: boolean;
     panes: ILayoutPane[];
-    view_aliases: string[];
-    view_types: typeof View[];
+    views: ViewOptionRaw[];
+    view_options: ViewOption[];
 }
 
 /**
@@ -104,12 +107,12 @@ export class LayoutConfiguration implements IConfiguration {
             }
         }
 
-        for (let alias of pane.view_aliases) {
+        for (let {alias, label} of pane.views) {
             const view_type = view_config.views[alias];
 
             if (!view_type) throw new Error(`View type '${alias}' does not exist`);
 
-            pane.view_types.push(view_type);
+            pane.view_options.push({type: view_type, label: label});
         }
     }
 
@@ -180,22 +183,22 @@ export class LayoutConfiguration implements IConfiguration {
     }
 
     processPaneViews(pane: ILayoutPane): void {
-        if (pane.view_aliases && pane.panes) {
+        if (pane.views && pane.panes) {
             throw new Error(`Only one of 'view_aliases' or 'panes' can be used for pane '${pane.name}'`);
         }
 
-        if (pane.view_aliases) {
-            if (!Array.isArray(pane.view_aliases)) {
+        if (pane.views) {
+            if (!Array.isArray(pane.views)) {
                 throw new Error(`Invalid type of 'view_aliases' for pane '${pane.name}'`);
             }
 
             // TODO validate item types
         } else {
-            pane.view_aliases = [];
+            pane.views = [];
         }
 
         // Создать пустой массив, чтобы в него вопследствии резолвить типы на основе алиасов
-        pane.view_types = [];
+        pane.view_options = [];
     }
 
     processSizeLimitValue(value: any): number {

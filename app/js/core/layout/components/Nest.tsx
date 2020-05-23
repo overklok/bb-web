@@ -5,7 +5,9 @@ import {PaneOrientation} from "../types";
 
 
 interface IProps {
-    view_type: typeof View
+    view_type: typeof View,
+    label: string
+    index: number
 }
 
 interface IState {
@@ -14,9 +16,6 @@ interface IState {
 export default class Nest extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
-
-        this.state = {
-        }
     }
 
     render() {

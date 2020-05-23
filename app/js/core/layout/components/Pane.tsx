@@ -4,10 +4,11 @@ import classNames from "classnames";
 // import ReactCSSTransitionGroup from 'react-transition-group';
 
 import Handle from "./Handle";
-import {ILayoutPane} from "../../configuration/LayoutConfiguration";
+import {ILayoutPane, ViewOption} from "../../configuration/LayoutConfiguration";
 import {PaneOrientation} from "../types";
 import {View} from "../../ui/View";
 import Nest from "./Nest";
+import Frame from "./Frame";
 
 /**
  * Свойства панели разметки
@@ -19,8 +20,8 @@ interface IProps {
     is_root: boolean,
     // внутренние панели
     panes?: ILayoutPane[],
-    // типы Видов
-    view_types?: typeof View[],
+    // варианты Видов
+    view_options?: ViewOption[],
 
     // ориентация панели
     orientation: PaneOrientation,
@@ -198,66 +199,6 @@ export default class Pane extends React.Component<IProps, IState> {
         }
     }
 
-    renderNest(index: number, view_type: typeof View) {
-        return (
-            <Nest
-                key={index}
-                view_type={view_type}
-            />
-        )
-    }
-
-    /**
-     * Сгенерировать дочернюю панель
-     *
-     * Выполняется перенос всех параметров модели в параметры компонента.
-     * Метод записывает по ссылке ref-объект, необходимый для управления дочерней панелью из родительской.
-     *
-     * @param {number}          index       номер панели (для идентификации React'ом)
-     * @param {PaneOrientation} orientation ориентация родительской панели
-     * @param {ILayoutPane}     data        модель панели
-     * @param {RefObject<Pane>} ref         ref-объект (возврат по ссылке)
-     */
-    renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
-        return (
-            <Pane
-                key={data.name || index}
-                name={data.name}
-                size={data.size}
-                size_min={data.size_min}
-                size_max={data.size_max}
-                size_unit={data.size_unit}
-                resizable={data.resizable}
-                panes={data.panes}
-                orientation={orientation}
-                ref={ref}
-                view_types={data.view_types}
-            />
-        );
-    }
-
-    /**
-     * Сгенерировать рукоятку для панелей
-     *
-     * Рукоятке передаются номера панелей, между которыми он расположен.
-     * Впоследствии эти номера будут передаваться обработчикам событий изменения положения рукоятки
-     * в родительской панели.
-     *
-     * @param {number}          index       номер рукоятки (для идентификации React'ом)
-     * @param {PaneOrientation} orientation ориентация родительской панели
-     * @param {number}          pane_prev   номер предыдущей панели
-     * @param {number}          pane_next   номер следующей панели
-     */
-    renderHandler(index: number, orientation: PaneOrientation, pane_prev: number, pane_next: number) {
-        return (
-            <Handle key={`h${index}`} orientation={orientation} pane_prev_num={pane_prev} pane_next_num={pane_next}
-                    handleDragStart={this.handleDragStart}
-                    handleDragFinish={this.handleDragFinish}
-                    handleDragging={this.handleDragging}
-            />
-        )
-    }
-
     /**
      * Сгенерировать содержимое компонента Pane
      *
@@ -289,9 +230,9 @@ export default class Pane extends React.Component<IProps, IState> {
         this.panes = [];
 
         if (this.props.panes.length > 0) {
-            components = this.generateNestedPaneComponents(this.props.panes, orientation);
+            components = this.renderPanes(this.props.panes, orientation);
         } else {
-            components = this.generateNests(this.props.view_types);
+            components = this.renderNests();
         }
 
         return (
@@ -299,6 +240,98 @@ export default class Pane extends React.Component<IProps, IState> {
                 {components}
             </div>
         );
+    }
+
+    private renderPanes(panes: ILayoutPane[], orientation: PaneOrientation) {
+        let elements = [];
+
+        for (const [index, pane] of panes.entries()) {
+            const ref: RefObject<Pane> = React.createRef();
+            const pane_comp = this.renderPane(index, orientation, pane, ref);
+            this.panes.push(ref);
+
+            elements.push(pane_comp);
+
+            if (index !== (panes.length - 1)) {
+                if (pane.resizable && panes[index+1].resizable) {
+                    elements.push(this.renderHandler(index, orientation, index, index + 1));
+                }
+            }
+        }
+
+        return elements;
+    }
+
+    private renderNests() {
+        return (
+            <Frame>
+                {this.props.view_options.map((view_option, index) => {
+                    return this.renderNest(index, view_option);
+                })}
+            </Frame>
+        )
+    }
+
+    /**
+     * Сгенерировать дочернюю панель
+     *
+     * Выполняется перенос всех параметров модели в параметры компонента.
+     * Метод записывает по ссылке ref-объект, необходимый для управления дочерней панелью из родительской.
+     *
+     * @param {number}          index       номер панели (для идентификации React'ом)
+     * @param {PaneOrientation} orientation ориентация родительской панели
+     * @param {ILayoutPane}     data        модель панели
+     * @param {RefObject<Pane>} ref         ref-объект (возврат по ссылке)
+     */
+    renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
+        return (
+            <Pane
+                key={data.name || index}
+                name={data.name}
+                size={data.size}
+                size_min={data.size_min}
+                size_max={data.size_max}
+                size_unit={data.size_unit}
+                resizable={data.resizable}
+                panes={data.panes}
+                orientation={orientation}
+                ref={ref}
+                view_options={data.view_options}
+            />
+        );
+    }
+
+    renderNest(index: number, view_option: ViewOption): JSX.Element {
+        return (
+            <Nest
+                key={index}
+                index={index}
+                view_type={view_option.type}
+                label={view_option.label}
+            />
+        )
+    }
+
+    /**
+     * Сгенерировать рукоятку для панелей
+     *
+     * Рукоятке передаются номера панелей, между которыми он расположен.
+     * Впоследствии эти номера будут передаваться обработчикам событий изменения положения рукоятки
+     * в родительской панели.
+     *
+     * @param {number}          index       номер рукоятки (для идентификации React'ом)
+     * @param {PaneOrientation} orientation ориентация родительской панели
+     * @param {number}          pane_prev   номер предыдущей панели
+     * @param {number}          pane_next   номер следующей панели
+     */
+    renderHandler(index: number, orientation: PaneOrientation, pane_prev: number, pane_next: number) {
+        return (
+            <Handle key={`h${index}`} orientation={orientation} pane_prev_num={pane_prev} pane_next_num={pane_next}
+                    handleDragStart={this.handleDragStart}
+                    handleDragFinish={this.handleDragFinish}
+                    handleDragging={this.handleDragging}
+            />
+        )
     }
 
     /**
@@ -418,37 +451,6 @@ export default class Pane extends React.Component<IProps, IState> {
         }
 
         this.recalcChild();
-    }
-    private generateNests(view_types: typeof View[]) {
-        let elements = [];
-
-        for (const [index, view_type] of view_types.entries()) {
-            const nest_comp = this.renderNest(index, view_type);
-
-            elements.push(nest_comp);
-        }
-
-        return elements;
-    }
-
-    private generateNestedPaneComponents(panes: ILayoutPane[], orientation: PaneOrientation) {
-        let elements = [];
-
-        for (const [index, pane] of panes.entries()) {
-            const ref: RefObject<Pane> = React.createRef();
-            const pane_comp = this.renderPane(index, orientation, pane, ref);
-            this.panes.push(ref);
-
-            elements.push(pane_comp);
-
-            if (index !== (panes.length - 1)) {
-                if (pane.resizable && panes[index+1].resizable) {
-                    elements.push(this.renderHandler(index, orientation, index, index + 1));
-                }
-            }
-        }
-
-        return elements;
     }
 
     get is_vertical() {
