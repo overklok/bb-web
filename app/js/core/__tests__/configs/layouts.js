@@ -23,7 +23,7 @@ export default {
                 {name: 's2', size_min: '10px'},
                 {name: 's3', size: '20%', panes: [
                         {name: 'k1'},
-                        {name: 'k2', view_aliases: ['test1']},
+                        {name: 'k2', views: [{alias: 'test1'}]},
                         {name: 'k3'},
                 ]}
             ]},

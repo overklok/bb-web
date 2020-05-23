@@ -1,9 +1,8 @@
 import * as React from "react";
 import Tab from "./Tab";
-import Nest from "./Nest";
 
 interface IProps {
-    children: JSX.Element[]
+    children: JSX.Element[] // usually a Nest creators
 }
 
 interface IState {
@@ -26,7 +25,23 @@ export default class Frame extends React.Component<IProps, IState> {
     }
 
     render() {
-        const {
+        if (this.props.children.length > 1) {
+            return this.renderMultiChild();
+        } else {
+            return this.renderSingleChild();
+        }
+    }
+
+    renderSingleChild() {
+        return (
+            <div className='frame'>
+                {this.props.children}
+            </div>
+        )
+    }
+
+    renderMultiChild() {
+         const {
             onClickTabItem,
             props: {
                 children
@@ -61,6 +76,6 @@ export default class Frame extends React.Component<IProps, IState> {
                     })}
                 </div>
             </div>
-        )
+        );
     }
 }
