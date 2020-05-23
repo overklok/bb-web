@@ -282,7 +282,10 @@ export default class Pane extends React.Component<IProps, IState> {
         });
 
         // Компоненты, лежащие внутри Pane
-        let components = [];
+        let components;
+
+        // Очистить панели, чтобы исключить ложные ссылки
+        this.panes = [];
 
         if (this.props.panes.length > 0) {
             components = this.generateNestedPaneComponents(this.props.panes, orientation);
