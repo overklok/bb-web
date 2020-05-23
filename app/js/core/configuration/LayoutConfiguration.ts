@@ -1,5 +1,7 @@
 import {PaneOrientation} from "../layout/types";
 import {IConfiguration} from "../helpers/IConfiguration";
+import {ViewConfiguration} from "./ViewConfiguration";
+import {View} from "../ui/View";
 
 const UNITS_ALLOWED = [
     "px", '%'
@@ -21,6 +23,8 @@ export interface ILayoutPane {
     fixed: number;
     resizable: boolean;
     panes: ILayoutPane[];
+    view_aliases: string[];
+    view_types: typeof View[];
 }
 
 /**
@@ -63,6 +67,14 @@ export class LayoutConfiguration implements IConfiguration {
         }
     }
 
+    resolveViewAliasesToTypes(view_config: ViewConfiguration) {
+        for (const mode of Object.values(this.modes)) {
+            for (const pane of mode.panes) {
+                this.resolvePaneViewAliasesToTypes(pane, view_config);
+            }
+        }
+    }
+
     /**
      * Обработать конфигурацию панели
      *
@@ -81,6 +93,24 @@ export class LayoutConfiguration implements IConfiguration {
         this.processPaneSize(pane);
         this.processPaneLimits(pane);
         this.processPaneResizability(pane);
+        this.processPaneViews(pane);
+    }
+
+    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: ViewConfiguration) {
+        // Выполнить перебор вложенных панелей (головная рекурсия)
+        if (pane.panes) {
+            for (const subpane of pane.panes) {
+                this.resolvePaneViewAliasesToTypes(subpane, view_config);
+            }
+        }
+
+        for (let alias of pane.view_aliases) {
+            const view_type = view_config.views[alias];
+
+            if (!view_type) throw new Error(`View type '${alias}' does not exist`);
+
+            pane.view_types.push(view_type);
+        }
     }
 
     /**
@@ -147,6 +177,25 @@ export class LayoutConfiguration implements IConfiguration {
         if (pane.size_min == pane.size_max && pane.size_max != null) {
             pane.resizable = false;
         }
+    }
+
+    processPaneViews(pane: ILayoutPane): void {
+        if (pane.view_aliases && pane.panes) {
+            throw new Error(`Only one of 'view_aliases' or 'panes' can be used for pane '${pane.name}'`);
+        }
+
+        if (pane.view_aliases) {
+            if (!Array.isArray(pane.view_aliases)) {
+                throw new Error(`Invalid type of 'view_aliases' for pane '${pane.name}'`);
+            }
+
+            // TODO validate item types
+        } else {
+            pane.view_aliases = [];
+        }
+
+        // Создать пустой массив, чтобы в него вопследствии резолвить типы на основе алиасов
+        pane.view_types = [];
     }
 
     processSizeLimitValue(value: any): number {

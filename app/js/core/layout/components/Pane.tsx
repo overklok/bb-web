@@ -6,6 +6,8 @@ import classNames from "classnames";
 import Handle from "./Handle";
 import {ILayoutPane} from "../../configuration/LayoutConfiguration";
 import {PaneOrientation} from "../types";
+import {View} from "../../ui/View";
+import Nest from "./Nest";
 
 /**
  * Свойства панели разметки
@@ -17,6 +19,8 @@ interface IProps {
     is_root: boolean,
     // внутренние панели
     panes?: ILayoutPane[],
+    // типы Видов
+    view_types?: typeof View[],
 
     // ориентация панели
     orientation: PaneOrientation,
@@ -77,6 +81,9 @@ interface IState {
 export default class Pane extends React.Component<IProps, IState> {
     static defaultProps = {
         panes: [] as ILayoutPane[],
+        view_aliases: [] as string[],
+        view_types: [] as typeof View[],
+
         name: 'unnamed',
         is_root: false,
         orientation: PaneOrientation.Horizontal,
@@ -191,6 +198,15 @@ export default class Pane extends React.Component<IProps, IState> {
         }
     }
 
+    renderNest(index: number, view_type: typeof View) {
+        return (
+            <Nest
+                key={index}
+                view_type={view_type}
+            />
+        )
+    }
+
     /**
      * Сгенерировать дочернюю панель
      *
@@ -215,6 +231,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 panes={data.panes}
                 orientation={orientation}
                 ref={ref}
+                view_types={data.view_types}
             />
         );
     }
@@ -265,26 +282,17 @@ export default class Pane extends React.Component<IProps, IState> {
         });
 
         // Компоненты, лежащие внутри Pane
-        const elements = [];
-        this.panes = [];
+        let components = [];
 
-        for (const [index, pane] of this.props.panes.entries()) {
-            const ref: RefObject<Pane> = React.createRef();
-            const pane_comp = this.renderPane(index, orientation, pane, ref);
-            this.panes.push(ref);
-
-            elements.push(pane_comp);
-
-            if (index !== (this.props.panes.length - 1)) {
-                if (pane.resizable && this.props.panes[index+1].resizable) {
-                    elements.push(this.renderHandler(index, orientation, index, index + 1));
-                }
-            }
+        if (this.props.panes.length > 0) {
+            components = this.generateNestedPaneComponents(this.props.panes, orientation);
+        } else {
+            components = this.generateNests(this.props.view_types);
         }
 
         return (
             <div className={klasses} ref={div_element => {this.div_element = div_element}}>
-                {elements}
+                {components}
             </div>
         );
     }
@@ -404,6 +412,38 @@ export default class Pane extends React.Component<IProps, IState> {
         }
 
         this.recalcChild();
+    }
+
+    private generateNests(view_types: typeof View[]) {
+        let elements = [];
+
+        for (const [index, view_type] of view_types.entries()) {
+            const nest_comp = this.renderNest(index, view_type);
+
+            elements.push(nest_comp);
+        }
+
+        return elements;
+    }
+
+    private generateNestedPaneComponents(panes: ILayoutPane[], orientation: PaneOrientation) {
+        let elements = [];
+
+        for (const [index, pane] of panes.entries()) {
+            const ref: RefObject<Pane> = React.createRef();
+            const pane_comp = this.renderPane(index, orientation, pane, ref);
+            this.panes.push(ref);
+
+            elements.push(pane_comp);
+
+            if (index !== (panes.length - 1)) {
+                if (pane.resizable && panes[index+1].resizable) {
+                    elements.push(this.renderHandler(index, orientation, index, index + 1));
+                }
+            }
+        }
+
+        return elements;
     }
 
     get is_vertical() {

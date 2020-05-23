@@ -7,7 +7,10 @@ import ConfigServiceProvider from "../providers/ConfigServiceProvider";
 import IConfigService from "../service/interfaces/IConfigService";
 
 import layouts from './configs/layouts';
+import views from './configs/views';
+
 import {LayoutConfiguration} from "../configuration/LayoutConfiguration";
+import {ViewConfiguration} from "../configuration/ViewConfiguration";
 
 class TestApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -19,7 +22,7 @@ class TestApplication extends Application {
     }
 
     protected setup() {
-        // @ts-ignore
+        this.instance(IConfigService).configure(ViewConfiguration, views);
         this.instance(IConfigService).configure(LayoutConfiguration, layouts);
     }
 

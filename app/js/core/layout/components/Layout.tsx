@@ -26,7 +26,7 @@ interface ILayoutState {
  *
  * Разметка определяет расположение внутренних модулей приложения,
  * компонуя панели в соответствии с выбранным режимом разметки.
- * Режимы разметки заданются в конфигурационном объекте `LayoutConfiguration`.
+ * Режимы разметки задаются в конфигурационном объекте `LayoutConfiguration`.
  */
 export default class Layout extends React.Component<ILayoutProps, ILayoutState> {
     constructor(props: ILayoutProps) {
@@ -54,7 +54,11 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
         const panes = this.props.config.modes[this.state.mode_name].panes;
 
         return (
-            <Pane is_root={true} panes={panes} name='root' orientation={orientation} />
+            <Pane is_root={true}
+                  panes={panes}
+                  name='root'
+                  orientation={orientation}
+            />
         );
     }
 }
