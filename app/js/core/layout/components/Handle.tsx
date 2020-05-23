@@ -95,6 +95,9 @@ export default class Handle extends React.Component<IProps, IState> {
         let cur_position = this.props.orientation == PaneOrientation.Horizontal ? evt.pageX : evt.pageY;
         let hdr_position = this.props.orientation == PaneOrientation.Horizontal ? this.div_element.offsetLeft : this.div_element.offsetTop;
 
+        // Учесть зум браузера
+        movement /= window.devicePixelRatio;
+
         // Овердраг - состояние, в котором о движении курсора в данном положении не следует сообщать.
         // По умолчанию сообщать о перетаскивании ручки
         let allowed = true;

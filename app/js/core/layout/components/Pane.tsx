@@ -52,7 +52,6 @@ interface IState {
 // 4. [OK] Refactor Pane
 // 5. [OK] Mode switching
 // 6. [OK] Animation
-// 7. Transition
 // === Base Completed ===
 // 8. Add resizing limits (px/%)
 // 9. Dynamic Configuration
@@ -382,12 +381,10 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param {number} pane_num_next Номер панели, распологающейся после рукоятки
      */
     handleDragStart(pane_num_prev: number, pane_num_next: number) {
-        const pane_prev = this.panes[pane_num_prev].current;
-        const pane_next = this.panes[pane_num_next].current;
-
         // Отключить анимацию на время перетаскивания
-        pane_prev.div_element.classList.remove('pane-animated');
-        pane_next.div_element.classList.remove('pane-animated');
+        for (const pane of this.panes) {
+            pane.current.div_element.classList.remove('pane-animated');
+        }
 
         this.recalcChild();
     }
@@ -401,12 +398,10 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param {number} pane_num_next Номер панели, распологающейся после рукоятки
      */
     handleDragFinish(pane_num_prev: number, pane_num_next: number) {
-        const pane_prev = this.panes[pane_num_prev].current;
-        const pane_next = this.panes[pane_num_next].current;
-
         // Включить анимацию на время перетаскивания
-        pane_prev.div_element.classList.add('pane-animated');
-        pane_next.div_element.classList.add('pane-animated');
+        for (const pane of this.panes) {
+            pane.current.div_element.classList.add('pane-animated');
+        }
 
         this.recalcChild();
     }
