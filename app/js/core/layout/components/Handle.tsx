@@ -40,6 +40,8 @@ export default class Handle extends React.Component<IProps, IState> {
     private overdrag_sign_pos:  boolean = false;
     // основной html-элемент, который генерирует этот компонент
     private div_element: HTMLDivElement;
+    private startposX: number;
+    private startposY: number;
 
     constructor(props: IProps) {
         super(props);
@@ -52,11 +54,17 @@ export default class Handle extends React.Component<IProps, IState> {
     componentDidMount(): void {
         document.addEventListener('mouseup', this.handleMouseUp);
         document.addEventListener('mousemove', this.handleMouseMove);
+
+        document.addEventListener('touchend', this.handleMouseUp);
+        document.addEventListener('touchmove', this.handleMouseMove);
     }
 
     componentWillUnmount(): void {
         document.removeEventListener('mouseup', this.handleMouseUp);
         document.removeEventListener('mousemove', this.handleMouseMove);
+
+        document.removeEventListener('touchend', this.handleMouseUp);
+        document.removeEventListener('touchmove', this.handleMouseMove);
     }
 
     render() {
@@ -69,12 +77,16 @@ export default class Handle extends React.Component<IProps, IState> {
         return (
             <div className={klass}
                  onMouseDown={this.handleMouseDown}
+                 onTouchStart={this.handleMouseDown}
                  ref={div_element => {this.div_element = div_element}}
             />
         );
     }
 
-    handleMouseDown() {
+    handleMouseDown(evt: any) {
+        this.startposX = evt.type === 'touchstart' ? evt.touches[0].pageX : evt.pageX;
+        this.startposY = evt.type === 'touchstart' ? evt.touches[0].pageY : evt.pageY;
+
         this.moving = true;
 
         this.props.handleDragStart(this.props.pane_prev_num, this.props.pane_next_num);
@@ -88,11 +100,20 @@ export default class Handle extends React.Component<IProps, IState> {
         this.moving = false;
     }
 
-    handleMouseMove(evt: MouseEvent) {
+    handleMouseMove(evt: any) {
         if (this.moving === false) return;
 
-        let movement = this.props.orientation == PaneOrientation.Horizontal ? evt.movementX : evt.movementY;
-        let cur_position = this.props.orientation == PaneOrientation.Horizontal ? evt.pageX : evt.pageY;
+        const   pageX = evt.type === 'touchmove' ? evt.touches[0].pageX : evt.pageX,
+                pageY = evt.type === 'touchmove' ? evt.touches[0].pageY : evt.pageY;
+
+        const movementX = pageX - this.startposX;
+        const movementY = pageY - this.startposY;
+
+        this.startposX = pageX;
+        this.startposY = pageY;
+
+        let movement = this.props.orientation == PaneOrientation.Horizontal ? movementX : movementY;
+        let cur_position = this.props.orientation == PaneOrientation.Horizontal ? pageX : pageX;
         let hdr_position = this.props.orientation == PaneOrientation.Horizontal ? this.div_element.offsetLeft : this.div_element.offsetTop;
 
         // Учесть зум браузера
