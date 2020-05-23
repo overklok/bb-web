@@ -14,16 +14,17 @@ body {
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .pane {
   display: flex;
   justify-content: space-between;
   // WARNING: It's vital to NOT use border-box sizing here!
-  //box-sizing: border-box;
   flex-grow: 1;
 
   overflow: hidden;
+  position: relative;
 
   &.pane-h {
     flex-direction: column;
@@ -33,14 +34,8 @@ body {
     flex-direction: row;
   }
 
-  &.pane_noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Opera and Firefox */
+  &.pane-noselect {
+    user-select: none;
   }
 }
 
@@ -55,29 +50,58 @@ body {
   }
 
   &.handler-h {
-    height: 20px;
+    height: 30px;
     cursor: ew-resize;
     margin: auto 0;
 
     &::before {
-      width: 4px;
+      width: 6px;
       height: 100%;
     }
   }
 
   &.handler-v {
-    width: 20px;
+    width: 30px;
     cursor: ns-resize;
     margin: 0 auto;
 
     &::before {
       width: 100%;
-      height: 4px;
+      height: 6px;
     }
   }
+}
+
+.frame {
+  box-sizing: border-box;
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+
+  // Can be managed
+  overflow: hidden;
 }
 
 // Theme
 .pane {
   border: 1px solid black;
+
+  &.pane-animated {
+    &.pane-h {
+      transition: width     0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  min-width 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  max-width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
+    &.pane-v {
+      transition: height      0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  min-height  0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  max-height  0.6s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+  }
+}
+
+.frame {
+  
 }

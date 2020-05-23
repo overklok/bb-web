@@ -4,6 +4,7 @@ import ILayoutService from "../service/interfaces/ILayoutService";
 import LayoutService from "../service/LayoutService";
 import IConfigService from "../service/interfaces/IConfigService";
 import {LayoutConfiguration} from "../configuration/LayoutConfiguration";
+import {ViewConfiguration} from "../configuration/ViewConfiguration";
 
 export default class LayoutServiceProvider extends ServiceProvider {
     register() {
@@ -14,9 +15,9 @@ export default class LayoutServiceProvider extends ServiceProvider {
 
     public boot() {
         const config_service = this.app.instance(IConfigService);
-        // @ts-ignore
-        const config = config_service.configuration(LayoutConfiguration);
+        const config_views = config_service.configuration(ViewConfiguration);
+        const config_layout = config_service.configuration(LayoutConfiguration);
 
-        this.app.instance(ILayoutService).setup(config);
+        this.app.instance(ILayoutService).setup(config_layout, config_views);
     }
 }
