@@ -14,6 +14,7 @@ body {
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .pane {
@@ -22,12 +23,19 @@ body {
   // WARNING: It's vital to NOT use border-box sizing here!
   flex-grow: 1;
 
+  overflow: hidden;
+  position: relative;
+
   &.pane-h {
     flex-direction: column;
   }
 
   &.pane-v {
     flex-direction: row;
+  }
+
+  &.pane-noselect {
+    user-select: none;
   }
 }
 
@@ -64,10 +72,19 @@ body {
   }
 }
 
+.nest {
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+
+  // Can be managed
+  overflow: hidden;
+}
+
 // Theme
 .pane {
   border: 2px solid black;
-
 
   &.pane-animated {
     &.pane-h {

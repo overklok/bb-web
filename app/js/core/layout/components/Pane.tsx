@@ -279,6 +279,7 @@ export default class Pane extends React.Component<IProps, IState> {
             'pane-h': this.props.orientation == PaneOrientation.Horizontal,
             'pane-v': this.props.orientation == PaneOrientation.Vertical,
             'pane-animated': true,
+            'pane-noselect': false,
         });
 
         // Компоненты, лежащие внутри Pane
@@ -394,6 +395,7 @@ export default class Pane extends React.Component<IProps, IState> {
     handleDragStart(pane_num_prev: number, pane_num_next: number) {
         // Отключить анимацию на время перетаскивания
         for (const pane of this.panes) {
+            pane.current.div_element.classList.add('pane-noselect');
             pane.current.div_element.classList.remove('pane-animated');
         }
 
@@ -411,12 +413,12 @@ export default class Pane extends React.Component<IProps, IState> {
     handleDragFinish(pane_num_prev: number, pane_num_next: number) {
         // Включить анимацию на время перетаскивания
         for (const pane of this.panes) {
+            pane.current.div_element.classList.remove('pane-noselect');
             pane.current.div_element.classList.add('pane-animated');
         }
 
         this.recalcChild();
     }
-
     private generateNests(view_types: typeof View[]) {
         let elements = [];
 
