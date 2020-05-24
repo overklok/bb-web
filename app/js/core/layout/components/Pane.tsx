@@ -9,6 +9,7 @@ import {PaneOrientation} from "../types";
 import {View} from "../../ui/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
+import TabDisplay from "./tab/TabDisplay";
 
 /**
  * Свойства панели разметки
@@ -273,9 +274,11 @@ export default class Pane extends React.Component<IProps, IState> {
     private renderNests() {
         return (
             <Frame>
-                {this.props.view_options.map((view_option, index) => {
-                    return this.renderNest(index, view_option);
-                })}
+                <TabDisplay>
+                    {this.props.view_options.map((view_option, index) => {
+                        return this.renderNest(index, view_option);
+                    })}
+                </TabDisplay>
             </Frame>
         )
     }

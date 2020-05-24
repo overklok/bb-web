@@ -1,4 +1,7 @@
 import * as React from "react";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 import Pane from "./Pane";
 
 import {LayoutConfiguration} from "../../configuration/LayoutConfiguration";
@@ -54,11 +57,13 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
         const panes = this.props.config.modes[this.state.mode_name].panes;
 
         return (
-            <Pane is_root={true}
-                  panes={panes}
-                  name='root'
-                  orientation={orientation}
-            />
+            <DndProvider backend={HTML5Backend}>
+                <Pane is_root={true}
+                      panes={panes}
+                      name='root'
+                      orientation={orientation}
+                />
+            </DndProvider>
         );
     }
 }

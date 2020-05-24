@@ -72,6 +72,8 @@ body {
   }
 }
 
+// Рамка в панели.
+// Принимает nest'ы
 .frame {
   box-sizing: border-box;
   position: absolute;
@@ -79,8 +81,42 @@ body {
   width: 100%;
   height: 100%;
 
-  // Can be managed
   overflow: hidden;
+}
+
+// Вкладочное отображение
+// Управляет переключением nest'ов
+.tab-display {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+// Список вкладок
+.tab-list {
+
+}
+
+// Содержимое вкладки
+.tab-content {
+  flex-grow: 1;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+}
+
+// Nest (гнездо)
+// Содержит динамический контент
+.nest {
+  width: 100%;
+  height: 100%;
+
+  // Can be managed
+  overflow: auto;
 }
 
 // Theme
