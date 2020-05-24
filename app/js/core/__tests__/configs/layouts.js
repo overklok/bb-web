@@ -51,5 +51,21 @@ export default {
                 ]}
             ]},
         ]
+    },
+    horz: {
+        policy: 'horizontal',
+        panes: [
+            {name: 'p1'},
+            {name: 'p2'},
+            {name: 'p3'},
+        ]
+    },
+    vert: {
+        policy: 'vertical',
+        panes: [
+            {name: 's1'},
+            {name: 's2'},
+            {name: 's3'},
+        ]
     }
 }

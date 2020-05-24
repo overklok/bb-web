@@ -1,6 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 import {PaneOrientation} from "../types";
+import {logDeprecation} from "sweetalert/typings/modules/options/deprecations";
 
 /**
  * Свойства рукоятки
@@ -37,7 +38,7 @@ export default class Handle extends React.Component<IProps, IState> {
     // выполняется ли перемещение в данный момент
     private moving: boolean = false;
     // является ли знак овердрага положительным
-    private overdrag_sign_pos:  boolean = false;
+    private overdrag_sign_pos: boolean = null;
     // основной html-элемент, который генерирует этот компонент
     private div_element: HTMLDivElement;
     private startposX: number;
@@ -84,6 +85,8 @@ export default class Handle extends React.Component<IProps, IState> {
     }
 
     handleMouseDown(evt: any) {
+        evt.preventDefault();
+
         this.startposX = evt.type === 'touchstart' ? evt.touches[0].pageX : evt.pageX;
         this.startposY = evt.type === 'touchstart' ? evt.touches[0].pageY : evt.pageY;
 
@@ -92,16 +95,21 @@ export default class Handle extends React.Component<IProps, IState> {
         this.props.handleDragStart(this.props.pane_prev_num, this.props.pane_next_num);
     }
 
-    handleMouseUp() {
+    handleMouseUp(evt: any) {
         if (this.moving === true) {
+            evt.preventDefault();
+
             this.props.handleDragFinish(this.props.pane_prev_num, this.props.pane_next_num);
         }
 
+        this.overdrag_sign_pos = null;
         this.moving = false;
     }
 
     handleMouseMove(evt: any) {
         if (this.moving === false) return;
+
+        evt.preventDefault();
 
         const   pageX = evt.type === 'touchmove' ? evt.touches[0].pageX : evt.pageX,
                 pageY = evt.type === 'touchmove' ? evt.touches[0].pageY : evt.pageY;
@@ -112,9 +120,11 @@ export default class Handle extends React.Component<IProps, IState> {
         this.startposX = pageX;
         this.startposY = pageY;
 
+        const hdr_rect = this.div_element.getBoundingClientRect();
+
         let movement = this.props.orientation == PaneOrientation.Horizontal ? movementX : movementY;
-        let cur_position = this.props.orientation == PaneOrientation.Horizontal ? pageX : pageX;
-        let hdr_position = this.props.orientation == PaneOrientation.Horizontal ? this.div_element.offsetLeft : this.div_element.offsetTop;
+        let cur_position = this.props.orientation == PaneOrientation.Horizontal ? pageX : pageY;
+        let hdr_position = this.props.orientation == PaneOrientation.Horizontal ? hdr_rect.left : hdr_rect.top;
 
         // Учесть зум браузера
         movement /= window.devicePixelRatio;
@@ -124,30 +134,19 @@ export default class Handle extends React.Component<IProps, IState> {
         let allowed = true;
 
         if (this.overdrag_sign_pos !== null) {
+
             // Не сообщать о перетаскивании ручки, если ранее был зафиксирован овердраг
             allowed = false;
-
-            // console.log("pos", cur_position, hdr_position, this.overdrag_sign_pos);
 
             /* Если курсор возвращён обратно за позицию овердрага, можно считать, что овердрага больше нет.
              * Для того, чтобы выйти из овердрага, курсор нужно вернуть НАЗАД
              * (т.е. переместить его в обратном направлении ЗА позицию овердрага)
              */
             if (this.overdrag_sign_pos && cur_position <= hdr_position) {
-                // console.log(movement)
-
-                // console.log("unlock", this.overdrag_sign_pos, movement);
-                // console.groupEnd();
-
                 allowed = true;
             }
 
             if (!this.overdrag_sign_pos && cur_position >= hdr_position) {
-                // console.log(movement)
-
-                // console.log("unlock", this.overdrag_sign_pos, movement);
-                // console.groupEnd();
-
                 allowed = true;
             }
         }
@@ -169,8 +168,6 @@ export default class Handle extends React.Component<IProps, IState> {
              */
             if (overdrag_sign_pos !== null) {
                 this.overdrag_sign_pos = overdrag_sign_pos > 0;
-                // console.group("od");
-                // console.log("lock", cur_position, movement, overdrag_sign_pos);
             } else {
                 this.overdrag_sign_pos = null;
             }
