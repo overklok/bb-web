@@ -63,9 +63,9 @@ export default {
     vert: {
         policy: 'vertical',
         panes: [
-            {name: 's1'},
-            {name: 's2'},
-            {name: 's3'},
+            {name: 'p1'},
+            {name: 'p2'},
+            {name: 'p3'},
         ]
     }
 }

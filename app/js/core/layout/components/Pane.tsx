@@ -142,6 +142,14 @@ export default class Pane extends React.Component<IProps, IState> {
      * Этот метод актуализирует выбранные параметры размеров в разметке документа.
      */
     setInitialCss() {
+        // Обнулить прежние возможные правила элемента
+        this.div_element.style.minHeight    = null;
+        this.div_element.style.minWidth     = null;
+        this.div_element.style.maxHeight    = null;
+        this.div_element.style.maxWidth     = null;
+        this.div_element.style.height       = null;
+        this.div_element.style.width        = null;
+
         if (this.is_vertical) {
             this.div_element.style.minHeight    = this.props.size_min ? this.props.size_min + 'px' : null;
         } else {
