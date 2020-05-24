@@ -1,5 +1,6 @@
 import * as React from "react";
 import Tab from "./Tab";
+import SingleTab from "./SingleTab";
 
 interface IProps {
     children: JSX.Element[] // usually a Nest creators
@@ -33,9 +34,29 @@ export default class Frame extends React.Component<IProps, IState> {
     }
 
     renderSingleChild() {
+        const {
+            props: {
+                children
+            },
+            state: {
+                active_tab
+            }
+        } = this;
+
         return (
             <div className='frame'>
-                {this.props.children}
+                <div className="tab-list">
+                    {children.map((child, index) => {
+                        const { label } = child.props;
+
+                        return (
+                            <SingleTab label={label} key={index} />
+                        )
+                    })}
+                </div>
+                <div className="tab-content">
+                    {this.props.children}
+                </div>
             </div>
         )
     }
@@ -64,6 +85,7 @@ export default class Frame extends React.Component<IProps, IState> {
                                 index={index}
                                 label={label}
                                 on_click={onClickTabItem}
+                                is_single={false}
                             />
                         );
                     })}

@@ -8,7 +8,7 @@ export default {
                 {name: 's2', size_min: '10px'},
                 {name: 's3', size: '20%', panes: [
                         {name: 'k1', views: [{alias: 'test1', label: "Label1"}, {alias: 'test2', label: "Label2"}]},
-                        {name: 'k2'},
+                        {name: 'k2', views: [{alias: 'test1', label: "SingleTest1"}]},
                         {name: 'k3'},
                 ]}
             ]},

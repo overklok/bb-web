@@ -121,3 +121,29 @@ body {
 .frame {
   
 }
+
+.tab-list {
+  border-bottom: solid 1px;
+}
+
+li.tab {
+  display: inline-block;
+  padding: 5px 10px;
+
+  list-style-type: none;
+  border-right: solid 1px;
+
+  background-color: lightslategrey;
+
+  &:hover {cursor: pointer;}
+
+  &.tab_active {
+    background-color: lightgray;
+  }
+
+  &.tab_single {
+    width: 100%;
+    text-align: center;
+    padding: 0;
+  }
+}
