@@ -102,6 +102,22 @@ body {
   }
 }
 
+.handler {
+  z-index: 1;
+
+  transition: transform ease-out 200ms;
+
+  &:hover {
+    &.handler-v {
+      transform: scaleY(3.5);
+    }
+
+    &.handler-h {
+      transform: scaleX(3.5);
+    }
+  }
+}
+
 .frame {
   
 }

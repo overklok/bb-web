@@ -50,6 +50,13 @@ export default class Handle extends React.Component<IProps, IState> {
         this.handleMouseUp      = this.handleMouseUp.bind(this);
         this.handleMouseDown    = this.handleMouseDown.bind(this);
         this.handleMouseMove    = this.handleMouseMove.bind(this);
+
+        // prevent page scrolling on touch devices
+        document.body.addEventListener(
+            'touchmove',
+            (e: any) => {e.preventDefault()},
+            { passive: false }
+        );
     }
 
     componentDidMount(): void {
