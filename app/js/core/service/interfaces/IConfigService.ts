@@ -1,14 +1,14 @@
 /**
  * @abstract
  */
-import {ConfigurationConstructor, IConfiguration} from "../../helpers/IConfiguration";
+import {ConfigConstructor, IConfig} from "../../helpers/IConfig";
 
 export default class IConfigService {
-    configure(abstrakt: ConfigurationConstructor, concrete: object) {
+    configure(abstrakt: ConfigConstructor, concrete: object) {
         throw new Error('abstract')
     }
 
-    configuration<V extends ConfigurationConstructor>(abstrakt: V): InstanceType<V> {
+    configuration<V extends ConfigConstructor>(abstrakt: V): InstanceType<V> {
         throw new Error('abstract');
     }
 }

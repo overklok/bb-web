@@ -1,8 +1,8 @@
 /**
  * Конструктор конфигурации
  */
-export interface ConfigurationConstructor {
-    new (config: object): IConfiguration;
+export interface ConfigConstructor {
+    new (config: object): IConfig;
 }
 
 /**
@@ -12,7 +12,7 @@ export interface ConfigurationConstructor {
  * объектов конфигурации. В некоторых случаях возможны предобработка и дополнительная
  * валидация контента кроме структуры.
  */
-export interface IConfiguration {
+export interface IConfig {
     /**
      * Выполнить предобработку
      */

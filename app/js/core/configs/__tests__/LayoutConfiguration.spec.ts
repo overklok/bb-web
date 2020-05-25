@@ -1,10 +1,10 @@
 import { expect } from "chai";
 
-import {ILayoutPane, LayoutConfiguration} from "../LayoutConfiguration";
+import {ILayoutPane, LayoutConfig} from "../LayoutConfig";
 import {ConfigurationError} from "../../exceptions/configuration";
 
 describe('LayoutConfiguration', function() {
-    const lc = new LayoutConfiguration({});
+    const lc = new LayoutConfig({});
 
     describe('validateSizes', function () {
         it('should throw an error if all sizes is not falsey', function () {

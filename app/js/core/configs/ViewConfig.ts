@@ -1,7 +1,7 @@
-import {IConfiguration} from "../helpers/IConfiguration";
+import {IConfig} from "../helpers/IConfig";
 import {View} from "../ui/View";
 
-export class ViewConfiguration implements IConfiguration {
+export class ViewConfig implements IConfig {
     views: {[key: string]: typeof View} = {};
 
     constructor(config: object) {

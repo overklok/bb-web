@@ -2,24 +2,24 @@
  * @abstract
  */
 import IConfigService from "./interfaces/IConfigService";
-import {ConfigurationConstructor, IConfiguration} from "../helpers/IConfiguration";
+import {ConfigConstructor, IConfig} from "../helpers/IConfig";
 
 export default class ConfigService extends IConfigService {
-    private bindings: Map<ConfigurationConstructor, object> = new Map();
+    private bindings: Map<ConfigConstructor, object> = new Map();
 
-    configure(abstrakt: ConfigurationConstructor, concrete: object) {
+    configure(abstrakt: ConfigConstructor, concrete: object) {
         if (typeof abstrakt !== "string") {
             concrete = new abstrakt(concrete);
 
             if ('preprocess' in concrete) {
-                (concrete as IConfiguration).preprocess();
+                (concrete as IConfig).preprocess();
             }
         }
 
         this.bindings.set(abstrakt, concrete);
     }
 
-    configuration<V extends ConfigurationConstructor>(abstrakt: V): InstanceType<V> {
+    configuration<V extends ConfigConstructor>(abstrakt: V): InstanceType<V> {
         return this.bindings.get(abstrakt) as InstanceType<V>;
     }
 }

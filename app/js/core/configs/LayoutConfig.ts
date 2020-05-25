@@ -1,6 +1,6 @@
 import {PaneOrientation} from "../layout/types";
-import {IConfiguration} from "../helpers/IConfiguration";
-import {ViewConfiguration} from "./ViewConfiguration";
+import {IConfig} from "../helpers/IConfig";
+import {ViewConfig} from "./ViewConfig";
 import {View} from "../ui/View";
 
 const UNITS_ALLOWED = [
@@ -46,7 +46,7 @@ export interface ILayoutMode {
  *
  * @property modes {} режимы разметки
  */
-export class LayoutConfiguration implements IConfiguration {
+export class LayoutConfig implements IConfig {
     modes: {[key: string]: ILayoutMode};
 
     constructor(config: object) {
@@ -70,7 +70,7 @@ export class LayoutConfiguration implements IConfiguration {
         }
     }
 
-    resolveViewAliasesToTypes(view_config: ViewConfiguration) {
+    resolveViewAliasesToTypes(view_config: ViewConfig) {
         for (const mode of Object.values(this.modes)) {
             for (const pane of mode.panes) {
                 this.resolvePaneViewAliasesToTypes(pane, view_config);
@@ -99,7 +99,7 @@ export class LayoutConfiguration implements IConfiguration {
         this.processPaneViews(pane);
     }
 
-    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: ViewConfiguration) {
+    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: ViewConfig) {
         // Выполнить перебор вложенных панелей (головная рекурсия)
         if (pane.panes) {
             for (const subpane of pane.panes) {
