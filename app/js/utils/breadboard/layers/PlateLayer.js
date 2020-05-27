@@ -16,8 +16,9 @@ import InductorPlate        from "../plates/InductorPlate";
 import RelayPlate           from "../plates/RelayPlate";
 import StripPlate           from "../plates/StripPlate";
 import DiodePlate           from "../plates/LEDPlate";
-import WS2801Plate          from "../plates/WS2801Plate";
 import MotorPlate from "../plates/MotorPlate";
+import RGBPlate from "../plates/RGBPlate";
+import DummyPlate from "../plates/DummyPlate";
 
 /**
  * Слой плашек
@@ -695,8 +696,8 @@ export default class PlateLayer extends Layer {
             RelayPlate.Alias,
             DiodePlate.Alias,
             StripPlate.Alias,
-            WS2801Plate.Alias,
-            MotorPlate.Alias,
+            RGBPlate.Alias,
+            DummyPlate.Alias,
         ]
     }
 
@@ -722,8 +723,9 @@ export default class PlateLayer extends Layer {
         captions[RelayPlate.Alias]          = 'реле';
         captions[DiodePlate.Alias]          = 'светодиод';
         captions[StripPlate.Alias]          = 'лента';
-        captions[WS2801Plate.Alias]         = 'RGB-светодиод';
         captions[MotorPlate.Alias]          = 'электромотор';
+        captions[RGBPlate.Alias]            = 'RGB-светодиод';
+        captions[DummyPlate.Alias]          = 'dummy';
 
         return captions;
     }
@@ -755,8 +757,9 @@ export default class PlateLayer extends Layer {
             case RelayPlate.Alias:          {return RelayPlate}
             case DiodePlate.Alias:          {return DiodePlate}
             case StripPlate.Alias:          {return StripPlate}
-            case WS2801Plate.Alias:         {return WS2801Plate}
             case MotorPlate.Alias:          {return MotorPlate}
+            case RGBPlate.Alias:            {return RGBPlate}
+            case DummyPlate.Alias:          {return DummyPlate}
             default:                        {throw new RangeError(`Unknown plate type '${type}'`)}
         }
     }

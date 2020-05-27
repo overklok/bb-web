@@ -1,8 +1,8 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 
-export default class WS2801Plate extends Plate {
-    static get Alias() {return "ws2801"}
+export default class RGBPlate extends Plate {
+    static get Alias() {return "rgb"}
 
     constructor(container, grid, schematic=false, verbose=false, id) {
         super(container, grid, false, verbose, id);
@@ -20,7 +20,7 @@ export default class WS2801Plate extends Plate {
         this._bezel.fill("#f09fc9");
 
         this._drawPicture();
-        this._drawLabel('вээс 2801', 40);
+        this._drawLabel('rgb', 40);
 
         // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };
