@@ -19,6 +19,7 @@ import DiodePlate           from "../plates/LEDPlate";
 import MotorPlate from "../plates/MotorPlate";
 import RGBPlate from "../plates/RGBPlate";
 import DummyPlate from "../plates/DummyPlate";
+import BuzzerPlate from "../plates/BuzzerPlate";
 
 /**
  * Слой плашек
@@ -695,6 +696,7 @@ export default class PlateLayer extends Layer {
             InductorPlate.Alias,
             RelayPlate.Alias,
             DiodePlate.Alias,
+            BuzzerPlate.Alias,
             StripPlate.Alias,
             RGBPlate.Alias,
             DummyPlate.Alias,
@@ -722,6 +724,7 @@ export default class PlateLayer extends Layer {
         captions[InductorPlate.Alias]       = 'индуктор';
         captions[RelayPlate.Alias]          = 'реле';
         captions[DiodePlate.Alias]          = 'светодиод';
+        captions[BuzzerPlate.Alias]         = 'зуммер';
         captions[StripPlate.Alias]          = 'лента';
         captions[MotorPlate.Alias]          = 'электромотор';
         captions[RGBPlate.Alias]            = 'RGB-светодиод';
@@ -756,6 +759,7 @@ export default class PlateLayer extends Layer {
             case InductorPlate.Alias:       {return InductorPlate}
             case RelayPlate.Alias:          {return RelayPlate}
             case DiodePlate.Alias:          {return DiodePlate}
+            case BuzzerPlate.Alias:         {return BuzzerPlate}
             case StripPlate.Alias:          {return StripPlate}
             case MotorPlate.Alias:          {return MotorPlate}
             case RGBPlate.Alias:            {return RGBPlate}
