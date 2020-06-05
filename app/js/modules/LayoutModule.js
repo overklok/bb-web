@@ -346,16 +346,16 @@ export default class LayoutModule extends Module {
                     this._panes.east.show("north");
                     duration += this._options.animSpeedMain;
 
-                    this._panes.east.show("south");
-                    duration += this._options.animSpeedSub;
+                    // this._panes.east.show("south");
+                    // duration += this._options.animSpeedSub;
 
                     this._layout.sizePane("east", .3);
                     duration += this._options.animSpeedMain;
 
-                    if (this._state.buttonsPaneVisible) {
-                        this._panes._east.south.show("south");
-                        duration += this._options.animSpeedSub;
-                    }
+                    // if (this._state.buttonsPaneVisible) {
+                    //     this._panes._east.south.show("south");
+                    //     duration += this._options.animSpeedSub;
+                    // }
 
                     break;
                 }
