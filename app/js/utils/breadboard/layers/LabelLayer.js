@@ -86,13 +86,13 @@ export default class LabelLayer extends Layer {
             const cell = col[0];
 
             const pos_x = cell.center.x,
-                  pos_y_pin = cell.pos.y - this._params.thickness,
+                  pos_y_pin = cell.pos.y - this._params.thickness * 1.3,
                   pos_y_pinval = cell.pos.y - this._params.thickness / 2;
 
             this._drawLabelText("top", pos_x, pos_y_pin, "A" + (i), this._params.thickness / 2);
 
             this._pinval_labels.push(
-                this._drawLabelText("top", pos_x, pos_y_pinval, "0")
+                this._drawLabelText("top", pos_x, pos_y_pinval, "0", 36, "900")
             );
 
             i++;
@@ -119,10 +119,10 @@ export default class LabelLayer extends Layer {
         }
     }
 
-    _drawLabelText(pane_name, pos_x, pos_y, text, size) {
+    _drawLabelText(pane_name, pos_x, pos_y, text, size, weight="bold") {
         return this._panes[pane_name]
             .text(text)
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
+            .font({size, weight, family: "'Lucida Console', Monaco, monospace"})
             .center(pos_x, pos_y);
     }
 
