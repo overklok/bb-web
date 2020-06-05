@@ -103,7 +103,7 @@ export default class LessonPreprocessor {
         exercise.display_buttons    = (exercise.type >= 1 && exercise.type <= 3) && exercise.display_buttons;
         exercise.layout_mode        = [0,4,5].indexOf(exercise.type) > -1 ? 'board' : 'code';
         exercise.layout_mode        = (exercise.type === 6) ? 'full' : exercise.layout_mode;
-        exercise.layout_mode        = (exercise.type === 6 && exercise.show_code_for_arduino) ? 'board_vars'
+        exercise.layout_mode        = (exercise.type === 6 && exercise.show_code_for_arduino) ? 'board'
                                                                                               : exercise.layout_mode;
 
         exercise._launch_variant    = exercise.launch_variant;
