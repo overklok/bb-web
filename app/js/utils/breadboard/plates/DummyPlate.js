@@ -1,3 +1,5 @@
+import draw from 'svgjs';
+
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 
@@ -40,11 +42,15 @@ export default class DummyPlate extends Plate {
         let center_x = cell1.center_rel.x + (cell2.pos.x - cell1.pos.x) / 2;
         let center_y = cell1.center_rel.y;
 
-        this._group.circle(qs/1.5, qs/1.5)
+        const radius = qs * 1.5;
+
+        const dot = this._group.circle(radius, radius)
             .center(
                 center_x,
                 center_y
             )
             .fill('#ff3a47');
+
+        dot.animate('1200ms').radius(0).loop();
     }
 }
