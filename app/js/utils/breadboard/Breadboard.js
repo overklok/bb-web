@@ -25,7 +25,7 @@ const GRID_ROWS = 11;                // Количество рядов в се�
 const GRID_COLS = 10;                // Количество колонок в сетке точек
 
 const GRID_POS_X = 120;
-const GRID_POS_Y = 170;
+const GRID_POS_Y = 200;
 
 
 import thm from "./styles/main.css";
@@ -246,6 +246,10 @@ export default class Breadboard {
      */
     clearRegions() {
         this._layers.region.clearRegions();
+    }
+
+    setPinsValues(values) {
+        this._layers.label.setPinsValues(values);
     }
 
     /**

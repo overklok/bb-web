@@ -670,7 +670,9 @@ class Application {
          * Изменены значения пинов
          */
         this._dispatcher.on('ls:pins_values', data => {
-            this.trc.setPinsValues(data);
+            console.log(data);
+            this.bb.setPinsValues(data);
+            // this.trc.setPinsValues(data);
         });
 
         /**

@@ -86,6 +86,10 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.clearRegions();
     }
 
+    setPinsValues(values) {
+        this._plugin.setPinsValues(values);
+    }
+
     switchSpareFilters(on) {
         this._plugin.switchSpareFilters(on);
     }

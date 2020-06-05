@@ -154,6 +154,10 @@ export default class BreadboardModule extends Module {
         this._board.clearRegions();
     }
 
+    setPinsValues(values) {
+        this._board.setPinsValues(values);
+    }
+
     getPlates() {
         if (!this._state.display) {return false}
 

@@ -1,5 +1,8 @@
 import Layer from "../core/Layer";
 
+const SYMBOL_UP = "🠩"
+const SYMBOL_DOWN = "🠫"
+
 export default class LabelLayer extends Layer {
     static get Class() {return "bb-layer-label"}
 
@@ -18,6 +21,8 @@ export default class LabelLayer extends Layer {
             top: this._container.nested(),
             left: this._container.nested()
         }
+
+        this._pinval_labels = [];
     }
 
     compose() {
@@ -37,16 +42,58 @@ export default class LabelLayer extends Layer {
         this._drawLabelsLeft();
     }
 
+    setPinsValues(values) {
+        if (!values || !Array.isArray(values)) {
+            throw new TypeError("Pin values must be an array");
+        }
+
+        let i = 0;
+
+        for (let col of this.__grid.cells) {
+            const cell = col[0];
+
+            const [mode, value] = values.hasOwnProperty(i) ? values[i] : [null, 0];
+            const pos_x = cell.center.x;
+
+            let arrow = "",
+                color = 'black';
+
+            if (mode === 'input') {
+                arrow = SYMBOL_UP;
+                color = "green";
+            }
+
+            if (mode === 'output') {
+                arrow = SYMBOL_DOWN;
+                color = "red";
+            }
+
+            if (value === 0) {
+                arrow = "";
+                color = "black";
+            }
+
+            this._pinval_labels[i].text(`${value}${arrow}`).fill(color).cx(pos_x);
+
+            i++;
+        }
+    }
+
     _drawLabelsTop() {
         let i = 0;
 
         for (let col of this.__grid.cells) {
-            let cell = col[0];
+            const cell = col[0];
 
-            let pos_x = cell.center.x;
-            let pos_y = cell.pos.y - this._params.thickness / 2;
+            const pos_x = cell.center.x,
+                  pos_y_pin = cell.pos.y - this._params.thickness,
+                  pos_y_pinval = cell.pos.y - this._params.thickness / 2;
 
-            this._drawLabelText("top", pos_x, pos_y, "A" + (i), this._params.thickness / 2);
+            this._drawLabelText("top", pos_x, pos_y_pin, "A" + (i), this._params.thickness / 2);
+
+            this._pinval_labels.push(
+                this._drawLabelText("top", pos_x, pos_y_pinval, "0")
+            );
 
             i++;
         }
@@ -73,7 +120,7 @@ export default class LabelLayer extends Layer {
     }
 
     _drawLabelText(pane_name, pos_x, pos_y, text, size) {
-        this._panes[pane_name]
+        return this._panes[pane_name]
             .text(text)
             .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
             .center(pos_x, pos_y);
