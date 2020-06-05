@@ -64,7 +64,7 @@ const MAPPINGS = {
         launch_buttons: PANE_IDS.MAIN_CENTER,
         breadboard: PANE_IDS.EAST_CENTER,
         workspace: PANE_IDS.MAIN_CENTER,
-        tracing: PANE_IDS.EAST_SOUTH_CENTER,
+        // tracing: PANE_IDS.EAST_SOUTH_CENTER,
         buttons: PANE_IDS.EAST_SOUTH_SOUTH,
         task: PANE_IDS.EAST_NORTH,
         lesson: PANE_IDS.MAIN_NORTH
