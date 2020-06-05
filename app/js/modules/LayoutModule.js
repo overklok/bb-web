@@ -349,7 +349,7 @@ export default class LayoutModule extends Module {
                     // this._panes.east.show("south");
                     // duration += this._options.animSpeedSub;
 
-                    this._layout.sizePane("east", .3);
+                    this._layout.sizePane("east", .4);
                     duration += this._options.animSpeedMain;
 
                     // if (this._state.buttonsPaneVisible) {
