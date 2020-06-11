@@ -77,7 +77,6 @@ export default class ButtonPlate extends LinearPlate {
         rect2.center(cell2.center_rel.x, cell2.center_rel.y);
 
         let line_len = rect2.x() - rect1.x();
-
         let line_gap = line_len / 6;
 
         this._group.path([

@@ -20,6 +20,7 @@ import MotorPlate from "../plates/MotorPlate";
 import RGBPlate from "../plates/RGBPlate";
 import DummyPlate from "../plates/DummyPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
+import TButtonPlate from "../plates/TButtonPlate";
 
 /**
  * Слой плашек
@@ -690,6 +691,7 @@ export default class PlateLayer extends Layer {
             RheostatPlate.Alias,
             BridgePlate.Alias,
             ButtonPlate.Alias,
+            TButtonPlate.Alias,
             SwitchPlate.Alias,
             CapacitorPlate.Alias,
             TransistorPlate.Alias,
@@ -718,6 +720,7 @@ export default class PlateLayer extends Layer {
         captions[RheostatPlate.Alias]       = 'реостат';
         captions[BridgePlate.Alias]         = 'перемычка';
         captions[ButtonPlate.Alias]         = 'кнопка';
+        captions[TButtonPlate.Alias]        = 'кнопка (T-образная)';
         captions[SwitchPlate.Alias]         = 'ключ';
         captions[CapacitorPlate.Alias]      = 'конденсатор';
         captions[TransistorPlate.Alias]     = 'транзистор';
@@ -753,6 +756,7 @@ export default class PlateLayer extends Layer {
             case RheostatPlate.Alias:       {return RheostatPlate}
             case BridgePlate.Alias:         {return BridgePlate}
             case ButtonPlate.Alias:         {return ButtonPlate}
+            case TButtonPlate.Alias:        {return TButtonPlate}
             case SwitchPlate.Alias:         {return SwitchPlate}
             case CapacitorPlate.Alias:      {return CapacitorPlate}
             case TransistorPlate.Alias:     {return TransistorPlate}
