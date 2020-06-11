@@ -1,12 +1,12 @@
 /**
  * @abstract
  */
-import {LayoutConfiguration} from "../../configuration/LayoutConfiguration";
-import {ViewConfiguration} from "../../configuration/ViewConfiguration";
+import {LayoutConfig} from "../../configs/LayoutConfig";
+import {ViewConfig} from "../../configs/ViewConfig";
 
 export default class ILayoutService {
-    public setup(config_layout: LayoutConfiguration,
-                 config_views: ViewConfiguration)   {throw new Error('abstract')};
+    public setup(config_layout: LayoutConfig,
+                 config_views: ViewConfig)          {throw new Error('abstract')};
     public compose(element: HTMLElement)            {throw new Error('abstract')};
     public switch(mode: string)                     {throw new Error('abstract')};
 }

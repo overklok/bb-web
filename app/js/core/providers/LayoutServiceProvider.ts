@@ -3,8 +3,8 @@ import Application from "../Application";
 import ILayoutService from "../service/interfaces/ILayoutService";
 import LayoutService from "../service/LayoutService";
 import IConfigService from "../service/interfaces/IConfigService";
-import {LayoutConfiguration} from "../configuration/LayoutConfiguration";
-import {ViewConfiguration} from "../configuration/ViewConfiguration";
+import {LayoutConfig} from "../configs/LayoutConfig";
+import {ViewConfig} from "../configs/ViewConfig";
 
 export default class LayoutServiceProvider extends ServiceProvider {
     register() {
@@ -15,8 +15,8 @@ export default class LayoutServiceProvider extends ServiceProvider {
 
     public boot() {
         const config_service = this.app.instance(IConfigService);
-        const config_views = config_service.configuration(ViewConfiguration);
-        const config_layout = config_service.configuration(LayoutConfiguration);
+        const config_views = config_service.configuration(ViewConfig);
+        const config_layout = config_service.configuration(LayoutConfig);
 
         this.app.instance(ILayoutService).setup(config_layout, config_views);
     }

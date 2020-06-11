@@ -9,8 +9,8 @@ import IConfigService from "../service/interfaces/IConfigService";
 import layouts from './configs/layouts';
 import views from './configs/views';
 
-import {LayoutConfiguration} from "../configuration/LayoutConfiguration";
-import {ViewConfiguration} from "../configuration/ViewConfiguration";
+import {LayoutConfig} from "../configs/LayoutConfig";
+import {ViewConfig} from "../configs/ViewConfig";
 
 class TestApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -22,8 +22,8 @@ class TestApplication extends Application {
     }
 
     protected setup() {
-        this.instance(IConfigService).configure(ViewConfiguration, views);
-        this.instance(IConfigService).configure(LayoutConfiguration, layouts);
+        this.instance(IConfigService).configure(ViewConfig, views);
+        this.instance(IConfigService).configure(LayoutConfig, layouts);
     }
 
     run(element: HTMLElement) {

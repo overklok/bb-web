@@ -3,15 +3,15 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Layout from "../layout/components/Layout";
 import ILayoutService from "./interfaces/ILayoutService";
-import {ILayoutMode, ILayoutPane, LayoutConfiguration} from "../configuration/LayoutConfiguration";
-import {ViewConfiguration} from "../configuration/ViewConfiguration";
+import {ILayoutMode, ILayoutPane, LayoutConfig} from "../configs/LayoutConfig";
+import {ViewConfig} from "../configs/ViewConfig";
 
 export default class LayoutService implements ILayoutService {
     private root: Layout;
-    private config: LayoutConfiguration;
-    private viewconfig: ViewConfiguration;
+    private config: LayoutConfig;
+    private viewconfig: ViewConfig;
 
-    public setup(modes_config: LayoutConfiguration, views_config: ViewConfiguration) {
+    public setup(modes_config: LayoutConfig, views_config: ViewConfig) {
         this.viewconfig = views_config;
         this.config = modes_config;
 

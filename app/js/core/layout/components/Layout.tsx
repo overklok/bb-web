@@ -4,7 +4,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import Pane from "./Pane";
 
-import {LayoutConfiguration} from "../../configuration/LayoutConfiguration";
+import {LayoutConfig} from "../../configs/LayoutConfig";
 
 require('css/layout.less');
 
@@ -13,7 +13,7 @@ require('css/layout.less');
  */
 interface ILayoutProps {
     // конифгурация режимов разметки
-    config: LayoutConfiguration,
+    config: LayoutConfig,
 }
 
 /**
@@ -29,7 +29,7 @@ interface ILayoutState {
  *
  * Разметка определяет расположение внутренних модулей приложения,
  * компонуя панели в соответствии с выбранным режимом разметки.
- * Режимы разметки задаются в конфигурационном объекте `LayoutConfiguration`.
+ * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
 export default class Layout extends React.Component<ILayoutProps, ILayoutState> {
     constructor(props: ILayoutProps) {

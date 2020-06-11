@@ -4,9 +4,9 @@ import classNames from "classnames";
 // import ReactCSSTransitionGroup from 'react-transition-group';
 
 import Handle from "./Handle";
-import {ILayoutPane, ViewOption} from "../../configuration/LayoutConfiguration";
+import {ILayoutPane, ViewOption} from "../../configs/LayoutConfig";
 import {PaneOrientation} from "../types";
-import {View} from "../../ui/View";
+import {View} from "../../base/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
 import TabDisplay from "./tab/TabDisplay";

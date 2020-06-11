@@ -1,6 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
-import {ILayoutPane} from "../../../configuration/LayoutConfiguration";
+import {ILayoutPane} from "../../../configs/LayoutConfig";
 import Tab from "./Tab";
 
 interface IProps {

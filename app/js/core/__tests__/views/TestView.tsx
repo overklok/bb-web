@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, IViewProps, IViewState} from "../../ui/View";
+import {View, IViewProps, IViewState} from "../../base/View";
 
 interface IProps extends IViewProps {
 

@@ -1,5 +1,5 @@
 import {IConfig} from "../helpers/IConfig";
-import {View} from "../ui/View";
+import {View} from "../base/View";
 
 export class ViewConfig implements IConfig {
     views: {[key: string]: typeof View} = {};

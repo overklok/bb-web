@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View} from "../../ui/View";
+import {View} from "../../base/View";
 import classNames from "classnames";
 import {PaneOrientation} from "../types";
 
