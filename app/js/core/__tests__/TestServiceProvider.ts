@@ -1,7 +1,7 @@
 import ServiceProvider from "../support/ServiceProvider";
 import Application from "../Application";
-import IEventService from "../service/interfaces/IEventService";
-import EventService from "../service/EventService";
+import IEventService from "../services/interfaces/IEventService";
+import EventService from "../services/EventService";
 
 export default class TestServiceProvider extends ServiceProvider {
     register() {

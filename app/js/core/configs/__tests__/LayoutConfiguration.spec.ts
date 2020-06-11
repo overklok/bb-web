@@ -1,7 +1,7 @@
 import { expect } from "chai";
 
 import {ILayoutPane, LayoutConfig} from "../LayoutConfig";
-import {ConfigurationError} from "../../exceptions/configuration";
+import {ConfigurationError} from "../../helpers/exceptions/configuration";
 
 describe('LayoutConfiguration', function() {
     const lc = new LayoutConfig({});

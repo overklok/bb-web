@@ -1,7 +1,7 @@
 import ServiceProvider from "../support/ServiceProvider";
 import Application from "../Application";
-import IConfigService from "../service/interfaces/IConfigService";
-import ConfigService from "../service/ConfigService";
+import IConfigService from "../services/interfaces/IConfigService";
+import ConfigService from "../services/ConfigService";
 
 export default class ConfigServiceProvider extends ServiceProvider {
     register() {

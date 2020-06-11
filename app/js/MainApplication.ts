@@ -2,8 +2,8 @@ import Application from "./core/Application";
 import ServiceProvider from "./core/support/ServiceProvider";
 import LayoutServiceProvider from "./core/providers/LayoutServiceProvider";
 import ConfigServiceProvider from "./core/providers/ConfigServiceProvider";
-import ILayoutService from "./core/service/interfaces/ILayoutService";
-import IConfigService from "./core/service/interfaces/IConfigService";
+import ILayoutService from "./core/services/interfaces/ILayoutService";
+import IConfigService from "./core/services/interfaces/IConfigService";
 
 import views from "./core/__tests__/configs/views";
 import layouts from "./core/__tests__/configs/layouts";

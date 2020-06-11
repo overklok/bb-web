@@ -1,8 +1,8 @@
 import ServiceProvider from "../support/ServiceProvider";
 import Application from "../Application";
-import ILayoutService from "../service/interfaces/ILayoutService";
-import LayoutService from "../service/LayoutService";
-import IConfigService from "../service/interfaces/IConfigService";
+import ILayoutService from "../services/interfaces/ILayoutService";
+import LayoutService from "../services/LayoutService";
+import IConfigService from "../services/interfaces/IConfigService";
 import {LayoutConfig} from "../configs/LayoutConfig";
 import {ViewConfig} from "../configs/ViewConfig";
 

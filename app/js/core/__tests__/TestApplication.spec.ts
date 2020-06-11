@@ -1,12 +1,12 @@
 import { expect } from "chai";
 
 import Application from "../Application";
-import IEventService from "../service/interfaces/IEventService";
-import EventService from "../service/EventService";
-import ILayoutService from "../service/interfaces/ILayoutService";
-import LayoutService from "../service/LayoutService";
-import IConfigService from "../service/interfaces/IConfigService";
-import ConfigService from "../service/ConfigService";
+import IEventService from "../services/interfaces/IEventService";
+import EventService from "../services/EventService";
+import ILayoutService from "../services/interfaces/ILayoutService";
+import LayoutService from "../services/LayoutService";
+import IConfigService from "../services/interfaces/IConfigService";
+import ConfigService from "../services/ConfigService";
 import TestApplication from "./TestApplication";
 
 describe('TestApplication', function() {

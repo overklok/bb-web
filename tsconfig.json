@@ -5,6 +5,7 @@
         "types/*"
       ]
     },
+    "experimentalDecorators": true,
     "sourceMap": true,
     "baseUrl": ".",
     "outDir": "./dist/",
