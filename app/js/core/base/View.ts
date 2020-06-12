@@ -1,12 +1,18 @@
 import * as React from "react";
+import ViewConnector from "../helpers/containers/ViewConnector";
 
 export interface IViewProps {
-
+    connector: ViewConnector;
 }
 
 export interface IViewState {
 
 }
 
-export class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
+export class View extends React.Component<IViewProps, IViewState> {
+    constructor(props: IViewProps) {
+        super(props);
+
+        this.props.connector.activate(this);
+    }
 }

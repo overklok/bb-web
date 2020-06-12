@@ -1,8 +1,8 @@
 import Application from "./core/Application";
 import ServiceProvider from "./core/support/ServiceProvider";
-import LayoutServiceProvider from "./core/providers/LayoutServiceProvider";
+import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ConfigServiceProvider from "./core/providers/ConfigServiceProvider";
-import ILayoutService from "./core/services/interfaces/ILayoutService";
+import IViewService from "./core/services/interfaces/IViewService";
 import IConfigService from "./core/services/interfaces/IConfigService";
 
 import views from "./core/__tests__/configs/views";
@@ -13,7 +13,7 @@ import {LayoutConfig} from "./core/configs/LayoutConfig";
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
-            LayoutServiceProvider,
+            ViewServiceProvider,
             ConfigServiceProvider,
         ];
     }
@@ -26,11 +26,11 @@ class MainApplication extends Application {
     run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
-        this.instance(ILayoutService).compose(element);
+        this.instance(IViewService).compose(element);
     }
 
     setMode(mode: string) {
-        this.instance(ILayoutService).switch(mode);
+        this.instance(IViewService).switch(mode);
     }
 }
 

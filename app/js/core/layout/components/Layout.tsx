@@ -5,6 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import Pane from "./Pane";
 
 import {LayoutConfig} from "../../configs/LayoutConfig";
+import ViewService from "../../services/ViewService";
 
 require('css/layout.less');
 
@@ -14,6 +15,7 @@ require('css/layout.less');
 interface ILayoutProps {
     // конифгурация режимов разметки
     config: LayoutConfig,
+    svc_view: ViewService,
 }
 
 /**
@@ -62,6 +64,7 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
                       panes={panes}
                       name='root'
                       orientation={orientation}
+                      svc_view={this.props.svc_view}
                 />
             </DndProvider>
         );

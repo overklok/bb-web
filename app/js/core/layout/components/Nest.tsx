@@ -1,13 +1,15 @@
 import * as React from "react";
 import {View} from "../../base/View";
 import classNames from "classnames";
-import {PaneOrientation} from "../types";
+import ViewService from "../../services/ViewService";
 
 
 interface IProps {
-    view_type: typeof View,
-    label: string
-    index: number
+    app: ViewService;
+
+    view_type: typeof View;
+    label: string;
+    index: number;
 }
 
 interface IState {
@@ -20,6 +22,7 @@ export default class Nest extends React.Component<IProps, IState> {
 
     render() {
         const SpecificView = this.props.view_type;
+        const connector = this.props.svc_view.getViewConnector(SpecificView);
 
         // Список классов, которые должны использоваться в зависимости от свойств
         let klasses = classNames({
@@ -28,7 +31,9 @@ export default class Nest extends React.Component<IProps, IState> {
 
         return (
             <div className={klasses}>
-                <SpecificView />
+                <SpecificView
+                    connector={connector}
+                />
             </div>
         )
     }

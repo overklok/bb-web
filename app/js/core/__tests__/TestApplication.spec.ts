@@ -3,8 +3,8 @@ import { expect } from "chai";
 import Application from "../Application";
 import IEventService from "../services/interfaces/IEventService";
 import EventService from "../services/EventService";
-import ILayoutService from "../services/interfaces/ILayoutService";
-import LayoutService from "../services/LayoutService";
+import IViewService from "../services/interfaces/IViewService";
+import ViewService from "../services/ViewService";
 import IConfigService from "../services/interfaces/IConfigService";
 import ConfigService from "../services/ConfigService";
 import TestApplication from "./TestApplication";
@@ -30,8 +30,8 @@ describe('TestApplication', function() {
         expect(application.instance(IEventService)).to.be.an.instanceof(EventService);
     });
 
-    it('Should instantiate LayoutServiceProvider', function() {
-        expect(application.instance(ILayoutService)).to.be.an.instanceof(LayoutService);
+    it('Should instantiate ViewServiceProvider', function() {
+        expect(application.instance(IViewService)).to.be.an.instanceof(ViewService);
     });
 
     let elem = document.createElement('div');

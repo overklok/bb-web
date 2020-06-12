@@ -1,4 +1,5 @@
 import Event from "./Event";
+import {View} from "./View";
 
 export function on(event: Event) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -12,8 +13,9 @@ export function on(event: Event) {
     }
 }
 
-export default abstract class Presenter {
+export default class Presenter {
+    public static viewtype: typeof View;
+
     private routes: Map<Event, Function>;
-    constructor() {
-    }
+    constructor(view: View) {};
 }

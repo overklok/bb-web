@@ -10,11 +10,13 @@ import {View} from "../../base/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
 import TabDisplay from "./tab/TabDisplay";
+import ViewService from "../../services/ViewService";
 
 /**
  * Свойства панели разметки
  */
 interface IProps {
+    svc_view: ViewService;
     // уникальное название панели
     name: string,
     // является ли панель корневой в иерархии
@@ -308,6 +310,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 orientation={orientation}
                 ref={ref}
                 view_options={data.view_options}
+                svc_view={this.props.svc_view}
             />
         );
     }
@@ -319,6 +322,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 index={index}
                 view_type={view_option.type}
                 label={view_option.label}
+                svc_view={this.props.svc_view}
             />
         )
     }
