@@ -9,7 +9,7 @@ import {ViewConfig} from "../configs/ViewConfig";
 export default class ViewServiceProvider extends ServiceProvider {
     register() {
         this.app.bind(IViewService, function (app: Application): any {
-            return new ViewService();
+            return new ViewService(app);
         });
     }
 

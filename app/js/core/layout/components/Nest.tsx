@@ -5,7 +5,7 @@ import ViewService from "../../services/ViewService";
 
 
 interface IProps {
-    app: ViewService;
+    svc_view: ViewService;
 
     view_type: typeof View;
     label: string;
@@ -16,13 +16,15 @@ interface IState {
 }
 
 export default class Nest extends React.Component<IProps, IState> {
+    private readonly connector: ViewConnector;
     constructor(props: IProps) {
         super(props);
+
+        this.connector = this.props.svc_view.getViewConnector(this.props.view_type);
     }
 
     render() {
         const SpecificView = this.props.view_type;
-        const connector = this.props.svc_view.getViewConnector(SpecificView);
 
         // Список классов, которые должны использоваться в зависимости от свойств
         let klasses = classNames({
@@ -32,7 +34,7 @@ export default class Nest extends React.Component<IProps, IState> {
         return (
             <div className={klasses}>
                 <SpecificView
-                    connector={connector}
+                    connector={this.connector}
                 />
             </div>
         )

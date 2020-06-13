@@ -13,7 +13,7 @@ export default class ViewService extends IViewService {
     private root: Layout;
     private config: LayoutConfig;
     private viewconfig: ViewConfig;
-    private presenters: Map<typeof View, typeof Presenter[]> = new Map();
+    private connectors: Map<typeof View, ViewConnector> = new Map();
 
     public setup(modes_config: LayoutConfig, views_config: ViewConfig) {
         this.viewconfig = views_config;
@@ -23,16 +23,17 @@ export default class ViewService extends IViewService {
     }
 
     public registerPresenterType(presenter: typeof Presenter): void {
-        if (this.presenters.get(presenter.viewtype) == null) {
-            this.presenters.set(presenter.viewtype, []);
+        if (this.connectors.get(presenter.viewtype) == null) {
+            this.connectors.set(presenter.viewtype, new ViewConnector(this.app));
         }
-        this.presenters.get(presenter.viewtype).push(presenter);
+
+        this.connectors.get(presenter.viewtype).addPresenter(presenter);
     }
 
     public getViewConnector(viewtype: typeof View): ViewConnector {
-        const presenters = this.presenters.get(viewtype);
+        const connector = this.connectors.get(viewtype);
 
-        return new ViewConnector(presenters);
+        return connector || new ViewConnector(this.app);
     }
 
     public compose(element: HTMLElement) {

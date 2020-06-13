@@ -1,8 +1,7 @@
-import IBindable from "../../helpers/IBindable";
-
 /**
  * @abstract
  */
 export default class IEventService {
-    public foo(): string {throw new Error('abstract')}
+    public subscribe(event_type: typeof Event, handler: Function): void {throw new Error('abstract')}
+    public emit(event: Event): void {throw new Error('abstract')}
 }

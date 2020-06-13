@@ -17,5 +17,8 @@ export default class Presenter {
     public static viewtype: typeof View;
 
     private routes: Map<Event, Function>;
-    constructor(view: View) {};
+
+    constructor(view: View) {
+
+    };
 }

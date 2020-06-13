@@ -23,6 +23,7 @@
     "react-dnd-html5-backend": "^11.0.0",
     "react-dom": "^16.12.0",
     "react-transition-group": "^4.3.0",
+    "rxjs": "^6.5.5",
     "socket.io-client": "^2.0.4",
     "svgjs": "^2.6.2",
     "sweetalert": "^2.1.0",
