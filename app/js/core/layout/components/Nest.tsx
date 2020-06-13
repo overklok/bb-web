@@ -2,6 +2,7 @@ import * as React from "react";
 import {View} from "../../base/View";
 import classNames from "classnames";
 import ViewService from "../../services/ViewService";
+import ViewConnector from "../../helpers/containers/ViewConnector";
 
 
 interface IProps {
