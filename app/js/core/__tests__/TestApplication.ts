@@ -11,7 +11,6 @@ import views from './configs/views';
 
 import {LayoutConfig} from "../configs/LayoutConfig";
 import {ViewConfig} from "../configs/ViewConfig";
-import MainPresenter from "./presenters/MainPresenter";
 
 class TestApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -25,8 +24,6 @@ class TestApplication extends Application {
     protected setup() {
         this.instance(IConfigService).configure(ViewConfig, views);
         this.instance(IConfigService).configure(LayoutConfig, layouts);
-
-        this.instance(IViewService).registerPresenterType(MainPresenter);
     }
 
     run(element: HTMLElement) {

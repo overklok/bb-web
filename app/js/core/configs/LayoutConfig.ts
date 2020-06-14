@@ -2,13 +2,15 @@ import {PaneOrientation} from "../layout/types";
 import {IConfig} from "../helpers/IConfig";
 import {ViewConfig} from "./ViewConfig";
 import {View} from "../base/View";
+import ViewConnector from "../helpers/containers/ViewConnector";
+import Application from "../Application";
 
 const UNITS_ALLOWED = [
     "px", '%'
 ];
 
 export type ViewOptionRaw = {alias: string, label: string};
-export type ViewOption = {type: typeof View, label: string};
+export type ViewOption = {connector: ViewConnector, type: typeof View, label: string};
 
 /**
  * Модель панели разметки
@@ -70,10 +72,10 @@ export class LayoutConfig implements IConfig {
         }
     }
 
-    resolveViewAliasesToTypes(view_config: ViewConfig) {
+    resolveViewAliasesToTypes(view_config: ViewConfig, app: Application) {
         for (const mode of Object.values(this.modes)) {
             for (const pane of mode.panes) {
-                this.resolvePaneViewAliasesToTypes(pane, view_config);
+                this.resolvePaneViewAliasesToTypes(pane, view_config, app);
             }
         }
     }
@@ -99,20 +101,32 @@ export class LayoutConfig implements IConfig {
         this.processPaneViews(pane);
     }
 
-    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: ViewConfig) {
+    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: ViewConfig, app: Application) {
         // Выполнить перебор вложенных панелей (головная рекурсия)
         if (pane.panes) {
             for (const subpane of pane.panes) {
-                this.resolvePaneViewAliasesToTypes(subpane, view_config);
+                this.resolvePaneViewAliasesToTypes(subpane, view_config, app);
             }
         }
 
         for (let {alias, label} of pane.views) {
-            const view_type = view_config.views[alias];
+            const view_assoc = view_config.views[alias];
+            const {view_type, presenter_types} = view_assoc;
 
             if (!view_type) throw new Error(`View type '${alias}' does not exist`);
 
-            pane.view_options.push({type: view_type, label: label});
+            const view_connector = new ViewConnector(app);
+
+            for (const presenter_type of presenter_types) {
+                view_connector.addPresenter(presenter_type);
+            }
+
+            pane.view_options.push(<ViewOption>({
+                type: view_type,
+                label: label,
+                alias: alias,
+                connector: view_connector
+            } as object));
         }
     }
 

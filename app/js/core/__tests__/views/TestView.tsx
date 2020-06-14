@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, IViewProps, IViewState} from "../../base/View";
+import {View, IViewProps} from "../../base/View";
 import {AbstractEvent} from "../../base/Event";
 
 export class ClickEvent extends AbstractEvent<ClickEvent> {
@@ -17,6 +17,8 @@ export default class TestView extends View {
     }
 
     render() {
+        console.log("Render TestView")
+
         this.emit(new ClickEvent({
            posX: 0,
            posY: 0

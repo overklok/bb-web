@@ -34,19 +34,19 @@ export default class ViewConnector {
             this.presenters.push(presenter);
 
             for (const [evt_type, handler] of presenter.routes.entries()) {
-                this.svc_event.subscribe(evt_type, handler);
+                this.svc_event.subscribe(evt_type, handler, this);
             }
         }
     }
 
     emit<E>(event: ViewEvent<E>) {
-        this.svc_event.emit(event);
+        this.svc_event.emit(event, this);
     }
 
     private unsubscribeCurrentPresenters() {
         for (const presenter of this.presenters) {
             for (const [evt_type, handler] of presenter.routes.entries()) {
-                this.svc_event.unsubscribe(evt_type, handler);
+                this.svc_event.unsubscribe(evt_type, handler, this);
             }
         }
     }
