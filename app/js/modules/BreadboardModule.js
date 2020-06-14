@@ -7,7 +7,7 @@ import BreadboardWrapper from '../wrappers/BreadboardWrapper';
  */
 export default class BreadboardModule extends Module {
     static get eventspace_name() {return "bb"}
-    static get event_types() {return ["change", "drag-start"]}
+    static get event_types() {return ["change", "drag-start", "short-circuit"]}
 
     static defaults() {
         return {
@@ -202,5 +202,9 @@ export default class BreadboardModule extends Module {
         this._board.onDragStart((data) => {
             this.emitEvent("drag-start", data);
         });
+
+        this._board.onShortCircuit(() => {
+            this.emitEvent("short-circuit", null);
+        })
     }
 }

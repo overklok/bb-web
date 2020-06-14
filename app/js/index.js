@@ -122,7 +122,7 @@ class Application {
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
             'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready', 'gui:reconnect',
-            'bb:change', 'bb:drag-start'
+            'bb:change', 'bb:drag-start', 'bb:short-circuit'
         ]);
     }
 
@@ -774,6 +774,10 @@ class Application {
             this.bb.clearCurrents();
             this.bb.clearRegions();
         });
+
+        this._dispatcher.on('bb:short-circuit', () => {
+            this.gui.showAlert('short_circuit');
+        })
 
         /**
          * Тик сборки логов

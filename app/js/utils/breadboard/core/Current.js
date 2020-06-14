@@ -136,6 +136,16 @@ export default class Current {
         this._activated = false;
     };
 
+    burn() {
+        this.deactivate();
+
+        // TODO: Animate line and add smoke particles
+
+        setTimeout(() => {
+            this.erase()
+        }, 400)
+    }
+
     /**
      * Проверить, совпадает ли контур у тока
      *

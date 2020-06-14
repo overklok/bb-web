@@ -20,6 +20,12 @@ export default class CurrentLayer extends Layer {
         this._show_source = undefined;
 
         this._currentgroup = undefined;
+
+        this._callbacks = {
+            shortcircuit: () => {
+                console.warn("A short circuit has been occurred. It seems this event won't be handled.")
+            },
+        }
     }
 
     /**
@@ -41,6 +47,12 @@ export default class CurrentLayer extends Layer {
         this.setCurrents(threads, this._spare, show_source);
     }
 
+    onShortCircuit(cb) {
+        if (!cb) {this._callbacks.shortcircuit = () => {}}
+
+        this._callbacks.shortcircuit = cb;
+    }
+
     /**
      * Возвратить все токи
      *
@@ -55,7 +67,7 @@ export default class CurrentLayer extends Layer {
      *
      * @param {String|Number} id идентификатор тока
      */
-    removeCurrent(id) {
+    removeCurrent(id, burn=false) {
         if (typeof id === "undefined") {
             throw new TypeError("Argument 'id' must be defined");
         }
@@ -66,7 +78,11 @@ export default class CurrentLayer extends Layer {
 
         let current = this._currents[id];
 
-        current.erase();
+        if (burn) {
+            current.burn();
+        } else {
+            current.erase();
+        }
 
         delete this._currents[current.id];
     }
@@ -173,6 +189,8 @@ export default class CurrentLayer extends Layer {
                 }
             }
         }
+
+        this._findShortCircuits();
     }
 
     _initGroups() {
@@ -183,6 +201,18 @@ export default class CurrentLayer extends Layer {
 
     _clearGroups() {
         if (this._currentgroup) this._currentgroup.remove();
+    }
+
+    _findShortCircuits() {
+        for (const id in this._currents) {
+            if (!this._currents.hasOwnProperty(id)) continue;
+
+            if (this._currents[id]._weight > 0.999) {
+                this._callbacks.shortcircuit();
+
+                this.removeCurrent(id, true);
+            }
+        }
     }
 
     /**

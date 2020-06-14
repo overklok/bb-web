@@ -109,4 +109,8 @@ export default class BreadboardWrapper extends Wrapper {
     onDragStart(cb) {
         this._plugin.onDragStart(cb);
     }
+
+    onShortCircuit(cb) {
+        this._plugin.onShortCircuit(cb);
+    }
 }

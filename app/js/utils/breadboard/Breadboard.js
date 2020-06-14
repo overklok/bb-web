@@ -58,6 +58,7 @@ export default class Breadboard {
         this._callbacks = {
             change: () => {},
             dragstart: () => {},
+            shortcircuit: () => {},
         };
 
         this._cache = {
@@ -274,6 +275,12 @@ export default class Breadboard {
         this._callbacks.dragstart = cb;
     }
 
+    onShortCircuit(cb) {
+        if (!cb) {this._callbacks.shortcircuit = () => {}}
+
+        this._callbacks.shortcircuit = cb;
+    }
+
     switchSchematic(on, detailed) {
         // TODO: Merge detailed and schematic modes
         if (this._schematic === on && this._detailed === detailed) return;
@@ -397,6 +404,7 @@ export default class Breadboard {
         /// включение / отключение режима только чтения
         this._setLayersReadOnly(this._options.readOnly);
         this._attachControlsEvents();
+        this._attachNotificationEvents();
 
         /// выполнить нажатие вручную, если требуется показать органы управления при запуске
         //if (this._options.showControlsDefault) {
@@ -508,6 +516,12 @@ export default class Breadboard {
         /// начало перетаскивания плашки
         this._layers.plate.onDragStart(() => {
             this._callbacks.dragstart();
+        })
+    }
+
+    _attachNotificationEvents() {
+        this._layers.current.onShortCircuit(() => {
+            this._callbacks.shortcircuit();
         })
     }
 

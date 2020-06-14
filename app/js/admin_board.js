@@ -154,6 +154,10 @@ class AdminBoardApplication {
 
             this._on_change_callback(data);
         });
+
+        this._dispatcher.on('bb:short-circuit', () => {
+            console.warn("Short circuit detected!");
+        });
     }
 }
 
