@@ -28,6 +28,10 @@ export default class EventService extends IEventService {
         map.set(event_type, []);
     }
 
+    resetObject(obj: any = null) {
+        this.handlers.set(obj, null);
+    }
+
     unsubscribe<V extends AbstractEvent<V>>(event_type: V, handler: Function, obj: any = null) {
         let map = this.handlers.get(obj);
 

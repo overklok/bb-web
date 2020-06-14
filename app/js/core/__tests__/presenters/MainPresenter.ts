@@ -1,15 +1,22 @@
 import Presenter, {on} from "../../base/Presenter";
-import TestView, {ClickEvent} from "../views/TestView";
+import {MountEvent, RenderEvent} from "../../base/View";
+import TestView from "../views/TestView";
 
-export default class MainPresenter extends Presenter {
-    public static viewtype = TestView;
-
+export default class MainPresenter extends Presenter<TestView> {
     constructor(view: TestView) {
         super(view);
+
+        console.log("CREATED")
     }
 
-    @on(ClickEvent)
-    actionIndex(event: ClickEvent) {
-        console.log('click', event);
+    @on(MountEvent)
+    actionMount(event: MountEvent) {
+        console.log(this, event);
+        this.view.setText('bar');
+    }
+
+    @on(RenderEvent)
+    actionRender(event: MountEvent) {
+        console.log('both!', event)
     }
 }

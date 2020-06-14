@@ -1,40 +1,34 @@
 import * as React from "react";
 import {View, IViewProps} from "../../base/View";
-import {AbstractEvent} from "../../base/Event";
 
-export class ClickEvent extends AbstractEvent<ClickEvent> {
-    public readonly posX: number;
-    public readonly posY: number;
+class IViewState {
+    text: string;
 }
 
-export default class TestView extends View {
+
+export default class TestView extends View<IViewProps, IViewState> {
     constructor(props: IViewProps) {
         super(props);
+
+        this.state = {
+            text: 'foo'
+        }
+
+        console.log('reset state')
     }
 
-    test() {
-
+    setText(text: string) {
+        this.setState({text});
     }
 
     render() {
-        console.log("Render TestView")
+        super.render();
 
-        this.emit(new ClickEvent({
-           posX: 0,
-           posY: 0
-        }));
+        console.log("Render TestView", this.state.text);
 
         return (
             <span>
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
-                Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
+                {this.state.text}
             </span>
         )
     }

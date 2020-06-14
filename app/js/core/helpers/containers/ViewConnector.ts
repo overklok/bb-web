@@ -1,15 +1,15 @@
 import Presenter from "../../base/Presenter";
-import {View} from "../../base/View";
+import {IViewProps, IViewState, View} from "../../base/View";
 import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
-import {ViewEvent} from "../../base/Event";
+import {AbstractEvent, ViewEvent} from "../../base/Event";
 
 // possible renamings: Supervisor, PresenterFactory (pterfac)
 export default class ViewConnector {
     private readonly app: Application;
     private readonly presenter_types: typeof Presenter[];
     private readonly svc_event: IEventService;
-    private presenters: Presenter[];
+    private presenters: Presenter<View<IViewProps, IViewState>>[];
 
     constructor(app: Application) {
         this.app = app;
@@ -23,18 +23,18 @@ export default class ViewConnector {
         this.presenter_types.push(presenter_type);
     }
 
-    activate(view: View) {
+    activate(view: View<IViewProps, IViewState>) {
         this.unsubscribeCurrentPresenters();
 
         this.presenters = [];
-
         for (const presenter_type of this.presenter_types) {
-            const presenter = new presenter_type(view);
 
+            const presenter = new presenter_type(view);
             this.presenters.push(presenter);
 
-            for (const [evt_type, handler] of presenter.routes.entries()) {
-                this.svc_event.subscribe(evt_type, handler, this);
+            for (const [evt_type, prop_handler] of presenter.routes.entries()) {
+                const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
+                this.svc_event.subscribe(evt_type, hdlr, this);
             }
         }
     }
@@ -44,10 +44,12 @@ export default class ViewConnector {
     }
 
     private unsubscribeCurrentPresenters() {
-        for (const presenter of this.presenters) {
-            for (const [evt_type, handler] of presenter.routes.entries()) {
-                this.svc_event.unsubscribe(evt_type, handler, this);
-            }
-        }
+        this.svc_event.resetObject(this);
+
+        // for (const presenter of this.presenters) {
+        //     for (const [evt_type, prop_handler] of presenter.routes.entries()) {
+        //         this.svc_event.reset(evt_type, this);
+        //     }
+        // }
     }
 }
