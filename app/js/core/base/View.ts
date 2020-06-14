@@ -1,6 +1,6 @@
 import * as React from "react";
 import ViewConnector from "../helpers/containers/ViewConnector";
-import {AbstractEvent} from "./Event";
+import {ViewEvent} from "./Event";
 
 export interface IViewProps {
     connector: ViewConnector;
@@ -17,7 +17,7 @@ export class View extends React.Component<IViewProps, IViewState> {
         this.props.connector.activate(this);
     }
 
-    emit(event: AbstractEvent) {
+    emit<E>(event: ViewEvent<E>) {
         this.props.connector.emit(event);
     }
 }

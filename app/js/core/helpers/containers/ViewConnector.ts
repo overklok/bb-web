@@ -2,7 +2,7 @@ import Presenter from "../../base/Presenter";
 import {View} from "../../base/View";
 import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
-import {AbstractEvent} from "../../base/Event";
+import {ViewEvent} from "../../base/Event";
 
 // possible renamings: Supervisor, PresenterFactory (pterfac)
 export default class ViewConnector {
@@ -39,7 +39,7 @@ export default class ViewConnector {
         }
     }
 
-    emit(event: AbstractEvent) {
+    emit<E>(event: ViewEvent<E>) {
         this.svc_event.emit(event);
     }
 
