@@ -1,28 +1,36 @@
 import IEventService from "./interfaces/IEventService";
+import {AbstractEvent} from "../base/Event";
 
 export default class EventService extends IEventService {
-    private handlers: Map<typeof Event, Function[]>;
+    private handlers: {[key: string]: Function[]} = {};
 
-    subscribe(event_type: typeof Event, handler: Function) {
-        let handlers = this.handlers.get(event_type)
+    subscribe(event_type: typeof AbstractEvent, handler: Function) {
+        console.log(this.handlers, event_type.name)
+
+        let handlers = this.handlers[event_type.name]
 
         if (handlers == null) {
             handlers = [];
-            this.handlers.set(event_type, handlers);
+
+            this.handlers[event_type.name] = handlers;
         }
 
         handlers.push(handler);
     }
 
-    unsubscribe(event_type: typeof Event) {
-        this.handlers.set(event_type, []);
+    reset(event_type: typeof AbstractEvent) {
+        this.handlers[event_type.name] = [];
     }
 
-    emit(event_type: typeof Event) {
-        const handlers = this.handlers.get(event_type) || [];
+    unsubscribe(event_type: typeof AbstractEvent, handler: Function) {
+        this.handlers[event_type.name] = this.handlers[event_type.name].filter((hdlr: Function) => hdlr != handler);
+    }
+
+    emit(event: AbstractEvent) {
+        const handlers = this.handlers[event.constructor.name] || [];
 
         for (const handler of handlers) {
-            // handlers();
+            handler(event);
         }
     }
 }

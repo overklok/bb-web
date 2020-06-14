@@ -2,6 +2,7 @@ import Presenter from "../../base/Presenter";
 import {View} from "../../base/View";
 import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
+import {AbstractEvent} from "../../base/Event";
 
 // possible renamings: Supervisor, PresenterFactory (pterfac)
 export default class ViewConnector {
@@ -23,14 +24,30 @@ export default class ViewConnector {
     }
 
     activate(view: View) {
+        this.unsubscribeCurrentPresenters();
+
         this.presenters = [];
 
-        // unsubscribe from events
-
         for (const presenter_type of this.presenter_types) {
-            this.presenters.push(new presenter_type(view));
-        }
+            const presenter = new presenter_type(view);
 
-        // subscribe for events
+            this.presenters.push(presenter);
+
+            for (const [evt_type, handler] of presenter.routes.entries()) {
+                this.svc_event.subscribe(evt_type, handler);
+            }
+        }
+    }
+
+    emit(event: AbstractEvent) {
+        this.svc_event.emit(event);
+    }
+
+    private unsubscribeCurrentPresenters() {
+        for (const presenter of this.presenters) {
+            for (const [evt_type, handler] of presenter.routes.entries()) {
+                this.svc_event.unsubscribe(evt_type, handler);
+            }
+        }
     }
 }
