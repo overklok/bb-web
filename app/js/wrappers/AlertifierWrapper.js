@@ -1,6 +1,6 @@
 import Wrapper from "../core/Wrapper";
 
-import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 
 import thm from "../../css/swal.css";
 
@@ -40,12 +40,27 @@ const ALERTS = {
         html: "Скорее всего, Вы открыли приложение где-то ещё. Если Вы пользуетесь " +
         "несколькими браузерами, проверьте, не открыта ли страница в них. Плата может работать только с " +
         "одной из них."
-    },
-    short_circuit: {
-        title: "Короткое замыание!",
-
     }
 };
+
+const TOASTS = {
+    short_circuit: {
+        title: "Короткое замыкание!",
+        icon: "error"
+    }
+}
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-start',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  onOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 
 export default class AlertifierWrapper extends Wrapper {
     constructor() {
@@ -72,18 +87,30 @@ export default class AlertifierWrapper extends Wrapper {
         this.closeAll();
 
         let title = ALERTS[type].title;
-        let html = ALERTS[type].html;
+        let html = ALERTS[type].html || "";
 
         let node = this._getContentNode(type, html);
 
-        this._alerts[type] = swal({
+        this._alerts[type] = Swal.fire({
             title: title,
             content: node,
             button: false,
-            closeOnClickOutside: false,
+            closeOnClickOutside: false
         });
 
         this._state.closed = false;
+    }
+
+    toast(type) {
+        if (!(type in TOASTS)) {throw new RangeError(`Type '${type}' does not exist`)}
+
+        const title = TOASTS[type].title,
+              icon = TOASTS[type].icon;
+
+        Toast.fire({
+            title: title,
+            icon: icon,
+        });
     }
 
     alertInput(type, confirm_only=false, def_val=false) {
@@ -95,7 +122,7 @@ export default class AlertifierWrapper extends Wrapper {
         let node = this._getContentNode(type, html);
 
         if (confirm_only) {
-            return swal({
+            return Swal.fire({
                 title: title,
                 content: node,
                 buttons: {
@@ -105,7 +132,7 @@ export default class AlertifierWrapper extends Wrapper {
             });
         }
 
-        return swal({
+        return Swal.fire({
             title: title,
             content: {
                 element: "input",
@@ -120,7 +147,7 @@ export default class AlertifierWrapper extends Wrapper {
 
     closeAll() {
         try {
-            swal.close();
+            Swal.close();
         } catch (e) {
             this._debug.debug("Nothing to close, skipping...");
         }

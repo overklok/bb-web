@@ -670,7 +670,6 @@ class Application {
          * Изменены значения пинов
          */
         this._dispatcher.on('ls:pins_values', data => {
-            console.log(data);
             this.bb.setPinsValues(data);
             // this.trc.setPinsValues(data);
         });
@@ -776,8 +775,8 @@ class Application {
         });
 
         this._dispatcher.on('bb:short-circuit', () => {
-            this.gui.showAlert('short_circuit');
-        })
+            this.gui.showToast('short_circuit');
+        });
 
         /**
          * Тик сборки логов

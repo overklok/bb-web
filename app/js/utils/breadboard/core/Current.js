@@ -1,5 +1,7 @@
 import thm from '../styles/current.css';
 
+let SYMBOL_SMOKE = undefined;
+
 /**
  * Класс "Ток"
  *
@@ -67,6 +69,17 @@ export default class Current {
 
         this._visible   = false;
         this._activated = false;
+    }
+
+    static defineSmokeSymbol(svg, color="black") {
+        const smoke = svg.symbol("smoke");
+        const c1 = smoke.circle(10).fill(color).opacity(0.8).move(0, 6),
+              c2 = smoke.circle(10).fill(color).opacity(0.6).move(10, 12),
+              c3 = smoke.circle(10).fill(color).opacity(0.3).move(10, 0);
+
+        // TODO anim
+
+        return smoke;
     }
 
     /**
@@ -139,11 +152,13 @@ export default class Current {
     burn() {
         this.deactivate();
 
-        // TODO: Animate line and add smoke particles
+        const dur = this._line.node.getTotalLength() / 2;
+
+        this._animateDestroy(dur) ;
 
         setTimeout(() => {
-            this.erase()
-        }, 400)
+            // this.erase();
+        }, dur);
     }
 
     /**
@@ -283,6 +298,42 @@ export default class Current {
         // this._line.attr('filter', 'url(#glow-current)');
     };
 
+    _animateDestroy(dur) {
+        if (!this._line_path) {throw new Error("Cannot animate current which hasn't been drawn")}
+
+        const len = this._line.node.getTotalLength();
+
+        let animname = `cur-${this._id}-destroy`;
+
+        this._sheet.insertRule(this._generateKeyframeRuleDestroy(this._id, len));
+
+        this._sheet.insertRule(`.${animname} {
+            stroke-dasharray: ${len};
+            stroke-dashoffset: 0;
+            animation: dash-${this._id} ${dur}ms linear forwards;
+        }`);
+
+        this._line.node.classList.add(animname);
+
+        const symbol = Current.defineSmokeSymbol(this._container_anim, "red");
+
+        // if (SYMBOL_SMOKE != null) {
+            for (let index = 0; index < 6; index++) {
+                const animname = `ssa-${this._id}-${index}`;
+                const use = this._container_anim.use(symbol).move(0, 0);
+                const rule = `.${animname} {
+                    opacity: 0;
+                    animation: ${this._generateAnimationRuleSmoke(dur, index/(6*2))};
+                    offset-path: path("${this._line_path}");
+                    animation-delay: ${index*50}ms;
+                }`;
+
+                this._sheet.insertRule(rule);
+                use.addClass(animname);
+            }
+        // }
+    }
+
     /**
      * Анимировать частицу.
      *
@@ -376,6 +427,16 @@ export default class Current {
         this._anim_delay = 0;
     }
 
+    _generateKeyframeRuleDestroy(id, to) {
+        return `
+            @keyframes dash-${this._id} {
+                to {
+                    stroke-dashoffset: ${to}; 
+                }
+            }
+        `;
+    }
+
     _generateKeyframeRuleMove(index, from, to, perc) {
         return `
             @keyframes cur-${this._id}-${index}-kfs-move {
@@ -436,6 +497,16 @@ export default class Current {
                 100% {r: ${scale_min}}
             }
         `;
+    }
+
+    _generateAnimationRuleSmoke(duration, nonlinearity=0) {
+        if (nonlinearity < 0) throw RangeError("animation nonlinearity shouldn't be less than 0");
+        if (nonlinearity > 1) throw RangeError("animation nonlinearity shouldn't be more than 1");
+
+        let secnum = 50 * nonlinearity,
+            firstnum = 100 - secnum;
+
+        return `smokemove ${duration}ms cubic-bezier(${firstnum/100},${secnum/100},1,1) reverse;`
     }
 
     _generateAnimationRuleMove(index, duration) {
@@ -504,6 +575,23 @@ export default class Current {
         document.body.appendChild(style);
 
         this._sheet = style.sheet;
+
+        this._initStaticAnimationRules();
+    }
+
+    _initStaticAnimationRules() {
+        this._sheet.insertRule(`@keyframes smokemove {
+            0% {
+                opacity: 0;
+            }
+            10% {
+                 opacity: 0;
+            }
+            100% {
+                opacity: 1; 
+                offset-distance: 100%;
+            }
+        }`);
     }
 
     static getPathLength(path) {

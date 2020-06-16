@@ -418,6 +418,10 @@ export default class GUIModule extends Module {
         this._alertifier.alertIndelible(type);
     }
 
+    showToast(type) {
+        this._alertifier.toast(type);
+    }
+
     showAlertInputCommand(hash_entered=false) {
         this._alertifier.alertInput('command', false, hash_entered)
             .then(command => {
