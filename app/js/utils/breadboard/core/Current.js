@@ -73,11 +73,19 @@ export default class Current {
 
     static defineSmokeSymbol(svg, color="black") {
         const smoke = svg.symbol("smoke");
-        const c1 = smoke.circle(10).fill(color).opacity(0.8).move(0, 6),
-              c2 = smoke.circle(10).fill(color).opacity(0.6).move(10, 12),
-              c3 = smoke.circle(10).fill(color).opacity(0.3).move(10, 0);
+        const c1 = smoke.circle(10).fill(color).opacity(1.0).move(0, 15),
+              c2 = smoke.circle(10).fill(color).opacity(0.8).move(10, 7),
+              c3 = smoke.circle(10).fill(color).opacity(0.9).move(10, 23),
+              c4 = smoke.circle(10).fill(color).opacity(0.3).move(20, 0),
+              c5 = smoke.circle(10).fill(color).opacity(0.5).move(20, 30),
+              c6 = smoke.circle(10).fill(color).opacity(1.0).move(20, 15);
 
-        // TODO anim
+        c1.animate({duration: 600,  delay: 0}).radius(0).dmove(4, 2)
+        c2.animate({duration: 1000, delay: 10}).radius(0).dmove(2, 4)
+        c3.animate({duration: 840,  delay: 20}).radius(0).dmove(1, 3)
+        c4.animate({duration: 800,  delay: 30}).radius(0).dmove(3, 1)
+        c5.animate({duration: 1200, delay: 40}).radius(0).dmove(5, 3)
+        c6.animate({duration: 300,  delay: 50}).radius(0).dmove(1, 2)
 
         return smoke;
     }
@@ -317,15 +325,17 @@ export default class Current {
 
         const symbol = Current.defineSmokeSymbol(this._container_anim, "red");
 
+        const item_count = len / 100;
+
         // if (SYMBOL_SMOKE != null) {
-            for (let index = 0; index < 6; index++) {
+            for (let index = 0; index < item_count; index++) {
                 const animname = `ssa-${this._id}-${index}`;
-                const use = this._container_anim.use(symbol).move(0, 0);
+                const use = this._container_anim.use(symbol).move(0, -15);
                 const rule = `.${animname} {
                     opacity: 0;
-                    animation: ${this._generateAnimationRuleSmoke(dur, index/(6*2))};
+                    animation: ${this._generateAnimationRuleSmoke(dur, index/(item_count*2))};
                     offset-path: path("${this._line_path}");
-                    animation-delay: ${index*50}ms;
+                    animation-delay: ${index*20}ms;
                 }`;
 
                 this._sheet.insertRule(rule);
