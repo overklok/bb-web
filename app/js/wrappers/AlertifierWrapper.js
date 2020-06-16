@@ -94,7 +94,9 @@ export default class AlertifierWrapper extends Wrapper {
         this._alerts[type] = Swal.fire({
             title: title,
             content: node,
-            button: false,
+            showCancelButton: false,
+            showCloseButton: false,
+            showConfirmButton: false,
             closeOnClickOutside: false
         });
 
