@@ -1,5 +1,5 @@
 import * as React from "react";
-import ViewConnector from "../helpers/containers/ViewConnector";
+import ViewConnector from "../helpers/ViewConnector";
 import {AbstractEvent, ViewEvent} from "./Event";
 import {ReactNode} from "react";
 
@@ -19,8 +19,8 @@ export class RenderEvent extends AbstractEvent<RenderEvent> {
 export class MountEvent extends AbstractEvent<MountEvent> {
 }
 
-export class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
-    constructor(props: P) {
+export abstract class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
+    protected constructor(props: P) {
         super(props);
 
         this.props.connector.activate(this);

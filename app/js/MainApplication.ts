@@ -5,16 +5,18 @@ import ConfigServiceProvider from "./core/providers/ConfigServiceProvider";
 import IViewService from "./core/services/interfaces/IViewService";
 import IConfigService from "./core/services/interfaces/IConfigService";
 
-import views from "./core/__tests__/configs/views";
-import layouts from "./core/__tests__/configs/layouts";
+import views from "./configs/views";
+import layouts from "./configs/layouts";
 import {ViewConfig} from "./core/configs/ViewConfig";
 import {LayoutConfig} from "./core/configs/LayoutConfig";
+import EventServiceProvider from "./core/providers/EventServiceProvider";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
             ConfigServiceProvider,
+            EventServiceProvider
         ];
     }
 

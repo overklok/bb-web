@@ -16,7 +16,8 @@ const BuildNotifierPlugin   = require('webpack-build-notifier');
 
 module.exports = {
     entry: {
-        'test': './app/js/core/__tests__/TestApplication.ts',
+        // 'test': './app/js/core/__tests__/TestApplication.ts',
+        'main': './app/js/MainApplication.ts',
     },
     devtool: 'eval-source-map',
     mode: 'development',
@@ -40,6 +41,14 @@ module.exports = {
                     path.resolve(__dirname, "app"),
                 ]
             },
+            {
+                loaders: ['style-loader', 'css-loader', 'less-loader'],
+                test: /\.css/,
+                include: [
+                    path.resolve(__dirname, "node_modules/intro.js/"),
+                    path.resolve(__dirname, "app"),
+                ]
+            },
         ]
     },
     resolve: {
@@ -47,10 +56,15 @@ module.exports = {
         modules: [path.resolve(__dirname, './app'), 'node_modules']
     },
     plugins: [
-         new HtmlWebpackPlugin({
-             template: './app/html/test.html',
+         // new HtmlWebpackPlugin({
+         //     template: './app/html/test.html',
+         //     inject: 'body',
+         //     filename: 'test.html'
+         // }),
+        new HtmlWebpackPlugin({
+             template: './app/html/main.html',
              inject: 'body',
-             filename: 'test.html'
+             filename: 'main.html'
          }),
         new BuildNotifierPlugin({
             title: "Tapanda Test",

@@ -58,7 +58,15 @@ export default abstract class Application {
     }
 
     public instance<V extends IBindable>(abstrakt: V|string): InstanceType<V> {
-        return this.instances.get(abstrakt);
+        const inst = this.instances.get(abstrakt);
+
+        if (inst == null) {
+            const itypename = typeof abstrakt === 'string' ? abstrakt : abstrakt.name;
+
+            throw new Error(`InstanceType "${itypename}" has not been binded to this application`);
+        }
+
+        return inst;
     }
 
     protected build() {

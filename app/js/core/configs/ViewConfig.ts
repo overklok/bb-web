@@ -1,8 +1,6 @@
 import {IConfig} from "../helpers/IConfig";
 import {View} from "../base/View";
 import Presenter from "../base/Presenter";
-import ViewConnector from "../helpers/containers/ViewConnector";
-import Application from "../Application";
 
 interface IViewAssoc {
     view_type: typeof View;

@@ -1,7 +1,5 @@
-import TestView from "../views/TestView";
-import TestView2 from "../views/TestView2";
+import BoardView from "../views/BoardView";
 
 export default {
-    test1: TestView,
-    test2: TestView2,
+    board: {view_type: BoardView, presenter_types: []},
 }

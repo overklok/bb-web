@@ -106,7 +106,7 @@ export default class Breadboard {
 
         /// базовая кисть
         this._brush = SVG(dom_node).size(WRAP_WIDTH, WRAP_HEIGHT);
-        this._brush.node.setAttribute("viewBox", "0 0 " + WRAP_WIDTH + " " + WRAP_HEIGHT);
+        this._brush.node.setAttributeNS(null, "viewBox", "0 0 " + WRAP_WIDTH + " " + WRAP_HEIGHT);
         this._brush.node.style.width = "100%";
         this._brush.node.style.height = "100%";
 
