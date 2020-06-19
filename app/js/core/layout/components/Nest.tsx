@@ -13,6 +13,7 @@ interface IProps {
 }
 
 interface IState {
+    mounted: boolean;
 }
 
 export default class Nest extends React.Component<IProps, IState> {
@@ -20,6 +21,14 @@ export default class Nest extends React.Component<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
+
+        this.state = {
+            mounted: false,
+        };
+    }
+
+    componentDidMount() {
+        this.setState({mounted: true});
     }
 
     render() {
@@ -30,13 +39,12 @@ export default class Nest extends React.Component<IProps, IState> {
             'nest': true,
         });
 
-        // TODO: Deal with ref forwarding
-
         return (
             <div className={klasses} ref={this.ref}>
                 <SpecificView
                     connector={this.props.connector}
                     ref_nest={this.ref}
+                    mounted={this.state.mounted}
                 />
             </div>
         )

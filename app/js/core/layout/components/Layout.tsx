@@ -61,6 +61,7 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
                 <Pane is_root={true}
                       panes={panes}
                       name='root'
+                      title='root'
                       orientation={orientation}
                 />
             </DndProvider>

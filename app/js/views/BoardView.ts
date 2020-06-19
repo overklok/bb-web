@@ -1,14 +1,13 @@
-import {ImperativeView} from "../core/base/ImperativeView";
-import {IViewProps} from "../core/base/View";
+import {IImperativeViewProps, ImperativeView} from "../core/base/ImperativeView";
 import Breadboard from "../utils/breadboard/Breadboard";
 import {ViewEvent} from "../core/base/Event";
 
 export class ChangeEvent extends ViewEvent<ChangeEvent> {}
 export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
 
-export default class BoardView extends ImperativeView<IViewProps> {
+export default class BoardView extends ImperativeView<IImperativeViewProps> {
     private bb: Breadboard;
-    constructor(props: IViewProps) {
+    constructor(props: IImperativeViewProps) {
         super(props);
 
         this.bb = new Breadboard();
@@ -16,10 +15,6 @@ export default class BoardView extends ImperativeView<IViewProps> {
     }
 
     inject(container: HTMLDivElement): void {
-        const node_text = document.createElement("p");
-        node_text.innerHTML = "Sample Text";
-        container.appendChild(node_text);
-
         this.bb.inject(container, {
             readOnly: false,
         });

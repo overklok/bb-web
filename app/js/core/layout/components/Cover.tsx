@@ -2,7 +2,9 @@ import * as React from "react";
 import classNames from "classnames";
 
 interface IProps {
-    enabled: boolean
+    enabled: boolean,
+    title?: string,
+    image?: string,
 }
 
 export default function Cover(props: IProps) {
@@ -12,6 +14,15 @@ export default function Cover(props: IProps) {
     });
 
     return (
-        <div className={klasses_wrap} />
+        <div className={klasses_wrap}>
+            <div className='cover__block'>
+                <img className='cover__img'
+                     src={props.image || ""}
+                     alt=""
+                >
+                </img>
+                <p>{props.title || "untitled"}</p>
+            </div>
+        </div>
     )
 }

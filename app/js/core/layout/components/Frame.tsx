@@ -5,7 +5,7 @@ import {DraggableItemTypes} from "../types";
 
 interface IProps {
     children: JSX.Element|JSX.Element[],
-    covered: boolean
+    covered: boolean,
 }
 
 export default function Frame(props: IProps) {

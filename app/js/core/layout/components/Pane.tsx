@@ -18,6 +18,8 @@ import Cover from "./Cover";
 interface IProps {
     // уникальное название панели
     name: string,
+    // заголовок панели
+    title: string,
     // является ли панель корневой в иерархии
     is_root: boolean,
     // внутренние панели
@@ -41,7 +43,7 @@ interface IProps {
     resizable: boolean,
 
     // прикрыта ли панель (изначально)
-    covered_initial: boolean
+    covered: boolean
 }
 
 /**
@@ -87,7 +89,7 @@ export default class Pane extends React.Component<IProps, IState> {
         size_max: 0,
 
         resizable: true,
-        covered_initial: false,
+        covered: false,
     };
 
     private panes: RefObject<Pane>[] = [];
@@ -109,7 +111,7 @@ export default class Pane extends React.Component<IProps, IState> {
         this.handleDragging = this.handleDragging.bind(this);
 
         this.state = {
-            covered: this.props.covered_initial,
+            covered: this.props.covered,
             animated: true,
         };
     }
@@ -130,8 +132,8 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param snapshot  некоторая информация до обновления компонента, определяемая в getSnapshotBeforeUpdate()
      */
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
-        if (this.props.covered_initial !== prevProps.covered_initial) {
-            this.setState({covered: this.props.covered_initial, animated: this.state.animated})
+        if (this.props.covered !== prevProps.covered) {
+            this.setState({covered: this.props.covered, animated: this.state.animated})
         }
 
         if (this.props.panes !== prevProps.panes) {
@@ -252,7 +254,10 @@ export default class Pane extends React.Component<IProps, IState> {
 
         return (
             <div className={klasses} ref={div_element => {this.div_element = div_element}}>
-                <Cover enabled={this.state.covered} />
+                {/*Показывать обложку для панели, если в ней нет вложенных панелей*/}
+                <Cover enabled={!this.panes.length && this.state.covered}
+                       title={this.props.title}
+                />
                 {components}
             </div>
         );
@@ -306,6 +311,7 @@ export default class Pane extends React.Component<IProps, IState> {
             <Pane
                 key={data.name || index}
                 name={data.name}
+                title={data.title}
                 size={data.size}
                 size_min={data.size_min}
                 size_max={data.size_max}
@@ -315,7 +321,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 orientation={orientation}
                 ref={ref}
                 view_options={data.view_options}
-                covered_initial={this.state.covered}
+                covered={this.state.covered}
             />
         );
     }

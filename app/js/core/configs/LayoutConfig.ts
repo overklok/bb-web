@@ -21,6 +21,7 @@ export type ViewOption = {connector: ViewConnector, type: typeof View, label: st
  */
 export interface ILayoutPane {
     name: string;
+    title: string;
     size: number;
     size_min: number;
     size_max: number;
@@ -95,6 +96,7 @@ export class LayoutConfig implements IConfig {
             }
         }
 
+        this.processPaneTitle(pane);
         this.processPaneSize(pane);
         this.processPaneLimits(pane);
         this.processPaneResizability(pane);
@@ -127,6 +129,12 @@ export class LayoutConfig implements IConfig {
                 alias: alias,
                 connector: view_connector
             } as object));
+        }
+    }
+
+    processPaneTitle(pane: ILayoutPane): void {
+        if (pane.title == null) {
+            pane.title = pane.name;
         }
     }
 
