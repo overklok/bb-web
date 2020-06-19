@@ -1,6 +1,7 @@
 import * as React from "react";
 import SingleTab from "./SingleTab";
 import Tab from "./Tab";
+import {View} from "../../../base/View";
 
 interface IProps {
     children: JSX.Element[] // usually a Nest creators
@@ -33,6 +34,10 @@ export default class TabDisplay extends React.Component<IProps, IState> {
         }
     }
 
+    updateViewInformation(view: View<any, any>) {
+        console.log(view);
+    }
+
     renderSingleChild() {
         const {
             props: {
@@ -44,7 +49,9 @@ export default class TabDisplay extends React.Component<IProps, IState> {
             <div className='tab-display'>
                 <div className="tab-list">
                     {children.map((child, index) => {
-                        const { label } = child.props;
+                        const { label, connector } = child.props;
+
+                        connector.onActivation((view: View<any, any>) => this.updateViewInformation(view));
 
                         return (
                             <SingleTab label={label} key={index} />
@@ -73,7 +80,9 @@ export default class TabDisplay extends React.Component<IProps, IState> {
             <div className='tab-display'>
                 <div className="tab-list">
                     {children.map((child, index) => {
-                        const { label } = child.props;
+                        const { label, connector } = child.props;
+
+                        connector.onActivation((view: View<any, any>) => this.updateViewInformation(view));
 
                         return (
                             <Tab

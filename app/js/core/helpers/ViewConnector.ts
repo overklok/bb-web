@@ -11,6 +11,8 @@ export default class ViewConnector {
     private readonly svc_event: IEventService;
     private presenters: Presenter<View<IViewProps, IViewState>>[];
 
+    private on_activation: Function;
+
     constructor(app: Application) {
         this.app = app;
 
@@ -37,10 +39,18 @@ export default class ViewConnector {
                 this.svc_event.subscribe(evt_type, hdlr, this);
             }
         }
+
+        if (this.on_activation) {
+            this.on_activation(view);
+        }
     }
 
     emit<E>(event: ViewEvent<E>) {
         this.svc_event.emit(event, this);
+    }
+
+    onActivation(cb: Function) {
+        this.on_activation = cb;
     }
 
     private unsubscribeCurrentPresenters() {
