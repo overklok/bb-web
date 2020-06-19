@@ -13,16 +13,18 @@ export abstract class ImperativeView<P extends IViewProps> extends View<P, IView
     abstract eject(container: HTMLDivElement): void;
 
     componentDidMount() {
-        this.inject(this.ref.current);
+        this.inject(this.props.ref_nest.current);
     }
 
     componentWillUnmount() {
-        this.eject(this.ref.current);
+        this.eject(this.props.ref_nest.current);
     }
 
     render(): React.ReactNode {
+        super.render();
+
         return (
-            <div ref={this.ref} />
+            <React.Fragment />
         )
     }
 }

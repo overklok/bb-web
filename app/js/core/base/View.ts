@@ -5,6 +5,7 @@ import {ReactNode} from "react";
 
 export interface IViewProps {
     connector: ViewConnector;
+    ref_nest: React.RefObject<HTMLDivElement>;
 }
 
 export interface IViewState {
