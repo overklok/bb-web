@@ -1,9 +1,11 @@
 import * as React from "react";
+import classNames from "classnames";
 import {useDrop} from "react-dnd";
 import {DraggableItemTypes} from "../types";
 
 interface IProps {
-    children: JSX.Element|JSX.Element[]
+    children: JSX.Element|JSX.Element[],
+    covered: boolean
 }
 
 export default function Frame(props: IProps) {
@@ -15,8 +17,13 @@ export default function Frame(props: IProps) {
         }),
     });
 
+    const klasses = classNames({
+        'frame': true,
+        'frame_covered': props.covered,
+    })
+
     return (
-        <div className='frame' ref={drop}>
+        <div className={klasses} ref={drop}>
             {props.children}
         </div>
     )

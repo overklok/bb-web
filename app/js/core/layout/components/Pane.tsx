@@ -10,6 +10,7 @@ import {View} from "../../base/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
 import TabDisplay from "./tab/TabDisplay";
+import Cover from "./Cover";
 
 /**
  * Свойства панели разметки
@@ -37,32 +38,21 @@ interface IProps {
     size_max: number
 
     // возможно ли изменять размер панели
-    resizable: boolean
+    resizable: boolean,
+
+    // прикрыта ли панель (изначально)
+    covered_initial: boolean
 }
 
 /**
  * Состояние панели разметки
  */
 interface IState {
-    // текущий размер панели
-    size: number,
-    // заблокирована ли панель
-    locked: boolean
+    // прикрыта ли панель
+    covered: boolean,
+    // анимирована ли панель
+    animated: boolean,
 }
-
-// TODO:
-// === PoC Completed ===
-// 1. [OK] Refactor configuration
-// 2. [OK] Add `fixed` shorthand for size_max and size_min
-// 3. [OK] Add `resizable` option
-// 4. [OK] Refactor Pane
-// 5. [OK] Mode switching
-// 6. [OK] Animation
-// === Base Completed ===
-// 8. Add resizing limits (px/%)
-// 9. Dynamic Configuration
-// 10. Drag & Drop
-// 11. Tabs
 
 /**
  * React-компонент "Панель разметки"
@@ -97,6 +87,7 @@ export default class Pane extends React.Component<IProps, IState> {
         size_max: 0,
 
         resizable: true,
+        covered_initial: false,
     };
 
     private panes: RefObject<Pane>[] = [];
@@ -116,13 +107,18 @@ export default class Pane extends React.Component<IProps, IState> {
         this.handleDragFinish = this.handleDragFinish.bind(this);
         this.handleDragStart = this.handleDragStart.bind(this);
         this.handleDragging = this.handleDragging.bind(this);
+
+        this.state = {
+            covered: this.props.covered_initial,
+            animated: true,
+        };
     }
 
     /**
      * Выполнить действия после монтажа компонента в документ
      */
     componentDidMount() {
-        this.setInitialCss();
+        this. setInitialCss();
     }
 
 
@@ -134,7 +130,17 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param snapshot  некоторая информация до обновления компонента, определяемая в getSnapshotBeforeUpdate()
      */
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
-        this.setInitialCss();
+        if (this.props.covered_initial !== prevProps.covered_initial) {
+            this.setState({covered: this.props.covered_initial, animated: this.state.animated})
+        }
+
+        if (this.props.panes !== prevProps.panes) {
+            this.setInitialCss();
+        }
+    }
+
+    componentWillUnmount() {
+
     }
 
     /**
@@ -228,8 +234,8 @@ export default class Pane extends React.Component<IProps, IState> {
             'pane': true,
             'pane-h': this.props.orientation == PaneOrientation.Horizontal,
             'pane-v': this.props.orientation == PaneOrientation.Vertical,
-            'pane-animated': true,
-            'pane-noselect': false,
+            'pane_noselect': false,
+            'pane_animated': this.state.animated,
         });
 
         // Компоненты, лежащие внутри Pane
@@ -246,6 +252,7 @@ export default class Pane extends React.Component<IProps, IState> {
 
         return (
             <div className={klasses} ref={div_element => {this.div_element = div_element}}>
+                <Cover enabled={this.state.covered} />
                 {components}
             </div>
         );
@@ -273,7 +280,7 @@ export default class Pane extends React.Component<IProps, IState> {
 
     private renderNests() {
         return (
-            <Frame>
+            <Frame covered={this.state.covered}>
                 <TabDisplay>
                     {this.props.view_options.map((view_option, index) => {
                         return this.renderNest(index, view_option);
@@ -308,6 +315,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 orientation={orientation}
                 ref={ref}
                 view_options={data.view_options}
+                covered_initial={this.state.covered}
             />
         );
     }
@@ -438,10 +446,12 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param {number} pane_num_next Номер панели, распологающейся после рукоятки
      */
     handleDragStart(pane_num_prev: number, pane_num_next: number) {
+        this.panes[pane_num_prev].current.setState({animated: false, covered: true})
+        this.panes[pane_num_next].current.setState({animated: false, covered: true})
+
         // Отключить анимацию на время перетаскивания
         for (const pane of this.panes) {
-            pane.current.div_element.classList.add('pane-noselect');
-            pane.current.div_element.classList.remove('pane-animated');
+            pane.current.div_element.classList.add('pane_noselect');
         }
 
         this.recalcChild();
@@ -456,10 +466,12 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param {number} pane_num_next Номер панели, распологающейся после рукоятки
      */
     handleDragFinish(pane_num_prev: number, pane_num_next: number) {
+        this.panes[pane_num_prev].current.setState({animated: true, covered: false})
+        this.panes[pane_num_next].current.setState({animated: true, covered: false})
+
         // Включить анимацию на время перетаскивания
         for (const pane of this.panes) {
-            pane.current.div_element.classList.remove('pane-noselect');
-            pane.current.div_element.classList.add('pane-animated');
+            pane.current.div_element.classList.remove('pane_noselect');
         }
 
         this.recalcChild();
