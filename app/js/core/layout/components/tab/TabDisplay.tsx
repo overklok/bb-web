@@ -2,6 +2,8 @@ import * as React from "react";
 import SingleTab from "./SingleTab";
 import Tab from "./Tab";
 import {View} from "../../../base/View";
+import TabMenu from "./TabMenu";
+import ViewConnector from "../../../helpers/ViewConnector";
 
 interface IProps {
     children: JSX.Element[] // usually a Nest creators
@@ -12,6 +14,8 @@ interface IState {
 }
 
 export default class TabDisplay extends React.Component<IProps, IState> {
+    private view_connectors: Array<[ViewConnector, React.RefObject<TabMenu>]> = [];
+
     constructor(props: IProps) {
         super(props);
 
@@ -22,11 +26,15 @@ export default class TabDisplay extends React.Component<IProps, IState> {
         this.onClickTabItem = this.onClickTabItem.bind(this);
     }
 
-    onClickTabItem(tab_index: number) {
-        this.setState({ active_tab: tab_index });
+    componentDidMount() {
+        for (const [view_connector, menuref] of this.view_connectors) {
+            menuref.current.setItems(view_connector.actions);
+        }
     }
 
     render() {
+        this.view_connectors = [];
+
         if (this.props.children.length > 1) {
             return this.renderMultiChild();
         } else {
@@ -34,8 +42,8 @@ export default class TabDisplay extends React.Component<IProps, IState> {
         }
     }
 
-    updateViewInformation(view: View<any, any>) {
-        console.log(view);
+    registerViewConnector(view_connector: ViewConnector, ref: React.RefObject<TabMenu>) {
+        this.view_connectors.push([view_connector, ref]);
     }
 
     renderSingleChild() {
@@ -50,11 +58,12 @@ export default class TabDisplay extends React.Component<IProps, IState> {
                 <div className="tab-list">
                     {children.map((child, index) => {
                         const { label, connector } = child.props;
+                        const ref: React.RefObject<TabMenu> = React.createRef();
 
-                        connector.onActivation((view: View<any, any>) => this.updateViewInformation(view));
+                        this.registerViewConnector(connector, ref);
 
                         return (
-                            <SingleTab label={label} key={index} />
+                            <SingleTab label={label} key={index} ref={ref}/>
                         )
                     })}
                 </div>
@@ -81,11 +90,13 @@ export default class TabDisplay extends React.Component<IProps, IState> {
                 <div className="tab-list">
                     {children.map((child, index) => {
                         const { label, connector } = child.props;
+                        const ref: React.RefObject<TabMenu> = React.createRef();
 
-                        connector.onActivation((view: View<any, any>) => this.updateViewInformation(view));
+                        this.registerViewConnector(connector, ref);
 
                         return (
                             <Tab
+                                ref={ref}
                                 active_tab={active_tab}
                                 key={index}
                                 index={index}
@@ -105,5 +116,9 @@ export default class TabDisplay extends React.Component<IProps, IState> {
                 </div>
             </div>
         );
+    }
+
+    private onClickTabItem(tab_index: number) {
+        this.setState({ active_tab: tab_index });
     }
 }

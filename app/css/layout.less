@@ -112,7 +112,7 @@ body {
   overflow: hidden;
 
   &.frame_covered {
-    visibility: hidden;
+    display: none;
   }
 }
 
@@ -129,6 +129,32 @@ body {
 // Список вкладок
 .tab-list {
 
+}
+
+.tab {
+  .tab__menu {
+    float: right;
+  }
+}
+
+.ddmenu {
+  position: relative;
+
+  .ddmenu__btn {
+
+  }
+
+  ul.ddmenu__items {
+    display: none;
+
+    position: absolute;
+    right: 0;
+    list-style-type: none;
+
+    &.ddmenu__items_active {
+      display: block;
+    }
+  }
 }
 
 // Содержимое вкладки
@@ -213,5 +239,36 @@ li.tab {
     width: 100%;
     text-align: center;
     padding: 0;
+  }
+}
+
+.ddmenu {
+  .ddmenu__btn {
+    padding: 0 5px;
+
+    &::before {
+      content: '=';
+    }
+
+    &.ddmenu__btn_active {
+      background: #9c9cff;
+    }
+  }
+
+  ul.ddmenu__items {
+    background: lightgrey;
+    margin: 0;
+    padding: 0;
+    border-bottom: solid 1px;
+    border-left: solid 1px;
+    border-right: solid 1px;
+
+    li {
+      padding: 0 5px;
+
+      &:hover {
+        background-color: #9c9cff;
+      }
+    }
   }
 }

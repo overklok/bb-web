@@ -10,8 +10,9 @@ export default class ViewConnector {
     private readonly presenter_types: typeof Presenter[];
     private readonly svc_event: IEventService;
     private presenters: Presenter<View<IViewProps, IViewState>>[];
-
     private on_activation: Function;
+
+    public actions: Array<[string, Function]> = [];
 
     constructor(app: Application) {
         this.app = app;
@@ -30,13 +31,30 @@ export default class ViewConnector {
 
         this.presenters = [];
         for (const presenter_type of this.presenter_types) {
-
             const presenter = new presenter_type(view);
             this.presenters.push(presenter);
 
+            // Activate presenter routes
             for (const [evt_type, prop_handler] of presenter.routes.entries()) {
                 const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
                 this.svc_event.subscribe(evt_type, hdlr, this);
+            }
+
+            // Activate presenter action bindings
+            const bindings = (presenter.constructor as any)["action_bindings"];
+
+            if (bindings) {
+                for (const binding of bindings.values()) {
+                    if (binding == null) continue;
+
+                    const [action_name, action_handler] = binding;
+                    const method = (presenter as any)[action_handler];
+
+                    if (method == null) continue;
+
+                    const hdlr = function () {method(...arguments)};
+                    this.actions.push([action_name, hdlr]);
+                }
             }
         }
 

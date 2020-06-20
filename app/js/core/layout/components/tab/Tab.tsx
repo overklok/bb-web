@@ -2,16 +2,17 @@ import * as React from "react";
 import classNames from "classnames";
 import {useDrag} from "react-dnd";
 import {DraggableItemTypes} from "../../types";
+import TabMenu from "./TabMenu";
 
 interface IProps {
-    label: string,
-    index: number,
-    is_single?: boolean,
-    active_tab: number,
-    on_click?: Function,
+    label: string;
+    index: number;
+    is_single?: boolean;
+    active_tab: number;
+    on_click?: Function;
 }
 
-export default function Tab(props: IProps) {
+const Tab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>) => {
     const onClick = () => {
         const { index, on_click } = props;
 
@@ -38,7 +39,10 @@ export default function Tab(props: IProps) {
 
     return (
         <li className={klasses} onClick={onClick} ref={drag}>
-            <span>{label}</span>
+            <span className='tab__title'>{label}</span>
+            <TabMenu ref={ref_menu} />
         </li>
     )
-}
+});
+
+export default Tab;

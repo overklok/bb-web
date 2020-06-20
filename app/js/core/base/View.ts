@@ -22,8 +22,6 @@ export class MountEvent extends AbstractEvent<MountEvent> {
 }
 
 export abstract class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
-    static Actions = ['a1', 'a2'];
-
     protected constructor(props: P) {
         super(props);
 
