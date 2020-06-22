@@ -5,6 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import Pane from "./Pane";
 
 import {LayoutConfig} from "../../configs/LayoutConfig";
+import {RefObject} from "react";
 
 require('css/layout.less');
 
@@ -32,12 +33,16 @@ interface ILayoutState {
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
 export default class Layout extends React.Component<ILayoutProps, ILayoutState> {
+    private pane_ref: RefObject<Pane> = React.createRef();
+
     constructor(props: ILayoutProps) {
         super(props);
 
         this.state = {
             mode_name: 'default'
         }
+
+        window.addEventListener('resize', this.onResize());
     }
 
     /**
@@ -63,8 +68,25 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
                       name='root'
                       title='root'
                       orientation={orientation}
+                      ref={this.pane_ref}
                 />
             </DndProvider>
         );
+    }
+
+    private onResize() {
+        let doit: number;
+
+        // throttle
+        return () => {
+            clearTimeout(doit);
+            doit = window.setTimeout(() => this.notifyResizePane(), 100);
+        }
+    }
+
+    private notifyResizePane() {
+        if (this.pane_ref.current) {
+            this.pane_ref.current.notifyResizePanes();
+        }
     }
 }

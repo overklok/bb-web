@@ -93,6 +93,7 @@ export default class Pane extends React.Component<IProps, IState> {
     };
 
     private panes: RefObject<Pane>[] = [];
+    private nests: RefObject<Nest>[] = [];
     private div_element: HTMLDivElement;
 
     /**
@@ -120,7 +121,7 @@ export default class Pane extends React.Component<IProps, IState> {
      * Выполнить действия после монтажа компонента в документ
      */
     componentDidMount() {
-        this. setInitialCss();
+        this.setInitialCss();
     }
 
 
@@ -215,6 +216,18 @@ export default class Pane extends React.Component<IProps, IState> {
             }
         }
     }
+    
+    notifyResizePanes() {
+        for (const pane of this.panes) {
+            pane.current.notifyResizePanes();
+        }
+        
+        for (const nest of this.nests) {
+            if (nest.current) {
+                nest.current.notifyResizeView();
+            }
+        }
+    }
 
     /**
      * Сгенерировать содержимое компонента Pane
@@ -284,11 +297,18 @@ export default class Pane extends React.Component<IProps, IState> {
     }
 
     private renderNests() {
+        this.nests = [];
+        
         return (
             <Frame covered={this.state.covered}>
                 <TabViewComposer>
                     {this.props.view_options.map((view_option, index) => {
-                        return this.renderNest(index, view_option);
+                        const ref: RefObject<Nest> = React.createRef();
+                        
+                        const nest = this.renderNest(index, view_option, ref);
+                        this.nests.push(ref);
+                        
+                        return nest;
                     })}
                 </TabViewComposer>
             </Frame>
@@ -319,14 +339,14 @@ export default class Pane extends React.Component<IProps, IState> {
                 resizable={data.resizable}
                 panes={data.panes}
                 orientation={orientation}
-                ref={ref}
                 view_options={data.view_options}
                 covered={this.state.covered}
+                ref={ref}
             />
         );
     }
 
-    renderNest(index: number, view_option: ViewOption): JSX.Element {
+    renderNest(index: number, view_option: ViewOption, ref: RefObject<Nest>): JSX.Element {
         return (
             <Nest
                 key={index}
@@ -334,6 +354,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 view_type={view_option.type}
                 connector={view_option.connector}
                 label={view_option.label}
+                ref={ref}
             />
         )
     }
@@ -481,6 +502,7 @@ export default class Pane extends React.Component<IProps, IState> {
         }
 
         this.recalcChild();
+        this.notifyResizePanes();
     }
 
     get is_vertical() {

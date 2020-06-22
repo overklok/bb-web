@@ -8,6 +8,8 @@ import {AbstractEvent, Action, ViewEvent} from "./Event";
 export default class ViewConnector {
     private readonly app: Application;
     private readonly svc_event: IEventService;
+    private view: View<any, any>;
+
     // private presenters: Presenter<View<IViewProps, IViewState>>[];
 
     public readonly presenter_types: typeof Presenter[];
@@ -42,6 +44,8 @@ export default class ViewConnector {
     }
 
     activate(view: View<IViewProps, IViewState>) {
+        this.view = view;
+
         this.unsubscribeCurrentPresenters();
 
         // this.presenters = [];
@@ -59,6 +63,12 @@ export default class ViewConnector {
 
     emit<E>(event: AbstractEvent<E>) {
         this.svc_event.emit(event, this);
+    }
+
+    resizeView() {
+        if (this.view) {
+            this.view.resize();
+        }
     }
 
     private unsubscribeCurrentPresenters() {

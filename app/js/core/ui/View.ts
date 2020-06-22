@@ -14,11 +14,12 @@ export interface IViewState {
 }
 
 export class RenderEvent extends AbstractEvent<RenderEvent> {
-    public readonly posX: number;
-    public readonly posY: number;
 }
 
 export class MountEvent extends AbstractEvent<MountEvent> {
+}
+
+export class ResizeEvent extends AbstractEvent<ResizeEvent> {
 }
 
 export abstract class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
@@ -36,11 +37,10 @@ export abstract class View<P extends IViewProps, S extends IViewState> extends R
         this.emit(new MountEvent({}));
     }
 
+    resize() {}
+
     render(): ReactNode {
-        this.emit(new RenderEvent({
-           posX: 0,
-           posY: 0
-        }));
+        this.emit(new RenderEvent({}));
 
         return null;
     }

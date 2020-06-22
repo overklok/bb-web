@@ -4,7 +4,7 @@ export default {
         panes: [
             {name: 'p1', fixed: 60, panes: [{name: 's1'}]},
             {name: 'p2', panes: [
-                {name: 's1', size: '20%', title: 'Left'},
+                {name: 's1', size: '20%', views: [{alias: 'blockly', label: "Blockly"}], title: 'Blockly'},
                 {name: 's2', size_min: '10px', views: [{alias: 'board', label: "Board"}, {alias: 'board', label: "Label2"}], title: 'Breadboard'},
                 {name: 's3', size: '20%', panes: [
                         {name: 'k1', views: [{alias: 'board', label: "Board 2"}]},
