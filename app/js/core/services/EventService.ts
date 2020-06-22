@@ -1,5 +1,5 @@
 import IEventService from "./interfaces/IEventService";
-import {AbstractEvent} from "../base/Event";
+import {AbstractEvent} from "../ui/Event";
 
 export default class EventService extends IEventService {
     private handlers: Map<any, Map<AbstractEvent<any>, Function[]>> = new Map();

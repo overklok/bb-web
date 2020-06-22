@@ -1,9 +1,8 @@
 import * as React from "react";
 import SingleTab from "./SingleTab";
 import Tab from "./Tab";
-import {View} from "../../../base/View";
 import TabMenu from "./TabMenu";
-import ViewConnector from "../../../helpers/ViewConnector";
+import ViewConnector from "../../../ui/ViewConnector";
 
 interface IProps {
     children: JSX.Element[] // usually a Nest creators
@@ -13,7 +12,7 @@ interface IState {
     active_tab: number
 }
 
-export default class TabDisplay extends React.Component<IProps, IState> {
+export default class TabViewComposer extends React.Component<IProps, IState> {
     private view_connectors: Array<[ViewConnector, React.RefObject<TabMenu>]> = [];
 
     constructor(props: IProps) {
@@ -101,8 +100,6 @@ export default class TabDisplay extends React.Component<IProps, IState> {
                         const ref: React.RefObject<TabMenu> = React.createRef();
 
                         this.registerViewConnector(connector, ref);
-
-                        console.log(connector.actions);
 
                         return (
                             <Tab

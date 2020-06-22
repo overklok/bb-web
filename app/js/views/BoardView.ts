@@ -1,7 +1,6 @@
-import {IImperativeViewProps, ImperativeView} from "../core/base/ImperativeView";
+import {IImperativeViewProps, ImperativeView} from "../core/ui/ImperativeView";
 import Breadboard from "../utils/breadboard/Breadboard";
-import {ViewEvent} from "../core/base/Event";
-import {BooleanAction} from "../core/base/Action";
+import {ViewEvent} from "../core/ui/Event";
 
 export class ChangeEvent extends ViewEvent<ChangeEvent> {}
 export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
@@ -48,7 +47,7 @@ export default class BoardView extends ImperativeView<IImperativeViewProps> {
         this.bb.highlightPlates(plate_ids);
     }
 
-    setPlateState(plate_id: string, state: object) {
+    setPlateState(plate_id: number, state: object) {
         this.bb.setPlateState(plate_id, state);
     }
 

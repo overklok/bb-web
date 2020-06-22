@@ -1,5 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
+import {Action, BooleanAction} from "../../../ui/Event";
 
 interface IProps {
 
@@ -7,7 +8,7 @@ interface IProps {
 
 interface IState {
     active: boolean;
-    items?: Array<[string, Function]>;
+    items?: Array<[string, Action<any>, Function]>;
 }
 
 export default class TabMenu extends React.Component<IProps, IState> {
@@ -18,7 +19,7 @@ export default class TabMenu extends React.Component<IProps, IState> {
 
         this.state = {
             active: false,
-            items: [] as Array<[string, Function]>,
+            items: [] as Array<[string, Action<any>, Function]>,
         };
 
         this.setActive = this.setActive.bind(this);
@@ -26,7 +27,7 @@ export default class TabMenu extends React.Component<IProps, IState> {
         this.onglobalclick = () => this.setInactive();
     }
 
-    setItems(items: Array<[string, Function]>) {
+    setItems(items: Array<[string, Action<any>, Function]>) {
         this.setState({...this.state, items});
     }
 
@@ -56,10 +57,17 @@ export default class TabMenu extends React.Component<IProps, IState> {
                 <div className={btn_klasses} onClick={this.setActive} />
                 <ul className={items_klasses}>
                     {
-                        this.state.items.map(([name, cb], index) => {
-                            return (
-                                <li key={index} onClick={() => {cb()}}>{name}</li>
-                            )
+                        this.state.items.map(([name, action_type, cb], index) => {
+                            if (action_type === null) {
+                                return <li key={index}><hr/></li>;
+                            }
+
+                            switch ((action_type as any).Alias) {
+                                case BooleanAction.Alias:
+                                    return <li key={index} onClick={() => {cb()}}>{`[B] ${name}`}</li>;
+                                default:
+                                    return <li key={index} onClick={() => {cb()}}>{name}</li>;
+                            }
                         })
                     }
                 </ul>

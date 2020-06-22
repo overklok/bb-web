@@ -6,10 +6,10 @@ import classNames from "classnames";
 import Handle from "./Handle";
 import {ILayoutPane, ViewOption} from "../../configs/LayoutConfig";
 import {PaneOrientation} from "../types";
-import {View} from "../../base/View";
+import {View} from "../../ui/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
-import TabDisplay from "./tab/TabDisplay";
+import TabViewComposer from "./tab/TabViewComposer";
 import Cover from "./Cover";
 
 /**
@@ -286,11 +286,11 @@ export default class Pane extends React.Component<IProps, IState> {
     private renderNests() {
         return (
             <Frame covered={this.state.covered}>
-                <TabDisplay>
+                <TabViewComposer>
                     {this.props.view_options.map((view_option, index) => {
                         return this.renderNest(index, view_option);
                     })}
-                </TabDisplay>
+                </TabViewComposer>
             </Frame>
         )
     }

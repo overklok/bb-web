@@ -2072,11 +2072,11 @@ $.fn.layout = function (opts) {
 				// border-panes use ALL keys in defaults.panes branch
 				o = options[pane] = $.extend(true, {}, d, o); // re-apply pane-specific opts AFTER pane-defaults
 				createFxOptions( pane );
-				// ensure all border-pane-specific base-classes exist
+				// ensure all border-pane-specific ui-classes exist
 				if (!o.resizerClass)	o.resizerClass	= "ui-layout-resizer";
 				if (!o.togglerClass)	o.togglerClass	= "ui-layout-toggler";
 			}
-			// ensure we have base pane-class (ALL panes)
+			// ensure we have ui pane-class (ALL panes)
 			if (!o.paneClass) o.paneClass = "ui-layout-pane";
 		});
 
@@ -2513,7 +2513,7 @@ $.fn.layout = function (opts) {
 					,	layoutEdge:		pane
 					,	layoutRole:		"toggler"
 					})
-					.css(_c.togglers.cssReq) // add base/required styles
+					.css(_c.togglers.cssReq) // add ui/required styles
 					.css(o.applyDemoStyles ? _c.togglers.cssDemo : {}) // add demo styles
 					.addClass(tClass +" "+ tClass+_pane)
 					.hover(addHover, removeHover) // ALWAYS add hover-classes, even if toggling is not enabled - handle with CSS instead
@@ -3834,7 +3834,7 @@ $.fn.layout = function (opts) {
 			evtName = o.slideTrigger_close = "mouseleave"; // also catches 'mouseout'
 
 		// add/remove slide triggers
-		$R[action](evtName, slideClose); // base event on resize
+		$R[action](evtName, slideClose); // ui event on resize
 		// need extra events for mouseleave
 		if (evtName === "mouseleave") {
 			// also close on pane.mouseleave

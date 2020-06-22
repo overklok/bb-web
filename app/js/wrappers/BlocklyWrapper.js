@@ -703,7 +703,7 @@ export default class BlocklyWrapper extends Wrapper {
     setVariableBlockValue(type, value=0) {
         let block = this._variable_blocks[type];
 
-        if (!block) {throw new RangeError("Variable of type `" + type + "`does not exist in the base")}
+        if (!block) {throw new RangeError("Variable of type `" + type + "`does not exist in the ui")}
 
         block.element.setFieldValue(value, "DUMMY");
 

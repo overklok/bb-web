@@ -1,8 +1,8 @@
 import {PaneOrientation} from "../layout/types";
 import {IConfig} from "../helpers/IConfig";
 import {ViewConfig} from "./ViewConfig";
-import {View} from "../base/View";
-import ViewConnector from "../helpers/ViewConnector";
+import {View} from "../ui/View";
+import ViewConnector from "../ui/ViewConnector";
 import Application from "../Application";
 
 const UNITS_ALLOWED = [

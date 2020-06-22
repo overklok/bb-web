@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View, IViewProps, IViewState} from "../../base/View";
+import {View, IViewProps, IViewState} from "../../ui/View";
 
 
 export default class TestView2 extends View<IViewProps, IViewState> {

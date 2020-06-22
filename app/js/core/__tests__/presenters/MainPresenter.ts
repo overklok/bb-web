@@ -1,5 +1,5 @@
-import Presenter, {on} from "../../base/Presenter";
-import {MountEvent, RenderEvent} from "../../base/View";
+import Presenter, {on} from "../../ui/Presenter";
+import {MountEvent, RenderEvent} from "../../ui/View";
 import TestView from "../views/TestView";
 
 export default class MainPresenter extends Presenter<TestView> {
