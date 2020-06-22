@@ -1,12 +1,14 @@
 import {IImperativeViewProps, ImperativeView} from "../core/base/ImperativeView";
 import Breadboard from "../utils/breadboard/Breadboard";
 import {ViewEvent} from "../core/base/Event";
+import {BooleanAction} from "../core/base/Action";
 
 export class ChangeEvent extends ViewEvent<ChangeEvent> {}
 export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
 
 export default class BoardView extends ImperativeView<IImperativeViewProps> {
     private bb: Breadboard;
+
     constructor(props: IImperativeViewProps) {
         super(props);
 

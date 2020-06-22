@@ -117,11 +117,7 @@ export class LayoutConfig implements IConfig {
 
             if (!view_type) throw new Error(`View type '${alias}' does not exist`);
 
-            const view_connector = new ViewConnector(app);
-
-            for (const presenter_type of presenter_types) {
-                view_connector.addPresenter(presenter_type);
-            }
+            const view_connector = new ViewConnector(app, presenter_types);
 
             pane.view_options.push(<ViewOption>({
                 type: view_type,

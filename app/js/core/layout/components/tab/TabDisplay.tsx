@@ -42,6 +42,10 @@ export default class TabDisplay extends React.Component<IProps, IState> {
         }
     }
 
+    resetViewConnectors() {
+        this.view_connectors = [];
+    }
+
     registerViewConnector(view_connector: ViewConnector, ref: React.RefObject<TabMenu>) {
         this.view_connectors.push([view_connector, ref]);
     }
@@ -52,6 +56,8 @@ export default class TabDisplay extends React.Component<IProps, IState> {
                 children
             },
         } = this;
+
+        this.resetViewConnectors();
 
         return (
             <div className='tab-display'>
@@ -64,7 +70,7 @@ export default class TabDisplay extends React.Component<IProps, IState> {
 
                         return (
                             <SingleTab label={label} key={index} ref={ref}/>
-                        )
+                    )
                     })}
                 </div>
                 <div className="tab-content">
@@ -85,6 +91,8 @@ export default class TabDisplay extends React.Component<IProps, IState> {
             }
         } = this;
 
+        this.resetViewConnectors();
+
         return (
             <div className='tab-display'>
                 <div className="tab-list">
@@ -93,6 +101,8 @@ export default class TabDisplay extends React.Component<IProps, IState> {
                         const ref: React.RefObject<TabMenu> = React.createRef();
 
                         this.registerViewConnector(connector, ref);
+
+                        console.log(connector.actions);
 
                         return (
                             <Tab

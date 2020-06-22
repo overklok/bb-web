@@ -1,5 +1,6 @@
 import {IViewProps, IViewState, View} from "./View";
 import {AbstractEvent} from "./Event";
+import {Action} from "./Action";
 
 export function on<V extends AbstractEvent<V>>(...event_types: V[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -15,29 +16,12 @@ export function on<V extends AbstractEvent<V>>(...event_types: V[]) {
     }
 }
 
-export function action<V extends AbstractEvent<V>>(action_alias: string) {
-    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        const tgt_action_names = target.constructor["actions"];
-
-        if (target.constructor["action_bindings"] == null) {
-            target.constructor["action_bindings"] = new Map();
-
-            for (const alias of tgt_action_names.keys()) {
-                target.constructor["action_bindings"].set(alias, null);
-            }
-        }
-
-        const action_name = tgt_action_names.get(action_alias);
-
-        target.constructor["action_bindings"].set(action_alias, [action_name, propertyKey]);
-
-        return target;
-    }
+export function action<V extends AbstractEvent<V>, A extends Action>(action_type: A) {
+    return on(action_type);
 }
 
 export default class Presenter<V extends View<IViewProps, IViewState>> {
-    protected static actions: Map<string, string> = new Map();
-    public static action_bindings: Map<string, [string, string]>;
+    protected static actions: Map<Action, string> = new Map();
 
     public readonly routes: Map<AbstractEvent<any>, string>;
 
