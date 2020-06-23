@@ -191,9 +191,15 @@ body {
 
   &.pane_animated {
     &.pane-h {
-      transition: width     0.6s cubic-bezier(0.33, 1, 0.68, 1),
+      transition: opacity   0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  width     0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   min-width 0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   max-width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+
+      &.pane-enter {opacity: 0;}
+      &.pane-enter-active {opacity: 1;}
+      &.pane-exit {opacity: 1;}
+      &.pane-exit-active {opacity: 0;}
 
       &.pane-enter:not(.pane-enter-active), &.pane-exit {
         &:not(.pane-sizemin):not(.pane-sizemax) {
@@ -211,11 +217,14 @@ body {
     }
 
     &.pane-v {
-      transition: height      0.6s cubic-bezier(0.33, 1, 0.68, 1),
+      transition: opacity   0.6s cubic-bezier(0.33, 1, 0.68, 1),
+                  height      0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   min-height  0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   max-height  0.6s cubic-bezier(0.33, 1, 0.68, 1);
 
       &.pane-enter:not(.pane-enter-active), &.pane-exit {
+        opacity: 0;
+
         &:not(.pane-sizemin):not(.pane-sizemax) {
           height: 0 !important;
         }
