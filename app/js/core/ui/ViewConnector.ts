@@ -16,6 +16,8 @@ export default class ViewConnector {
     public actions: Array<[string, Action<any>, Function]> = [];
 
     constructor(app: Application, presenter_types: typeof Presenter[]) {
+        console.log('pres cons');
+
         this.app = app;
 
         this.svc_event = this.app.instance(IEventService);

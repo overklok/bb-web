@@ -27,6 +27,7 @@ export default class BlocklyView extends ImperativeView<IImperativeViewProps> {
     }
 
     resize() {
+        console.log('blk resize');
         this.blockly.resize();
     }
 

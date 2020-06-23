@@ -185,17 +185,49 @@ body {
 .pane {
   border: 1px solid black;
 
+  //&.pane-enter, &.pane-exit {
+  //  height: 0;
+  //}
+
   &.pane_animated {
     &.pane-h {
       transition: width     0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   min-width 0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   max-width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+
+      &.pane-enter:not(.pane-enter-active), &.pane-exit {
+        &:not(.pane-sizemin):not(.pane-sizemax) {
+          width: 0 !important;
+        }
+
+        &.pane-sizemin {
+          min-width: 0 !important;
+        }
+
+        &.pane-sizemax {
+          max-width: 0 !important;
+        }
+      }
     }
 
     &.pane-v {
       transition: height      0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   min-height  0.6s cubic-bezier(0.33, 1, 0.68, 1),
                   max-height  0.6s cubic-bezier(0.33, 1, 0.68, 1);
+
+      &.pane-enter:not(.pane-enter-active), &.pane-exit {
+        &:not(.pane-sizemin):not(.pane-sizemax) {
+          height: 0 !important;
+        }
+
+        &.pane-sizemin {
+          min-height: 0 !important;
+        }
+
+        &.pane-sizemax {
+          max-height: 0 !important;
+        }
+      }
     }
   }
 }

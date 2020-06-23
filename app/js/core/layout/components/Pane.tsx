@@ -1,7 +1,7 @@
 import * as React from "react";
 import {RefObject} from "react";
 import classNames from "classnames";
-// import ReactCSSTransitionGroup from 'react-transition-group';
+import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
 
 import Handle from "./Handle";
 import {ILayoutPane, ViewOption} from "../../configs/LayoutConfig";
@@ -124,7 +124,6 @@ export default class Pane extends React.Component<IProps, IState> {
         this.setInitialCss();
     }
 
-
     /**
      * Выполнить действия после обновления свойств компонента
      *
@@ -142,8 +141,42 @@ export default class Pane extends React.Component<IProps, IState> {
         }
     }
 
-    componentWillUnmount() {
+    /**
+     * Выполнить действия перед "входом" элемента
+     *
+     * Метод вызывается в тот момент, когда к элементу добавлен CSS-класс начала анимации входа.
+     */
+    childWillEnter() {
+        // Перед входом нужно убедиться, что размеры дочерних панели соответствуют конфигурации.
+        // Класс начала анимации входа задаёт панели нулевой размер, и к завершению входа этот класс будет убран.
+        // Поскольку у свободных элементов размер вычисляется через flex, они не будут развёрнуты, если не вызывать
+        // эту функцию.
+        this.setInitialCssChild();
+    }
 
+    /**
+     * Выполнить действия после "входа" элемента
+     *
+     * Метод вызывается в тот момент, когда к элементу добавлен CSS-класс окончания анимации входа.
+     */
+    childDidEnter() {
+        // this.setInitialCss();
+        // this.notifyResizePanes();
+    }
+
+    /**
+     * Выполнить действия перед "уходом" элемента
+     *
+     * Метод вызывается в тот момент, когда к элементу добавлен CSS-класс начала анимации выхода.
+     */
+    childWillLeave() {
+        // Для применения эффекта выхода необходимо заново рассчитать размеры дочерних панелей на
+        // основе новых (нулевых) значений CSS-атрибутов панелей, которые будут удалены.
+        this.recalcChild();
+    }
+
+    childDidLeave() {
+        // this.notifyResizePanes();
     }
 
     /**
@@ -152,6 +185,8 @@ export default class Pane extends React.Component<IProps, IState> {
      * Этот метод актуализирует выбранные параметры размеров в разметке документа.
      */
     setInitialCss() {
+        if (this.div_element == null) return;
+
         // Обнулить прежние возможные правила элемента
         this.div_element.style.minHeight    = null;
         this.div_element.style.minWidth     = null;
@@ -187,6 +222,16 @@ export default class Pane extends React.Component<IProps, IState> {
         this.div_element.style.flexGrow = "0";
     }
 
+    setInitialCssChild() {
+        for (const ref of this.panes) {
+            const pane = ref.current;
+
+            if (pane) {
+                pane.setInitialCss();
+            }
+        }
+    }
+
     /**
      * Выполнить перерасчёт размеров дочерних панелей
      *
@@ -219,7 +264,9 @@ export default class Pane extends React.Component<IProps, IState> {
     
     notifyResizePanes() {
         for (const pane of this.panes) {
-            pane.current.notifyResizePanes();
+            if (pane.current) {
+                pane.current.notifyResizePanes();
+            }
         }
         
         for (const nest of this.nests) {
@@ -251,6 +298,8 @@ export default class Pane extends React.Component<IProps, IState> {
             'pane-v': this.props.orientation == PaneOrientation.Vertical,
             'pane_noselect': false,
             'pane_animated': this.state.animated,
+            'pane-sizemin': this.props.size_min,
+            'pane-sizemax': this.props.size_max,
         });
 
         // Компоненты, лежащие внутри Pane
@@ -293,7 +342,11 @@ export default class Pane extends React.Component<IProps, IState> {
             }
         }
 
-        return elements;
+        return (
+            <TransitionGroup component={null}>
+                {elements}
+            </TransitionGroup>
+        );
     }
 
     private renderNests() {
@@ -328,21 +381,32 @@ export default class Pane extends React.Component<IProps, IState> {
      */
     renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
         return (
-            <Pane
-                key={data.name || index}
-                name={data.name}
-                title={data.title}
-                size={data.size}
-                size_min={data.size_min}
-                size_max={data.size_max}
-                size_unit={data.size_unit}
-                resizable={data.resizable}
-                panes={data.panes}
-                orientation={orientation}
-                view_options={data.view_options}
-                covered={this.state.covered}
-                ref={ref}
-            />
+            <CSSTransition
+                timeout={600}
+                key={'t' + (data.name || index)}
+                classNames="pane"
+
+                onEntering={() => this.childWillEnter()}
+                onEntered={() => this.childDidEnter()}
+                onExiting={() => this.childWillLeave()}
+                onExited={() => this.childDidLeave()}
+            >
+                <Pane
+                    key={data.name || index}
+                    name={data.name}
+                    title={data.title}
+                    size={data.size}
+                    size_min={data.size_min}
+                    size_max={data.size_max}
+                    size_unit={data.size_unit}
+                    resizable={data.resizable}
+                    panes={data.panes}
+                    orientation={orientation}
+                    view_options={data.view_options}
+                    covered={this.state.covered}
+                    ref={ref}
+                />
+            </CSSTransition>
         );
     }
 
@@ -373,11 +437,13 @@ export default class Pane extends React.Component<IProps, IState> {
      */
     renderHandler(index: number, orientation: PaneOrientation, pane_prev: number, pane_next: number) {
         return (
-            <Handle key={`h${index}`} orientation={orientation} pane_prev_num={pane_prev} pane_next_num={pane_next}
-                    handleDragStart={this.handleDragStart}
-                    handleDragFinish={this.handleDragFinish}
-                    handleDragging={this.handleDragging}
-            />
+            <CSSTransition key={`ht${index}`} timeout={0}>
+                <Handle key={`h${index}`} orientation={orientation} pane_prev_num={pane_prev} pane_next_num={pane_next}
+                        handleDragStart={this.handleDragStart}
+                        handleDragFinish={this.handleDragFinish}
+                        handleDragging={this.handleDragging}
+                />
+            </CSSTransition>
         )
     }
 
