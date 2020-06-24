@@ -7,15 +7,14 @@ export default class TButtonPlate extends ButtonPlate {
 
     constructor(container, grid, schematic=false, verbose=false, id) {
         super(container, grid, schematic, verbose, id);
+    }
 
-        this._params.size = {x: 3, y: 2};
-
-        this._params.surface = [
-            {x: 0, y: 0},   {x: 1, y: 0},   {x: 2, y: 0},
-                            {x: 1, y: 1}
-        ];
-
-        this._params.origin = {x: 0, y: 0};
+    /**
+     * @returns {number}
+     * @private
+     */
+    get __length__() {
+        return 3;
     }
 
     /**
@@ -42,15 +41,15 @@ export default class TButtonPlate extends ButtonPlate {
     _drawPicture(qs=Plate.QuadSizeDefault) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(2, 0);
-        let cell3 = this.__grid.cell(1, 1);
+        let cell3 = this.__grid.cell(1, 0);
 
         let rect1 = this._group.rect(qs, qs);
         let rect2 = this._group.rect(qs, qs);
-        let rect3 = this._group.rect(qs, qs);
+        // let rect3 = this._group.rect(qs, qs);
 
         rect1.cx(cell1.center_rel.x).cy(cell1.center_rel.y);
         rect2.cx(cell2.center_rel.x).cy(cell2.center_rel.y);
-        rect3.cx(cell3.center_rel.x).cy(cell3.center_rel.y);
+        // rect3.cx(cell3.center_rel.x).cy(cell3.center_rel.y);
 
         let line_right = this._group.path([
             ['M', cell1.center_rel.x, cell1.center_rel.y],
