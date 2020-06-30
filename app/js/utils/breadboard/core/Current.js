@@ -323,25 +323,25 @@ export default class Current {
 
         this._line.node.classList.add(animname);
 
-        const symbol = Current.defineSmokeSymbol(this._container_anim, "red");
-
-        const item_count = len / 100;
-
-        // if (SYMBOL_SMOKE != null) {
-            for (let index = 0; index < item_count; index++) {
-                const animname = `ssa-${this._id}-${index}`;
-                const use = this._container_anim.use(symbol).move(0, -15);
-                const rule = `.${animname} {
-                    opacity: 0;
-                    animation: ${this._generateAnimationRuleSmoke(dur, index/(item_count*2))};
-                    offset-path: path("${this._line_path}");
-                    animation-delay: ${index*20}ms;
-                }`;
-
-                this._sheet.insertRule(rule);
-                use.addClass(animname);
-            }
-        // }
+        // const symbol = Current.defineSmokeSymbol(this._container_anim, "red");
+        //
+        // const item_count = len / 100;
+        //
+        // // if (SYMBOL_SMOKE != null) {
+        //     for (let index = 0; index < item_count; index++) {
+        //         const animname = `ssa-${this._id}-${index}`;
+        //         const use = this._container_anim.use(symbol).move(0, -15);
+        //         const rule = `.${animname} {
+        //             opacity: 0;
+        //             animation: ${this._generateAnimationRuleSmoke(dur, index/(item_count*2))};
+        //             offset-path: path("${this._line_path}");
+        //             animation-delay: ${index*20}ms;
+        //         }`;
+        //
+        //         this._sheet.insertRule(rule);
+        //         use.addClass(animname);
+        //     }
+        // // }
     }
 
     /**
