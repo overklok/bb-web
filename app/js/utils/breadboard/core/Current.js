@@ -162,7 +162,8 @@ export default class Current {
 
         const dur = this._line.node.getTotalLength() / 2;
 
-        this._animateDestroy(dur) ;
+        this._animateBurning(dur);
+        // this._animateDestroy(dur) ;
 
         setTimeout(() => {
             // this.erase();
@@ -313,7 +314,7 @@ export default class Current {
 
         let animname = `cur-${this._id}-destroy`;
 
-        this._sheet.insertRule(this._generateKeyframeRuleDestroy(this._id, len));
+        this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, len));
 
         this._sheet.insertRule(`.${animname} {
             stroke-dasharray: ${len};
@@ -322,26 +323,24 @@ export default class Current {
         }`);
 
         this._line.node.classList.add(animname);
+    }
 
-        // const symbol = Current.defineSmokeSymbol(this._container_anim, "red");
-        //
-        // const item_count = len / 100;
-        //
-        // // if (SYMBOL_SMOKE != null) {
-        //     for (let index = 0; index < item_count; index++) {
-        //         const animname = `ssa-${this._id}-${index}`;
-        //         const use = this._container_anim.use(symbol).move(0, -15);
-        //         const rule = `.${animname} {
-        //             opacity: 0;
-        //             animation: ${this._generateAnimationRuleSmoke(dur, index/(item_count*2))};
-        //             offset-path: path("${this._line_path}");
-        //             animation-delay: ${index*20}ms;
-        //         }`;
-        //
-        //         this._sheet.insertRule(rule);
-        //         use.addClass(animname);
-        //     }
-        // // }
+    _animateBurning(dur) {
+        if (!this._line_path) {throw new Error("Cannot animate current which hasn't been drawn")}
+
+        const len = this._line.node.getTotalLength();
+
+        let animname = `cur-${this._id}-burn`;
+
+        this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, len));
+
+        this._sheet.insertRule(`.${animname} {
+            stroke-dasharray: ${len};
+            stroke-dashoffset: 0;
+            animation: dash-${this._id} ${dur}ms linear forwards infinite;
+        }`);
+
+        this._line.node.classList.add(animname);
     }
 
     /**
@@ -437,7 +436,7 @@ export default class Current {
         this._anim_delay = 0;
     }
 
-    _generateKeyframeRuleDestroy(id, to) {
+    _generateKeyframeRuleBurn(id, to) {
         return `
             @keyframes dash-${this._id} {
                 to {
