@@ -67,7 +67,7 @@ export default class CurrentLayer extends Layer {
      *
      * @param {String|Number} id идентификатор тока
      */
-    removeCurrent(id, burn=false) {
+    removeCurrent(id) {
         if (typeof id === "undefined") {
             throw new TypeError("Argument 'id' must be defined");
         }
@@ -78,11 +78,7 @@ export default class CurrentLayer extends Layer {
 
         let current = this._currents[id];
 
-        if (burn) {
-            current.burn();
-        } else {
-            current.erase();
-        }
+        current.erase();
 
         delete this._currents[current.id];
     }
@@ -207,10 +203,9 @@ export default class CurrentLayer extends Layer {
         for (const id in this._currents) {
             if (!this._currents.hasOwnProperty(id)) continue;
 
-            if (this._currents[id]._weight > 0.999) {
+            if (this._currents[id].is_burning) {
                 this._callbacks.shortcircuit();
-
-                this.removeCurrent(id, true);
+                return;
             }
         }
     }

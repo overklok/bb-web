@@ -69,6 +69,7 @@ export default class Current {
 
         this._visible   = false;
         this._activated = false;
+        this._burning   = false;
     }
 
     static defineSmokeSymbol(svg, color="black") {
@@ -97,6 +98,15 @@ export default class Current {
      */
     get id() {
         return this._id;
+    }
+
+    /**
+     * Замкнут ли накоротко ток в данный момент
+     *
+     * @returns {boolean}
+     */
+    get is_burning() {
+        return this._burning;
     }
 
     /**
@@ -157,19 +167,6 @@ export default class Current {
         this._activated = false;
     };
 
-    burn() {
-        this.deactivate();
-
-        const dur = this._line.node.getTotalLength() / 2;
-
-        this._animateBurning(dur);
-        // this._animateDestroy(dur) ;
-
-        setTimeout(() => {
-            // this.erase();
-        }, dur);
-    }
-
     /**
      * Проверить, совпадает ли контур у тока
      *
@@ -200,7 +197,7 @@ export default class Current {
      */
     activate() {
         if (!this._visible) throw new Error("Cannot activate invisible current");
-        if (this._activated) throw new Error("The current is activated already");
+        if (this._activated) return;
 
         if (!this._sheet) {
             this.deactivate();
@@ -260,6 +257,18 @@ export default class Current {
         this._activated = false;
     };
 
+    showParticles() {
+        for (const particle of this._particles) {
+            particle.attr('visibility', 'visible');
+        }
+    }
+
+    hideParticles() {
+        for (const particle of this._particles) {
+            particle.attr('visibility', 'hidden');
+        }
+    }
+
     /**
      * Изменить вес тока
      * @param weight
@@ -268,20 +277,26 @@ export default class Current {
         const _weight = this._normalizeWeight(weight);
 
         if (this.thread.weight !== weight) {
-            // задать скорость
-            this._setParticleSpeed(_weight);
+            if (weight > 20) {
+                // "Сжигать" ток от КЗ
+                this._burnEnable();
+            } else {
+                // Отключить "сжигание", возможно, включённое ранее
+                this._burnDisable();
+                // задать скорость
+                this._setParticleSpeed(_weight);
 
-            // изменить цвет в стиле контура
-            this._style = this._getStyle(_weight);
+                // изменить цвет в стиле контура
+                this._style = this._getStyle(_weight);
 
-            // применить стиль к контуру
-            this._line.stroke(this._style);
+                // применить стиль к контуру
+                this._line.stroke(this._style);
 
-            // изменить цвет у всех частиц
-            for (let particle of this._particles) {
-                particle.fill({color: this._style.color, opacity: this._style.opacity});
+                // изменить цвет у всех частиц
+                for (let particle of this._particles) {
+                    particle.fill({color: this._style.color, opacity: this._style.opacity});
+                }
             }
-
         }
 
         this._weight = _weight;
@@ -307,40 +322,42 @@ export default class Current {
         // this._line.attr('filter', 'url(#glow-current)');
     };
 
-    _animateDestroy(dur) {
+    _burnEnable() {
+        if (this._burning) return;
+        this._burning = true;
+
         if (!this._line_path) {throw new Error("Cannot animate current which hasn't been drawn")}
 
+        this.hideParticles();
+
         const len = this._line.node.getTotalLength();
+        const dur = len;
 
-        let animname = `cur-${this._id}-destroy`;
+        let animname = `cur-${this._id}-burn`;
 
-        this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, len));
+        this._rule_idx_burn_kfs =
+            this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, 0));
 
-        this._sheet.insertRule(`.${animname} {
-            stroke-dasharray: ${len};
-            stroke-dashoffset: 0;
-            animation: dash-${this._id} ${dur}ms linear forwards;
+        this._rule_idx_burn =
+            this._sheet.insertRule(`.${animname} {
+            stroke-dasharray: ${len/5};
+            stroke-dashoffset: ${len};
+            animation: dash-${this._id} ${dur}ms linear infinite;
         }`);
 
         this._line.node.classList.add(animname);
     }
 
-    _animateBurning(dur) {
-        if (!this._line_path) {throw new Error("Cannot animate current which hasn't been drawn")}
+    _burnDisable() {
+        if (!this._burning) return;
+        this._burning = false;
 
-        const len = this._line.node.getTotalLength();
+        this._sheet.deleteRule(this._rule_idx_burn_kfs);
+        this._sheet.deleteRule(this._rule_idx_burn);
 
-        let animname = `cur-${this._id}-burn`;
+        this._line.node.classList.remove(`cur-${this._id}-burn`);
 
-        this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, len));
-
-        this._sheet.insertRule(`.${animname} {
-            stroke-dasharray: ${len};
-            stroke-dashoffset: 0;
-            animation: dash-${this._id} ${dur}ms linear forwards infinite;
-        }`);
-
-        this._line.node.classList.add(animname);
+        this.showParticles();
     }
 
     /**

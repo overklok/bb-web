@@ -223,18 +223,6 @@ export default class Breadboard {
         this._layers.current.setCurrents(threads, false, this._options.showSourceCurrents);
     }
 
-    // document.getElementById("version").innerText = app.version;
-    //
-    //     const currents = {
-    //         threads: [
-    //             {from: {x: 1, y: 1}, to: {x: 5, y: 1}, weight: 2e2}
-    //         ]
-    //     };
-    //
-    //     setTimeout(() => {
-    //         app.setData(null, currents);
-    //     }, 1000)
-
     /**
      * Очистить токи
      */
