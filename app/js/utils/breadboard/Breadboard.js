@@ -58,7 +58,8 @@ export default class Breadboard {
         this._callbacks = {
             change: () => {},
             dragstart: () => {},
-            shortcircuit: () => {},
+            shortcircuitstart: () => {},
+            shortcircuitend: () => {},
         };
 
         this._cache = {
@@ -275,8 +276,14 @@ export default class Breadboard {
         this._callbacks.dragstart = cb;
     }
 
-    onShortCircuit(cb) {
-        if (!cb) {this._callbacks.shortcircuit = () => {}}
+    onShortCircuitStart(cb) {
+        if (!cb) {this._callbacks.shortcircuitstart = () => {}}
+
+        this._callbacks.shortcircuit = cb;
+    }
+
+    onShortCircuitEnd(cb) {
+        if (!cb) {this._callbacks.shortcircuitend = () => {}}
 
         this._callbacks.shortcircuit = cb;
     }
@@ -520,8 +527,12 @@ export default class Breadboard {
     }
 
     _attachNotificationEvents() {
-        this._layers.current.onShortCircuit(() => {
-            this._callbacks.shortcircuit();
+        this._layers.current.onShortCircuitStart(() => {
+            this._callbacks.shortcircuitstart();
+        })
+
+        this._layers.current.onShortCircuitEnd(() => {
+            this._callbacks.shortcircuitend();
         })
     }
 

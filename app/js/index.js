@@ -122,7 +122,7 @@ class Application {
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
             'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready', 'gui:reconnect',
-            'bb:change', 'bb:drag-start', 'bb:short-circuit'
+            'bb:change', 'bb:drag-start', 'bb:shortcircuit-start', 'bb:shortcircuit-end'
         ]);
     }
 

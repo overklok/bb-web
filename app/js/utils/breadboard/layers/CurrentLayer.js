@@ -25,6 +25,8 @@ export default class CurrentLayer extends Layer {
             shortcircuit: () => {
                 console.warn("A short circuit has been occurred. It seems this event won't be handled.")
             },
+            shortcircuitstart: () => {},
+            shortcircuitend: () => {},
         }
     }
 
@@ -51,6 +53,18 @@ export default class CurrentLayer extends Layer {
         if (!cb) {this._callbacks.shortcircuit = () => {}}
 
         this._callbacks.shortcircuit = cb;
+    }
+
+    onShortCircuitStart(cb) {
+        if (!cb) {this._callbacks.shortcircuitstart = () => {}}
+
+        this._callbacks.shortcircuitstart = cb;
+    }
+
+    onShortCircuitEnd(cb) {
+        if (!cb) {this._callbacks.shortcircuitend = () => {}}
+
+        this._callbacks.shortcircuitend = cb;
     }
 
     /**
@@ -205,9 +219,18 @@ export default class CurrentLayer extends Layer {
 
             if (this._currents[id].is_burning) {
                 this._callbacks.shortcircuit();
+
+                if (!this._shorted) {
+                    this._callbacks.shortcircuitstart();
+                    this._shorted = true;
+                }
+
                 return;
             }
         }
+
+        this._shorted = false;
+        this._callbacks.shortcircuitend();
     }
 
     /**

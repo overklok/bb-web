@@ -242,7 +242,8 @@ export default class Current {
         // В противном случае, на малую долю секунды будет заметна частица в положении (0,0)
         // до начала анимации
         setTimeout(() => {
-            this._container_anim.opacity(1);
+            // функция _updateBurning включает/выключает видимость котнейнера с частицами
+            this._updateBurning();
             this._activated = true;
         }, 0);
     };
@@ -258,15 +259,11 @@ export default class Current {
     };
 
     showParticles() {
-        for (const particle of this._particles) {
-            particle.attr('visibility', 'visible');
-        }
+        this._container_anim.opacity(1);
     }
 
     hideParticles() {
-        for (const particle of this._particles) {
-            particle.attr('visibility', 'hidden');
-        }
+        this._container_anim.opacity(0);
     }
 
     /**
@@ -277,32 +274,36 @@ export default class Current {
         const _weight = this._normalizeWeight(weight);
 
         if (this.thread.weight !== weight) {
-            if (weight > 20) {
-                // "Сжигать" ток от КЗ
-                this._burnEnable();
-            } else {
-                // Отключить "сжигание", возможно, включённое ранее
-                this._burnDisable();
-                // задать скорость
-                this._setParticleSpeed(_weight);
+            // задать скорость
+            this._setParticleSpeed(_weight);
 
-                // изменить цвет в стиле контура
-                this._style = this._getStyle(_weight);
+            // изменить цвет в стиле контура
+            this._style = this._getStyle(_weight);
 
-                // применить стиль к контуру
-                this._line.stroke(this._style);
+            // применить стиль к контуру
+            this._line.stroke(this._style);
 
-                // изменить цвет у всех частиц
-                for (let particle of this._particles) {
-                    particle.fill({color: this._style.color, opacity: this._style.opacity});
-                }
+            // изменить цвет у всех частиц
+            for (let particle of this._particles) {
+                particle.fill({color: this._style.color, opacity: this._style.opacity});
             }
         }
 
         this._weight = _weight;
         this.thread.weight = weight;
 
+        this._updateBurning();
         this._updateDebugInfo();
+    }
+
+    _updateBurning() {
+        if (this.thread.weight > 20) {
+            // "Сжигать" ток от КЗ
+            this._burnEnable();
+        } else {
+            // Отключить "сжигание", возможно, включённое ранее
+            this._burnDisable();
+        }
     }
 
     _normalizeWeight(weight) {
