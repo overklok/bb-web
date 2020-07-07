@@ -550,7 +550,7 @@ export default class Current {
     _setParticleSpeed(speed) {
         if (!this._sheet) return;
 
-        let delay = 0;
+        let delay;
 
         // новая длительность цикла анимации (ДЦА), мс
         let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
