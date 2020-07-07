@@ -106,7 +106,7 @@ export default class Current {
      * @returns {boolean}
      */
     get is_burning() {
-        return this.thread.weight > 20;
+        return this.thread.weight > 2;
     }
 
     /**
@@ -244,6 +244,13 @@ export default class Current {
         setTimeout(() => {
             // функция _updateBurning включает/выключает видимость контейнера с частицами
             this._updateBurning();
+
+            // функция _updateBurning делает это не всегда, поэтому нужно в случае необходимости отображения частиц
+            // дополнительно убедится в их видимости
+            if (!this.is_burning) {
+                this._container_anim.opacity(1);
+            }
+
             this._activated = true;
         }, 0);
     };
