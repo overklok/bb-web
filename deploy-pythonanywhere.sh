@@ -13,13 +13,13 @@ npm run build
 
 # srv-dev
 cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-dev/frontend/static/frontend/app/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-blockly/admin-blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-board/admin-board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-blockly/admin_blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-board/admin_board.js
 
 # srv-main
 cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-main/frontend/static/frontend/app/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-blockly/js/admin-blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-board/js/admin-board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-board/js/admin_board.js
 
 # srv-alpha1
 #cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha1/frontend/static/frontend/app/js/
