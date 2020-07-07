@@ -24,15 +24,6 @@ export default class CapacitorPlate extends LinearPlate {
     };
 
     /**
-     * Установить состояние конденсатора
-     *
-     * @param {object} state новое состояние конденсатора
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
-
-    /**
      *
      * @param {number} qs размер квадратов
      * @private

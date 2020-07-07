@@ -21,15 +21,6 @@ export default class PhotoresistorPlate extends LinearPlate {
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
 
-    /**
-     * Установить состояние фоторезистора
-     *
-     * @param {object} state новое состояние фоторезистора
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
-
     get input() {
         return Number(this._state.input);
     }

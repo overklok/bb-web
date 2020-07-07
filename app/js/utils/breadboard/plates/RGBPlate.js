@@ -26,15 +26,6 @@ export default class RGBPlate extends Plate {
     };
 
     /**
-     * Установить состояние RGB-диода
-     *
-     * @param {object} state новое состояние RGB-диода
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
-
-    /**
      *
      * @param {number} ls размер светодиода
      * @private

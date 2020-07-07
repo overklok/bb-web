@@ -34,15 +34,6 @@ export default class StripPlate extends Plate {
     };
 
     /**
-     * Установить состояние перемычки
-     *
-     * @param {object} state новое состояние перемычки
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
-
-    /**
      *
      * @param {number} ls размер лампочки / высота указателя
      * @private

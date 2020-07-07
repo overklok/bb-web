@@ -109,7 +109,7 @@ export default class Plate {
         /// Режим перетаскивания
         this._dragging = false;
         /// Отрисована ли была плашка
-        this._drawed = false;
+        this._drawn = false;
         /// Событие начала перетаскивания было инициировано
         this._dragstart_activated = false;
 
@@ -248,7 +248,7 @@ export default class Plate {
         this.rotate(orientation, true);
         this.__draw__(cell, orientation);
 
-        this._drawed = true;
+        this._drawn = true;
 
         this._params.size_px.x = width;
         this._params.size_px.y = height;
@@ -264,6 +264,7 @@ export default class Plate {
      * Установить состояние плашки
      *
      * @param {object} state новое состояние плашки, которое требуется отобразить
+     * @param suppress_events
      */
     setState(state, suppress_events=false) {
         let is_dirty = false;
@@ -274,12 +275,6 @@ export default class Plate {
 
                 is_dirty = true;
             }
-        }
-
-        if (this._state.highlighted === true) {
-            this._bezel.attr('filter', 'url(#glow-plate)');
-        } else {
-            this._bezel.attr('filter', null);
         }
 
         if (!suppress_events) {
@@ -299,17 +294,11 @@ export default class Plate {
      */
     highlightError(on=false) {
         if (on) {
-            // возможно, к плашке применён фильтр
-            this._bezel.attr('filter', null);
             // установить подсветку ошибки
             this._error_highlighter.opacity(0.3);
         } else {
             // снять подсветку ошибки
             this._error_highlighter.opacity(0);
-            // возможно, плашке нужно вернуть фильтр
-            if (this._state.highlighted === true) {
-                this._bezel.attr('filter', 'url(#glow-plate)');
-            }
         }
     }
 
@@ -481,6 +470,8 @@ export default class Plate {
      * Снять выделение контура плашки
      */
     deselect() {
+        console.trace('desel')
+
         if (this._params.schematic) {
             this._bezel.animate('100ms').stroke({opacity: 0, color: "#f0eddb", width: 2});
         } else {
@@ -536,7 +527,7 @@ export default class Plate {
 
         let cursor_point_last = undefined;
 
-        let cell_supposed = undefined;
+        let cell_supposed = this._calcSupposedCell();
 
         /// обработчик перетаскивания плашки
         let onmove = (evt) => {
@@ -959,7 +950,7 @@ export default class Plate {
         iy += dy;
 
         // анимировать, но только не в случае незавершённой отрисовки
-        this.move(this.__grid.cell(ix, iy), false, this._drawed);
+        this.move(this.__grid.cell(ix, iy), false, this._drawn);
     }
 
     /**

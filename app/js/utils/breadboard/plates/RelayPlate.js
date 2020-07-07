@@ -26,15 +26,6 @@ export default class RelayPlate extends LinearPlate {
     };
 
     /**
-     * Установить состояние реле
-     *
-     * @param {object} state новое состояние реле
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
-
-    /**
      * Переместить реле
      *
      * @param {int} dx смещение реле по оси X

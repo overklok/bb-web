@@ -38,15 +38,6 @@ export default class TransistorPlate extends Plate {
     };
 
     /**
-     * Установить состояние перемычки
-     *
-     * @param {object} state новое состояние перемычки
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
-
-    /**
      *
      * @param {number} qs размер квадратов
      * @private

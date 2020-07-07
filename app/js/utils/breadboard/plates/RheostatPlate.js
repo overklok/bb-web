@@ -34,15 +34,6 @@ export default class RheostatPlate extends Plate {
     }
 
     /**
-     * Установить состояние резистора
-     *
-     * @param {object} state новое состояние резистора
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
-
-    /**
      * Переместить резистор
      *
      * @param {int} dx смещение резистора по оси X
