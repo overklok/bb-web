@@ -106,7 +106,7 @@ export default class Current {
      * @returns {boolean}
      */
     get is_burning() {
-        return this._burning;
+        return this.thread.weight > 20;
     }
 
     /**
@@ -242,7 +242,7 @@ export default class Current {
         // В противном случае, на малую долю секунды будет заметна частица в положении (0,0)
         // до начала анимации
         setTimeout(() => {
-            // функция _updateBurning включает/выключает видимость котнейнера с частицами
+            // функция _updateBurning включает/выключает видимость контейнера с частицами
             this._updateBurning();
             this._activated = true;
         }, 0);
@@ -297,7 +297,7 @@ export default class Current {
     }
 
     _updateBurning() {
-        if (this.thread.weight > 20) {
+        if (this.is_burning) {
             // "Сжигать" ток от КЗ
             this._burnEnable();
         } else {

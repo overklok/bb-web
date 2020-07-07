@@ -23,10 +23,9 @@ const ALERTS = {
         title: "Введите команду:",
     },
     no_server: {
-        // title: "Нет связи с устройством",
-        title: "no_socket_server",
+        title: "Нет связи с устройством",
         html:   "Без специальной службы работать с устройством не получится. " +
-                "Пожалуйста, позовите вашего руководителя, чтобы он решил проблему.",
+                "Пожалуйста, позовите вашего учителя, чтобы он решил проблему.",
         image: "terminal.gif"
     },
     another_client: {
@@ -40,6 +39,12 @@ const ALERTS = {
         html: "Скорее всего, Вы открыли приложение где-то ещё. Если Вы пользуетесь " +
         "несколькими браузерами, проверьте, не открыта ли страница в них. Плата может работать только с " +
         "одной из них."
+    },
+    short_circuit: {
+        title: "Короткое замыкание!",
+        icon: "error",
+        position: 'top-end',
+        allow_outside_click: true,
     }
 };
 
@@ -81,26 +86,32 @@ export default class AlertifierWrapper extends Wrapper {
         this._images_path = path;
     }
 
-    alertIndelible(type) {
+    showAlert(type) {
         if (!(type in ALERTS)) {throw new RangeError(`Type '${type}' does not exist`)}
 
         this.closeAll();
 
         let title = ALERTS[type].title;
-        let html = ALERTS[type].html || "";
-
-        let node = this._getContentNode(type, html);
+        let html = this._getContent(type, ALERTS[type].html || "");
 
         this._alerts[type] = Swal.fire({
             title: title,
-            content: node,
+            html: html,
+            position: ALERTS[type].position || "center",
+            icon: ALERTS[type].icon,
             showCancelButton: false,
             showCloseButton: false,
             showConfirmButton: false,
-            closeOnClickOutside: false
+            allowOutsideClick: ALERTS[type].allow_outside_click
         });
 
         this._state.closed = false;
+    }
+
+    hideAlert(type) {
+        if (type in this._alerts) {
+            this._alerts[type].close();
+        }
     }
 
     toast(type) {
@@ -119,31 +130,26 @@ export default class AlertifierWrapper extends Wrapper {
         if (!(type in ALERTS)) {throw new RangeError(`Type '${type}' does not exist`)}
 
         let title = ALERTS[type].title;
-        let html = ALERTS[type].html;
-
-        let node = this._getContentNode(type, html);
+        let html = this._getContent(type, ALERTS[type].html);
 
         if (confirm_only) {
             return Swal.fire({
                 title: title,
-                content: node,
-                buttons: {
-                    cancel: "Работать без устройства",
-                    confirm: "Переподключиться",
-                },
+                html: html,
+                position: ALERTS[type].position,
+                cancelButtonText: "Работать без устройства",
+                confirmButtonText: "Переподключиться",
+                showCancelButton: true,
             });
         }
 
         return Swal.fire({
             title: title,
-            content: {
-                element: "input",
-                attributes: {
-                    placeholder: "#",
-                    value: def_val ? "#" : "",
-                    type: "text",
-                },
-            },
+            input: "text",
+            inputValue: def_val ? "#" : "",
+            inputAttributes: {
+                placeholder: "#",
+            }
         });
     }
 
@@ -155,15 +161,11 @@ export default class AlertifierWrapper extends Wrapper {
         }
     }
 
-    _getContentNode(type, html) {
-        let node = document.createElement("div");
-
+    _getContent(type, html) {
         if (this._images_path && 'image' in ALERTS[type] && ALERTS[type].image) {
             html += `<br><img src='${this._images_path}/${ALERTS[type].image}' style="width: 200px; margin-top: 20px;">`
         }
 
-        node.innerHTML = html;
-
-        return node;
+        return html;
     }
 }

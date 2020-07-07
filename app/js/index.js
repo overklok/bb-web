@@ -703,7 +703,7 @@ class Application {
          */
         this._dispatcher.on('ls:disconnect', () => {
             console.log("IPC DISCONNECTED");
-            this.gui.setBoardStatus('default222');
+            this.gui.setBoardStatus('default');
 
             this.gui.showAlert("no_server");
         });
@@ -774,8 +774,12 @@ class Application {
             this.bb.clearRegions();
         });
 
-        this._dispatcher.on('bb:short-circuit', () => {
-            this.gui.showToast('short_circuit');
+        this._dispatcher.on('bb:shortcircuit-start', () => {
+            this.gui.showAlert('short_circuit');
+        });
+
+        this._dispatcher.on('bb:shortcircuit-end', () => {
+            this.gui.hideAlert('short_circuit');
         });
 
         /**

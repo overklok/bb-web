@@ -21,10 +21,10 @@ export default class CurrentLayer extends Layer {
 
         this._currentgroup = undefined;
 
+        this._shorted = false;
+
         this._callbacks = {
-            shortcircuit: () => {
-                console.warn("A short circuit has been occurred. It seems this event won't be handled.")
-            },
+            shortcircuit: () => {},
             shortcircuitstart: () => {},
             shortcircuitend: () => {},
         }

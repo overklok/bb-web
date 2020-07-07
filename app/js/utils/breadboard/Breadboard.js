@@ -279,13 +279,13 @@ export default class Breadboard {
     onShortCircuitStart(cb) {
         if (!cb) {this._callbacks.shortcircuitstart = () => {}}
 
-        this._callbacks.shortcircuit = cb;
+        this._callbacks.shortcircuitstart = cb;
     }
 
     onShortCircuitEnd(cb) {
         if (!cb) {this._callbacks.shortcircuitend = () => {}}
 
-        this._callbacks.shortcircuit = cb;
+        this._callbacks.shortcircuitend = cb;
     }
 
     switchSchematic(on, detailed) {
