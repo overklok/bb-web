@@ -1,6 +1,6 @@
 import Module from "../core/Module";
 
-import BreadboardWrapper from '../wrappers/BreadboardWrapper';
+import Breadboard from "../utils/breadboard/Breadboard";
 
 /**
  * Модуль для работы с макетной платой
@@ -30,7 +30,7 @@ export default class BreadboardModule extends Module {
             verbose: this._options.verbose,
         };
 
-        this._board = new BreadboardWrapper();
+        this._board = new Breadboard();
 
         this._subscribeToWrapperEvents();
     }
@@ -38,10 +38,6 @@ export default class BreadboardModule extends Module {
     setAdminMode(isAdmin) {
         this._options.modeAdmin = isAdmin;
         this._board.setReadOnly(!isAdmin);
-        //let plates = this.getPlates();
-        // пересоздание
-        //this.setPlates(plates);
-        // this._board.setReadOnly(!isAdmin);
     }
 
     inject(dom_node) {
@@ -53,7 +49,9 @@ export default class BreadboardModule extends Module {
 
             if (dom_node !== undefined) {
                 // this._board.inject(dom_node, false);
-                this._board.inject(dom_node, !this._options.modeAdmin);
+                this._board.inject(dom_node, {
+                    readOnly: !this._options.modeAdmin
+                });
 
                 this._state.display = true;
 
@@ -76,7 +74,7 @@ export default class BreadboardModule extends Module {
     eject() {
         if (!this._state.display) {return true}
 
-        this._board.eject();
+        this._board.dispose();
 
         this._state.display = false;
         // this._state.spare = false;
@@ -85,11 +83,13 @@ export default class BreadboardModule extends Module {
     highlightErrorPlates(plate_ids) {
         if (!this._state.display) {return true}
 
-        this._board.highlightErrorPlates(plate_ids);
+        this._board.highlightPlates(plate_ids);
     }
 
     updatePlates(plates) {
         if (!this._state.display) {return true}
+
+        this._board.clearRegions();
 
         return this._board.setPlates(plates);
     }
@@ -132,7 +132,7 @@ export default class BreadboardModule extends Module {
     clearCurrents() {
         if (!this._state.display) {return true}
 
-        this._board.removeCurrents();
+        this._board.removeAllCurrents();
 
         for (let plate of this._board.getPlates()) {
             this._board.setPlateState(plate.id, {
@@ -142,9 +142,10 @@ export default class BreadboardModule extends Module {
     }
 
     highlightRegion(region, clear) {
-        if (!this._state.display) {return true}
+        if (!this._state.display) return;
+        if (!region) return;
 
-        this._board.highlightRegion(region, clear);
+        this._board.highlightRegion(region.from, region.to, clear);
     }
 
     clearRegions() {

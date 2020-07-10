@@ -258,6 +258,8 @@ export default class PlateLayer extends Layer {
      * @param {Array} plate_ids массив идентификаторов плашек, которые требуется подсветить
      */
     highlightPlates(plate_ids) {
+        if (!plate_ids) return;
+
         for (let plate_id in this._plates) {
             this._plates[plate_id].highlightError(false);
         }

@@ -70,7 +70,7 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.setCurrents(threads);
     }
 
-    removeCurrents() {
+    removeAllCurrents() {
         this._plugin._layers.current.removeAllCurrents();
     }
 

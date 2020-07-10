@@ -470,8 +470,6 @@ export default class Plate {
      * Снять выделение контура плашки
      */
     deselect() {
-        console.trace('desel')
-
         if (this._params.schematic) {
             this._bezel.animate('100ms').stroke({opacity: 0, color: "#f0eddb", width: 2});
         } else {

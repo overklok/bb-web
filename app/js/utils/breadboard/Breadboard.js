@@ -224,6 +224,10 @@ export default class Breadboard {
         this._layers.current.setCurrents(threads, false, this._options.showSourceCurrents);
     }
 
+    removeAllCurrents() {
+        this._layers.current.removeAllCurrents();
+    }
+
     /**
      * Очистить токи
      */
@@ -239,8 +243,8 @@ export default class Breadboard {
      * @param {boolean} clear   очистить предыдущее выделение
      * @param {String}  color   цвет выделения в формате Hex
      */
-    highlightRegion(from, to, clear, color) {
-        this._layers.region.highlightRegion(from, to, clear, color);
+    highlightRegion(from, to, clear) {
+        this._layers.region.highlightRegion(from, to, clear);
     }
 
     /**

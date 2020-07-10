@@ -22,8 +22,7 @@ import Loggable from './Loggable';
  *
  * Например:
  *
- * `BlocklyWrapper.js`,
- * `BreadboardWrapper.js`
+ * `BlocklyWrapper.js`
  */
 export default class Wrapper extends Loggable {
     /**
