@@ -677,19 +677,13 @@ class Application {
         /**
          * Изменён статус платы
          */
-        this._dispatcher.on('ls:board-status', status => {
-            this.gui.setBoardStatus(status);
-        });
+        this._dispatcher.on('ls:board-status', data => {
+            this.gui.setBoardStatus(data.status);
 
-        // this._dispatcher.on('ls:request_calc', step => {
-        //     let plates = this.bb.getPlates();
-        //
-        //     this.gs.calcCurrents(plates, step)
-        //         .then(results => Promise.all([
-        //             this.bb.updateCurrents(results),
-        //             this.ls.sendSpi(results.board_data)
-        //         ]))
-        // });
+            if (data.board_type != null) {
+                this.bb.setBoardType(data.board_type);
+            }
+        });
 
         /**
          * Достигнут тайм-аут соединения с IPC

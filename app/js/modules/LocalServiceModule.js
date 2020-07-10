@@ -49,6 +49,7 @@ export default class LocalServiceModule extends Module {
         this._state = {
             connected: false,
             board_status: undefined,
+            board_version: undefined,
             check_later: false,
             running: false,
             mode: undefined,
@@ -441,12 +442,19 @@ export default class LocalServiceModule extends Module {
 
         this._ipc.on('board-connect', () => {
             this._state.board_status = 'connect';
-            this.emitEvent('board-status', 'connect');
+            this.emitEvent('board-status', {
+                status: this._state.board_status,
+                version: this._state.board_version,
+            });
         });
 
         this._ipc.on('board-disconnect', () => {
             this._state.board_status = 'disconnect';
-            this.emitEvent('board-status', 'disconnect');
+            this._state.board_version = undefined;
+            this.emitEvent('board-status', {
+                status: this._state.board_status,
+                version: this._state.board_version,
+            });
         });
 
         this._ipc.on('client_swap', () => {

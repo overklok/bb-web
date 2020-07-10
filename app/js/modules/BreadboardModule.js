@@ -173,6 +173,12 @@ export default class BreadboardModule extends Module {
         this._board.switchSpareFilters(on);
     }
 
+    setBoardType(board_type) {
+        if (board_type == null) return;
+
+        // this._board.setBoardType(board_type);
+    }
+
     switchSchematic(on, detailed=false) {
         if (!this._state.display) {
             this._state.schematic = on;
