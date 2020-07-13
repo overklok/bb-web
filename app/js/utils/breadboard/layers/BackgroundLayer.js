@@ -34,9 +34,15 @@ export default class BackgroundLayer extends Layer {
         this._logo_flower   = undefined;
         this._logo_text     = undefined;
 
+        this._domain_config = undefined;
+
         this._is_logo_clicked = false;
 
         this._initGroups();
+    }
+
+    setDomainConfig(domain_config) {
+        this._domain_config = domain_config;
     }
 
     compose() {
@@ -232,23 +238,51 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawDomains() {
-        for (let col of this.__grid.cells) {
-            this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
-            this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
+        if (!this._domain_config) return;
+
+        for (const domain of this._domain_config) {
+            const   d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
+                    d_to    = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
+
+
+            if (domain.horz) {
+                for (let row = d_from.y; row <= d_to.y; row++) {
+                    this._drawDomain(
+                        this._domaingroup,
+                        this.__grid.cell(d_from.x, row),
+                        this.__grid.cell(d_to.x, row),
+                        this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ
+                    );
+                }
+            } else {
+                for (let col = d_from.x; col <= d_to.x; col++) {
+                    this._drawDomain(
+                        this._domaingroup,
+                        this.__grid.cell(col, d_from.y),
+                        this.__grid.cell(col, d_to.y),
+                        this.__schematic ? '#777' : GRADIENTS.GOLD.VERT
+                    );
+                }
+            }
         }
 
-        this._drawDomain(
-            this._domaingroup,
-            this.__grid.cell(0,1),
-            this.__grid.cell(9,1),
-            this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
-        );
-        this._drawDomain(
-            this._domaingroup,
-            this.__grid.cell(0,-1, Grid.BorderTypes.Wrap),
-            this.__grid.cell(9,-1, Grid.BorderTypes.Wrap),
-            this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
-        );
+        // for (let col of this.__grid.cells) {
+        //     this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
+        //     this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
+        // }
+        //
+        // this._drawDomain(
+        //     this._domaingroup,
+        //     this.__grid.cell(0,1),
+        //     this.__grid.cell(9,1),
+        //     this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
+        // );
+        // this._drawDomain(
+        //     this._domaingroup,
+        //     this.__grid.cell(0,-1, Grid.BorderTypes.Wrap),
+        //     this.__grid.cell(9,-1, Grid.BorderTypes.Wrap),
+        //     this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
+        // );
     }
 
     /**
