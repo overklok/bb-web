@@ -53,8 +53,25 @@ const LAYOUTS = {
         GRID_ROWS:      16,   // Количество рядов в сетке точек
         GRID_COLS:      8,   // Количество колонок в сетке точек
 
-        GRID_POS_X:     180,
-        GRID_POS_Y:     170,
+        GRID_POS_X:     280,
+        GRID_POS_Y:     140,
+
+        DOMAINS: [
+            {horz: true,  dots: false, from: {x: 0, y: 0},   to: {x: 3,  y: 0}},
+            {horz: true,  dots: true,  from: {x: 3, y: 0},   to: {x: -1, y: 0}},
+
+            {horz: false, dots: false, from: {x: 0, y: 1},   to: {x: -2, y: 5}},
+            {horz: false, dots: false, from: {x: 0, y: 6},   to: {x: -2, y: 9}},
+            {horz: false, dots: false, from: {x: 0, y: 10},  to: {x: -2, y: 14}},
+
+            {horz: true,  dots: false, from: {x: 0, y: 15},  to: {x: 3,  y: 15}},
+            {horz: true,  dots: true,  from: {x: 3, y: 15},  to: {x: -1, y: 15}},
+
+            {horz: false, dots: false, from: {x: -1, y: 1},  to: {x: -1, y: 3}},
+            {horz: false, dots: false, from: {x: -1, y: 6},  to: {x: -1, y: 7}},
+            {horz: false, dots: false, from: {x: -1, y: 8},  to: {x: -1, y: 9}},
+            {horz: false, dots: false, from: {x: -1, y: 12}, to: {x: -1, y: 14}},
+        ]
     }
 }
 

@@ -251,7 +251,8 @@ export default class BackgroundLayer extends Layer {
                         this._domaingroup,
                         this.__grid.cell(d_from.x, row),
                         this.__grid.cell(d_to.x, row),
-                        this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ
+                        this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ,
+                        domain.dots
                     );
                 }
             } else {
@@ -260,7 +261,8 @@ export default class BackgroundLayer extends Layer {
                         this._domaingroup,
                         this.__grid.cell(col, d_from.y),
                         this.__grid.cell(col, d_to.y),
-                        this.__schematic ? '#777' : GRADIENTS.GOLD.VERT
+                        this.__schematic ? '#777' : GRADIENTS.GOLD.VERT,
+                        domain.dots
                     );
                 }
             }
@@ -293,7 +295,7 @@ export default class BackgroundLayer extends Layer {
      * @param {SVG.Gradient}    color
      * @private
      */
-    _drawDomain(container, cell_from, cell_to, color="#D4AF37") {
+    _drawDomain(container, cell_from, cell_to, color="#D4AF37", dotted=false) {
         let width = Math.abs(cell_from.pos.x - cell_to.pos.x);
         let height = Math.abs(cell_from.pos.y - cell_to.pos.y);
 
@@ -306,7 +308,7 @@ export default class BackgroundLayer extends Layer {
             width   = width >= height ? Math.max(width, height) : 0;
             height  = width <  height ? Math.max(width, height) : 0;
 
-            this._drawDomainLine(container, cell_from, cell_to, width, height, color);
+            this._drawDomainLine(container, cell_from, cell_to, width, height, color, dotted);
         } else {
             this._drawDomainRect(container, cell_from, cell_to, width, height, color);
         }
@@ -364,7 +366,7 @@ export default class BackgroundLayer extends Layer {
             .move(cell.pos.x, cell.pos.y);
     }
 
-    _drawDomainLine(container, cell_from, cell_to, len_x, len_y, color) {
+    _drawDomainLine(container, cell_from, cell_to, len_x, len_y, color, dotted) {
         let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
             is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
 
@@ -382,7 +384,7 @@ export default class BackgroundLayer extends Layer {
         }
 
         container.line(0, 0, len_x, len_y)
-            .stroke({color, width: 6, linecap: 'round'})
+            .stroke({color, width: 6, linecap: 'round', dasharray: dotted ? 16 : null})
             .move(cell_from.center.x + bias_x, cell_from.center.y + bias_y)
             .opacity(0.5);
     }
