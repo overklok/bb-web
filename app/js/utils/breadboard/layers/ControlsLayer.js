@@ -252,6 +252,7 @@ export default class ControlsLayer extends Layer {
             this.toggleLogoActive(!this._is_logo_clicked);
 
             this._callbacks.logoclick();
+            this.switchVisibility();
         });
     }
 

@@ -610,11 +610,6 @@ export default class Breadboard {
             }
         });
 
-        /// нажатие на логотип платы
-        this._layers.controls.onLogoClick(() => {
-            this._layers.controls.switchVisibility();
-        });
-
         /// начало перетаскивания плашки
         this._layers.plate.onDragStart(() => {
             this._callbacks.dragstart();
