@@ -13,6 +13,7 @@ const LOGO_COLOR_DEFAULT    = "#000000";
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
 
+    /** отклонение линий доменов в схематическом режиме */
     static get DomainSchematicBias() {return 20}
 
     constructor(container, grid, schematic=false, detailed=false) {
@@ -54,7 +55,7 @@ export default class BackgroundLayer extends Layer {
             .move(4, 4);
 
         this._drawLogo();
-        this._drawDeco();
+        this._drawAuxPoints();
         this._drawDomains();
         this._drawCells();
     }
@@ -158,75 +159,8 @@ export default class BackgroundLayer extends Layer {
         this._is_logo_clicked = on;
     }
 
-    _drawDeco() {
-        try {
-            // Voltage source line reference points
-            let cell1 = this.__grid.cell(0, 1, Grid.BorderTypes.Wrap);
-            let cell2 = this.__grid.cell(0, 5, Grid.BorderTypes.Wrap);
-            let cell3 = this.__grid.cell(0, 6, Grid.BorderTypes.Wrap);
-            let cell4 = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
-
-            // Line takeaway/rise
-            let rise = 40;
-
-            let gap_begin_y = cell2.center.y + this.__grid.gap.y * 5/3,
-                gap_end_y   = cell3.center.y - this.__grid.gap.y * 5/3;
-
-            // Top/bottom bias (detailed schematic view only)
-            let bias = 0;
-
-            if (this.__schematic && this.__detailed) {
-                bias = BackgroundLayer.DomainSchematicBias;
-            }
-
-            // Voltage source line, actually
-            this._decogroup.path([
-                ['M', cell1.pos.x, cell1.center.y - bias],
-                ['l', -rise, 0],
-                ['L', cell2.pos.x-rise, gap_begin_y],
-                ['M', cell3.pos.x-rise, gap_end_y],
-                ['L', cell4.pos.x-rise, cell4.center.y + bias],
-                ['l', rise, 0],
-            ])
-                .fill({opacity: 0})
-                .stroke({color: "#000", width: 2, opacity: 1});
-
-            this._decogroup.path([
-                ['M', cell1.pos.x - rise * 2, gap_begin_y],
-                ['l', rise * 2, 0],
-            ])
-                .stroke({color: "#f00", width: 6, opacity: 1, linecap: 'round'});
-            ;
-
-            this._decogroup.path([
-                ['M', cell3.pos.x - rise * 1.5, gap_end_y],
-                ['l', rise, 0]
-            ])
-                .fill({opacity: 0})
-                .stroke({color: "#00f", width: 6, opacity: 1, linecap: 'round'});
-
-            let cap_size = 42;
-
-            let cap_pos_x = cell2.pos.x - rise * 2 + cap_size / 4;
-
-            // Pole caption 1
-            this._decogroup
-                .text("+")
-                .fill({color: "#f00"})
-                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
-                .center(cap_pos_x, gap_begin_y - cap_size / 1.5);
-
-            // Pole caption 2
-            this._decogroup
-                .text("-")
-                .fill({color: "#00f"})
-                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
-                .center(cap_pos_x, gap_begin_y + cap_size);
-
-
-        } catch (re) {
-            console.error("Invalid reference cells has been selected to draw voltage source line");
-        }
+    _drawAuxPoints() {
+        this._drawAuxPointSource();
     }
 
     _drawCells() {
@@ -429,5 +363,78 @@ export default class BackgroundLayer extends Layer {
             .stroke({color})
             .move(cell_from.pos.x, cell_from.pos.y)
             .radius(10);
+    }
+
+    _drawAuxPointSource() {
+        const   vcc = this.__grid.auxPoint(Grid.AuxPoints.Vcc),
+                gnd = this.__grid.auxPoint(Grid.AuxPoints.Gnd);
+
+        if (!vcc && !gnd) return;
+
+        try {
+            // Voltage source line reference points
+            let cell_top = this.__grid.cell(0, 1, Grid.BorderTypes.Wrap);
+            let cell_bottom = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
+
+            // Line takeaway/rise
+            let rise = 40;
+
+            // Point positions corrected to prevent current overlay
+            const vcc_pos = {x: p_vcc.pos.x, y: p_vcc.pos.y + 8},
+                  gnd_pos = {x: p_gnd.pos.x, y: p_gnd.pos.y - 8};
+
+            // Top/bottom bias (detailed schematic view only)
+            let bias = 0;
+
+            if (this.__schematic && this.__detailed) {
+                bias = BackgroundLayer.DomainSchematicBias;
+            }
+
+            // Voltage source line, actually
+            this._decogroup.path([
+                ['M', vcc_pos.x, vcc_pos.y],
+                ['L', vcc_pos.x, cell_top.center.y - bias],
+                ['l', rise, 0]
+            ])
+                .fill({opacity: 0})
+                .stroke({color: "#000", width: 2, opacity: 1});
+
+            this._decogroup.path([
+                ['M', gnd_pos.x, gnd_pos.y],
+                ['L', gnd_pos.x, cell_bottom.center.y + bias],
+                ['l', rise, 0],
+            ])
+                .fill({opacity: 0})
+                .stroke({color: "#000", width: 2, opacity: 1});
+
+            this._decogroup.line(0, 0, rise * 2.5, 0)
+                .center(vcc_pos.x, vcc_pos.y)
+                .stroke({color: "#f00", width: 6, opacity: 1, linecap: 'round'});
+
+            this._decogroup.line(0, 0, rise * 1.5, 0)
+                .center(gnd_pos.x, gnd_pos.y)
+                .stroke({color: "#00f", width: 6, opacity: 1, linecap: 'round'});
+
+            const   cap_size = 42,
+                    cap_pos_x = vcc_pos.x - rise * 1.25;
+
+            // Pole caption 1
+            this._decogroup
+                .text("+")
+                .fill({color: "#f00"})
+                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
+                .center(cap_pos_x, vcc_pos.y - cap_size / 2);
+
+            // Pole caption 2
+            this._decogroup
+                .text("-")
+                .fill({color: "#00f"})
+                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
+                .center(cap_pos_x, gnd_pos.y + cap_size / 2);
+
+
+        } catch (re) {
+            console.error("Invalid reference cells has been selected to draw voltage source line");
+        }
     }
 }

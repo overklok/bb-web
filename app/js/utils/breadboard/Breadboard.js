@@ -37,6 +37,11 @@ const LAYOUTS = {
             {horz: false,   from: {x: 0, y: 2},     to: {x: -1, y: 5}},
             {horz: false,   from: {x: 0, y: 6},     to: {x: -1, y: 9}},
             {horz: true,    from: {x: 0, y: -1},    to: {x: -1, y: -1}},
+        ],
+
+        POINTS: [
+            Grid.AuxPoints.Vcc,
+            Grid.AuxPoints.Gnd,
         ]
     },
 
@@ -53,7 +58,7 @@ const LAYOUTS = {
         GRID_ROWS:      16,   // Количество рядов в сетке точек
         GRID_COLS:      8,   // Количество колонок в сетке точек
 
-        GRID_POS_X:     280,
+        GRID_POS_X:     220,
         GRID_POS_Y:     140,
 
         DOMAINS: [
@@ -169,7 +174,8 @@ export default class Breadboard {
             this._options.layout.GRID_ROWS,  this._options.layout.GRID_COLS,
             this._options.layout.GRID_WIDTH, this._options.layout.GRID_HEIGHT,
             this._options.layout.GRID_POS_X, this._options.layout.GRID_POS_Y,
-            this._options.layout.GRID_GAP_X, this._options.layout.GRID_GAP_Y
+            this._options.layout.GRID_GAP_X, this._options.layout.GRID_GAP_Y,
+            this._options.layout.POINTS
         );
 
         /// создать фильтры

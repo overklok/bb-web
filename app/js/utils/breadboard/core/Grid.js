@@ -8,13 +8,24 @@ const BORDER_TYPES = {
     Wrap: 'wrap',
 };
 
+const AUX_POINTS = {
+    Vcc: 'vcc',
+    Gnd: 'gnd',
+};
+
+const AUX_POINT_TYPES = {
+    Source: 'source',
+};
+
 /**
  * Класс "Сетка"
  */
 export default class Grid {
     static get BorderTypes() {return BORDER_TYPES}
+    static get AuxPoints() {return AUX_POINTS}
+    static get AuxPointTypes() {return AUX_POINT_TYPES}
 
-    constructor(rows, cols, width, height, pos_x=0, pos_y=0, gap_x=0, gap_y=0) {
+    constructor(rows, cols, width, height, pos_x=0, pos_y=0, gap_x=0, gap_y=0, aux_points_names=null) {
         if (rows == null || cols == null || width == null || height == null) {
             throw new TypeError("All required arguments should be defined");
         }
@@ -44,9 +55,13 @@ export default class Grid {
             }
         };
 
+        this._aux_points_names = aux_points_names || [];
+
         /// Ячейки сетки
         this._cells = [];
+        this._aux_points = {};
         this._createCells();
+        this._initAuxPoints();
     }
 
     get dim() {
@@ -126,6 +141,18 @@ export default class Grid {
         return this._cells[i][j];
     }
 
+    auxPoint(i, j=null) {
+        try {
+            if (typeof i === 'string') {
+                return this._aux_points[i];
+            }
+
+            return this._aux_points[i][j];
+        } catch (TypeError) {
+            return undefined;
+        }
+    }
+
     /**
      * Расположить ячейки сетки
      *
@@ -158,6 +185,42 @@ export default class Grid {
 
         if (j >= 2 && j <= 5) {return "vt" + i;}
         if (j >= 6 && j <= 9) {return "vb" + i;}
+    }
+
+    _initAuxPoints() {
+        const celldist_y = this.cell(0, 1).pos.y - this.cell(0, 0).pos.y;
+
+        const source_center = {
+            x: 80,
+            y: this.cell(0, 5).center.y + celldist_y / 2
+        };
+
+        this._aux_points[Grid.AuxPoints.Vcc] = {
+            idx: {x: -1, y: 1},
+            pos: {x: source_center.x, y: source_center.y - 20},
+            type: Grid.AuxPointTypes.Source,
+            name: Grid.AuxPoints.Vcc
+        }
+
+        this._aux_points[Grid.AuxPoints.Gnd] = {
+            idx: {x: -1, y: this.dim.y - 1},
+            pos: {x: source_center.x, y: source_center.y + 20},
+            type: Grid.AuxPointTypes.Source,
+            name: Grid.AuxPoints.Gnd
+        }
+
+        for (const point of Object.values(this._aux_points)) {
+            if (this._aux_points_names.indexOf(point.name) === -1) {
+                delete this._aux_points[point.name];
+                continue;
+            }
+
+            if (!(point.idx.x in this._aux_points)) {
+                this._aux_points[point.idx.x] = [];
+            }
+
+            this._aux_points[point.idx.x][point.idx.y] = point;
+        }
     }
 
     /**

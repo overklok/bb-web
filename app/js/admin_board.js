@@ -44,6 +44,7 @@ class AdminBoardApplication {
         this._container_id = config.containerId || "";
         this._mode_admin = config.modeAdmin;
         this._passive = config.passive || false;
+        this._board_advanced = config.boardAdvanced || false;
     }
 
     /**
@@ -103,8 +104,8 @@ class AdminBoardApplication {
         /// Модули
 
         /** @type {BreadboardModule} модуль отображения макетной платы */
-        this.bb = new BreadboardModule({modeAdmin: this._mode_admin}); // Breadboard
-        this.ls = new LocalServiceModule({modeDummy:this._passive}); // Local ServiceProvider
+        this.bb = new BreadboardModule({modeAdmin: this._mode_admin, layoutAdvanced: this._board_advanced}); // Breadboard
+        this.ls = new LocalServiceModule({modeDummy: this._passive}); // Local ServiceProvider
 
         this.ls.launch();
     }

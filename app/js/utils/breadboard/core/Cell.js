@@ -109,7 +109,7 @@ export default class Cell {
     }
 
     isAt(x=null, y=null) {
-        if (x === null && y === null) throw new TypeError("One of (x, y) must be no null");
+        if (x === null && y === null) throw new TypeError("One of (x, y) must be not null");
 
         if (x === -1) x = this.__grid.dim.x - 1;
         if (y === -1) y = this.__grid.dim.y - 1;
