@@ -33,6 +33,8 @@ export default class LabelLayer extends Layer {
         this._domain_config = undefined;
 
         this._pinval_labels = [];
+
+        this._initGroups();
     }
 
     setDomainConfig(domain_config) {
@@ -40,9 +42,24 @@ export default class LabelLayer extends Layer {
     }
 
     compose() {
-        this._domaingroup = this._container.group();
-
         this._drawLabels();
+    }
+
+    recompose(schematic, detailed) {
+        super.recompose(schematic, detailed);
+
+        this._initGroups();
+        this.compose();
+    }
+
+    _initGroups() {
+        this._clearGroups();
+
+        this._domaingroup = this._container.group();
+    }
+
+    _clearGroups() {
+        if (this._domaingroup)  this._domaingroup.remove();
     }
 
     setPinsValues(values) {
@@ -85,6 +102,9 @@ export default class LabelLayer extends Layer {
     _drawLabels() {
         if (!this._domain_config) return;
 
+        const font_size = (this.__schematic && this.__detailed) ? 30 : 20,
+              text_bias = (this.__schematic && this.__detailed) ? 10 : 6;
+
         for (const domain of this._domain_config) {
             const d_from = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
                   d_to   = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
@@ -108,7 +128,7 @@ export default class LabelLayer extends Layer {
                         text = `A${pin_num}`;
                     }
 
-                    this._drawLabelText(cell.center.x, cell.pos.y - 8, text);
+                    this._drawLabelText(cell.center.x, cell.pos.y - text_bias, text, font_size);
 
                     pin_num += pin_dir;
                 }

@@ -78,14 +78,11 @@ const LAYOUTS = {
         DOMAINS: [
             // Верхняя линия
             {
-                horz: true,
-                from: {x: 0, y: 0}, to: {x: 3, y: 0},
-                role: LabelLayer.CellRoles.Plus,
-                inv: true
+                horz: true, from: {x: 0, y: 0}, to: {x: 3, y: 0},
+                role: LabelLayer.CellRoles.Plus, inv: true
             },
             {
-                horz: true,
-                from: {x: 4, y: 0}, to: {x: -1, y: 0},
+                horz: true, from: {x: 4, y: 0}, to: {x: -1, y: 0},
                 role: LabelLayer.CellRoles.Analog,
                 style: BackgroundLayer.DomainSchematicStyles.Dotted,
                 inv: true, cont: true, pins_from: 0
@@ -274,6 +271,7 @@ export default class Breadboard {
         this._layers.plate.recompose(schematic, verbose);
         this._layers.current.recompose(schematic, detailed);
         this._layers.controls.recompose(schematic);
+        this._layers.label.recompose(schematic, detailed);
     }
 
     /**
