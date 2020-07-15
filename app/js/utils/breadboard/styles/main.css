@@ -7,7 +7,7 @@
     font-weight: bold;
     font-size: 20px;
 
-    width: 85px;
+    width: 30%;
     height: 42px;
     border-radius: 5px;
     border-color: #c9c9c9;
@@ -15,12 +15,17 @@
     border-width: 1px;
 }
 
+.bb-plate-btn-add {
+    width: 65%;
+    font-size: 22px;
+}
+
 .bb-plate-add-selector {
     font-family: "Lucida Console", Monaco, monospace;
     font-weight: bold;
     font-size: 26px;
 
-    width: 200px;
+    width: 100%;
     margin-bottom: 4px !important;
     height: 44px;
     text-align: center;
@@ -36,7 +41,6 @@
     border-color: #c9c9c9;
     border-style: solid;
     border-width: 1px;
-    padding: 0px 10px;
     color: black;
     text-decoration: none;
     cursor: pointer;
@@ -46,13 +50,8 @@
     text-align: center;
 }
 
-.bb-plate-btn-add {
-    width: 88px;
-    font-size: 18px;
-}
-
 .bb-plate-btn-clear, .bb-plate-btn-fullscreen {
-    width: 180px;
+    width: 100%;
     font-size: 22px;
 }
 

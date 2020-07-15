@@ -275,10 +275,10 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawAuxPointSource() {
-        const   vcc = this.__grid.auxPoint(Grid.AuxPoints.Vcc),
-                gnd = this.__grid.auxPoint(Grid.AuxPoints.Gnd);
+        const   p_vcc = this.__grid.auxPoint(Grid.AuxPoints.Vcc),
+                p_gnd = this.__grid.auxPoint(Grid.AuxPoints.Gnd);
 
-        if (!vcc && !gnd) return;
+        if (!p_vcc || !p_gnd) return;
 
         try {
             // Voltage source line reference points

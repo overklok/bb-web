@@ -51,8 +51,8 @@ const LAYOUTS = {
         WRAP_WIDTH:     850,  // Ширина рабочей области
         WRAP_HEIGHT:    1300, // Высота рабочей области
 
-        GRID_WIDTH:     520,
-        GRID_HEIGHT:    1120,
+        GRID_WIDTH:     580,
+        GRID_HEIGHT:    1180,
 
         GRID_GAP_X:     10,
         GRID_GAP_Y:     10,
@@ -60,8 +60,8 @@ const LAYOUTS = {
         GRID_ROWS:      16,   // Количество рядов в сетке точек
         GRID_COLS:      8,   // Количество колонок в сетке точек
 
-        GRID_POS_X:     220,
-        GRID_POS_Y:     140,
+        GRID_POS_X:     190,
+        GRID_POS_Y:     105,
 
         DOMAINS: [
             {horz: true,  dots: false, from: {x: 0, y: 0},   to: {x: 3,  y: 0}},

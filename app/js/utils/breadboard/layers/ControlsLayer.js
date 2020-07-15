@@ -49,10 +49,15 @@ export default class ControlsLayer extends Layer {
         config = config || {};
 
         this._params = {
-            x1: config.horz ? 150 : 10,
+            x1: config.horz ? 130 : 10,
+            y1: config.horz ? 0 : 40,
+            w1: config.horz ? 240 : 185,
+            h1: config.horz ? 120 : 120,
+
             x2: config.horz ? 850 : 10,
-            y1: config.horz ? 0 : 0,
-            y2: config.horz ? 0 : this.__grid.size.y,
+            y2: config.horz ? 0 : this.__grid.size.y - 40,
+            w2: config.horz ? 210 : 185,
+            h2: config.horz ? 120 : 120,
 
             logo_horz: !!config.horz,
         };
@@ -204,7 +209,7 @@ export default class ControlsLayer extends Layer {
     }
 
     _drawLogo() {
-        this._logogroup     = this._container.group().id("logogroup");
+        this._logogroup = this._container.group().id("logogroup");
 
         let image = this._logogroup
             .nested();
@@ -233,7 +238,13 @@ export default class ControlsLayer extends Layer {
         this._logo_text = text;
         this._logo_flower = flower;
 
-        this._logogroup.cx(100 + this.__grid.size.x / 2);
+        if (this._params.logo_horz) {
+            this._logogroup.cx(100 + this.__grid.size.x / 2);
+        } else {
+            this._logogroup.cy(100 + this.__grid.size.y / 2)
+                .x(-140)
+                .rotate(-90)
+        }
 
         this._logogroup.style({cursor: 'pointer'});
 
@@ -259,7 +270,7 @@ export default class ControlsLayer extends Layer {
     }
 
     _drawMenuPrimary(plate_types, plate_captions) {
-        this._addgroup = this._getEmbeddedHtmlGroup(205, 120, this._params.x1, this._params.y1);
+        this._addgroup = this._getEmbeddedHtmlGroup(this._params.w1, this._params.h1, this._params.x1, this._params.y1);
 
         let wrap = document.createElement("div");
         let input = document.createElement("input");
@@ -299,7 +310,7 @@ export default class ControlsLayer extends Layer {
     }
 
     _drawMenuSecondary() {
-        this._cleargroup = this._getEmbeddedHtmlGroup(205, 120, this._params.x2, this._params.y2);
+        this._cleargroup = this._getEmbeddedHtmlGroup(this._params.w2, this._params.h2, this._params.x2, this._params.y2);
 
         let wrap = document.createElement("div");
         let btn_clear = document.createElement("a");
