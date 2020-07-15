@@ -30,6 +30,7 @@ const GRID_POS_Y = 200;
 
 import thm from "./styles/main.css";
 import {initGradients} from "./styles/gradients";
+import SelectorLayer from "./layers/SelectorLayer";
 
 /**
  * Основной класс платы.
@@ -53,6 +54,7 @@ export default class Breadboard {
             current:    undefined,
             region:     undefined,
             controls:   undefined,
+            selector:   undefined,
         };
 
         this._callbacks = {
@@ -395,6 +397,7 @@ export default class Breadboard {
         let region      = this._brush.nested(); // области выделения
         let plate       = this._brush.nested(); // плашки
         let controls    = this._brush.nested(); // органы управления
+        let selector    = this._brush.nested(); // органы управления
 
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid, this._schematic, this._detailed);
@@ -403,6 +406,7 @@ export default class Breadboard {
         this._layers.plate      = new PlateLayer(plate, this.__grid, this._schematic, this._verbose);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
+        this._layers.selector   = new SelectorLayer(selector, this.__grid);
 
         /// внутренняя компоновка каждого слоя
         this._layers.background.compose();
@@ -411,6 +415,7 @@ export default class Breadboard {
         this._layers.plate.compose();
         this._layers.region.compose();
         this._layers.controls.compose(Breadboard.getAllPlateTypes(), Breadboard.getAllPlateCaptions());
+        this._layers.selector.compose();
 
         /// включение / отключение режима только чтения
         this._setLayersReadOnly(this._options.readOnly);

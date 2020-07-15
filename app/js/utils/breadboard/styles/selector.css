@@ -1,0 +1,91 @@
+.bb-sel-root {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+}
+
+.bb-sel-list {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: 1fr;
+    /*grid-gap: 5px;*/
+}
+
+.bb-sel-item {
+    position: relative;
+    overflow: hidden;
+
+    height: 0;
+    padding-bottom: 100%;
+}
+
+.bb-sel-cell {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    border: red solid 1px;
+    box-sizing: border-box;
+}
+
+.bb-sel-slider {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 80%;
+    max-height: 80%;
+
+    /* TEMP */
+    background: indianred;
+    width: 40%;
+    height: 40%;
+}
+
+.bb-sel-slide {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10%;
+    cursor: pointer;
+
+    font-size: 40px;
+    font-weight: bolder;
+    color: indianred;
+}
+
+.bb-sel-slide.bb-sel-slide-left {left: 0; text-align: left;}
+.bb-sel-slide.bb-sel-slide-right {right: 0; text-align: right;}
+
+.bb-sel-pedestal {
+    position: absolute;
+    height: 10%;
+    bottom: 0;
+
+    text-align: center;
+
+    width: 100%;
+    margin: 0 auto;
+}
+
+ul.bb-sel-bulletlist {
+    padding-left: 0;
+    margin-left: -5px;
+    list-style: none;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+ul.bb-sel-bulletlist li {
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    background: #ccc;
+    border-radius: 50%;
+    margin-left: 3px;
+    margin-right: 3px;
+    cursor: pointer;
+}
