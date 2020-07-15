@@ -51,12 +51,12 @@ export default class ControlsLayer extends Layer {
         this._params = {
             x1: config.horz ? 130 : 10,
             y1: config.horz ? 0 : 40,
-            w1: config.horz ? 240 : 185,
+            w1: config.horz ? 240 : 180,
             h1: config.horz ? 120 : 120,
 
             x2: config.horz ? 850 : 10,
             y2: config.horz ? 0 : this.__grid.size.y - 40,
-            w2: config.horz ? 210 : 185,
+            w2: config.horz ? 210 : 180,
             h2: config.horz ? 120 : 120,
 
             logo_horz: !!config.horz,

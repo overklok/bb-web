@@ -6,11 +6,19 @@ import PlateContextMenu from "../menus/PlateContextMenu";
 
 import {GRADIENTS} from "../styles/gradients";
 
+const DOMAIN_SCHEMATIC_STYLES = {
+    Default: 'default',
+    Dotted: 'dotted',
+    None: 'none'
+}
+
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
 
     /** отклонение линий доменов в схематическом режиме */
     static get DomainSchematicBias() {return 20}
+
+    static get DomainSchematicStyles() {return DOMAIN_SCHEMATIC_STYLES}
 
     constructor(container, grid, schematic=false, detailed=false) {
         super(container, grid, schematic, detailed);
@@ -87,6 +95,7 @@ export default class BackgroundLayer extends Layer {
             const   d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
                     d_to    = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
 
+            if (domain.style === BackgroundLayer.DomainSchematicStyles.None) continue;
 
             if (domain.horz) {
                 for (let row = d_from.y; row <= d_to.y; row++) {
@@ -94,8 +103,10 @@ export default class BackgroundLayer extends Layer {
                         this._domaingroup,
                         this.__grid.cell(d_from.x, row),
                         this.__grid.cell(d_to.x, row),
+                        !!domain.inv,
+                        !!domain.cont,
                         this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ,
-                        domain.dots
+                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted
                     );
                 }
             } else {
@@ -104,8 +115,10 @@ export default class BackgroundLayer extends Layer {
                         this._domaingroup,
                         this.__grid.cell(col, d_from.y),
                         this.__grid.cell(col, d_to.y),
+                        !!domain.inv,
+                        !!domain.cont,
                         this.__schematic ? '#777' : GRADIENTS.GOLD.VERT,
-                        domain.dots
+                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted
                     );
                 }
             }
@@ -135,25 +148,22 @@ export default class BackgroundLayer extends Layer {
      * @param {SVG.Container}   container
      * @param {Cell}            cell_from
      * @param {Cell}            cell_to
+     * @param {boolean}         inversed
+     * @param {boolean}         cont        whether to continue (previous) domain, in order to switch style
      * @param {SVG.Gradient}    color
+     * @param dotted
      * @private
      */
-    _drawDomain(container, cell_from, cell_to, color="#D4AF37", dotted=false) {
-        let width = Math.abs(cell_from.pos.x - cell_to.pos.x);
-        let height = Math.abs(cell_from.pos.y - cell_to.pos.y);
-
+    _drawDomain(container, cell_from, cell_to, inversed=false, cont=false, color="#D4AF37", dotted=false) {
         if (this.__schematic && typeof color !== 'string') {
             console.error('String color is not supported in schematic mode');
             return;
         }
 
         if (this.__schematic) {
-            width   = width >= height ? Math.max(width, height) : 0;
-            height  = width <  height ? Math.max(width, height) : 0;
-
-            this._drawDomainLine(container, cell_from, cell_to, width, height, color, dotted);
+            this._drawDomainLine(container, cell_from, cell_to, inversed, cont, color, dotted);
         } else {
-            this._drawDomainRect(container, cell_from, cell_to, width, height, color);
+            this._drawDomainRect(container, cell_from, cell_to, color);
         }
     }
 
@@ -209,26 +219,43 @@ export default class BackgroundLayer extends Layer {
             .move(cell.pos.x, cell.pos.y);
     }
 
-    _drawDomainLine(container, cell_from, cell_to, len_x, len_y, color, dotted) {
-        let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
-            is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
+    _drawDomainLine(container, cell_from, cell_to, inversed, cont, color, dotted) {
+        let len_x = Math.abs(cell_from.pos.x - cell_to.pos.x),
+            len_y = Math.abs(cell_from.pos.y - cell_to.pos.y);
+
+        const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
+              is_vertical = Cell.IsLineVertical(cell_from, cell_to);
 
         let bias_x = 0,
             bias_y = 0;
 
-        if (this.__detailed) {
-            // дорисовать засечки
-            this._drawDomainLineNotches(container, cell_from, cell_to, color);
+        len_x = len_x >= len_y ? len_x : 0;
+        len_y = len_x <  len_y ? len_y : 0;
 
-            bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias,
-            bias_y = !is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+        let bias_cont_x = 0,
+            bias_cont_y = 0;
 
-            if (is_top) bias_y *= -1;
+        if (cont && len_x) {
+            bias_cont_x = this.__grid.cell(1, 0).pos.x - this.__grid.cell(0, 0).pos.x;
         }
 
-        container.line(0, 0, len_x, len_y)
+        if (cont && len_y) {
+            bias_cont_y = this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y;
+        }
+
+        if (this.__detailed) {
+            // дорисовать засечки
+            this._drawDomainLineNotches(container, cell_from, cell_to, inversed, color);
+
+            bias_x = is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+            bias_y = is_vertical ? 0 : BackgroundLayer.DomainSchematicBias;
+
+            if (inversed) {bias_x *= -1; bias_y *= -1;}
+        }
+
+        container.line(0, 0, len_x + bias_cont_x, len_y + bias_cont_y)
             .stroke({color, width: 6, linecap: 'round', dasharray: dotted ? 16 : null})
-            .move(cell_from.center.x + bias_x, cell_from.center.y + bias_y)
+            .move(cell_from.center.x + bias_x - bias_cont_x, cell_from.center.y + bias_y - bias_cont_y)
             .opacity(0.5);
     }
 
@@ -241,9 +268,9 @@ export default class BackgroundLayer extends Layer {
      * @param color
      * @private
      */
-    _drawDomainLineNotches(container, cell_from, cell_to, color) {
-        let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
-            is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
+    _drawDomainLineNotches(container, cell_from, cell_to, inversed, color) {
+        const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
+              is_vertical   = Cell.IsLineVertical(cell_from, cell_to);
 
         let pos_from  = is_horizontal ? cell_from.idx.x : cell_from.idx.y;
         let pos_to    = is_horizontal ? cell_to.idx.x   : cell_to.idx.y;
@@ -255,18 +282,22 @@ export default class BackgroundLayer extends Layer {
             let cell = is_horizontal ? this.__grid.cell(pos, cell_from.idx.y) : this.__grid.cell(cell_from.idx.x, pos);
 
             let bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
-            let bias_y = !is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+            let bias_y =  is_vertical   ? 0 : BackgroundLayer.DomainSchematicBias;
 
-            let corr_y = (is_top) ? -BackgroundLayer.DomainSchematicBias : 0;
+            let corr_x = (inversed) ? -bias_x : 0;
+            let corr_y = (inversed) ? -bias_y : 0;
 
             container.line(0, 0, bias_x, bias_y)
                 .stroke({color, width: 6, linecap: 'round'})
-                .move(cell.center.x, cell.center.y + corr_y)
+                .move(cell.center.x + corr_x, cell.center.y + corr_y)
                 .opacity(0.5);
         }
     }
 
-    _drawDomainRect(container, cell_from, cell_to, width, height, color) {
+    _drawDomainRect(container, cell_from, cell_to, color) {
+        const width = Math.abs(cell_from.pos.x - cell_to.pos.x),
+              height = Math.abs(cell_from.pos.y - cell_to.pos.y);
+
         container.rect(width + cell_from.size.x, height + cell_from.size.y)
             .fill({color})
             .stroke({color})

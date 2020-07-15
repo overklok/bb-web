@@ -184,6 +184,10 @@ export default class Cell {
         return cell_from.isAt(x, y) && cell_to.isAt(x, y);
     }
 
+    static IsLineVertical(cell_from, cell_to) {
+        return cell_from.idx.x === cell_to.idx.x;
+    }
+
     static IsLineHorizontal(cell_from, cell_to) {
         return cell_from.idx.y === cell_to.idx.y;
     }

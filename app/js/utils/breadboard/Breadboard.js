@@ -33,10 +33,22 @@ const LAYOUTS = {
         GRID_POS_Y:     200,
 
         DOMAINS: [
-            {horz: true,    from: {x: 0, y: 1},     to: {x: -1, y: 1}},
+            // Линия аналоговых пинов
+            {
+                horz: true, from: {x: 0, y: 0}, to: {x: -1, y: 0},
+                style: BackgroundLayer.DomainSchematicStyles.None,
+                role: LabelLayer.CellRoles.Analog
+            },
+
+            // Верхняя линия "+"
+            {horz: true,    from: {x: 0, y: 1},     to: {x: -1, y: 1}, inv: true},
+
+            // Нижняя линия "-"
+            {horz: true,    from: {x: 0, y: -1},    to: {x: -1, y: -1}},
+
+            // Две группы вертикальных линий
             {horz: false,   from: {x: 0, y: 2},     to: {x: -1, y: 5}},
             {horz: false,   from: {x: 0, y: 6},     to: {x: -1, y: 9}},
-            {horz: true,    from: {x: 0, y: -1},    to: {x: -1, y: -1}},
         ],
 
         POINTS: [
@@ -61,24 +73,59 @@ const LAYOUTS = {
         GRID_COLS:      8,   // Количество колонок в сетке точек
 
         GRID_POS_X:     190,
-        GRID_POS_Y:     105,
+        GRID_POS_Y:     90,
 
         DOMAINS: [
-            {horz: true,  dots: false, from: {x: 0, y: 0},   to: {x: 3,  y: 0}},
-            {horz: true,  dots: true,  from: {x: 3, y: 0},   to: {x: -1, y: 0}},
+            // Верхняя линия
+            {
+                horz: true,
+                from: {x: 0, y: 0}, to: {x: 3, y: 0},
+                role: LabelLayer.CellRoles.Plus,
+                inv: true
+            },
+            {
+                horz: true,
+                from: {x: 4, y: 0}, to: {x: -1, y: 0},
+                role: LabelLayer.CellRoles.Analog,
+                style: BackgroundLayer.DomainSchematicStyles.Dotted,
+                inv: true, cont: true, pins_from: 0
+            },
 
-            {horz: false, dots: false, from: {x: 0, y: 1},   to: {x: -2, y: 5}},
-            {horz: false, dots: false, from: {x: 0, y: 6},   to: {x: -2, y: 9}},
-            {horz: false, dots: false, from: {x: 0, y: 10},  to: {x: -2, y: 14}},
+            // Нижняя линия
+            {
+                horz: true,
+                from: {x: 0, y: 15}, to: {x: 3, y: 15},
+                role: LabelLayer.CellRoles.Plus
+            },
+            {
+                horz: true,
+                from: {x: 4, y: 15}, to: {x: -1, y: 15},
+                role: LabelLayer.CellRoles.Analog,
+                style: BackgroundLayer.DomainSchematicStyles.Dotted,
+                cont: true, pins_to: 11,
+            },
 
-            {horz: true,  dots: false, from: {x: 0, y: 15},  to: {x: 3,  y: 15}},
-            {horz: true,  dots: true,  from: {x: 3, y: 15},  to: {x: -1, y: 15}},
+            // Три группы вертикальных линий
+            {horz: false, from: {x: 0, y: 1},   to: {x: -2, y: 5}},
+            {horz: false, from: {x: 0, y: 6},   to: {x: -2, y: 9}},
+            {horz: false, from: {x: 0, y: 10},  to: {x: -2, y: 14}},
 
-            {horz: false, dots: false, from: {x: -1, y: 1},  to: {x: -1, y: 3}},
-            {horz: false, dots: false, from: {x: -1, y: 6},  to: {x: -1, y: 7}},
-            {horz: false, dots: false, from: {x: -1, y: 8},  to: {x: -1, y: 9}},
-            {horz: false, dots: false, from: {x: -1, y: 12}, to: {x: -1, y: 14}},
-        ]
+            // Тройные линии в верхней и нижней группах
+            {horz: false, from: {x: -1, y: 1},  to: {x: -1, y: 3}},
+            {horz: false, from: {x: -1, y: 12}, to: {x: -1, y: 14}},
+
+            // Двойные линии в средней группе
+            {horz: false, from: {x: -1, y: 8},  to: {x: -1, y: 9}},
+            {horz: false, from: {x: -1, y: 6},  to: {x: -1, y: 7}},
+
+            // Одиночные контакты - аналоговые пины
+            {horz: false, from: {x: -1, y: 4},  to: {x: -1, y: 4},  role: LabelLayer.CellRoles.Analog, pins_from: 5},
+            {horz: false, from: {x: -1, y: 5},  to: {x: -1, y: 5},  role: LabelLayer.CellRoles.Analog, pins_from: 6},
+            {horz: false, from: {x: -1, y: 10}, to: {x: -1, y: 10}, role: LabelLayer.CellRoles.Analog, pins_from: 7},
+            {horz: false, from: {x: -1, y: 11}, to: {x: -1, y: 11}, role: LabelLayer.CellRoles.Analog, pins_from: 8},
+        ],
+
+        CONTROLS: {horz: false},
     }
 }
 
@@ -477,6 +524,7 @@ export default class Breadboard {
 
         this._layers.background.setDomainConfig(this._options.layout.DOMAINS);
         this._layers.controls.setLayoutConfig(this._options.layout.CONTROLS);
+        this._layers.label.setDomainConfig(this._options.layout.DOMAINS);
 
         /// внутренняя компоновка каждого слоя
         this._layers.background.compose();
