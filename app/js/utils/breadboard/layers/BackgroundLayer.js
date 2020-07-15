@@ -4,11 +4,7 @@ import Grid from "../core/Grid";
 import Cell from "../core/Cell";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
-import {logoSVG, leafSVG} from "../styles/paths";
 import {GRADIENTS} from "../styles/gradients";
-
-const LOGO_COLOR_ACTIVE     = "#6B8FFF";
-const LOGO_COLOR_DEFAULT    = "#000000";
 
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
@@ -22,22 +18,12 @@ export default class BackgroundLayer extends Layer {
         this._container.addClass(BackgroundLayer.Class);
 
         this._boardgroup    = undefined;
-        this._logogroup     = undefined;
 
         this._domaingroup   = undefined;
         this._currentgroup     = undefined;
         this._decogroup     = undefined;
 
-        this._callbacks = {
-            logoclick: () => {}
-        };
-
-        this._logo_flower   = undefined;
-        this._logo_text     = undefined;
-
         this._domain_config = undefined;
-
-        this._is_logo_clicked = false;
 
         this._initGroups();
     }
@@ -54,7 +40,6 @@ export default class BackgroundLayer extends Layer {
             .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
 
-        this._drawLogo();
         this._drawAuxPoints();
         this._drawDomains();
         this._drawCells();
@@ -65,26 +50,12 @@ export default class BackgroundLayer extends Layer {
 
         this._initGroups();
         this.compose();
-
-        // re-click
-        this.toggleLogoActive(this._is_logo_clicked);
-    }
-
-    clickLogo() {
-        this._logogroup.fire('click');
-    }
-
-    onLogoClick(cb) {
-        if (!cb) {this._callbacks.logoclick = () => {}}
-
-        this._callbacks.logoclick = cb;
     }
 
     _initGroups() {
         this._clearGroups();
 
         this._boardgroup    = this._container.group();
-        this._logogroup     = this._container.group().id("logogroup");
         this._domaingroup   = this._container.group();
         this._currentgroup     = this._container.group();
         this._decogroup     = this._container.group();
@@ -92,71 +63,9 @@ export default class BackgroundLayer extends Layer {
 
     _clearGroups() {
         if (this._boardgroup)   this._boardgroup.remove();
-        if (this._logogroup)    this._logogroup.remove();
         if (this._domaingroup)  this._domaingroup.remove();
         if (this._currentgroup)    this._currentgroup.remove();
         if (this._decogroup)    this._decogroup.remove();
-    }
-
-    _drawLogo() {
-        let image = this._logogroup
-            .nested();
-
-        let text = this._logogroup.path(logoSVG());
-
-        let flower = image.group();
-        let leaf = flower.symbol();
-
-        leaf.path(leafSVG()).scale(4);
-
-        flower.use(leaf).rotate(0, 32, 65.5);
-        flower.use(leaf).rotate(60, 32, 65.5);
-        flower.use(leaf).rotate(120, 32, 65.5);
-        flower.use(leaf).rotate(180, 32, 65.5);
-        flower.use(leaf).rotate(240, 32, 65.5);
-        flower.use(leaf).rotate(300, 32, 65.5);
-
-        flower.move(18,0);
-        flower.scale(0.7);
-
-        text.move(-70, 5);
-
-        text.scale(0.5);
-
-        this._logo_text = text;
-        this._logo_flower = flower;
-
-        this._logogroup.cx(100 + this.__grid.size.x / 2);
-
-        this._logogroup.style({cursor: 'pointer'});
-
-        this._logogroup.click((evt) => {
-            this.toggleLogoActive(!this._is_logo_clicked);
-
-            this._callbacks.logoclick();
-        });
-    }
-
-    toggleLogoActive(on=true, animate=true) {
-        if (on) {
-            if (animate) {
-                this._logo_text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-                this._logo_flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-            } else {
-                this._logo_text.fill(LOGO_COLOR_ACTIVE);
-                this._logo_flower.fill(LOGO_COLOR_ACTIVE);
-            }
-        } else {
-            if (animate) {
-                this._logo_text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-                this._logo_flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-            } else {
-                this._logo_text.fill(LOGO_COLOR_DEFAULT);
-                this._logo_flower.fill(LOGO_COLOR_DEFAULT);
-            }
-        }
-
-        this._is_logo_clicked = on;
     }
 
     _drawAuxPoints() {

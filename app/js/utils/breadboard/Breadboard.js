@@ -42,7 +42,9 @@ const LAYOUTS = {
         POINTS: [
             Grid.AuxPoints.Vcc,
             Grid.AuxPoints.Gnd,
-        ]
+        ],
+
+        CONTROLS: {horz: true}
     },
 
     Advanced: {
@@ -139,7 +141,7 @@ export default class Breadboard {
         this._layers.region.toggle(!on);
         this._layers.controls.toggle(!on);
         // this._layers.current.toggle(!on);
-        this._layers.background.toggleLogoActive(!on, false);
+        this._layers.controls.toggleLogoActive(!on, false);
     }
 
     getPlates() {
@@ -474,6 +476,7 @@ export default class Breadboard {
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
 
         this._layers.background.setDomainConfig(this._options.layout.DOMAINS);
+        this._layers.controls.setLayoutConfig(this._options.layout.CONTROLS);
 
         /// внутренняя компоновка каждого слоя
         this._layers.background.compose();
@@ -501,7 +504,7 @@ export default class Breadboard {
      */
     _setLayersReadOnly(readOnly) {
         this._layers.plate.setEditable(!readOnly);
-        this._layers.background.toggleLogoActive(!readOnly);
+        this._layers.controls.toggleLogoActive(!readOnly);
         this._layers.controls.setVisibilityBlocking(readOnly);
         this._layers.controls.setVisibility(!readOnly);
 
@@ -608,7 +611,7 @@ export default class Breadboard {
         });
 
         /// нажатие на логотип платы
-        this._layers.background.onLogoClick(() => {
+        this._layers.controls.onLogoClick(() => {
             this._layers.controls.switchVisibility();
         });
 

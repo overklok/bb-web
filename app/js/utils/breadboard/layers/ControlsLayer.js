@@ -4,6 +4,10 @@ import Breadboard from "../Breadboard";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import LabelLayer from "../layers/LabelLayer";
 import ContextMenu from "../core/ContextMenu";
+import {leafSVG, logoSVG} from "../styles/paths";
+
+const LOGO_COLOR_ACTIVE     = "#6B8FFF";
+const LOGO_COLOR_DEFAULT    = "#000000";
 
 export default class ControlsLayer extends Layer {
     static get Class() {return "bb-layer-controls"}
@@ -13,15 +17,13 @@ export default class ControlsLayer extends Layer {
 
         this._container.addClass(ControlsLayer.Class);
 
-        this._params = {
-            x1: 100,
-            x2: 800,
-            y: 0,
-        };
-
         this._addgroup      = undefined;
         this._cleargroup    = undefined;
         this._menugroup     = this._container.group();
+        this._logogroup     = undefined;
+
+        this._logo_flower   = undefined;
+        this._logo_text     = undefined;
 
         this._ctxmenu       = new BoardContextMenu(this._menugroup, grid);
         this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
@@ -32,16 +34,34 @@ export default class ControlsLayer extends Layer {
             fullscreen: () => {},
             capture: () => {},
             ctxmenuitemclick: () => {},
+            logoclick: () => {}
         };
 
         this._is_fullscreen = false;
         this._is_visible = false;
         this._is_visibility_blocked = false;
+        this._is_logo_clicked = false;
+
+        this.setLayoutConfig();
+    }
+
+    setLayoutConfig(config) {
+        config = config || {};
+
+        this._params = {
+            x1: config.horz ? 150 : 10,
+            x2: config.horz ? 850 : 10,
+            y1: config.horz ? 0 : 0,
+            y2: config.horz ? 0 : this.__grid.size.y,
+
+            logo_horz: !!config.horz,
+        };
     }
 
     compose(plate_types, plate_captions) {
-        this._drawLeftMenu(plate_types, plate_captions);
-        this._drawRightMenu();
+        this._drawMenuPrimary(plate_types, plate_captions);
+        this._drawMenuSecondary();
+        this._drawLogo();
         this._hide();
     }
 
@@ -58,6 +78,32 @@ export default class ControlsLayer extends Layer {
 
     setVisibilityBlocking(blocked) {
         this._is_visibility_blocked = blocked;
+    }
+
+    clickLogo() {
+        this._logogroup.fire('click');
+    }
+
+    toggleLogoActive(on=true, animate=true) {
+        if (on) {
+            if (animate) {
+                this._logo_text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+                this._logo_flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+            } else {
+                this._logo_text.fill(LOGO_COLOR_ACTIVE);
+                this._logo_flower.fill(LOGO_COLOR_ACTIVE);
+            }
+        } else {
+            if (animate) {
+                this._logo_text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+                this._logo_flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+            } else {
+                this._logo_text.fill(LOGO_COLOR_DEFAULT);
+                this._logo_flower.fill(LOGO_COLOR_DEFAULT);
+            }
+        }
+
+        this._is_logo_clicked = on;
     }
 
     onAdd(cb) {
@@ -82,6 +128,12 @@ export default class ControlsLayer extends Layer {
         } else {
             this._callbacks.fullscreen = cb;
         }
+    }
+
+    onLogoClick(cb) {
+        if (!cb) {this._callbacks.logoclick = () => {}}
+
+        this._callbacks.logoclick = cb;
     }
 
     /**
@@ -151,6 +203,47 @@ export default class ControlsLayer extends Layer {
         return this._oncontextmenu;
     }
 
+    _drawLogo() {
+        this._logogroup     = this._container.group().id("logogroup");
+
+        let image = this._logogroup
+            .nested();
+
+        let text = this._logogroup.path(logoSVG());
+
+        let flower = image.group();
+        let leaf = flower.symbol();
+
+        leaf.path(leafSVG()).scale(4);
+
+        flower.use(leaf).rotate(0, 32, 65.5);
+        flower.use(leaf).rotate(60, 32, 65.5);
+        flower.use(leaf).rotate(120, 32, 65.5);
+        flower.use(leaf).rotate(180, 32, 65.5);
+        flower.use(leaf).rotate(240, 32, 65.5);
+        flower.use(leaf).rotate(300, 32, 65.5);
+
+        flower.move(18,0);
+        flower.scale(0.7);
+
+        text.move(-70, 5);
+
+        text.scale(0.5);
+
+        this._logo_text = text;
+        this._logo_flower = flower;
+
+        this._logogroup.cx(100 + this.__grid.size.x / 2);
+
+        this._logogroup.style({cursor: 'pointer'});
+
+        this._logogroup.click((evt) => {
+            this.toggleLogoActive(!this._is_logo_clicked);
+
+            this._callbacks.logoclick();
+        });
+    }
+
     _show() {
         this._addgroup.style.display = "block";
         this._cleargroup.style.display = "block";
@@ -165,8 +258,8 @@ export default class ControlsLayer extends Layer {
         this._detachEventListeners();
     }
 
-    _drawLeftMenu(plate_types, plate_captions) {
-        this._addgroup = this._getEmbeddedHtmlGroup(270, 120, this._params.x1, this._params.y);
+    _drawMenuPrimary(plate_types, plate_captions) {
+        this._addgroup = this._getEmbeddedHtmlGroup(205, 120, this._params.x1, this._params.y1);
 
         let wrap = document.createElement("div");
         let input = document.createElement("input");
@@ -205,8 +298,8 @@ export default class ControlsLayer extends Layer {
         this._addgroup.appendChild(wrap);
     }
 
-    _drawRightMenu() {
-        this._cleargroup = this._getEmbeddedHtmlGroup(300, 120, this._params.x2, this._params.y);
+    _drawMenuSecondary() {
+        this._cleargroup = this._getEmbeddedHtmlGroup(205, 120, this._params.x2, this._params.y2);
 
         let wrap = document.createElement("div");
         let btn_clear = document.createElement("a");

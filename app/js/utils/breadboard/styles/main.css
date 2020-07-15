@@ -20,7 +20,7 @@
     font-weight: bold;
     font-size: 26px;
 
-    width: 270px;
+    width: 200px;
     margin-bottom: 4px !important;
     height: 44px;
     text-align: center;
@@ -29,7 +29,6 @@
 .bb-plate-btn-add, .bb-plate-btn-clear, .bb-plate-btn-fullscreen {
     font-family: "Lucida Console", Monaco, monospace;
     font-weight: bold;
-    font-size: 26px;
 
     background-color: #ffffff;
     display: block;
@@ -41,15 +40,20 @@
     color: black;
     text-decoration: none;
     cursor: pointer;
-    width: 154px;
     float: right;
     height: 44px;
     line-height: 44px;
     text-align: center;
 }
 
+.bb-plate-btn-add {
+    width: 88px;
+    font-size: 18px;
+}
+
 .bb-plate-btn-clear, .bb-plate-btn-fullscreen {
-    width: 224px;
+    width: 180px;
+    font-size: 22px;
 }
 
 .bb-cm {
