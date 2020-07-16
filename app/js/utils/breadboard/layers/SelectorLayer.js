@@ -41,11 +41,11 @@ export default class SelectorLayer extends Layer {
         this._appendItem();
         this._appendItem();
         this._appendItem();
+        this._appendItem();
+        this._appendItem();
     }
 
     _appendScrollables() {
-        this._htmlcontainer.classList.add('bb-sel-root');
-
         this._area = document.createElement("div");
         this._area.classList.add('bb-sel-list');
 
@@ -92,12 +92,14 @@ export default class SelectorLayer extends Layer {
 
         elements[0][1].click();
 
+        const ellen = elements.length;
+
         slidectrl_right.addEventListener('click', () => {
             const bullet_active = pedestal.getElementsByClassName('active')[0];
             const idx_curr = this._getElementIndex(bullet_active);
 
             // negative modulo
-            elements[(((idx_curr + 1) % 3) + 3) % 3][1].click();
+            elements[(((idx_curr + 1) % ellen) + ellen) % ellen][1].click();
         });
 
         slidectrl_left.addEventListener('click', () => {
@@ -105,7 +107,7 @@ export default class SelectorLayer extends Layer {
             const idx_curr = this._getElementIndex(bullet_active);
 
             // negative modulo
-            elements[(((idx_curr - 1) % 3) + 3) % 3][1].click();
+            elements[(((idx_curr - 1) % ellen) + ellen) % ellen][1].click();
         });
 
         this._itemcount++;
@@ -201,7 +203,7 @@ export default class SelectorLayer extends Layer {
     _getEmbeddedHtmlGroup(container, width=0, height=0, x=0, y=0) {
         let fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
 
-        fo.classList.add("node");
+        fo.classList.add("bb-sel-root");
         fo.setAttribute("width", width);
         fo.setAttribute("height", height);
         fo.setAttribute("x", x);
