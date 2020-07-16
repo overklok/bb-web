@@ -53,48 +53,82 @@ export default class SelectorLayer extends Layer {
     _appendItem() {
         const item = document.createElement("div");
         const cell = document.createElement("div");
-        const slider = document.createElement("div");
-        const slide_left = document.createElement("div");
-        const slide_right = document.createElement("div");
-        const pedestal = document.createElement("div");
-        const bulletlist = document.createElement("ul");
-        const bullets = [
-            document.createElement("li"),
-            document.createElement("li"),
-            document.createElement("li"),
-        ]
+        const slidectrl_left = document.createElement("div");
+        const slidectrl_right = document.createElement("div");
+        const pedestal_wrap = document.createElement("div");
+        const pedestal = document.createElement("ul");
 
         item.classList.add('bb-sel-item');
         cell.classList.add('bb-sel-cell');
-        slider.classList.add('bb-sel-slider');
+        pedestal_wrap.classList.add('bb-sel-pedestal-wrap');
         pedestal.classList.add('bb-sel-pedestal');
-        bulletlist.classList.add('bb-sel-bulletlist');
-        slide_left.classList.add('bb-sel-slide', 'bb-sel-slide-left');
-        slide_right.classList.add('bb-sel-slide', 'bb-sel-slide-right');
+        slidectrl_left.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-left');
+        slidectrl_right.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-right');
 
-        bullets[0].classList.add('bb-sel-bullet');
-        bullets[1].classList.add('bb-sel-bullet');
-        bullets[2].classList.add('bb-sel-bullet');
+        this._elements = [
+            this._generateSlide(cell, pedestal),
+            this._generateSlide(cell, pedestal),
+            this._generateSlide(cell, pedestal),
+        ];
 
-        bulletlist.appendChild(bullets[0]);
-        bulletlist.appendChild(bullets[1]);
-        bulletlist.appendChild(bullets[2]);
+        this._elements[0][1].click();
 
-        pedestal.appendChild(bulletlist);
+        pedestal_wrap.appendChild(pedestal);
 
-        cell.appendChild(slide_left);
-        cell.appendChild(slide_right);
-        cell.appendChild(pedestal);
-        cell.appendChild(slider);
+        cell.appendChild(slidectrl_left);
+        cell.appendChild(slidectrl_right);
+        cell.appendChild(pedestal_wrap);
         item.appendChild(cell);
         this._area.appendChild(item);
 
-        slider.innerHTML = "TEST";
-
-        slide_right.innerText = ">";
-        slide_left.innerText = "<";
+        slidectrl_right.innerText = ">";
+        slidectrl_left.innerText = "<";
 
         this._itemcount++;
+    }
+
+    _generateSlide(cell, pedestal) {
+        const slide = document.createElement("div");
+        const bullet = document.createElement("li");
+
+        slide.classList.add('bb-sel-slide');
+
+        slide.innerText = "TEST";
+
+        cell.appendChild(slide);
+        pedestal.appendChild(bullet);
+
+        bullet.addEventListener('click', () => {
+            const slide_active  = cell.getElementsByClassName('active')[0];
+            const bullet_active = pedestal.getElementsByClassName('active')[0];
+
+            if (slide_active && bullet_active) {
+                const idx_prev = this._getElementIndex(bullet_active);
+                const idx_curr = this._getElementIndex(bullet);
+
+                if (idx_prev === idx_curr) return;
+
+                if (idx_prev > idx_curr) {
+                    // Previous element positioned to the right
+                    slide_active.style.left = "100%";
+                    console.log('move right');
+                } else {
+                    // Previous element positioned to the left
+                    slide_active.style.left = "0";
+                    console.log('move left');
+                }
+
+                slide_active.classList.remove('active');
+                bullet_active.classList.remove('active');
+            }
+
+            slide.style.left = "50%";
+
+            bullet.classList.add('active');
+            slide.classList.add('active');
+        });
+
+        return [slide, bullet];
     }
 
     _initGroups() {
@@ -126,5 +160,11 @@ export default class SelectorLayer extends Layer {
         fo.appendChild(body);
 
         return body;
+    }
+
+    _getElementIndex(node) {
+        let index = 0;
+        while ( (node = node.previousElementSibling) ) {index++;}
+        return index;
     }
 }
