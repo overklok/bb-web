@@ -51,38 +51,51 @@ export default class SelectorLayer extends Layer {
     }
 
     _appendItem() {
-        const item = document.createElement("div");
         const cell = document.createElement("div");
         const slidectrl_left = document.createElement("div");
         const slidectrl_right = document.createElement("div");
         const pedestal_wrap = document.createElement("div");
         const pedestal = document.createElement("ul");
 
-        item.classList.add('bb-sel-item');
         cell.classList.add('bb-sel-cell');
         pedestal_wrap.classList.add('bb-sel-pedestal-wrap');
         pedestal.classList.add('bb-sel-pedestal');
         slidectrl_left.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-left');
         slidectrl_right.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-right');
 
-        this._elements = [
+        const elements = [
             this._generateSlide(cell, pedestal),
             this._generateSlide(cell, pedestal),
             this._generateSlide(cell, pedestal),
         ];
-
-        this._elements[0][1].click();
 
         pedestal_wrap.appendChild(pedestal);
 
         cell.appendChild(slidectrl_left);
         cell.appendChild(slidectrl_right);
         cell.appendChild(pedestal_wrap);
-        item.appendChild(cell);
-        this._area.appendChild(item);
+        this._area.appendChild(cell);
 
         slidectrl_right.innerText = ">";
         slidectrl_left.innerText = "<";
+
+        elements[0][1].click();
+
+        slidectrl_right.addEventListener('click', () => {
+            const bullet_active = pedestal.getElementsByClassName('active')[0];
+            const idx_curr = this._getElementIndex(bullet_active);
+
+            // negative modulo
+            elements[(((idx_curr + 1) % 3) + 3) % 3][1].click();
+        });
+
+        slidectrl_left.addEventListener('click', () => {
+            const bullet_active = pedestal.getElementsByClassName('active')[0];
+            const idx_curr = this._getElementIndex(bullet_active);
+
+            // negative modulo
+            elements[(((idx_curr - 1) % 3) + 3) % 3][1].click();
+        });
 
         this._itemcount++;
     }
@@ -110,12 +123,20 @@ export default class SelectorLayer extends Layer {
 
                 if (idx_prev > idx_curr) {
                     // Previous element positioned to the right
-                    slide_active.style.left = "100%";
-                    console.log('move right');
+                    slide_active.animate({
+                        left: ["50%", '100%']
+                    }, 500);
+                    slide.animate({
+                        left: ["0%", '50%']
+                    }, 500);
                 } else {
                     // Previous element positioned to the left
-                    slide_active.style.left = "0";
-                    console.log('move left');
+                    slide_active.animate({
+                        left: ["50%", '0%']
+                    }, 500);
+                    slide.animate({
+                        left: ["100%", '50%']
+                    }, 500);
                 }
 
                 slide_active.classList.remove('active');
