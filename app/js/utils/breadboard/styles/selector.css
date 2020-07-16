@@ -38,23 +38,23 @@
     max-height: 80%;
 
     opacity: 0;
+    pointer-events: none;
 
-    transition: opacity 500ms linear,
-                transform 500ms linear;
+    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
 
     transform: translate(-50%, -50%) scale(0.7);
 
     /* http://help.dimsemenov.com/discussions/problems/858-weird-bug-in-chrome */
     -webkit-backface-visibility: hidden;
 
-    /* TEMP */
-    background: indianred;
     width: 60%;
-    height: 60%;
+    height: 50%;
 }
 
 .bb-sel-slide.active {
     opacity: 1;
+    pointer-events: all;
 
     transform: translate(-50%, -50%) scale(1.0);
 }
@@ -85,7 +85,7 @@
 
 .bb-sel-pedestal-wrap {
     position: absolute;
-    height: 10%;
+    height: 22%;
     bottom: 0;
 
     text-align: center;
@@ -107,8 +107,8 @@ ul.bb-sel-pedestal {
 
 ul.bb-sel-pedestal li {
     display: inline-block;
-    height: 10px;
-    width: 10px;
+    height: 20px;
+    width: 20px;
     background: #ccc;
     border-radius: 50%;
     margin-left: 3px;
@@ -118,4 +118,42 @@ ul.bb-sel-pedestal li {
 
 ul.bb-sel-pedestal li.active {
     background: #3e999f;
+}
+
+.bb-sel-title {
+    text-align: center;
+    font-size: 60px;
+    padding: 10px;
+    font-weight: bolder;
+}
+
+.bb-sel-subtitle {
+    font-size: 40px;
+    margin-bottom: 5px;
+}
+
+.bb-sel-svg_wrap {
+    width: 100%;
+    height: 100%;
+
+    cursor: pointer;
+
+    background-image: radial-gradient(#403f3f2e 0%, transparent 70%);
+    background-size: 100% 90%;
+    background-position: center;
+}
+
+svg.bb-sel-svg {
+    width: 100%;
+    height: 100%;
+
+    transition: transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bb-sel-slide.active svg.bb-sel-svg {
+    transform: perspective(500px) rotate3d(5, -195, 70, 35deg);
+}
+
+.bb-sel-svg_wrap:hover svg.bb-sel-svg {
+    transform: perspective(0);
 }

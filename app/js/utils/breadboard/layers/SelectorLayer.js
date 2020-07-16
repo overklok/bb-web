@@ -1,6 +1,9 @@
+import SVG from 'svgjs';
 import Layer from "../core/Layer";
 
 import "../styles/selector.css";
+import BridgePlate from "../plates/BridgePlate";
+import SwitchPlate from "../plates/SwitchPlate";
 
 export default class SelectorLayer extends Layer {
     constructor(container, grid) {
@@ -9,7 +12,6 @@ export default class SelectorLayer extends Layer {
         this._maincontainer = undefined;
 
         this._backgroundgroup = undefined;
-        this._scrollbargroup = undefined;
 
         this._itemcount = 0;
 
@@ -24,7 +26,7 @@ export default class SelectorLayer extends Layer {
             .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
 
-        const bg = this._maincontainer
+        this._maincontainer
             .rect('100%', '90%')
             .radius(20)
             .fill({color: "#f9f9f9"})
@@ -56,21 +58,30 @@ export default class SelectorLayer extends Layer {
         const slidectrl_right = document.createElement("div");
         const pedestal_wrap = document.createElement("div");
         const pedestal = document.createElement("ul");
+        const title = document.createElement("div");
+        const subtitle = document.createElement("div");
 
         cell.classList.add('bb-sel-cell');
         pedestal_wrap.classList.add('bb-sel-pedestal-wrap');
         pedestal.classList.add('bb-sel-pedestal');
         slidectrl_left.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-left');
         slidectrl_right.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-right');
+        title.classList.add('bb-sel-title');
+        subtitle.classList.add('bb-sel-subtitle');
 
         const elements = [
-            this._generateSlide(cell, pedestal),
-            this._generateSlide(cell, pedestal),
-            this._generateSlide(cell, pedestal),
+            this._generateSlide(cell, pedestal, subtitle, "slide1"),
+            this._generateSlide(cell, pedestal, subtitle, "slide2"),
+            this._generateSlide(cell, pedestal, subtitle, "slide3"),
         ];
 
+        pedestal_wrap.appendChild(subtitle);
         pedestal_wrap.appendChild(pedestal);
 
+        title.innerText = "title";
+        subtitle.innerText = "subtitle";
+
+        cell.appendChild(title);
         cell.appendChild(slidectrl_left);
         cell.appendChild(slidectrl_right);
         cell.appendChild(pedestal_wrap);
@@ -100,56 +111,79 @@ export default class SelectorLayer extends Layer {
         this._itemcount++;
     }
 
-    _generateSlide(cell, pedestal) {
+    _generateSlide(cell, pedestal, subtitle, title_text="none") {
         const slide = document.createElement("div");
         const bullet = document.createElement("li");
+        const svg_wrap = document.createElement("div");
+        const svg = SVG(svg_wrap);
 
         slide.classList.add('bb-sel-slide');
+        svg.node.classList.add('bb-sel-svg');
+        svg_wrap.classList.add('bb-sel-svg_wrap');
 
-        slide.innerText = "TEST";
+        const gcell = this.__grid.cell(0, 0);
+        const plate = new SwitchPlate(svg, this.__grid);
+        plate.draw(gcell, 'west');
+        plate._container.dmove(-gcell.pos.x, -gcell.pos.y);
+        const width = plate._container.width(),
+              height = plate._container.width();
 
+        plate._container.center(width / 2, height / 2);
+
+        svg.node.setAttributeNS(
+            null,"viewBox", `0 0 ${width} ${height}`
+        );
+
+        slide.appendChild(svg_wrap);
         cell.appendChild(slide);
         pedestal.appendChild(bullet);
 
-        bullet.addEventListener('click', () => {
-            const slide_active  = cell.getElementsByClassName('active')[0];
-            const bullet_active = pedestal.getElementsByClassName('active')[0];
-
-            if (slide_active && bullet_active) {
-                const idx_prev = this._getElementIndex(bullet_active);
-                const idx_curr = this._getElementIndex(bullet);
-
-                if (idx_prev === idx_curr) return;
-
-                if (idx_prev > idx_curr) {
-                    // Previous element positioned to the right
-                    slide_active.animate({
-                        left: ["50%", '100%']
-                    }, 500);
-                    slide.animate({
-                        left: ["0%", '50%']
-                    }, 500);
-                } else {
-                    // Previous element positioned to the left
-                    slide_active.animate({
-                        left: ["50%", '0%']
-                    }, 500);
-                    slide.animate({
-                        left: ["100%", '50%']
-                    }, 500);
-                }
-
-                slide_active.classList.remove('active');
-                bullet_active.classList.remove('active');
-            }
-
-            slide.style.left = "50%";
-
-            bullet.classList.add('active');
-            slide.classList.add('active');
-        });
+        bullet.addEventListener(
+            'click',
+            () => this._onSlideClick(cell, pedestal, subtitle, slide, bullet, title_text)
+        );
 
         return [slide, bullet];
+    }
+
+    _onSlideClick(cell, pedestal, subtitle, slide, bullet, title_text) {
+        const slide_active  = cell.getElementsByClassName('active')[0];
+        const bullet_active = pedestal.getElementsByClassName('active')[0];
+
+        if (slide_active && bullet_active) {
+            const idx_prev = this._getElementIndex(bullet_active);
+            const idx_curr = this._getElementIndex(bullet);
+
+            if (idx_prev === idx_curr) return;
+
+            if (idx_prev > idx_curr) {
+                // Previous element positioned to the right
+                slide_active.animate({
+                    left: ["50%", '100%']
+                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
+                slide.animate({
+                    left: ["0%", '50%']
+                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
+            } else {
+                // Previous element positioned to the left
+                slide_active.animate({
+                    left: ["50%", '0%']
+                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
+                slide.animate({
+                    left: ["100%", '50%']
+                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
+            }
+
+            slide_active.classList.remove('active');
+            bullet_active.classList.remove('active');
+        }
+
+        slide.style.left = "50%";
+
+        bullet.classList.add('active');
+        slide.classList.add('active');
+
+        subtitle.innerText = title_text;
     }
 
     _initGroups() {
