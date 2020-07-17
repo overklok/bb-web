@@ -11,11 +11,12 @@ export default class BreadboardModule extends Module {
 
     static defaults() {
         return {
-            modeAdmin:  false,
-            schematic:  false,
-            detailed:   false,
-            verbose:    false,
-            spare:      false,
+            layoutAdvanced: false,
+            modeAdmin:      false,
+            schematic:      false,
+            detailed:       false,
+            verbose:        false,
+            spare:          false,
         }
     }
 
@@ -50,7 +51,8 @@ export default class BreadboardModule extends Module {
             if (dom_node !== undefined) {
                 // this._board.inject(dom_node, false);
                 this._board.inject(dom_node, {
-                    readOnly: !this._options.modeAdmin
+                    readOnly: !this._options.modeAdmin,
+                    layout: this._options.layoutAdvanced ? Breadboard.Layouts.Advanced : Breadboard.Layouts.Basic
                 });
 
                 this._state.display = true;
@@ -174,10 +176,16 @@ export default class BreadboardModule extends Module {
         this._board.switchSpareFilters(on);
     }
 
-    setBoardType(board_type) {
-        if (board_type == null) return;
+    setLayoutAdvanced(advanced=false) {
+        if (advanced) {
+            this._board.setLayout(Breadboard.Layouts.Advanced);
+        } else {
+            this._board.setLayout(Breadboard.Layouts.Basic);
+        }
+    }
 
-        // this._board.setBoardType(board_type);
+    getLayout() {
+        return this._board.getLayout();
     }
 
     switchSchematic(on, detailed=false) {

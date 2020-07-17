@@ -679,10 +679,6 @@ class Application {
          */
         this._dispatcher.on('ls:board-status', data => {
             this.gui.setBoardStatus(data.status);
-
-            if (data.board_type != null) {
-                this.bb.setBoardType(data.board_type);
-            }
         });
 
         /**

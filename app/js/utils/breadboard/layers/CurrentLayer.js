@@ -264,41 +264,27 @@ export default class CurrentLayer extends Layer {
      * @private
      */
     _buildCurrentLinePath(points) {
-        const last_coord_y = this.__grid.dim.y - 1;
-        let path;
+        const   aux_point_from  = this.__grid.auxPoint(points.from.x, points.from.y),
+                aux_point_to    = this.__grid.auxPoint(points.to.x, points.to.y);
 
-        // Ток идёт ИЗ ПЛЮСА
-        if (points.from.x === -1 && points.from.y === 1) {
-            let c_arb = this.__grid.cell(points.to.x, points.to.y);
-            path = this._getLinePathSourcePlus(c_arb, false);
+        const   aux_point = aux_point_to || aux_point_from,
+                to_aux = !!aux_point_to;
+
+        if (aux_point) {
+            const c_arb = to_aux ? this.__grid.cell(points.from.x, points.from.y)
+                                 : this.__grid.cell(points.to.x, points.to.y);
+
+            switch (aux_point.cat) {
+                case Grid.AuxPointCats.Source:  return this._getLinePathSource(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb1:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb3:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+            }
         }
 
-        // Ток идёт ИЗ МИНУСА
-        else if (points.from.x === - 1 && points.from.y === last_coord_y) {
-            let c_arb = this.__grid.cell(points.to.x, points.to.y);
-            path = this._getLinePathSourceMinus(c_arb, true);
-        }
+        const   c_from  = this.__grid.cell(points.from.x, points.from.y),
+                c_to    = this.__grid.cell(points.to.x, points.to.y);
 
-        // Ток идёт В ПЛЮС
-        else if (points.to.x === - 1 && points.to.y === 1) {
-            let c_arb = this.__grid.cell(points.from.x, points.from.y);
-            path = this._getLinePathSourcePlus(c_arb, true);
-        }
-
-        // Ток идёт В МИНУС
-        else if (points.to.x === - 1 && points.to.y === last_coord_y) {
-            let c_arb = this.__grid.cell(points.from.x, points.from.y);
-            path = this._getLinePathSourceMinus(c_arb, false);
-        }
-
-        else {
-            let c_from  = this.__grid.cell(points.from.x, points.from.y),
-                c_to    = this.__grid.cell(points.to.x, points.to.y)
-
-            path = this._getLinePathArbitrary(c_from, c_to);
-        }
-
-        return path;
+        return this._getLinePathArbitrary(c_from, c_to);
     };
 
     _getLinePathArbitrary(c_from, c_to) {
@@ -341,27 +327,22 @@ export default class CurrentLayer extends Layer {
         ];
     }
 
-    _getLinePathSourcePlus(c_arb, to_source=false) {
-        // "out" (from "+") means this is top current
-        let c_zero = this.__grid.cell(0, 1);
-
-        let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
+    _getLinePathSource(c_arb, aux_point, to_source=false) {
+        let needs_bias  = this.__schematic && this.__detailed,
+            bias_y      = needs_bias * BackgroundLayer.DomainSchematicBias;
 
         if (to_source) {
             return [
                 ['M', c_arb.center_adj.x, c_arb.center_adj.y],
-                ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
-                ['L', c_zero.center_adj.x, c_zero.center_adj.y - bias_y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
 
-                ['L', 80, c_zero.center_adj.y - bias_y],
-                ['L', 80, 720]
+                ['L', aux_point.pos.x, aux_point.cell.center_adj.y + bias_y],
+                ['L', aux_point.pos.x, aux_point.pos.y]
             ];
         } else {
             return [
-                ['M', 80, 720],
-                ['L', 80, c_zero.center_adj.y - bias_y],
-                ['L', c_zero.center_adj.x, c_zero.center_adj.y - bias_y],
+                ['M', aux_point.pos.x, aux_point.pos.y],
+                ['L', aux_point.pos.x, aux_point.cell.center_adj.y - bias_y],
 
                 ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
                 ['L', c_arb.center_adj.x, c_arb.center_adj.y]
@@ -369,30 +350,22 @@ export default class CurrentLayer extends Layer {
         }
     }
 
-    _getLinePathSourceMinus(c_arb, to_source=false) {
-        // "in" (to "-") means this is bottom current
-        let c_zero = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
-
-        let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
-
+    _getLinePathUsb(c_arb, aux_point, to_source=false) {
         if (to_source) {
             return [
-                ['M', 80, 780],
-                ['L', 80, c_zero.center_adj.y + bias_y],
-
-                ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
-                ['L', c_arb.center_adj.x, c_arb.center_adj.y]
+                ['M', c_arb.center_adj.x, c_arb.center_adj.y],
+                ['L', aux_point.pos.x - aux_point.bias, c_arb.center_adj.y],
+                ['L', aux_point.pos.x - aux_point.bias, aux_point.pos.y],
+                ['L', aux_point.pos.x, aux_point.pos.y]
             ];
         } else {
             return [
-                ['M', c_arb.center_adj.x, c_arb.center_adj.y],
-                ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
-
-                ['L', 80, c_zero.center_adj.y + bias_y],
-                ['L', 80, 780]
+                ['M', aux_point.pos.x, aux_point.pos.y],
+                ['L', aux_point.pos.x - aux_point.bias, aux_point.pos.y],
+                ['L', aux_point.pos.x - aux_point.bias, c_arb.center_adj.y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y]
             ];
-        };
+        }
     }
 
     /**

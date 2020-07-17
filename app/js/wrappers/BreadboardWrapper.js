@@ -25,7 +25,7 @@ export default class BreadboardWrapper extends Wrapper {
         }
 
         this._plugin.inject(dom_node, {
-            readOnly: read_only
+            readOnly: read_only,
         });
     }
 

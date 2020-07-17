@@ -109,7 +109,7 @@ export default class Cell {
     }
 
     isAt(x=null, y=null) {
-        if (x === null && y === null) throw new TypeError("One of (x, y) must be no null");
+        if (x === null && y === null) throw new TypeError("One of (x, y) must be not null");
 
         if (x === -1) x = this.__grid.dim.x - 1;
         if (y === -1) y = this.__grid.dim.y - 1;
@@ -182,6 +182,10 @@ export default class Cell {
         }
 
         return cell_from.isAt(x, y) && cell_to.isAt(x, y);
+    }
+
+    static IsLineVertical(cell_from, cell_to) {
+        return cell_from.idx.x === cell_to.idx.x;
     }
 
     static IsLineHorizontal(cell_from, cell_to) {
