@@ -102,8 +102,8 @@ export default class LabelLayer extends Layer {
     _drawLabels() {
         if (!this._domain_config) return;
 
-        const font_size = (this.__schematic && this.__detailed) ? 30 : 20,
-              text_bias = (this.__schematic && this.__detailed) ? 10 : 6;
+        const   font_size = (this.__schematic && this.__detailed) ? 30 : 20,
+                text_bias = (this.__schematic && this.__detailed) ? 10 : -4;
 
         for (const domain of this._domain_config) {
             const d_from = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
@@ -128,7 +128,15 @@ export default class LabelLayer extends Layer {
                         text = `A${pin_num}`;
                     }
 
-                    this._drawLabelText(cell.center.x, cell.pos.y - text_bias, text, font_size);
+                    let pos_y = cell.center.y - cell.size.y - text_bias;
+
+                    switch (domain.label_pos) {
+                        case "top":     pos_y = cell.center.y - cell.size.y - text_bias/2; break;
+                        case "bottom":  pos_y = cell.center.y + cell.size.y + text_bias/2; break;
+                        default:        pos_y = cell.pos.y + text_bias; break;
+                    }
+
+                    this._drawLabelText(cell.center.x, pos_y, text, font_size);
 
                     pin_num += pin_dir;
                 }

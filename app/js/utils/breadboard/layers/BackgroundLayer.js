@@ -104,10 +104,12 @@ export default class BackgroundLayer extends Layer {
                         this._domaingroup,
                         this.__grid.cell(d_from.x, row),
                         this.__grid.cell(d_to.x, row),
-                        !!domain.inv,
-                        !!domain.cont,
                         this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ,
-                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted
+                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
+                        !!domain.inv,
+                        domain.after,
+                        domain.before,
+                        domain.ab_notches
                     );
                 }
             } else {
@@ -116,10 +118,12 @@ export default class BackgroundLayer extends Layer {
                         this._domaingroup,
                         this.__grid.cell(col, d_from.y),
                         this.__grid.cell(col, d_to.y),
-                        !!domain.inv,
-                        !!domain.cont,
                         this.__schematic ? '#777' : GRADIENTS.GOLD.VERT,
-                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted
+                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
+                        !!domain.inv,
+                        domain.after,
+                        domain.before,
+                        domain.ab_notches
                     );
                 }
             }
@@ -128,23 +132,64 @@ export default class BackgroundLayer extends Layer {
 
     /**
      *
-     * @param {SVG.Container}   container
-     * @param {Cell}            cell_from
-     * @param {Cell}            cell_to
-     * @param {boolean}         inversed
-     * @param {boolean}         cont        whether to continue (previous) domain, in order to switch style
-     * @param {SVG.Gradient}    color
-     * @param dotted
+     * @param {SVG.Container}   container   SVG-узел, в котором рисовать
+     * @param {Cell}            cell_from   Начальная ячейка сетки
+     * @param {Cell}            cell_to     Конечная ячейка сетки
+     * @param {SVG.Gradient}    color       Задать цвет домена
+     * @param {boolean}         dotted      Пунктирный стиль (в схем. режиме)
+     * @param {boolean}         inversed    Инвертировать смещение линии (в схем. режиме)
+     * @param {number}          after       Дорисовать линию на N ячеек после (в схем. режиме)
+     * @param {number}          before      Дорисовать линию на N ячеек до (в схем. режиме)
      * @private
      */
-    _drawDomain(container, cell_from, cell_to, inversed=false, cont=false, color="#D4AF37", dotted=false) {
+    _drawDomain(
+        container,
+        cell_from, cell_to,
+        color="#D4AF37",
+        dotted=false,
+        inversed=false,
+        after=0, before= 0,
+    ) {
         if (this.__schematic && typeof color !== 'string') {
             console.error('String color is not supported in schematic mode');
             return;
         }
 
         if (this.__schematic) {
-            this._drawDomainLine(container, cell_from, cell_to, inversed, cont, color, dotted);
+            this._drawDomainLine(container, cell_from, cell_to, inversed, true, color, dotted);
+
+            const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
+                  is_vertical = Cell.IsLineVertical(cell_from, cell_to);
+
+            if (after > 0) {
+                const cell_from_add = this.__grid.cell(
+                    cell_to.idx.x,
+                    cell_to.idx.y
+                );
+                const cell_to_add = this.__grid.cell(
+                    cell_to.idx.x + after * is_horizontal,
+                    cell_to.idx.y + after * is_vertical
+                )
+
+                this._drawDomainLine(
+                    container, cell_from_add, cell_to_add, inversed, false, color, dotted
+                );
+            }
+
+            if (before > 0) {
+                const cell_from_add = this.__grid.cell(
+                    cell_from.idx.x - before * is_horizontal,
+                    cell_from.idx.y - before * is_vertical
+                );
+                const cell_to_add = this.__grid.cell(
+                    cell_from.idx.x,
+                    cell_from.idx.y
+                )
+                this._drawDomainLine(
+                    container, cell_from_add, cell_to_add, inversed, false, color, dotted
+                );
+            }
+
         } else {
             this._drawDomainRect(container, cell_from, cell_to, color);
         }
@@ -184,12 +229,12 @@ export default class BackgroundLayer extends Layer {
             .move(cell.pos.x, cell.pos.y);
     }
 
-    _drawDomainLine(container, cell_from, cell_to, inversed, cont, color, dotted) {
-        let len_x = Math.abs(cell_from.pos.x - cell_to.pos.x),
-            len_y = Math.abs(cell_from.pos.y - cell_to.pos.y);
-
+    _drawDomainLine(container, cell_from, cell_to, inversed, use_notches, color, dotted) {
         const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
               is_vertical = Cell.IsLineVertical(cell_from, cell_to);
+
+        let len_x = Math.abs(cell_from.pos.x - cell_to.pos.x),
+            len_y = Math.abs(cell_from.pos.y - cell_to.pos.y);
 
         let bias_x = 0,
             bias_y = 0;
@@ -200,17 +245,11 @@ export default class BackgroundLayer extends Layer {
         let bias_cont_x = 0,
             bias_cont_y = 0;
 
-        if (cont && len_x) {
-            bias_cont_x = this.__grid.cell(1, 0).pos.x - this.__grid.cell(0, 0).pos.x;
-        }
-
-        if (cont && len_y) {
-            bias_cont_y = this.__grid.cell(0, 1).pos.y - this.__grid.cell(0, 0).pos.y;
-        }
-
         if (this.__detailed) {
             // дорисовать засечки
-            this._drawDomainLineNotches(container, cell_from, cell_to, inversed, color);
+            if (use_notches) {
+                this._drawDomainLineNotches(container, cell_from, cell_to, inversed, color);
+            }
 
             bias_x = is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
             bias_y = is_vertical ? 0 : BackgroundLayer.DomainSchematicBias;
@@ -370,19 +409,24 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawAuxPointUsb(p_vcc, p_gnd, p_an1, p_an2) {
-        this._drawAuxPointUsbPath(p_vcc, 20, BackgroundLayer.DomainSchematicBias);
-        this._drawAuxPointUsbPath(p_gnd, 20, BackgroundLayer.DomainSchematicBias);
-        this._drawAuxPointUsbPath(p_an1, 40);
-        this._drawAuxPointUsbPath(p_an2, 40);
+        this._drawAuxPointUsbPath(p_vcc, BackgroundLayer.DomainSchematicBias);
+        this._drawAuxPointUsbPath(p_gnd, BackgroundLayer.DomainSchematicBias);
+        this._drawAuxPointUsbPath(p_an1);
+        this._drawAuxPointUsbPath(p_an2);
     }
 
-    _drawAuxPointUsbPath(point, bias, bias_domain=0) {
+    _drawAuxPointUsbPath(point, bias_domain=0) {
+        let needs_bias  = this.__schematic && this.__detailed;
+        bias_domain = needs_bias * bias_domain;
+
+        const cell_x = needs_bias ? point.cell.center.x : point.cell.pos.x + point.cell.size.x;
+
         try {
             this._decogroup.path([
                 ['M', point.pos.x, point.pos.y],
-                ['l', -bias, 0],
+                ['l', -point.bias, 0],
                 ['l', 0, point.cell.center.y - point.pos.y],
-                ['l', point.cell.center.x - point.pos.x + bias + bias_domain, 0]
+                ['l', cell_x - point.pos.x + point.bias + bias_domain, 0]
             ])
                 .fill({color: 'none'})
                 .stroke({color: "#777", width: 6, linecap: 'round'})

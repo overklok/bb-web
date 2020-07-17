@@ -274,8 +274,10 @@ export default class CurrentLayer extends Layer {
             const c_arb = to_aux ? this.__grid.cell(points.from.x, points.from.y)
                                  : this.__grid.cell(points.to.x, points.to.y);
 
-            switch (aux_point.type) {
-                case Grid.AuxPointCats.Source: return this._getLinePathSource(c_arb, aux_point, to_aux);
+            switch (aux_point.cat) {
+                case Grid.AuxPointCats.Source:  return this._getLinePathSource(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb1:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb3:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
             }
         }
 
@@ -327,34 +329,40 @@ export default class CurrentLayer extends Layer {
 
     _getLinePathSource(c_arb, aux_point, to_source=false) {
         let needs_bias  = this.__schematic && this.__detailed,
-            bias_y      = needs_bias * BackgroundLayer.DomainSchematicBias,
-            c_zero;
-
-        if (aux_point.name === Grid.AuxPoints.Vcc) {
-            // "out" (from "+") means this is top current
-            c_zero = this.__grid.cell(0, 1);
-            bias_y *= -1;
-        } else if (aux_point.name === Grid.AuxPoints.Gnd) {
-            // "in" (to "-") means this is bottom current
-            c_zero = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
-        } else {
-            throw new Error("Auxiliary point name should be 'vcc' or 'gnd'");
-        }
+            bias_y      = needs_bias * BackgroundLayer.DomainSchematicBias;
 
         if (to_source) {
             return [
                 ['M', c_arb.center_adj.x, c_arb.center_adj.y],
                 ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
 
-                ['L', aux_point.pos.x, c_zero.center_adj.y + bias_y],
+                ['L', aux_point.pos.x, aux_point.cell.center_adj.y + bias_y],
                 ['L', aux_point.pos.x, aux_point.pos.y]
             ];
         } else {
             return [
                 ['M', aux_point.pos.x, aux_point.pos.y],
-                ['L', aux_point.pos.x, c_zero.center_adj.y + bias_y],
+                ['L', aux_point.pos.x, aux_point.cell.center_adj.y + bias_y],
 
                 ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y]
+            ];
+        }
+    }
+
+    _getLinePathUsb(c_arb, aux_point, to_source=false) {
+        if (to_source) {
+            return [
+                ['M', c_arb.center_adj.x, c_arb.center_adj.y],
+                ['L', aux_point.pos.x - aux_point.bias, c_arb.center_adj.y],
+                ['L', aux_point.pos.x - aux_point.bias, aux_point.pos.y],
+                ['L', aux_point.pos.x, aux_point.pos.y]
+            ];
+        } else {
+            return [
+                ['M', aux_point.pos.x, aux_point.pos.y],
+                ['L', aux_point.pos.x - aux_point.bias, aux_point.pos.y],
+                ['L', aux_point.pos.x - aux_point.bias, c_arb.center_adj.y],
                 ['L', c_arb.center_adj.x, c_arb.center_adj.y]
             ];
         }
