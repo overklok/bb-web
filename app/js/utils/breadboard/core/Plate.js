@@ -641,12 +641,29 @@ export default class Plate {
         this._container.animate('100ms').opacity(1);
     }
 
+    snap() {
+        this.move(this._cell_supposed, false, true);
+        this._hideShadow();
+
+        this._dragging = false;
+        this._callbacks.dragfinish();
+    }
+
     move_to_point(x, y) {
         this._container.move(x, y);
     }
 
     dmove(dx, dy) {
         this._container.dmove(dx, dy);
+
+        this._cell_supposed = this._calcSupposedCell();
+        this._dropShadowToCell(this._cell_supposed);
+
+        if (!this._dragging) {
+            this._showShadow();
+            this._callbacks.dragstart();
+            this._dragging = true;
+        }
     }
 
     /**

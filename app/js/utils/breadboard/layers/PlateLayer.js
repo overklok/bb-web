@@ -47,8 +47,6 @@ export default class PlateLayer extends Layer {
         this._plate_selected = undefined;
         this._editable = false;
 
-        /// Событие начала перетаскивания было инициировано
-        this._dragstart_activated = false;
         /// Последняя позиция перемещения курсора
         this._cursor_point_mousedown = undefined;
     }
@@ -565,19 +563,10 @@ export default class PlateLayer extends Layer {
             let dx = cursor_point.x - this._cursor_point_mousedown.x;
             let dy = cursor_point.y - this._cursor_point_mousedown.y;
 
-            this._plate_dragging.dmove(dx, dy);
-
             this._cursor_point_mousedown = cursor_point;
 
-            this._cell_supposed = this._plate_dragging._calcSupposedCell();
-            this._plate_dragging._dropShadowToCell(this._cell_supposed);
-
-            if (dx > 0 || dy > 0) {
-                if (!this._dragstart_activated) {
-                    this._plate_dragging._showShadow();
-                    this._plate_dragging._callbacks.dragstart();
-                    this._dragstart_activated = true;
-                }
+            if (dx !== 0 || dy !== 0) {
+                this._plate_dragging.dmove(dx, dy);
             }
         };
 
@@ -594,12 +583,8 @@ export default class PlateLayer extends Layer {
                 document.body.removeEventListener('mousemove', this._onMouseMove(), false);
                 document.body.removeEventListener('mouseup', this._onMouseUp(), false);
 
-                // Snap
-                this._plate_dragging.move(this._cell_supposed, false, true);
-                this._plate_dragging._hideShadow();
-
-                this._dragstart_activated = false;
-                this._plate_dragging._callbacks.dragfinish();
+                // Snap & release
+                this._plate_dragging.snap();
                 this._plate_dragging = undefined;
             }
         };
