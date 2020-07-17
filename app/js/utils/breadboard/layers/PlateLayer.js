@@ -140,11 +140,10 @@ export default class PlateLayer extends Layer {
 
         const plate = this._plates[id];
         let plate_point = Breadboard.getCursorPoint(this._container.node, plate_x, plate_y);
-        // let cursor_point = Breadboard.getCursorPoint(this._container.node, cursor_x, cursor_y);
 
         plate.center_to_point(plate_point.x, plate_point.y);
-        // plate.center_to_point(cursor_point.x, cursor_point.y, true);
         this._onPlateMouseDown({which: 1}, plate);
+        this.selectPlate(plate);
     }
 
     /**
@@ -435,30 +434,7 @@ export default class PlateLayer extends Layer {
             if (evt.target.classList.contains(ContextMenu.ItemClass)) return;
             if (evt.target.classList.contains(ContextMenu.ItemInputClass)) return;
 
-            /// Если плашка не была выделена ранее
-            if (this._plate_selected && plate !== this._plate_selected) {
-                /// Снять её выделение
-                this._plate_selected.deselect();
-                /// Убрать контекстное меню
-                this._plate_selected.hideContextMenu();
-                /// Отключить её события
-                this.setPlateEditable(plate, false);
-                this._plate_selected.onChange(null);
-            }
-
-            /// Обрабатывать её события
-            this.setPlateEditable(plate);
-            plate.onChange(data => this._callbacks.change(data));
-            plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
-            plate.onDragFinish(() => this._onPlateDragFinish(plate));
-            plate.onDragStart(() => {
-                this._onPlateDragStart(plate);
-                this._callbacks.dragstart(plate);
-            });
-
-            /// выделить данную плашку
-            this._plate_selected = plate;
-            this._plate_selected.select();
+            this.selectPlate(plate);
 
             if (evt.which === 1) {
                 this._onPlateMouseDown(evt, this._plate_selected);
@@ -470,6 +446,33 @@ export default class PlateLayer extends Layer {
                 plate.hideContextMenu();
             }
         });
+    }
+
+    selectPlate(plate) {
+        /// Если плашка не была выделена ранее
+        if (this._plate_selected && plate !== this._plate_selected) {
+            /// Снять её выделение
+            this._plate_selected.deselect();
+            /// Убрать контекстное меню
+            this._plate_selected.hideContextMenu();
+            /// Отключить её события
+            this.setPlateEditable(plate, false);
+            this._plate_selected.onChange(null);
+        }
+
+        /// Обрабатывать её события
+        this.setPlateEditable(plate);
+        plate.onChange(data => this._callbacks.change(data));
+        plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
+        plate.onDragFinish(() => this._onPlateDragFinish(plate));
+        plate.onDragStart(() => {
+            this._onPlateDragStart(plate);
+            this._callbacks.dragstart(plate);
+        });
+
+        /// выделить данную плашку
+        this._plate_selected = plate;
+        this._plate_selected.select();
     }
 
     /**

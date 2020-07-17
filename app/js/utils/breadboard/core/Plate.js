@@ -682,8 +682,10 @@ export default class Plate {
     dmove(dx, dy) {
         this._container.dmove(dx, dy);
 
-        this._cell_supposed = this._calcSupposedCell();
-        this._dropShadowToCell(this._cell_supposed);
+        requestAnimationFrame(() => {
+            this._cell_supposed = this._calcSupposedCell();
+            this._dropShadowToCell(this._cell_supposed);
+        })
 
         if (!this._dragging) {
             this._showShadow();
