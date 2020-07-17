@@ -4,6 +4,66 @@ import Layer from "../core/Layer";
 import "../styles/selector.css";
 import BridgePlate from "../plates/BridgePlate";
 import SwitchPlate from "../plates/SwitchPlate";
+import LEDPlate from "../plates/LEDPlate";
+import ResistorPlate from "../plates/ResistorPlate";
+import PhotoresistorPlate from "../plates/PhotoresistorPlate";
+import RheostatPlate from "../plates/RheostatPlate";
+import ButtonPlate from "../plates/ButtonPlate";
+import TButtonPlate from "../plates/TButtonPlate";
+import CapacitorPlate from "../plates/CapacitorPlate";
+import DummyPlate from "../plates/DummyPlate";
+import TransistorPlate from "../plates/TransistorPlate";
+import InductorPlate from "../plates/InductorPlate";
+import RelayPlate from "../plates/RelayPlate";
+import BuzzerPlate from "../plates/BuzzerPlate";
+
+const ITEMS = [
+    {
+        title: "Перемычка",
+        type: BridgePlate,
+        options: [
+            {title: "2 клетки", extra: 2},
+            {title: "3 клетки", extra: 3},
+            {title: "4 клетки", extra: 4},
+            {title: "5 клеток", extra: 5},
+            {title: "6 клеток", extra: 6},
+        ]
+    },
+    {
+        title: "Светодиод",
+        type: LEDPlate,
+        options: [
+            {title: "Зелёный", extra: "G"},
+            {title: "Красный", extra: "R"}
+        ]
+    },
+    {
+        title: "Резистор",
+        type: ResistorPlate,
+        options: [
+            {title: "200 Ом",   extra: 200},
+            {title: "1  кОм",   extra: 1000},
+            {title: "10 кОм",   extra: 10000}
+        ]
+    },
+    {
+        title: "Конденсатор",
+        type: CapacitorPlate,
+        options: [{title: "Обычный"}]
+    },
+
+    {title: "Транзистор",   type: TransistorPlate,      options: [{title: "Обычный"}]},
+    {title: "Фоторезистор", type: PhotoresistorPlate,   options: [{title: "Обычный"}]},
+    {title: "Реостат",      type: RheostatPlate,        options: [{title: "Обычный"}]},
+    {title: "Кнопка",       type: ButtonPlate,          options: [{title: "Обычная"}]},
+    {title: "Кнопка-3",     type: TButtonPlate,         options: [{title: "Обычная"}]},
+    {title: "Ключ",         type: SwitchPlate,          options: [{title: "Обычный"}]},
+    {title: "Индуктор",     type: InductorPlate,        options: [{title: "Обычный"}]},
+    {title: "Реле",         type: RelayPlate,           options: [{title: "Обычное"}]},
+    {title: "Зуммер",       type: BuzzerPlate,          options: [{title: "Обычный"}]},
+    {title: "Dummy",        type: DummyPlate,           options: [{title: "Обычная"}]},
+
+]
 
 export default class SelectorLayer extends Layer {
     constructor(container, grid) {
@@ -38,11 +98,9 @@ export default class SelectorLayer extends Layer {
 
         this._appendScrollables();
 
-        this._appendItem();
-        this._appendItem();
-        this._appendItem();
-        this._appendItem();
-        this._appendItem();
+        for (const item of ITEMS) {
+            this._appendItem(item);
+        }
     }
 
     _appendScrollables() {
@@ -52,7 +110,9 @@ export default class SelectorLayer extends Layer {
         this._htmlcontainer.appendChild(this._area);
     }
 
-    _appendItem() {
+    _appendItem(settings) {
+        if (!settings.options) return;
+
         const cell = document.createElement("div");
         const slidectrl_left = document.createElement("div");
         const slidectrl_right = document.createElement("div");
@@ -69,23 +129,24 @@ export default class SelectorLayer extends Layer {
         title.classList.add('bb-sel-title');
         subtitle.classList.add('bb-sel-subtitle');
 
-        const elements = [
-            this._generateSlide(cell, pedestal, subtitle, "slide1"),
-            this._generateSlide(cell, pedestal, subtitle, "slide2"),
-            this._generateSlide(cell, pedestal, subtitle, "slide3"),
-        ];
+        const elements = [];
+
+        for (const option of settings.options) {
+            elements.push(
+                this._generateSlide(cell, pedestal, subtitle, settings, option)
+            )
+        }
 
         pedestal_wrap.appendChild(subtitle);
         pedestal_wrap.appendChild(pedestal);
-
-        title.innerText = "title";
-        subtitle.innerText = "subtitle";
 
         cell.appendChild(title);
         cell.appendChild(slidectrl_left);
         cell.appendChild(slidectrl_right);
         cell.appendChild(pedestal_wrap);
         this._area.appendChild(cell);
+
+        title.innerText = settings.title;
 
         slidectrl_right.innerText = ">";
         slidectrl_left.innerText = "<";
@@ -113,7 +174,7 @@ export default class SelectorLayer extends Layer {
         this._itemcount++;
     }
 
-    _generateSlide(cell, pedestal, subtitle, title_text="none") {
+    _generateSlide(cell, pedestal, subtitle, settings_item, settings) {
         const slide = document.createElement("div");
         const bullet = document.createElement("li");
         const svg_wrap = document.createElement("div");
@@ -124,7 +185,10 @@ export default class SelectorLayer extends Layer {
         svg_wrap.classList.add('bb-sel-svg_wrap');
 
         const gcell = this.__grid.cell(0, 0);
-        const plate = new SwitchPlate(svg, this.__grid);
+        const plate = new settings_item.type(
+            svg, this.__grid, false, false, undefined, settings.extra
+        );
+
         plate.draw(gcell, 'west');
         plate._container.dmove(-gcell.pos.x, -gcell.pos.y);
         const width = plate._container.width(),
@@ -142,13 +206,13 @@ export default class SelectorLayer extends Layer {
 
         bullet.addEventListener(
             'click',
-            () => this._onSlideClick(cell, pedestal, subtitle, slide, bullet, title_text)
+            () => this._onSlideClick(cell, pedestal, subtitle, slide, bullet, settings)
         );
 
         return [slide, bullet];
     }
 
-    _onSlideClick(cell, pedestal, subtitle, slide, bullet, title_text) {
+    _onSlideClick(cell, pedestal, subtitle, slide, bullet, settings) {
         const slide_active  = cell.getElementsByClassName('active')[0];
         const bullet_active = pedestal.getElementsByClassName('active')[0];
 
@@ -185,7 +249,7 @@ export default class SelectorLayer extends Layer {
         bullet.classList.add('active');
         slide.classList.add('active');
 
-        subtitle.innerText = title_text;
+        subtitle.innerText = settings.title;
     }
 
     _initGroups() {
