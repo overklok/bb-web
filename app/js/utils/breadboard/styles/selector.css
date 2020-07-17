@@ -1,7 +1,29 @@
 .bb-sel-root {
     overflow-y: scroll;
     overflow-x: hidden;
+
+    background-color: #f9f9f9;
+    border: #dedede 4px solid;
     border-radius: 20px;
+}
+
+.bb-sel-area {
+    width: 100%;
+    height: 90%;
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    position: absolute;
+    top: 10%;
+}
+
+.bb-sel-controls {
+    width: 100%;
+    height: 10%;
+
+    position: absolute;
+    top: 0;
 }
 
 .bb-sel-list {

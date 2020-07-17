@@ -74,40 +74,20 @@ export default class SelectorLayer extends Layer {
 
         this._container.addClass(SelectorLayer.Class);
 
-        this._maincontainer = undefined;
-
-        this._backgroundgroup = undefined;
-
-        this._itemcount = 0;
-
         this._callbacks = {
             onplatetake: (plate_data, plate_x, plate_y, cursor_x, cursor_y) => {},
-        }
-
-        this._initGroups();
+            clear: () => {},
+            fullscreen: () => {},
+        };
 
         this.hide();
     }
 
     compose() {
-        this._backgroundgroup
-            .rect('30%', '99%') /// 99 из-за обрезания рамки
-            .radius(20)
-            .fill({color: "#f9f9f9"})
-            .stroke({color: "#c9c9c9", width: 4})
-            .move(4, 4);
+        this._htmlcontainer = this._getEmbeddedHtmlGroup(this._container, '30%', '99%')
 
-        this._maincontainer
-            .rect('30%', '89%')
-            .radius(20)
-            .fill({color: "#f9f9f9"})
-            .stroke({color: "#c9c9c9", width: 4});
-
-        this._maincontainer.x(4).y('10%');
-
-        this._htmlcontainer = this._getEmbeddedHtmlGroup(this._maincontainer, '30%', '88%')
-
-        this._appendScrollables();
+        this._appendBasics();
+        this._appendControls();
 
         for (const item of ITEMS) {
             this._appendItem(item);
@@ -135,6 +115,22 @@ export default class SelectorLayer extends Layer {
         this._callbacks.onplatetake = cb;
     }
 
+    onClear(cb) {
+        if (!cb) {
+            this._callbacks.clear = () => {};
+        } else {
+            this._callbacks.clear = cb;
+        }
+    }
+
+    onFullscreen(cb) {
+        if (!cb) {
+            this._callbacks.fullscreen = () => {};
+        } else {
+            this._callbacks.fullscreen = cb;
+        }
+    }
+
     _closeOnClick(evt) {
         let el = evt.target;
 
@@ -146,11 +142,45 @@ export default class SelectorLayer extends Layer {
         }
     }
 
-    _appendScrollables() {
+    _appendBasics() {
         this._area = document.createElement("div");
-        this._area.classList.add('bb-sel-list');
+        this._area.classList.add('bb-sel-area');
 
+        this._list = document.createElement("div");
+        this._list.classList.add('bb-sel-list');
+
+        this._controls = document.createElement("div");
+        this._controls.classList.add('bb-sel-controls');
+
+        this._area.appendChild(this._list);
+
+        this._htmlcontainer.appendChild(this._controls);
         this._htmlcontainer.appendChild(this._area);
+    }
+
+    _appendControls() {
+        let btn_clear = document.createElement("a");
+        let btn_fullscreen = document.createElement("a");
+
+        btn_clear.classList += "bb-plate-btn-clear";
+        btn_fullscreen.classList += "bb-plate-btn-fullscreen";
+
+        btn_clear.addEventListener("click", () => {
+            this._callbacks.clear();
+        });
+
+        btn_fullscreen.addEventListener("click", () => {
+            this._is_fullscreen = !this._is_fullscreen;
+            this._callbacks.fullscreen(this._is_fullscreen);
+
+            btn_fullscreen.innerHTML = this._is_fullscreen ? "Свернуть" : "Во весь экран";
+        });
+
+        btn_clear.innerHTML = "Очистить всё";
+        btn_fullscreen.innerHTML = "Во весь экран";
+
+        this._controls.appendChild(btn_clear);
+        this._controls.appendChild(btn_fullscreen);
     }
 
     _appendItem(settings) {
@@ -187,7 +217,7 @@ export default class SelectorLayer extends Layer {
         cell.appendChild(slidectrl_left);
         cell.appendChild(slidectrl_right);
         cell.appendChild(pedestal_wrap);
-        this._area.appendChild(cell);
+        this._list.appendChild(cell);
 
         title.innerText = settings.title;
 
@@ -213,8 +243,6 @@ export default class SelectorLayer extends Layer {
             // negative modulo
             elements[(((idx_curr - 1) % ellen) + ellen) % ellen][1].click();
         });
-
-        this._itemcount++;
     }
 
     _generateSlide(cell, pedestal, subtitle, settings_item, settings) {
@@ -313,18 +341,6 @@ export default class SelectorLayer extends Layer {
         );
 
         this.close();
-    }
-
-    _initGroups() {
-        this._clearGroups();
-
-        this._backgroundgroup   = this._container.group();
-        this._maincontainer     = this._container.nested();
-    }
-
-    _clearGroups() {
-        if (this._backgroundgroup)  this._backgroundgroup.remove();
-        if (this._maincontainer)    this._maincontainer.remove();
     }
 
     _getEmbeddedHtmlGroup(container, width=0, height=0, x=0, y=0) {

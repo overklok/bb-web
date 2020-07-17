@@ -622,7 +622,7 @@ export default class Breadboard {
         });
 
         /// очистка платы
-        this._layers.controls.onClear(() => {
+        this._layers.selector.onClear(() => {
             this.clearPlates();
 
             this._callbacks.change({
@@ -640,7 +640,7 @@ export default class Breadboard {
         })
 
         /// переключение полноэкранного режима
-        this._layers.controls.onFullscreen((on) => {
+        this._layers.selector.onFullscreen((on) => {
             Breadboard.fullScreen(on, this._brush.node);
         });
 
