@@ -342,9 +342,9 @@ export default class CurrentLayer extends Layer {
         } else {
             return [
                 ['M', aux_point.pos.x, aux_point.pos.y],
-                ['L', aux_point.pos.x, aux_point.cell.center_adj.y + bias_y],
+                ['L', aux_point.pos.x, aux_point.cell.center_adj.y - bias_y],
 
-                ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
                 ['L', c_arb.center_adj.x, c_arb.center_adj.y]
             ];
         }
