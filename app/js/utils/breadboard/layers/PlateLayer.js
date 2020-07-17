@@ -460,6 +460,10 @@ export default class PlateLayer extends Layer {
             this._plate_selected = plate;
             this._plate_selected.select();
 
+            if (evt.which === 1) {
+                this._onPlateMouseDown(evt, this._plate_selected);
+            }
+
             if (evt.which === 3) {
                 plate.showContextMenu(evt, this._container.node);
             } else {
