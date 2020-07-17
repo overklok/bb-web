@@ -80,21 +80,21 @@ export default class SelectorLayer extends Layer {
 
     compose() {
         this._backgroundgroup
-            .rect('100%', '99%') /// 99 из-за обрезания рамки
+            .rect('30%', '99%') /// 99 из-за обрезания рамки
             .radius(20)
             .fill({color: "#f9f9f9"})
             .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
 
         this._maincontainer
-            .rect('100%', '90%')
+            .rect('30%', '89%')
             .radius(20)
             .fill({color: "#f9f9f9"})
             .stroke({color: "#c9c9c9", width: 4});
 
         this._maincontainer.x(4).y('10%');
 
-        this._htmlcontainer = this._getEmbeddedHtmlGroup(this._maincontainer, '100%', '100%')
+        this._htmlcontainer = this._getEmbeddedHtmlGroup(this._maincontainer, '30%', '88%')
 
         this._appendScrollables();
 
