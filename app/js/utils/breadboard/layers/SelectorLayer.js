@@ -16,6 +16,7 @@ import TransistorPlate from "../plates/TransistorPlate";
 import InductorPlate from "../plates/InductorPlate";
 import RelayPlate from "../plates/RelayPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
+import Plate from "../core/Plate";
 
 const ITEMS = [
     {
@@ -66,8 +67,12 @@ const ITEMS = [
 ]
 
 export default class SelectorLayer extends Layer {
+    static get Class() {return "bb-layer-selector"}
+
     constructor(container, grid) {
         super(container, grid);
+
+        this._container.addClass(SelectorLayer.Class);
 
         this._maincontainer = undefined;
 
@@ -76,10 +81,12 @@ export default class SelectorLayer extends Layer {
         this._itemcount = 0;
 
         this._callbacks = {
-            onplatetake: (plate_data) => {},
+            onplatetake: (plate_data, plate_x, plate_y, cursor_x, cursor_y) => {},
         }
 
         this._initGroups();
+
+        this.hide();
     }
 
     compose() {
@@ -105,12 +112,38 @@ export default class SelectorLayer extends Layer {
         for (const item of ITEMS) {
             this._appendItem(item);
         }
+
+        document.addEventListener('click', (evt) => this._closeOnClick(evt));
+        document.addEventListener('mousedown', (evt) => this._closeOnClick(evt));
+    }
+
+    open() {
+        this._container.opacity(0).show().animate('100ms').opacity(1);
+        setTimeout(() => {this._opened = true;}, 100);
+    }
+
+    close() {
+        this._opened = false;
+
+        this._container.animate('100ms').opacity(0);
+        setTimeout(() => this.hide(), 100);
     }
 
     onPlateTake(cb) {
         if (!cb) this._callbacks.onplatetake = () => {};
 
         this._callbacks.onplatetake = cb;
+    }
+
+    _closeOnClick(evt) {
+        let el = evt.target;
+
+        /// Определить, является ли элемент, по которому выполнено нажатие, частью слоя
+        while ((el = el.parentElement) && !(el.classList.contains(SelectorLayer.Class))) {}
+
+        if (!el && this._opened) {
+            this.close();
+        }
     }
 
     _appendScrollables() {
@@ -201,6 +234,7 @@ export default class SelectorLayer extends Layer {
 
         plate.draw(gcell, 'west');
         plate.move_to_point(0, 0);
+
         const width = plate._container.width(),
               height = plate._container.width();
 
@@ -221,7 +255,7 @@ export default class SelectorLayer extends Layer {
 
         slide.addEventListener(
             'mousedown',
-            () => this._onSlideHold(plate)
+            (evt) => this._onSlideHold(evt, svg.node, plate)
         )
 
         return [slide, bullet];
@@ -267,8 +301,18 @@ export default class SelectorLayer extends Layer {
         subtitle.innerText = settings.title;
     }
 
-    _onSlideHold(plate) {
-        this._callbacks.onplatetake(plate.serialize());
+    _onSlideHold(evt, svg_node, plate) {
+        if (evt.which !== 1) return;
+
+        const rect = svg_node.getBoundingClientRect();
+
+        this._callbacks.onplatetake(
+            plate.serialize(),
+            rect.left + rect.width/2, rect.top + rect.height/2,
+            evt.clientX, evt.clientY
+        );
+
+        this.close();
     }
 
     _initGroups() {

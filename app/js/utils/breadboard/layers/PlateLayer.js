@@ -128,7 +128,7 @@ export default class PlateLayer extends Layer {
         }
     }
 
-    takePlate(plate_data) {
+    takePlate(plate_data, plate_x, plate_y, cursor_x, cursor_y) {
         const id = this.addPlate(
             plate_data.type,
             plate_data.x, plate_data.y,
@@ -139,7 +139,12 @@ export default class PlateLayer extends Layer {
         )
 
         const plate = this._plates[id];
+        let plate_point = Breadboard.getCursorPoint(this._container.node, plate_x, plate_y);
+        // let cursor_point = Breadboard.getCursorPoint(this._container.node, cursor_x, cursor_y);
 
+        plate.center_to_point(plate_point.x, plate_point.y);
+        // plate.center_to_point(cursor_point.x, cursor_point.y, true);
+        this._onPlateMouseDown({which: 1}, plate);
     }
 
     /**
@@ -472,27 +477,12 @@ export default class PlateLayer extends Layer {
      * @returns {boolean} принято ли изменение
      */
     setPlateEditable(plate, editable=true) {
-        // if (!editable) {
-        //
-        //     plate._group.off();      // отключить все обработчики
-        //     plate._editable = false;
-        //     return true;
-        // }
-        //
-        // /// если svg задан, но уже включено, выйти
-        // if (plate._editable) {
-        //     return true;
-        // }
-        //
-        // /// если svg задан, но не включено, включить
-        // plate._editable = true;
+        plate.setEditable(editable);
 
         if (editable) {
-            plate._container.style({cursor: 'move'});
             plate.onMouseDown((evt) => this._onPlateMouseDown(evt, plate));
             plate.onMouseWheel((evt) => this._onPlateMouseWheel(evt, plate));
         } else {
-            plate._container.style({cursor: 'default'});
             plate.onMouseDown(null);
             plate.onMouseWheel(null);
         }

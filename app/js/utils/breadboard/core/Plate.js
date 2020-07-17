@@ -114,7 +114,7 @@ export default class Plate {
         this._ctxmenu = new (this.__cm_class__())(this._container, this.__grid, {id: this._id, schematic: this._params.schematic});
         this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
 
-        this._group.mousedown((evt) => {console.log(this._callbacks.mousedown); this._callbacks.mousedown(evt)});
+        this._group.mousedown((evt) => {this._callbacks.mousedown(evt)});
 
         /// обработчик вращения колёсика мыши на плашке
         if (this._group.node.addEventListener) {
@@ -641,16 +641,42 @@ export default class Plate {
         this._container.animate('100ms').opacity(1);
     }
 
+    setEditable(editable=true) {
+        if (editable) {
+            this._container.style({cursor: 'move'});
+        } else {
+            this._container.style({cursor: 'default'});
+        }
+    }
+
     snap() {
+        if (!this._cell_supposed) {
+            this._cell_supposed = this._calcSupposedCell();
+        }
+
         this.move(this._cell_supposed, false, true);
+
         this._hideShadow();
 
         this._dragging = false;
+        this._cell_supposed = undefined;
         this._callbacks.dragfinish();
     }
 
-    move_to_point(x, y) {
-        this._container.move(x, y);
+    move_to_point(x, y, animate=false) {
+        if (animate) {
+            this._container.animate('100ms', '<>').move(x, y);
+        } else {
+            this._container.move(x, y);
+        }
+    }
+
+    center_to_point(x, y, animate=false) {
+        if (animate) {
+            this._container.animate('100ms', '<>').center(x, y);
+        } else {
+            this._container.center(x, y);
+        }
     }
 
     dmove(dx, dy) {

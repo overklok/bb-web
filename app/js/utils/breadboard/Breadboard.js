@@ -631,6 +631,14 @@ export default class Breadboard {
             });
         });
 
+        this._layers.background.onMenuClick(() => {
+            this._layers.selector.open();
+        })
+
+        this._layers.selector.onPlateTake((plate_data, plate_x, plate_y, cursor_x, cursor_y) => {
+            this._layers.plate.takePlate(plate_data, plate_x, plate_y, cursor_x, cursor_y);
+        })
+
         /// переключение полноэкранного режима
         this._layers.controls.onFullscreen((on) => {
             Breadboard.fullScreen(on, this._brush.node);
@@ -685,10 +693,6 @@ export default class Breadboard {
 
         this._layers.current.onShortCircuitEnd(() => {
             this._callbacks.shortcircuitend();
-        })
-
-        this._layers.selector.onPlateTake((plate_data) => {
-            this._layers.plate.takePlate(plate_data);
         })
     }
 
