@@ -21,6 +21,7 @@ import RGBPlate from "../plates/RGBPlate";
 import DummyPlate from "../plates/DummyPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
 import TButtonPlate from "../plates/TButtonPlate";
+import Breadboard from "../Breadboard";
 
 /**
  * Слой плашек
@@ -41,8 +42,15 @@ export default class PlateLayer extends Layer {
         this._plates = {};
         this._plategroup = undefined;
 
+        this._cell_supposed = undefined;
+        this._plate_dragging = undefined;
         this._plate_selected = undefined;
         this._editable = false;
+
+        /// Событие начала перетаскивания было инициировано
+        this._dragstart_activated = false;
+        /// Последняя позиция перемещения курсора
+        this._cursor_point_mousedown = undefined;
     }
 
     compose() {
@@ -82,20 +90,7 @@ export default class PlateLayer extends Layer {
         for (let plate_id in this._plates) {
             let plate = this._plates[plate_id];
 
-            data.push({
-                id:             plate.id,
-                type:           plate.alias,
-                x:              plate.pos.x,
-                y:              plate.pos.y,
-                extra:          plate.extra,
-                length:         plate.length,
-                orientation:    plate.state.orientation,
-                input:          plate.input,
-                // cell_num:       plate._state.cell_num,
-                // contr_num:      plate._state.contr_num,
-                // currents:       plate._state.currents,
-                // voltages:       plate._state.voltages,
-            });
+            data.push(plate.serialize());
         }
 
         return data;
@@ -133,6 +128,20 @@ export default class PlateLayer extends Layer {
             this._setCurrentPlatesEditable(false);
             this._editable = false;
         }
+    }
+
+    takePlate(plate_data) {
+        const id = this.addPlate(
+            plate_data.type,
+            plate_data.x, plate_data.y,
+            plate_data.orientation,
+            null,
+            plate_data.extra,
+            false
+        )
+
+        const plate = this._plates[id];
+
     }
 
     /**
@@ -430,12 +439,12 @@ export default class PlateLayer extends Layer {
                 /// Убрать контекстное меню
                 this._plate_selected.hideContextMenu();
                 /// Отключить её события
-                this._plate_selected.setEditable(false);
+                this.setPlateEditable(plate, false);
                 this._plate_selected.onChange(null);
             }
 
             /// Обрабатывать её события
-            plate.setEditable(this._container.node);
+            this.setPlateEditable(plate);
             plate.onChange(data => this._callbacks.change(data));
             plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
             plate.onDragFinish(() => this._onPlateDragFinish(plate));
@@ -454,6 +463,41 @@ export default class PlateLayer extends Layer {
                 plate.hideContextMenu();
             }
         });
+    }
+
+    /**
+     * Сделать плашку редактируемой
+     *
+     * @param plate
+     * @param editable
+     *
+     * @returns {boolean} принято ли изменение
+     */
+    setPlateEditable(plate, editable=true) {
+        // if (!editable) {
+        //
+        //     plate._group.off();      // отключить все обработчики
+        //     plate._editable = false;
+        //     return true;
+        // }
+        //
+        // /// если svg задан, но уже включено, выйти
+        // if (plate._editable) {
+        //     return true;
+        // }
+        //
+        // /// если svg задан, но не включено, включить
+        // plate._editable = true;
+
+        if (editable) {
+            plate._container.style({cursor: 'move'});
+            plate.onMouseDown((evt) => this._onPlateMouseDown(evt, plate));
+            plate.onMouseWheel((evt) => this._onPlateMouseWheel(evt, plate));
+        } else {
+            plate._container.style({cursor: 'default'});
+            plate.onMouseDown(null);
+            plate.onMouseWheel(null);
+        }
     }
 
     /**
@@ -485,7 +529,7 @@ export default class PlateLayer extends Layer {
                 this._plate_selected.hideContextMenu();
 
                 /// Отключить её события
-                this._plate_selected.setEditable(false);
+                this.setPlateEditable(this._plate_selected, false);
                 this._plate_selected.onChange(null);
                 this._plate_selected.onContextMenuItemClick(null);
 
@@ -494,6 +538,83 @@ export default class PlateLayer extends Layer {
         };
 
         return this._onclick;
+    }
+
+    _onPlateMouseDown(evt, plate) {
+        if (evt.which === 1 && !this._plate_dragging) {
+            plate.rearrange();
+
+            document.body.addEventListener('mousemove', this._onMouseMove(), false);
+            document.body.addEventListener('mouseup', this._onMouseUp(), false);
+
+            this._cursor_point_mousedown = Breadboard.getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+
+            this._plate_dragging = plate;
+            this._cell_supposed = plate._calcSupposedCell();
+        }
+    }
+
+    _onMouseMove() {
+        if (this._onmousemove) {
+            return this._onmousemove;
+        }
+
+        this._onmousemove = (evt) => {
+            let cursor_point = Breadboard.getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+
+            let dx = cursor_point.x - this._cursor_point_mousedown.x;
+            let dy = cursor_point.y - this._cursor_point_mousedown.y;
+
+            this._plate_dragging.dmove(dx, dy);
+
+            this._cursor_point_mousedown = cursor_point;
+
+            this._cell_supposed = this._plate_dragging._calcSupposedCell();
+            this._plate_dragging._dropShadowToCell(this._cell_supposed);
+
+            if (dx > 0 || dy > 0) {
+                if (!this._dragstart_activated) {
+                    this._plate_dragging._showShadow();
+                    this._plate_dragging._callbacks.dragstart();
+                    this._dragstart_activated = true;
+                }
+            }
+        };
+
+        return this._onmousemove;
+    }
+
+    _onMouseUp() {
+        if (this._onmouseup) {
+            return this._onmouseup;
+        }
+
+        this._onmouseup = (evt) => {
+            if (evt.which === 1) {
+                document.body.removeEventListener('mousemove', this._onMouseMove(), false);
+                document.body.removeEventListener('mouseup', this._onMouseUp(), false);
+
+                // Snap
+                this._plate_dragging.move(this._cell_supposed, false, true);
+                this._plate_dragging._hideShadow();
+
+                this._dragstart_activated = false;
+                this._plate_dragging._callbacks.dragfinish();
+                this._plate_dragging = undefined;
+            }
+        };
+
+        return this._onmouseup;
+    }
+
+    _onPlateMouseWheel(evt, plate) {
+        if (evt.deltaY > 16) {
+            plate.rotateClockwise();
+        }
+
+        if (evt.deltaY < -16) {
+            plate.rotateCounterClockwise();
+        }
     }
 
     /**

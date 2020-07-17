@@ -197,7 +197,7 @@ export default class ControlsLayer extends Layer {
                 evt.preventDefault();
 
                 let svg_main = this._container.node;
-                let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
+                let cursor_point = Breadboard.getCursorPoint(svg_main, evt.clientX, evt.clientY);
 
                 this._ctxmenu.draw(cursor_point, false);
             } else {

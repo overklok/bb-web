@@ -686,6 +686,10 @@ export default class Breadboard {
         this._layers.current.onShortCircuitEnd(() => {
             this._callbacks.shortcircuitend();
         })
+
+        this._layers.selector.onPlateTake((plate_data) => {
+            this._layers.plate.takePlate(plate_data);
+        })
     }
 
     /**
@@ -926,9 +930,8 @@ export default class Breadboard {
      *
      * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
      *                      в системе координат заданного SVG-узла
-     * @private
      */
-    static _getCursorPoint(svg_main, clientX, clientY) {
+    static getCursorPoint(svg_main, clientX, clientY) {
         let svg_point = svg_main.createSVGPoint();
 
         svg_point.x = clientX;

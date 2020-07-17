@@ -75,6 +75,10 @@ export default class SelectorLayer extends Layer {
 
         this._itemcount = 0;
 
+        this._callbacks = {
+            onplatetake: (plate_data) => {},
+        }
+
         this._initGroups();
     }
 
@@ -101,6 +105,12 @@ export default class SelectorLayer extends Layer {
         for (const item of ITEMS) {
             this._appendItem(item);
         }
+    }
+
+    onPlateTake(cb) {
+        if (!cb) this._callbacks.onplatetake = () => {};
+
+        this._callbacks.onplatetake = cb;
     }
 
     _appendScrollables() {
@@ -190,7 +200,7 @@ export default class SelectorLayer extends Layer {
         );
 
         plate.draw(gcell, 'west');
-        plate._container.dmove(-gcell.pos.x, -gcell.pos.y);
+        plate.move_to_point(0, 0);
         const width = plate._container.width(),
               height = plate._container.width();
 
@@ -206,13 +216,18 @@ export default class SelectorLayer extends Layer {
 
         bullet.addEventListener(
             'click',
-            () => this._onSlideClick(cell, pedestal, subtitle, slide, bullet, settings)
+            () => this._onBulletClick(cell, pedestal, subtitle, slide, bullet, settings)
         );
+
+        slide.addEventListener(
+            'mousedown',
+            () => this._onSlideHold(plate)
+        )
 
         return [slide, bullet];
     }
 
-    _onSlideClick(cell, pedestal, subtitle, slide, bullet, settings) {
+    _onBulletClick(cell, pedestal, subtitle, slide, bullet, settings) {
         const slide_active  = cell.getElementsByClassName('active')[0];
         const bullet_active = pedestal.getElementsByClassName('active')[0];
 
@@ -250,6 +265,10 @@ export default class SelectorLayer extends Layer {
         slide.classList.add('active');
 
         subtitle.innerText = settings.title;
+    }
+
+    _onSlideHold(plate) {
+        this._callbacks.onplatetake(plate.serialize());
     }
 
     _initGroups() {
