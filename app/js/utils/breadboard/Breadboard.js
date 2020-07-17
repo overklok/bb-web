@@ -52,8 +52,7 @@ const LAYOUTS = {
         ],
 
         POINTS: [
-            Grid.AuxPoints.Vcc,
-            Grid.AuxPoints.Gnd,
+            Grid.AuxPointCats.Source,
         ],
 
         CONTROLS: {horz: true}
@@ -120,6 +119,12 @@ const LAYOUTS = {
             {horz: false, from: {x: -1, y: 5},  to: {x: -1, y: 5},  role: LabelLayer.CellRoles.Analog, pins_from: 6},
             {horz: false, from: {x: -1, y: 10}, to: {x: -1, y: 10}, role: LabelLayer.CellRoles.Analog, pins_from: 7},
             {horz: false, from: {x: -1, y: 11}, to: {x: -1, y: 11}, role: LabelLayer.CellRoles.Analog, pins_from: 8},
+        ],
+
+        POINTS: [
+            Grid.AuxPointCats.Usb1,
+            Grid.AuxPointCats.Usb2,
+            Grid.AuxPointCats.Usb3,
         ],
 
         CONTROLS: {horz: false},
@@ -221,6 +226,7 @@ export default class Breadboard {
             this._options.layout.GRID_WIDTH, this._options.layout.GRID_HEIGHT,
             this._options.layout.GRID_POS_X, this._options.layout.GRID_POS_Y,
             this._options.layout.GRID_GAP_X, this._options.layout.GRID_GAP_Y,
+            this._options.layout.WRAP_WIDTH, this._options.layout.WRAP_HEIGHT,
             this._options.layout.POINTS
         );
 
