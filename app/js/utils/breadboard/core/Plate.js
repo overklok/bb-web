@@ -38,7 +38,7 @@ export default class Plate {
 
     static get QuadSizeDefault()    {return 24}
     static get LEDSizeDefault()     {return 16}
-    static get LabelSizeDefault()   {return 12}
+    static get LabelSizeDefault()   {return 16}
 
     constructor(container_parent, grid, schematic=false, verbose=false, id=null, extra=0) {
         if (!container_parent || !grid) {

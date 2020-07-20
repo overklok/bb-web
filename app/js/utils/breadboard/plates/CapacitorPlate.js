@@ -64,7 +64,7 @@ export default class CapacitorPlate extends LinearPlate {
         if (num >= 1)          {text = String(Number(num).toPrecision())   + 'пк'}
 
         this._group.text(text + 'Ф')
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "normal"})
+            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
             .cx(this._container.width() / 2)
             .y(this._container.height() - size - 2)
             // .stroke({width: 0.5})

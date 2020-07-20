@@ -62,11 +62,11 @@ const ITEMS = [
         tags: "конденсатор ёмкость емкость capacitor",
         type: CapacitorPlate,
         options: [
-            {title: "100 мкФ", extra: 100},
-            {title: "1000 мкФ", extra: 1000},
+            {title: "100 мкФ", extra: 1e-4},
+            {title: "1000 мкФ", extra: 1e-3},
         ],
         custom: {
-            default: {title: "Своя ёмкость (мкФ)", extra: 200}
+            default: {title: "Своя ёмкость (пкФ)", extra: 200}
         }
     },
 
