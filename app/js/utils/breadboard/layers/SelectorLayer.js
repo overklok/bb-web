@@ -22,7 +22,7 @@ const ITEMS = [
     {
         title: "Перемычка",
         type: BridgePlate,
-        tags: "перемычка мост",
+        tags: "перемычка мост bridge",
         options: [
             {title: "2 клетки", extra: 2},
             {title: "3 клетки", extra: 3},
@@ -31,11 +31,12 @@ const ITEMS = [
             {title: "6 клеток", extra: 6},
         ],
         custom: {
-            default: {title: "Свой", extra: 2}
+            default: {title: "Свой размер", extra: 2}
         }
     },
     {
         title: "Светодиод",
+        tags: "светодиод лампа свет led diode light",
         type: LEDPlate,
         options: [
             {title: "Зелёный", extra: "G"},
@@ -44,30 +45,91 @@ const ITEMS = [
     },
     {
         title: "Резистор",
+        tags: "резистор сопротивление resistor",
         type: ResistorPlate,
         options: [
             {title: "200 Ом",   extra: 200},
-            {title: "1  кОм",   extra: 1000},
-            {title: "10 кОм",   extra: 10000}
-        ]
+            {title: "1 кОм",    extra: 1000},
+            {title: "10 кОм",   extra: 10000},
+            {title: "30 кОм",   extra: 30000},
+        ],
+        custom: {
+            default: {title: "Свой номинал (кОм)", extra: 100}
+        }
     },
     {
         title: "Конденсатор",
+        tags: "конденсатор ёмкость емкость capacitor",
         type: CapacitorPlate,
-        options: [{title: "Обычный"}]
+        options: [
+            {title: "100 мкФ", extra: 100},
+            {title: "1000 мкФ", extra: 1000},
+        ],
+        custom: {
+            default: {title: "Своя ёмкость (мкФ)", extra: 200}
+        }
     },
 
-    {title: "Транзистор",   type: TransistorPlate,      options: [{title: "Обычный"}]},
-    {title: "Фоторезистор", type: PhotoresistorPlate,   options: [{title: "Обычный"}]},
-    {title: "Реостат",      type: RheostatPlate,        options: [{title: "Обычный"}]},
-    {title: "Кнопка",       type: ButtonPlate,          options: [{title: "Обычная"}]},
-    {title: "Кнопка-3",     type: TButtonPlate,         options: [{title: "Обычная"}]},
-    {title: "Ключ",         type: SwitchPlate,          options: [{title: "Обычный"}]},
-    {title: "Индуктор",     type: InductorPlate,        options: [{title: "Обычный"}]},
-    {title: "Реле",         type: RelayPlate,           options: [{title: "Обычное"}]},
-    {title: "Зуммер",       type: BuzzerPlate,          options: [{title: "Обычный"}]},
-    {title: "Dummy",        type: DummyPlate,           options: [{title: "Обычная"}]},
-
+    {
+        title: "Транзистор",
+        tags: "транзистор transistor",
+        type: TransistorPlate,
+        options: [{title: "Обычный"}],
+    },
+    {
+        title: "Фоторезистор",
+        tags: "фоторезистор photoresistor",
+        type: PhotoresistorPlate,
+        options: [{title: "Обычный"}]
+    },
+    {
+        title: "Реостат",
+        tags: "реостат резистор переменный rheostat resistor variable",
+        type: RheostatPlate,
+        options: [{title: "Обычный"}]
+    },
+    {
+        title: "Кнопка",
+        tags: "кнопка button",
+        type: ButtonPlate,
+        options: [{title: "Обычная"}]
+    },
+    {
+        title: "Кнопка-3",
+        tags: "кнопка button",
+        type: TButtonPlate,
+        options: [{title: "Обычная"}]
+    },
+    {
+        title: "Ключ",
+        tags: "ключ switch",
+        type: SwitchPlate,
+        options: [{title: "Обычный"}]
+    },
+    {
+        title: "Индуктор",
+        tags: "индуктор индуктивность катушка inductor inductance coil",
+        type: InductorPlate,
+        options: [{title: "Обычный"}]
+    },
+    {
+        title: "Реле",
+        tags: "реле relay",
+        type: RelayPlate,
+        options: [{title: "Обычное"}]
+    },
+    {
+        title: "Зуммер",
+        tags: "зуммер пищалка buzzer beeper",
+        type: BuzzerPlate,
+        options: [{title: "Обычный"}]
+    },
+    {
+        title: "Dummy",
+        tags: "dummy",
+        type: DummyPlate,
+        options: [{title: "Обычная"}]
+    },
 ]
 
 export default class SelectorLayer extends Layer {
@@ -160,7 +222,7 @@ export default class SelectorLayer extends Layer {
             let found = false;
 
             for (const tag of tags) {
-                if (tag.indexOf(query) !== -1) {
+                if (tag.indexOf(query.toLowerCase()) !== -1) {
                     found = true;
                     break;
                 }
@@ -283,7 +345,7 @@ export default class SelectorLayer extends Layer {
 
             inp_custom.style.display = "display";
             const [slide, bullet, svg] =
-                this._generateSlide(slider, pedestal, subtitle, settings, option);
+                this._generateSlide(slider, pedestal, subtitle, settings, option, true);
 
             inp_custom.addEventListener('input', () => {
                 bullet.click();
@@ -319,7 +381,7 @@ export default class SelectorLayer extends Layer {
         return cell;
     }
 
-    _generateSlide(cell, pedestal, subtitle, settings_item, settings) {
+    _generateSlide(cell, pedestal, subtitle, settings_item, settings, bullet_custom=false) {
         const slide = document.createElement("div");
         const bullet = document.createElement("li");
         const svg_wrap = document.createElement("div");
@@ -328,6 +390,10 @@ export default class SelectorLayer extends Layer {
         slide.classList.add('bb-sel-slide');
         svg.node.classList.add('bb-sel-svg');
         svg_wrap.classList.add('bb-sel-svg_wrap');
+
+        if (bullet_custom) {
+            bullet.classList.add('custom');
+        }
 
         this._updateSlide(slide, svg, subtitle, settings_item, settings);
 

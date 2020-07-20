@@ -58,10 +58,13 @@ export default class ControlsLayer extends Layer {
     }
 
     compose(plate_types, plate_captions) {
+        this._logogroup = this._container.group().id("logogroup");
+        this._menugroup = this._container.group();
+        this._buttongroup = this._container.nested();
+
         this._drawLogo();
         this._drawMenuButton();
 
-        this._menugroup = this._container.group();
         this._hide();
 
         this._ctxmenu       = new BoardContextMenu(this._menugroup, this.__grid);
@@ -189,15 +192,18 @@ export default class ControlsLayer extends Layer {
     }
 
     _drawMenuButton() {
-        const btn = this._container.rect(50, 25)
-            .move(10, 10)
+        this._buttongroup
             .click(() => this._callbacks.menuclick())
             .style({cursor: 'pointer'});
+
+        this._buttongroup.rect(30, 25).move(20, 20).fill({color: '#afafaf'});
+
+        this._buttongroup.rect(30, 5).move(20, 20);
+        this._buttongroup.rect(30, 5).move(20, 30);
+        this._buttongroup.rect(30, 5).move(20, 40);
     }
 
     _drawLogo() {
-        this._logogroup = this._container.group().id("logogroup");
-
         let image = this._logogroup
             .nested();
 
@@ -244,10 +250,12 @@ export default class ControlsLayer extends Layer {
     }
 
     _show() {
+        this._buttongroup.show();
         this._attachEventListeners();
     }
 
     _hide() {
+        this._buttongroup.hide();
         this._detachEventListeners();
     }
 }
