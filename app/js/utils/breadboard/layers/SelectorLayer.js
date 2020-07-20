@@ -22,13 +22,17 @@ const ITEMS = [
     {
         title: "Перемычка",
         type: BridgePlate,
+        tags: "перемычка мост",
         options: [
             {title: "2 клетки", extra: 2},
             {title: "3 клетки", extra: 3},
             {title: "4 клетки", extra: 4},
             {title: "5 клеток", extra: 5},
             {title: "6 клеток", extra: 6},
-        ]
+        ],
+        custom: {
+            default: {title: "Свой", extra: 2}
+        }
     },
     {
         title: "Светодиод",
@@ -80,18 +84,23 @@ export default class SelectorLayer extends Layer {
             fullscreen: () => {},
         };
 
+        this._items = [];
+
         this.hide();
     }
 
     compose() {
         this._htmlcontainer = this._getEmbeddedHtmlGroup(this._container, '30%', '99%')
+        this._items = [];
 
         this._appendBasics();
         this._appendControls();
 
         for (const item of ITEMS) {
-            this._appendItem(item);
+            this._items.push(this._appendItem(item));
         }
+
+        this._filterItems();
 
         document.addEventListener('click', (evt) => this._closeOnClick(evt));
         document.addEventListener('mousedown', (evt) => this._closeOnClick(evt));
@@ -142,6 +151,29 @@ export default class SelectorLayer extends Layer {
         }
     }
 
+    _filterItems(query="") {
+        query = query.trim();
+
+        for (const item of this._items) {
+            const tags = item.getAttribute("data-tags").split(" ");
+
+            let found = false;
+
+            for (const tag of tags) {
+                if (tag.indexOf(query) !== -1) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                item.style.display = "block";
+            } else {
+                item.style.display = "none";
+            }
+        }
+    }
+
     _appendBasics() {
         this._area = document.createElement("div");
         this._area.classList.add('bb-sel-area');
@@ -161,9 +193,13 @@ export default class SelectorLayer extends Layer {
     _appendControls() {
         let btn_clear = document.createElement("a");
         let btn_fullscreen = document.createElement("a");
+        let inp_search = document.createElement("input");
 
-        btn_clear.classList += "bb-plate-btn-clear";
-        btn_fullscreen.classList += "bb-plate-btn-fullscreen";
+        btn_clear.classList.add("bb-sel-btn-clear");
+        btn_fullscreen.classList.add("bb-sel-btn-fullscreen");
+        inp_search.classList.add("bb-sel-inp-search");
+
+        inp_search.setAttribute("placeholder", "Поиск")
 
         btn_clear.addEventListener("click", () => {
             this._callbacks.clear();
@@ -176,53 +212,89 @@ export default class SelectorLayer extends Layer {
             btn_fullscreen.innerHTML = this._is_fullscreen ? "Свернуть" : "Во весь экран";
         });
 
+        inp_search.addEventListener("input", () => {
+            this._filterItems(inp_search.value);
+        })
+
         btn_clear.innerHTML = "Очистить всё";
         btn_fullscreen.innerHTML = "Во весь экран";
 
         this._controls.appendChild(btn_clear);
         this._controls.appendChild(btn_fullscreen);
+        this._controls.appendChild(inp_search);
     }
 
     _appendItem(settings) {
         if (!settings.options) return;
 
         const cell = document.createElement("div");
+        const slider = document.createElement("div");
         const slidectrl_left = document.createElement("div");
         const slidectrl_right = document.createElement("div");
         const pedestal_wrap = document.createElement("div");
         const pedestal = document.createElement("ul");
         const title = document.createElement("div");
         const subtitle = document.createElement("div");
+        const inp_custom = document.createElement("input");
+
+        cell.setAttribute('data-tags', settings.tags || "");
 
         cell.classList.add('bb-sel-cell');
+        slider.classList.add('bb-sel-slider');
+
         pedestal_wrap.classList.add('bb-sel-pedestal-wrap');
         pedestal.classList.add('bb-sel-pedestal');
         slidectrl_left.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-left');
         slidectrl_right.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-right');
         title.classList.add('bb-sel-title');
         subtitle.classList.add('bb-sel-subtitle');
+        inp_custom.classList.add('bb-sel-inp-custom');
 
         const elements = [];
 
         for (const option of settings.options) {
             elements.push(
-                this._generateSlide(cell, pedestal, subtitle, settings, option)
+                this._generateSlide(slider, pedestal, subtitle, settings, option)
             )
         }
 
         pedestal_wrap.appendChild(subtitle);
         pedestal_wrap.appendChild(pedestal);
 
+        slider.appendChild(slidectrl_left);
+        slider.appendChild(slidectrl_right);
+
         cell.appendChild(title);
-        cell.appendChild(slidectrl_left);
-        cell.appendChild(slidectrl_right);
+        cell.appendChild(inp_custom);
+        cell.appendChild(slider);
         cell.appendChild(pedestal_wrap);
+
         this._list.appendChild(cell);
 
         title.innerText = settings.title;
 
         slidectrl_right.innerText = ">";
         slidectrl_left.innerText = "<";
+
+        if (!settings.custom) {
+            inp_custom.style.display = "none";
+        } else {
+            const option = settings.custom.default;
+
+            inp_custom.style.display = "display";
+            const [slide, bullet, svg] =
+                this._generateSlide(slider, pedestal, subtitle, settings, option);
+
+            inp_custom.addEventListener('input', () => {
+                bullet.click();
+                this._updateSlide(
+                    slide, svg, subtitle, settings, {
+                        title: `${option.title} [${inp_custom.value}]`,
+                        extra: inp_custom.value
+                    }
+                );
+            })
+        }
 
         elements[0][1].click();
 
@@ -243,6 +315,8 @@ export default class SelectorLayer extends Layer {
             // negative modulo
             elements[(((idx_curr - 1) % ellen) + ellen) % ellen][1].click();
         });
+
+        return cell;
     }
 
     _generateSlide(cell, pedestal, subtitle, settings_item, settings) {
@@ -255,12 +329,38 @@ export default class SelectorLayer extends Layer {
         svg.node.classList.add('bb-sel-svg');
         svg_wrap.classList.add('bb-sel-svg_wrap');
 
-        const gcell = this.__grid.cell(0, 0);
-        const plate = new settings_item.type(
-            svg, this.__grid, false, false, undefined, settings.extra
+        this._updateSlide(slide, svg, subtitle, settings_item, settings);
+
+        slide.appendChild(svg_wrap);
+        cell.appendChild(slide);
+        pedestal.appendChild(bullet);
+
+        bullet.addEventListener(
+            'click',
+            () => this._onBulletClick(cell, pedestal, subtitle, slide, bullet)
         );
 
-        plate.draw(gcell, 'west');
+        return [slide, bullet, svg];
+    }
+
+    _updateSlide(slide, svg, subtitle, settings_item, settings) {
+        svg.node.innerHTML = "";
+
+        const gcell = this.__grid.cell(0, 0);
+
+        let plate,
+            error_message = null;
+
+        try {
+            plate = new settings_item.type(svg, this.__grid, false, false, undefined, settings.extra);
+            plate.draw(gcell, 'west');
+        } catch (e) {
+            plate = new DummyPlate(svg, this.__grid, false, false);
+            plate.draw(gcell, 'west');
+            error_message = e;
+            console.error(e);
+        }
+
         plate.move_to_point(0, 0);
 
         const width = plate._container.width(),
@@ -272,24 +372,18 @@ export default class SelectorLayer extends Layer {
             null,"viewBox", `0 0 ${width} ${height}`
         );
 
-        slide.appendChild(svg_wrap);
-        cell.appendChild(slide);
-        pedestal.appendChild(bullet);
+        slide.onmousedown = (evt) => this._onSlideHold(evt, svg.node, plate);
 
-        bullet.addEventListener(
-            'click',
-            () => this._onBulletClick(cell, pedestal, subtitle, slide, bullet, settings)
-        );
+        slide.setAttribute('data-title', settings.title);
 
-        slide.addEventListener(
-            'mousedown',
-            (evt) => this._onSlideHold(evt, svg.node, plate)
-        )
-
-        return [slide, bullet];
+        if (error_message) {
+            subtitle.innerHTML = `<p style="color: red;">${error_message}</p>`
+        } else {
+            subtitle.innerHTML = settings.title;
+        }
     }
 
-    _onBulletClick(cell, pedestal, subtitle, slide, bullet, settings) {
+    _onBulletClick(cell, pedestal, subtitle, slide, bullet) {
         const slide_active  = cell.getElementsByClassName('active')[0];
         const bullet_active = pedestal.getElementsByClassName('active')[0];
 
@@ -326,7 +420,7 @@ export default class SelectorLayer extends Layer {
         bullet.classList.add('active');
         slide.classList.add('active');
 
-        subtitle.innerText = settings.title;
+        subtitle.innerText = slide.getAttribute('data-title');
     }
 
     _onSlideHold(evt, svg_node, plate) {
