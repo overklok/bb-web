@@ -344,8 +344,11 @@ export default class SelectorLayer extends Layer {
             const option = settings.custom.default;
 
             inp_custom.style.display = "display";
-            const [slide, bullet, svg] =
-                this._generateSlide(slider, pedestal, subtitle, settings, option, true);
+
+            const generated = this._generateSlide(slider, pedestal, subtitle, settings, option, true);
+
+            elements.push(generated);
+            const [slide, bullet, svg] = generated;
 
             inp_custom.addEventListener('input', () => {
                 bullet.click();
