@@ -17,24 +17,18 @@ export default class ControlsLayer extends Layer {
 
         this._container.addClass(ControlsLayer.Class);
 
-        this._addgroup      = undefined;
-        this._cleargroup    = undefined;
-        this._menugroup     = this._container.group();
+        this._menugroup     = undefined;
         this._logogroup     = undefined;
 
         this._logo_flower   = undefined;
         this._logo_text     = undefined;
 
-        this._ctxmenu       = new BoardContextMenu(this._menugroup, grid);
-        this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
+        this._ctxmenu       = undefined;
 
         this._callbacks = {
-            add: () => {},
-            clear: () => {},
-            fullscreen: () => {},
-            capture: () => {},
             ctxmenuitemclick: () => {},
-            logoclick: () => {}
+            logoclick: () => {},
+            menuclick: () => {}
         };
 
         this._is_fullscreen = false;
@@ -64,10 +58,14 @@ export default class ControlsLayer extends Layer {
     }
 
     compose(plate_types, plate_captions) {
-        this._drawMenuPrimary(plate_types, plate_captions);
-        this._drawMenuSecondary();
         this._drawLogo();
+        this._drawMenuButton();
+
+        this._menugroup = this._container.group();
         this._hide();
+
+        this._ctxmenu       = new BoardContextMenu(this._menugroup, this.__grid);
+        this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)})
     }
 
     setVisibility(is_visible) {
@@ -111,28 +109,10 @@ export default class ControlsLayer extends Layer {
         this._is_logo_clicked = on;
     }
 
-    onAdd(cb) {
-        if (!cb) {
-            this._callbacks.add = () => {};
-        } else {
-            this._callbacks.add = cb;
-        }
-    }
+    onMenuClick(cb) {
+        if (!cb) {this._callbacks.menuclick = () => {}; return}
 
-    onClear(cb) {
-        if (!cb) {
-            this._callbacks.clear = () => {};
-        } else {
-            this._callbacks.clear = cb;
-        }
-    }
-
-    onFullscreen(cb) {
-        if (!cb) {
-            this._callbacks.fullscreen = () => {};
-        } else {
-            this._callbacks.fullscreen = cb;
-        }
+        this._callbacks.menuclick = cb;
     }
 
     onLogoClick(cb) {
@@ -208,6 +188,13 @@ export default class ControlsLayer extends Layer {
         return this._oncontextmenu;
     }
 
+    _drawMenuButton() {
+        const btn = this._container.rect(50, 25)
+            .move(10, 10)
+            .click(() => this._callbacks.menuclick())
+            .style({cursor: 'pointer'});
+    }
+
     _drawLogo() {
         this._logogroup = this._container.group().id("logogroup");
 
@@ -257,105 +244,10 @@ export default class ControlsLayer extends Layer {
     }
 
     _show() {
-        this._addgroup.style.display = "block";
-        this._cleargroup.style.display = "block";
-
         this._attachEventListeners();
     }
 
     _hide() {
-        this._addgroup.style.display = "none";
-        this._cleargroup.style.display = "none";
-
         this._detachEventListeners();
-    }
-
-    _drawMenuPrimary(plate_types, plate_captions) {
-        this._addgroup = this._getEmbeddedHtmlGroup(this._params.w1, this._params.h1, this._params.x1, this._params.y1);
-
-        let wrap = document.createElement("div");
-        let input = document.createElement("input");
-        let select = document.createElement("select");
-        let btn_apply = document.createElement("a");
-
-        wrap.classList += "bb-plate-left-wrap";
-        input.classList += "bb-plate-add-input";
-        select.classList += "bb-plate-add-selector";
-        btn_apply.classList += "bb-plate-btn-add";
-
-        let options = plate_types;
-
-        for (let i = 0; i < options.length; i++) {
-            let opt = options[i];
-            let el = document.createElement("option");
-            el.textContent = plate_captions[opt];
-            el.value = opt;
-
-            select.appendChild(el);
-        }
-
-        btn_apply.addEventListener("click", () => {
-            let plate_type = select.options[select.selectedIndex].value;
-            let extra = input.value;
-
-            this._callbacks.add(plate_type, extra);
-        });
-
-        btn_apply.innerHTML = "Добавить";
-
-        wrap.appendChild(select);
-        wrap.appendChild(input);
-        wrap.appendChild(btn_apply);
-
-        this._addgroup.appendChild(wrap);
-    }
-
-    _drawMenuSecondary() {
-        this._cleargroup = this._getEmbeddedHtmlGroup(this._params.w2, this._params.h2, this._params.x2, this._params.y2);
-
-        let wrap = document.createElement("div");
-        let btn_clear = document.createElement("a");
-        let btn_fullscreen = document.createElement("a");
-
-        wrap.classList += "bb-plate-right-wrap";
-        btn_clear.classList += "bb-plate-btn-clear";
-        btn_fullscreen.classList += "bb-plate-btn-fullscreen";
-
-        btn_clear.addEventListener("click", () => {
-            this._callbacks.clear();
-        });
-
-        btn_fullscreen.addEventListener("click", () => {
-            this._is_fullscreen = !this._is_fullscreen;
-            this._callbacks.fullscreen(this._is_fullscreen);
-
-            btn_fullscreen.innerHTML = this._is_fullscreen ? "Свернуть" : "Во весь экран";
-        });
-
-        btn_clear.innerHTML = "Очистить всё";
-        btn_fullscreen.innerHTML = "Во весь экран";
-
-        wrap.appendChild(btn_clear);
-        wrap.appendChild(btn_fullscreen);
-        this._cleargroup.appendChild(wrap);
-    }
-
-    _getEmbeddedHtmlGroup(width=0, height=0, x=0, y=0) {
-        let fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-
-        fo.classList.add("node");
-        fo.setAttribute("width", width);
-        fo.setAttribute("height", height);
-        fo.setAttribute("x", x);
-        fo.setAttribute("y", y);
-
-        this._container.node.appendChild(fo);
-
-        let body = document.createElement("div");
-        body.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-
-        fo.appendChild(body);
-
-        return body;
     }
 }

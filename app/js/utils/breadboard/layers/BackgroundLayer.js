@@ -33,10 +33,6 @@ export default class BackgroundLayer extends Layer {
 
         this._domain_config = undefined;
 
-        this._callbacks = {
-            menuclick: () => {}
-        };
-
         this._initGroups();
     }
 
@@ -55,7 +51,6 @@ export default class BackgroundLayer extends Layer {
         this._drawAuxPoints();
         this._drawDomains();
         this._drawCells();
-        this._drawMenuButton();
     }
 
     recompose(schematic, detailed) {
@@ -63,12 +58,6 @@ export default class BackgroundLayer extends Layer {
 
         this._initGroups();
         this.compose();
-    }
-
-    onMenuClick(cb) {
-        if (!cb) {this._callbacks.menuclick = () => {}; return}
-
-        this._callbacks.menuclick = cb;
     }
 
     _initGroups() {
@@ -85,13 +74,6 @@ export default class BackgroundLayer extends Layer {
         if (this._domaingroup)  this._domaingroup.remove();
         if (this._currentgroup) this._currentgroup.remove();
         if (this._decogroup)    this._decogroup.remove();
-    }
-
-    _drawMenuButton() {
-        const btn = this._boardgroup.rect(50, 25)
-            .move(10, 10)
-            .click(() => this._callbacks.menuclick())
-            .style({cursor: 'pointer'});
     }
 
     _drawAuxPoints() {

@@ -611,16 +611,6 @@ export default class Breadboard {
      * @private
      */
     _attachControlsEvents() {
-        /// добавление плашек
-        this._layers.controls.onAdd((plate_type, extra) => {
-            let id_new = this.addPlate(plate_type, 0, 0, 'west', null, extra);
-
-            this._callbacks.change({
-                id: id_new,
-                action: 'create'
-            });
-        });
-
         /// очистка платы
         this._layers.selector.onClear(() => {
             this.clearPlates();
@@ -631,7 +621,7 @@ export default class Breadboard {
             });
         });
 
-        this._layers.background.onMenuClick(() => {
+        this._layers.controls.onMenuClick(() => {
             this._layers.selector.open();
         })
 
