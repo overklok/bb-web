@@ -278,7 +278,8 @@ export default class Plate {
 
         this.highlightError(false);
         this.move(cell, true);
-        this.rotate(orientation, true);
+        this.rotate(orientation, true, false);
+        this._preventOverflow(true);
         this.__draw__(cell, orientation);
 
         this._drawn = true;
@@ -900,7 +901,7 @@ export default class Plate {
      *
      * @private
      */
-    _preventOverflow() {
+    _preventOverflow(throw_error=false) {
         /// Номер ячейки, занимаемой опорной ячейкой плашки
         let ix = this._state.cell.idx.x,
             iy = this._state.cell.idx.y;
@@ -918,6 +919,10 @@ export default class Plate {
 
         ix += dx;
         iy += dy;
+
+        if ((dx !== 0 || dy !== 0) && throw_error) {
+            throw new RangeError(`Invalid plate position: an overflow occurred at [${ix}, ${iy}] for plate #${this.id}`)
+        }
 
         // анимировать, но только не в случае незавершённой отрисовки
         this.move(this.__grid.cell(ix, iy), false, this._drawn);
