@@ -759,11 +759,11 @@ export default class Breadboard {
         if (!svg_node) {return}
 
         let canvas = document.createElement("canvas");
-        canvas.style.minWidth = WRAP_WIDTH;
-        canvas.style.minHeight = WRAP_HEIGHT;
+        canvas.style.minWidth = this._options.layout.WRAP_WIDTH;
+        canvas.style.minHeight = this._options.layout.WRAP_HEIGHT;
 
-        canvas.setAttribute('width', WRAP_WIDTH);
-        canvas.setAttribute('height', WRAP_HEIGHT);
+        canvas.setAttribute('width', this._options.layout.WRAP_WIDTH);
+        canvas.setAttribute('height', this._options.layout.WRAP_HEIGHT);
 
         document.body.appendChild(canvas);
 
@@ -774,7 +774,7 @@ export default class Breadboard {
         let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
 
         if (rasterize) {
-            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: WRAP_HEIGHT});
+            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: this._options.layout.WRAP_HEIGHT});
 
             let img = canvas.toDataURL("image/png");
 
