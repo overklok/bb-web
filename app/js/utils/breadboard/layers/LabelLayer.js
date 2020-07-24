@@ -62,18 +62,15 @@ export default class LabelLayer extends Layer {
         if (this._domaingroup)  this._domaingroup.remove();
     }
 
-    setPinsValues(values) {
-        if (!values || !Array.isArray(values)) {
+    setPinsValues(values_arr) {
+        if (!values_arr || !Array.isArray(values_arr)) {
             throw new TypeError("Pin values must be an array");
         }
 
         let i = 0;
 
-        for (let col of this.__grid.cells) {
-            const cell = col[0];
-
-            const [mode, value] = values.hasOwnProperty(i) ? values[i] : [null, 0];
-            const pos_x = cell.center.x;
+        for (const pinval_label of this._pinval_labels) {
+            const [mode, value] = values_arr.hasOwnProperty(i) ? values_arr[i] : [null, 0];
 
             let arrow = "",
                 color = 'black';
@@ -93,7 +90,11 @@ export default class LabelLayer extends Layer {
                 color = "black";
             }
 
-            this._pinval_labels[i].text(`${value}${arrow}`).fill(color).cx(pos_x);
+            if (mode !== null) {
+                pinval_label.text(`${value}${arrow}`).fill(color);
+            } else {
+                pinval_label.text(`A${i}`).fill('black');
+            }
 
             i++;
         }
@@ -136,7 +137,12 @@ export default class LabelLayer extends Layer {
                         default:        pos_y = cell.pos.y + text_bias; break;
                     }
 
-                    this._drawLabelText(cell.center.x, pos_y, text, font_size);
+                    const label = this._drawLabelText(cell.center.x, pos_y, text, font_size);
+
+                    if (domain.role === LabelLayer.CellRoles.Analog) {
+                        this._pinval_labels[pin_num] = label;
+                        console.log(pin_num, label);
+                    }
 
                     pin_num += pin_dir;
                 }
