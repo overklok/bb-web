@@ -141,7 +141,6 @@ export default class LabelLayer extends Layer {
 
                     if (domain.role === LabelLayer.CellRoles.Analog) {
                         this._pinval_labels[pin_num] = label;
-                        console.log(pin_num, label);
                     }
 
                     pin_num += pin_dir;
