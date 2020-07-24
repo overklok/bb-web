@@ -195,8 +195,9 @@ export default class Breadboard {
 
     switchModePhoto(on=true) {
         this._layers.region.toggle(!on);
-        this._layers.controls.toggle(!on);
+        // this._layers.controls.toggle(!on);
         // this._layers.current.toggle(!on);
+        this._layers.controls.toggleButtonDisplay(!on);
         this._layers.controls.toggleLogoActive(!on, false);
     }
 

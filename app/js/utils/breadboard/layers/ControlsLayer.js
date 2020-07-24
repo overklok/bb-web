@@ -90,6 +90,14 @@ export default class ControlsLayer extends Layer {
         this._logogroup.fire('click');
     }
 
+    toggleButtonDisplay(on=true) {
+        if (on) {
+            this._buttongroup.show();
+        } else {
+            this._buttongroup.hide();
+        }
+    }
+
     toggleLogoActive(on=true, animate=true) {
         if (on) {
             if (animate) {
