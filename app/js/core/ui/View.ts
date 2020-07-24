@@ -23,10 +23,18 @@ export class ResizeEvent extends AbstractEvent<ResizeEvent> {
 }
 
 export abstract class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
+    protected connector: ViewConnector;
+
     protected constructor(props: P) {
         super(props);
 
-        this.props.connector.activate(this);
+        this.props.connector.attach(this);
+    }
+
+    attachConnector(connector: ViewConnector) {
+        if (connector !== this.props.connector) {
+            connector.attach(this);
+        }
     }
 
     emit<E>(event: ViewEvent<E>) {

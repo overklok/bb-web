@@ -18,6 +18,7 @@ interface IState {
 
 export default class Nest extends React.Component<IProps, IState> {
     private readonly ref = React.createRef<HTMLDivElement>()
+    private readonly ref_view = React.createRef<View<any, any>>()
 
     constructor(props: IProps) {
         super(props);
@@ -43,9 +44,14 @@ export default class Nest extends React.Component<IProps, IState> {
             'nest': true,
         });
 
+        if (this.ref_view.current) {
+            this.ref_view.current.attachConnector(this.props.connector);
+        }
+
         return (
             <div className={klasses} ref={this.ref}>
                 <SpecificView
+                    ref={this.ref_view}
                     connector={this.props.connector}
                     ref_nest={this.ref}
                     mounted={this.state.mounted}

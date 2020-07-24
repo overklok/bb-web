@@ -45,7 +45,7 @@ export default class ViewConnector {
         }
     }
 
-    activate(view: View<IViewProps, IViewState>) {
+    attach(view: View<IViewProps, IViewState>) {
         this.view = view;
 
         this.unsubscribeCurrentPresenters();
