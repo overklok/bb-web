@@ -176,7 +176,7 @@ export default class Pane extends React.Component<IProps, IState> {
     }
 
     childDidLeave() {
-        // this.notifyResizePanes();
+        this.notifyResizePanes();
     }
 
     /**
