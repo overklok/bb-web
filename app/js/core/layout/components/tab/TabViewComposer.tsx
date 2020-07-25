@@ -31,6 +31,12 @@ export default class TabViewComposer extends React.Component<IProps, IState> {
         }
     }
 
+    componentDidUpdate() {
+        for (const [view_connector, menuref] of this.view_connectors) {
+            menuref.current.setItems(view_connector.actions);
+        }
+    }
+
     render() {
         this.view_connectors = [];
 

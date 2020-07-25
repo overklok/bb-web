@@ -1,6 +1,6 @@
-import Presenter, {action} from "../core/ui/Presenter";
+import Presenter, {action, on} from "../core/ui/Presenter";
 import {Action, BooleanAction} from "../core/ui/Event";
-import BoardView from "../views/BoardView";
+import BoardView, {ChangeEvent} from "../views/BoardView";
 
 export class EditAction extends BooleanAction<EditAction> {}
 
@@ -9,8 +9,19 @@ export default class BoardPresenter extends Presenter<BoardView> {
         [EditAction, 'Редактировать'],
     ]);
 
+    constructor(view: BoardView) {
+        super(view);
+
+        console.log('BoardPresenter created');
+    }
+
     @action(EditAction)
     test() {
         this.view.setReadOnly(true);
+    }
+
+    @on(ChangeEvent)
+    onchange(evt: ChangeEvent) {
+        console.log('onchange', evt);
     }
 }

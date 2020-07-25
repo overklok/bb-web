@@ -23,8 +23,6 @@ export class ResizeEvent extends AbstractEvent<ResizeEvent> {
 }
 
 export abstract class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
-    protected connector: ViewConnector;
-
     protected constructor(props: P) {
         super(props);
 

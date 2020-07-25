@@ -21,7 +21,7 @@ export default {
                 {name: 's1', size: '20%', views: [{alias: 'blockly', label: "Blockly"}], title: 'Blockly'},
                 // {name: 's2', size_min: '10px', views: [{alias: 'board', label: "Board"}, {alias: 'board', label: "Label2"}], title: 'Breadboard'},
                 {name: 's3', size: '20%', panes: [
-                        {name: 'k3', views: [{alias: 'board', label: "Board 4"}]},
+                        {name: 'k3', views: [{alias: 'board2', label: "Board 4"}]},
                 ]}
             ]},
         ]
