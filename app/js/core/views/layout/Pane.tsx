@@ -4,11 +4,11 @@ import classNames from "classnames";
 import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
 
 import Handle from "./Handle";
-import {ILayoutPane, ViewOption} from "../../configs/LayoutConfig";
-import {View} from "../../ui/View";
+import {ILayoutPane, ViewOption} from "../../models/LayoutModel";
+import {View} from "../../base/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
-import TabViewComposer from "../../ui/viewcomposers/tab/TabViewComposer";
+import TabViewComposer from "../../base/viewcomposers/tab/TabViewComposer";
 import Cover from "./Cover";
 
 export enum PaneOrientation {
@@ -355,6 +355,8 @@ export default class Pane extends React.Component<IProps, IState> {
 
     private renderNests() {
         this.nests = [];
+
+        if (!this.props.view_options) return null;
         
         return (
             <Frame covered={this.state.covered}>

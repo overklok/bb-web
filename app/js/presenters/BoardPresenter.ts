@@ -1,5 +1,5 @@
-import Presenter, {action, on} from "../core/ui/Presenter";
-import {Action, BooleanAction} from "../core/ui/Event";
+import Presenter, {action, on} from "../core/base/Presenter";
+import {Action, BooleanAction} from "../core/base/Event";
 import BoardView, {ChangeEvent} from "../views/BoardView";
 
 export class EditAction extends BooleanAction<EditAction> {}

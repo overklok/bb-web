@@ -4,7 +4,7 @@ import * as ReactDOM from "react-dom";
 import Layout from "../views/layout/Layout";
 import IViewService from "./interfaces/IViewService";
 
-import ViewConnector from "../ui/ViewConnector";
+import ViewConnector from "../base/ViewConnector";
 
 export default class ViewService extends IViewService {
     private root: Layout;

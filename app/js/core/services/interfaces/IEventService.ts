@@ -1,4 +1,4 @@
-import {AbstractEvent} from "../../ui/Event";
+import {AbstractEvent} from "../../base/Event";
 
 /**
  * @abstract

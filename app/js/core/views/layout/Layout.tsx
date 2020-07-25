@@ -2,15 +2,11 @@ import * as React from "react";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import Pane from "./Pane";
+import Pane, {PaneOrientation} from "./Pane";
 
-import {LayoutConfig} from "../../configs/LayoutConfig";
 import {RefObject} from "react";
-import {IViewProps, IViewState, View} from "../../ui/View";
-import {ViewConfig} from "../../configs/ViewConfig";
-import views_config from "../../../configs/views";
-import modes_config from "../../../configs/layouts";
-import IConfigService from "../../services/interfaces/IConfigService";
+import {IViewProps, IViewState, View} from "../../base/View";
+import {ILayoutMode, ILayoutPane} from "../../models/LayoutModel";
 
 require('../../../../../app/css/layout.less');
 
@@ -23,7 +19,7 @@ export enum DraggableItemTypes {
  */
 interface ILayoutProps extends IViewProps {
     // конифгурация режимов разметки
-    // config: LayoutConfig,
+    modes: {[key: string]: ILayoutMode};
 }
 
 /**
@@ -42,10 +38,16 @@ interface ILayoutState extends IViewState {
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
 export default class Layout extends View<ILayoutProps, ILayoutState> {
-    private pane_ref: RefObject<Pane> = React.createRef();
+    static defaultProps = {
+        modes: {
+            default: {
+                policy: PaneOrientation.Horizontal,
+                panes: [] as ILayoutPane[]
+            }
+        }
+    };
 
-    private config_layout: LayoutConfig;
-    private config_view: ViewConfig;
+    private pane_ref: RefObject<Pane> = React.createRef();
 
     constructor(props: ILayoutProps) {
         super(props);
@@ -55,21 +57,6 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
         }
 
         window.addEventListener('resize', this.onResize());
-
-        // TEMP!!!!
-        // TODO: Remove this code an make this.props.connector.app private!!!!!
-
-        this.props.connector.app.instance(IConfigService).configure(ViewConfig, views_config);
-        this.props.connector.app.instance(IConfigService).configure(LayoutConfig, modes_config);
-
-        const config_service = this.props.connector.app.instance(IConfigService);
-        const config_views = config_service.configuration(ViewConfig);
-        const config_layout = config_service.configuration(LayoutConfig);
-
-        this.config_view = config_views;
-        this.config_layout = config_layout;
-
-        this.config_layout.resolveViewAliasesToTypes(this.config_view, this.props.connector.app);
     }
 
     /**
@@ -84,9 +71,9 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
     }
 
     render() {
-        const orientation = this.config_layout.modes[this.state.mode_name].policy;
+        const orientation = this.props.modes[this.state.mode_name].policy;
 
-        const panes = this.config_layout.modes[this.state.mode_name].panes;
+        const panes = this.props.modes[this.state.mode_name].panes;
 
         return (
             <DndProvider backend={HTML5Backend}>

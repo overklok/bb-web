@@ -1,4 +1,4 @@
-import {IImperativeViewProps, ImperativeView} from "../core/ui/ImperativeView";
+import {IImperativeViewProps, ImperativeView} from "../core/base/ImperativeView";
 import BlocklyWrapper from '../wrappers/BlocklyWrapper'
 
 import JSONBlocks       from '../utils/blockly/extras/blocks';

@@ -6,7 +6,7 @@ import {AbstractEvent, Action, ViewEvent} from "./Event";
 
 // possible renamings: Supervisor, PresenterFactory (pterfac)
 export default class ViewConnector {
-    readonly app: Application;
+    private readonly app: Application;
     private readonly svc_event: IEventService;
     private view: View<any, any>;
 

@@ -1,6 +1,6 @@
 import Application from "../../Application";
 import * as React from "react";
-import {IViewProps, View} from "../../ui/View";
+import {IViewProps, View} from "../../base/View";
 
 /**
  * @abstract

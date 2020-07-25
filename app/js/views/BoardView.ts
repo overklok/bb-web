@@ -1,6 +1,6 @@
-import {IImperativeViewProps, ImperativeView} from "../core/ui/ImperativeView";
+import {IImperativeViewProps, ImperativeView} from "../core/base/ImperativeView";
 import Breadboard from "../utils/breadboard/Breadboard";
-import {ViewEvent} from "../core/ui/Event";
+import {ViewEvent} from "../core/base/Event";
 
 export class ChangeEvent extends ViewEvent<ChangeEvent> {}
 export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}

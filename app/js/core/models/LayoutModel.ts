@@ -1,9 +1,9 @@
-import {IConfig} from "../helpers/IConfig";
-import {ViewConfig} from "./ViewConfig";
-import {View} from "../ui/View";
-import ViewConnector from "../ui/ViewConnector";
+import {WidgetModel} from "./WidgetModel";
+import {View} from "../base/View";
 import Application from "../Application";
 import {PaneOrientation} from "../views/layout/Pane";
+import ViewConnector from "../base/ViewConnector";
+import Model from "../base/Model";
 
 const UNITS_ALLOWED = [
     "px", '%'
@@ -45,19 +45,20 @@ export interface ILayoutMode {
 }
 
 /**
- * Конфигурация разметки
+ * Модель разметки
  *
  * @property modes {} режимы разметки
  */
-export class LayoutConfig implements IConfig {
+export class LayoutModel extends Model {
     modes: {[key: string]: ILayoutMode};
 
-    constructor(config: object) {
-        this.modes = {};
-
-        for (const [mode_name, mode] of Object.entries(config)) {
-            this.modes[mode_name] = <ILayoutMode>mode;
-        }
+    constructor(options: object) {
+        super();
+        // this.modes = {};
+        //
+        // for (const [mode_name, mode] of Object.entries(config)) {
+        //     this.modes[mode_name] = <ILayoutMode>mode;
+        // }
     }
 
     /**
@@ -73,7 +74,7 @@ export class LayoutConfig implements IConfig {
         }
     }
 
-    resolveViewAliasesToTypes(view_config: ViewConfig, app: Application) {
+    resolveViewAliasesToTypes(view_config: WidgetModel, app: Application) {
         for (const mode of Object.values(this.modes)) {
             for (const pane of mode.panes) {
                 this.resolvePaneViewAliasesToTypes(pane, view_config, app);
@@ -103,7 +104,7 @@ export class LayoutConfig implements IConfig {
         this.processPaneViews(pane);
     }
 
-    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: ViewConfig, app: Application) {
+    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: WidgetModel, app: Application) {
         // Выполнить перебор вложенных панелей (головная рекурсия)
         if (pane.panes) {
             for (const subpane of pane.panes) {

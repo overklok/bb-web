@@ -2,7 +2,7 @@ import ServiceProvider from "./ServiceProvider";
 import Application from "../Application";
 import IViewService from "../services/interfaces/IViewService";
 import ViewService from "../services/ViewService";
-import SingleViewComposer from "../ui/viewcomposers/SingleViewComposer";
+import SingleViewComposer from "../base/viewcomposers/SingleViewComposer";
 import Layout from "../views/layout/Layout";
 
 export default class ViewServiceProvider extends ServiceProvider {
