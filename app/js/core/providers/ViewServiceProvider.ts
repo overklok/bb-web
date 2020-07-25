@@ -13,7 +13,6 @@ export default class ViewServiceProvider extends ServiceProvider {
     }
 
     public boot() {
-        // @ts-ignore
         this.app.instance(IViewService).setup(SingleViewComposer, [Layout]);
     }
 }

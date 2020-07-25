@@ -12,7 +12,7 @@ export default class IViewService {
         this.app = app;
     }
 
-    public setup(view_composer: typeof React.Component, views: typeof View[])   {throw new Error('abstract')};
+    public setup(view_composer: typeof React.Component, views: typeof React.Component[])   {throw new Error('abstract')};
     public compose(element: HTMLElement)                                        {throw new Error('abstract')};
     public switch(mode: string)                                                 {throw new Error('abstract')};
 }
