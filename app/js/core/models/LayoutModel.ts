@@ -1,48 +1,14 @@
-import {WidgetModel} from "./WidgetModel";
-import {View} from "../base/View";
 import Application from "../Application";
-import {PaneOrientation} from "../views/layout/Pane";
 import ViewConnector from "../base/ViewConnector";
 import Model from "../base/Model";
+import {ILayoutMode, ILayoutPane, IWidget, ViewOption} from "../views/layout/Layout";
 
 const UNITS_ALLOWED = [
     "px", '%'
 ];
 
 export type ViewOptionRaw = {alias: string, label: string};
-export type ViewOption = {connector: ViewConnector, type: typeof View, label: string};
 
-/**
- * Модель панели разметки
- *
- * Панель является основообразующим элементом разметки.
- * Панель является одновременно самым высокоуровневым и низкоуровневым элементом разметки,
- * так как может содержать в себе другие панели, т.е. эта модель является рекурсивной.
- */
-export interface ILayoutPane {
-    name: string;
-    title: string;
-    size: number;
-    size_min: number;
-    size_max: number;
-    size_unit: string;
-    fixed: number;
-    resizable: boolean;
-    panes: ILayoutPane[];
-    views: ViewOptionRaw[];
-    view_options: ViewOption[];
-}
-
-/**
- * Режим разметки
- *
- * Режим определяет состояние разметки в определённый момент времени.
- * За счёт возможности переключения режимов разметка является динамической.
- */
-export interface ILayoutMode {
-    panes: ILayoutPane[];
-    policy: PaneOrientation;
-}
 
 /**
  * Модель разметки
@@ -50,15 +16,20 @@ export interface ILayoutMode {
  * @property modes {} режимы разметки
  */
 export class LayoutModel extends Model {
+    widgets: {[key: string]: IWidget} = {};
     modes: {[key: string]: ILayoutMode};
 
-    constructor(options: object) {
+    constructor(state_initial: {modes: {[key: string]: ILayoutMode}, widgets: {[key: string]: IWidget}}) {
         super();
-        // this.modes = {};
-        //
-        // for (const [mode_name, mode] of Object.entries(config)) {
-        //     this.modes[mode_name] = <ILayoutMode>mode;
-        // }
+        const {modes: modes_raw, widgets: widgets_raw} = state_initial;
+
+        for (const [mode_name, mode] of Object.entries(modes_raw)) {
+            this.modes[mode_name] = <ILayoutMode>mode;
+        }
+
+        for (const [widget_name, widget] of Object.entries(widgets_raw)) {
+            this.widgets[widget_name] = <IWidget>widget;
+        }
     }
 
     /**
@@ -70,14 +41,6 @@ export class LayoutModel extends Model {
         for (const mode of Object.values(this.modes)) {
             for (const pane of mode.panes) {
                 this.preprocessPane(pane);
-            }
-        }
-    }
-
-    resolveViewAliasesToTypes(view_config: WidgetModel, app: Application) {
-        for (const mode of Object.values(this.modes)) {
-            for (const pane of mode.panes) {
-                this.resolvePaneViewAliasesToTypes(pane, view_config, app);
             }
         }
     }
@@ -102,31 +65,6 @@ export class LayoutModel extends Model {
         this.processPaneLimits(pane);
         this.processPaneResizability(pane);
         this.processPaneViews(pane);
-    }
-
-    resolvePaneViewAliasesToTypes(pane: ILayoutPane, view_config: WidgetModel, app: Application) {
-        // Выполнить перебор вложенных панелей (головная рекурсия)
-        if (pane.panes) {
-            for (const subpane of pane.panes) {
-                this.resolvePaneViewAliasesToTypes(subpane, view_config, app);
-            }
-        }
-
-        for (let {alias, label} of pane.views) {
-            const view_assoc = view_config.views[alias];
-            const {view_type, presenter_types} = view_assoc;
-
-            if (!view_type) throw new Error(`View type '${alias}' does not exist`);
-
-            const view_connector = new ViewConnector(app, presenter_types);
-
-            pane.view_options.push(<ViewOption>({
-                type: view_type,
-                label: label,
-                alias: alias,
-                connector: view_connector
-            } as object));
-        }
     }
 
     processPaneTitle(pane: ILayoutPane): void {

@@ -1,6 +1,6 @@
 TO-DO:
 
-!!!! Сейчас: Объединить LayoutModel и WidgetModel !!!!
+!!!! Сейчас: Deal with resolvePaneViewAliasesToTypes !!!!
 
 1. Сделать Layout частным случаем View, при этом:
     * Классы, которые определяют структуру внутренней реализации View (т.е. от которых зависит View)

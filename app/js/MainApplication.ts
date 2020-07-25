@@ -7,10 +7,8 @@ import IViewService from "./core/services/interfaces/IViewService";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 import IModelService from "./core/services/interfaces/IModelService";
 import {LayoutModel} from "./core/models/LayoutModel";
-import {WidgetModel} from "./core/models/WidgetModel";
 
-import views_config from "./configs/views";
-import modes_config from "./configs/layouts";
+import layouts_config from "./configs/layouts";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -30,8 +28,7 @@ class MainApplication extends Application {
 
         this.instance(IViewService).compose(element);
 
-        this.instance(IModelService).register(LayoutModel, modes_config);
-        this.instance(IModelService).register(WidgetModel, views_config);
+        this.instance(IModelService).register(LayoutModel, layouts_config);
     }
 
     setMode(mode: string) {
