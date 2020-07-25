@@ -1,7 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
-import {PaneOrientation} from "../types";
 import {logDeprecation} from "sweetalert/typings/modules/options/deprecations";
+import {PaneOrientation} from "./Pane";
 
 /**
  * Свойства рукоятки

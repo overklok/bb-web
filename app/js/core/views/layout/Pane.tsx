@@ -5,12 +5,16 @@ import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group
 
 import Handle from "./Handle";
 import {ILayoutPane, ViewOption} from "../../configs/LayoutConfig";
-import {PaneOrientation} from "../types";
 import {View} from "../../ui/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
-import TabViewComposer from "./tab/TabViewComposer";
+import TabViewComposer from "../../ui/viewcomposers/tab/TabViewComposer";
 import Cover from "./Cover";
+
+export enum PaneOrientation {
+    Vertical = 'vertical',
+    Horizontal = 'horizontal'
+}
 
 /**
  * Свойства панели разметки

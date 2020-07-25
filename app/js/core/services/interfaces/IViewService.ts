@@ -1,6 +1,6 @@
-import {LayoutConfig} from "../../configs/LayoutConfig";
-import {ViewConfig} from "../../configs/ViewConfig";
 import Application from "../../Application";
+import * as React from "react";
+import {IViewProps, View} from "../../ui/View";
 
 /**
  * @abstract
@@ -12,8 +12,7 @@ export default class IViewService {
         this.app = app;
     }
 
-    public setup(config_layout: LayoutConfig,
-                 config_views: ViewConfig)                      {throw new Error('abstract')};
-    public compose(element: HTMLElement)                        {throw new Error('abstract')};
-    public switch(mode: string)                                 {throw new Error('abstract')};
+    public setup(view_composer: typeof React.Component, views: typeof View[])   {throw new Error('abstract')};
+    public compose(element: HTMLElement)                                        {throw new Error('abstract')};
+    public switch(mode: string)                                                 {throw new Error('abstract')};
 }

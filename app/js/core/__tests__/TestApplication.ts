@@ -1,6 +1,6 @@
 import Application from "../Application";
 import TestServiceProvider from "./TestServiceProvider";
-import ServiceProvider from "../support/ServiceProvider";
+import ServiceProvider from "../providers/ServiceProvider";
 import ViewServiceProvider from "../providers/ViewServiceProvider";
 import IViewService from "../services/interfaces/IViewService";
 import ConfigServiceProvider from "../providers/ConfigServiceProvider";

@@ -1,9 +1,9 @@
-import {PaneOrientation} from "../layout/types";
 import {IConfig} from "../helpers/IConfig";
 import {ViewConfig} from "./ViewConfig";
 import {View} from "../ui/View";
 import ViewConnector from "../ui/ViewConnector";
 import Application from "../Application";
+import {PaneOrientation} from "../views/layout/Pane";
 
 const UNITS_ALLOWED = [
     "px", '%'

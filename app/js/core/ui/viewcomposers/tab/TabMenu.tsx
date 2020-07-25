@@ -1,6 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
-import {Action, BooleanAction} from "../../../ui/Event";
+import {Action, BooleanAction} from "../../Event";
 
 interface IProps {
 

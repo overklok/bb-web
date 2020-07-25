@@ -2,7 +2,7 @@ import * as React from "react";
 import SingleTab from "./SingleTab";
 import Tab from "./Tab";
 import TabMenu from "./TabMenu";
-import ViewConnector from "../../../ui/ViewConnector";
+import ViewConnector from "../../ViewConnector";
 
 interface IProps {
     children: JSX.Element[] // usually a Nest creators
@@ -75,7 +75,7 @@ export default class TabViewComposer extends React.Component<IProps, IState> {
 
                         return (
                             <SingleTab label={label} key={index} ref={ref}/>
-                    )
+                        )
                     })}
                 </div>
                 <div className="tab-content">

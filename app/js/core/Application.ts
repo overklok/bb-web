@@ -1,4 +1,4 @@
-import ServiceProvider from "./support/ServiceProvider";
+import ServiceProvider from "./providers/ServiceProvider";
 import IBindable from "./helpers/IBindable";
 
 export default abstract class Application {

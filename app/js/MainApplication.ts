@@ -1,5 +1,5 @@
 import Application from "./core/Application";
-import ServiceProvider from "./core/support/ServiceProvider";
+import ServiceProvider from "./core/providers/ServiceProvider";
 import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ConfigServiceProvider from "./core/providers/ConfigServiceProvider";
 import IViewService from "./core/services/interfaces/IViewService";
@@ -21,8 +21,7 @@ class MainApplication extends Application {
     }
 
     protected setup() {
-        this.instance(IConfigService).configure(ViewConfig, views);
-        this.instance(IConfigService).configure(LayoutConfig, layouts);
+
     }
 
     run(element: HTMLElement) {

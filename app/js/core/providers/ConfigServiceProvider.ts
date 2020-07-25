@@ -1,4 +1,4 @@
-import ServiceProvider from "../support/ServiceProvider";
+import ServiceProvider from "./ServiceProvider";
 import Application from "../Application";
 import IConfigService from "../services/interfaces/IConfigService";
 import ConfigService from "../services/ConfigService";

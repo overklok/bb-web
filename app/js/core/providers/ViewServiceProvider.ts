@@ -1,10 +1,9 @@
-import ServiceProvider from "../support/ServiceProvider";
+import ServiceProvider from "./ServiceProvider";
 import Application from "../Application";
 import IViewService from "../services/interfaces/IViewService";
 import ViewService from "../services/ViewService";
-import IConfigService from "../services/interfaces/IConfigService";
-import {LayoutConfig} from "../configs/LayoutConfig";
-import {ViewConfig} from "../configs/ViewConfig";
+import SingleViewComposer from "../ui/viewcomposers/SingleViewComposer";
+import Layout from "../views/layout/Layout";
 
 export default class ViewServiceProvider extends ServiceProvider {
     register() {
@@ -14,10 +13,7 @@ export default class ViewServiceProvider extends ServiceProvider {
     }
 
     public boot() {
-        const config_service = this.app.instance(IConfigService);
-        const config_views = config_service.configuration(ViewConfig);
-        const config_layout = config_service.configuration(LayoutConfig);
-
-        this.app.instance(IViewService).setup(config_layout, config_views);
+        // @ts-ignore
+        this.app.instance(IViewService).setup(SingleViewComposer, [Layout]);
     }
 }

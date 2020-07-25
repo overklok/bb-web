@@ -6,21 +6,30 @@ import Pane from "./Pane";
 
 import {LayoutConfig} from "../../configs/LayoutConfig";
 import {RefObject} from "react";
+import {IViewProps, IViewState, View} from "../../ui/View";
+import {ViewConfig} from "../../configs/ViewConfig";
+import views_config from "../../../configs/views";
+import modes_config from "../../../configs/layouts";
+import IConfigService from "../../services/interfaces/IConfigService";
 
-require('css/layout.less');
+require('../../../../../app/css/layout.less');
+
+export enum DraggableItemTypes {
+    Tab = 'tab'
+}
 
 /**
  * Свойства разметки
  */
-interface ILayoutProps {
+interface ILayoutProps extends IViewProps {
     // конифгурация режимов разметки
-    config: LayoutConfig,
+    // config: LayoutConfig,
 }
 
 /**
  * Состояние разметки
  */
-interface ILayoutState {
+interface ILayoutState extends IViewState {
     // название текущего режима разметки
     mode_name: string
 }
@@ -32,8 +41,11 @@ interface ILayoutState {
  * компонуя панели в соответствии с выбранным режимом разметки.
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
-export default class Layout extends React.Component<ILayoutProps, ILayoutState> {
+export default class Layout extends View<ILayoutProps, ILayoutState> {
     private pane_ref: RefObject<Pane> = React.createRef();
+
+    private config_layout: LayoutConfig;
+    private config_view: ViewConfig;
 
     constructor(props: ILayoutProps) {
         super(props);
@@ -43,12 +55,27 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
         }
 
         window.addEventListener('resize', this.onResize());
+
+        // TEMP!!!!
+        // TODO: Remove this code an make this.props.connector.app private!!!!!
+
+        this.props.connector.app.instance(IConfigService).configure(ViewConfig, views_config);
+        this.props.connector.app.instance(IConfigService).configure(LayoutConfig, modes_config);
+
+        const config_service = this.props.connector.app.instance(IConfigService);
+        const config_views = config_service.configuration(ViewConfig);
+        const config_layout = config_service.configuration(LayoutConfig);
+
+        this.config_view = config_views;
+        this.config_layout = config_layout;
+
+        this.config_layout.resolveViewAliasesToTypes(this.config_view, this.props.connector.app);
     }
 
     /**
      * Установить режим разметки
      *
-     * @param mode название режима разметки из конифгурации
+     * @param mode название режима разметки из конфигурации
      */
     setMode(mode: string) {
         this.setState({
@@ -57,9 +84,9 @@ export default class Layout extends React.Component<ILayoutProps, ILayoutState> 
     }
 
     render() {
-        const orientation = this.props.config.modes[this.state.mode_name].policy;
+        const orientation = this.config_layout.modes[this.state.mode_name].policy;
 
-        const panes = this.props.config.modes[this.state.mode_name].panes;
+        const panes = this.config_layout.modes[this.state.mode_name].panes;
 
         return (
             <DndProvider backend={HTML5Backend}>

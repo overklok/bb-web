@@ -1,7 +1,8 @@
 import * as React from "react";
 import classNames from "classnames";
 import {useDrop} from "react-dnd";
-import {DraggableItemTypes} from "../types";
+import {DraggableItemTypes} from "./Layout";
+
 
 interface IProps {
     children: JSX.Element|JSX.Element[],
