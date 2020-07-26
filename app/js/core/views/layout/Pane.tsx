@@ -357,6 +357,8 @@ export default class Pane extends React.Component<IProps, IState> {
     private renderNests() {
         this.nests = [];
 
+        console.log(this.props._widgets);
+
         if (!this.props._widgets) return null;
         
         return (

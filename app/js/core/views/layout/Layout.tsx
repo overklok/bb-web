@@ -6,7 +6,6 @@ import Pane, {PaneOrientation} from "./Pane";
 
 import {RefObject} from "react";
 import {IViewProps, IViewState, View} from "../../base/View";
-import Presenter from "../../base/Presenter";
 import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
 
@@ -16,7 +15,8 @@ export enum DraggableItemTypes {
     Tab = 'tab'
 }
 
-
+import layouts_config from "../../../configs/layouts";
+import {LayoutModel} from "../../models/LayoutModel";
 
 /**
  * Модель панели разметки
@@ -84,6 +84,7 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
         }
     };
 
+    private modes: {[key: string]: ILayoutMode};
     private pane_ref: RefObject<Pane> = React.createRef();
 
     constructor(props: ILayoutProps) {
@@ -93,7 +94,8 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
             mode_name: 'default'
         }
 
-        this.resolveWidgets(this.props.modes);
+        const mdl = new LayoutModel(layouts_config as unknown as {[key: string]: ILayoutMode});
+        this.modes = this.resolveWidgets(mdl.modes);
 
         window.addEventListener('resize', this.onResize());
     }
@@ -110,9 +112,9 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
     }
 
     render() {
-        const orientation = this.props.modes[this.state.mode_name].policy;
+        const orientation = this.modes[this.state.mode_name].policy;
 
-        const panes = this.props.modes[this.state.mode_name].panes;
+        const panes = this.modes[this.state.mode_name].panes;
 
         return (
             <DndProvider backend={HTML5Backend}>
@@ -127,12 +129,14 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
         );
     }
 
-    private resolveWidgets(modes: {[key: string]: ILayoutMode}) {
+    private resolveWidgets(modes: {[key: string]: ILayoutMode}): {[key: string]: ILayoutMode} {
         for (const mode of Object.values(modes)) {
             for (const pane of mode.panes) {
                 this.resolvePaneWidgets(pane);
             }
         }
+
+        return modes;
     }
 
     private resolvePaneWidgets(pane: ILayoutPane) {
@@ -146,7 +150,7 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
             return;
         }
 
-        if (pane.widgets) {
+        if (this.props.widgets && pane.widgets) {
             // если в панели не лежат другие панели, то в ней могут быть виджеты
 
             pane._widgets = [];

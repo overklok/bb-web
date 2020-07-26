@@ -17,6 +17,7 @@ export default class ViewService extends IViewService {
     private view_connector: ViewConnector;
 
     public setup(view_composer: typeof React.Component, views: typeof React.Component[]) {
+        this.widgets = {};
         this.views = views;
         this.view_composer = view_composer;
         this.view_connector = new ViewConnector(this.app, []);
@@ -57,20 +58,17 @@ export default class ViewService extends IViewService {
 
         const children = view_types.map((SpecificView: typeof React.Component, index) => {
             return <SpecificView
+                widgets={this.widgets}
                 connector={this.view_connector}
                 key={index}
             />;
         });
 
-        const props = {
-            widgets: this.widgets
-        };
-
-        this.composer_instance = this.render(this.view_composer, props, children, this.element, null) as ViewComposerAny;
+        this.composer_instance = this.render(this.view_composer, children, this.element, null) as ViewComposerAny;
     }
 
-    protected render(component: typeof React.Component, props: any, children: any, target_node: any, callback: any) {
-        const react_element = React.createElement(component, props, children);
+    protected render(component: typeof React.Component, children: any, target_node: any, callback: any) {
+        const react_element = React.createElement(component, {}, children);
         return ReactDOM.render(react_element, target_node, callback);
     }
 }
