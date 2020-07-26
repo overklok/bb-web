@@ -1,13 +1,10 @@
-import Application from "../Application";
-import ViewConnector from "../base/ViewConnector";
 import Model from "../base/Model";
-import {ILayoutMode, ILayoutPane, IWidget, ViewOption} from "../views/layout/Layout";
+import {ILayoutMode, ILayoutPane} from "../views/layout/Layout";
+import {Widget} from "../services/interfaces/IViewService";
 
 const UNITS_ALLOWED = [
     "px", '%'
 ];
-
-export type ViewOptionRaw = {alias: string, label: string};
 
 
 /**
@@ -16,20 +13,12 @@ export type ViewOptionRaw = {alias: string, label: string};
  * @property modes {} режимы разметки
  */
 export class LayoutModel extends Model {
-    widgets: {[key: string]: IWidget} = {};
     modes: {[key: string]: ILayoutMode};
 
-    constructor(state_initial: {modes: {[key: string]: ILayoutMode}, widgets: {[key: string]: IWidget}}) {
+    constructor(modes: {[key: string]: ILayoutMode}) {
         super();
-        const {modes: modes_raw, widgets: widgets_raw} = state_initial;
-
-        for (const [mode_name, mode] of Object.entries(modes_raw)) {
-            this.modes[mode_name] = <ILayoutMode>mode;
-        }
-
-        for (const [widget_name, widget] of Object.entries(widgets_raw)) {
-            this.widgets[widget_name] = <IWidget>widget;
-        }
+        this.modes = modes;
+        this.preprocess();
     }
 
     /**
@@ -140,22 +129,19 @@ export class LayoutModel extends Model {
     }
 
     processPaneViews(pane: ILayoutPane): void {
-        if (pane.views && pane.panes) {
-            throw new Error(`Only one of 'view_aliases' or 'panes' can be used for pane '${pane.name}'`);
+        if (pane.widgets && pane.panes) {
+            throw new Error(`Only one of 'widgets' or 'panes' can be used for pane '${pane.name}'`);
         }
 
-        if (pane.views) {
-            if (!Array.isArray(pane.views)) {
-                throw new Error(`Invalid type of 'view_aliases' for pane '${pane.name}'`);
+        if (pane.widgets) {
+            if (!Array.isArray(pane.widgets)) {
+                throw new Error(`Invalid type of 'widgets' for pane '${pane.name}'`);
             }
 
             // TODO validate item types
         } else {
-            pane.views = [];
+            pane.widgets = [];
         }
-
-        // Создать пустой массив, чтобы в него вопследствии резолвить типы на основе алиасов
-        pane.view_options = [];
     }
 
     processSizeLimitValue(value: any): number {

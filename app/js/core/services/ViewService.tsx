@@ -1,15 +1,16 @@
 import * as React from "react";
 
 import * as ReactDOM from "react-dom";
-import Layout from "../views/layout/Layout";
 import IViewService, {Widget} from "./interfaces/IViewService";
 
 import ViewConnector from "../base/ViewConnector";
 import {IViewProps, IViewState} from "../base/View";
-import {PresenterType, ViewType} from "../base/types";
+import {PresenterType, ViewComposerAny, ViewType} from "../helpers/types";
 
 export default class ViewService extends IViewService {
-    private root: Layout;
+    private composer_instance: ViewComposerAny;
+
+    private element: HTMLElement;
 
     private views: typeof React.Component[];
     private view_composer: typeof React.Component;
@@ -22,21 +23,10 @@ export default class ViewService extends IViewService {
     }
 
     public compose(element: HTMLElement) {
-        const view_types = this.views;
+        this.element = element;
 
-        const children = view_types.map((SpecificView: typeof React.Component, index) => {
-            return <SpecificView
-                connector={this.view_connector}
-                key={index}
-            />;
-        });
-
-        this.root = this.render(this.view_composer, children, element, null) as Layout;
+        this.recompose();
     }
-
-    public switch(mode: string) {
-        this.root.setMode(mode);
-    };
 
     public registerWidgetTypes(
         widget_types: {
@@ -52,12 +42,35 @@ export default class ViewService extends IViewService {
 
             const connector = new ViewConnector(this.app, presenter_types);
 
-            this.widgets.set(alias, {connector, view_type, label: label || alias} as Widget);
+            this.widgets[alias] = {connector, view_type, label: label || alias} as Widget;
+        }
+
+        if (this.element) {
+            this.recompose();
         }
     }
 
-    protected render(component: typeof React.Component, children: any, target_node: any, callback: any) {
-        const react_element = React.createElement(component, {}, children);
+    protected recompose() {
+        if (!this.element) {throw new Error("Root view hasn't been composed yet")};
+
+        const view_types = this.views;
+
+        const children = view_types.map((SpecificView: typeof React.Component, index) => {
+            return <SpecificView
+                connector={this.view_connector}
+                key={index}
+            />;
+        });
+
+        const props = {
+            widgets: this.widgets
+        };
+
+        this.composer_instance = this.render(this.view_composer, props, children, this.element, null) as ViewComposerAny;
+    }
+
+    protected render(component: typeof React.Component, props: any, children: any, target_node: any, callback: any) {
+        const react_element = React.createElement(component, props, children);
         return ReactDOM.render(react_element, target_node, callback);
     }
 }

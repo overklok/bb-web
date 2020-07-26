@@ -1,14 +1,8 @@
 import * as React from "react";
+import ViewComposer, {IVCProps, IVCState} from "../ViewComposer";
 
-interface IProps {
-    children: JSX.Element[]
-}
-
-interface IState {}
-
-
-export default class SingleViewComposer extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
+export default class SingleViewComposer extends ViewComposer<IVCProps, IVCState> {
+    constructor(props: IVCProps) {
         super(props);
     }
 

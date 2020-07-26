@@ -4,12 +4,13 @@ import classNames from "classnames";
 import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
 
 import Handle from "./Handle";
-import {ILayoutPane, ViewOption} from "../../models/LayoutModel";
 import {View} from "../../base/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
 import TabViewComposer from "../../base/viewcomposers/tab/TabViewComposer";
 import Cover from "./Cover";
+import {ILayoutPane} from "./Layout";
+import {Widget} from "../../services/interfaces/IViewService";
 
 export enum PaneOrientation {
     Vertical = 'vertical',
@@ -29,7 +30,7 @@ interface IProps {
     // внутренние панели
     panes?: ILayoutPane[],
     // варианты Видов
-    view_options?: ViewOption[],
+    _widgets?: Widget[],
 
     // ориентация панели
     orientation: PaneOrientation,
@@ -356,15 +357,15 @@ export default class Pane extends React.Component<IProps, IState> {
     private renderNests() {
         this.nests = [];
 
-        if (!this.props.view_options) return null;
+        if (!this.props._widgets) return null;
         
         return (
             <Frame covered={this.state.covered}>
                 <TabViewComposer>
-                    {this.props.view_options.map((view_option, index) => {
+                    {this.props._widgets.map((widget, index) => {
                         const ref: RefObject<Nest> = React.createRef();
                         
-                        const nest = this.renderNest(index, view_option, ref);
+                        const nest = this.renderNest(index, widget, ref);
                         this.nests.push(ref);
                         
                         return nest;
@@ -408,7 +409,7 @@ export default class Pane extends React.Component<IProps, IState> {
                     resizable={data.resizable}
                     panes={data.panes}
                     orientation={orientation}
-                    view_options={data.view_options}
+                    _widgets={data._widgets}
                     covered={this.state.covered}
                     ref={ref}
                 />
@@ -416,14 +417,14 @@ export default class Pane extends React.Component<IProps, IState> {
         );
     }
 
-    renderNest(index: number, view_option: ViewOption, ref: RefObject<Nest>): JSX.Element {
+    renderNest(index: number, widget: Widget, ref: RefObject<Nest>): JSX.Element {
         return (
             <Nest
                 key={index}
                 index={index}
-                view_type={view_option.type}
-                connector={view_option.connector}
-                label={view_option.label}
+                view_type={widget.view_type}
+                connector={widget.connector}
+                label={widget.label}
                 ref={ref}
             />
         )

@@ -1,13 +1,11 @@
 import * as React from "react";
+import ViewComposer, {IVCProps, IVCState} from "../ViewComposer";
 
-interface IProps {
-    children: JSX.Element[]
-}
+export default class OverlayViewComposer extends ViewComposer<IVCProps, IVCState> {
+    constructor(props: IVCProps) {
+        super(props);
+    }
 
-interface IState {}
-
-
-export default class OverlayViewComposer extends React.Component<IProps, IState> {
     render() {
         const {children} = this.props;
 

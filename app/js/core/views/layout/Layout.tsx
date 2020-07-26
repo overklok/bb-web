@@ -6,10 +6,9 @@ import Pane, {PaneOrientation} from "./Pane";
 
 import {RefObject} from "react";
 import {IViewProps, IViewState, View} from "../../base/View";
-import {ILayoutMode, ILayoutPane, ViewOptionRaw} from "../../models/LayoutModel";
-import ViewConnector from "../../base/ViewConnector";
 import Presenter from "../../base/Presenter";
-import Application from "../../Application";
+import {Widget} from "../../services/interfaces/IViewService";
+import {WidgetInfo} from "../../helpers/types";
 
 require('../../../../../app/css/layout.less');
 
@@ -36,8 +35,9 @@ export interface ILayoutPane {
     fixed: number;
     resizable: boolean;
     panes: ILayoutPane[];
-    views: ViewOptionRaw[];
-    view_options: ViewOption[];
+    widgets: WidgetInfo[];
+
+    _widgets: Widget[];
 }
 
 /**
@@ -49,11 +49,6 @@ export interface ILayoutPane {
 export interface ILayoutMode {
     panes: ILayoutPane[];
     policy: PaneOrientation;
-}
-
-export interface IWidget {
-    view_type: typeof View;
-    presenter_types: typeof Presenter[];
 }
 
 /**
@@ -98,6 +93,8 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
             mode_name: 'default'
         }
 
+        this.resolveWidgets(this.props.modes);
+
         window.addEventListener('resize', this.onResize());
     }
 
@@ -130,36 +127,41 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
         );
     }
 
-    private resolveViewAliasesToTypes(app: Application) {
-        for (const mode of Object.values(this.modes)) {
+    private resolveWidgets(modes: {[key: string]: ILayoutMode}) {
+        for (const mode of Object.values(modes)) {
             for (const pane of mode.panes) {
-                this.resolvePaneViewAliasesToTypes(pane, app);
+                this.resolvePaneWidgets(pane);
             }
         }
     }
 
-    private resolvePaneViewAliasesToTypes(pane: ILayoutPane, app: Application) {
+    private resolvePaneWidgets(pane: ILayoutPane) {
         // Выполнить перебор вложенных панелей (головная рекурсия)
         if (pane.panes) {
             for (const subpane of pane.panes) {
-                this.resolvePaneViewAliasesToTypes(subpane, app);
+                this.resolvePaneWidgets(subpane);
             }
+
+            // если в панели лежат другие панели, то дальше обрабатывать не имеет смысла
+            return;
         }
 
-        for (let {alias, label} of pane.views) {
-            const view_assoc = this.widgets[alias];
-            const {view_type, presenter_types} = view_assoc;
+        if (pane.widgets) {
+            // если в панели не лежат другие панели, то в ней могут быть виджеты
 
-            if (!view_type) throw new Error(`View type '${alias}' does not exist`);
+            pane._widgets = [];
 
-            const view_connector = new ViewConnector(app, presenter_types);
+            for (let {alias, label} of pane.widgets) {
+                if (!(alias in this.props.widgets)) {
+                    throw new Error(`Cannot resolve widget by alias ${alias}`)
+                }
+                const widget = this.props.widgets[alias];
 
-            pane.view_options.push(<ViewOption>({
-                type: view_type,
-                label: label,
-                alias: alias,
-                connector: view_connector
-            } as object));
+                // замеить надпись виджета, если она переопределена
+                widget.label = label || widget.label;
+
+                pane._widgets.push(widget);
+            }
         }
     }
 

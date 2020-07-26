@@ -3,19 +3,16 @@ import SingleTab from "./SingleTab";
 import Tab from "./Tab";
 import TabMenu from "./TabMenu";
 import ViewConnector from "../../ViewConnector";
+import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
-interface IProps {
-    children: JSX.Element[] // usually a Nest creators
-}
-
-interface IState {
+interface IState extends IVCState {
     active_tab: number
 }
 
-export default class TabViewComposer extends React.Component<IProps, IState> {
+export default class TabViewComposer extends ViewComposer<IVCProps, IState> {
     private view_connectors: Array<[ViewConnector, React.RefObject<TabMenu>]> = [];
 
-    constructor(props: IProps) {
+    constructor(props: IVCProps) {
         super(props);
 
         this.state = {

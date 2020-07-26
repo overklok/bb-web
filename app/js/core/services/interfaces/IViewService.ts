@@ -2,7 +2,7 @@ import Application from "../../Application";
 import * as React from "react";
 import ViewConnector from "../../base/ViewConnector";
 import {IViewProps, IViewState, View} from "../../base/View";
-import {PresenterType, ViewType} from "../../base/types";
+import {PresenterType, ViewType} from "../../helpers/types";
 
 export type Widget = {connector: ViewConnector, view_type: typeof View, label?: string};
 
@@ -11,10 +11,11 @@ export type Widget = {connector: ViewConnector, view_type: typeof View, label?: 
  */
 export default class IViewService {
     protected readonly app: Application;
-    protected widgets: Map<string, Widget>;
+    protected widgets: {[key: string]: Widget};
 
     constructor(app: Application) {
         this.app = app;
+        this.widgets = {};
     }
 
     public setup(view_composer: typeof React.Component, views: typeof React.Component[])  {throw new Error('abstract')};

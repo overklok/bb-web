@@ -28,9 +28,10 @@ class MainApplication extends Application {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         this.instance(IViewService).registerWidgetTypes(widgets_config);
-        this.instance(IViewService).compose(element);
 
         this.instance(IModelService).register(LayoutModel, layouts_config);
+
+        this.instance(IViewService).compose(element);
     }
 
     setMode(mode: string) {
