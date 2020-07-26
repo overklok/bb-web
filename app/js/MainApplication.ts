@@ -33,10 +33,6 @@ class MainApplication extends Application {
 
         this.instance(IViewService).compose(element);
     }
-
-    setMode(mode: string) {
-        this.instance(IViewService).switch(mode);
-    }
 }
 
 declare global {

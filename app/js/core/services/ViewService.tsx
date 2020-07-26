@@ -1,26 +1,27 @@
 import * as React from "react";
 
 import * as ReactDOM from "react-dom";
-import IViewService, {Widget} from "./interfaces/IViewService";
+import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 
 import ViewConnector from "../base/ViewConnector";
-import {IViewProps, IViewState} from "../base/View";
-import {PresenterType, ViewComposerAny, ViewType} from "../helpers/types";
+import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
 
     private element: HTMLElement;
 
-    private views: typeof React.Component[];
     private view_composer: typeof React.Component;
-    private view_connector: ViewConnector;
 
-    public setup(view_composer: typeof React.Component, views: typeof React.Component[]) {
+    public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType[] = []) {
         this.widgets = {};
-        this.views = views;
         this.view_composer = view_composer;
-        this.view_connector = new ViewConnector(this.app, []);
+
+        if (typeof widget_types === 'string') {
+            this.widget_type_key = widget_types;
+        } else {
+            this.widget_types = widget_types;
+        }
     }
 
     public compose(element: HTMLElement) {
@@ -29,21 +30,20 @@ export default class ViewService extends IViewService {
         this.recompose();
     }
 
-    public registerWidgetTypes(
-        widget_types: {
-            [key: string]: {
-                view_type: ViewType<IViewProps, IViewState>,
-                presenter_types: PresenterType<IViewProps, IViewState>[],
-                label?: string
-            }
-        }
-    ) {
+    public registerWidgetTypes(widget_types: {[key: string]: WidgetType}) {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
             const {view_type, presenter_types, label} = widget_type;
 
             const connector = new ViewConnector(this.app, presenter_types);
 
             this.widgets[alias] = {connector, view_type, label: label || alias} as Widget;
+        }
+
+        if (this.widget_type_key) {
+            if (!(this.widget_type_key in this.widgets)) {
+                throw new Error(`Widget type ${this.widget_type_key} has not been found`);
+            }
+            this.widget_types = [widget_types[this.widget_type_key]];
         }
 
         if (this.element) {
@@ -54,12 +54,14 @@ export default class ViewService extends IViewService {
     protected recompose() {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
-        const view_types = this.views;
+        const children = this.widget_types.map((widget_type: WidgetType, index) => {
+            const {view_type: SpecificView, presenter_types} = widget_type;
 
-        const children = view_types.map((SpecificView: typeof React.Component, index) => {
+            const view_connector = new ViewConnector(this.app, presenter_types);
+
             return <SpecificView
                 widgets={this.widgets}
-                connector={this.view_connector}
+                connector={view_connector}
                 key={index}
             />;
         });

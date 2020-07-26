@@ -1,5 +1,5 @@
 import Model from "../base/Model";
-import {ILayoutMode, ILayoutPane} from "../views/layout/Layout";
+import {ILayoutMode, ILayoutPane} from "../views/layout/LayoutView";
 import {Widget} from "../services/interfaces/IViewService";
 
 const UNITS_ALLOWED = [
@@ -17,7 +17,7 @@ export class LayoutModel extends Model {
 
     constructor(modes: {[key: string]: ILayoutMode}) {
         super();
-        this.modes = modes;
+        this.modes = Object.assign({}, modes);
         this.preprocess();
     }
 
@@ -28,8 +28,8 @@ export class LayoutModel extends Model {
      */
     preprocess(): void {
         for (const mode of Object.values(this.modes)) {
-            for (const pane of mode.panes) {
-                this.preprocessPane(pane);
+            for (const [key, pane] of mode.panes.entries()) {
+                mode.panes[key] = this.preprocessPane(pane);
             }
         }
     }
@@ -41,11 +41,13 @@ export class LayoutModel extends Model {
      *
      * @param pane
      */
-    preprocessPane(pane: ILayoutPane): void {
+    preprocessPane(pane: ILayoutPane): ILayoutPane {
+        pane = Object.assign({}, pane);
+
         // Выполнить перебор вложенных панелей (головная рекурсия)
         if (pane.panes) {
-            for (const subpane of pane.panes) {
-                this.preprocessPane(subpane);
+            for (const [key, subpane] of pane.panes.entries()) {
+                pane.panes[key] = this.preprocessPane(subpane);
             }
         }
 
@@ -54,6 +56,8 @@ export class LayoutModel extends Model {
         this.processPaneLimits(pane);
         this.processPaneResizability(pane);
         this.processPaneViews(pane);
+
+        return pane;
     }
 
     processPaneTitle(pane: ILayoutPane): void {
@@ -76,7 +80,9 @@ export class LayoutModel extends Model {
      *
      * @param pane
      */
-    processPaneSize(pane: ILayoutPane): void {
+    processPaneSize(pane: ILayoutPane): ILayoutPane {
+        pane = Object.assign({}, pane);
+
         let size, size_unit;
 
         /**
@@ -106,9 +112,13 @@ export class LayoutModel extends Model {
         if (Number.isNaN(size)) size = null;
 
         [pane.size, pane.size_unit] = [size, size_unit];
+
+        return pane;
     }
 
-    processPaneLimits(pane: ILayoutPane): void {
+    processPaneLimits(pane: ILayoutPane): ILayoutPane {
+        pane = Object.assign({}, pane);
+
         if (pane.fixed) {
             pane.size_min = pane.fixed;
             pane.size_max = pane.fixed;
@@ -116,9 +126,13 @@ export class LayoutModel extends Model {
 
         pane.size_min = this.processSizeLimitValue(pane.size_min);
         pane.size_max = this.processSizeLimitValue(pane.size_max);
+
+        return pane;
     }
 
-    processPaneResizability(pane: ILayoutPane): void {
+    processPaneResizability(pane: ILayoutPane): ILayoutPane {
+        pane = Object.assign({}, pane);
+
         if (pane.resizable == null) {
             pane.resizable = true;
         }
@@ -126,10 +140,15 @@ export class LayoutModel extends Model {
         if (pane.size_min == pane.size_max && pane.size_max != null) {
             pane.resizable = false;
         }
+
+        return pane;
     }
 
-    processPaneViews(pane: ILayoutPane): void {
+    processPaneViews(pane: ILayoutPane): ILayoutPane {
+        pane = Object.assign({}, pane);
+
         if (pane.widgets && pane.panes) {
+            console.error(pane);
             throw new Error(`Only one of 'widgets' or 'panes' can be used for pane '${pane.name}'`);
         }
 
@@ -142,6 +161,8 @@ export class LayoutModel extends Model {
         } else {
             pane.widgets = [];
         }
+
+        return pane;
     }
 
     processSizeLimitValue(value: any): number {

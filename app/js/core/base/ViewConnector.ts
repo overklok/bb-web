@@ -51,7 +51,14 @@ export default class ViewConnector {
 
         // this.presenters = [];
         for (const presenter_type of this.presenter_types) {
-            const presenter = new presenter_type(view);
+            let presenter: Presenter<View<IViewProps, IViewState>>;
+
+            // try {
+                presenter = new presenter_type(view);
+            // } catch (e) {
+                // TODO: PresenterError
+                // throw Error("Uncaught PresenterError [TODO]");
+            // }
             // this.presenters.push(presenter);
 
             // Activate presenter routes

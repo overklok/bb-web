@@ -9,7 +9,7 @@ import Nest from "./Nest";
 import Frame from "./Frame";
 import TabViewComposer from "../../base/viewcomposers/tab/TabViewComposer";
 import Cover from "./Cover";
-import {ILayoutPane} from "./Layout";
+import {ILayoutPane} from "./LayoutView";
 import {Widget} from "../../services/interfaces/IViewService";
 
 export enum PaneOrientation {
@@ -356,8 +356,6 @@ export default class Pane extends React.Component<IProps, IState> {
 
     private renderNests() {
         this.nests = [];
-
-        console.log(this.props._widgets);
 
         if (!this.props._widgets) return null;
         

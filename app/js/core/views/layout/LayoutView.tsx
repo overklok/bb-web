@@ -15,9 +15,6 @@ export enum DraggableItemTypes {
     Tab = 'tab'
 }
 
-import layouts_config from "../../../configs/layouts";
-import {LayoutModel} from "../../models/LayoutModel";
-
 /**
  * Модель панели разметки
  *
@@ -56,7 +53,7 @@ export interface ILayoutMode {
  */
 interface ILayoutProps extends IViewProps {
     // конифгурация режимов разметки
-    modes: {[key: string]: ILayoutMode};
+    // modes: {[key: string]: ILayoutMode};
 }
 
 /**
@@ -74,30 +71,49 @@ interface ILayoutState extends IViewState {
  * компонуя панели в соответствии с выбранным режимом разметки.
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
-export default class Layout extends View<ILayoutProps, ILayoutState> {
-    static defaultProps = {
-        modes: {
+export default class LayoutView extends View<ILayoutProps, ILayoutState> {
+    private mounted: boolean;
+    private pane_ref: RefObject<Pane> = React.createRef();
+    private modes: {[key: string]: ILayoutMode};
+
+    constructor(props: ILayoutProps) {
+        super(props);
+
+        this.modes = {
             default: {
                 policy: PaneOrientation.Horizontal,
                 panes: [] as ILayoutPane[]
             }
-        }
-    };
+        };
 
-    private modes: {[key: string]: ILayoutMode};
-    private pane_ref: RefObject<Pane> = React.createRef();
-
-    constructor(props: ILayoutProps) {
-        super(props);
+        this.mounted = false;
 
         this.state = {
             mode_name: 'default'
         }
 
-        const mdl = new LayoutModel(layouts_config as unknown as {[key: string]: ILayoutMode});
-        this.modes = this.resolveWidgets(mdl.modes);
-
         window.addEventListener('resize', this.onResize());
+
+        console.log('oneview');
+    }
+
+    componentDidMount() {
+        this.mounted = true;
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    setModes(modes: {[key: string]: ILayoutMode}) {
+        if (!modes) return;
+        this.modes = this.resolveWidgets(modes);
+
+        if (this.mounted) {
+            this.setState({});
+        }
+
+        console.log(this.modes);
     }
 
     /**
@@ -112,6 +128,8 @@ export default class Layout extends View<ILayoutProps, ILayoutState> {
     }
 
     render() {
+        console.log(this.modes);
+
         const orientation = this.modes[this.state.mode_name].policy;
 
         const panes = this.modes[this.state.mode_name].panes;

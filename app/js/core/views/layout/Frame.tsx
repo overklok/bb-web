@@ -1,7 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 import {useDrop} from "react-dnd";
-import {DraggableItemTypes} from "./Layout";
+import {DraggableItemTypes} from "./LayoutView";
 
 
 interface IProps {
