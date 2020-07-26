@@ -3,6 +3,7 @@ import {IViewProps, IViewState, View} from "./View";
 import Application from "../Application";
 import IEventService from "../services/interfaces/IEventService";
 import {AbstractEvent, Action, ViewEvent} from "./Event";
+import {PresenterType} from "./types";
 
 // possible renamings: Supervisor, PresenterFactory (pterfac)
 export default class ViewConnector {
@@ -12,10 +13,10 @@ export default class ViewConnector {
 
     // private presenters: Presenter<View<IViewProps, IViewState>>[];
 
-    public readonly presenter_types: typeof Presenter[];
+    public readonly presenter_types: PresenterType<IViewProps, IViewState>[];
     public actions: Array<[string, Action<any>, Function]> = [];
 
-    constructor(app: Application, presenter_types: typeof Presenter[]) {
+    constructor(app: Application, presenter_types: PresenterType<IViewProps, IViewState>[]) {
         this.app = app;
 
         this.svc_event = this.app.instance(IEventService);

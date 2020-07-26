@@ -17,7 +17,7 @@ export enum DraggableItemTypes {
     Tab = 'tab'
 }
 
-export type ViewOption = {connector: ViewConnector, type: typeof View, label: string};
+
 
 /**
  * Модель панели разметки

@@ -9,6 +9,7 @@ import IModelService from "./core/services/interfaces/IModelService";
 import {LayoutModel} from "./core/models/LayoutModel";
 
 import layouts_config from "./configs/layouts";
+import widgets_config from "./configs/widgets";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -26,6 +27,7 @@ class MainApplication extends Application {
     run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
+        this.instance(IViewService).registerWidgetTypes(widgets_config);
         this.instance(IViewService).compose(element);
 
         this.instance(IModelService).register(LayoutModel, layouts_config);

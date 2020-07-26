@@ -2,9 +2,11 @@ import * as React from "react";
 
 import * as ReactDOM from "react-dom";
 import Layout from "../views/layout/Layout";
-import IViewService from "./interfaces/IViewService";
+import IViewService, {Widget} from "./interfaces/IViewService";
 
 import ViewConnector from "../base/ViewConnector";
+import {IViewProps, IViewState} from "../base/View";
+import {PresenterType, ViewType} from "../base/types";
 
 export default class ViewService extends IViewService {
     private root: Layout;
@@ -35,6 +37,24 @@ export default class ViewService extends IViewService {
     public switch(mode: string) {
         this.root.setMode(mode);
     };
+
+    public registerWidgetTypes(
+        widget_types: {
+            [key: string]: {
+                view_type: ViewType<IViewProps, IViewState>,
+                presenter_types: PresenterType<IViewProps, IViewState>[],
+                label?: string
+            }
+        }
+    ) {
+        for (const [alias, widget_type] of Object.entries(widget_types)) {
+            const {view_type, presenter_types, label} = widget_type;
+
+            const connector = new ViewConnector(this.app, presenter_types);
+
+            this.widgets.set(alias, {connector, view_type, label: label || alias} as Widget);
+        }
+    }
 
     protected render(component: typeof React.Component, children: any, target_node: any, callback: any) {
         const react_element = React.createElement(component, {}, children);
