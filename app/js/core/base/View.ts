@@ -31,25 +31,33 @@ export abstract class View<P extends IViewProps, S extends IViewState> extends R
         this.props.connector.attach(this);
     }
 
-    attachConnector(connector: ViewConnector) {
+    public attachConnector(connector: ViewConnector) {
         if (connector !== this.props.connector) {
             connector.attach(this);
         }
     }
 
-    emit<E>(event: ViewEvent<E>) {
-        this.props.connector.emit(event);
-    }
-
-    componentDidMount() {
+    public componentDidMount() {
+        this.viewDidMount();
         this.emit(new MountEvent({}));
     }
 
-    resize() {}
+    public componentWillUnmount() {
+        this.viewWillUnmount();
+    }
 
-    render(): ReactNode {
+    public render(): ReactNode {
         this.emit(new RenderEvent({}));
 
         return null;
+    }
+
+    public resize() {}
+
+    protected viewDidMount() {}
+    protected viewWillUnmount() {}
+
+    protected emit<E>(event: ViewEvent<E>) {
+        this.props.connector.emit(event);
     }
 }

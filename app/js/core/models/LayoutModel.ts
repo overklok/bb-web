@@ -27,9 +27,9 @@ export class LayoutModel extends Model {
      * В даном случае выполняется проверка правильности составленного объекта
      */
     preprocess(): void {
-        for (const mode of Object.values(this.modes)) {
+        for (const [k, mode] of Object.entries(this.modes)) {
             for (const [key, pane] of mode.panes.entries()) {
-                mode.panes[key] = this.preprocessPane(pane);
+                this.modes[k].panes[key] = this.preprocessPane(pane);
             }
         }
     }
@@ -51,19 +51,23 @@ export class LayoutModel extends Model {
             }
         }
 
-        this.processPaneTitle(pane);
-        this.processPaneSize(pane);
-        this.processPaneLimits(pane);
-        this.processPaneResizability(pane);
-        this.processPaneViews(pane);
+        pane = this.processPaneTitle(pane);
+        pane = this.processPaneSize(pane);
+        pane = this.processPaneLimits(pane);
+        pane = this.processPaneResizability(pane);
+        pane = this.processPaneViews(pane);
 
         return pane;
     }
 
-    processPaneTitle(pane: ILayoutPane): void {
+    processPaneTitle(pane: ILayoutPane): ILayoutPane {
+        pane = Object.assign({}, pane);
+
         if (pane.title == null) {
             pane.title = pane.name;
         }
+
+        return pane;
     }
 
     /**
@@ -89,7 +93,7 @@ export class LayoutModel extends Model {
          * Панели с null-размером являются свободными (не имеющими начального размера)
          * Такие панели обрабатывать не нужно.
          */
-        if (pane.size == null) return;
+        if (pane.size == null) return pane;
 
         /**
          * Если в поле size задана строка, то это, с большой вероятностью, число с единицей измерения.

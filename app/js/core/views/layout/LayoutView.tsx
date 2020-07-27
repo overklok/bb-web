@@ -93,27 +93,15 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
         }
 
         window.addEventListener('resize', this.onResize());
-
-        console.log('oneview');
     }
 
-    componentDidMount() {
-        this.mounted = true;
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
-    }
-
-    setModes(modes: {[key: string]: ILayoutMode}) {
+    public setModes(modes: {[key: string]: ILayoutMode}) {
         if (!modes) return;
         this.modes = this.resolveWidgets(modes);
 
         if (this.mounted) {
             this.setState({});
         }
-
-        console.log(this.modes);
     }
 
     /**
@@ -121,14 +109,14 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
      *
      * @param mode название режима разметки из конфигурации
      */
-    setMode(mode: string) {
+    public setMode(mode: string) {
         this.setState({
             mode_name: mode
         });
     }
 
-    render() {
-        console.log(this.modes);
+    public render() {
+        super.render();
 
         const orientation = this.modes[this.state.mode_name].policy;
 
@@ -145,6 +133,14 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
                 />
             </DndProvider>
         );
+    }
+
+    protected viewDidMount() {
+        this.mounted = true;
+    }
+
+    protected viewWillUnmount() {
+        this.mounted = false;
     }
 
     private resolveWidgets(modes: {[key: string]: ILayoutMode}): {[key: string]: ILayoutMode} {

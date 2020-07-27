@@ -31,4 +31,8 @@ export default class Presenter<V extends View<IViewProps, IViewState>> {
 
         this.view = view;
     };
+
+    protected ready() {
+
+    }
 }
