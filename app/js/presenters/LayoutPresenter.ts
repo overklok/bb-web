@@ -14,6 +14,7 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
 
     @on(MountEvent)
     mounted() {
+        console.log(this.model.modes);
         this.view.setModes(this.model.modes);
     }
 }

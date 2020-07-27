@@ -173,7 +173,7 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
                 if (!(alias in this.props.widgets)) {
                     throw new Error(`Cannot resolve widget by alias ${alias}`)
                 }
-                const widget = this.props.widgets[alias];
+                const widget = Object.assign({}, this.props.widgets[alias]);
 
                 // замеить надпись виджета, если она переопределена
                 widget.label = label || widget.label;
