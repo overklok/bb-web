@@ -3,15 +3,10 @@ import Cell from "../core/Cell";
 import Layer from "../core/Layer";
 import Current from "../core/Current";
 import BackgroundLayer from "../layers/BackgroundLayer";
-
-const CURRENT_WIDTH = 14;
-const CURRENT_WIDTH_SCHEMATIC = 10;
-
-const PARTICLE_SIZE = 18;
-const PARTICLE_SIZE_SCHEMATIC = 16;
-
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
+
+    static get MeaningfulnessThreshold() {return 1e-8}
 
     constructor(container, grid, schematic=false, detailed=false) {
         super(container, grid, schematic, detailed);
@@ -25,6 +20,14 @@ export default class CurrentLayer extends Layer {
         this._show_source = undefined;
 
         this._currentgroup = undefined;
+
+        this._shorted = false;
+
+        this._callbacks = {
+            shortcircuit: () => {},
+            shortcircuitstart: () => {},
+            shortcircuitend: () => {},
+        }
     }
 
     /**
@@ -44,6 +47,24 @@ export default class CurrentLayer extends Layer {
         this._initGroups();
 
         this.setCurrents(threads, this._spare, show_source);
+    }
+
+    onShortCircuit(cb) {
+        if (!cb) {this._callbacks.shortcircuit = () => {}}
+
+        this._callbacks.shortcircuit = cb;
+    }
+
+    onShortCircuitStart(cb) {
+        if (!cb) {this._callbacks.shortcircuitstart = () => {}}
+
+        this._callbacks.shortcircuitstart = cb;
+    }
+
+    onShortCircuitEnd(cb) {
+        if (!cb) {this._callbacks.shortcircuitend = () => {}}
+
+        this._callbacks.shortcircuitend = cb;
     }
 
     /**
@@ -134,7 +155,7 @@ export default class CurrentLayer extends Layer {
             let same = false;
 
             /// цикл по новым контурам
-            for (let thread of threads) {
+            for (let [i, thread] of threads.entries()) {
                 /// если у данного локального тока контур совпадает
                 if (current.hasSameThread(thread)) {
                     /// записать контур
@@ -148,7 +169,13 @@ export default class CurrentLayer extends Layer {
             }
 
             if (same) {
-                current.setWeight(same.weight);
+                if (same.weight < CurrentLayer.MeaningfulnessThreshold) {
+                    // удалить ток, если он недостаточно весомый
+                    this.removeCurrent(current_id);
+                } else {
+                    // обновить вес тока
+                    current.setWeight(same.weight);
+                }
             }
         }
 
@@ -160,12 +187,20 @@ export default class CurrentLayer extends Layer {
         }
 
         /// создать токи для непомеченных контуров
-        for (let thread of threads) {
+        for (let [i, thread] of threads.entries()) {
             if (!thread.___touched) {
-                let cur = this._addCurrent(thread, spare, show_source);
-                cur.___touched = true;
+                if (thread.weight < CurrentLayer.MeaningfulnessThreshold) {
+                    // удалить путь тока, если он недостаточно весомый
+                    delete threads[i];
+                } else {
+                    // добавить новый ток
+                    let cur = this._addCurrent(thread, spare, show_source);
+                    cur.___touched = true;
+                }
             }
         }
+
+        this._findShortCircuits();
     }
 
     _initGroups() {
@@ -176,6 +211,26 @@ export default class CurrentLayer extends Layer {
 
     _clearGroups() {
         if (this._currentgroup) this._currentgroup.remove();
+    }
+
+    _findShortCircuits() {
+        for (const id in this._currents) {
+            if (!this._currents.hasOwnProperty(id)) continue;
+
+            if (this._currents[id].is_burning) {
+                this._callbacks.shortcircuit();
+
+                if (!this._shorted) {
+                    this._callbacks.shortcircuitstart();
+                    this._shorted = true;
+                }
+
+                return;
+            }
+        }
+
+        this._shorted = false;
+        this._callbacks.shortcircuitend();
     }
 
     /**
@@ -190,17 +245,13 @@ export default class CurrentLayer extends Layer {
     _addCurrent(thread, spare, show_source=true) {
         if (!thread || thread.length === 0) {}
 
-        let current = new Current(this._currentgroup, thread, this._getCurrentOptions());
-
         let line_path = this._buildCurrentLinePath(thread);
+        let current = new Current(this._currentgroup, thread, this.__schematic);
 
         this._currents[current.id] = current;
 
-        let weight = thread.weight > 1 ? 1 : thread.weight;
-        this._weight = weight;
-
-        current.draw(line_path, weight);
-        current.activate(weight);
+        current.draw(line_path);
+        current.activate();
 
         return current;
     };
@@ -213,22 +264,27 @@ export default class CurrentLayer extends Layer {
      * @private
      */
     _buildCurrentLinePath(points) {
-        let path;
+        const   aux_point_from  = this.__grid.auxPoint(points.from.x, points.from.y),
+                aux_point_to    = this.__grid.auxPoint(points.to.x, points.to.y);
 
-        if (points.from.x === -1) {
-            let c_to = this.__grid.cell(points.to.x, points.to.y);
-            path = this._getLinePathSourceOut(c_to);
-        } else if (points.to.x === -1) {
-            let c_from = this.__grid.cell(points.from.x, points.from.y);
-            path = this._getLinePathSourceIn(c_from);
-        } else {
-            let c_from  = this.__grid.cell(points.from.x, points.from.y),
-                c_to    = this.__grid.cell(points.to.x, points.to.y)
+        const   aux_point = aux_point_to || aux_point_from,
+                to_aux = !!aux_point_to;
 
-            path = this._getLinePathArbitrary(c_from, c_to);
+        if (aux_point) {
+            const c_arb = to_aux ? this.__grid.cell(points.from.x, points.from.y)
+                                 : this.__grid.cell(points.to.x, points.to.y);
+
+            switch (aux_point.cat) {
+                case Grid.AuxPointCats.Source:  return this._getLinePathSource(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb1:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb3:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+            }
         }
 
-        return path;
+        const   c_from  = this.__grid.cell(points.from.x, points.from.y),
+                c_to    = this.__grid.cell(points.to.x, points.to.y);
+
+        return this._getLinePathArbitrary(c_from, c_to);
     };
 
     _getLinePathArbitrary(c_from, c_to) {
@@ -271,44 +327,44 @@ export default class CurrentLayer extends Layer {
         ];
     }
 
-    _getLinePathSourceOut(c_to) {
-        // "out" (from "+") means this is top current
-        let c_from = this.__grid.cell(0, 1);
+    _getLinePathSource(c_arb, aux_point, to_source=false) {
+        let needs_bias  = this.__schematic && this.__detailed,
+            bias_y      = needs_bias * BackgroundLayer.DomainSchematicBias;
 
-        let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
+        if (to_source) {
+            return [
+                ['M', c_arb.center_adj.x, c_arb.center_adj.y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y + bias_y],
 
-        return [
-            ['M', 80, 720],
-            ['L', 80, c_from.center_adj.y - bias_y],
-            ['L', c_from.center_adj.x, c_from.center_adj.y - bias_y],
+                ['L', aux_point.pos.x, aux_point.cell.center_adj.y + bias_y],
+                ['L', aux_point.pos.x, aux_point.pos.y]
+            ];
+        } else {
+            return [
+                ['M', aux_point.pos.x, aux_point.pos.y],
+                ['L', aux_point.pos.x, aux_point.cell.center_adj.y - bias_y],
 
-            ['L', c_to.center_adj.x, c_to.center_adj.y - bias_y],
-            ['L', c_to.center_adj.x, c_to.center_adj.y]
-        ];
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y - bias_y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y]
+            ];
+        }
     }
 
-    _getLinePathSourceIn(c_from) {
-        // "in" (to "-") means this is bottom current
-        let c_to = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
-
-        let needs_bias = this.__schematic && this.__detailed;
-        let bias_y = needs_bias ? BackgroundLayer.DomainSchematicBias : 0;
-
-        return [
-            ['M', c_from.center_adj.x, c_from.center_adj.y],
-            ['L', c_from.center_adj.x, c_from.center_adj.y + bias_y],
-
-            ['L', 80, c_to.center_adj.y + bias_y],
-            ['L', 80, 780]
-        ];
-    }
-
-    _getCurrentOptions() {
-        return {
-            width: this.__schematic ? CURRENT_WIDTH_SCHEMATIC : CURRENT_WIDTH,
-            linecap: "round",
-            particle_radius: this.__schematic ? PARTICLE_SIZE_SCHEMATIC : PARTICLE_SIZE
+    _getLinePathUsb(c_arb, aux_point, to_source=false) {
+        if (to_source) {
+            return [
+                ['M', c_arb.center_adj.x, c_arb.center_adj.y],
+                ['L', aux_point.pos.x - aux_point.bias, c_arb.center_adj.y],
+                ['L', aux_point.pos.x - aux_point.bias, aux_point.pos.y],
+                ['L', aux_point.pos.x, aux_point.pos.y]
+            ];
+        } else {
+            return [
+                ['M', aux_point.pos.x, aux_point.pos.y],
+                ['L', aux_point.pos.x - aux_point.bias, aux_point.pos.y],
+                ['L', aux_point.pos.x - aux_point.bias, c_arb.center_adj.y],
+                ['L', c_arb.center_adj.x, c_arb.center_adj.y]
+            ];
         }
     }
 

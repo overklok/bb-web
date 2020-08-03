@@ -16,7 +16,12 @@ import InductorPlate        from "../plates/InductorPlate";
 import RelayPlate           from "../plates/RelayPlate";
 import StripPlate           from "../plates/StripPlate";
 import DiodePlate           from "../plates/LEDPlate";
-import WS2801Plate          from "../plates/WS2801Plate";
+import MotorPlate from "../plates/MotorPlate";
+import RGBPlate from "../plates/RGBPlate";
+import DummyPlate from "../plates/DummyPlate";
+import BuzzerPlate from "../plates/BuzzerPlate";
+import TButtonPlate from "../plates/TButtonPlate";
+import Breadboard from "../Breadboard";
 
 /**
  * Слой плашек
@@ -24,8 +29,8 @@ import WS2801Plate          from "../plates/WS2801Plate";
 export default class PlateLayer extends Layer {
     static get Class() {return "bb-layer-plate"}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    constructor(container, grid, schematic=false, verbose=false) {
+        super(container, grid, schematic, verbose);
 
         this._container.addClass(PlateLayer.Class);
 
@@ -37,16 +42,21 @@ export default class PlateLayer extends Layer {
         this._plates = {};
         this._plategroup = undefined;
 
+        this._cell_supposed = undefined;
+        this._plate_dragging = undefined;
         this._plate_selected = undefined;
         this._editable = false;
+
+        /// Последняя позиция перемещения курсора
+        this._cursor_point_mousedown = undefined;
     }
 
     compose() {
         this._initGroups();
     }
 
-    recompose(schematic) {
-        super.recompose(schematic);
+    recompose(schematic, verbose) {
+        super.recompose(schematic, false, verbose);
 
         let plates_data = this.getCurrentPlatesData();
 
@@ -78,20 +88,7 @@ export default class PlateLayer extends Layer {
         for (let plate_id in this._plates) {
             let plate = this._plates[plate_id];
 
-            data.push({
-                id:             plate.id,
-                type:           plate.alias,
-                x:              plate._state.cell.idx.x,
-                y:              plate._state.cell.idx.y,
-                length:         plate._params.size.x,
-                orientation:    plate._state.orientation,
-                extra:          plate._params.extra,
-                input:            plate._state.input,
-                // cell_num:       plate._state.cell_num,
-                // contr_num:      plate._state.contr_num,
-                // currents:       plate._state.currents,
-                // voltages:       plate._state.voltages,
-            });
+            data.push(plate.serialize());
         }
 
         return data;
@@ -131,6 +128,24 @@ export default class PlateLayer extends Layer {
         }
     }
 
+    takePlate(plate_data, plate_x, plate_y, cursor_x, cursor_y) {
+        const id = this.addPlate(
+            plate_data.type,
+            plate_data.x, plate_data.y,
+            plate_data.orientation,
+            null,
+            plate_data.extra,
+            false
+        )
+
+        const plate = this._plates[id];
+        let plate_point = Breadboard.getCursorPoint(this._container.node, plate_x, plate_y);
+
+        plate.center_to_point(plate_point.x, plate_point.y);
+        this._onPlateMouseDown({which: 1}, plate);
+        this.selectPlate(plate);
+    }
+
     /**
      * Добавить плашку на слой
      *
@@ -156,7 +171,7 @@ export default class PlateLayer extends Layer {
             return id;
         } else {
             plate_class = PlateLayer._typeToPlateClass(type);
-            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, id, extra);
+            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, extra);
         }
 
         if (this._editable) {
@@ -227,6 +242,7 @@ export default class PlateLayer extends Layer {
                     // cell_num: plate.cell_num,
                     // contr_num: plate.contr_num,
                     input: plate.input,
+                    output: plate.output,
                 });
             }
         }
@@ -253,6 +269,8 @@ export default class PlateLayer extends Layer {
      * @param {Array} plate_ids массив идентификаторов плашек, которые требуется подсветить
      */
     highlightPlates(plate_ids) {
+        if (!plate_ids) return;
+
         for (let plate_id in this._plates) {
             this._plates[plate_id].highlightError(false);
         }
@@ -416,30 +434,11 @@ export default class PlateLayer extends Layer {
             if (evt.target.classList.contains(ContextMenu.ItemClass)) return;
             if (evt.target.classList.contains(ContextMenu.ItemInputClass)) return;
 
-            /// Если плашка не была выделена ранее
-            if (this._plate_selected && plate !== this._plate_selected) {
-                /// Снять её выделение
-                this._plate_selected.deselect();
-                /// Убрать контекстное меню
-                this._plate_selected.hideContextMenu();
-                /// Отключить её события
-                this._plate_selected.setEditable(false);
-                this._plate_selected.onChange(null);
+            this.selectPlate(plate);
+
+            if (evt.which === 1) {
+                this._onPlateMouseDown(evt, this._plate_selected);
             }
-
-            /// Обрабатывать её события
-            plate.setEditable(this._container.node);
-            plate.onChange(data => this._callbacks.change(data));
-            plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
-            plate.onDragFinish(() => this._onPlateDragFinish(plate));
-            plate.onDragStart(() => {
-                this._onPlateDragStart(plate);
-                this._callbacks.dragstart(plate);
-            });
-
-            /// выделить данную плашку
-            this._plate_selected = plate;
-            this._plate_selected.select();
 
             if (evt.which === 3) {
                 plate.showContextMenu(evt, this._container.node);
@@ -447,6 +446,53 @@ export default class PlateLayer extends Layer {
                 plate.hideContextMenu();
             }
         });
+    }
+
+    selectPlate(plate) {
+        /// Если плашка не была выделена ранее
+        if (this._plate_selected && plate !== this._plate_selected) {
+            /// Снять её выделение
+            this._plate_selected.deselect();
+            /// Убрать контекстное меню
+            this._plate_selected.hideContextMenu();
+            /// Отключить её события
+            this.setPlateEditable(plate, false);
+            this._plate_selected.onChange(null);
+        }
+
+        /// Обрабатывать её события
+        this.setPlateEditable(plate);
+        plate.onChange(data => this._callbacks.change(data));
+        plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
+        plate.onDragFinish(() => this._onPlateDragFinish(plate));
+        plate.onDragStart(() => {
+            this._onPlateDragStart(plate);
+            this._callbacks.dragstart(plate);
+        });
+
+        /// выделить данную плашку
+        this._plate_selected = plate;
+        this._plate_selected.select();
+    }
+
+    /**
+     * Сделать плашку редактируемой
+     *
+     * @param plate
+     * @param editable
+     *
+     * @returns {boolean} принято ли изменение
+     */
+    setPlateEditable(plate, editable=true) {
+        plate.setEditable(editable);
+
+        if (editable) {
+            plate.onMouseDown((evt) => this._onPlateMouseDown(evt, plate));
+            plate.onMouseWheel((evt) => this._onPlateMouseWheel(evt, plate));
+        } else {
+            plate.onMouseDown(null);
+            plate.onMouseWheel(null);
+        }
     }
 
     /**
@@ -478,7 +524,7 @@ export default class PlateLayer extends Layer {
                 this._plate_selected.hideContextMenu();
 
                 /// Отключить её события
-                this._plate_selected.setEditable(false);
+                this.setPlateEditable(this._plate_selected, false);
                 this._plate_selected.onChange(null);
                 this._plate_selected.onContextMenuItemClick(null);
 
@@ -487,6 +533,70 @@ export default class PlateLayer extends Layer {
         };
 
         return this._onclick;
+    }
+
+    _onPlateMouseDown(evt, plate) {
+        if (evt.which === 1 && !this._plate_dragging) {
+            plate.rearrange();
+
+            document.body.addEventListener('mousemove', this._onMouseMove(), false);
+            document.body.addEventListener('mouseup', this._onMouseUp(), false);
+
+            this._cursor_point_mousedown = Breadboard.getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+
+            this._plate_dragging = plate;
+            this._cell_supposed = plate._calcSupposedCell();
+        }
+    }
+
+    _onMouseMove() {
+        if (this._onmousemove) {
+            return this._onmousemove;
+        }
+
+        this._onmousemove = (evt) => {
+            let cursor_point = Breadboard.getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+
+            let dx = cursor_point.x - this._cursor_point_mousedown.x;
+            let dy = cursor_point.y - this._cursor_point_mousedown.y;
+
+            this._cursor_point_mousedown = cursor_point;
+
+            if (dx !== 0 || dy !== 0) {
+                this._plate_dragging.dmove(dx, dy);
+            }
+        };
+
+        return this._onmousemove;
+    }
+
+    _onMouseUp() {
+        if (this._onmouseup) {
+            return this._onmouseup;
+        }
+
+        this._onmouseup = (evt) => {
+            if (evt.which === 1) {
+                document.body.removeEventListener('mousemove', this._onMouseMove(), false);
+                document.body.removeEventListener('mouseup', this._onMouseUp(), false);
+
+                // Snap & release
+                this._plate_dragging.snap();
+                this._plate_dragging = undefined;
+            }
+        };
+
+        return this._onmouseup;
+    }
+
+    _onPlateMouseWheel(evt, plate) {
+        if (evt.deltaY > 16) {
+            plate.rotateClockwise();
+        }
+
+        if (evt.deltaY < -16) {
+            plate.rotateCounterClockwise();
+        }
     }
 
     /**
@@ -537,35 +647,41 @@ export default class PlateLayer extends Layer {
         /// Когда нажата кнопка клавиатуры
         this._onkey = (evt) => {
             if (this._plate_selected) {
-                evt.preventDefault();
-
                 /// Если есть выделенная плашка
                 switch (evt.code) {
                     case "BracketLeft":
                         this._plate_selected.rotateClockwise();
+                        evt.preventDefault();
                         break;
                     case "BracketRight":
                         this._plate_selected.rotateCounterClockwise();
+                        evt.preventDefault();
                         break;
                     case "ArrowLeft":
                         this._plate_selected.shift(-1, 0);
+                        evt.preventDefault();
                         break;
                     case "ArrowRight":
                         this._plate_selected.shift(1, 0);
+                        evt.preventDefault();
                         break;
                     case "ArrowUp":
                         this._plate_selected.shift(0, -1);
+                        evt.preventDefault();
                         break;
                     case "ArrowDown":
                         this._plate_selected.shift(0, 1);
+                        evt.preventDefault();
                         break;
                     case "KeyD":
                         this._duplicatePlate(this._plate_selected);
+                        evt.preventDefault();
                         break;
                     case "Delete":
                         /// Удалить её
                         this.removePlate(this._plate_selected.id);
                         this._plate_selected = null;
+                        evt.preventDefault();
                         break;
                 }
             }
@@ -600,7 +716,7 @@ export default class PlateLayer extends Layer {
                 break;
             }
             case PlateContextMenu.CMI_INPUT: {
-                this._plate_selected.setState({input: Number(value)});
+                this._plate_selected.setState({input: value});
                 break;
             }
         }
@@ -680,14 +796,17 @@ export default class PlateLayer extends Layer {
             RheostatPlate.Alias,
             BridgePlate.Alias,
             ButtonPlate.Alias,
+            TButtonPlate.Alias,
             SwitchPlate.Alias,
             CapacitorPlate.Alias,
             TransistorPlate.Alias,
             InductorPlate.Alias,
             RelayPlate.Alias,
             DiodePlate.Alias,
+            BuzzerPlate.Alias,
             StripPlate.Alias,
-            WS2801Plate.Alias,
+            RGBPlate.Alias,
+            DummyPlate.Alias,
         ]
     }
 
@@ -706,14 +825,18 @@ export default class PlateLayer extends Layer {
         captions[RheostatPlate.Alias]       = 'реостат';
         captions[BridgePlate.Alias]         = 'перемычка';
         captions[ButtonPlate.Alias]         = 'кнопка';
+        captions[TButtonPlate.Alias]        = 'кнопка (T-образная)';
         captions[SwitchPlate.Alias]         = 'ключ';
         captions[CapacitorPlate.Alias]      = 'конденсатор';
         captions[TransistorPlate.Alias]     = 'транзистор';
         captions[InductorPlate.Alias]       = 'индуктор';
         captions[RelayPlate.Alias]          = 'реле';
         captions[DiodePlate.Alias]          = 'светодиод';
+        captions[BuzzerPlate.Alias]         = 'зуммер';
         captions[StripPlate.Alias]          = 'лента';
-        captions[WS2801Plate.Alias]         = 'RGB-светодиод';
+        captions[MotorPlate.Alias]          = 'электромотор';
+        captions[RGBPlate.Alias]            = 'RGB-светодиод';
+        captions[DummyPlate.Alias]          = 'dummy';
 
         return captions;
     }
@@ -738,14 +861,18 @@ export default class PlateLayer extends Layer {
             case RheostatPlate.Alias:       {return RheostatPlate}
             case BridgePlate.Alias:         {return BridgePlate}
             case ButtonPlate.Alias:         {return ButtonPlate}
+            case TButtonPlate.Alias:        {return TButtonPlate}
             case SwitchPlate.Alias:         {return SwitchPlate}
             case CapacitorPlate.Alias:      {return CapacitorPlate}
             case TransistorPlate.Alias:     {return TransistorPlate}
             case InductorPlate.Alias:       {return InductorPlate}
             case RelayPlate.Alias:          {return RelayPlate}
             case DiodePlate.Alias:          {return DiodePlate}
+            case BuzzerPlate.Alias:         {return BuzzerPlate}
             case StripPlate.Alias:          {return StripPlate}
-            case WS2801Plate.Alias:         {return WS2801Plate}
+            case MotorPlate.Alias:          {return MotorPlate}
+            case RGBPlate.Alias:            {return RGBPlate}
+            case DummyPlate.Alias:          {return DummyPlate}
             default:                        {throw new RangeError(`Unknown plate type '${type}'`)}
         }
     }

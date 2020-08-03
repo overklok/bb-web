@@ -1,8 +1,11 @@
 import IPCWrapper from "../IPCWrapper";
 
 const HANDLERS_LIMIT = 20;
+const ATTEMPT_LIMIT = 10;
+const ATTEMPT_PERIOD = 100; // ms
 
 let G_CONNECTOR = undefined;
+let G_IS_CONNECTING = false;
 let G_IS_DISCONNECTING = true;
 
 // TODO: Move _connect() routine to global scope
@@ -20,29 +23,53 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     init() {
-        if (!this.canBeUsed()) {
-            return Promise.reject(
-                "You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC."
-            );
-        }
+        let attempts = 0;
 
-        return this.disconnect()
+        let waiter = new Promise((resolve, reject) => {
+            let si = setInterval(() => {
+                attempts += 1;
+
+                if (this.canBeUsed()) {
+                    clearInterval(si);
+
+                    resolve();
+                }
+
+                if (attempts > ATTEMPT_LIMIT) {
+                    clearInterval(si);
+                    attempts = 0;
+
+                    reject("You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC.");
+                }
+
+            }, ATTEMPT_PERIOD);
+        });
+
+        return waiter
+            .then(() => this.disconnect())
             .then(() => this._connect());
     }
 
     on(channel, handler) {
-        this._handlers[channel] = handler;
+        channel = (channel === 'command') ? 'xcommand' : channel;
+
+        this._handlers[channel] = (evt, data) => {
+            data = JSON.parse(data);
+            console.debug('QtIPC:on', channel, data);
+            handler(channel, data);
+        }
     }
 
     once(channel, handler) {
         this._handlers[channel] = (data) => {
-            handler(data);
+            handler(JSON.parse(data));
             delete this._handlers[channel];
         };
     }
 
     send(channel, data) {
-        G_CONNECTOR.emit(channel, data);
+        console.debug('QtIPC:send', channel, data);
+        G_CONNECTOR.emit(channel, JSON.stringify(data));
     }
 
     disconnect() {
@@ -63,6 +90,8 @@ export default class QtIPCWrapper extends IPCWrapper {
     }
 
     _connect() {
+        G_IS_CONNECTING = true;
+
         return new Promise((resolve, reject) => {
             let rep = setInterval(() => {
                 if (!window.qt) {
@@ -73,6 +102,8 @@ export default class QtIPCWrapper extends IPCWrapper {
 
                         if (G_CONNECTOR && G_CONNECTOR.event_sig) {
                             G_CONNECTOR.event_sig.connect(this._onEventSig.bind(this));
+
+                            G_IS_CONNECTING = false;
 
                             clearInterval(rep);
                             resolve(this);

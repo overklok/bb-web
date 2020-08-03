@@ -415,12 +415,22 @@ export default class GUIModule extends Module {
     }
 
     showAlert(type) {
-        this._alertifier.alertIndelible(type);
+        this._alertifier.showAlert(type);
+    }
+
+    hideAlert(type) {
+        this._alertifier.hideAlert(type);
+    }
+
+    showToast(type) {
+        this._alertifier.toast(type);
     }
 
     showAlertInputCommand(hash_entered=false) {
         this._alertifier.alertInput('command', false, hash_entered)
-            .then(command => {
+            .then(alertdata => {
+                let command = alertdata.value;
+
                 command = this._url_hash_parser.parse(command);
                 this.emitEvent("hash-command", command);
             });
@@ -428,8 +438,8 @@ export default class GUIModule extends Module {
 
     showAlertReconnect() {
         this._alertifier.alertInput('reconnect', true)
-            .then(confirmed => {
-                this.emitEvent("reconnect", confirmed);
+            .then(alertdata => {
+                this.emitEvent("reconnect", alertdata.isConfirmed);
             });
     }
 

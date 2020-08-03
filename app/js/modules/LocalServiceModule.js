@@ -25,7 +25,7 @@ export default class LocalServiceModule extends Module {
     static get eventspace_name()    {return "ls"}
     static get event_types()        {return [
         "connect", "disconnect", "client_swap", "command", "variable",
-        "terminate", "plates", "currents", "board-status", "timeout", "error",
+        "terminate", "plates", "currents", "pins_values", "board-status", "timeout", "error",
         // "request_calc",
     ]};
 
@@ -49,13 +49,12 @@ export default class LocalServiceModule extends Module {
         this._state = {
             connected: false,
             board_status: undefined,
+            board_version: undefined,
             check_later: false,
             running: false,
             mode: undefined,
             dev_type: undefined,
         };
-
-        this.launch();
     }
 
     switchDummyMode(on) {
@@ -87,12 +86,13 @@ export default class LocalServiceModule extends Module {
                 this.emitEvent("board-status", "default");
             // }, 1000);
 
+            return Promise.resolve();
         } else {
             if (this._options.portUrgent) {
                 this.resetPort(this._options.portUrgent);
             }
 
-            this._launchIPC(socket_addr, socket_port)
+            return this._launchIPC(socket_addr, socket_port)
                 .then(() => this._subscribeToWrapperEvents());
         }
     }
@@ -442,12 +442,19 @@ export default class LocalServiceModule extends Module {
 
         this._ipc.on('board-connect', () => {
             this._state.board_status = 'connect';
-            this.emitEvent('board-status', 'connect');
+            this.emitEvent('board-status', {
+                status: this._state.board_status,
+                version: this._state.board_version,
+            });
         });
 
         this._ipc.on('board-disconnect', () => {
             this._state.board_status = 'disconnect';
-            this.emitEvent('board-status', 'disconnect');
+            this._state.board_version = undefined;
+            this.emitEvent('board-status', {
+                status: this._state.board_status,
+                version: this._state.board_version,
+            });
         });
 
         this._ipc.on('client_swap', () => {
@@ -476,7 +483,18 @@ export default class LocalServiceModule extends Module {
         });
 
         this._ipc.on('draw_currents', (evt, data) => {
-           this.emitEvent('currents', data);
+            let arduino_pins = undefined;
+
+            if (data.hasOwnProperty('arduino_pins')) {
+                arduino_pins = data.arduino_pins;
+                delete data.arduino_pins;
+            }
+
+            this.emitEvent('currents', data);
+
+            if (arduino_pins) {
+                this.emitEvent('pins_values', arduino_pins);
+            }
         });
 
         // this._ipc.on('request_calc', (evt, data) => {

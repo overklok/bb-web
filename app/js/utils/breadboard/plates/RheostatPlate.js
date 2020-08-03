@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class RheostatPlate extends Plate {
     static get Alias() {return "rheostat"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
 
         this._params.size = {x: 3, y: 2};
 
@@ -29,13 +29,8 @@ export default class RheostatPlate extends Plate {
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
 
-    /**
-     * Установить состояние резистора
-     *
-     * @param {object} state новое состояние резистора
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
+    get input() {
+        return Number(this._state.input);
     }
 
     /**

@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class StripPlate extends Plate {
     static get Alias() {return "strip"}
 
-    constructor(container, grid, schematic=false, id, length=1) {
-        super(container, grid, schematic, id, length);
+    constructor(container, grid, schematic=false, verbose=false, id, length=1) {
+        super(container, grid, schematic, verbose, id, length);
 
         this._params.extra = Number((length <= 0) ? 1 : length);
         this._params.size = {x: this._params.extra, y: 1};
@@ -32,15 +32,6 @@ export default class StripPlate extends Plate {
 
         // this._group.text(`Strip ${this._params.len} cells`).font({size: 26});
     };
-
-    /**
-     * Установить состояние перемычки
-     *
-     * @param {object} state новое состояние перемычки
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
 
     /**
      *

@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class RelayPlate extends LinearPlate {
     static get Alias() {return "relay"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
     }
 
     get __length__() {
@@ -24,15 +24,6 @@ export default class RelayPlate extends LinearPlate {
 
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
-
-    /**
-     * Установить состояние реле
-     *
-     * @param {object} state новое состояние реле
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
 
     /**
      * Переместить реле

@@ -15,6 +15,7 @@ const FIELDTYPES = {
     SECONDS:    "Seconds",
     BOOL:       "Boolean",
     PIN:        "Pin",
+    DUMMY:      "Dummy",
 };
 
 const POSTFIXES = {
@@ -62,6 +63,9 @@ const CATEGORIES = {
     },
     LOGIC: {
         colour: "%{BKY_LOGIC_HUE}"
+    },
+    DUMMY: {
+        colour: "#d300ff"
     }
 };
 
@@ -182,6 +186,11 @@ const BLOCK_INPUTS_CONSTRAINTS = {
         ['A8', '8'],
         ['A9', '9'],
     ],
+
+    DUMMY_VARS: [
+        ['dummy_1', 'dummy_out_value_1'],
+        ['dummy_2', 'dummy_out_value_1'],
+    ]
 };
 
 export {DATATYPES, FIELDTYPES, POSTFIXES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS}

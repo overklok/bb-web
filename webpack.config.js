@@ -174,6 +174,11 @@ function getCopypaths(env) {
             {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/board.js'}
         ];
     }
+    if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR_SOCK) {
+        copypaths = [...copypaths,
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR_SOCK + '/board.js'}
+        ];
+    }
 
     if (env.timeline === true && dotenv.parsed.PATH_DIST_MONITOR) {
         copypaths = [...copypaths,

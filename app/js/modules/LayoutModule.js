@@ -64,7 +64,7 @@ const MAPPINGS = {
         launch_buttons: PANE_IDS.MAIN_CENTER,
         breadboard: PANE_IDS.EAST_CENTER,
         workspace: PANE_IDS.MAIN_CENTER,
-        tracing: PANE_IDS.EAST_SOUTH_CENTER,
+        // tracing: PANE_IDS.EAST_SOUTH_CENTER,
         buttons: PANE_IDS.EAST_SOUTH_SOUTH,
         task: PANE_IDS.EAST_NORTH,
         lesson: PANE_IDS.MAIN_NORTH
@@ -346,16 +346,16 @@ export default class LayoutModule extends Module {
                     this._panes.east.show("north");
                     duration += this._options.animSpeedMain;
 
-                    this._panes.east.show("south");
-                    duration += this._options.animSpeedSub;
+                    // this._panes.east.show("south");
+                    // duration += this._options.animSpeedSub;
 
-                    this._layout.sizePane("east", .3);
+                    this._layout.sizePane("east", .4);
                     duration += this._options.animSpeedMain;
 
-                    if (this._state.buttonsPaneVisible) {
-                        this._panes._east.south.show("south");
-                        duration += this._options.animSpeedSub;
-                    }
+                    // if (this._state.buttonsPaneVisible) {
+                    //     this._panes._east.south.show("south");
+                    //     duration += this._options.animSpeedSub;
+                    // }
 
                     break;
                 }

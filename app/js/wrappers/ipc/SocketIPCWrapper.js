@@ -13,6 +13,8 @@ export default class SocketIPCWrapper extends IPCWrapper {
         this._socket = io(this._getFullAddr());
 
         this.is_socket = true;
+
+        this._handlers = {};
     }
 
     get addr() {
@@ -31,16 +33,28 @@ export default class SocketIPCWrapper extends IPCWrapper {
         channel = (channel === 'connect') ? 'xconnect' : channel;
         channel = (channel === 'command') ? 'xcommand' : channel;
 
-        let xhandler = (data) => {handler(undefined, data)};
+        this._handlers[channel] = (evt, data) => {
+            console.debug('SocketIPC:on', channel, data);
+            handler(channel, data);
+        };
+
+        let xhandler = (data) => {this._handlers[channel](undefined, data)};
 
         this._socket.on(channel, xhandler);
     }
 
     once(channel, handler) {
-        this._socket.once(channel, handler);
+        this._handlers[channel] = (evt, data) => {
+            console.debug('SocketIPC:once', channel, data);
+            handler(channel, data);
+        };
+
+        this._socket.once(channel, this._handlers[channel]);
     }
 
     send(channel, data) {
+        console.debug('SocketIPC:send', channel, data);
+
         this._socket.emit(channel, data);
     }
 

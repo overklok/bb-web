@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class CapacitorPlate extends LinearPlate {
     static get Alias() {return "capacitor"}
 
-    constructor(container, grid, id, schematic=false, capacity) {
-        super(container, grid, id, schematic, capacity);
+    constructor(container, grid, schematic=false, verbose=false, id, capacity) {
+        super(container, grid, schematic, verbose, id, capacity);
 
         this._params.extra = Number(capacity) || 0.001;
     }
@@ -22,15 +22,6 @@ export default class CapacitorPlate extends LinearPlate {
 
         this._drawLabel(this._params.extra);
     };
-
-    /**
-     * Установить состояние конденсатора
-     *
-     * @param {object} state новое состояние конденсатора
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
 
     /**
      *
@@ -73,7 +64,7 @@ export default class CapacitorPlate extends LinearPlate {
         if (num >= 1)          {text = String(Number(num).toPrecision())   + 'пк'}
 
         this._group.text(text + 'Ф')
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "normal"})
+            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
             .cx(this._container.width() / 2)
             .y(this._container.height() - size - 2)
             // .stroke({width: 0.5})

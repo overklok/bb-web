@@ -6,6 +6,7 @@ import ControlsJSONGenerators   from './controls/generators';
 import EventJSONGenerators      from './event/generators';
 import StripJSONGenerators      from './strip/generators';
 import ArduinoJSONGenerators    from './arduino/generators';
+import DummyJSONGenerators      from './dummy/generators';
 
 let JSONGenerators = {};
 
@@ -31,6 +32,10 @@ for (let strip_generator in StripJSONGenerators) {
 
 for (let arduino_generator in ArduinoJSONGenerators) {
     JSONGenerators[arduino_generator] = ArduinoJSONGenerators[arduino_generator]
+}
+
+for (let dummy_generator in DummyJSONGenerators) {
+    JSONGenerators[dummy_generator] = DummyJSONGenerators[dummy_generator]
 }
 
 export default JSONGenerators;

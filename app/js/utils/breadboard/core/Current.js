@@ -1,5 +1,7 @@
 import thm from '../styles/current.css';
 
+let SYMBOL_SMOKE = undefined;
+
 /**
  * Класс "Ток"
  *
@@ -28,23 +30,32 @@ export default class Current {
         // "#00b5c2",
         // "#006ec2",
     ]}
-    static get DurationMin() {return 1000}    // Чем больше, тем медленнее ток с минимальным весом (600)
-    static get DurationMax() {return 10000}   // Чем меньше, тем быстрее ток с максимальным весом (10000)
-    static get AnimationDelta() {return 200}  // Расстояние между соседними частицами, px
 
-    constructor(container, points, style) {
+    static get DurationMin() {return 200}       // Длительность цикла анимации частиц тока при минимальном весе
+    static get DurationMax() {return 10000}     // Длительность цикла анимации частиц тока при максимальном весе
+    static get AnimationDelta() {return 200}    // Расстояние между соседними частицами, px
+
+    static get WidthMax() {return 14};           // Толщина тока при максимальном весе
+    static get WidthSchematicMax() {return 10};  // Толщина тока при максимальном весе (в схематическом режиме)
+
+    static get RadiusMax() {return 18};           // Радиус частиц при максимальном весе
+    static get RadiusSchematicMax() {return 16};  // Радиус частиц при максимальном весе (в схематическом режиме)
+
+    static get FullOpacityThreshold() {return 0.07} // Граница веса, при которой ток ещё полностью непрозрачности
+
+    constructor(container, thread, schematic) {
         this.container  = container;        // родительский DOM-узел
-        this.style      = style;            // стиль SVG-линии
-        this.points     = points;           // координаты виртуальных точек линии тока (начало и конец)
+        this.thread     = thread;           // координаты виртуальных точек линии тока (начало и конец)
 
-        this._container_anim = this.container.nested();     // родительский DOM-узел анимации
+        this._container_anim    = this.container.nested();     // родительский DOM-узел анимации
+        // this._group_debug       = this.container.group();      // DOM-узел для отладки
         this._id = Math.floor(Math.random() * (10 ** 6));   // Идентификатор по умолчанию - случайная строка
 
         // Прочие внутрение параметры
+        this._schematic     = schematic;
         this._particles     = [];           // частицы тока (для анимации)
-        this._weight        = 0;            // сила тока
         this._line          = null;         // SVG-линия тока
-        this._line_path   = undefined;    // координаты реальных точек линии тока (начало и конец)
+        this._line_path     = undefined;    // координаты реальных точек линии тока (начало и конец)
         this._line_length   = undefined;    // длина линии тока
 
         // Параметры анимации
@@ -53,10 +64,31 @@ export default class Current {
         this._anim_delay        = undefined;    // накопленное запаздывание анимации
 
         // Прочие параметры анимации
-        this._radius_min = this.style.width / 2;        // минимальный радиус частицы
-        this._radius_max = this.style.particle_radius;  // максимальный радиус частицы
+        this._weight    = this._normalizeWeight(thread.weight);
+        this._style     = this._getStyle(this._weight);
 
-        this._visible = false;
+        this._visible   = false;
+        this._activated = false;
+        this._burning   = false;
+    }
+
+    static defineSmokeSymbol(svg, color="black") {
+        const smoke = svg.symbol("smoke");
+        const c1 = smoke.circle(10).fill(color).opacity(1.0).move(0, 15),
+              c2 = smoke.circle(10).fill(color).opacity(0.8).move(10, 7),
+              c3 = smoke.circle(10).fill(color).opacity(0.9).move(10, 23),
+              c4 = smoke.circle(10).fill(color).opacity(0.3).move(20, 0),
+              c5 = smoke.circle(10).fill(color).opacity(0.5).move(20, 30),
+              c6 = smoke.circle(10).fill(color).opacity(1.0).move(20, 15);
+
+        c1.animate({duration: 600,  delay: 0}).radius(0).dmove(4, 2)
+        c2.animate({duration: 1000, delay: 10}).radius(0).dmove(2, 4)
+        c3.animate({duration: 840,  delay: 20}).radius(0).dmove(1, 3)
+        c4.animate({duration: 800,  delay: 30}).radius(0).dmove(3, 1)
+        c5.animate({duration: 1200, delay: 40}).radius(0).dmove(5, 3)
+        c6.animate({duration: 300,  delay: 50}).radius(0).dmove(1, 2)
+
+        return smoke;
     }
 
     /**
@@ -69,6 +101,15 @@ export default class Current {
     }
 
     /**
+     * Замкнут ли накоротко ток в данный момент
+     *
+     * @returns {boolean}
+     */
+    get is_burning() {
+        return this.thread.weight > 2;
+    }
+
+    /**
      * Отрисовать контур тока по заданному пути
      *
      * Применяется фильтр свечения.
@@ -76,9 +117,7 @@ export default class Current {
      * @param path
      * @param weight
      */
-    draw(path, weight=0) {
-        this.style.color = Current.pickColorFromRange(weight);
-
+    draw(path) {
         // big thanks to Pythagoras for this formula
         this._line_path = Current._pathArrayToString(path);
         this._line_length = Current.getPathLength(this._line_path);
@@ -86,11 +125,18 @@ export default class Current {
         this._line = this.container
             .path(this._line_path)
             .fill('none')
-            .stroke(this.style)
+            .stroke(this._style)
             .addClass('current-line');
 
         this._container_anim.before(this._line);
         this._container_anim.opacity(0);
+
+        if (this._group_debug) {
+            this._group_debug.move(
+                this._line.x() + Current.WidthMax,
+                this._line.y() + Current.WidthMax
+            );
+        }
 
         this._addGlowFilter();
 
@@ -113,7 +159,12 @@ export default class Current {
 
         this._sheet.ownerNode.remove();
 
+        if (this._group_debug) {
+            this._group_debug.remove();
+        }
+
         this._visible = false;
+        this._activated = false;
     };
 
     /**
@@ -123,12 +174,12 @@ export default class Current {
      * @returns {boolean}
      */
     hasSameThread(thread) {
-        if (!this.points) return false;
+        if (!this.thread) return false;
 
-        return  thread.from.x === this.points.from.x &&
-                thread.from.y === this.points.from.y &&
-                thread.to.x === this.points.to.x &&
-                thread.to.y === this.points.to.y;
+        return  thread.from.x === this.thread.from.x &&
+                thread.from.y === this.thread.from.y &&
+                thread.to.x === this.thread.to.x &&
+                thread.to.y === this.thread.to.y;
     }
 
     /**
@@ -144,15 +195,16 @@ export default class Current {
      *
      * @param weight    Скорость анимации тока (движения частиц по контуру)
      */
-    activate(weight=0) {
+    activate() {
         if (!this._visible) throw new Error("Cannot activate invisible current");
+        if (this._activated) return;
 
         if (!this._sheet) {
             this.deactivate();
         }
 
         // длительность прохода Current.AnimationDelta px пути
-        let dur = Math.ceil(Current.DurationMax + weight * (Current.DurationMin - Current.DurationMax));
+        let dur = Math.ceil(Current.DurationMax + this._weight * (Current.DurationMin - Current.DurationMax));
 
         // Число частиц на ток
         let particles_per_line = (this._line_length / Current.AnimationDelta);
@@ -172,20 +224,34 @@ export default class Current {
             }
 
             // Сгенерировать частицу
-            this._particles[i] = this._container_anim.circle(this.style.particle_radius * 2).addClass('current-particle');
+            this._particles[i] = this._container_anim.circle(this._style.particle_radius * 2).addClass('current-particle');
 
             // Заливка и центрирование
-            this._particles[i].fill(Current.pickColorFromRange(weight));
+            this._particles[i].fill({
+                color: Current.pickColorFromRange(this._weight),
+                opacity: Current.pickOpacityFromRange(this._weight),
+            });
 
             // Анимировать частицу
             this._animateParticle(this._particles[i], i, particles_per_line, progress_start, progress_end, dur);
         }
 
+        this._updateDebugInfo();
+
         // Это необходимо для того, чтобы дать браузеру вставить анимацию во все полигоны
         // В противном случае, на малую долю секунды будет заметна частица в положении (0,0)
         // до начала анимации
         setTimeout(() => {
-            this._container_anim.opacity(1);
+            // функция _updateBurning включает/выключает видимость контейнера с частицами
+            this._updateBurning();
+
+            // функция _updateBurning делает это не всегда, поэтому нужно в случае необходимости отображения частиц
+            // дополнительно убедится в их видимости
+            if (!this.is_burning) {
+                this._container_anim.opacity(1);
+            }
+
+            this._activated = true;
         }, 0);
     };
 
@@ -196,36 +262,65 @@ export default class Current {
         this._particles = [];
         this._container_anim.clear();
         this._initStyleSheet();
+        this._activated = false;
     };
+
+    showParticles() {
+        this._container_anim.opacity(1);
+    }
+
+    hideParticles() {
+        this._container_anim.opacity(0);
+    }
 
     /**
      * Изменить вес тока
      * @param weight
      */
     setWeight(weight=0) {
-        weight = weight > 1 ? 1 : weight;
+        const _weight = this._normalizeWeight(weight);
 
-        // weight = Math.log(weight);
-
-        if (this._weight !== weight) {
+        if (this.thread.weight !== weight) {
             // задать скорость
-            this._setParticleSpeed(weight);
-            // определить цвет
+            this._setParticleSpeed(_weight);
 
             // изменить цвет в стиле контура
-            this.style.color = Current.pickColorFromRange(weight);
+            this._style = this._getStyle(_weight);
 
             // применить стиль к контуру
-            this._line.stroke(this.style);
+            this._line.stroke(this._style);
 
             // изменить цвет у всех частиц
             for (let particle of this._particles) {
-                particle.fill(this.style.color);
+                particle.fill({color: this._style.color, opacity: this._style.opacity});
             }
-
         }
 
-        this._weight = weight;
+        this._weight = _weight;
+        this.thread.weight = weight;
+
+        this._updateBurning();
+        this._updateDebugInfo();
+    }
+
+    _updateBurning() {
+        if (this.is_burning) {
+            // "Сжигать" ток от КЗ
+            this._burnEnable();
+        } else {
+            // Отключить "сжигание", возможно, включённое ранее
+            this._burnDisable();
+        }
+    }
+
+    _normalizeWeight(weight) {
+        weight = Number(weight);
+
+        // Держать значение в интервале [0..1]
+        const k = 1.6;
+        weight = 1 - 1 / (1 + k * weight);
+
+        return EasingFunctions.easeOutQuad(weight);
     }
 
     /**
@@ -235,6 +330,44 @@ export default class Current {
         // this._line.attr('filter', 'url(#glow-current)');
     };
 
+    _burnEnable() {
+        if (this._burning) return;
+        this._burning = true;
+
+        if (!this._line_path) {throw new Error("Cannot animate current which hasn't been drawn")}
+
+        this.hideParticles();
+
+        const len = this._line.node.getTotalLength();
+        const dur = len;
+
+        let animname = `cur-${this._id}-burn`;
+
+        this._rule_idx_burn_kfs =
+            this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, 0));
+
+        this._rule_idx_burn =
+            this._sheet.insertRule(`.${animname} {
+            stroke-dasharray: ${len/5};
+            stroke-dashoffset: ${len};
+            animation: dash-${this._id} ${dur}ms linear infinite;
+        }`);
+
+        this._line.node.classList.add(animname);
+    }
+
+    _burnDisable() {
+        if (!this._burning) return;
+        this._burning = false;
+
+        this._sheet.deleteRule(this._rule_idx_burn_kfs);
+        this._sheet.deleteRule(this._rule_idx_burn);
+
+        this._line.node.classList.remove(`cur-${this._id}-burn`);
+
+        this.showParticles();
+    }
+
     /**
      * Анимировать частицу.
      *
@@ -243,7 +376,7 @@ export default class Current {
      * анимации в режиме реального времени, однако требует больше памяти для манипуляции
      * таблицами стилей.
      *
-     * Преполагается, что функция вызывается в цикле по анимированным частицам.
+     * Предполагается, что функция вызывается в цикле по частицам.
      *
      * @param particle              {SVG.Circle}    SVG-представление частицы, изображающей ток
      * @param index                 {Number}        Порядковый номер (индекс) сгенерированной частицы
@@ -315,7 +448,7 @@ export default class Current {
         }
 
         rule_animation += `; offset-path: path('${this._line_path}')`;
-        rule_animation += `; transform: translate(-${this.style.particle_radius}px, -${this.style.particle_radius}px)`;
+        rule_animation += `; transform: translate(-${this._style.particle_radius}px, -${this._style.particle_radius}px)`;
 
         rule_animation += ';}';
 
@@ -326,6 +459,16 @@ export default class Current {
         // Зафиксировать параметры времени
         this._anim_dur = dur;
         this._anim_delay = 0;
+    }
+
+    _generateKeyframeRuleBurn(id, to) {
+        return `
+            @keyframes dash-${this._id} {
+                to {
+                    stroke-dashoffset: ${to}; 
+                }
+            }
+        `;
     }
 
     _generateKeyframeRuleMove(index, from, to, perc) {
@@ -349,36 +492,55 @@ export default class Current {
     }
 
     _generateKeyframeRuleScaleUp(index, perc) {
+        const scale_min = this._style.width / 2,
+              scale_max = this._style.particle_radius;
+
         return `
             @keyframes cur-${this._id}-${index}-kfs-radius {
-                0% {r: ${this._radius_min}}
-                ${perc*0.4}% {r: ${this._radius_max}}
-                100% {r: ${this._radius_max}}
+                0% {r: ${scale_min}}
+                ${perc*0.4}% {r: ${scale_max}}
+                100% {r: ${scale_max}}
                 }
         `;
     }
 
     _generateKeyframeRuleScaleDown(index, perc) {
+        const scale_min = this._style.width / 2,
+              scale_max = this._style.particle_radius;
+
         return `
             @keyframes cur-${this._id}-${index}-kfs-radius {
-                0% {r: ${this._radius_max}}
-                ${perc*0.6}% {r: ${this._radius_max}}
-                ${perc}% {r: ${this._radius_min}}
-                100% {r: ${this._radius_min}}
+                0% {r: ${scale_max}}
+                ${perc*0.6}% {r: ${scale_max}}
+                ${perc}% {r: ${scale_min}}
+                100% {r: ${scale_min}}
             }
         `;
     }
 
     _generateKeyframeRuleScaleUpDown(index, perc) {
+        const scale_min = this._style.width / 2,
+              scale_max = this._style.particle_radius;
+
         return `
             @keyframes cur-${this._id}-${index}-kfs-radius {
                 0% {r: 10}
-                ${perc*0.4}% {r: ${this._radius_max}}
-                ${perc*0.6}% {r: ${this._radius_max}}
-                ${perc}% {r: ${this._radius_min}}
-                100% {r: ${this._radius_min}}
+                ${perc*0.4}% {r: ${scale_max}}
+                ${perc*0.6}% {r: ${scale_max}}
+                ${perc}% {r: ${scale_min}}
+                100% {r: ${scale_min}}
             }
         `;
+    }
+
+    _generateAnimationRuleSmoke(duration, nonlinearity=0) {
+        if (nonlinearity < 0) throw RangeError("animation nonlinearity shouldn't be less than 0");
+        if (nonlinearity > 1) throw RangeError("animation nonlinearity shouldn't be more than 1");
+
+        let secnum = 50 * nonlinearity,
+            firstnum = 100 - secnum;
+
+        return `smokemove ${duration}ms cubic-bezier(${firstnum/100},${secnum/100},1,1) reverse;`
     }
 
     _generateAnimationRuleMove(index, duration) {
@@ -396,7 +558,7 @@ export default class Current {
     _setParticleSpeed(speed) {
         if (!this._sheet) return;
 
-        let delay = 0;
+        let delay;
 
         // новая длительность цикла анимации (ДЦА), мс
         let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
@@ -447,6 +609,23 @@ export default class Current {
         document.body.appendChild(style);
 
         this._sheet = style.sheet;
+
+        this._initStaticAnimationRules();
+    }
+
+    _initStaticAnimationRules() {
+        this._sheet.insertRule(`@keyframes smokemove {
+            0% {
+                opacity: 0;
+            }
+            10% {
+                 opacity: 0;
+            }
+            100% {
+                opacity: 1; 
+                offset-distance: 100%;
+            }
+        }`);
     }
 
     static getPathLength(path) {
@@ -470,12 +649,56 @@ export default class Current {
         return str;
     }
 
+    _getStyle(weight) {
+        const width_max = this._schematic ? Current.WidthSchematicMax : Current.WidthMax,
+              radii_max = this._schematic ? Current.RadiusSchematicMax : Current.RadiusMax;
+
+        // const alpha = weight / 0.1;
+        const alpha = 1;
+
+        const width = weight > 0.1 ? width_max : Math.floor( alpha * width_max),
+              radii = weight > 0.1 ? radii_max : Math.floor(alpha * radii_max);
+
+        let style = {
+            linecap: "round",
+            color: Current.pickColorFromRange(weight),
+            width: width,
+            particle_radius: radii,
+            opacity: Current.pickOpacityFromRange(weight),
+        };
+
+        return style;
+    }
+
+    _updateDebugInfo() {
+        const wght_anim = Number.parseFloat(this._weight).toPrecision(4);
+        const wght_thrd = Number.parseFloat(this.thread.weight).toPrecision(4);
+
+        if (this._group_debug) {
+            this._group_debug.clear();
+            this._group_debug.text(`aw:  ${wght_anim}\ntw:  ${wght_thrd}`)
+                             .font({'line-height': '1em', weight: 'bold'})
+                             .style({color: 'blue'})
+        }
+    }
+
+    static pickOpacityFromRange(weight) {
+        weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
+
+        const max = Current.FullOpacityThreshold;
+
+        weight = weight > max ? 1 : 1 - Math.exp(-10 * weight / max);
+
+        return weight;
+    }
+
     static pickColorFromRange(weight) {
-        // вес не может превышать 1
-        weight = weight > 1 ? 1 : weight;
+        // вес должен быть в пределах [0..1]
+        weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
 
         // размер секции перехода цветов (secsize <= 1)
-        let secsize = 1 / Current.Colors.length;
+        let secsize = 1 / (Current.Colors.length - 1);
+
         // номер секции перехода цветов (section <= кол-во цветов)
         let section = Math.ceil(weight / secsize);
         section = section > 0 ? section -1 : 0;
@@ -546,4 +769,33 @@ export default class Current {
             Math.round(color1[2] * w1 + color2[2] * w2)
         ];
     }
+}
+
+const EasingFunctions = {
+  // no easing, no acceleration
+  linear: t => t,
+  // accelerating from zero velocity
+  easeInQuad: t => t*t,
+  // decelerating to zero velocity
+  easeOutQuad: t => t*(2-t),
+  // acceleration until halfway, then deceleration
+  easeInOutQuad: t => t<.5 ? 2*t*t : -1+(4-2*t)*t,
+  // accelerating from zero velocity
+  easeInCubic: t => t*t*t,
+  // decelerating to zero velocity
+  easeOutCubic: t => (--t)*t*t+1,
+  // acceleration until halfway, then deceleration
+  easeInOutCubic: t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1,
+  // accelerating from zero velocity
+  easeInQuart: t => t*t*t*t,
+  // decelerating to zero velocity
+  easeOutQuart: t => 1-(--t)*t*t*t,
+  // acceleration until halfway, then deceleration
+  easeInOutQuart: t => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t,
+  // accelerating from zero velocity
+  easeInQuint: t => t*t*t*t*t,
+  // decelerating to zero velocity
+  easeOutQuint: t => 1+(--t)*t*t*t*t,
+  // acceleration until halfway, then deceleration
+  easeInOutQuint: t => t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t
 }

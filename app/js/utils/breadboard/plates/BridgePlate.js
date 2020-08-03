@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}
 
-    constructor(container, grid, schematic=false, id, length=2) {
-        super(container, grid, schematic, id, length);
+    constructor(container, grid, schematic=false, verbose=false, id, length=2) {
+        super(container, grid, schematic, verbose, id, length);
 
         length = Number(length);
         length = Number.isInteger(length) ? length : 2;
@@ -40,15 +40,6 @@ export default class BridgePlate extends LinearPlate {
 
         // this._group.text(`Bridge ${this._params.len} cells`).font({size: 20});
     };
-
-    /**
-     * Установить состояние перемычки
-     *
-     * @param {object} state новое состояние перемычки
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
 
     /**
      *

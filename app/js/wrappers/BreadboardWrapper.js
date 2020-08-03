@@ -25,7 +25,7 @@ export default class BreadboardWrapper extends Wrapper {
         }
 
         this._plugin.inject(dom_node, {
-            readOnly: read_only
+            readOnly: read_only,
         });
     }
 
@@ -70,7 +70,7 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.setCurrents(threads);
     }
 
-    removeCurrents() {
+    removeAllCurrents() {
         this._plugin._layers.current.removeAllCurrents();
     }
 
@@ -86,6 +86,10 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.clearRegions();
     }
 
+    setPinsValues(values) {
+        this._plugin.setPinsValues(values);
+    }
+
     switchSpareFilters(on) {
         this._plugin.switchSpareFilters(on);
     }
@@ -94,11 +98,23 @@ export default class BreadboardWrapper extends Wrapper {
         this._plugin.switchSchematic(on, detailed);
     }
 
+    switchVerbose(on) {
+        this._plugin.switchVerbose(on);
+    }
+
     onChange(cb) {
         this._plugin.onChange(cb);
     }
 
     onDragStart(cb) {
         this._plugin.onDragStart(cb);
+    }
+
+    onShortCircuitStart(cb) {
+        this._plugin.onShortCircuitStart(cb);
+    }
+
+    onShortCircuitEnd(cb) {
+        this._plugin.onShortCircuitEnd(cb);
     }
 }

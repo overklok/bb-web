@@ -4,16 +4,21 @@ import Grid from "../core/Grid";
 import Cell from "../core/Cell";
 import PlateContextMenu from "../menus/PlateContextMenu";
 
-import {logoSVG, leafSVG} from "../styles/paths";
 import {GRADIENTS} from "../styles/gradients";
 
-const LOGO_COLOR_ACTIVE     = "#6B8FFF";
-const LOGO_COLOR_DEFAULT    = "#000000";
+const DOMAIN_SCHEMATIC_STYLES = {
+    Default: 'default',
+    Dotted: 'dotted',
+    None: 'none'
+}
 
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
 
+    /** отклонение линий доменов в схематическом режиме */
     static get DomainSchematicBias() {return 20}
+
+    static get DomainSchematicStyles() {return DOMAIN_SCHEMATIC_STYLES}
 
     constructor(container, grid, schematic=false, detailed=false) {
         super(container, grid, schematic, detailed);
@@ -21,22 +26,18 @@ export default class BackgroundLayer extends Layer {
         this._container.addClass(BackgroundLayer.Class);
 
         this._boardgroup    = undefined;
-        this._logogroup     = undefined;
 
         this._domaingroup   = undefined;
-        this._currentgroup     = undefined;
+        this._currentgroup  = undefined;
         this._decogroup     = undefined;
 
-        this._callbacks = {
-            logoclick: () => {}
-        };
-
-        this._logo_flower   = undefined;
-        this._logo_text     = undefined;
-
-        this._is_logo_clicked = false;
+        this._domain_config = undefined;
 
         this._initGroups();
+    }
+
+    setDomainConfig(domain_config) {
+        this._domain_config = domain_config;
     }
 
     compose() {
@@ -47,8 +48,7 @@ export default class BackgroundLayer extends Layer {
             .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
 
-        this._drawLogo();
-        this._drawDeco();
+        this._drawAuxPoints();
         this._drawDomains();
         this._drawCells();
     }
@@ -58,169 +58,27 @@ export default class BackgroundLayer extends Layer {
 
         this._initGroups();
         this.compose();
-
-        // re-click
-        this.toggleLogoActive(this._is_logo_clicked);
-    }
-
-    clickLogo() {
-        this._logogroup.fire('click');
-    }
-
-    onLogoClick(cb) {
-        if (!cb) {this._callbacks.logoclick = () => {}}
-
-        this._callbacks.logoclick = cb;
     }
 
     _initGroups() {
         this._clearGroups();
 
         this._boardgroup    = this._container.group();
-        this._logogroup     = this._container.group().id("logogroup");
         this._domaingroup   = this._container.group();
-        this._currentgroup     = this._container.group();
+        this._currentgroup  = this._container.group();
         this._decogroup     = this._container.group();
     }
 
     _clearGroups() {
         if (this._boardgroup)   this._boardgroup.remove();
-        if (this._logogroup)    this._logogroup.remove();
         if (this._domaingroup)  this._domaingroup.remove();
-        if (this._currentgroup)    this._currentgroup.remove();
+        if (this._currentgroup) this._currentgroup.remove();
         if (this._decogroup)    this._decogroup.remove();
     }
 
-    _drawLogo() {
-        let image = this._logogroup
-            .nested();
-
-        let text = this._logogroup.path(logoSVG());
-
-        let flower = image.group();
-        let leaf = flower.symbol();
-
-        leaf.path(leafSVG()).scale(4);
-
-        flower.use(leaf).rotate(0, 32, 65.5);
-        flower.use(leaf).rotate(60, 32, 65.5);
-        flower.use(leaf).rotate(120, 32, 65.5);
-        flower.use(leaf).rotate(180, 32, 65.5);
-        flower.use(leaf).rotate(240, 32, 65.5);
-        flower.use(leaf).rotate(300, 32, 65.5);
-
-        flower.move(18,0);
-        flower.scale(0.7);
-
-        text.move(-70, 5);
-
-        text.scale(0.5);
-
-        this._logo_text = text;
-        this._logo_flower = flower;
-
-        this._logogroup.cx(100 + this.__grid.size.x / 2);
-
-        this._logogroup.style({cursor: 'pointer'});
-
-        this._logogroup.click((evt) => {
-            this.toggleLogoActive(!this._is_logo_clicked);
-
-            this._callbacks.logoclick();
-        });
-    }
-
-    toggleLogoActive(on=true, animate=true) {
-        if (on) {
-            if (animate) {
-                this._logo_text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-                this._logo_flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-            } else {
-                this._logo_text.fill(LOGO_COLOR_ACTIVE);
-                this._logo_flower.fill(LOGO_COLOR_ACTIVE);
-            }
-        } else {
-            if (animate) {
-                this._logo_text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-                this._logo_flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-            } else {
-                this._logo_text.fill(LOGO_COLOR_DEFAULT);
-                this._logo_flower.fill(LOGO_COLOR_DEFAULT);
-            }
-        }
-
-        this._is_logo_clicked = on;
-    }
-
-    _drawDeco() {
-        try {
-            // Voltage source line reference points
-            let cell1 = this.__grid.cell(0, 1, Grid.BorderTypes.Wrap);
-            let cell2 = this.__grid.cell(0, 5, Grid.BorderTypes.Wrap);
-            let cell3 = this.__grid.cell(0, 6, Grid.BorderTypes.Wrap);
-            let cell4 = this.__grid.cell(0, -1, Grid.BorderTypes.Wrap);
-
-            // Line takeaway/rise
-            let rise = 40;
-
-            let gap_begin_y = cell2.center.y + this.__grid.gap.y * 5/3,
-                gap_end_y   = cell3.center.y - this.__grid.gap.y * 5/3;
-
-            // Top/bottom bias (detailed schematic view only)
-            let bias = 0;
-
-            if (this.__schematic && this.__detailed) {
-                bias = BackgroundLayer.DomainSchematicBias;
-            }
-
-            // Voltage source line, actually
-            this._decogroup.path([
-                ['M', cell1.pos.x, cell1.center.y - bias],
-                ['l', -rise, 0],
-                ['L', cell2.pos.x-rise, gap_begin_y],
-                ['M', cell3.pos.x-rise, gap_end_y],
-                ['L', cell4.pos.x-rise, cell4.center.y + bias],
-                ['l', rise, 0],
-            ])
-                .fill({opacity: 0})
-                .stroke({color: "#000", width: 2, opacity: 1});
-
-            this._decogroup.path([
-                ['M', cell1.pos.x - rise * 2, gap_begin_y],
-                ['l', rise * 2, 0],
-            ])
-                .stroke({color: "#f00", width: 6, opacity: 1, linecap: 'round'});
-            ;
-
-            this._decogroup.path([
-                ['M', cell3.pos.x - rise * 1.5, gap_end_y],
-                ['l', rise, 0]
-            ])
-                .fill({opacity: 0})
-                .stroke({color: "#00f", width: 6, opacity: 1, linecap: 'round'});
-
-            let cap_size = 42;
-
-            let cap_pos_x = cell2.pos.x - rise * 2 + cap_size / 4;
-
-            // Pole caption 1
-            this._decogroup
-                .text("+")
-                .fill({color: "#f00"})
-                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
-                .center(cap_pos_x, gap_begin_y - cap_size / 1.5);
-
-            // Pole caption 2
-            this._decogroup
-                .text("-")
-                .fill({color: "#00f"})
-                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
-                .center(cap_pos_x, gap_begin_y + cap_size);
-
-
-        } catch (re) {
-            console.error("Invalid reference cells has been selected to draw voltage source line");
-        }
+    _drawAuxPoints() {
+        this._drawAuxPointSource();
+        this._drawAuxPointUsbs();
     }
 
     _drawCells() {
@@ -232,63 +90,108 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawDomains() {
-        for (let col of this.__grid.cells) {
-            this._drawDomain(this._domaingroup, col[2], col[5], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
-            this._drawDomain(this._domaingroup, col[6], col[9], this.__schematic ? '#777' : GRADIENTS.GOLD.VERT);
-        }
+        if (!this._domain_config) return;
 
-        this._drawDomain(
-            this._domaingroup,
-            this.__grid.cell(0,1),
-            this.__grid.cell(9,1),
-            this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
-        );
-        this._drawDomain(
-            this._domaingroup,
-            this.__grid.cell(0,-1, Grid.BorderTypes.Wrap),
-            this.__grid.cell(9,-1, Grid.BorderTypes.Wrap),
-            this.__schematic ? '#555' : GRADIENTS.GOLD.HORZ
-        );
+        for (const domain of this._domain_config) {
+            const   d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
+                    d_to    = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
+
+            if (domain.style === BackgroundLayer.DomainSchematicStyles.None) continue;
+
+            if (domain.horz) {
+                for (let row = d_from.y; row <= d_to.y; row++) {
+                    this._drawDomain(
+                        this._domaingroup,
+                        this.__grid.cell(d_from.x, row),
+                        this.__grid.cell(d_to.x, row),
+                        this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ,
+                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
+                        !!domain.inv,
+                        domain.after,
+                        domain.before
+                    );
+                }
+            } else {
+                for (let col = d_from.x; col <= d_to.x; col++) {
+                    this._drawDomain(
+                        this._domaingroup,
+                        this.__grid.cell(col, d_from.y),
+                        this.__grid.cell(col, d_to.y),
+                        this.__schematic ? '#777' : GRADIENTS.GOLD.VERT,
+                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
+                        !!domain.inv,
+                        domain.after,
+                        domain.before
+                    );
+                }
+            }
+        }
     }
 
     /**
      *
-     * @param {SVG.Container}   container
-     * @param {Cell}            cell_from
-     * @param {Cell}            cell_to
-     * @param {SVG.Gradient}    color
+     * @param {SVG.Container}   container   SVG-узел, в котором рисовать
+     * @param {Cell}            cell_from   Начальная ячейка сетки
+     * @param {Cell}            cell_to     Конечная ячейка сетки
+     * @param {SVG.Gradient}    color       Задать цвет домена
+     * @param {boolean}         dotted      Пунктирный стиль (в схем. режиме)
+     * @param {boolean}         inversed    Инвертировать смещение линии (в схем. режиме)
+     * @param {number}          after       Дорисовать линию на N ячеек после (в схем. режиме)
+     * @param {number}          before      Дорисовать линию на N ячеек до (в схем. режиме)
      * @private
      */
-    _drawDomain(container, cell_from, cell_to, color="#D4AF37") {
-        let width = Math.abs(cell_from.pos.x - cell_to.pos.x);
-        let height = Math.abs(cell_from.pos.y - cell_to.pos.y);
-
+    _drawDomain(
+        container,
+        cell_from, cell_to,
+        color="#D4AF37",
+        dotted=false,
+        inversed=false,
+        after=0, before= 0,
+    ) {
         if (this.__schematic && typeof color !== 'string') {
             console.error('String color is not supported in schematic mode');
             return;
         }
 
         if (this.__schematic) {
-            width   = width >= height ? Math.max(width, height) : 0;
-            height  = width <  height ? Math.max(width, height) : 0;
+            this._drawDomainLine(container, cell_from, cell_to, inversed, true, color, dotted);
 
-            this._drawDomainLine(container, cell_from, cell_to, width, height, color);
+            const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
+                  is_vertical = Cell.IsLineVertical(cell_from, cell_to);
+
+            if (after > 0) {
+                const cell_from_add = this.__grid.cell(
+                    cell_to.idx.x,
+                    cell_to.idx.y
+                );
+                const cell_to_add = this.__grid.cell(
+                    cell_to.idx.x + after * is_horizontal,
+                    cell_to.idx.y + after * is_vertical
+                )
+
+                this._drawDomainLine(
+                    container, cell_from_add, cell_to_add, inversed, false, color, dotted
+                );
+            }
+
+            if (before > 0) {
+                const cell_from_add = this.__grid.cell(
+                    cell_from.idx.x - before * is_horizontal,
+                    cell_from.idx.y - before * is_vertical
+                );
+                const cell_to_add = this.__grid.cell(
+                    cell_from.idx.x,
+                    cell_from.idx.y
+                )
+                this._drawDomainLine(
+                    container, cell_from_add, cell_to_add, inversed, false, color, dotted
+                );
+            }
+
         } else {
-            this._drawDomainRect(container, cell_from, cell_to, width, height, color);
+            this._drawDomainRect(container, cell_from, cell_to, color);
         }
     }
-
-    // _drawContact(container, cell_from, cell_to, color="#000") {
-    //     let len = {
-    //         x: math.sqrt(cell_from.pos.x * cell_from.pos.x - cell_to.pos.x * cell_to.pos.x),
-    //         y: math.sqrt(cell_from.pos.y * cell_from.pos.y - cell_to.pos.y * cell_to.pos.y),
-    //     };
-    //
-    //     if (this.__schematic && typeof color !== 'string') {
-    //         console.error('String color is not supported in schematic mode');
-    //         return;
-    //     };
-    // }
 
     _drawCell(container, cell) {
         if (this.__schematic) {
@@ -303,12 +206,6 @@ export default class BackgroundLayer extends Layer {
 
             return;
         }
-
-        // container
-        //     .circle(cell.size.x)
-        //     .move(cell.pos.x, cell.pos.y)
-        //     .fill({color: GRADIENTS.GOLD.RADIAL, opacity: 1})
-        //     .stroke({color: "#6f6f6f", opacity: 0.5});
 
         // quad style
         container
@@ -330,26 +227,37 @@ export default class BackgroundLayer extends Layer {
             .move(cell.pos.x, cell.pos.y);
     }
 
-    _drawDomainLine(container, cell_from, cell_to, len_x, len_y, color) {
-        let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
-            is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
+    _drawDomainLine(container, cell_from, cell_to, inversed, use_notches, color, dotted) {
+        const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
+              is_vertical = Cell.IsLineVertical(cell_from, cell_to);
+
+        let len_x = Math.abs(cell_from.pos.x - cell_to.pos.x),
+            len_y = Math.abs(cell_from.pos.y - cell_to.pos.y);
 
         let bias_x = 0,
             bias_y = 0;
 
+        len_x = len_x >= len_y ? len_x : 0;
+        len_y = len_x <  len_y ? len_y : 0;
+
+        let bias_cont_x = 0,
+            bias_cont_y = 0;
+
         if (this.__detailed) {
             // дорисовать засечки
-            this._drawDomainLineNotches(container, cell_from, cell_to, color);
+            if (use_notches) {
+                this._drawDomainLineNotches(container, cell_from, cell_to, inversed, color);
+            }
 
-            bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias,
-            bias_y = !is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+            bias_x = is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+            bias_y = is_vertical ? 0 : BackgroundLayer.DomainSchematicBias;
 
-            if (is_top) bias_y *= -1;
+            if (inversed) {bias_x *= -1; bias_y *= -1;}
         }
 
-        container.line(0, 0, len_x, len_y)
-            .stroke({color, width: 6, linecap: 'round'})
-            .move(cell_from.center.x + bias_x, cell_from.center.y + bias_y)
+        container.line(0, 0, len_x + bias_cont_x, len_y + bias_cont_y)
+            .stroke({color, width: 6, linecap: 'round', dasharray: dotted ? 16 : null})
+            .move(cell_from.center.x + bias_x - bias_cont_x, cell_from.center.y + bias_y - bias_cont_y)
             .opacity(0.5);
     }
 
@@ -362,9 +270,9 @@ export default class BackgroundLayer extends Layer {
      * @param color
      * @private
      */
-    _drawDomainLineNotches(container, cell_from, cell_to, color) {
-        let is_top          = Cell.IsLineAt(cell_from, cell_to, null, 1),
-            is_horizontal   = Cell.IsLineHorizontal(cell_from, cell_to);
+    _drawDomainLineNotches(container, cell_from, cell_to, inversed, color) {
+        const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
+              is_vertical   = Cell.IsLineVertical(cell_from, cell_to);
 
         let pos_from  = is_horizontal ? cell_from.idx.x : cell_from.idx.y;
         let pos_to    = is_horizontal ? cell_to.idx.x   : cell_to.idx.y;
@@ -376,22 +284,153 @@ export default class BackgroundLayer extends Layer {
             let cell = is_horizontal ? this.__grid.cell(pos, cell_from.idx.y) : this.__grid.cell(cell_from.idx.x, pos);
 
             let bias_x =  is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
-            let bias_y = !is_horizontal ? 0 : BackgroundLayer.DomainSchematicBias;
+            let bias_y =  is_vertical   ? 0 : BackgroundLayer.DomainSchematicBias;
 
-            let corr_y = (is_top) ? -BackgroundLayer.DomainSchematicBias : 0;
+            let corr_x = (inversed) ? -bias_x : 0;
+            let corr_y = (inversed) ? -bias_y : 0;
 
             container.line(0, 0, bias_x, bias_y)
                 .stroke({color, width: 6, linecap: 'round'})
-                .move(cell.center.x, cell.center.y + corr_y)
+                .move(cell.center.x + corr_x, cell.center.y + corr_y)
                 .opacity(0.5);
         }
     }
 
-    _drawDomainRect(container, cell_from, cell_to, width, height, color) {
+    _drawDomainRect(container, cell_from, cell_to, color) {
+        const width = Math.abs(cell_from.pos.x - cell_to.pos.x),
+              height = Math.abs(cell_from.pos.y - cell_to.pos.y);
+
         container.rect(width + cell_from.size.x, height + cell_from.size.y)
             .fill({color})
             .stroke({color})
             .move(cell_from.pos.x, cell_from.pos.y)
             .radius(10);
+    }
+
+    _drawAuxPointSource() {
+        if (!this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.Source)) return;
+
+        const   p_vcc = this.__grid.auxPoint(Grid.AuxPoints.Vcc),
+                p_gnd = this.__grid.auxPoint(Grid.AuxPoints.Gnd);
+
+        // try {
+            // Line takeaway/rise
+            let rise = 40;
+
+            // Point positions corrected to prevent current overlay
+            const vcc_pos = {x: p_vcc.pos.x, y: p_vcc.pos.y + 8},
+                  gnd_pos = {x: p_gnd.pos.x, y: p_gnd.pos.y - 8};
+
+            // Top/bottom bias (detailed schematic view only)
+            let bias = 0,
+                vcc_cell_pos_x = p_vcc.cell.pos.x,
+                gnd_cell_pos_x = p_gnd.cell.pos.x;
+
+            if (this.__schematic && this.__detailed) {
+                bias = BackgroundLayer.DomainSchematicBias;
+                vcc_cell_pos_x = p_vcc.cell.center.x;
+                gnd_cell_pos_x = p_gnd.cell.center.x;
+            }
+
+            // Voltage source line, actually
+            this._decogroup.path([
+                ['M', vcc_pos.x, vcc_pos.y],
+                ['L', vcc_pos.x, p_vcc.cell.center.y - bias],
+                ['l', vcc_cell_pos_x - vcc_pos.x, 0]
+            ])
+                .fill({color: 'none'})
+                .stroke({color: "#777", width: 6, linecap: 'round'})
+                .opacity(0.5);
+                // .fill({opacity: 0})
+                // .stroke({color: "#000", width: 2, opacity: 1});
+
+            this._decogroup.path([
+                ['M', gnd_pos.x, gnd_pos.y],
+                ['L', gnd_pos.x, p_gnd.cell.center.y + bias],
+                ['l', gnd_cell_pos_x - gnd_pos.x, 0],
+            ])
+                .fill({color: 'none'})
+                .stroke({color: "#777", width: 6, linecap: 'round'})
+                .opacity(0.5);
+                // .fill({opacity: 0})
+                // .stroke({color: "#000", width: 2, opacity: 1});
+
+            this._decogroup.line(0, 0, rise * 2.5, 0)
+                .center(vcc_pos.x, vcc_pos.y)
+                .stroke({color: "#f00", width: 6, opacity: 1, linecap: 'round'});
+
+            this._decogroup.line(0, 0, rise * 1.5, 0)
+                .center(gnd_pos.x, gnd_pos.y)
+                .stroke({color: "#00f", width: 6, opacity: 1, linecap: 'round'});
+
+            const   cap_size = 42,
+                    cap_pos_x = vcc_pos.x - rise * 1.25;
+
+            // Pole caption 1
+            this._decogroup
+                .text("+")
+                .fill({color: "#f00"})
+                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
+                .center(cap_pos_x, vcc_pos.y - cap_size / 2);
+
+            // Pole caption 2
+            this._decogroup
+                .text("-")
+                .fill({color: "#00f"})
+                .font({size: cap_size, family: "'Lucida Console', Monaco, monospace", weight: "bold"})
+                .center(cap_pos_x, gnd_pos.y + cap_size / 2);
+
+
+        // } catch (re) {
+        //     console.error("Invalid reference cells has been selected to draw voltage source line");
+        // }
+    }
+
+    _drawAuxPointUsbs() {
+        if (this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.Usb1)) {
+            this._drawAuxPointUsb(
+                this.__grid.auxPoint(Grid.AuxPoints.U1Vcc),
+                this.__grid.auxPoint(Grid.AuxPoints.U1Gnd),
+                this.__grid.auxPoint(Grid.AuxPoints.U1Analog1),
+                this.__grid.auxPoint(Grid.AuxPoints.U1Analog2),
+            );
+        }
+
+        if (this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.Usb3)) {
+            this._drawAuxPointUsb(
+                this.__grid.auxPoint(Grid.AuxPoints.U3Vcc),
+                this.__grid.auxPoint(Grid.AuxPoints.U3Gnd),
+                this.__grid.auxPoint(Grid.AuxPoints.U3Analog1),
+                this.__grid.auxPoint(Grid.AuxPoints.U3Analog2),
+            );
+        }
+    }
+
+    _drawAuxPointUsb(p_vcc, p_gnd, p_an1, p_an2) {
+        this._drawAuxPointUsbPath(p_vcc, BackgroundLayer.DomainSchematicBias);
+        this._drawAuxPointUsbPath(p_gnd, BackgroundLayer.DomainSchematicBias);
+        this._drawAuxPointUsbPath(p_an1);
+        this._drawAuxPointUsbPath(p_an2);
+    }
+
+    _drawAuxPointUsbPath(point, bias_domain=0) {
+        let needs_bias  = this.__schematic && this.__detailed;
+        bias_domain = needs_bias * bias_domain;
+
+        const cell_x = needs_bias ? point.cell.center.x : point.cell.pos.x + point.cell.size.x;
+
+        try {
+            this._decogroup.path([
+                ['M', point.pos.x, point.pos.y],
+                ['l', -point.bias, 0],
+                ['l', 0, point.cell.center.y - point.pos.y],
+                ['l', cell_x - point.pos.x + point.bias + bias_domain, 0]
+            ])
+                .fill({color: 'none'})
+                .stroke({color: "#777", width: 6, linecap: 'round'})
+                .opacity(0.5);
+        } catch (re) {
+            console.error("Invalid reference cells has been selected to draw voltage source line");
+        }
     }
 }

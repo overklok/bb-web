@@ -1,20 +1,22 @@
 import Module from "../core/Module";
 
-import BreadboardWrapper from '../wrappers/BreadboardWrapper';
+import Breadboard from "../utils/breadboard/Breadboard";
 
 /**
  * Модуль для работы с макетной платой
  */
 export default class BreadboardModule extends Module {
     static get eventspace_name() {return "bb"}
-    static get event_types() {return ["change", "drag-start"]}
+    static get event_types() {return ["change", "drag-start", "shortcircuit-start", "shortcircuit-end"]}
 
     static defaults() {
         return {
-            modeAdmin:  false,
-            schematic:  false,
-            detailed:   false,
-            spare:      false,
+            layoutAdvanced: false,
+            modeAdmin:      false,
+            schematic:      false,
+            detailed:       false,
+            verbose:        false,
+            spare:          false,
         }
     }
 
@@ -26,9 +28,10 @@ export default class BreadboardModule extends Module {
             spare: this._options.spare,
             schematic: this._options.schematic,
             detailed: this._options.detailed,
+            verbose: this._options.verbose,
         };
 
-        this._board = new BreadboardWrapper();
+        this._board = new Breadboard();
 
         this._subscribeToWrapperEvents();
     }
@@ -36,10 +39,6 @@ export default class BreadboardModule extends Module {
     setAdminMode(isAdmin) {
         this._options.modeAdmin = isAdmin;
         this._board.setReadOnly(!isAdmin);
-        //let plates = this.getPlates();
-        // пересоздание
-        //this.setPlates(plates);
-        // this._board.setReadOnly(!isAdmin);
     }
 
     inject(dom_node) {
@@ -51,7 +50,10 @@ export default class BreadboardModule extends Module {
 
             if (dom_node !== undefined) {
                 // this._board.inject(dom_node, false);
-                this._board.inject(dom_node, !this._options.modeAdmin);
+                this._board.inject(dom_node, {
+                    readOnly: !this._options.modeAdmin,
+                    layout: this._options.layoutAdvanced ? Breadboard.Layouts.Advanced : Breadboard.Layouts.Basic
+                });
 
                 this._state.display = true;
 
@@ -74,7 +76,7 @@ export default class BreadboardModule extends Module {
     eject() {
         if (!this._state.display) {return true}
 
-        this._board.eject();
+        this._board.dispose();
 
         this._state.display = false;
         // this._state.spare = false;
@@ -83,11 +85,13 @@ export default class BreadboardModule extends Module {
     highlightErrorPlates(plate_ids) {
         if (!this._state.display) {return true}
 
-        this._board.highlightErrorPlates(plate_ids);
+        this._board.highlightPlates(plate_ids);
     }
 
     updatePlates(plates) {
         if (!this._state.display) {return true}
+
+        this._board.clearRegions();
 
         return this._board.setPlates(plates);
     }
@@ -109,7 +113,6 @@ export default class BreadboardModule extends Module {
 
         if (!('elements' in data)) {return true}
 
-        // это будет приходить с сервера
         for (let element of data.elements) {
             this._board.setPlateState(element.id, {
                 currents: element.currents,
@@ -131,7 +134,7 @@ export default class BreadboardModule extends Module {
     clearCurrents() {
         if (!this._state.display) {return true}
 
-        this._board.removeCurrents();
+        this._board.removeAllCurrents();
 
         for (let plate of this._board.getPlates()) {
             this._board.setPlateState(plate.id, {
@@ -141,15 +144,20 @@ export default class BreadboardModule extends Module {
     }
 
     highlightRegion(region, clear) {
-        if (!this._state.display) {return true}
+        if (!this._state.display) return;
+        if (!region) return;
 
-        this._board.highlightRegion(region, clear);
+        this._board.highlightRegion(region.from, region.to, clear);
     }
 
     clearRegions() {
         if (!this._state.display) {return true}
 
         this._board.clearRegions();
+    }
+
+    setPinsValues(values) {
+        this._board.setPinsValues(values);
     }
 
     getPlates() {
@@ -168,6 +176,18 @@ export default class BreadboardModule extends Module {
         this._board.switchSpareFilters(on);
     }
 
+    setLayoutAdvanced(advanced=false) {
+        if (advanced) {
+            this._board.setLayout(Breadboard.Layouts.Advanced);
+        } else {
+            this._board.setLayout(Breadboard.Layouts.Basic);
+        }
+    }
+
+    getLayout() {
+        return this._board.getLayout();
+    }
+
     switchSchematic(on, detailed=false) {
         if (!this._state.display) {
             this._state.schematic = on;
@@ -175,7 +195,16 @@ export default class BreadboardModule extends Module {
             return false
         }
 
-        this._board.switchSchematic(on, this._state.detailed);
+        this._board.switchSchematic(on, this._state.detailed, this._state.verbose);
+    }
+
+    switchVerbose(on) {
+        if (!this._state.display) {
+            this._state.verbose = on;
+            return false
+        }
+
+        this._board.switchVerbose(this._state.verbose);
     }
 
     _subscribeToWrapperEvents() {
@@ -186,6 +215,14 @@ export default class BreadboardModule extends Module {
 
         this._board.onDragStart((data) => {
             this.emitEvent("drag-start", data);
+        });
+
+        this._board.onShortCircuitStart(() => {
+            this.emitEvent("shortcircuit-start", null);
+        });
+
+        this._board.onShortCircuitEnd(() => {
+            this.emitEvent("shortcircuit-end", null);
         });
     }
 }

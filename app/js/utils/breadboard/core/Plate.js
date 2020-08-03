@@ -38,9 +38,9 @@ export default class Plate {
 
     static get QuadSizeDefault()    {return 24}
     static get LEDSizeDefault()     {return 16}
-    static get LabelSizeDefault()   {return 12}
+    static get LabelSizeDefault()   {return 16}
 
-    constructor(container_parent, grid, schematic=false, id=null, extra=0) {
+    constructor(container_parent, grid, schematic=false, verbose=false, id=null, extra=0) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
@@ -76,7 +76,8 @@ export default class Plate {
             rels:       undefined,      // относительные позиции занимаемых ячеек
             adjs:       undefined,      // корректировки положения плашки
             extra:      extra,          // доп. параметр
-            schematic:  schematic       // схематическое отображение плашки
+            schematic:  schematic,       // схематическое отображение плашки
+            verbose:    verbose,       // схематическое отображение плашки
         };
 
         /// Состояние - изменяемые свойства плашки
@@ -87,6 +88,7 @@ export default class Plate {
             currents:       undefined,
             voltages:       undefined,
             input:          undefined,
+            output:         undefined,
             cell_num:       undefined,
             contr_num:      undefined,
         };
@@ -98,21 +100,37 @@ export default class Plate {
         this._callbacks = {
             change: () => {},           // изменения плашки
             ctxmenuitemclick: () => {}, // нажатия на пункт контекстного меню
-            dragstart: () => {},        // начала перетаскивания плашки
-            dragfinish: () => {}        // конца перетаскивания плашки
+            mousedown: () => {},
+            mousewheel: () => {},
+            dragstart: () => {},
+            dragfinish: () => {},
         };
 
-        /// Режим редактирования
-        this._editable = false;
         /// Режим перетаскивания
         this._dragging = false;
         /// Отрисована ли была плашка
-        this._drawed = false;
-        /// Событие начала перетаскивания было инициировано
-        this._dragstart_activated = false;
+        this._drawn = false;
 
         this._ctxmenu = new (this.__cm_class__())(this._container, this.__grid, {id: this._id, schematic: this._params.schematic});
         this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
+
+        this._group.mousedown((evt) => {this._callbacks.mousedown(evt)});
+
+        /// обработчик вращения колёсика мыши на плашке
+        if (this._group.node.addEventListener) {
+            if ('onwheel' in document) {
+                // IE9+, FF17+, Ch31+
+                this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt));
+            } else if ('onmousewheel' in document) {
+                // устаревший вариант события
+                this._group.node.addEventListener("mousewheel", (evt) => this._callbacks.mousewheel(evt));
+            } else {
+                // Firefox < 17
+            this._group.node.addEventListener("MozMousePixelScroll", (evt) => this._callbacks.mousewheel(evt));
+            }
+        } else { // IE8-
+            this._group.node.attachEvent("onmousewheel", (evt) => this._callbacks.mousewheel(evt));
+        }
 
         this.showGroupEditable(false);
     }
@@ -143,6 +161,10 @@ export default class Plate {
         return this._params.extra;
     }
 
+    get length() {
+        return this._params.size.x;
+    }
+
     /**
      * Возвратить текущее состояние плашки
      *
@@ -150,6 +172,10 @@ export default class Plate {
      */
     get state() {
         return this._state;
+    }
+
+    get input() {
+        return this._state.input;
     }
 
     /**
@@ -188,6 +214,23 @@ export default class Plate {
      */
     __getOppositeCell__(cell) {
         throw new Error("Method should be implemented");
+    }
+
+    serialize() {
+        return {
+            id:             this.id,
+            type:           this.alias,
+            x:              this.pos.x,
+            y:              this.pos.y,
+            extra:          this.extra,
+            length:         this.length,
+            orientation:    this.state.orientation,
+            input:          this.input,
+            // cell_num:       this._state.cell_num,
+            // contr_num:      this._state.contr_num,
+            // currents:       this._state.currents,
+            // voltages:       this._state.voltages,
+        }
     }
 
     /**
@@ -235,10 +278,11 @@ export default class Plate {
 
         this.highlightError(false);
         this.move(cell, true);
-        this.rotate(orientation, true);
+        this.rotate(orientation, true, false);
+        this._preventOverflow(true);
         this.__draw__(cell, orientation);
 
-        this._drawed = true;
+        this._drawn = true;
 
         this._params.size_px.x = width;
         this._params.size_px.y = height;
@@ -254,6 +298,7 @@ export default class Plate {
      * Установить состояние плашки
      *
      * @param {object} state новое состояние плашки, которое требуется отобразить
+     * @param suppress_events
      */
     setState(state, suppress_events=false) {
         let is_dirty = false;
@@ -264,12 +309,6 @@ export default class Plate {
 
                 is_dirty = true;
             }
-        }
-
-        if (this._state.highlighted === true) {
-            this._bezel.attr('filter', 'url(#glow-plate)');
-        } else {
-            this._bezel.attr('filter', null);
         }
 
         if (!suppress_events) {
@@ -289,17 +328,11 @@ export default class Plate {
      */
     highlightError(on=false) {
         if (on) {
-            // возможно, к плашке применён фильтр
-            this._bezel.attr('filter', null);
             // установить подсветку ошибки
             this._error_highlighter.opacity(0.3);
         } else {
             // снять подсветку ошибки
             this._error_highlighter.opacity(0);
-            // возможно, плашке нужно вернуть фильтр
-            if (this._state.highlighted === true) {
-                this._bezel.attr('filter', 'url(#glow-plate)');
-            }
         }
     }
 
@@ -308,7 +341,7 @@ export default class Plate {
      */
     click() {
         this._container.fire('mousedown');
-        this._rearrange();
+        this.rearrange();
     }
 
     /**
@@ -456,7 +489,7 @@ export default class Plate {
      * Выделить контур плашки
      */
     select() {
-        this._rearrange();
+        this.rearrange();
 
         if (this._params.schematic) {
             this._bezel.animate('100ms').stroke({opacity: 1, color: "#0900fa", width: 2});
@@ -499,111 +532,6 @@ export default class Plate {
     }
 
     /**
-     * Сделать плашку редактируемой
-     *
-     * @param   {HTMLElement}   svg_main SVG-элемент в DOM, содержащий плашку
-     *
-     * @returns {boolean} принято ли изменение
-     */
-    setEditable(svg_main) {
-        /// если svg не задан, отключить и выйти
-        if (!svg_main) {
-            this._container.style({cursor: 'default'});
-            this._group.off();      // отключить все обработчики
-            this._editable = false;
-            return true;
-        }
-
-        /// если svg задан, но уже включено, выйти
-        if (this._editable) {
-            return true;
-        }
-
-        /// если svg задан, но не включено, включить
-        this._editable = true;
-
-        this._container.style({cursor: 'move'});
-
-        let cursor_point_last = undefined;
-
-        let cell_supposed = undefined;
-
-        /// обработчик перетаскивания плашки
-        let onmove = (evt) => {
-            let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
-
-            let dx = cursor_point.x - cursor_point_last.x;
-            let dy = cursor_point.y - cursor_point_last.y;
-
-            this._container.dmove(dx, dy);
-
-            cursor_point_last = cursor_point;
-
-            cell_supposed = this._calcSupposedCell();
-            this._dropShadowToCell(cell_supposed);
-
-            if (dx > 0 || dy > 0) {
-                this._dragging = true;
-
-                if (!this._dragstart_activated) {
-                    this._showShadow();
-                    this._callbacks.dragstart();
-                    this._dragstart_activated = true;
-                }
-            }
-        };
-
-        let onmouseup = (evt) => {
-            if (evt.which === 1) {
-                document.body.removeEventListener('mousemove', onmove, false);
-                document.body.removeEventListener('mouseup', onmouseup, false);
-
-                // Snap
-                this.move(cell_supposed, false, true);
-                this._hideShadow();
-
-                this._dragging = false;
-                this._dragstart_activated = false;
-                this._callbacks.dragfinish();
-            }
-        };
-
-        /// обработчик нажатия кнопки мыши на плашке
-        this._group.mousedown((evt) => {
-            if (evt.which === 1 && !this._dragging) {
-                this._rearrange();
-
-                document.body.addEventListener('mousemove', onmove, false);
-                document.body.addEventListener('mouseup', onmouseup, false);
-
-                cursor_point_last = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
-            }
-        });
-
-        /// отбработчик вращения колёсика мыши на плашке
-        if (this._group.node.addEventListener) {
-            if ('onwheel' in document) {
-                // IE9+, FF17+, Ch31+
-                this._group.node.removeEventListener("wheel", this.onWheel());
-                this._group.node.addEventListener("wheel", this.onWheel());
-            } else if ('onmousewheel' in document) {
-                // устаревший вариант события
-                this._group.node.removeEventListener("mousewheel", this.onWheel());
-                this._group.node.addEventListener("mousewheel", this.onWheel());
-            } else {
-                // Firefox < 17
-            this._group.node.removeEventListener("MozMousePixelScroll", this.onWheel());
-            this._group.node.addEventListener("MozMousePixelScroll", this.onWheel());
-            }
-        } else { // IE8-
-            this._group.node.attachEvent("onmousewheel", this.onWheel());
-        }
-
-        this._editable = true;
-        return true;
-    }
-
-    /**
      * Показать группу для режима редактирования
      *
      * @param on
@@ -628,33 +556,12 @@ export default class Plate {
     }
 
     /**
-     * Установить обработчик события вращения колёсика мыши на плашке
-     */
-    onWheel() {
-        if (this._onwheel) {
-            return this._onwheel;
-        }
-
-        this._onwheel = (evt) => {
-            if (evt.deltaY > 16) {
-                this.rotateClockwise();
-            }
-
-            if (evt.deltaY < -16) {
-                this.rotateCounterClockwise();
-            }
-        };
-
-        return this._onwheel;
-    }
-
-    /**
      * Установить обработчик начала перетаскивания плашки
      *
      * @param {function} cb обработчик начала перетаскивания плашки
      */
     onDragStart(cb) {
-        if (!cb) {this._callbacks.dragstart = () => {}}
+        if (!cb) {this._callbacks.dragstart = () => {}; return}
 
         this._callbacks.dragstart = cb;
     }
@@ -665,9 +572,21 @@ export default class Plate {
      * @param {function} cb обработчик конца перетаскивания плашки
      */
     onDragFinish(cb) {
-        if (!cb) {this._callbacks.dragfinish = () => {}}
+        if (!cb) {this._callbacks.dragfinish = () => {}; return}
 
         this._callbacks.dragfinish = cb;
+    }
+
+    onMouseDown(cb) {
+        if (!cb) {this._callbacks.mousedown = () => {}; return}
+
+        this._callbacks.mousedown = cb;
+    }
+
+    onMouseWheel(cb) {
+        if (!cb) {this._callbacks.mousewheel = () => {}; return}
+
+        this._callbacks.mousewheel = cb;
     }
 
     /**
@@ -676,7 +595,7 @@ export default class Plate {
      * @param {function} cb обработчик нажатия на пункт контекстного меню плашки.
      */
     onContextMenuItemClick(cb) {
-        if (!cb) {this._callbacks.ctxmenuitemclick = () => {}}
+        if (!cb) {this._callbacks.ctxmenuitemclick = () => {}; return}
 
         this._callbacks.ctxmenuitemclick = cb;
     }
@@ -690,7 +609,7 @@ export default class Plate {
     showContextMenu(evt, svg_main) {
         if (this._dragging) return;
 
-        let cursor_point = Breadboard._getCursorPoint(svg_main, evt.clientX, evt.clientY);
+        let cursor_point = Breadboard.getCursorPoint(svg_main, evt.clientX, evt.clientY);
 
         this._ctxmenu.draw(cursor_point, true, [this._state.input]);
     }
@@ -721,6 +640,59 @@ export default class Plate {
     unfreeze() {
         this._container.style('pointer-events', 'inherit');
         this._container.animate('100ms').opacity(1);
+    }
+
+    setEditable(editable=true) {
+        if (editable) {
+            this._container.style({cursor: 'move'});
+        } else {
+            this._container.style({cursor: 'default'});
+        }
+    }
+
+    snap() {
+        if (!this._cell_supposed) {
+            this._cell_supposed = this._calcSupposedCell();
+        }
+
+        this.move(this._cell_supposed, false, true);
+
+        this._hideShadow();
+
+        this._dragging = false;
+        this._cell_supposed = undefined;
+        this._callbacks.dragfinish();
+    }
+
+    move_to_point(x, y, animate=false) {
+        if (animate) {
+            this._container.animate('100ms', '<>').move(x, y);
+        } else {
+            this._container.move(x, y);
+        }
+    }
+
+    center_to_point(x, y, animate=false) {
+        if (animate) {
+            this._container.animate('100ms', '<>').center(x, y);
+        } else {
+            this._container.center(x, y);
+        }
+    }
+
+    dmove(dx, dy) {
+        this._container.dmove(dx, dy);
+
+        requestAnimationFrame(() => {
+            this._cell_supposed = this._calcSupposedCell();
+            this._dropShadowToCell(this._cell_supposed);
+        })
+
+        if (!this._dragging) {
+            this._showShadow();
+            this._callbacks.dragstart();
+            this._dragging = true;
+        }
     }
 
     /**
@@ -929,7 +901,7 @@ export default class Plate {
      *
      * @private
      */
-    _preventOverflow() {
+    _preventOverflow(throw_error=false) {
         /// Номер ячейки, занимаемой опорной ячейкой плашки
         let ix = this._state.cell.idx.x,
             iy = this._state.cell.idx.y;
@@ -948,8 +920,12 @@ export default class Plate {
         ix += dx;
         iy += dy;
 
+        if ((dx !== 0 || dy !== 0) && throw_error) {
+            throw new RangeError(`Invalid plate position: an overflow occurred at [${ix}, ${iy}] for plate #${this.id}`)
+        }
+
         // анимировать, но только не в случае незавершённой отрисовки
-        this.move(this.__grid.cell(ix, iy), false, this._drawed);
+        this.move(this.__grid.cell(ix, iy), false, this._drawn);
     }
 
     /**
@@ -959,7 +935,7 @@ export default class Plate {
      *
      * @private
      */
-    _rearrange() {
+    rearrange() {
         let node_temp = this._container.node;
         this._container.node.remove();
         this._node_parent.appendChild(node_temp);

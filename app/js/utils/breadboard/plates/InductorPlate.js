@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class InductorPlate extends LinearPlate {
     static get Alias() {return "inductor"}
 
-    constructor(container, grid, id, schematic=false, inductance) {
-        super(container, grid, id, schematic, inductance);
+    constructor(container, grid, schematic=false, verbose=false, id, inductance) {
+        super(container, grid, schematic, verbose, id, inductance);
 
         this._params.extra = Number(inductance) || 100;
     }
@@ -22,15 +22,6 @@ export default class InductorPlate extends LinearPlate {
 
         // this._group.text(`Button`).font({size: 20});
     };
-
-    /**
-     * Установить состояние перемычки
-     *
-     * @param {object} state новое состояние перемычки
-     */
-    setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-    }
 
     /**
      *

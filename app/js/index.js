@@ -122,7 +122,7 @@ class Application {
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
             'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready', 'gui:reconnect',
-            'bb:change', 'bb:drag-start'
+            'bb:change', 'bb:drag-start', 'bb:shortcircuit-start', 'bb:shortcircuit-end'
         ]);
     }
 
@@ -217,6 +217,7 @@ class Application {
                     this.gui.showMissionButtons(lesson.missions);
                     this.gui.setLessonText(lesson.name)
                 })
+                .then(() => this.ls.launch())
                 .then(() => this.ins.launchLesson(mission_idx, exercise_idx))
                 .catch(error => {
                     this.gui.showSpinnerError(error.message);
@@ -603,14 +604,6 @@ class Application {
         });
 
         /**
-         * Изменено значение переменной
-         */
-        this._dispatcher.on('ls:variable', data => {
-            console.log(data);
-            this.trc.setVariableValue(data.id, data.value);
-        });
-
-        /**
          * Когда программа завершится
          */
         this._dispatcher.on('ls:terminate', check_needed => {
@@ -642,6 +635,14 @@ class Application {
         });
 
         /**
+         * Изменено значение переменной
+         */
+        this._dispatcher.on('ls:variable', data => {
+            // For Arduino pins, see `ls:pin_values` event handler
+            this.trc.setVariableValue(data.id, data.value);
+        });
+
+        /**
          * Изменены плашки
          */
         this._dispatcher.on('ls:plates', data => {
@@ -666,21 +667,19 @@ class Application {
         });
 
         /**
-         * Изменён статус платы
+         * Изменены значения пинов
          */
-        this._dispatcher.on('ls:board-status', status => {
-            this.gui.setBoardStatus(status);
+        this._dispatcher.on('ls:pins_values', data => {
+            this.bb.setPinsValues(data);
+            // this.trc.setPinsValues(data);
         });
 
-        // this._dispatcher.on('ls:request_calc', step => {
-        //     let plates = this.bb.getPlates();
-        //
-        //     this.gs.calcCurrents(plates, step)
-        //         .then(results => Promise.all([
-        //             this.bb.updateCurrents(results),
-        //             this.ls.sendSpi(results.board_data)
-        //         ]))
-        // });
+        /**
+         * Изменён статус платы
+         */
+        this._dispatcher.on('ls:board-status', data => {
+            this.gui.setBoardStatus(data.status);
+        });
 
         /**
          * Достигнут тайм-аут соединения с IPC
@@ -763,6 +762,14 @@ class Application {
         this._dispatcher.on('bb:drag-start', () => {
             this.bb.clearCurrents();
             this.bb.clearRegions();
+        });
+
+        this._dispatcher.on('bb:shortcircuit-start', () => {
+            this.gui.showAlert('short_circuit');
+        });
+
+        this._dispatcher.on('bb:shortcircuit-end', () => {
+            this.gui.hideAlert('short_circuit');
         });
 
         /**

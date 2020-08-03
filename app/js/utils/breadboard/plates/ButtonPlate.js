@@ -6,8 +6,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class ButtonPlate extends LinearPlate {
     static get Alias() {return "button"}
 
-    constructor(container, grid, schematic=false, id) {
-        super(container, grid, schematic, id);
+    constructor(container, grid, schematic=false, verbose=false, id) {
+        super(container, grid, schematic, verbose, id);
     }
 
     __cm_class__() {
@@ -23,16 +23,42 @@ export default class ButtonPlate extends LinearPlate {
     __draw__(position, orientation) {
         this._drawPicture();
 
+        if (this._params.verbose) {
+            this._redrawInput(this._state.input);
+        }
+
         // this._group.text(`Button`).font({size: 20});
     };
 
     /**
      * Установить состояние перемычки
      *
-     * @param {object} state новое состояние перемычки
+     * @param {object} state    новое состояние перемычки
+     * @param suppress_events   глушить вызов событий
      */
     setState(state, suppress_events) {
         super.setState(state, suppress_events);
+
+        if (state.input === undefined) return;
+
+        let input = !!state.input;
+
+        this._ctxmenu.setValue(input);
+
+        if (this._params.verbose) {
+            this._redrawInput(input);
+        }
+    }
+
+    _redrawInput(input_value) {
+        if (!this._svginp) {
+            let cell = this.__grid.cell(0, 0);
+            this._svginp = this._group.text('0')
+                .center(cell.center_rel.x, cell.center_rel.y)
+                .style({fill: '#FFF', size: 18});
+        }
+
+        this._svginp.text(input_value ? '1' : '0');
     }
 
     /**
@@ -51,7 +77,6 @@ export default class ButtonPlate extends LinearPlate {
         rect2.center(cell2.center_rel.x, cell2.center_rel.y);
 
         let line_len = rect2.x() - rect1.x();
-
         let line_gap = line_len / 6;
 
         this._group.path([
