@@ -10,6 +10,7 @@ interface IProps {
     is_single?: boolean;
     active_tab: number;
     on_click?: Function;
+    overlay_node?: HTMLElement;
 }
 
 const Tab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>) => {
@@ -21,7 +22,7 @@ const Tab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>)
         }
     };
 
-    const {is_single, active_tab, index, label} = props;
+    const {is_single, active_tab, index, label, overlay_node} = props;
 
     const [{is_dragging}, drag] = useDrag({
         item: {type: DraggableItemTypes.Tab},
@@ -40,7 +41,7 @@ const Tab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>)
     return (
         <li className={klasses} onClick={onClick} ref={drag}>
             <span className='tab__title'>{label}</span>
-            <TabMenu ref={ref_menu} />
+            <TabMenu ref={ref_menu} overlay_node={overlay_node} />
         </li>
     )
 });

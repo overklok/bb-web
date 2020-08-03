@@ -1,18 +1,25 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import classNames from "classnames";
 import {Action, BooleanAction} from "../../Event";
+import TabMenuPopup from "./TabMenuPopup";
 
 interface IProps {
-
+    overlay_node?: HTMLElement;
 }
 
 interface IState {
     active: boolean;
     items?: Array<[string, Action<any>, Function]>;
+    m_left: number;
+    m_top: number;
+    m_btn_width: number;
+    m_btn_height: number;
 }
 
 export default class TabMenu extends React.Component<IProps, IState> {
     private readonly onglobalclick: () => void;
+    private readonly btn_ref: React.RefObject<HTMLDivElement> = React.createRef();
 
     constructor(props: IProps) {
         super(props);
@@ -20,15 +27,15 @@ export default class TabMenu extends React.Component<IProps, IState> {
         this.state = {
             active: false,
             items: [] as Array<[string, Action<any>, Function]>,
+            m_left: 0,
+            m_top: 0,
+            m_btn_width: 0,
+            m_btn_height: 0,
         };
 
         this.setActive = this.setActive.bind(this);
 
         this.onglobalclick = () => this.setInactive();
-    }
-
-    setItems(items: Array<[string, Action<any>, Function]>) {
-        this.setState({...this.state, items});
     }
 
     componentDidMount() {
@@ -39,44 +46,47 @@ export default class TabMenu extends React.Component<IProps, IState> {
         document.body.removeEventListener("click", this.onglobalclick);
     }
 
+    setItems(items: Array<[string, Action<any>, Function]>) {
+        this.setState({...this.state, items});
+    }
+
     render() {
         if (this.state.items.length === 0) return null;
 
         const btn_klasses = classNames({
-           'ddmenu__btn': true,
-           'ddmenu__btn_active': this.state.active,
-        });
-
-        const items_klasses = classNames({
-            'ddmenu__items': true,
-            'ddmenu__items_active': this.state.active
+           'tab__btn': true,
+           'tab__btn_active': this.state.active,
         });
 
         return (
-            <div className='tab__menu ddmenu'>
-                <div className={btn_klasses} onClick={this.setActive} />
-                <ul className={items_klasses}>
-                    {
-                        this.state.items.map(([name, action_type, cb], index) => {
-                            if (action_type === null) {
-                                return <li key={index}><hr/></li>;
-                            }
-
-                            switch ((action_type as any).Alias) {
-                                case BooleanAction.Alias:
-                                    return <li key={index} onClick={() => {cb()}}>{`[B] ${name}`}</li>;
-                                default:
-                                    return <li key={index} onClick={() => {cb()}}>{name}</li>;
-                            }
-                        })
-                    }
-                </ul>
-            </div>
+            <React.Fragment>
+                <div className={btn_klasses} onClick={this.setActive} ref={this.btn_ref} />
+                {
+                    this.state.active ?
+                        <TabMenuPopup
+                            items={this.state.items}
+                            overlay_node={this.props.overlay_node}
+                            left={this.state.m_left}
+                            top={this.state.m_top}
+                            btn_width={this.state.m_btn_width}
+                            btn_height={this.state.m_btn_height}
+                        /> :
+                        null
+                }
+            </React.Fragment>
         )
     }
 
     private setActive() {
-        this.setState({active: true});
+        const rect = this.btn_ref.current.getBoundingClientRect();
+
+        this.setState({
+            active: true,
+            m_left: rect.left,
+            m_top: rect.top,
+            m_btn_width: rect.width,
+            m_btn_height: rect.height
+        });
     }
 
     private setInactive() {

@@ -1,7 +1,9 @@
+// @ts-ignore (used here just to suppress IDE warning)
+import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
+
 import * as React from "react";
 import {RefObject} from "react";
 import classNames from "classnames";
-import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
 
 import Handle from "./Handle";
 import {View} from "../../base/View";
@@ -22,33 +24,35 @@ export enum PaneOrientation {
  */
 interface IProps {
     // уникальное название панели
-    name: string,
+    name: string;
     // заголовок панели
-    title: string,
+    title: string;
     // является ли панель корневой в иерархии
-    is_root: boolean,
+    is_root: boolean;
     // внутренние панели
-    panes?: ILayoutPane[],
+    panes?: ILayoutPane[];
     // варианты Видов
-    _widgets?: Widget[],
+    _widgets?: Widget[];
 
     // ориентация панели
-    orientation: PaneOrientation,
+    orientation: PaneOrientation;
 
     // единица измерения размера панели
-    size_unit: string,
+    size_unit: string;
     // начальный размер: PX / %
-    size: string|number
+    size: string|number;
     // минимальный размер: PX / %
-    size_min: number
+    size_min: number;
     // максимальный размер: PX / %
-    size_max: number
+    size_max: number;
 
     // возможно ли изменять размер панели
-    resizable: boolean,
+    resizable: boolean;
 
     // прикрыта ли панель (изначально)
-    covered: boolean
+    covered: boolean;
+
+    overlay_node?: HTMLElement;
 }
 
 /**
@@ -56,9 +60,9 @@ interface IProps {
  */
 interface IState {
     // прикрыта ли панель
-    covered: boolean,
+    covered: boolean;
     // анимирована ли панель
-    animated: boolean,
+    animated: boolean;
 }
 
 /**
@@ -358,10 +362,12 @@ export default class Pane extends React.Component<IProps, IState> {
         this.nests = [];
 
         if (!this.props._widgets) return null;
+
+        const overlay_node = this.props.overlay_node;
         
         return (
             <Frame covered={this.state.covered}>
-                <TabViewComposer>
+                <TabViewComposer overlay_node={overlay_node}>
                     {this.props._widgets.map((widget, index) => {
                         const ref: RefObject<Nest> = React.createRef();
                         
@@ -412,6 +418,7 @@ export default class Pane extends React.Component<IProps, IState> {
                     _widgets={data._widgets}
                     covered={this.state.covered}
                     ref={ref}
+                    overlay_node={this.props.overlay_node}
                 />
             </CSSTransition>
         );
@@ -546,8 +553,8 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param {number} pane_num_next Номер панели, распологающейся после рукоятки
      */
     handleDragStart(pane_num_prev: number, pane_num_next: number) {
-        this.panes[pane_num_prev].current.setState({animated: false, covered: true})
-        this.panes[pane_num_next].current.setState({animated: false, covered: true})
+        this.panes[pane_num_prev].current.setState({animated: false, covered: false})
+        this.panes[pane_num_next].current.setState({animated: false, covered: false})
 
         // Отключить анимацию на время перетаскивания
         for (const pane of this.panes) {

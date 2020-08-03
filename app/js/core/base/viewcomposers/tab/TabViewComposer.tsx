@@ -5,14 +5,18 @@ import TabMenu from "./TabMenu";
 import ViewConnector from "../../ViewConnector";
 import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
+interface IProps extends IVCProps {
+    overlay_node?: HTMLElement
+}
+
 interface IState extends IVCState {
     active_tab: number
 }
 
-export default class TabViewComposer extends ViewComposer<IVCProps, IState> {
+export default class TabViewComposer extends ViewComposer<IProps, IState> {
     private view_connectors: Array<[ViewConnector, React.RefObject<TabMenu>]> = [];
 
-    constructor(props: IVCProps) {
+    constructor(props: IProps) {
         super(props);
 
         this.state = {
@@ -55,7 +59,8 @@ export default class TabViewComposer extends ViewComposer<IVCProps, IState> {
     renderSingleChild() {
         const {
             props: {
-                children
+                children,
+                overlay_node
             },
         } = this;
 
@@ -71,7 +76,7 @@ export default class TabViewComposer extends ViewComposer<IVCProps, IState> {
                         this.registerViewConnector(connector, ref);
 
                         return (
-                            <SingleTab label={label} key={index} ref={ref}/>
+                            <SingleTab label={label} key={index} ref={ref} overlay_node={overlay_node} />
                         )
                     })}
                 </div>
@@ -86,11 +91,12 @@ export default class TabViewComposer extends ViewComposer<IVCProps, IState> {
          const {
             onClickTabItem,
             props: {
-                children
+                children,
+                overlay_node
             },
             state: {
                 active_tab
-            }
+            },
         } = this;
 
         this.resetViewConnectors();
@@ -113,6 +119,7 @@ export default class TabViewComposer extends ViewComposer<IVCProps, IState> {
                                 label={label}
                                 on_click={onClickTabItem}
                                 is_single={false}
+                                overlay_node={overlay_node}
                             />
                         );
                     })}

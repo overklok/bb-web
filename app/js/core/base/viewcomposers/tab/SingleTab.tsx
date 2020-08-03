@@ -4,7 +4,8 @@ import Tab from "./Tab";
 import TabMenu from "./TabMenu";
 
 interface IProps {
-    label: string,
+    label: string;
+    overlay_node?: HTMLElement;
 }
 
 const SingleTab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>) => {
@@ -14,6 +15,7 @@ const SingleTab = React.forwardRef((props: IProps, ref_menu: React.RefObject<Tab
             index={0}
             label={props.label}
             is_single={true}
+            overlay_node={props.overlay_node}
             ref={ref_menu}
         />
     )

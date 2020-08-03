@@ -76,6 +76,9 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     private pane_ref: RefObject<Pane> = React.createRef();
     private modes: {[key: string]: ILayoutMode};
 
+    private root_ref: RefObject<HTMLDivElement> = React.createRef();
+    private overlay_node: HTMLDivElement;
+
     constructor(props: ILayoutProps) {
         super(props);
 
@@ -91,6 +94,9 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
         this.state = {
             mode_name: 'default'
         }
+
+        this.overlay_node = document.createElement('div');
+        this.overlay_node.classList.add('layout-overlay');
 
         window.addEventListener('resize', this.onResize());
     }
@@ -123,24 +129,31 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
         const panes = this.modes[this.state.mode_name].panes;
 
         return (
-            <DndProvider backend={HTML5Backend}>
-                <Pane is_root={true}
-                      panes={panes}
-                      name='root'
-                      title='root'
-                      orientation={orientation}
-                      ref={this.pane_ref}
-                />
-            </DndProvider>
+            <div ref={this.root_ref} className='layout'>
+                <DndProvider backend={HTML5Backend}>
+                    <Pane is_root={true}
+                          panes={panes}
+                          name='root'
+                          title='root'
+                          orientation={orientation}
+                          ref={this.pane_ref}
+                          overlay_node={this.overlay_node}
+                    />
+                </DndProvider>
+            </div>
         );
     }
 
     protected viewDidMount() {
         this.mounted = true;
+
+        this.root_ref.current.appendChild(this.overlay_node);
     }
 
     protected viewWillUnmount() {
         this.mounted = false;
+
+        this.root_ref.current.removeChild(this.overlay_node);
     }
 
     private resolveWidgets(modes: {[key: string]: ILayoutMode}): {[key: string]: ILayoutMode} {
