@@ -1,6 +1,7 @@
-import Model from "../base/Model";
+import Model from "../base/model/Model";
 import {ILayoutMode, ILayoutPane} from "../views/layout/LayoutView";
 import {Widget} from "../services/interfaces/IViewService";
+import DummyDataSource from "../base/model/datasources/DummyDataSource";
 
 const UNITS_ALLOWED = [
     "px", '%'
@@ -12,7 +13,7 @@ const UNITS_ALLOWED = [
  *
  * @property modes {} режимы разметки
  */
-export class LayoutModel extends Model {
+export class LayoutModel extends Model<DummyDataSource> {
     modes: {[key: string]: ILayoutMode};
 
     constructor(modes: {[key: string]: ILayoutMode}) {

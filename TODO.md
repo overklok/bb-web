@@ -1,7 +1,5 @@
 TO-DO:
 
-!!!! Сейчас: Add 'oninit' decorator to Presenter to prevent calling actions before construction of Views !!!!
-
 1. Сделать Layout частным случаем View, при этом:
     * Классы, которые определяют структуру внутренней реализации View (т.е. от которых зависит View)
     оставить в отдельном месте (это может быть какой-нибудь подкаталог Ui)

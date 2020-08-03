@@ -2,7 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import {useDrag} from "react-dnd";
 import TabMenu from "./TabMenu";
-import {DraggableItemTypes} from "../../../views/layout/LayoutView";
+import {DraggableItemTypes} from "../../../../views/layout/LayoutView";
 
 interface IProps {
     label: string;

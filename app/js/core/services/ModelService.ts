@@ -1,5 +1,5 @@
 import IModelService from "./interfaces/IModelService";
-import Model, {ModelConstructor} from "../base/Model";
+import Model, {ModelConstructor} from "../base/model/Model";
 
 
 export default class ModelService extends IModelService {

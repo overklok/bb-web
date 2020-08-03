@@ -1,6 +1,6 @@
-import {IViewProps, IViewState, View} from "../base/View";
+import {IViewProps, IViewState, View} from "../base/view/View";
 import Presenter from "../base/Presenter";
-import ViewComposer, {IVCProps, IVCState} from "../base/ViewComposer";
+import ViewComposer, {IVCProps, IVCState} from "../base/view/ViewComposer";
 
 type WidgetInfo = {alias: string, label: string};
 

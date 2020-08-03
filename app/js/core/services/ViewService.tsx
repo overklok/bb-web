@@ -3,7 +3,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 
-import ViewConnector from "../base/ViewConnector";
+import ViewConnector from "../base/view/ViewConnector";
 import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 
 export default class ViewService extends IViewService {

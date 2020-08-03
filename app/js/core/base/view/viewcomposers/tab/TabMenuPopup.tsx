@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import {Action, BooleanAction} from "../../Event";
+import {Action, BooleanAction} from "../../../Event";
 
 interface IProps {
     overlay_node?: HTMLElement;

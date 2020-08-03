@@ -1,4 +1,4 @@
-import {IImperativeViewProps, ImperativeView} from "../core/base/ImperativeView";
+import {IImperativeViewProps, ImperativeView} from "../core/base/view/ImperativeView";
 import Breadboard from "../utils/breadboard/Breadboard";
 import {ViewEvent} from "../core/base/Event";
 

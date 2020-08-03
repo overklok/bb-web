@@ -1,4 +1,4 @@
-import Model, {ModelConstructor} from "../../base/Model";
+import Model, {ModelConstructor} from "../../base/model/Model";
 
 export default class IModelService {
     register(abstrakt: ModelConstructor, state_initial?: object) {

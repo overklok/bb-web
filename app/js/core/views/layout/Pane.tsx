@@ -6,10 +6,10 @@ import {RefObject} from "react";
 import classNames from "classnames";
 
 import Handle from "./Handle";
-import {View} from "../../base/View";
+import {View} from "../../base/view/View";
 import Nest from "./Nest";
 import Frame from "./Frame";
-import TabViewComposer from "../../base/viewcomposers/tab/TabViewComposer";
+import TabViewComposer from "../../base/view/viewcomposers/tab/TabViewComposer";
 import Cover from "./Cover";
 import {ILayoutPane} from "./LayoutView";
 import {Widget} from "../../services/interfaces/IViewService";

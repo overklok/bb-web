@@ -1,6 +1,5 @@
 import * as React from "react";
 import classNames from "classnames";
-import {logDeprecation} from "sweetalert/typings/modules/options/deprecations";
 import {PaneOrientation} from "./Pane";
 
 /**

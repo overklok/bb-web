@@ -1,4 +1,4 @@
-import {IViewProps, IViewState, View} from "./View";
+import {IViewProps, IViewState, View} from "./view/View";
 import {AbstractEvent, Action} from "./Event";
 
 export function on<V extends AbstractEvent<V>>(...event_types: V[]) {

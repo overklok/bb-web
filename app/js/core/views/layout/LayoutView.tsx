@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import Pane, {PaneOrientation} from "./Pane";
 
 import {RefObject} from "react";
-import {IViewProps, IViewState, View} from "../../base/View";
+import {IViewProps, IViewState, View} from "../../base/view/View";
 import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
 

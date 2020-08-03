@@ -1,9 +1,9 @@
-import Presenter from "./Presenter";
+import Presenter from "../Presenter";
 import {IViewProps, IViewState, View} from "./View";
-import Application from "../Application";
-import IEventService from "../services/interfaces/IEventService";
-import {AbstractEvent, Action, ViewEvent} from "./Event";
-import {PresenterType} from "../helpers/types";
+import Application from "../../Application";
+import IEventService from "../../services/interfaces/IEventService";
+import {AbstractEvent, Action, ViewEvent} from "../Event";
+import {PresenterType} from "../../helpers/types";
 
 // possible renamings: Supervisor, PresenterFactory (pterfac)
 export default class ViewConnector {

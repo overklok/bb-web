@@ -1,8 +1,8 @@
 import Application from "../../Application";
-import ViewConnector from "../../base/ViewConnector";
-import {IViewProps, IViewState, View} from "../../base/View";
+import ViewConnector from "../../base/view/ViewConnector";
+import {IViewProps, IViewState, View} from "../../base/view/View";
 import {PresenterType, ViewComposerType, ViewType} from "../../helpers/types";
-import ViewComposer, {IVCProps, IVCState} from "../../base/ViewComposer";
+import ViewComposer, {IVCProps, IVCState} from "../../base/view/ViewComposer";
 
 export type Widget = {connector: ViewConnector, view_type: typeof View, label?: string};
 

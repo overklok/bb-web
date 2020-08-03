@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ResizeEvent, View} from "../../base/View";
+import {ResizeEvent, View} from "../../base/view/View";
 import classNames from "classnames";
-import ViewConnector from "../../base/ViewConnector";
+import ViewConnector from "../../base/view/ViewConnector";
 
 
 interface IProps {

@@ -1,8 +1,8 @@
 import * as React from "react";
 import ViewConnector from "./ViewConnector";
-import {AbstractEvent, ViewEvent} from "./Event";
+import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
-import {Widget} from "../services/interfaces/IViewService";
+import {Widget} from "../../services/interfaces/IViewService";
 
 export interface IViewProps {
     connector: ViewConnector;

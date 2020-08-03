@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import classNames from "classnames";
-import {Action, BooleanAction} from "../../Event";
+import {Action, BooleanAction} from "../../../Event";
 import TabMenuPopup from "./TabMenuPopup";
 
 interface IProps {
