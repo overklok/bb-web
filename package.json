@@ -26,7 +26,7 @@
     "rxjs": "^6.5.5",
     "socket.io-client": "^2.0.4",
     "svgjs": "^2.6.2",
-    "sweetalert2": "^9.15.1",
+    "sweetalert2": "^9.17.1",
     "ts-loader": "^6.0.2",
     "typescript": "^3.7.5",
     "vis-timeline": "^6.5.2",
