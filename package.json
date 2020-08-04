@@ -35,6 +35,7 @@
   "devDependencies": {
     "@ryancavanaugh/jquery.ui.layout": "0.0.13-alpha",
     "@types/classnames": "^2.2.9",
+    "@types/socket.io-client": "^1.4.33",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",

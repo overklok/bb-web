@@ -10,7 +10,7 @@ export default class IModelService {
     }
     
     register<DS extends DataSource>(abstrakt: ModelConstructor<DS>, data_source: DS, state_initial?: object) {
-        throw new Error('abstract')
+        throw new Error('abstract');
     }
 
     retrieve<M extends ModelConstructor<any>>(abstrakt: M): InstanceType<M> {
