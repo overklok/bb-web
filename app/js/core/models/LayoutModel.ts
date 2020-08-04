@@ -16,10 +16,16 @@ const UNITS_ALLOWED = [
 export class LayoutModel extends Model<DummyDataSource> {
     modes: {[key: string]: ILayoutMode};
 
-    constructor(modes: {[key: string]: ILayoutMode}) {
-        super();
-        this.modes = Object.assign({}, modes);
+    init(modes: {[key: string]: ILayoutMode}) {
+        this.modes = JSON.parse(JSON.stringify(Object.assign({}, modes)));
         this.preprocess();
+    }
+
+    load(): boolean {
+        throw new Error("Method not implemented.");
+    }
+    save(): void {
+        throw new Error("Method not implemented.");
     }
 
     /**

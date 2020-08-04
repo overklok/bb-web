@@ -4,11 +4,13 @@ import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
 import {AbstractEvent, Action, ViewEvent} from "../Event";
 import {PresenterType} from "../../helpers/types";
+import IModelService from "../../services/interfaces/IModelService";
 
 // possible renamings: Supervisor, PresenterFactory (pterfac)
 export default class ViewConnector {
     private readonly app: Application;
     private readonly svc_event: IEventService;
+    private readonly svc_model: IModelService;
     private view: View<any, any>;
 
     // private presenters: Presenter<View<IViewProps, IViewState>>[];
@@ -20,6 +22,7 @@ export default class ViewConnector {
         this.app = app;
 
         this.svc_event = this.app.instance(IEventService);
+        this.svc_model = this.app.instance(IModelService);
 
         this.presenter_types = presenter_types;
         // this.presenters = [];
@@ -54,7 +57,7 @@ export default class ViewConnector {
             let presenter: Presenter<View<IViewProps, IViewState>>;
 
             // try {
-                presenter = new presenter_type(view);
+                presenter = new presenter_type(view, this.svc_model);
             // } catch (e) {
                 // TODO: PresenterError
                 // throw Error("Uncaught PresenterError [TODO]");
