@@ -10,7 +10,10 @@ import {LayoutModel} from "./core/models/LayoutModel";
 
 import layouts_config from "./configs/layouts";
 import widgets_config from "./configs/widgets";
-import DummyDataSource from "./core/base/model/datasources/DummyDataSource";
+import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
+import SocketDatasource from "./core/models/datasources/SocketDatasource";
+import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
+import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -25,10 +28,21 @@ class MainApplication extends Application {
 
     }
 
-    run(element: HTMLElement) {
+    async run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
-        const dds = new DummyDataSource();
+        const dds = new DummyDatasource();
+
+        const sds = new SocketDatasource('127.0.0.1', 8085);
+        const qds = new QtIPCDatasource();
+
+        const ads = new AdaptiveDatasource([qds, sds])
+
+
+        await ads.init();
+        await ads.connect();
+
+        console.log('ok.');
 
         this.instance(IViewService).registerWidgetTypes(widgets_config);
 

@@ -1,5 +1,5 @@
 import {ModelConstructor} from "../../base/model/Model";
-import DataSource from "../../base/model/DataSource";
+import Datasource from "../../base/model/Datasource";
 import IEventService from "./IEventService";
 
 export default class IModelService {
@@ -9,7 +9,7 @@ export default class IModelService {
         this.svc_event = svc_event;
     }
     
-    register<DS extends DataSource>(abstrakt: ModelConstructor<DS>, data_source: DS, state_initial?: object) {
+    register<DS extends Datasource>(abstrakt: ModelConstructor<DS>, data_source: DS, state_initial?: object) {
         throw new Error('abstract');
     }
 

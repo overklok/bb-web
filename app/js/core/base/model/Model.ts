@@ -1,17 +1,16 @@
-import DataSource from "./DataSource";
+import Datasource from "./Datasource";
 import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";
 
-export interface ModelConstructor<V extends DataSource> {
+export interface ModelConstructor<V extends Datasource> {
     new(data_source: V, svc_event: IEventService, state_initial?: object): Model<any>;
 }
 
-export default abstract class Model<V extends DataSource> {
+export default abstract class Model<V extends Datasource> {
     private data_source: V;
     private svc_event: IEventService;
 
     constructor(data_source: V, svc_event: IEventService, state_initial?: object) {
-        data_source.connectModel(this);
         this.data_source = data_source;
         this.svc_event = svc_event;
 

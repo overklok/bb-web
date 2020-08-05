@@ -1,10 +1,10 @@
-import AsynchronousDataSource from "../../base/model/datasources/AsynchronousDataSource";
+import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
 
-export default class RotaryAsyncDataSource extends AsynchronousDataSource {
-    private data_source: AsynchronousDataSource;
-    private readonly data_sources: AsynchronousDataSource[];
+export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
+    private data_source: AsynchronousDatasource;
+    private readonly data_sources: AsynchronousDatasource[];
 
-    constructor(data_sources: AsynchronousDataSource[]) {
+    constructor(data_sources: AsynchronousDatasource[]) {
         super();
 
         this.data_sources = data_sources;
@@ -25,8 +25,8 @@ export default class RotaryAsyncDataSource extends AsynchronousDataSource {
         return result;
     }
 
-    async connect(): Promise<object> {
-        if (!this.data_source) return Promise.resolve(undefined);
+    async connect(): Promise<boolean> {
+        if (!this.data_source) return false;
 
         await this.data_source.connect();
     }

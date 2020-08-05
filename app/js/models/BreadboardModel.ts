@@ -1,12 +1,16 @@
 import Model from "../core/base/model/Model";
-import DummyDataSource from "../core/base/model/datasources/DummyDataSource";
+import DummyDatasource from "../core/base/model/datasources/DummyDatasource";
 
-export default class BreadboardModel extends Model<DummyDataSource> {
+export default class BreadboardModel extends Model<DummyDatasource> {
     load(): boolean {
         return false;
     }
 
     save(): void {
+
+    }
+
+    init(state: object | undefined): void {
 
     }
 }

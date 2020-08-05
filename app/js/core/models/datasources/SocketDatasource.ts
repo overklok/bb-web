@@ -1,8 +1,8 @@
 import io from 'socket.io-client';
 
-import AsynchronousDataSource from "../../base/model/datasources/AsynchronousDataSource";
+import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
 
-export default class SocketDatasource extends AsynchronousDataSource {
+export default class SocketDatasource extends AsynchronousDatasource {
     private readonly addr: string;
     private readonly port: number;
     private socket: SocketIOClient.Socket;
@@ -23,7 +23,7 @@ export default class SocketDatasource extends AsynchronousDataSource {
         return true;
     }
 
-    async connect(): Promise<object> {
+    async connect(): Promise<boolean> {
         this.send('connect');
 
         // TODO: wait for answer or fail
