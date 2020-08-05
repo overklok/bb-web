@@ -216,13 +216,23 @@ export default class Breadboard {
             throw new TypeError("Breadboard::inject(): DOM node is undefined");
         }
 
+        const div_wrap = document.createElement("div");
+        dom_node.appendChild(div_wrap);
+
+        this._div_wrap = div_wrap;
+
+        div_wrap.style.width = '100%';
+        div_wrap.style.height = '100%';
+        div_wrap.style.position = 'relative';
+        div_wrap.style.overflow = 'hidden';
+
         this._dom_node_parent = dom_node;
 
         /// применить опции
         this._setOptions(options);
 
         /// базовая кисть
-        this._brush = SVG(dom_node).size(this._options.layout.WRAP_WIDTH, this._options.layout.WRAP_HEIGHT);
+        this._brush = SVG(div_wrap);
         this._brush.node.setAttribute("viewBox", "0 0 " + this._options.layout.WRAP_WIDTH + " " + this._options.layout.WRAP_HEIGHT);
         this._brush.node.style.width = "100%";
         this._brush.node.style.height = "100%";
@@ -525,7 +535,9 @@ export default class Breadboard {
         let region      = this._brush.nested(); // области выделения
         let plate       = this._brush.nested(); // плашки
         let controls    = this._brush.nested(); // органы управления
-        let selector    = this._brush.nested(); // органы управления
+        let selector    = document.createElement("div"); // органы управления
+
+        this._div_wrap.appendChild(selector);
 
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid, this._schematic, this._detailed);
