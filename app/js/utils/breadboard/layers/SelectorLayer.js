@@ -138,7 +138,7 @@ export default class SelectorLayer extends Layer {
     constructor(container, grid) {
         super(container, grid);
 
-        this._container.addClass(SelectorLayer.Class);
+        this._container.classList.add(SelectorLayer.Class);
 
         this._callbacks = {
             onplatetake: (plate_data, plate_x, plate_y, cursor_x, cursor_y) => {},
@@ -152,7 +152,10 @@ export default class SelectorLayer extends Layer {
     }
 
     compose() {
-        this._htmlcontainer = this._getEmbeddedHtmlGroup(this._container, '30%', '99%')
+        this._htmlcontainer = document.createElement("div");
+        this._htmlcontainer.classList.add("bb-sel-root");
+        this._container.appendChild(this._htmlcontainer);
+
         this._items = [];
 
         this._appendBasics();
@@ -168,15 +171,23 @@ export default class SelectorLayer extends Layer {
         document.addEventListener('mousedown', (evt) => this._closeOnClick(evt));
     }
 
+    show() {
+        this._container.style.display = 'block';
+    }
+
+    hide() {
+        this._container.style.display = 'none';
+    }
+
     open() {
-        this._container.opacity(0).show().animate('100ms').opacity(1);
-        setTimeout(() => {this._opened = true;}, 100);
+        this._container.style.opacity = '1';
+        setTimeout(() => {this.show(); this._opened = true;}, 100);
     }
 
     close() {
         this._opened = false;
 
-        this._container.animate('100ms').opacity(0);
+        this._container.style.opacity = 0;
         setTimeout(() => this.hide(), 100);
     }
 
@@ -504,25 +515,6 @@ export default class SelectorLayer extends Layer {
         );
 
         this.close();
-    }
-
-    _getEmbeddedHtmlGroup(container, width=0, height=0, x=0, y=0) {
-        let fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-
-        fo.classList.add("bb-sel-root");
-        fo.setAttribute("width", width);
-        fo.setAttribute("height", height);
-        fo.setAttribute("x", x);
-        fo.setAttribute("y", y);
-
-        container.node.appendChild(fo);
-
-        let body = document.createElement("div");
-        body.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-
-        fo.appendChild(body);
-
-        return body;
     }
 
     _getElementIndex(node) {

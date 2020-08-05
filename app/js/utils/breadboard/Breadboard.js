@@ -219,8 +219,12 @@ export default class Breadboard {
         const div_wrap = document.createElement("div");
         dom_node.appendChild(div_wrap);
 
+        this._div_wrap = div_wrap;
+
         div_wrap.style.width = '100%';
         div_wrap.style.height = '100%';
+        div_wrap.style.position = 'relative';
+        div_wrap.style.overflow = 'hidden';
 
         this._dom_node_parent = dom_node;
 
@@ -531,7 +535,9 @@ export default class Breadboard {
         let region      = this._brush.nested(); // области выделения
         let plate       = this._brush.nested(); // плашки
         let controls    = this._brush.nested(); // органы управления
-        let selector    = this._brush.nested(); // органы управления
+        let selector    = document.createElement("div"); // органы управления
+
+        this._div_wrap.appendChild(selector);
 
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid, this._schematic, this._detailed);
