@@ -14,6 +14,12 @@ const UNITS_ALLOWED = [
  * @property modes {} режимы разметки
  */
 export class LayoutModel extends Model<DummyDataSource> {
+    load(): boolean {
+        throw new Error("Method not implemented.");
+    }
+    save(): void {
+        throw new Error("Method not implemented.");
+    }
     modes: {[key: string]: ILayoutMode};
 
     constructor(modes: {[key: string]: ILayoutMode}) {
