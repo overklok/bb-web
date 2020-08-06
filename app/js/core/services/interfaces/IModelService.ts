@@ -1,4 +1,4 @@
-import {ModelConstructor} from "../../base/model/Model";
+import {ModelConstructor, ModelState} from "../../base/model/Model";
 import Datasource from "../../base/model/Datasource";
 import IEventService from "./IEventService";
 
@@ -9,11 +9,11 @@ export default class IModelService {
         this.svc_event = svc_event;
     }
     
-    register<DS extends Datasource>(abstrakt: ModelConstructor<DS>, data_source: DS, state_initial?: object) {
+    register<MS extends ModelState, DS extends Datasource>(abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: MS) {
         throw new Error('abstract');
     }
 
-    retrieve<M extends ModelConstructor<any>>(abstrakt: M): InstanceType<M> {
+    retrieve<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(abstrakt: M): InstanceType<M> {
         throw new Error('abstract');
     }
 }

@@ -29,12 +29,11 @@ export interface ILayoutPane {
     size_min: number;
     size_max: number;
     size_unit: string;
-    fixed: number;
     resizable: boolean;
     panes: ILayoutPane[];
     widgets: WidgetInfo[];
 
-    _widgets: Widget[];
+    _widgets?: Widget[];
 }
 
 /**

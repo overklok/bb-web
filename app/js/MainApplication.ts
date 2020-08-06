@@ -14,6 +14,7 @@ import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
+import BreadboardModel from "./models/BreadboardModel";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -47,6 +48,7 @@ class MainApplication extends Application {
         this.instance(IViewService).registerWidgetTypes(widgets_config);
 
         this.instance(IModelService).register(LayoutModel, dds, layouts_config);
+        this.instance(IModelService).register(BreadboardModel, qds);
 
         this.instance(IViewService).compose(element);
     }

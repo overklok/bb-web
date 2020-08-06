@@ -1,31 +1,46 @@
 import Model from "../base/model/Model";
 import {ILayoutMode, ILayoutPane} from "../views/layout/LayoutView";
-import {Widget} from "../services/interfaces/IViewService";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
+import {PaneOrientation} from "../views/layout/Pane";
 
 const UNITS_ALLOWED = [
     "px", '%'
 ];
 
+type Widget = {
+    alias: string;
+    label: string;
+}
+
+type Pane = {
+    name: string;
+    title?: string;
+    size_min?: string;
+    size_max?: string;
+    resizable?: Boolean;
+    fixed?: number;
+    size?: string;
+    widgets?: Widget[];
+    panes?: Pane[];
+}
+
+type LayoutMode = {
+    policy: string;
+    panes: Pane[]
+}
+
+interface LayoutModelState {
+    modes: {[key: string]: LayoutMode};
+}
 
 /**
  * Модель разметки
  *
  * @property modes {} режимы разметки
  */
-export class LayoutModel extends Model<DummyDatasource> {
-    modes: {[key: string]: ILayoutMode};
-
-    init(modes: {[key: string]: ILayoutMode}) {
-        this.modes = JSON.parse(JSON.stringify(Object.assign({}, modes)));
-        this.preprocess();
-    }
-
-    load(): boolean {
-        throw new Error("Method not implemented.");
-    }
-    save(): void {
-        throw new Error("Method not implemented.");
+export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
+    init(state: LayoutModelState) {
+        this.state = JSON.parse(JSON.stringify(Object.assign({}, state)));
     }
 
     /**
@@ -33,12 +48,23 @@ export class LayoutModel extends Model<DummyDatasource> {
      *
      * В даном случае выполняется проверка правильности составленного объекта
      */
-    preprocess(): void {
-        for (const [k, mode] of Object.entries(this.modes)) {
+    getFormatted(): {[key: string]: ILayoutMode} {
+        let modes_formatted: {[key: string]: ILayoutMode} = {};
+
+        for (const [k, mode] of Object.entries(this.state.modes)) {
+            modes_formatted[k] = {
+                policy: mode.policy as PaneOrientation,
+                panes: []
+            }
+
             for (const [key, pane] of mode.panes.entries()) {
-                this.modes[k].panes[key] = this.preprocessPane(pane);
+                modes_formatted[k].panes[key] = this.preprocessPane(pane);
             }
         }
+
+        console.log(modes_formatted);
+
+        return modes_formatted;
     }
 
     /**
@@ -48,33 +74,36 @@ export class LayoutModel extends Model<DummyDatasource> {
      *
      * @param pane
      */
-    preprocessPane(pane: ILayoutPane): ILayoutPane {
-        pane = Object.assign({}, pane);
+    preprocessPane(pane: Pane): ILayoutPane {
+        this.processPaneViews(pane);
+        const title = this.processPaneTitle(pane);
+        const {size, size_unit} = this.processPaneSize(pane);
+        const {size_min, size_max, resizable} = this.processPaneLimits(pane);
+
+        const pane_formatted: ILayoutPane = {
+            name: pane.name,
+            title,
+            size,
+            size_unit,
+            size_min,
+            size_max,
+            resizable,
+            panes: [],
+            widgets: [],
+        };
 
         // Выполнить перебор вложенных панелей (головная рекурсия)
         if (pane.panes) {
             for (const [key, subpane] of pane.panes.entries()) {
-                pane.panes[key] = this.preprocessPane(subpane);
+                pane_formatted.panes[key] = this.preprocessPane(subpane);
             }
         }
 
-        pane = this.processPaneTitle(pane);
-        pane = this.processPaneSize(pane);
-        pane = this.processPaneLimits(pane);
-        pane = this.processPaneResizability(pane);
-        pane = this.processPaneViews(pane);
-
-        return pane;
+        return pane_formatted;
     }
 
-    processPaneTitle(pane: ILayoutPane): ILayoutPane {
-        pane = Object.assign({}, pane);
-
-        if (pane.title == null) {
-            pane.title = pane.name;
-        }
-
-        return pane;
+    processPaneTitle(pane: Pane): string {
+        return pane.title || pane.name;
     }
 
     /**
@@ -91,16 +120,14 @@ export class LayoutModel extends Model<DummyDatasource> {
      *
      * @param pane
      */
-    processPaneSize(pane: ILayoutPane): ILayoutPane {
-        pane = Object.assign({}, pane);
-
+    processPaneSize(pane: Pane): { size: number, size_unit: string } {
         let size, size_unit;
 
         /**
          * Панели с null-размером являются свободными (не имеющими начального размера)
          * Такие панели обрабатывать не нужно.
          */
-        if (pane.size == null) return pane;
+        if (pane.size == null) return {size: null, size_unit: null};
 
         /**
          * Если в поле size задана строка, то это, с большой вероятностью, число с единицей измерения.
@@ -122,42 +149,30 @@ export class LayoutModel extends Model<DummyDatasource> {
 
         if (Number.isNaN(size)) size = null;
 
-        [pane.size, pane.size_unit] = [size, size_unit];
-
-        return pane;
+        return {size, size_unit};
     }
 
-    processPaneLimits(pane: ILayoutPane): ILayoutPane {
-        pane = Object.assign({}, pane);
+    processPaneLimits(pane: Pane): {size_min: number, size_max: number, resizable: boolean} {
+        let resizable, size_min, size_max;
 
-        if (pane.fixed) {
-            pane.size_min = pane.fixed;
-            pane.size_max = pane.fixed;
-        }
+        size_min = pane.fixed ? pane.fixed : pane.size_min;
+        size_max = pane.fixed ? pane.fixed : pane.size_max;
 
-        pane.size_min = this.processSizeLimitValue(pane.size_min);
-        pane.size_max = this.processSizeLimitValue(pane.size_max);
-
-        return pane;
-    }
-
-    processPaneResizability(pane: ILayoutPane): ILayoutPane {
-        pane = Object.assign({}, pane);
+        size_min = this.processSizeLimitValue(size_min);
+        size_max = this.processSizeLimitValue(size_max);
 
         if (pane.resizable == null) {
-            pane.resizable = true;
+            resizable = true;
         }
 
         if (pane.size_min == pane.size_max && pane.size_max != null) {
-            pane.resizable = false;
+            resizable = false;
         }
 
-        return pane;
+        return {size_min, size_max, resizable};
     }
 
-    processPaneViews(pane: ILayoutPane): ILayoutPane {
-        pane = Object.assign({}, pane);
-
+    processPaneViews(pane: Pane): void {
         if (pane.widgets && pane.panes) {
             console.error(pane);
             throw new Error(`Only one of 'widgets' or 'panes' can be used for pane '${pane.name}'`);
@@ -169,11 +184,7 @@ export class LayoutModel extends Model<DummyDatasource> {
             }
 
             // TODO validate item types
-        } else {
-            pane.widgets = [];
         }
-
-        return pane;
     }
 
     processSizeLimitValue(value: any): number {

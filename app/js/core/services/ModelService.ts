@@ -1,19 +1,19 @@
 import IModelService from "./interfaces/IModelService";
-import Model, {ModelConstructor} from "../base/model/Model";
+import Model, {ModelConstructor, ModelState} from "../base/model/Model";
 import Datasource from "../base/model/Datasource";
 import IEventService from "./interfaces/IEventService";
 
 
 export default class ModelService extends IModelService {
-    private bindings: Map<ModelConstructor<any>, Model<any>> = new Map();
+    private bindings: Map<ModelConstructor<any, any>, Model<any, any>> = new Map();
 
-    register<DS extends Datasource>(abstrakt: ModelConstructor<DS>, data_source: DS, state_initial?: object) {
+    register<MS extends ModelState, DS extends Datasource, >(abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: MS) {
         const model = new abstrakt(data_source, this.svc_event, state_initial);
 
         this.bindings.set(abstrakt, model);
     }
 
-    retrieve<V extends ModelConstructor<any>>(abstrakt: V): InstanceType<V> {
-        return this.bindings.get(abstrakt) as InstanceType<V>;
+    retrieve<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(abstrakt: M): InstanceType<M> {
+        return this.bindings.get(abstrakt) as InstanceType<M>;
     }
 }

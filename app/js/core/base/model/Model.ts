@@ -2,25 +2,33 @@ import Datasource from "./Datasource";
 import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";
 
-export interface ModelConstructor<V extends Datasource> {
-    new(data_source: V, svc_event: IEventService, state_initial?: object): Model<any>;
+export interface ModelConstructor<MS extends ModelState, DS extends Datasource> {
+    new(data_source: DS, svc_event: IEventService, state_initial?: MS): Model<MS, DS>;
 }
 
-export default abstract class Model<V extends Datasource> {
-    private data_source: V;
+export interface ModelState {
+
+}
+
+export default abstract class Model<MS extends ModelState, DS extends Datasource> {
+    protected state: MS;
+    private data_source: DS;
     private svc_event: IEventService;
 
-    constructor(data_source: V, svc_event: IEventService, state_initial?: object) {
+    constructor(data_source: DS, svc_event: IEventService, state_initial?: MS) {
         this.data_source = data_source;
         this.svc_event = svc_event;
 
         this.init(state_initial);
     }
 
-    abstract init(state?: object): void;
+    init(state: MS): void {
+        this.state = state;
+    };
 
-    abstract load(): boolean;
-    abstract save(): void;
+    getState() {
+        return this.state;
+    }
 
     protected emit<E>(evt: ModelEvent<E>) {
         this.svc_event.emit(evt);

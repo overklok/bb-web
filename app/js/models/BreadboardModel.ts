@@ -1,16 +1,37 @@
-import Model from "../core/base/model/Model";
-import DummyDatasource from "../core/base/model/datasources/DummyDatasource";
+import AsynchronousModel, {listen} from "../core/base/model/AsynchronousModel";
+import {ModelState} from "../core/base/model/Model";
 
-export default class BreadboardModel extends Model<DummyDatasource> {
-    load(): boolean {
-        return false;
+type Plate = {
+    id: number;
+    type: string;
+    orientation: string;
+    x: number,
+    y: number,
+}
+
+type Current = {
+
+}
+
+interface BreadboardModelState extends ModelState {
+    plates: Plate[];
+    currents: Current[];
+}
+
+export default class BreadboardModel extends AsynchronousModel<BreadboardModelState> {
+    send(): void {
+
     }
 
-    save(): void {
-
+    @listen('plates')
+    private onPlates(plates: Plate[]) {
+        this.state.plates = plates;
+        console.log(plates);
     }
 
-    init(state: object | undefined): void {
-
+    @listen('currents')
+    private onCurrents(currents: Current[]) {
+        this.state.currents = currents;
+        console.log(currents);
     }
 }
