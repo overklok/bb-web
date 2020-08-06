@@ -25,7 +25,7 @@ export enum DraggableItemTypes {
 export interface ILayoutPane {
     name: string;
     title: string;
-    size: number;
+    size?: number;
     size_min: number;
     size_max: number;
     size_unit: string;

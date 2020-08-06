@@ -2,6 +2,7 @@ import Model from "../base/model/Model";
 import {ILayoutMode, ILayoutPane} from "../views/layout/LayoutView";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {PaneOrientation} from "../views/layout/Pane";
+import {WidgetInfo} from "../helpers/types";
 
 const UNITS_ALLOWED = [
     "px", '%'
@@ -58,11 +59,9 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
             }
 
             for (const [key, pane] of mode.panes.entries()) {
-                modes_formatted[k].panes[key] = this.preprocessPane(pane);
+                modes_formatted[k].panes[key] = this.formatPane(pane);
             }
         }
-
-        console.log(modes_formatted);
 
         return modes_formatted;
     }
@@ -74,13 +73,24 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
      *
      * @param pane
      */
-    preprocessPane(pane: Pane): ILayoutPane {
-        this.processPaneViews(pane);
-        const title = this.processPaneTitle(pane);
-        const {size, size_unit} = this.processPaneSize(pane);
-        const {size_min, size_max, resizable} = this.processPaneLimits(pane);
+    formatPane(pane: Pane): ILayoutPane {
+        let panes = undefined;
 
-        const pane_formatted: ILayoutPane = {
+        // Выполнить перебор вложенных панелей (головная рекурсия)
+        if (pane.panes) {
+            panes = [];
+
+            for (const [key, subpane] of pane.panes.entries()) {
+                panes[key] = this.formatPane(subpane);
+            }
+        }
+
+        const title = this.formatPaneTitle(pane);
+        const {size, size_unit} = this.formatPaneSize(pane);
+        const {size_min, size_max, resizable} = this.formatPaneLimits(pane);
+        const widgets = this.formatPaneViews(pane);
+
+        return {
             name: pane.name,
             title,
             size,
@@ -88,21 +98,12 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
             size_min,
             size_max,
             resizable,
-            panes: [],
-            widgets: [],
+            widgets,
+            panes,
         };
-
-        // Выполнить перебор вложенных панелей (головная рекурсия)
-        if (pane.panes) {
-            for (const [key, subpane] of pane.panes.entries()) {
-                pane_formatted.panes[key] = this.preprocessPane(subpane);
-            }
-        }
-
-        return pane_formatted;
     }
 
-    processPaneTitle(pane: Pane): string {
+    formatPaneTitle(pane: Pane): string {
         return pane.title || pane.name;
     }
 
@@ -120,14 +121,14 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
      *
      * @param pane
      */
-    processPaneSize(pane: Pane): { size: number, size_unit: string } {
+    formatPaneSize(pane: Pane): { size: number, size_unit: string } {
         let size, size_unit;
 
         /**
          * Панели с null-размером являются свободными (не имеющими начального размера)
          * Такие панели обрабатывать не нужно.
          */
-        if (pane.size == null) return {size: null, size_unit: null};
+        if (pane.size == null) return {size: 0, size_unit: null};
 
         /**
          * Если в поле size задана строка, то это, с большой вероятностью, число с единицей измерения.
@@ -152,27 +153,27 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
         return {size, size_unit};
     }
 
-    processPaneLimits(pane: Pane): {size_min: number, size_max: number, resizable: boolean} {
+    formatPaneLimits(pane: Pane): {size_min: number, size_max: number, resizable: boolean} {
         let resizable, size_min, size_max;
 
         size_min = pane.fixed ? pane.fixed : pane.size_min;
         size_max = pane.fixed ? pane.fixed : pane.size_max;
 
-        size_min = this.processSizeLimitValue(size_min);
-        size_max = this.processSizeLimitValue(size_max);
+        size_min = this.formatSizeLimitValue(size_min);
+        size_max = this.formatSizeLimitValue(size_max);
 
         if (pane.resizable == null) {
             resizable = true;
         }
 
-        if (pane.size_min == pane.size_max && pane.size_max != null) {
+        if (size_min == size_max && size_max != null) {
             resizable = false;
         }
 
         return {size_min, size_max, resizable};
     }
 
-    processPaneViews(pane: Pane): void {
+    formatPaneViews(pane: Pane): WidgetInfo[] {
         if (pane.widgets && pane.panes) {
             console.error(pane);
             throw new Error(`Only one of 'widgets' or 'panes' can be used for pane '${pane.name}'`);
@@ -184,10 +185,14 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
             }
 
             // TODO validate item types
+        } else {
+            return [];
         }
+
+        return pane.widgets;
     }
 
-    processSizeLimitValue(value: any): number {
+    formatSizeLimitValue(value: any): number {
         if (value == null) return null;
 
         if (typeof value === 'string') {
