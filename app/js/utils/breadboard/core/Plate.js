@@ -120,7 +120,7 @@ export default class Plate {
         if (this._group.node.addEventListener) {
             if ('onwheel' in document) {
                 // IE9+, FF17+, Ch31+
-                this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt));
+                this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt), {passive: true});
             } else if ('onmousewheel' in document) {
                 // устаревший вариант события
                 this._group.node.addEventListener("mousewheel", (evt) => this._callbacks.mousewheel(evt));

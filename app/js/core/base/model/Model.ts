@@ -12,22 +12,27 @@ export interface ModelState {
 
 export default abstract class Model<MS extends ModelState, DS extends Datasource> {
     protected state: MS;
-    private data_source: DS;
+    protected data_source: DS;
     private svc_event: IEventService;
 
     constructor(data_source: DS, svc_event: IEventService, state_initial?: MS) {
         this.data_source = data_source;
         this.svc_event = svc_event;
 
+        this.ready();
         this.init(state_initial);
     }
 
-    init(state: MS): void {
-        this.state = state;
-    };
-
-    getState() {
+    public getState() {
         return this.state;
+    }
+
+    protected ready(): void {
+
+    }
+
+    protected init(state: MS): void {
+        this.state = state;
     }
 
     protected emit<E>(evt: ModelEvent<E>) {

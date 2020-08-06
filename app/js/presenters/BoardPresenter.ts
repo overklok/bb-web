@@ -1,7 +1,6 @@
 import Presenter, {action, on} from "../core/base/Presenter";
 import {Action, BooleanAction} from "../core/base/Event";
 import BoardView, {ChangeEvent} from "../views/BoardView";
-import IModelService from "../core/services/interfaces/IModelService";
 
 export class EditAction extends BooleanAction<EditAction> {}
 

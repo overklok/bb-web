@@ -1,4 +1,5 @@
 import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
+import {Simulate} from "react-dom/test-utils";
 
 export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
     private data_source: AsynchronousDatasource;
@@ -53,5 +54,23 @@ export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
         if (!this.data_source) return;
 
         this.data_source.send(channel, data);
+    }
+
+    on_connect(handler: Function) {
+        for (const source of this.data_sources) {
+            source.on_connect(handler);
+        }
+    }
+
+    on_disconnect(handler: Function) {
+        for (const source of this.data_sources) {
+            source.on_disconnect(handler);
+        }
+    }
+
+    on_timeout(handler: Function) {
+        for (const source of this.data_sources) {
+            source.on_timeout(handler);
+        }
     }
 }

@@ -34,21 +34,16 @@ class MainApplication extends Application {
 
         const dds = new DummyDatasource();
 
-        const sds = new SocketDatasource('127.0.0.1', 8085);
-        const qds = new QtIPCDatasource();
-
-        const ads = new AdaptiveDatasource([qds, sds])
-
-
-        await ads.init();
-        await ads.connect();
-
-        console.log('ok.');
+        const ads = new AdaptiveDatasource([
+            new QtIPCDatasource(),
+            new SocketDatasource('127.0.0.1', 8085),
+        ]);
 
         this.instance(IViewService).registerWidgetTypes(widgets_config);
 
+        this.instance(IModelService).launch(ads);
         this.instance(IModelService).register(LayoutModel, dds, layouts_config);
-        this.instance(IModelService).register(BreadboardModel, qds);
+        this.instance(IModelService).register(BreadboardModel, ads);
 
         this.instance(IViewService).compose(element);
     }

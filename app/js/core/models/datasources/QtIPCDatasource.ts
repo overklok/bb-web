@@ -1,4 +1,4 @@
-import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
+import AsynchronousDatasource, {AsyncDatasourceStatus} from "../../base/model/datasources/AsynchronousDatasource";
 import {sleep} from "../../helpers/functions";
 
 type QtEventSignal = {
@@ -12,9 +12,8 @@ type QtWebConnector = {} & {
 }
 
 enum QtWebStatus {
-    Connecting,
+    Initial,
     Connected,
-    Disconnecting,
     Disconnected
 }
 
@@ -26,7 +25,7 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
 
     // An interactive object passed by Qt side
     private static Connector: QtWebConnector;
-    private static Status: QtWebStatus = QtWebStatus.Disconnected;
+    private static Status: QtWebStatus = QtWebStatus.Initial;
 
     private readonly _handlers: {[key: string]: Function};
 
@@ -36,8 +35,16 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         this._handlers = {};
     }
 
+    get status(): AsyncDatasourceStatus {
+        switch (QtIPCDatasource.Status) {
+            case QtWebStatus.Initial:       return AsyncDatasourceStatus.Initial;
+            case QtWebStatus.Connected:     return AsyncDatasourceStatus.Connected;
+            case QtWebStatus.Disconnected:  return AsyncDatasourceStatus.Disconnected;
+        }
+    }
+
     async init(): Promise<boolean> {
-        if (QtIPCDatasource.Status !== QtWebStatus.Disconnected) return;
+        if (QtIPCDatasource.Status === QtWebStatus.Connected) return;
 
         for (let att = 0; att < QtIPCDatasource.AttemptLimit; att++) {
             if (QtIPCDatasource.isPossible()) {
@@ -50,19 +57,17 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
             console.debug('[QtIPC] initializing...');
         }
 
-        console.warn("You cannot use an Qt's IPC in regular browser. Please use another wrapper for IPC.");
-
         return false;
     }
 
     connect(): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            if (QtIPCDatasource.Status !== QtWebStatus.Disconnected) {
+            if (QtIPCDatasource.Status === QtWebStatus.Connected) {
                 resolve(false);
                 return;
             }
 
-            QtIPCDatasource.Status = QtWebStatus.Connecting;
+            QtIPCDatasource.Status = QtWebStatus.Disconnected;
 
             const rep = setInterval(() => {
                 if (!QtIPCDatasource.isReady()) {
@@ -77,11 +82,16 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
                             QtIPCDatasource.Connector.event_sig.connect(this.onEventSig.bind(this));
                             QtIPCDatasource.Status = QtWebStatus.Connected;
 
-                            clearInterval(rep);
                             console.debug('[QtIPC] connected.');
+                            clearInterval(rep);
+                            this.emit_connect();
                             resolve(true);
                         } else {
                             clearInterval(rep);
+                            QtIPCDatasource.Status = QtWebStatus.Disconnected;
+                            // we doesn't need time-out behaviour here
+                            console.debug('[QtIPC] connection rejected.');
+                            this.emit_disconnect();
                             reject();
                         }
                     });
@@ -92,15 +102,16 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
 
     disconnect(): Promise<void> {
         return new Promise(resolve => {
-            if (!(QtIPCDatasource.Status !== QtWebStatus.Connected)) {
+            if (QtIPCDatasource.Status === QtWebStatus.Disconnected) {
                 resolve();
             } else {
-                QtIPCDatasource.Status = QtWebStatus.Disconnecting;
+                QtIPCDatasource.Status = QtWebStatus.Disconnected;
 
                 QtIPCDatasource.Connector.event_sig.disconnect(() => {
                     QtIPCDatasource.Connector = undefined;
                     QtIPCDatasource.Status = QtWebStatus.Disconnected;
 
+                    this.emit_disconnect();
                     resolve();
                 });
             }
