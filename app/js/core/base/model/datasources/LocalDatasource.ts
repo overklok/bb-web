@@ -1,6 +1,4 @@
-import Datasource from "../Datasource";
-import Model from "../Model";
+import SynchronousDatasource from "./SynchronousDatasource";
 
-export default abstract class LocalDatasource extends Datasource {
-    connectModel(model: Model<any, any>): void {}
+export default abstract class LocalDatasource extends SynchronousDatasource {
 }

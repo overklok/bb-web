@@ -10,7 +10,8 @@ type Plate = {
 }
 
 type Current = {
-
+    from: number;
+    to: number;
 }
 
 interface BreadboardModelState extends ModelState {
@@ -25,7 +26,7 @@ enum Channels {
 
 export default class BreadboardModel extends AsynchronousModel<BreadboardModelState> {
     sendPlates(): void {
-        this.send('plates', this.state.plates);
+        this.send(Channels.Plates, this.state.plates);
     }
 
     @connect()

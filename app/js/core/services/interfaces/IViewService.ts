@@ -18,7 +18,7 @@ export type WidgetType = {
 export default class IViewService {
     protected readonly app: Application;
     protected widgets: {[key: string]: Widget};
-    protected widget_types: WidgetType[];
+    protected widget_types: WidgetType[] = [];
     protected widget_type_key: string;
 
     constructor(app: Application) {

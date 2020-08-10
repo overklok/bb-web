@@ -1,26 +1,29 @@
-import {ModelConstructor, ModelState} from "../../base/model/Model";
+import Model, {ModelConstructor, ModelState} from "../../base/model/Model";
 import Datasource from "../../base/model/Datasource";
-import IEventService from "./IEventService";
 import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
+import IEventService from "./IEventService";
 
 export default class IModelService {
     protected svc_event: IEventService;
 
-    setup(svc_event: IEventService) {
-        this.svc_event = svc_event;
+    public setup(svc_event: IEventService): void {
+        this.svc_event = svc_event
     }
 
-    launch(args: AsynchronousDatasource) {
+    public launch(args: AsynchronousDatasource): void {
         Array.from(arguments).map(
             data_source => IModelService.launchDataSource(data_source)
         )
     }
     
-    register<MS extends ModelState, DS extends Datasource>(abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: MS) {
+    public register<MS extends ModelState, DS extends Datasource> (
+        abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: MS
+    ): Model<MS, DS>
+    {
         throw new Error('abstract');
     }
 
-    retrieve<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(abstrakt: M): InstanceType<M> {
+    public retrieve<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(abstrakt: M): InstanceType<M> {
         throw new Error('abstract');
     }
 

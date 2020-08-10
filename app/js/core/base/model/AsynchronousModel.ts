@@ -1,5 +1,7 @@
 import Model from "./Model";
 import AsynchronousDatasource, {AsyncDatasourceStatus} from "./datasources/AsynchronousDatasource";
+import Application from "../../Application";
+import IEventService from "../../services/interfaces/IEventService";
 
 export function listen(channel: string) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -43,7 +45,9 @@ export default abstract class AsynchronousModel<MS> extends Model<MS, Asynchrono
     public readonly handler_connect: Function;
     public readonly handler_disconnect: Function;
 
-    protected ready() {
+    constructor(data_source: AsynchronousDatasource, svc_event: IEventService) {
+        super(data_source, svc_event);
+
         for (const [channel, handler] of Object.entries(this.handlers)) {
             this.data_source.on(channel, handler);
         }

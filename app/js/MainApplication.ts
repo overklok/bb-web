@@ -15,13 +15,16 @@ import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import BreadboardModel from "./models/BreadboardModel";
+import HttpDatasource from "./core/models/datasources/HttpDatasource";
+import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";
+import UserModel from "./models/UserModel";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
             ModelServiceProvider,
-            EventServiceProvider
+            EventServiceProvider,
         ];
     }
 
@@ -39,11 +42,21 @@ class MainApplication extends Application {
             new SocketDatasource('127.0.0.1', 8085),
         ]);
 
-        this.instance(IViewService).registerWidgetTypes(widgets_config);
+        const hds = new HttpDatasource('127.0.0.1', 8000);
 
         this.instance(IModelService).launch(ads);
+
+        this.instance(IModelService).register(UserModel, hds);
         this.instance(IModelService).register(LayoutModel, dds, layouts_config);
         this.instance(IModelService).register(BreadboardModel, ads);
+
+        hds.registerMiddleware([
+            new JWTAuthMiddleware(
+                this.instance(IModelService).retrieve(UserModel)
+            )
+        ]);
+
+        this.instance(IViewService).registerWidgetTypes(widgets_config);
 
         this.instance(IViewService).compose(element);
     }

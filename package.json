@@ -73,6 +73,7 @@
     "mocha": "^4.0.1",
     "phantomjs-prebuilt": "^2.1.16",
     "style-loader": "^0.19.1",
+    "terser-webpack-plugin": "^4.1.0",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "webpack-build-notifier": "^2.0.0",
     "webpack-bundle-analyzer": "^3.1.0",
@@ -90,7 +91,7 @@
     "watch:board": "webpack --watch --mode development --env.board",
     "watch:blockly": "webpack --watch --mode development --env.blockly",
     "watch:timeline": "webpack --watch --mode development --env.timeline",
-    "watch:test": "webpack --watch --mode development --config webpack.config.test.js",
+    "watch:test": "webpack --watch --mode production --config webpack.config.test.js",
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",
     "docs": "./node_modules/.bin/esdoc"

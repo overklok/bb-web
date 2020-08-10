@@ -27,7 +27,7 @@ module.exports = (env, argv) => {
 
     return {
         entry: getEntries(env),
-        devtool: 'eval-source-map', // 'source-map' for production
+        devtool: 'source-map', // 'source-map' for production
         output: {
             filename: '[name].js',
             path: path.resolve(__dirname, 'dist')

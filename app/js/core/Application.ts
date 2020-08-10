@@ -69,6 +69,10 @@ export default abstract class Application {
         return inst;
     }
 
+    public exists<V extends IBindable>(abstrakt: V|string): boolean {
+        return this.instances.has(abstrakt);
+    }
+
     protected build() {
         for (const [abstrakt, concrete] of this.bindings.entries()) {
             const instance = concrete(this);
