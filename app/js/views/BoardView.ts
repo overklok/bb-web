@@ -16,6 +16,8 @@ export default class BoardView extends ImperativeView<IImperativeViewProps> {
     }
 
     inject(container: HTMLDivElement): void {
+        console.log(container);
+
         this.bb.inject(container, {
             readOnly: false,
         });

@@ -6,6 +6,8 @@ export interface IImperativeViewProps extends IViewProps {
 }
 
 export abstract class ImperativeView<P extends IImperativeViewProps> extends View<P, IViewState> {
+    private readonly ref = React.createRef<HTMLDivElement>();
+
     protected constructor(props: P) {
         super(props);
     }
@@ -24,12 +26,16 @@ export abstract class ImperativeView<P extends IImperativeViewProps> extends Vie
 
         if (this.props.mounted === true) {
             this.inject(this.props.ref_nest.current);
+        } else {
+            this.inject(this.ref.current);
         }
     }
 
     public componentWillUnmount() {
         if (this.props.mounted === true) {
             this.eject(this.props.ref_nest.current);
+        } else {
+            this.inject(this.ref.current);
         }
 
         super.componentWillUnmount();

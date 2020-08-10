@@ -91,7 +91,12 @@
     "watch:board": "webpack --watch --mode development --env.board",
     "watch:blockly": "webpack --watch --mode development --env.blockly",
     "watch:timeline": "webpack --watch --mode development --env.timeline",
-    "watch:test": "webpack --watch --mode production --config webpack.config.test.js",
+
+    "build-new:main":   "webpack --config webpack.config.new.js         --mode production  --env.main",
+    "build-new:board":  "webpack --config webpack.config.new.js         --mode production  --env.board",
+    "watch-new:main":   "webpack --config webpack.config.new.js --watch --mode development --env.main",
+    "watch-new:board":  "webpack --config webpack.config.new.js --watch --mode development --env.board",
+
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",
     "docs": "./node_modules/.bin/esdoc"

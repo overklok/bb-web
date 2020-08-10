@@ -19,13 +19,11 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 
 module.exports = (env, argv) => {
+    const is_dev = env.mode === "development";
+
     return {
-        entry: {
-            // 'test': './app/js/core/__tests__/TestApplication.ts',
-            'main': './app/js/MainApplication.ts',
-        },
-        devtool: 'source-map', // 'source-map' for dev, 'eval-source-map' for dev
-        mode: 'production',
+        entry: getEntries(env),
+        devtool: is_dev ? 'eval-source-map' : 'source-map',
         optimization: {
             minimizer: [new TerserPlugin({
                 cache: true,
@@ -79,12 +77,21 @@ module.exports = (env, argv) => {
                 filename: 'main.html'
             }),
             new BuildNotifierPlugin({
-                title: "Tapanda Test",
+                title: "Tapanda [New]",
                 logo: path.resolve("./img/favicon.png"),
             }),
         ]
     }
 };
+
+function getEntries(env) {
+    // Bundle entries
+    let entries = {};
+    if (env.main === true)      entries['main'] = './app/js/MainApplication.ts';
+    if (env.board === true)     entries['board'] = './app/js/BoardApplication.ts';
+
+    return entries;
+}
 
 function getVersionNumber() {
     return generate(process.env.npm_package_version);
@@ -100,8 +107,6 @@ function getVersionTarget(env, mode=null) {
 
     if (matches > 1) return `mixed`;
 
-    if (env.main === true)      return `main`;
-    if (env.board === true)     return `board`;
-    if (env.blockly === true)   return `blockly`;
-    if (env.timeline === true)  return `timeline`;
+    if (env.main === true)  return `main`;
+    if (env.board === true) return `board`;
 }
