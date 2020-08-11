@@ -118,32 +118,10 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         })
     }
 
-    on(channel: string, handler: Function) {
-        if (!(QtIPCDatasource.Status !== QtWebStatus.Connected)) throw new Error("Datasource is not connected to Qt");
-
-        this._handlers[channel] = (evt: any, data: string) => {
-            data = JSON.parse(data);
-
-            console.debug('[QtIPC] received', channel, data);
-
-            handler(channel, data);
-        }
-    }
-
-    once(channel: string, handler: Function) {
-        if (!(QtIPCDatasource.Status !== QtWebStatus.Connected)) throw new Error("Datasource is not connected to Qt");
-
-        this._handlers[channel] = (data: string) => {
-            handler(JSON.parse(data));
-            delete this._handlers[channel];
-        };
-    }
-
     send(channel: string, data?: object) {
-        if (!(QtIPCDatasource.Status !== QtWebStatus.Connected)) throw new Error("Datasource is not connected to Qt");
+        if (QtIPCDatasource.Status !== QtWebStatus.Connected) throw new Error("Datasource is not connected to Qt");
 
         console.debug('[QtIPC] send', channel, data);
-
         QtIPCDatasource.Connector.emit(channel, JSON.stringify(data));
     }
 
@@ -160,8 +138,11 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
     }
 
     private onEventSig(channel: string, data: string) {
-        if (channel in this._handlers) {
-            this._handlers[channel]({channel}, data);
+        console.debug('[QtIPC] received', channel, data);
+
+        if (this.hasHandlers(channel)) {
+            data = JSON.parse(data);
+            this.handle(channel, data);
         }
     }
 }

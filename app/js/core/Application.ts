@@ -1,16 +1,24 @@
 import ServiceProvider from "./providers/ServiceProvider";
 import IBindable from "./helpers/IBindable";
 
+// passed by DefinePlugin in Webpack config
+declare var __VERSION__: string;
+
 export default abstract class Application {
     private bindings:   Map<string|IBindable, Function> = new Map();
     private instances:  Map<string|IBindable, any>      = new Map();
 
     private providers:  Array<ServiceProvider> = [];
 
+    public readonly version: string;
+
     constructor() {
         this.init();
         this.setup();
         this.boot();
+
+        this.version = __VERSION__;
+        console.log(`Loaded ${this.version}`);
     }
 
     /**

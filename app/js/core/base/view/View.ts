@@ -3,6 +3,7 @@ import ViewConnector from "./ViewConnector";
 import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";
+import {coverOptions} from "../../helpers/functions";
 
 export interface IViewOptions {
 
@@ -38,7 +39,7 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
         super(props);
 
         const defaults = Object.getPrototypeOf(this).constructor.defaultOptions;
-        this.options = this.coverOptions(this.props.options, defaults) as O;
+        this.options = coverOptions(this.props.options, defaults) as O;
 
         this.props.connector.attach(this);
     }
@@ -71,22 +72,5 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
 
     protected emit<E>(event: ViewEvent<E>) {
         this.props.connector.emit(event);
-    }
-
-    private coverOptions(options: {[key: string]: any}, defaults: {[key: string]: any}) {
-        const result: {[key: string]: any} = {};
-
-        /// Если не заданы опции - выдать опции по умолчанию
-        if (typeof options === "undefined") return defaults as O;
-
-        /// Если options - не объект, то возвратить значение
-        if (typeof options !== 'object') return options;
-
-        /// Для каждой заданной опции выполнить рекурсивно поиск опции
-        for (const option_key of Object.keys(defaults)) {
-            result[option_key] = this.coverOptions(options[option_key], defaults[option_key]);
-        }
-
-        return result;
     }
 }

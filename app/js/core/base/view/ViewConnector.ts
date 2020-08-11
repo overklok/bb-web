@@ -13,6 +13,7 @@ export default class ViewConnector {
     private readonly svc_model: IModelService;
     private view: View<any, any>;
 
+    private handlers: [AbstractEvent<any>, Function][] = [];
     // private presenters: Presenter<View<IViewProps, IViewState>>[];
 
     public readonly presenter_types: PresenterType<View<IViewOptions, IViewState>>[];
@@ -67,13 +68,15 @@ export default class ViewConnector {
             // Activate presenter routes
             for (const [evt_type, prop_handler] of presenter.routes.entries()) {
                 const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
-                this.svc_event.subscribe(evt_type, hdlr, this);
+                this.svc_event.subscribe(evt_type, hdlr);
+
+                this.handlers.push([evt_type, hdlr]);
             }
         }
     }
 
     emit<E>(event: AbstractEvent<E>) {
-        this.svc_event.emit(event, this);
+        this.svc_event.emit(event);
     }
 
     resizeView() {
@@ -83,6 +86,11 @@ export default class ViewConnector {
     }
 
     private unsubscribeCurrentPresenters() {
-        this.svc_event.resetObject(this);
+        // this.svc_event.resetObject(this);
+       for (const [evt_type, handler] of this.handlers) {
+           this.svc_event.unsubscribe(evt_type, handler)
+       }
+
+       this.handlers = [];
     }
 }

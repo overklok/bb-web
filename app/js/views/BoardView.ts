@@ -12,12 +12,12 @@ export interface BoardViewOptions extends IViewOptions {
 }
 
 export default class BoardView extends ImperativeView<BoardViewOptions> {
+    private bb: Breadboard;
+
     static defaultOptions: BoardViewOptions = {
         schematic: true,
         verbose: false
     }
-
-    private bb: Breadboard;
 
     constructor(props: IViewProps<BoardViewOptions>) {
         super(props);

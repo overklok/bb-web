@@ -6,8 +6,6 @@ type Course = {
 }
 
 export default class CourseModel extends RestModel<Course> {
-
-    
     protected schema(): RestSchema {
         return {
             [CRUDAction.Read]: ({id}) => `courses/${id}`,
@@ -16,5 +14,9 @@ export default class CourseModel extends RestModel<Course> {
 
     async test() {
         await this.read({id: 12});
+    }
+
+    protected defaultState(): Course {
+        return undefined;
     }
 }

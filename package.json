@@ -92,10 +92,10 @@
     "watch:blockly": "webpack --watch --mode development --env.blockly",
     "watch:timeline": "webpack --watch --mode development --env.timeline",
 
-    "build-new:main":   "webpack --config webpack.config.new.js         --mode production  --env.main",
-    "build-new:board":  "webpack --config webpack.config.new.js         --mode production  --env.board",
-    "watch-new:main":   "webpack --config webpack.config.new.js --watch --mode development --env.main",
-    "watch-new:board":  "webpack --config webpack.config.new.js --watch --mode development --env.board",
+    "build-new:main":     "webpack --config webpack.config.new.js         --mode production  --env.main",
+    "build-new:monitor":  "webpack --config webpack.config.new.js         --mode production  --env.monitor",
+    "watch-new:main":     "webpack --config webpack.config.new.js --watch --mode development --env.main",
+    "watch-new:monitor":  "webpack --config webpack.config.new.js --watch --mode development --env.monitor",
 
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",

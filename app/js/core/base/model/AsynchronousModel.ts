@@ -41,20 +41,22 @@ export function timeout() {
 
 export default abstract class AsynchronousModel<MS> extends Model<MS, AsynchronousDatasource> {
     public readonly handlers: {[key: string]: Function};
-    public readonly handler_timeout: Function;
-    public readonly handler_connect: Function;
-    public readonly handler_disconnect: Function;
+    public readonly handler_timeout:       Function;
+    public readonly handler_connect:       Function;
+    public readonly handler_disconnect:    Function;
 
-    constructor(data_source: AsynchronousDatasource, svc_event: IEventService) {
+    protected constructor(data_source: AsynchronousDatasource, svc_event: IEventService) {
         super(data_source, svc_event);
 
         for (const [channel, handler] of Object.entries(this.handlers)) {
-            this.data_source.on(channel, handler);
+            this.data_source.on(channel, handler.bind(this));
         }
 
-        this.data_source.on_timeout(this.handler_timeout);
-        this.data_source.on_connect(this.handler_connect);
-        this.data_source.on_disconnect(this.handler_disconnect);
+        const hdlr_timeout = function() {(this as any)[this.prop_handler](...arguments)};
+
+        this.data_source.on_timeout(this.handler_timeout.bind(this));
+        this.data_source.on_connect(this.handler_connect.bind(this));
+        this.data_source.on_disconnect(this.handler_disconnect.bind(this));
 
         switch (this.data_source.status) {
             case AsyncDatasourceStatus.Timeouted:       if (this.handler_timeout)    this.handler_timeout(); break;

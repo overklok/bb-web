@@ -1,5 +1,5 @@
 import BoardView from "../views/BoardView";
-import BoardPresenter from "../presenters/BoardPresenter";
+import BoardPresenter from "../presenters/debug/BoardMonitorPresenter";
 import BlocklyView from "../views/BlocklyView";
 import LayoutView from "../core/views/layout/LayoutView";
 import LayoutPresenter from "../presenters/LayoutPresenter";

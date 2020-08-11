@@ -10,9 +10,7 @@ export enum AsyncDatasourceStatus {
 export default abstract class AsynchronousDatasource extends Datasource {
     protected _status: AsyncDatasourceStatus = AsyncDatasourceStatus.Initial;
 
-    protected handlers_timeout: Function[] = [];
-    protected handlers_connect: Function[] = [];
-    protected handlers_disconnect: Function[] = [];
+    protected handlers: {[channel: string]: {func: Function, disposable: boolean}[]} = {};
 
     get status() {return this._status};
 
@@ -20,40 +18,64 @@ export default abstract class AsynchronousDatasource extends Datasource {
     abstract async connect(): Promise<boolean>;
     abstract async disconnect(): Promise<void>;
 
-    abstract on(channel: string, handler: Function): void;
-    abstract once(channel: string, handler: Function): void;
     abstract send(channel: string, data: object): void;
+
+    on(channel: string, handler: Function): void {
+        if (!this.handlers[channel]) {
+            this.handlers[channel] = [];
+        }
+
+        this.handlers[channel].push({func: handler, disposable: false});
+    };
+
+    once(channel: string, handler: Function): void {
+        if (!this.handlers[channel]) {
+            this.handlers[channel] = [];
+        }
+
+        this.handlers[channel].push({func: handler, disposable: true});
+    };
+
+    handle(channel: string, data?: any): void {
+        if (this.handlers[channel]) {
+            for (const [key, handler] of this.handlers[channel].entries()) {
+                handler.func(data);
+
+                if (handler.disposable) {
+                    delete this.handlers[channel][key];
+                }
+            }
+        }
+    }
+
+    hasHandlers(channel: string) {
+        return this.handlers[channel] && this.handlers[channel].length;
+    }
 
     on_connect(handler: Function) {
         if (!handler) return;
-        this.handlers_connect.push(handler);
+        this.on('__connect__', handler);
     }
 
     on_disconnect(handler: Function) {
         if (!handler) return;
-        this.handlers_disconnect.push(handler);
+        this.on('__disconnect__', handler);
     }
 
     on_timeout(handler: Function) {
         if (!handler) return;
-        this.handlers_timeout.push(handler);
+        this.on('__timeout__', handler);
     }
 
     emit_connect() {
-        for (const handler of this.handlers_connect) {
-            handler();
-        }
+        this.handle('__connect__');
     }
 
     emit_disconnect() {
-        for (const handler of this.handlers_disconnect) {
-            handler();
-        }
+        this.handle('__disconnect__');
     }
 
     emit_timeout() {
-        for (const handler of this.handlers_timeout) {
-            handler();
-        }
+        this.handle('__timeout__');
     }
 }

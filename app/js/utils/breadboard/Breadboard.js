@@ -180,6 +180,8 @@ export default class Breadboard {
         this._spare = false;
         this._filters_defined = false;
 
+        options = options || {};
+
         this._schematic = options.schematic || false;
         this._detailed = options.detailed || false;
         this._verbose = options.verbose || false;

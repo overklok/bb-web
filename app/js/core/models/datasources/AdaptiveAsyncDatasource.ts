@@ -1,5 +1,4 @@
-import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
-import {Simulate} from "react-dom/test-utils";
+import AsynchronousDatasource, {AsyncDatasourceStatus} from "../../base/model/datasources/AsynchronousDatasource";
 
 export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
     private data_source: AsynchronousDatasource;
@@ -11,6 +10,12 @@ export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
         this.data_sources = data_sources;
     }
 
+    get status(): AsyncDatasourceStatus {
+        if (!this.data_source) return AsyncDatasourceStatus.Initial;
+
+        return this.data_source.status
+    }
+
     async init(): Promise<boolean> {
         let result = undefined;
 
@@ -19,6 +24,7 @@ export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
 
             if (result) {
                 this.data_source = source;
+                this.moveEarlyHandlers();
                 break;
             }
         }
@@ -39,13 +45,19 @@ export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
     }
 
     on(channel: string, handler: Function): void {
-        if (!this.data_source) return;
+        if (!this.data_source) {
+            super.on(channel, handler);
+            return;
+        }
 
         this.data_source.on(channel, handler);
     }
 
     once(channel: string, handler: Function): void {
-        if (!this.data_source) return;
+        if (!this.data_source) {
+            super.once(channel, handler);
+            return;
+        }
 
         this.data_source.once(channel, handler);
     }
@@ -56,21 +68,17 @@ export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
         this.data_source.send(channel, data);
     }
 
-    on_connect(handler: Function) {
-        for (const source of this.data_sources) {
-            source.on_connect(handler);
+    private moveEarlyHandlers() {
+        for (const [channel, handlers] of Object.entries(this.handlers)) {
+            for (const {func, disposable} of handlers) {
+                if (disposable) {
+                    this.data_source.once(channel, func);
+                } else {
+                    this.data_source.on(channel, func);
+                }
+            }
         }
-    }
 
-    on_disconnect(handler: Function) {
-        for (const source of this.data_sources) {
-            source.on_disconnect(handler);
-        }
-    }
-
-    on_timeout(handler: Function) {
-        for (const source of this.data_sources) {
-            source.on_timeout(handler);
-        }
+        this.handlers = {};
     }
 }

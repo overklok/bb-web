@@ -40,6 +40,10 @@ interface LayoutModelState {
  * @property modes {} режимы разметки
  */
 export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
+    protected defaultState(): LayoutModelState {
+        return undefined;
+    }
+
     init(state: LayoutModelState) {
         this.state = JSON.parse(JSON.stringify(Object.assign({}, state)));
     }

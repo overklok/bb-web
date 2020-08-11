@@ -5,5 +5,7 @@ type User = {
 }
 
 export default class UserModel extends JWTAuthModel<User> {
-
+    protected defaultState(): User {
+        return undefined;
+    }
 }
