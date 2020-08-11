@@ -1,23 +1,17 @@
 import * as React from "react";
 import {IViewProps, IViewState, View} from "./View";
 
-export interface IImperativeViewProps extends IViewProps {
-    mounted: boolean;
-}
-
-export abstract class ImperativeView<P extends IImperativeViewProps> extends View<P, IViewState> {
-    private readonly ref = React.createRef<HTMLDivElement>();
-
+export abstract class ImperativeView<P extends IViewProps> extends View<P, IViewState> {
     protected constructor(props: P) {
         super(props);
     }
 
-    protected abstract inject(container: HTMLDivElement): void;
-    protected abstract eject(container: HTMLDivElement): void;
+    protected abstract inject(container: HTMLElement): void;
+    protected abstract eject(container: HTMLElement): void;
 
     public componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<IViewState>, snapshot?: any) {
         if (prevProps.mounted === false && this.props.mounted === true) {
-            this.inject(this.props.ref_nest.current);
+            this.inject(this.props.ref_parent.current);
         }
     }
 
@@ -25,17 +19,13 @@ export abstract class ImperativeView<P extends IImperativeViewProps> extends Vie
         super.componentDidMount();
 
         if (this.props.mounted === true) {
-            this.inject(this.props.ref_nest.current);
-        } else {
-            this.inject(this.ref.current);
+            this.inject(this.props.ref_parent.current);
         }
     }
 
     public componentWillUnmount() {
         if (this.props.mounted === true) {
-            this.eject(this.props.ref_nest.current);
-        } else {
-            this.inject(this.ref.current);
+            this.eject(this.props.ref_parent.current);
         }
 
         super.componentWillUnmount();

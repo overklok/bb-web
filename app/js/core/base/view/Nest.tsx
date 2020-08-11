@@ -1,13 +1,16 @@
 import * as React from "react";
-import {ResizeEvent, View} from "../../base/view/View";
+import {ResizeEvent, View} from "./View";
 import classNames from "classnames";
-import ViewConnector from "../../base/view/ViewConnector";
+import ViewConnector from "./ViewConnector";
+import {ViewType} from "../../helpers/types";
+import {Widget} from "../../services/interfaces/IViewService";
 
 
 interface IProps {
     connector: ViewConnector;
 
-    view_type: typeof View;
+    widgets?: {[key: string]: Widget};
+    view_type: ViewType<any, any>;
     label: string;
     index: number;
 }
@@ -52,8 +55,9 @@ export default class Nest extends React.Component<IProps, IState> {
             <div className={klasses} ref={this.ref}>
                 <SpecificView
                     ref={this.ref_view}
+                    widgets={this.props.widgets}
                     connector={this.props.connector}
-                    ref_nest={this.ref}
+                    ref_parent={this.ref}
                     mounted={this.state.mounted}
                 />
             </div>

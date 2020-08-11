@@ -4,7 +4,7 @@ import {IViewProps, IViewState, View} from "../../base/view/View";
 import {PresenterType, ViewComposerType, ViewType} from "../../helpers/types";
 import ViewComposer, {IVCProps, IVCState} from "../../base/view/ViewComposer";
 
-export type Widget = {connector: ViewConnector, view_type: typeof View, label?: string};
+export type Widget = {connector: ViewConnector, view_type: ViewType<any, any>, label?: string};
 
 export type WidgetType = {
     view_type: ViewType<IViewProps, IViewState>,

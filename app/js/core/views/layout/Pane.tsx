@@ -7,7 +7,7 @@ import classNames from "classnames";
 
 import Handle from "./Handle";
 import {View} from "../../base/view/View";
-import Nest from "./Nest";
+import Nest from "../../base/view/Nest";
 import Frame from "./Frame";
 import TabViewComposer from "../../base/view/viewcomposers/tab/TabViewComposer";
 import Cover from "./Cover";
@@ -370,7 +370,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 <TabViewComposer overlay_node={overlay_node}>
                     {this.props._widgets.map((widget, index) => {
                         const ref: RefObject<Nest> = React.createRef();
-                        
+
                         const nest = this.renderNest(index, widget, ref);
                         this.nests.push(ref);
                         

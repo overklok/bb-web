@@ -281,6 +281,7 @@ export default class Breadboard {
      * Удалить графическую составляющую платы
      */
     dispose() {
+        this._div_wrap.remove();
         this._brush.node.remove();
         this._layers = {};
     }

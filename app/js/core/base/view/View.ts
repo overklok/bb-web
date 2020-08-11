@@ -5,8 +5,9 @@ import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";
 
 export interface IViewProps {
+    mounted: boolean;
     connector: ViewConnector;
-    ref_nest?: React.RefObject<HTMLDivElement>;
+    ref_parent?: React.RefObject<HTMLElement>;
     on_viewinfo_ready?: Function;
     widgets?: {[key: string]: Widget};
 }

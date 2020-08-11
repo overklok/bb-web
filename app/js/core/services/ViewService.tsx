@@ -5,6 +5,7 @@ import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 
 import ViewConnector from "../base/view/ViewConnector";
 import {ViewComposerAny, ViewComposerType} from "../helpers/types";
+import Nest from "../base/view/Nest";
 
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
@@ -59,10 +60,13 @@ export default class ViewService extends IViewService {
 
             const view_connector = new ViewConnector(this.app, presenter_types);
 
-            return <SpecificView
-                widgets={this.widgets}
-                connector={view_connector}
+            return <Nest
                 key={index}
+                index={index}
+                view_type={SpecificView}
+                connector={view_connector}
+                widgets={this.widgets}
+                label={"root"}
             />;
         });
 

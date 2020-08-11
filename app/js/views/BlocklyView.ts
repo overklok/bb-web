@@ -1,13 +1,14 @@
-import {IImperativeViewProps, ImperativeView} from "../core/base/view/ImperativeView";
+import {ImperativeView} from "../core/base/view/ImperativeView";
 import BlocklyWrapper from '../wrappers/BlocklyWrapper'
 
 import JSONBlocks       from '../utils/blockly/extras/blocks';
 import JSONGenerators   from '../utils/blockly/extras/generators';
+import {IViewProps} from "../core/base/view/View";
 
-export default class BlocklyView extends ImperativeView<IImperativeViewProps> {
+export default class BlocklyView extends ImperativeView<IViewProps> {
     private blockly: BlocklyWrapper;
 
-    constructor(props: IImperativeViewProps) {
+    constructor(props: IViewProps) {
         super(props);
 
         this.blockly = new BlocklyWrapper();

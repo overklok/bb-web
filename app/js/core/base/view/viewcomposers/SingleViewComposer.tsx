@@ -7,12 +7,6 @@ export default class SingleViewComposer extends ViewComposer<IVCProps, IVCState>
     }
 
     render() {
-        const {children} = this.props;
-
-        return (
-            <div style={{width: "100vw", height: "100vh"}}>
-                {children}
-            </div>
-        );
+        return this.props.children ? this.props.children[0] : null;
     }
 };

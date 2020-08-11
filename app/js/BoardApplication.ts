@@ -7,6 +7,8 @@ import IViewService from "./core/services/interfaces/IViewService";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 import BoardView from "./views/BoardView";
 
+import "../css/global.less";
+
 class BoardApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [

@@ -19,6 +19,8 @@ import HttpDatasource from "./core/models/datasources/HttpDatasource";
 import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";
 import UserModel from "./models/UserModel";
 
+import "../css/global.less";
+
 class MainApplication extends Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
