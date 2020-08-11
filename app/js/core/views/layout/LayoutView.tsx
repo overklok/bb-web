@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import Pane, {PaneOrientation} from "./Pane";
 
 import {RefObject} from "react";
-import {IViewProps, IViewState, View} from "../../base/view/View";
+import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
 import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
 
@@ -48,14 +48,6 @@ export interface ILayoutMode {
 }
 
 /**
- * Свойства разметки
- */
-interface ILayoutProps extends IViewProps {
-    // конифгурация режимов разметки
-    // modes: {[key: string]: ILayoutMode};
-}
-
-/**
  * Состояние разметки
  */
 interface ILayoutState extends IViewState {
@@ -70,7 +62,7 @@ interface ILayoutState extends IViewState {
  * компонуя панели в соответствии с выбранным режимом разметки.
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
-export default class LayoutView extends View<ILayoutProps, ILayoutState> {
+export default class LayoutView extends View<IViewOptions, ILayoutState> {
     private mounted: boolean;
     private pane_ref: RefObject<Pane> = React.createRef();
     private modes: {[key: string]: ILayoutMode};
@@ -78,7 +70,7 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     private root_ref: RefObject<HTMLDivElement> = React.createRef();
     private overlay_node: HTMLDivElement;
 
-    constructor(props: ILayoutProps) {
+    constructor(props: IViewProps<IViewOptions>) {
         super(props);
 
         this.modes = {

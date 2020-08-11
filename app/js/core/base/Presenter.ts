@@ -1,7 +1,7 @@
-import {IViewProps, IViewState, View} from "./view/View";
+import {IViewOptions, IViewState, View} from "./view/View";
 import {AbstractEvent, Action} from "./Event";
 import IModelService from "../services/interfaces/IModelService";
-import Model, {ModelConstructor, ModelState} from "./model/Model";
+import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
 
 export function on<V extends AbstractEvent<V>>(...event_types: V[]) {
@@ -22,7 +22,7 @@ export function action<A extends Action<A>>(action_type: A) {
     return on(action_type);
 }
 
-export default class Presenter<V extends View<IViewProps, IViewState>> {
+export default class Presenter<V extends View<IViewOptions, IViewState>> {
     // protected static actions: Map<Action<any>, string> = new Map();
     public readonly routes: Map<AbstractEvent<any>, string>;
 

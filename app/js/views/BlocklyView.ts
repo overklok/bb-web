@@ -3,12 +3,12 @@ import BlocklyWrapper from '../wrappers/BlocklyWrapper'
 
 import JSONBlocks       from '../utils/blockly/extras/blocks';
 import JSONGenerators   from '../utils/blockly/extras/generators';
-import {IViewProps} from "../core/base/view/View";
+import {IViewOptions, IViewProps} from "../core/base/view/View";
 
-export default class BlocklyView extends ImperativeView<IViewProps> {
+export default class BlocklyView extends ImperativeView<IViewOptions> {
     private blockly: BlocklyWrapper;
 
-    constructor(props: IViewProps) {
+    constructor(props: IViewProps<IViewOptions>) {
         super(props);
 
         this.blockly = new BlocklyWrapper();

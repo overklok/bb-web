@@ -1,15 +1,15 @@
 import * as React from "react";
 import {IViewProps, IViewState, View} from "./View";
 
-export abstract class ImperativeView<P extends IViewProps> extends View<P, IViewState> {
-    protected constructor(props: P) {
+export abstract class ImperativeView<O> extends View<O, IViewState> {
+    protected constructor(props: IViewProps<O>) {
         super(props);
     }
 
     protected abstract inject(container: HTMLElement): void;
     protected abstract eject(container: HTMLElement): void;
 
-    public componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<IViewState>, snapshot?: any) {
+    public componentDidUpdate(prevProps: Readonly<IViewProps<O>>, prevState: Readonly<IViewState>, snapshot?: any) {
         if (prevProps.mounted === false && this.props.mounted === true) {
             this.inject(this.props.ref_parent.current);
         }

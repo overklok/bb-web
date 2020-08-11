@@ -14,7 +14,7 @@ export default class ViewService extends IViewService {
 
     private view_composer: typeof React.Component;
 
-    public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType[] = []) {
+    public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = []) {
         this.widgets = {};
         this.view_composer = view_composer;
 
@@ -31,7 +31,7 @@ export default class ViewService extends IViewService {
         this.recompose();
     }
 
-    public registerWidgetTypes(widget_types: {[key: string]: WidgetType}) {
+    public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
             const {view_type, presenter_types, label} = widget_type;
 
@@ -55,7 +55,7 @@ export default class ViewService extends IViewService {
     protected recompose() {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
-        const children = this.widget_types.map((widget_type: WidgetType, index) => {
+        const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
             const {view_type: SpecificView, presenter_types} = widget_type;
 
             const view_connector = new ViewConnector(this.app, presenter_types);

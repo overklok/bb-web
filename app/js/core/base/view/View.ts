@@ -4,12 +4,17 @@ import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";
 
-export interface IViewProps {
+export interface IViewOptions {
+
+}
+
+export interface IViewProps<O extends IViewOptions> {
     mounted: boolean;
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     on_viewinfo_ready?: Function;
     widgets?: {[key: string]: Widget};
+    options?: O;
 }
 
 export interface IViewState {
@@ -25,8 +30,8 @@ export class MountEvent extends AbstractEvent<MountEvent> {
 export class ResizeEvent extends AbstractEvent<ResizeEvent> {
 }
 
-export abstract class View<P extends IViewProps, S extends IViewState> extends React.Component<P, S> {
-    protected constructor(props: P) {
+export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
+    protected constructor(props: IViewProps<O>) {
         super(props);
 
         this.props.connector.attach(this);

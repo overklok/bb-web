@@ -1,5 +1,5 @@
 import Presenter from "../Presenter";
-import {IViewProps, IViewState, View} from "./View";
+import {IViewOptions, IViewProps, IViewState, View} from "./View";
 import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
 import {AbstractEvent, Action, ViewEvent} from "../Event";
@@ -15,10 +15,10 @@ export default class ViewConnector {
 
     // private presenters: Presenter<View<IViewProps, IViewState>>[];
 
-    public readonly presenter_types: PresenterType<IViewProps, IViewState>[];
+    public readonly presenter_types: PresenterType<View<IViewOptions, IViewState>>[];
     public actions: Array<[string, Action<any>, Function]> = [];
 
-    constructor(app: Application, presenter_types: PresenterType<IViewProps, IViewState>[]) {
+    constructor(app: Application, presenter_types: PresenterType<View<IViewOptions, IViewState>>[]) {
         this.app = app;
 
         this.svc_event = this.app.instance(IEventService);
@@ -47,14 +47,14 @@ export default class ViewConnector {
         }
     }
 
-    attach(view: View<IViewProps, IViewState>) {
+    attach(view: View<IViewOptions, IViewState>) {
         this.view = view;
 
         this.unsubscribeCurrentPresenters();
 
         // this.presenters = [];
         for (const presenter_type of this.presenter_types) {
-            let presenter: Presenter<View<IViewProps, IViewState>>;
+            let presenter: Presenter<View<IViewOptions, IViewState>>;
 
             // try {
                 presenter = new presenter_type(view, this.svc_model);
