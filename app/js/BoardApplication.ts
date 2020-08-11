@@ -26,7 +26,9 @@ class BoardApplication extends Application {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         this.instance(IViewService).registerWidgetTypes({
-            main: {view_type: BoardView, presenter_types: []},
+            main: {view_type: BoardView, presenter_types: [], view_options: {
+                schematic: true
+            }},
         });
 
         this.instance(IViewService).compose(element);

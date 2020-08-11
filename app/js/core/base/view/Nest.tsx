@@ -1,16 +1,17 @@
 import * as React from "react";
-import {ResizeEvent, View} from "./View";
+import {IViewOptions, ResizeEvent, View} from "./View";
 import classNames from "classnames";
 import ViewConnector from "./ViewConnector";
 import {ViewType} from "../../helpers/types";
 import {Widget} from "../../services/interfaces/IViewService";
 
 
-interface IProps {
+interface IProps<O extends IViewOptions> {
     connector: ViewConnector;
 
     widgets?: {[key: string]: Widget};
-    view_type: ViewType<any, any>;
+    view_type: ViewType<O, any>;
+    view_options?: O;
     label: string;
     index: number;
 }
@@ -19,11 +20,11 @@ interface IState {
     mounted: boolean;
 }
 
-export default class Nest extends React.Component<IProps, IState> {
+export default class Nest extends React.Component<IProps<any>, IState> {
     private readonly ref = React.createRef<HTMLDivElement>()
     private readonly ref_view = React.createRef<View<any, any>>()
 
-    constructor(props: IProps) {
+    constructor(props: IProps<any>) {
         super(props);
 
         this.state = {
@@ -58,6 +59,7 @@ export default class Nest extends React.Component<IProps, IState> {
                     widgets={this.props.widgets}
                     connector={this.props.connector}
                     ref_parent={this.ref}
+                    options={this.props.view_options}
                     mounted={this.state.mounted}
                 />
             </div>

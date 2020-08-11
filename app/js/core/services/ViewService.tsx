@@ -6,6 +6,7 @@ import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 import ViewConnector from "../base/view/ViewConnector";
 import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 import Nest from "../base/view/Nest";
+import {IViewOptions} from "../base/view/View";
 
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
@@ -31,7 +32,7 @@ export default class ViewService extends IViewService {
         this.recompose();
     }
 
-    public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
+    public registerWidgetTypes<O extends IViewOptions>(widget_types: {[key: string]: WidgetType<O>}) {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
             const {view_type, presenter_types, label} = widget_type;
 
@@ -56,7 +57,7 @@ export default class ViewService extends IViewService {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
         const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
-            const {view_type: SpecificView, presenter_types} = widget_type;
+            const {view_type: SpecificView, presenter_types, label, view_options} = widget_type;
 
             const view_connector = new ViewConnector(this.app, presenter_types);
 
@@ -64,9 +65,10 @@ export default class ViewService extends IViewService {
                 key={index}
                 index={index}
                 view_type={SpecificView}
+                view_options={view_options}
                 connector={view_connector}
                 widgets={this.widgets}
-                label={"root"}
+                label={label}
             />;
         });
 

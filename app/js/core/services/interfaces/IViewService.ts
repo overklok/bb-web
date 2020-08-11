@@ -28,5 +28,5 @@ export default class IViewService {
 
     public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = [])  {throw new Error('abstract')};
     public compose(element: HTMLElement)                                                                    {throw new Error('abstract')};
-    public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>})                              {throw new Error('abstract')};
+    public registerWidgetTypes<O extends IViewOptions>(widget_types: {[key: string]: WidgetType<O>})        {throw new Error('abstract')};
 }
