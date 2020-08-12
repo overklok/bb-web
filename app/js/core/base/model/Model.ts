@@ -3,12 +3,27 @@ import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";
 import {coverOptions} from "../../helpers/functions";
 
+/**
+ * @see Model
+ */
 export interface ModelConstructor<MS extends ModelState, DS extends Datasource> {
     new(data_source: DS, svc_event: IEventService): Model<MS, DS>;
 }
 
+/**
+ * An object defining data that the Model should retrieve and/or send.
+ *
+ * @see Model
+ */
 export type ModelState = {[key: string]: any}
 
+/**
+ * A class defining the data to be displayed to otherwise acted upon in the user interface.
+ * It isolates the logic of formatting and validation from other components in the system.
+ *
+ * In this case, models is separated from objects which actually used to keep actual data.
+ * These objects extends from ModelState. Each Model required to define its ModelState.
+ */
 export default abstract class Model<MS extends ModelState, DS extends Datasource> {
     protected state: MS;
     protected data_source: DS;

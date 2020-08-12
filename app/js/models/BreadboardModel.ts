@@ -61,10 +61,6 @@ export default class BreadboardModel extends AsynchronousModel<BreadboardModelSt
         };
     }
 
-    constructor(data_source: AsynchronousDatasource, svc_event: IEventService) {
-        super(data_source, svc_event);
-    }
-
     sendPlates(plates: Plate[]): void {
         this.state.plates = plates;
         this.send(ChannelsTo.Plates, plates);

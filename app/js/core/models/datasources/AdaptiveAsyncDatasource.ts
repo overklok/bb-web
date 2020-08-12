@@ -19,15 +19,24 @@ export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
     async init(): Promise<boolean> {
         let result = undefined;
 
+        console.group(`trying to init async datasource (${this.data_sources.length} options available...)`)
+
         for (const source of this.data_sources) {
+            console.debug(`trying ${source.constructor.name}...`)
+
             result = await source.init();
 
             if (result) {
                 this.data_source = source;
                 this.moveEarlyHandlers();
+                console.debug(`${source.constructor.name} initialized.`);
                 break;
+            } else {
+                console.debug(`failed to init ${source.constructor.name}, skipping...`)
             }
         }
+
+        console.groupEnd()
 
         return result;
     }

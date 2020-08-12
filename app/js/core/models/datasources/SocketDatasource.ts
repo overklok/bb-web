@@ -26,8 +26,8 @@ export default class SocketDatasource extends AsynchronousDatasource {
 
         this.socket.on('disconnect', () => {
             this._status = AsyncDatasourceStatus.Disconnected;
-            this.emit_disconnect();
             console.debug('[SocketIPC] disconnected.');
+            this.emit_disconnect();
         });
 
         return true;
@@ -39,30 +39,32 @@ export default class SocketDatasource extends AsynchronousDatasource {
                 resolve(true);
             }
 
-            if (!this.socket.hasListeners('connect')) {
-                this.socket.on('connect', () => {
+            console.debug('[SocketIPC] connecting...');
+
+            // if (!this.socket.hasListeners('connect')) {
+                this.socket.on('xconnect', (cli_descriptor: string) => {
+                    // of course you can use 'connect' instead of 'xconnect' here
+
                     this._status = AsyncDatasourceStatus.Connected;
-                    console.debug('[SocketIPC] connected.');
+                    console.debug(`[SocketIPC] connection established. Client: ${cli_descriptor || 'unknown'}.`);
                     this.emit_connect();
                     resolve(true);
                 });
-            }
 
-            setTimeout(() => {
-                if (this._status === AsyncDatasourceStatus.Connected) return;
+                setTimeout(() => {
+                    if (this._status === AsyncDatasourceStatus.Connected) return;
 
-                // we can time-out because connection can be established later
-                this._status = AsyncDatasourceStatus.Timeouted;
-                console.debug('[SocketIPC] connection timeout.');
-                this.emit_timeout();
-            }, SocketDatasource.ConnectTimeout);
+                    // we can time-out because connection can be established later
+                    this._status = AsyncDatasourceStatus.Timeouted;
+                    console.debug('[SocketIPC] connection timeout.');
+                    this.emit_timeout();
+                }, SocketDatasource.ConnectTimeout);
+            // }
         });
     }
 
     async disconnect() {
         if (!this.socket) return;
-
-        this._status = AsyncDatasourceStatus.Disconnected;
 
         this.socket.disconnect();
     }

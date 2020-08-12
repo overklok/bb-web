@@ -15,6 +15,7 @@ import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncData
 import BoardMonitorPresenter from "./presenters/debug/BoardMonitorPresenter";
 import IModelService from "./core/services/interfaces/IModelService";
 import BreadboardModel from "./models/BreadboardModel";
+import ConnectionModel from "./models/common/ConnectionModel";
 
 class MonitorApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
@@ -29,7 +30,7 @@ class MonitorApplication extends Application {
     protected setup() {
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
-            new SocketDatasource('127.0.0.1', 8085),
+            new SocketDatasource('127.0.0.1', 8005),
         ]);
     }
 
@@ -46,6 +47,7 @@ class MonitorApplication extends Application {
         });
 
         svc_model.launch(this.ads);
+        // svc_model.register(ConnectionModel, this.ads);
         svc_model.register(BreadboardModel, this.ads);
 
         this.instance(IViewService).compose(element);

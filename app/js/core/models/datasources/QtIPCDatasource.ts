@@ -105,8 +105,6 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
             if (QtIPCDatasource.Status === QtWebStatus.Disconnected) {
                 resolve();
             } else {
-                QtIPCDatasource.Status = QtWebStatus.Disconnected;
-
                 QtIPCDatasource.Connector.event_sig.disconnect(() => {
                     QtIPCDatasource.Connector = undefined;
                     QtIPCDatasource.Status = QtWebStatus.Disconnected;

@@ -4,6 +4,11 @@ import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
 
+/**
+ * Decorator function applied to Presenter methods to subscribe them to events
+ *
+ * @param event_types
+ */
 export function on<V extends AbstractEvent<V>>(...event_types: V[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (target.routes == null) {
@@ -18,17 +23,34 @@ export function on<V extends AbstractEvent<V>>(...event_types: V[]) {
     }
 }
 
+/**
+ * Alternative to {@link on} function
+ *
+ * @param action_type
+ */
 export function action<A extends Action<A>>(action_type: A) {
     return on(action_type);
 }
 
+/**
+ * An entity that acts upon the Model and the View.
+ * It retrieves data from repositories (the Model), and formats it for display in the View.
+ *
+ * @see Model
+ * @see View
+ */
 export default class Presenter<V extends View<IViewOptions, IViewState>> {
-    // protected static actions: Map<Action<any>, string> = new Map();
     public readonly routes: Map<AbstractEvent<any>, string>;
 
     protected view: V;
     private svc_model: IModelService;
 
+    /**
+     * Create a Presenter.
+     *
+     * @param view        an instance of some kind of View
+     * @param svc_model   an instance of model service
+     */
     constructor(view: V, svc_model: IModelService) {
         if (this.routes == null) {this.routes = new Map();}
 
@@ -38,10 +60,16 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> {
         this.ready();
     };
 
-    protected ready() {
+    /**
+     * Prepare Presenter for use in application workflow.
+     */
+    protected ready() {}
 
-    }
-
+    /**
+     * Retrieve an instance of the Model.
+     *
+     * @param model_type
+     */
     protected getModel<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(model_type: M): InstanceType<M> {
         return this.svc_model.retrieve(model_type);
     }
