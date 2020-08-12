@@ -47,7 +47,7 @@ class MonitorApplication extends Application {
         });
 
         svc_model.launch(this.ads);
-        // svc_model.register(ConnectionModel, this.ads);
+        svc_model.register(ConnectionModel, this.ads);
         svc_model.register(BreadboardModel, this.ads);
 
         this.instance(IViewService).compose(element);

@@ -11,8 +11,6 @@ export function listen(channel: string) {
 
         target.handlers[channel] = target[propertyKey];
 
-        console.log(target, channel);
-
         return target;
     }
 }
@@ -42,22 +40,20 @@ export function timeout() {
 }
 
 export default abstract class AsynchronousModel<MS> extends Model<MS, AsynchronousDatasource> {
-    public readonly handlers: {[key: string]: Function} = {};
+    public readonly handlers: {[key: string]: Function};
     public readonly handler_timeout:       Function;
     public readonly handler_connect:       Function;
     public readonly handler_disconnect:    Function;
 
     constructor(data_source: AsynchronousDatasource, svc_event: IEventService) {
         super(data_source, svc_event);
-    }
 
-    public init(state: MS) {
-        super.init(state);
-
-        console.log(this);
-
-        for (const [channel, handler] of Object.entries(this.handlers)) {
-            this.data_source.on(channel, handler.bind(this));
+        if (this.handlers) {
+            for (const [channel, handler] of Object.entries(this.handlers)) {
+                this.data_source.on(channel, handler.bind(this));
+            }
+        } else {
+            this.handlers = {};
         }
 
         if (this.handler_timeout)       this.data_source.on_timeout(this.handler_timeout.bind(this));
