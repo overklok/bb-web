@@ -1,21 +1,27 @@
 import Application from "./core/Application";
+
+import IViewService from "./core/services/interfaces/IViewService";
+import IModelService from "./core/services/interfaces/IModelService";
+
 import ServiceProvider from "./core/providers/ServiceProvider";
 import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
-import IViewService from "./core/services/interfaces/IViewService";
-
 import EventServiceProvider from "./core/providers/EventServiceProvider";
-import BoardView from "./views/BoardView";
 
-import "../css/global.less";
-import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
+import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
-import BoardMonitorPresenter from "./presenters/debug/BoardMonitorPresenter";
-import IModelService from "./core/services/interfaces/IModelService";
-import BreadboardModel from "./models/BreadboardModel";
+
+import BoardMonitorPresenter from "./presenters/monitor/BoardMonitorPresenter";
+
+import BreadboardModel from "./models/common/BreadboardModel";
 import ConnectionModel from "./models/common/ConnectionModel";
+
+import BoardView from "./views/board/BoardView";
+
+import "../css/global.less";
+import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 
 class MonitorApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
@@ -32,6 +38,12 @@ class MonitorApplication extends Application {
             new QtIPCDatasource(),
             new SocketDatasource('127.0.0.1', 8005),
         ]);
+    }
+
+    protected boot() {
+        super.boot();
+
+        this.instance(IViewService).setup(SingleViewComposer, 'main');
     }
 
     async run(element: HTMLElement) {

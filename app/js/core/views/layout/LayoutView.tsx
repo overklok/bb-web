@@ -8,8 +8,11 @@ import {RefObject} from "react";
 import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
 import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
+import {ViewEvent} from "../../base/Event";
 
 require('../../../../../app/css/layout.less');
+
+export class LayoutMountEvent extends ViewEvent<LayoutMountEvent> {}
 
 export enum DraggableItemTypes {
     Tab = 'tab'
@@ -25,15 +28,14 @@ export enum DraggableItemTypes {
 export interface ILayoutPane {
     name: string;
     title: string;
-    size?: number;
-    size_min: number;
-    size_max: number;
-    size_unit: string;
+    size?: string;
+    size_min: string;
+    size_max: string;
     resizable: boolean;
     panes: ILayoutPane[];
     widgets: WidgetInfo[];
 
-    _widgets?: Widget[];
+    _widgets?: Widget<any>[];
 }
 
 /**
@@ -139,6 +141,8 @@ export default class LayoutView extends View<IViewOptions, ILayoutState> {
         this.mounted = true;
 
         this.root_ref.current.appendChild(this.overlay_node);
+
+        this.emit(new LayoutMountEvent({}));
     }
 
     protected viewWillUnmount() {

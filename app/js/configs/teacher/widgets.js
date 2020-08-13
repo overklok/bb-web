@@ -1,8 +1,8 @@
-import BoardView from "../views/BoardView";
-import BoardPresenter from "../presenters/debug/BoardMonitorPresenter";
-import BlocklyView from "../views/BlocklyView";
-import LayoutView from "../core/views/layout/LayoutView";
-import LayoutPresenter from "../presenters/LayoutPresenter";
+import BoardView from "../../views/board/BoardView";
+import BoardPresenter from "../../presenters/monitor/BoardMonitorPresenter";
+import BlocklyView from "../../views/blockly/BlocklyView";
+import LayoutView from "../../core/views/layout/LayoutView";
+import LayoutPresenter from "../../core/presenters/LayoutPresenter";
 
 export default {
     main: {view_type: LayoutView, presenter_types: [LayoutPresenter]},

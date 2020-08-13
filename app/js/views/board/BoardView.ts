@@ -1,7 +1,7 @@
-import {ImperativeView} from "../core/base/view/ImperativeView";
-import Breadboard from "../utils/breadboard/Breadboard";
-import {ViewEvent} from "../core/base/Event";
-import {IViewOptions, IViewProps} from "../core/base/view/View";
+import {ImperativeView} from "../../core/base/view/ImperativeView";
+import Breadboard from "../../utils/breadboard/Breadboard";
+import {ViewEvent} from "../../core/base/Event";
+import {IViewOptions, IViewProps} from "../../core/base/view/View";
 
 export class ChangeEvent extends ViewEvent<ChangeEvent> {}
 export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
@@ -9,6 +9,7 @@ export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
 export interface BoardViewOptions extends IViewOptions {
     schematic?: boolean;
     verbose?: boolean;
+    readonly?: boolean
 }
 
 export default class BoardView extends ImperativeView<BoardViewOptions> {
@@ -16,24 +17,24 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
 
     static defaultOptions: BoardViewOptions = {
         schematic: true,
+        readonly: true,
         verbose: false
     }
 
     constructor(props: IViewProps<BoardViewOptions>) {
         super(props);
 
-        this.bb = new Breadboard({
-            schematic: this.options.schematic,
-            detailed: this.options.schematic,
-            verbose: this.options.verbose
-        });
+        this.bb = new Breadboard();
 
         this.setup();
     }
 
     inject(container: HTMLDivElement): void {
         this.bb.inject(container, {
-            readOnly: false,
+            readOnly: this.options.readonly,
+            schematic: this.options.schematic,
+            detailed: this.options.schematic,
+            verbose: this.options.verbose,
         });
     }
 

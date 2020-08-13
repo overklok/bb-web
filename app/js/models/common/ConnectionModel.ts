@@ -5,11 +5,7 @@ type Connection = {
 }
 
 export default class ConnectionModel extends AsynchronousModel<Connection> {
-    protected defaultState(): Connection {
-        return {
-            is_active: false
-        }
-    }
+    protected defaultState: Connection = {is_active: false}
 
     @connect()
     private onConnect() {

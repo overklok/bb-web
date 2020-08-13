@@ -1,5 +1,5 @@
 import * as React from "react";
-import {IViewOptions, ResizeEvent, View} from "./View";
+import {IViewOptions, View} from "./View";
 import classNames from "classnames";
 import ViewConnector from "./ViewConnector";
 import {ViewType} from "../../helpers/types";
@@ -9,7 +9,7 @@ import {Widget} from "../../services/interfaces/IViewService";
 interface IProps<O extends IViewOptions> {
     connector: ViewConnector;
 
-    widgets?: {[key: string]: Widget};
+    widgets?: {[key: string]: Widget<any>};
     view_type: ViewType<O, any>;
     view_options?: O;
     label: string;

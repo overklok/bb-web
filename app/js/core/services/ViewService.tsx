@@ -32,13 +32,13 @@ export default class ViewService extends IViewService {
         this.recompose();
     }
 
-    public registerWidgetTypes<O extends IViewOptions>(widget_types: {[key: string]: WidgetType<O>}) {
+    public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
-            const {view_type, presenter_types, label} = widget_type;
+            const {view_type, presenter_types, label, view_options} = widget_type;
 
             const connector = new ViewConnector(this.app, presenter_types);
 
-            this.widgets[alias] = {connector, view_type, label: label || alias} as Widget;
+            this.widgets[alias] = {connector, view_type, label: label || alias, view_options} as Widget<any>;
         }
 
         if (this.widget_type_key) {

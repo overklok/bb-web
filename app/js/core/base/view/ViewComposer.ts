@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export interface IVCProps {
-    children: JSX.Element[]
+    children: JSX.Element[];
 } 
 
 export interface IVCState {

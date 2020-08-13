@@ -14,7 +14,7 @@ export interface IViewProps<O extends IViewOptions> {
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     on_viewinfo_ready?: Function;
-    widgets?: {[key: string]: Widget};
+    widgets?: {[key: string]: Widget<any>};
     options?: O;
 }
 
@@ -22,20 +22,11 @@ export interface IViewState {
 
 }
 
-export class RenderEvent extends AbstractEvent<RenderEvent> {
-}
-
-export class MountEvent extends AbstractEvent<MountEvent> {
-}
-
-export class ResizeEvent extends AbstractEvent<ResizeEvent> {
-}
-
 export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
     public static defaultOptions: IViewOptions;
     protected options: O;
 
-    protected constructor(props: IViewProps<O>) {
+    constructor(props: IViewProps<O>) {
         super(props);
 
         const defaults = Object.getPrototypeOf(this).constructor.defaultOptions;
@@ -52,7 +43,6 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
 
     public componentDidMount() {
         this.viewDidMount();
-        this.emit(new MountEvent({}));
     }
 
     public componentWillUnmount() {
@@ -60,8 +50,6 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
     }
 
     public render(): ReactNode {
-        this.emit(new RenderEvent({}));
-
         return null;
     }
 

@@ -50,7 +50,7 @@ export default class GUIModule extends Module {
 
         this._state = {
             ready: false,
-            switched: true, // debug only
+            switched: true, // monitor only
             listenButtons: false,
 
             areasDisp: {

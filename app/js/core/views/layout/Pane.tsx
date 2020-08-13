@@ -6,7 +6,7 @@ import {RefObject} from "react";
 import classNames from "classnames";
 
 import Handle from "./Handle";
-import {View} from "../../base/view/View";
+import {IViewOptions, View} from "../../base/view/View";
 import Nest from "../../base/view/Nest";
 import Frame from "./Frame";
 import TabViewComposer from "../../base/view/viewcomposers/tab/TabViewComposer";
@@ -32,19 +32,17 @@ interface IProps {
     // внутренние панели
     panes?: ILayoutPane[];
     // варианты Видов
-    _widgets?: Widget[];
+    _widgets?: Widget<any>[];
 
     // ориентация панели
     orientation: PaneOrientation;
 
-    // единица измерения размера панели
-    size_unit: string;
     // начальный размер: PX / %
-    size: string|number;
+    size: string;
     // минимальный размер: PX / %
-    size_min: number;
+    size_min: string;
     // максимальный размер: PX / %
-    size_max: number;
+    size_max: string;
 
     // возможно ли изменять размер панели
     resizable: boolean;
@@ -78,6 +76,8 @@ interface IState {
  * Для возможности изменения размеров панелей используются вспомогательные компоненты - "Рукоятки".
  * Они располагаются между панелей, для которых возможно изменение размера.
  *
+ * TODO: Calculate size_unit here, pass to class attributes. Same for size_min and size_max
+ *
  * @property {RefObject<Pane>[]} список ref-объектов, содержащих вложенный компонент Pane
  * @property {HTMLDivElement} div-элемент компонента Pane в документе
  */
@@ -91,11 +91,10 @@ export default class Pane extends React.Component<IProps, IState> {
         is_root: false,
         orientation: PaneOrientation.Horizontal,
 
-        size: 0,
-        size_unit: '%',
+        size: '0px',
 
-        size_min: 0,
-        size_max: 0,
+        size_min: '0px',
+        size_max: '0px',
 
         resizable: true,
         covered: false,
@@ -104,6 +103,14 @@ export default class Pane extends React.Component<IProps, IState> {
     private panes: RefObject<Pane>[] = [];
     private nests: RefObject<Nest>[] = [];
     private div_element: HTMLDivElement;
+
+    public size: number;
+    public size_min: number;
+    public size_max: number;
+
+    public size_unit: string;
+    public size_min_unit: string;
+    public size_max_unit: string;
 
     /**
      * Создать объект компонента Pane
@@ -124,6 +131,8 @@ export default class Pane extends React.Component<IProps, IState> {
             covered: this.props.covered,
             animated: true,
         };
+
+        this.parseSizes();
     }
 
     /**
@@ -148,6 +157,8 @@ export default class Pane extends React.Component<IProps, IState> {
         if (this.props.panes !== prevProps.panes) {
             this.setInitialCss();
         }
+
+        this.parseSizes();
     }
 
     /**
@@ -188,6 +199,12 @@ export default class Pane extends React.Component<IProps, IState> {
         this.notifyResizePanes();
     }
 
+    parseSizes() {
+        [this.size, this.size_unit]         = parseSize(this.props.size);
+        [this.size_min, this.size_min_unit] = parseSize(this.props.size_min);
+        [this.size_max, this.size_max_unit] = parseSize(this.props.size_max);
+    }
+
     /**
      * Назначить начальные значения CSS-атрибутов для div-компонента.
      *
@@ -205,27 +222,27 @@ export default class Pane extends React.Component<IProps, IState> {
         this.div_element.style.width        = null;
 
         if (this.is_vertical) {
-            this.div_element.style.minHeight    = this.props.size_min ? this.props.size_min + 'px' : null;
+            this.div_element.style.minHeight    = this.size_min ? this.size_min + this.size_min_unit : null;
         } else {
-            this.div_element.style.minWidth     = this.props.size_min ? this.props.size_min + 'px' : null;
+            this.div_element.style.minWidth     = this.size_min ? this.size_min + this.size_min_unit : null;
         }
 
         if (this.is_vertical) {
-            this.div_element.style.maxHeight    = this.props.size_max ? this.props.size_max + 'px' : null;
+            this.div_element.style.maxHeight    = this.size_max ? this.size_max + this.size_max_unit : null;
         } else {
-            this.div_element.style.maxWidth     = this.props.size_max ? this.props.size_max + 'px' : null;
+            this.div_element.style.maxWidth     = this.size_max ? this.size_max + this.size_max_unit: null;
         }
 
-        if (this.props.size == 0) {
+        if (this.size == 0) {
             this.div_element.style.width = null;
             this.div_element.style.flexGrow = null;
             return;
         }
 
         if (this.is_vertical) {
-            this.div_element.style.height   = this.props.size ? this.props.size + this.props.size_unit : null;
+            this.div_element.style.height   = this.size ? this.size + this.size_unit : null;
         } else {
-            this.div_element.style.width    = this.props.size ? this.props.size + this.props.size_unit : null;
+            this.div_element.style.width    = this.size ? this.size + this.size_unit : null;
         }
 
         this.div_element.style.flexGrow = "0";
@@ -411,7 +428,6 @@ export default class Pane extends React.Component<IProps, IState> {
                     size={data.size}
                     size_min={data.size_min}
                     size_max={data.size_max}
-                    size_unit={data.size_unit}
                     resizable={data.resizable}
                     panes={data.panes}
                     orientation={orientation}
@@ -424,12 +440,13 @@ export default class Pane extends React.Component<IProps, IState> {
         );
     }
 
-    renderNest(index: number, widget: Widget, ref: RefObject<Nest>): JSX.Element {
+    renderNest(index: number, widget: Widget<any>, ref: RefObject<Nest>): JSX.Element {
         return (
             <Nest
                 key={index}
                 index={index}
                 view_type={widget.view_type}
+                view_options={widget.view_options}
                 connector={widget.connector}
                 label={widget.label}
                 ref={ref}
@@ -501,27 +518,34 @@ export default class Pane extends React.Component<IProps, IState> {
         // Количество процентов, на которое была смещена рукоятка
         let movement_perc = movement_px * ppp;
 
+        pane_prev.size_min = 12;
+
+        const size_min_absolute_prev = pane_prev.size_min_unit === '%' ? pane_prev.size_min * ppp : pane_prev.size_min,
+              size_min_absolute_next = pane_next.size_min_unit === '%' ? pane_next.size_min * ppp : pane_next.size_min,
+              size_max_absolute_prev = pane_prev.size_max_unit === '%' ? pane_prev.size_max * ppp : pane_prev.size_max,
+              size_max_absolute_next = pane_next.size_max_unit === '%' ? pane_next.size_max * ppp : pane_next.size_max;
+
         // Проверка минимально допустимого размера следующей за рукояткой панели
-        if (size_next_old_px - movement_px <= pane_next.props.size_min) {
-            movement_perc = size_next_old_perc - pane_next.props.size_min * ppp;
+        if (size_next_old_px - movement_px <= size_min_absolute_next) {
+            movement_perc = size_next_old_perc - size_min_absolute_next * ppp;
             overdrag = 1;
         }
 
         // Проверка минимально допустимого размера предыдущей до рукоятки панели
-        if (size_prev_old_px + movement_px <= pane_prev.props.size_min) {
-            movement_perc = -(size_prev_old_perc - pane_prev.props.size_min * ppp);
+        if (size_prev_old_px + movement_px <= size_min_absolute_prev) {
+            movement_perc = -(size_prev_old_perc - size_min_absolute_prev * ppp);
             overdrag = -1;
         }
 
         // Проверка максимально допустимого размера следующей за рукояткой панели
-        if (pane_next.props.size_max && size_next_old_px - movement_px >= pane_next.props.size_max) {
-            movement_perc = (size_next_old_perc - pane_next.props.size_max * ppp);
+        if (pane_next.props.size_max && size_next_old_px - movement_px >= size_max_absolute_next) {
+            movement_perc = (size_next_old_perc - size_max_absolute_next * ppp);
             overdrag = -1;
         }
 
         // Проверка максимально допустимого размера предыдущей до рукоятки панели
-        if (pane_prev.props.size_max && size_prev_old_px + movement_px >= pane_prev.props.size_max) {
-            movement_perc = -(size_prev_old_perc - pane_prev.props.size_max * ppp);
+        if (pane_prev.props.size_max && size_prev_old_px + movement_px >= size_max_absolute_prev) {
+            movement_perc = -(size_prev_old_perc - size_max_absolute_prev * ppp);
             overdrag = 1;
         }
 
@@ -592,6 +616,15 @@ export default class Pane extends React.Component<IProps, IState> {
     static inverseOrientation(orientation: PaneOrientation) {
         return orientation === PaneOrientation.Horizontal ? PaneOrientation.Vertical : PaneOrientation.Horizontal;
     }
+}
+
+function parseSize(value: string): [number, string] {
+    if (!value) return [0, 'px'];
+
+    const unit = value.slice(-1) === '%' ? '%' : 'px';
+    const size = Number(value.slice(0, -unit.length));
+
+    return [size, unit];
 }
 
 function normalize(min: number, max: number) {

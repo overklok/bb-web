@@ -1,27 +1,28 @@
-import AsynchronousModel, {connect, disconnect, listen, timeout} from "../core/base/model/AsynchronousModel";
-import {ModelState} from "../core/base/model/Model";
-import AsynchronousDatasource from "../core/base/model/datasources/AsynchronousDatasource";
-import IEventService from "../core/services/interfaces/IEventService";
-import {AbstractEvent, ModelEvent} from "../core/base/Event";
+import AsynchronousModel, {connect, disconnect, listen, timeout} from "../../core/base/model/AsynchronousModel";
+import {ModelState} from "../../core/base/model/Model";
+import AsynchronousDatasource from "../../core/base/model/datasources/AsynchronousDatasource";
+import IEventService from "../../core/services/interfaces/IEventService";
+import {AbstractEvent, ModelEvent} from "../../core/base/Event";
 
 // Types
 enum PinDirection {Input = 'input', Output = 'output'}
 type ArduinoPin = [PinDirection, number];
 
-type Plate = {
+export type Plate = {
     id: number;
     type: string;
     orientation: string;
-    x: number,
-    y: number,
+    x: number;
+    y: number;
+    extra: string|number;
 }
 
-type PlateDiff = {
+export type PlateDiff = {
     id: number;
     highlighted: boolean;
 }
 
-type Thread = {
+export type Thread = {
     from: number;
     to: number;
 }
@@ -53,12 +54,10 @@ export class ElectronicEvent extends ModelEvent<ElectronicEvent> {
 }
 
 export default class BreadboardModel extends AsynchronousModel<BreadboardModelState> {
-    protected defaultState(): BreadboardModelState {
-        return {
-            plates: [],
-            threads: [],
-            arduino_pins: []
-        };
+    protected defaultState: BreadboardModelState = {
+        plates: [],
+        threads: [],
+        arduino_pins: []
     }
 
     sendPlates(plates: Plate[]): void {

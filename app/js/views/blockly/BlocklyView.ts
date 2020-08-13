@@ -1,9 +1,9 @@
-import {ImperativeView} from "../core/base/view/ImperativeView";
-import BlocklyWrapper from '../wrappers/BlocklyWrapper'
+import {ImperativeView} from "../../core/base/view/ImperativeView";
+import BlocklyWrapper from '../../wrappers/BlocklyWrapper'
 
-import JSONBlocks       from '../utils/blockly/extras/blocks';
-import JSONGenerators   from '../utils/blockly/extras/generators';
-import {IViewOptions, IViewProps} from "../core/base/view/View";
+import JSONBlocks       from '../../utils/blockly/extras/blocks';
+import JSONGenerators   from '../../utils/blockly/extras/generators';
+import {IViewOptions, IViewProps} from "../../core/base/view/View";
 
 export default class BlocklyView extends ImperativeView<IViewOptions> {
     private blockly: BlocklyWrapper;

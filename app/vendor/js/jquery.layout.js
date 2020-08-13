@@ -577,7 +577,7 @@ $.layout = {
 	 * @param {(Object|string)}			info			String message OR Hash/Array
 	 * @param {(Boolean|string|Object)=}	[popup=false]	True means alert-box - can be skipped
 	 * @param {(Object|string)=}			[debugTitle=""]	Title for Hash data - can be skipped
-	 * @param {Object=}					[debugOpts]		Extra options for debug output
+	 * @param {Object=}					[debugOpts]		Extra options for monitor output
 	 */
 ,	msg: function (info, popup, debugTitle, debugOpts) {
 		if ($.isPlainObject(info) && window.debugData) {
@@ -684,7 +684,7 @@ $.layout.defaults = {
 ,	onunload_end:				null		// CALLBACK when Layout is destroyed OR onWindowUnload
 ,	initPanes:					true		// false = DO NOT initialize the panes onLoad - will init later
 ,	showErrorMessages:			true		// enables fatal error messages to warn developers of common errors
-,	showDebugMessages:			false		// display console-and-alert debug msgs - IF this Layout version _has_ debugging code!
+,	showDebugMessages:			false		// display console-and-alert monitor msgs - IF this Layout version _has_ debugging code!
 //	Changing this zIndex value will cause other zIndex values to automatically change
 ,	zIndex:						null		// the PANE zIndex - resizers and masks will be +1
 //	DO NOT CHANGE the zIndex values below unless you clearly understand their relationships
@@ -1100,7 +1100,7 @@ $.fn.layout = function (opts) {
 	/**
 	 * Alert or console.log a message - IF option is enabled.
 	 *
-	 * @param {(string|!Object)}	msg				Message (or debug-data) to display
+	 * @param {(string|!Object)}	msg				Message (or monitor-data) to display
 	 * @param {boolean=}			[popup=false]	True by default, means 'alert', false means use console.log
 	 * @param {boolean=}			[debug=false]	True means is a widget debugging message
 	 */

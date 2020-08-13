@@ -1,7 +1,6 @@
-import Presenter, {on} from "../core/base/Presenter";
-import LayoutView from "../core/views/layout/LayoutView";
-import {LayoutModel} from "../core/models/LayoutModel";
-import {MountEvent} from "../core/base/view/View";
+import Presenter, {on} from "../base/Presenter";
+import LayoutView, {LayoutMountEvent} from "../views/layout/LayoutView";
+import LayoutModel from "../models/LayoutModel";
 
 export default class LayoutPresenter extends Presenter<LayoutView> {
     private model: LayoutModel;
@@ -10,7 +9,7 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
         this.model = this.getModel(LayoutModel);
     }
 
-    @on(MountEvent)
+    @on(LayoutMountEvent)
     mounted() {
         const modes = this.model.getFormatted();
 

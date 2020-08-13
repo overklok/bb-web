@@ -16,7 +16,5 @@ export default class CourseModel extends RestModel<Course> {
         await this.read({id: 12});
     }
 
-    protected defaultState(): Course {
-        return undefined;
-    }
+    protected defaultState: Course = undefined;
 }

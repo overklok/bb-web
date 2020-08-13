@@ -1,6 +1,6 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import BoardView, {ChangeEvent} from "../../views/BoardView";
-import BreadboardModel, {ElectronicEvent} from "../../models/BreadboardModel";
+import BoardView, {ChangeEvent} from "../../views/board/BoardView";
+import BreadboardModel, {ElectronicEvent} from "../../models/common/BreadboardModel";
 
 export default class BoardMonitorPresenter extends Presenter<BoardView> {
     private model: BreadboardModel;

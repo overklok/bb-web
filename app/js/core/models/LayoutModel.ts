@@ -16,10 +16,10 @@ type Widget = {
 type Pane = {
     name: string;
     title?: string;
-    size_min?: string;
-    size_max?: string;
+    size_min?: string|number;
+    size_max?: string|number;
     resizable?: Boolean;
-    fixed?: number;
+    fixed?: string|number;
     size?: string;
     widgets?: Widget[];
     panes?: Pane[];
@@ -39,10 +39,8 @@ interface LayoutModelState {
  *
  * @property modes {} режимы разметки
  */
-export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
-    protected defaultState(): LayoutModelState {
-        return undefined;
-    }
+export default class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
+    protected defaultState: LayoutModelState = undefined;
 
     init(state: LayoutModelState) {
         this.state = JSON.parse(JSON.stringify(Object.assign({}, state)));
@@ -90,7 +88,7 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
         }
 
         const title = this.formatPaneTitle(pane);
-        const {size, size_unit} = this.formatPaneSize(pane);
+        const size = this.formatPaneSize(pane);
         const {size_min, size_max, resizable} = this.formatPaneLimits(pane);
         const widgets = this.formatPaneViews(pane);
 
@@ -98,7 +96,6 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
             name: pane.name,
             title,
             size,
-            size_unit,
             size_min,
             size_max,
             resizable,
@@ -125,14 +122,14 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
      *
      * @param pane
      */
-    formatPaneSize(pane: Pane): { size: number, size_unit: string } {
+    formatPaneSize(pane: Pane): string {
         let size, size_unit;
 
         /**
          * Панели с null-размером являются свободными (не имеющими начального размера)
          * Такие панели обрабатывать не нужно.
          */
-        if (pane.size == null) return {size: 0, size_unit: null};
+        if (pane.size == null) return null;
 
         /**
          * Если в поле size задана строка, то это, с большой вероятностью, число с единицей измерения.
@@ -154,10 +151,10 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
 
         if (Number.isNaN(size)) size = null;
 
-        return {size, size_unit};
+        return size + size_unit;
     }
 
-    formatPaneLimits(pane: Pane): {size_min: number, size_max: number, resizable: boolean} {
+    formatPaneLimits(pane: Pane): {size_min: string, size_max: string, resizable: boolean} {
         let resizable, size_min, size_max;
 
         size_min = pane.fixed ? pane.fixed : pane.size_min;
@@ -196,19 +193,19 @@ export class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
         return pane.widgets;
     }
 
-    formatSizeLimitValue(value: any): number {
+    formatSizeLimitValue(value: string|number): string {
         if (value == null) return null;
 
         if (typeof value === 'string') {
-            if (value.slice(-2)) {
-                value = value.slice(0, -2);
-            }
-
-            value = Number(value);
+            // if (value.slice(-2)) {
+            //     value = value.slice(0, -2);
+            // }
+            //
+            // value = Number(value);
         }
 
-        if (!Number.isInteger(value)) {
-            throw new Error(`Invalid size limit format: ${value}`);
+        if (typeof value === 'number') {
+            value = `${value}px`;
         }
 
         return value;

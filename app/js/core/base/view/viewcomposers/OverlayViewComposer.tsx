@@ -1,5 +1,6 @@
 import * as React from "react";
 import ViewComposer, {IVCProps, IVCState} from "../ViewComposer";
+import classNames from "classnames";
 
 export default class OverlayViewComposer extends ViewComposer<IVCProps, IVCState> {
     constructor(props: IVCProps) {
@@ -7,10 +8,14 @@ export default class OverlayViewComposer extends ViewComposer<IVCProps, IVCState
     }
 
     render() {
-        const {children} = this.props;
+        return this.props.children.map((child, i) => {
+            const klasses = classNames({
+                'layer': true,
+            });
 
-        return (
-            {children}
-        )
+            return <div key={i} className={klasses}>
+                {child}
+            </div>
+        });
     }
 };

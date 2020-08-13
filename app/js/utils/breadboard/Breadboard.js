@@ -180,11 +180,7 @@ export default class Breadboard {
         this._spare = false;
         this._filters_defined = false;
 
-        options = options || {};
-
-        this._schematic = options.schematic || false;
-        this._detailed = options.detailed || false;
-        this._verbose = options.verbose || false;
+        this._setOptions(options)
     }
 
     getContainer() {
@@ -209,6 +205,8 @@ export default class Breadboard {
 
     /**
      * Инициализировать графическую составляющую платы
+     *
+     * TODO: Remove Options (used in constructor)
      *
      * @param {HTMLElement} dom_node    DOM-узел, в который будет встроена плата
      * @param {Object}      options     дополнительные опции инициализации
@@ -256,6 +254,8 @@ export default class Breadboard {
         this._defineGradients();
         /// инициализировать слои
         this._composeLayers();
+
+        this.setReadOnly(this._options.readOnly);
     };
 
 
@@ -267,11 +267,11 @@ export default class Breadboard {
     setReadOnly(readOnly) {
         this._options.readOnly = readOnly;
         this._setLayersReadOnly(this._options.readOnly);
-        // this.redraw(this._schematic);
+        // this.redraw(this._options.schematic);
 
         // this._options.showControlsDefault = !readOnly;
 
-        // this.redraw(this._schematic);
+        // this.redraw(this._options.schematic);
         // this._attachControlsEvents();
     }
 
@@ -437,20 +437,20 @@ export default class Breadboard {
 
     switchSchematic(on, detailed) {
         // TODO: Merge detailed and schematic modes
-        if (this._schematic === on && this._detailed === detailed) return;
+        if (this._options.schematic === on && this._options.detailed === detailed) return;
 
-        this._schematic = on;
-        this._detailed = detailed;
+        this._options.schematic = on;
+        this._options.detailed = detailed;
 
-        this.redraw(this._schematic, this._detailed, this._verbose);
+        this.redraw(this._options.schematic, this._options.detailed, this._options.verbose);
     }
 
     switchVerbose(on) {
-        if (this._verbose === on) return;
+        if (this._options.verbose === on) return;
 
-        this._verbose = on;
+        this._options.verbose = on;
 
-        this.redraw(this._schematic, this._detailed, this._verbose);
+        this.redraw(this._options.schematic, this._options.detailed, this._options.verbose);
     }
 
     switchSpareFilters(on) {
@@ -543,10 +543,10 @@ export default class Breadboard {
         this._div_wrap.appendChild(selector);
 
         /// инициализация слоёв
-        this._layers.background = new BackgroundLayer(background, this.__grid, this._schematic, this._detailed);
+        this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.label      = new LabelLayer(label_panes, this.__grid);
-        this._layers.current    = new CurrentLayer(current, this.__grid, this._schematic, this._detailed);
-        this._layers.plate      = new PlateLayer(plate, this.__grid, this._schematic, this._verbose);
+        this._layers.current    = new CurrentLayer(current, this.__grid, this._options.schematic, this._options.detailed);
+        this._layers.plate      = new PlateLayer(plate, this.__grid, this._options.schematic, this._options.verbose);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
@@ -604,10 +604,14 @@ export default class Breadboard {
         options = options || {};
 
         this._options = {
-            layout: (options.layout === undefined ? Breadboard.Layouts.Basic : options.layout),
-            readOnly: (options.readOnly === undefined ? true : options.readOnly),
-            showControlsDefault: (options.showControlsDefault === undefined ? true : options.showControlsDefault),
-            showSourceCurrents: (options.showSourceCurrents === undefined ? true : options.showSourceCurrents)
+            verbose:    options.verbose || false,
+            detailed:   options.detailed || false,
+            schematic:  options.schematic || false,
+
+            layout:                 (options.layout === undefined ? Breadboard.Layouts.Basic : options.layout),
+            readOnly:               (options.readOnly === undefined ? true : options.readOnly),
+            showControlsDefault:    (options.showControlsDefault === undefined ? true : options.showControlsDefault),
+            showSourceCurrents:     (options.showSourceCurrents === undefined ? true : options.showSourceCurrents)
         }
     }
 

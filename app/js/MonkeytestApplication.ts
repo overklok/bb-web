@@ -1,4 +1,5 @@
 import Application from "./core/Application";
+
 import IViewService from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
 
@@ -7,25 +8,28 @@ import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 
-import HttpDatasource from "./core/models/datasources/HttpDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
-import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
+import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
 import LayoutModel from "./core/models/LayoutModel";
 import BreadboardModel from "./models/common/BreadboardModel";
+import ConnectionModel from "./models/common/ConnectionModel";
 
-import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";
-
-import UserModel from "./models/UserModel";
-
-import layouts_config from "./configs/teacher/layouts";
-import widgets_config from "./configs/teacher/widgets";
+import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 
 import "../css/global.less";
 
-class MainApplication extends Application {
+import layouts_config from "./configs/monkey/layouts";
+import widgets_config from "./configs/monkey/widgets";
+import ModalModel from "./core/models/ModalModel";
+import Model from "./core/base/model/Model";
+
+class MonkeytestApplication extends Application {
+    private ads: AdaptiveAsyncDatasource;
+    private dds: DummyDatasource;
+    private mdl_modal: Model<undefined, DummyDatasource>;
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
@@ -35,34 +39,28 @@ class MainApplication extends Application {
     }
 
     protected setup() {
+        this.ads = new AdaptiveDatasource([
+            new QtIPCDatasource(),
+            new SocketDatasource('127.0.0.1', 8005),
+        ]);
 
+        this.dds = new DummyDatasource();
     }
 
     async run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
-        const dds = new DummyDatasource();
+        const svc_view = this.instance(IViewService),
+              svc_model = this.instance(IModelService);
 
-        const ads = new AdaptiveDatasource([
-            new QtIPCDatasource(),
-            new SocketDatasource('127.0.0.1', 8085),
-        ]);
+        svc_view.registerWidgetTypes(widgets_config);
 
-        const hds = new HttpDatasource('127.0.0.1', 8000);
+        this.mdl_modal = svc_model.register(ModalModel, new DummyDatasource());
 
-        this.instance(IModelService).launch(ads);
-
-        this.instance(IModelService).register(UserModel, hds);
-        this.instance(IModelService).register(LayoutModel, dds, layouts_config);
-        this.instance(IModelService).register(BreadboardModel, ads);
-
-        hds.registerMiddleware([
-            new JWTAuthMiddleware(
-                this.instance(IModelService).retrieve(UserModel)
-            )
-        ]);
-
-        this.instance(IViewService).registerWidgetTypes(widgets_config);
+        svc_model.launch(this.ads);
+        svc_model.register(LayoutModel, this.dds, layouts_config);
+        svc_model.register(ConnectionModel, this.ads);
+        svc_model.register(BreadboardModel, this.ads);
 
         this.instance(IViewService).compose(element);
     }
@@ -74,4 +72,4 @@ declare global {
   }
 }
 
-window.Application = MainApplication;
+window.Application = MonkeytestApplication;

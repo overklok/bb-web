@@ -116,8 +116,9 @@ function getCopypaths(env) {
 function getEntries(env) {
     // Bundle entries
     let entries = {};
-    if (env.main === true)      entries['main'] = './app/js/MainApplication.ts';
-    if (env.monitor === true)   entries['monitor'] = './app/js/MonitorApplication.ts';
+    if (env.main === true)      entries['main']     = './app/js/MainApplication.ts';
+    if (env.monitor === true)   entries['monitor']  = './app/js/MonitorApplication.ts';
+    if (env.monkey === true)    entries['monkey']   = './app/js/MonkeytestApplication.ts';
 
     return entries;
 }
@@ -136,6 +137,7 @@ function getVersionTarget(env, mode=null) {
 
     if (matches > 1) return `mixed`;
 
-    if (env.main === true)  return `main`;
-    if (env.monitor === true) return `monitor`;
+    if (env.main === true)      return `main`;
+    if (env.monitor === true)   return `monitor`;
+    if (env.monkey === true)    return `monkey`;
 }

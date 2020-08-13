@@ -33,13 +33,15 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
     constructor(data_source: DS, svc_event: IEventService) {
         this.data_source = data_source;
         this.svc_event = svc_event;
-        this.state = this.defaultState();
     }
 
-    protected abstract defaultState(): MS;
+    protected abstract defaultState: MS;
 
     public init(state: MS): void {
-        if (!state) return;
+        if (!state) {
+            this.state = this.defaultState;
+            return;
+        }
 
         this.state = state;
     }
