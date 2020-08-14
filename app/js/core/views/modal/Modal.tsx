@@ -3,9 +3,15 @@ import classNames from "classnames";
 
 import '../../../../css/modal.less'
 
+export type ModalSize = 'sm'|'md'|'lg';
+
 export interface IModalProps {
     onClose: Function;
     children?: string | JSX.Element | JSX.Element[];
+    fixed?: boolean;
+    size?: ModalSize;
+    width?: number|string;
+    height?: number|string;
 }
 
 const Modal = (props: IModalProps) => {
@@ -19,12 +25,16 @@ const Modal = (props: IModalProps) => {
     });
 
     let klasses_modal = classNames({
-        'mdl': true
+        'mdl': true,
+        'mdl_sz_fixed': props.size || props.fixed,
+        'mdl_sz_sm': props.size === 'sm',
+        'mdl_sz_md': props.size === 'md',
+        'mdl_sz_lg': props.size === 'lg',
     })
 
     return (
         <div className={klasses_overlay} onClick={onClose}>
-            <div className={klasses_modal}>
+            <div className={klasses_modal} style={{width: props.width, height: props.height}}>
                 {props.children}
             </div>
         </div>

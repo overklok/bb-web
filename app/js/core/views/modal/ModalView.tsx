@@ -1,5 +1,5 @@
 import * as React from "react";
-import Modal from "./Modal";
+import Modal, {ModalSize} from "./Modal";
 
 import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
 import DialogModal from "./DialogModal";
@@ -11,6 +11,11 @@ export interface IModal {
     content?: string;
     widget_alias?: string;
     is_dialog?: boolean;
+
+    fixed?: boolean;
+    size?: ModalSize;
+    width?: number|string;
+    height?: number|string;
 }
 
 interface ModalViewState extends IViewState {
@@ -38,7 +43,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
 
     render(): React.ReactNode {
         return this.state.modals.map((modal_data, i) => {
-            const {is_dialog, heading, hint, widget_alias} = modal_data;
+            const {is_dialog, heading, hint, widget_alias, fixed, size, width, height} = modal_data;
 
             let content: string | JSX.Element = modal_data.content;
 
@@ -48,13 +53,18 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
 
             if (is_dialog) {
                 return (
-                    <DialogModal key={i} onClose={() => this.closeModal(i)} heading={heading} hint={hint}>
+                    <DialogModal key={i} onClose={() => this.closeModal(i)}
+                                 heading={heading} hint={hint}
+                                 fixed={fixed} size={size} width={width} height={height}
+                    >
                         {content}
                     </DialogModal>
                 )
             } else {
                 return (
-                    <Modal key={i} onClose={() => this.closeModal(i)}>
+                    <Modal key={i} onClose={() => this.closeModal(i)}
+                           fixed={fixed} size={size} width={width} height={height}
+                    >
                         {content}
                     </Modal>
                 )

@@ -1,3 +1,9 @@
+@xs-min: 0;       @xs-max: 575.98px;
+@sm-min: 576px;   @sm-max: 767.98px;
+@md-min: 768px;   @md-max: 991.98px;
+@lg-min: 992px;   @lg-max: 1199.98px;
+@xl-min: 1200px;  @xl-max: infinity;
+
 .mdl-overlay {
   position: absolute;
 
@@ -16,12 +22,39 @@
   // horizontal centering
   left: 50%;
   transform: translate(-50%, -50%);
+
+  &_sz_sm {
+    @media(min-width: @xs-min) {width: 280px;}
+    @media(min-width: @sm-min) {width: 320px;}
+  }
+
+  &_sz_md {
+    @media(min-width: @xs-min) {width: 320px;}
+    @media(min-width: @sm-min) {width: 410px;}
+    @media(min-width: @md-min) {width: 540px;}
+    @media(min-width: @lg-min) {width: 620px;}
+  }
+
+  &_sz_lg {
+    @media(min-width: @xs-min) {width: 360px;}
+    @media(min-width: @sm-min) {width: 510px;}
+    @media(min-width: @md-min) {width: 620px;}
+    @media(min-width: @lg-min) {width: 780px;}
+    @media(min-width: @xl-min) {width: 920px;}
+  }
 }
 
 .mdl-dlg {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
   background-color: white;
   border-radius: 5px;
-  overflow: hidden;
 }
 
 .mdl-dlg__header {
@@ -37,6 +70,8 @@
 }
 
 .mdl-dlg__body {
+  height: 100%;
+
   padding: 5px 5px;
 
   font-size: 1.25em;

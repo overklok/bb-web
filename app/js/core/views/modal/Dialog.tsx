@@ -17,7 +17,7 @@ const Dialog = (props: IDialogProps) => {
 
     // Список классов, которые должны использоваться в зависимости от свойств
     const klasses_dialog = classNames({
-        'mdl-dlg': true
+        'mdl-dlg': true,
     })
 
     return (

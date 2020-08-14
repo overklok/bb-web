@@ -8,6 +8,11 @@ interface IModalData {
     content?: string;
     widget_alias?: string;
     is_dialog?: boolean;
+
+    fixed?: boolean;
+    size?: 'sm'|'md'|'lg';
+    width?: number|string;
+    height?: number|string;
 }
 
 export class ShowModalEvent extends ModelEvent<ShowModalEvent> {
