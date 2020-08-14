@@ -11,6 +11,7 @@ export default class OverlayViewComposer extends ViewComposer<IVCProps, IVCState
         return this.props.children.map((child, i) => {
             const klasses = classNames({
                 'layer': true,
+                'layer_main': i === 0,
             });
 
             return <div key={i} className={klasses}>
