@@ -57,6 +57,10 @@ interface ILayoutState extends IViewState {
     mode_name: string
 }
 
+interface ILayoutOptions extends IViewOptions {
+    show_headers: boolean;
+}
+
 /**
  * React-компонент "Разметка"
  *
@@ -64,7 +68,7 @@ interface ILayoutState extends IViewState {
  * компонуя панели в соответствии с выбранным режимом разметки.
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
-export default class LayoutView extends View<IViewOptions, ILayoutState> {
+export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
     private mounted: boolean;
     private pane_ref: RefObject<Pane> = React.createRef();
     private modes: {[key: string]: ILayoutMode};
@@ -72,13 +76,17 @@ export default class LayoutView extends View<IViewOptions, ILayoutState> {
     private root_ref: RefObject<HTMLDivElement> = React.createRef();
     private overlay_node: HTMLDivElement;
 
-    constructor(props: IViewProps<IViewOptions>) {
+    static defaultOptions: ILayoutOptions = {
+        show_headers: true
+    }
+
+    constructor(props: IViewProps<ILayoutOptions>) {
         super(props);
 
         this.modes = {
             default: {
                 policy: PaneOrientation.Horizontal,
-                panes: [] as ILayoutPane[]
+                panes: [] as ILayoutPane[],
             }
         };
 
@@ -121,6 +129,8 @@ export default class LayoutView extends View<IViewOptions, ILayoutState> {
 
         const panes = this.modes[this.state.mode_name].panes;
 
+        console.log(this.options);
+
         return (
             <div ref={this.root_ref} className='layout'>
                 <DndProvider backend={HTML5Backend}>
@@ -131,6 +141,7 @@ export default class LayoutView extends View<IViewOptions, ILayoutState> {
                           orientation={orientation}
                           ref={this.pane_ref}
                           overlay_node={this.overlay_node}
+                          show_headers={this.options.show_headers}
                     />
                 </DndProvider>
             </div>

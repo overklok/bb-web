@@ -1,8 +1,10 @@
 import BoardView from "../../views/board/BoardView";
-import BlocklyView from "../../views/blockly/BlocklyView";
+import TestkitView from "../../views/monkey/TestkitView";
+import MonkeyView from "../../views/monkey/MonkeyView";
 
 export default {
     board_disp: {view_type: BoardView, presenter_types: [], view_options: {schematic: false, readonly: false}},
     board_ref: {view_type: BoardView, presenter_types: [], view_options: {schematic: false}},
-    blockly: {view_type: BlocklyView, presenter_types: []}
+    controls: {view_type: MonkeyView, presenter_types: []},
+    testkit: {view_type: TestkitView, presenter_types: []},
 }

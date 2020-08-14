@@ -9,11 +9,17 @@ function coverOptions(options: {[key: string]: any}, defaults: {[key: string]: a
     if (typeof options === "undefined") return defaults;
 
     /// Если options - не объект, то возвратить значение
-    if (typeof options !== 'object') return options;
+    if (typeof options !== 'object' || Array.isArray(options)) return options;
 
     /// Для каждой заданной опции выполнить рекурсивно поиск опции
     for (const option_key of Object.keys(defaults)) {
         result[option_key] = coverOptions(options[option_key], defaults[option_key]);
+    }
+
+    for (const option_key of Object.keys(options)) {
+        if (option_key in Object.keys(defaults)) continue;
+        if (typeof options[option_key] === "undefined") continue;
+        result[option_key] = coverOptions(options[option_key], {});
     }
 
     return result;

@@ -35,6 +35,12 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
         this.props.connector.attach(this);
     }
 
+    public setOptions<K extends keyof O>(
+        options: ((prevState: Readonly<O>) => (Pick<O, K> | O | null)) | (Pick<O, K> | O | null)
+    ) {
+        this.options = coverOptions(options, this.props.options) as O;
+    }
+
     public attachConnector(connector: ViewConnector) {
         if (connector !== this.props.connector) {
             connector.attach(this);

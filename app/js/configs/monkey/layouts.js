@@ -1,4 +1,7 @@
 export default {
+    options: {
+        show_headers: false,
+    },
     modes: {
         default: {
             policy: 'vertical',
@@ -14,7 +17,7 @@ export default {
                 {
                     name: 'settings', fixed: '20%',
                     panes: [
-                        {name: 'controls', fixed: '10%'},
+                        {name: 'controls', fixed: '10%', widgets: [{alias: 'controls', label: 'Controls'}]},
                         {name: 'list'},
                     ]
                 },

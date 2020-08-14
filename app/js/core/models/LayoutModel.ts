@@ -30,8 +30,13 @@ type LayoutMode = {
     panes: Pane[]
 }
 
+type LayoutOptions = {
+    show_headers?: boolean;
+}
+
 interface LayoutModelState {
     modes: {[key: string]: LayoutMode};
+    options?: LayoutOptions
 }
 
 /**
@@ -40,10 +45,20 @@ interface LayoutModelState {
  * @property modes {} режимы разметки
  */
 export default class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
-    protected defaultState: LayoutModelState = undefined;
+    protected defaultState: LayoutModelState = {
+        options: {show_headers: true},
+        modes: {}
+    };
 
     init(state: LayoutModelState) {
-        this.state = JSON.parse(JSON.stringify(Object.assign({}, state)));
+        this.setState({
+            options: state.options,
+            modes: state.modes
+        });
+    }
+
+    getOptions(): LayoutOptions {
+        return this.state.options;
     }
 
     /**
@@ -51,7 +66,7 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
      *
      * В даном случае выполняется проверка правильности составленного объекта
      */
-    getFormatted(): {[key: string]: ILayoutMode} {
+    getModes(): {[key: string]: ILayoutMode} {
         let modes_formatted: {[key: string]: ILayoutMode} = {};
 
         for (const [k, mode] of Object.entries(this.state.modes)) {

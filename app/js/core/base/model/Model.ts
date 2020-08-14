@@ -49,7 +49,7 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
     public setState<K extends keyof MS>(
         state: ((prevState: Readonly<MS>) => (Pick<MS, K> | MS | null)) | (Pick<MS, K> | MS | null)
     ): void {
-        this.state = coverOptions(state, this.state) as MS;
+        this.state = coverOptions(state, this.defaultState) as MS;
     }
 
     public getState() {

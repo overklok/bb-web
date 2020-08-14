@@ -7,13 +7,16 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
 
     protected ready() {
         this.model = this.getModel(LayoutModel);
+        const options = this.model.getOptions();
+
+        this.view.setOptions({
+            show_headers: options.show_headers
+        });
     }
 
     @on(LayoutMountEvent)
     mounted() {
-        const modes = this.model.getFormatted();
-
-        console.log(modes);
+        const modes = this.model.getModes();
 
         this.view.setModes(modes);
     }

@@ -7,6 +7,7 @@ import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
 interface IProps extends IVCProps {
     overlay_node?: HTMLElement
+    show_headers?: boolean
 }
 
 interface IState extends IVCState {
@@ -14,6 +15,10 @@ interface IState extends IVCState {
 }
 
 export default class TabViewComposer extends ViewComposer<IProps, IState> {
+    static defaultProps = {
+        show_headers: true
+    }
+
     private view_connectors: Array<[ViewConnector, React.RefObject<TabMenu>]> = [];
 
     constructor(props: IProps) {
@@ -60,26 +65,33 @@ export default class TabViewComposer extends ViewComposer<IProps, IState> {
         const {
             props: {
                 children,
-                overlay_node
+                overlay_node,
+                show_headers
             },
         } = this;
+
+        console.log(show_headers);
 
         this.resetViewConnectors();
 
         return (
             <div className='tab-display'>
-                <div className="tab-list">
-                    {children.map((child, index) => {
-                        const { label, connector } = child.props;
-                        const ref: React.RefObject<TabMenu> = React.createRef();
+                {!show_headers
+                    ? null
+                    :
+                    <div className="tab-list">
+                        {children.map((child, index) => {
+                            const {label, connector} = child.props;
+                            const ref: React.RefObject<TabMenu> = React.createRef();
 
-                        this.registerViewConnector(connector, ref);
+                            this.registerViewConnector(connector, ref);
 
-                        return (
-                            <SingleTab label={label} key={index} ref={ref} overlay_node={overlay_node} />
-                        )
-                    })}
-                </div>
+                            return (
+                                <SingleTab label={label} key={index} ref={ref} overlay_node={overlay_node}/>
+                            )
+                        })}
+                    </div>
+                }
                 <div className="tab-content">
                     {this.props.children}
                 </div>
@@ -92,7 +104,8 @@ export default class TabViewComposer extends ViewComposer<IProps, IState> {
             onClickTabItem,
             props: {
                 children,
-                overlay_node
+                overlay_node,
+                show_headers
             },
             state: {
                 active_tab
@@ -103,27 +116,31 @@ export default class TabViewComposer extends ViewComposer<IProps, IState> {
 
         return (
             <div className='tab-display'>
-                <div className="tab-list">
-                    {children.map((child, index) => {
-                        const { label, connector } = child.props;
-                        const ref: React.RefObject<TabMenu> = React.createRef();
+                {!show_headers
+                    ? null
+                    :
+                    <div className="tab-list">
+                        {children.map((child, index) => {
+                            const {label, connector} = child.props;
+                            const ref: React.RefObject<TabMenu> = React.createRef();
 
-                        this.registerViewConnector(connector, ref);
+                            this.registerViewConnector(connector, ref);
 
-                        return (
-                            <Tab
-                                ref={ref}
-                                active_tab={active_tab}
-                                key={index}
-                                index={index}
-                                label={label}
-                                on_click={onClickTabItem}
-                                is_single={false}
-                                overlay_node={overlay_node}
-                            />
-                        );
-                    })}
-                </div>
+                            return (
+                                <Tab
+                                    ref={ref}
+                                    active_tab={active_tab}
+                                    key={index}
+                                    index={index}
+                                    label={label}
+                                    on_click={onClickTabItem}
+                                    is_single={false}
+                                    overlay_node={overlay_node}
+                                />
+                            );
+                        })}
+                    </div>
+                }
                 <div className="tab-content">
                     {children.map(child => {
                         if (child.props.index !== active_tab) return undefined;

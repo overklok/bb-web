@@ -50,6 +50,8 @@ interface IProps {
     // прикрыта ли панель (изначально)
     covered: boolean;
 
+    show_headers?: boolean;
+
     overlay_node?: HTMLElement;
 }
 
@@ -98,6 +100,8 @@ export default class Pane extends React.Component<IProps, IState> {
 
         resizable: true,
         covered: false,
+
+        show_headers: true,
     };
 
     private panes: RefObject<Pane>[] = [];
@@ -381,10 +385,10 @@ export default class Pane extends React.Component<IProps, IState> {
         if (!this.props._widgets) return null;
 
         const overlay_node = this.props.overlay_node;
-        
+
         return (
             <Frame covered={this.state.covered}>
-                <TabViewComposer overlay_node={overlay_node}>
+                <TabViewComposer overlay_node={overlay_node} show_headers={this.props.show_headers}>
                     {this.props._widgets.map((widget, index) => {
                         const ref: RefObject<Nest> = React.createRef();
 
@@ -435,6 +439,7 @@ export default class Pane extends React.Component<IProps, IState> {
                     covered={this.state.covered}
                     ref={ref}
                     overlay_node={this.props.overlay_node}
+                    show_headers={this.props.show_headers}
                 />
             </CSSTransition>
         );
