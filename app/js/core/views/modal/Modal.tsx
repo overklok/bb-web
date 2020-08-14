@@ -8,7 +8,6 @@ export type ModalSize = 'sm'|'md'|'lg';
 export interface IModalProps {
     onClose: Function;
     children?: string | JSX.Element | JSX.Element[];
-    fixed?: boolean;
     size?: ModalSize;
     width?: number|string;
     height?: number|string;
@@ -26,7 +25,6 @@ const Modal = (props: IModalProps) => {
 
     let klasses_modal = classNames({
         'mdl': true,
-        'mdl_sz_fixed': props.size || props.fixed,
         'mdl_sz_sm': props.size === 'sm',
         'mdl_sz_md': props.size === 'md',
         'mdl_sz_lg': props.size === 'lg',

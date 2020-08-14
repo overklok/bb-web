@@ -9,7 +9,6 @@ interface IModalData {
     widget_alias?: string;
     is_dialog?: boolean;
 
-    fixed?: boolean;
     size?: 'sm'|'md'|'lg';
     width?: number|string;
     height?: number|string;

@@ -9,7 +9,7 @@ type IProps = IModalProps & IDialogProps;
 const DialogModal = (props: IProps) => {
     return (
         <Modal onClose={props.onClose}
-               fixed={props.fixed} size={props.size} width={props.width} height={props.height}
+               size={props.size} width={props.width} height={props.height}
         >
             <Dialog heading={props.heading} hint={props.hint} onClose={props.onClose}>
                 {props.children}

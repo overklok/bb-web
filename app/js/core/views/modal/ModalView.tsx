@@ -12,7 +12,6 @@ export interface IModal {
     widget_alias?: string;
     is_dialog?: boolean;
 
-    fixed?: boolean;
     size?: ModalSize;
     width?: number|string;
     height?: number|string;
@@ -43,7 +42,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
 
     render(): React.ReactNode {
         return this.state.modals.map((modal_data, i) => {
-            const {is_dialog, heading, hint, widget_alias, fixed, size, width, height} = modal_data;
+            const {is_dialog, heading, hint, widget_alias, size, width, height} = modal_data;
 
             let content: string | JSX.Element = modal_data.content;
 
@@ -55,7 +54,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
                 return (
                     <DialogModal key={i} onClose={() => this.closeModal(i)}
                                  heading={heading} hint={hint}
-                                 fixed={fixed} size={size} width={width} height={height}
+                                 size={size} width={width} height={height}
                     >
                         {content}
                     </DialogModal>
@@ -63,7 +62,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
             } else {
                 return (
                     <Modal key={i} onClose={() => this.closeModal(i)}
-                           fixed={fixed} size={size} width={width} height={height}
+                           size={size} width={width} height={height}
                     >
                         {content}
                     </Modal>
