@@ -70,8 +70,6 @@ export default class TabViewComposer extends ViewComposer<IProps, IState> {
             },
         } = this;
 
-        console.log(show_headers);
-
         this.resetViewConnectors();
 
         return (

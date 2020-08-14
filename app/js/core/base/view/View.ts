@@ -10,10 +10,9 @@ export interface IViewOptions {
 }
 
 export interface IViewProps<O extends IViewOptions> {
-    mounted: boolean;
+    nest_mounted: boolean;
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
-    on_viewinfo_ready?: Function;
     widgets?: {[key: string]: Widget<any>};
     options?: O;
 }
@@ -24,6 +23,8 @@ export interface IViewState {
 
 export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
     public static defaultOptions: IViewOptions;
+    public static notifyNestMount: boolean = false;
+
     protected options: O;
 
     constructor(props: IViewProps<O>) {

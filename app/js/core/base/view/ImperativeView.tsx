@@ -2,6 +2,8 @@ import * as React from "react";
 import {IViewProps, IViewState, View} from "./View";
 
 export abstract class ImperativeView<O> extends View<O, IViewState> {
+    public static notifyNestMount: boolean = true;
+
     protected constructor(props: IViewProps<O>) {
         super(props);
     }
@@ -10,7 +12,7 @@ export abstract class ImperativeView<O> extends View<O, IViewState> {
     protected abstract eject(container: HTMLElement): void;
 
     public componentDidUpdate(prevProps: Readonly<IViewProps<O>>, prevState: Readonly<IViewState>, snapshot?: any) {
-        if (prevProps.mounted === false && this.props.mounted === true) {
+        if (prevProps.nest_mounted === false && this.props.nest_mounted === true) {
             this.inject(this.props.ref_parent.current);
         }
     }
@@ -18,13 +20,13 @@ export abstract class ImperativeView<O> extends View<O, IViewState> {
     public componentDidMount() {
         super.componentDidMount();
 
-        if (this.props.mounted === true) {
+        if (this.props.nest_mounted === true) {
             this.inject(this.props.ref_parent.current);
         }
     }
 
     public componentWillUnmount() {
-        if (this.props.mounted === true) {
+        if (this.props.nest_mounted === true) {
             this.eject(this.props.ref_parent.current);
         }
 

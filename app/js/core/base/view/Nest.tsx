@@ -33,7 +33,9 @@ export default class Nest extends React.Component<IProps<any>, IState> {
     }
 
     componentDidMount() {
-        this.setState({mounted: true});
+        if (Object.getPrototypeOf(this.ref_view.current).constructor.notifyNestMount) {
+            this.setState({mounted: true});
+        }
     }
     
     notifyResizeView() {
@@ -60,7 +62,7 @@ export default class Nest extends React.Component<IProps<any>, IState> {
                     connector={this.props.connector}
                     ref_parent={this.ref}
                     options={this.props.view_options}
-                    mounted={this.state.mounted}
+                    nest_mounted={this.state.mounted}
                 />
             </div>
         )

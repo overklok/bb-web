@@ -129,8 +129,6 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
 
         const panes = this.modes[this.state.mode_name].panes;
 
-        console.log(this.options);
-
         return (
             <div ref={this.root_ref} className='layout'>
                 <DndProvider backend={HTML5Backend}>
