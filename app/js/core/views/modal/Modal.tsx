@@ -1,7 +1,11 @@
+// @ts-ignore (used here just to suppress IDE warning)
+import {TransitionGroup, Transition, CSSTransition} from 'react-transition-group';
+
 import * as React from "react";
 import classNames from "classnames";
 
 import '../../../../css/core/modal.less'
+import {useState} from "react";
 
 export type ModalSize = 'sm'|'md'|'lg';
 
@@ -33,9 +37,13 @@ const Modal = (props: IModalProps) => {
     return (
         <React.Fragment>
             <div className={klasses_overlay} onClick={onOverlayClick} />
-            <div className={klasses_modal} style={{width: props.width, height: props.height}}>
-                {props.children}
-            </div>
+            <TransitionGroup component={null}>
+                <CSSTransition key='k' timeout={600} classNames="mdl">
+                    <div className={klasses_modal} style={{width: props.width, height: props.height}}>
+                        {props.children}
+                    </div>
+                </CSSTransition>
+            </TransitionGroup>
         </React.Fragment>
     )
 };
