@@ -15,9 +15,7 @@ export interface IModalProps {
 
 const Modal = (props: IModalProps) => {
     const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
-        if (e.currentTarget.classList.contains('mdl-overlay')) {
-            props.onClose && props.onClose(e);
-        }
+        props.onClose && props.onClose(e);
     };
 
     // Список классов, которые должны использоваться в зависимости от свойств
