@@ -41,7 +41,7 @@ class MonkeytestApplication extends Application {
     protected setup() {
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
-            new SocketDatasource('127.0.0.1', 8005),
+            // new SocketDatasource('127.0.0.1', 8005),
         ]);
 
         this.dds = new DummyDatasource();

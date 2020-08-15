@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import '../../../../css/modal.less'
+import '../../../../css/core/modal.less'
 import Modal, {IModalProps} from "./Modal";
 import Dialog, {IDialogProps} from "./Dialog";
 

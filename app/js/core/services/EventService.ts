@@ -4,7 +4,7 @@ import {AbstractEvent} from "../base/Event";
 export default class EventService extends IEventService {
     private handlers: Map<any, Map<AbstractEvent<any>, Function[]>> = new Map();
 
-    subscribe<V extends AbstractEvent<V>>(event_type: V, handler: Function, obj: any = null) {
+    subscribe<V extends AbstractEvent<V>>(event_type: V, handler: Function, obj: any = null): number {
         let map = this.handlers.get(obj);
 
         if (map == null) {
@@ -12,7 +12,7 @@ export default class EventService extends IEventService {
             this.handlers.set(obj, map);
         }
 
-        let handlers = map.get(event_type)
+        let handlers = map.get(event_type);
 
         if (handlers == null) {
             handlers = [];
@@ -20,29 +20,30 @@ export default class EventService extends IEventService {
             map.set(event_type, handlers);
         }
 
-        handlers.push(handler);
+        return handlers.push(handler) - 1;
     }
 
     reset<V extends AbstractEvent<V>>(event_type: V, obj: any = null) {
         let map = this.handlers.get(obj);
-        map.set(event_type, []);
+        map.set(event_type, null);
     }
 
     resetObject(obj: any = null) {
         this.handlers.set(obj, null);
     }
 
-    unsubscribe<V extends AbstractEvent<V>>(event_type: V, handler: Function, obj: any = null) {
+    unsubscribe<V extends AbstractEvent<V>>(event_type: V, key: number, obj: any = null) {
         let map = this.handlers.get(obj);
 
         if (map == null) return;
 
-        map.set(
-            event_type,
-            map.get(event_type).filter(
-                (hdlr: Function) => hdlr != handler
-            )
-        );
+        let handlers = map.get(event_type);
+
+        if (key > handlers.length) {
+            throw new Error("Invalid handler key has been passed to unsubscribe");
+        }
+
+        handlers.splice(key);
     }
 
     emit<E>(event: AbstractEvent<E>, obj: any = null) {

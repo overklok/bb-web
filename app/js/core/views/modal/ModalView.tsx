@@ -83,6 +83,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
                   index={0}
                   label={widget.label}
                   view_type={widget.view_type}
+                  view_options={widget.view_options}
             />
         )
     }

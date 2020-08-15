@@ -9,7 +9,7 @@ import 'jquery-ui/ui/widgets/draggable';
 
 // console.log("JQR", jQuery.easing);
 
-import styles from "../../css/layout.css";
+import styles from "../../css/core/layout.css";
 
 /// jQuery Layout conflict fix
 (function ($){$.fn.selector = { split: function() { return ""; }};})(jQuery);

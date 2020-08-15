@@ -26,9 +26,12 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
     public static notifyNestMount: boolean = false;
 
     protected options: O;
+    protected mounted: boolean;
 
     constructor(props: IViewProps<O>) {
         super(props);
+
+        this.mounted = false;
 
         const defaults = Object.getPrototypeOf(this).constructor.defaultOptions;
         this.options = coverOptions(this.props.options, defaults) as O;
@@ -49,10 +52,12 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
     }
 
     public componentDidMount() {
+        this.mounted = true;
         this.viewDidMount();
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
         this.viewWillUnmount();
     }
 

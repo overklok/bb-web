@@ -1,10 +1,10 @@
 import React from "react";
-import {IViewOptions, IViewState, View} from "../../core/base/view/View";
+import {IViewOptions, IViewProps, IViewState, View} from "../../core/base/view/View";
+import {ViewEvent} from "../../core/base/Event";
 
 type TestkitItem = {title: string, type: string};
 
 interface TestkitViewState extends IViewState {
-    items: TestkitItem[];
     keys_active: number[];
 }
 
@@ -14,27 +14,52 @@ interface TestkitItemComponentProps {
 }
 
 export function TestkitItemComponent(props: TestkitItemComponentProps) {
-    return <input
-        type='checkbox'
-        title={props.title}
-        checked={props.checked}
-    />
+    return (
+        <React.Fragment>
+            <p>
+                {props.title}
+                <input type='checkbox' title={props.title} checked={props.checked}/>
+            </p>
+        </React.Fragment>
+    )
 }
 
-export default class TestkitView extends View<IViewOptions, TestkitViewState> {
+interface TestkitViewOptions {
+    items: TestkitItem[];
+}
+
+export default class TestkitView extends View<TestkitViewOptions, TestkitViewState> {
+    static defaultOptions: TestkitViewOptions = {
+        items: []
+    }
+
+    constructor(props: IViewProps<TestkitViewOptions>) {
+        super(props);
+
+        this.state = {
+            keys_active: []
+        }
+    }
+
     setActive(keys: number[]) {
         this.setState({keys_active: keys})
     }
 
-    setItems(items: TestkitItem[]) {
-        this.setState({items})
-    }
-
     render(): React.ReactNode {
-        const {items} = this.state;
+        const {items} = this.options;
 
-        return items.map((item, i) => {
-            return <TestkitItemComponent title={item.title} key={i} checked={i in this.state.keys_active} />
-        });
+        console.log(items);
+
+        return (
+            <div className='testkit'>
+                <p>Select components to use:</p>
+
+                <div className='testkit__list'>
+                    {items.map((item, i) => {
+                        return <TestkitItemComponent title={item.title} key={i} checked={i in this.state.keys_active} />
+                    })}
+                </div>
+            </div>
+        );
     }
 }

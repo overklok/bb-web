@@ -1,7 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 
-import '../../../../css/modal.less'
+import '../../../../css/core/modal.less'
 
 export type ModalSize = 'sm'|'md'|'lg';
 

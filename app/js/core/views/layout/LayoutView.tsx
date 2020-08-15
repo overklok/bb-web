@@ -10,7 +10,7 @@ import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
 import {ViewEvent} from "../../base/Event";
 
-require('../../../../../app/css/layout.less');
+require('../../../../css/core/layout.less');
 
 export class LayoutMountEvent extends ViewEvent<LayoutMountEvent> {}
 
@@ -69,7 +69,6 @@ interface ILayoutOptions extends IViewOptions {
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
 export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
-    private mounted: boolean;
     private pane_ref: RefObject<Pane> = React.createRef();
     private modes: {[key: string]: ILayoutMode};
 
@@ -89,8 +88,6 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
                 panes: [] as ILayoutPane[],
             }
         };
-
-        this.mounted = false;
 
         this.state = {
             mode_name: 'default'
@@ -147,16 +144,12 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
     }
 
     protected viewDidMount() {
-        this.mounted = true;
-
         this.root_ref.current.appendChild(this.overlay_node);
 
         this.emit(new LayoutMountEvent({}));
     }
 
     protected viewWillUnmount() {
-        this.mounted = false;
-
         this.root_ref.current.removeChild(this.overlay_node);
     }
 
