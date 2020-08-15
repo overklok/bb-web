@@ -21,6 +21,15 @@ export interface IViewState {
 
 }
 
+export class RenderEvent extends AbstractEvent<RenderEvent> {
+}
+
+export class MountEvent extends AbstractEvent<MountEvent> {
+}
+
+export class ResizeEvent extends AbstractEvent<ResizeEvent> {
+}
+
 export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
     public static defaultOptions: IViewOptions;
     public static notifyNestMount: boolean = false;
@@ -54,6 +63,7 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
     public componentDidMount() {
         this.mounted = true;
         this.viewDidMount();
+        this.emit(new MountEvent({}));
     }
 
     public componentWillUnmount() {
@@ -62,6 +72,8 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
     }
 
     public render(): ReactNode {
+        this.emit(new RenderEvent({}));
+
         return null;
     }
 
