@@ -170,7 +170,7 @@ export default class PlateLayer extends Layer {
             this._plates[id].rotate(orientation);
             return id;
         } else {
-            plate_class = PlateLayer._typeToPlateClass(type);
+            plate_class = PlateLayer.typeToPlateClass(type);
             plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, extra);
         }
 
@@ -847,10 +847,8 @@ export default class PlateLayer extends Layer {
      * @param {string} type строковый тип плашки
      *
      * @returns {Plate} класс плашки
-     *
-     * @private
      */
-    static _typeToPlateClass(type) {
+    static typeToPlateClass(type) {
         if (!type) {
             throw new TypeError("Parameter `type` is not defined");
         }

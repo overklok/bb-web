@@ -218,17 +218,6 @@ export default class Grid {
     _initAuxPoints() {
         const celldist_y = this.cell(0, 1).pos.y - this.cell(0, 0).pos.y;
 
-        const usb1_center = {
-            // take border width into account
-            x: this.wrap.x - 5,
-            y: this.cell(0, 4).center.y + celldist_y / 2
-        };
-
-        const usb3_center = {
-            // take border width into account
-            x: this.wrap.x - 5,
-            y: this.cell(0, 10).center.y + celldist_y / 2
-        };
 
         if (this.isAuxPointCatRequired(Grid.AuxPointCats.Source)) {
             const source_center = {
@@ -256,6 +245,12 @@ export default class Grid {
         // USB1
 
         if (this.isAuxPointCatRequired(Grid.AuxPointCats.Usb1)) {
+            const usb1_center = {
+                // take border width into account
+                x: this.wrap.x - 5,
+                y: this.cell(0, 4).center.y + celldist_y / 2
+            };
+
             this._aux_points[Grid.AuxPoints.U1Vcc] = {
                 idx: {x: 8, y: 3},
                 pos: {x: usb1_center.x, y: usb1_center.y - 21},
@@ -296,6 +291,12 @@ export default class Grid {
         // USB3
 
         if (this.isAuxPointCatRequired(Grid.AuxPointCats.Usb3)) {
+            const usb3_center = {
+                // take border width into account
+                x: this.wrap.x - 5,
+                y: this.cell(0, 10).center.y + celldist_y / 2
+            };
+
             this._aux_points[Grid.AuxPoints.U3Vcc] = {
                 idx: {x: 8, y: 9},
                 pos: {x: usb3_center.x, y: usb3_center.y - 21},

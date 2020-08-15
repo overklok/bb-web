@@ -13,8 +13,9 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
     protected runConfigurator() {
         this.modal.showModal({
             widget_alias: 'testkit',
+            heading: 'Изменить набор плашек',
             is_dialog: true,
-            heading: 'Test Kit'
+            size: 'lg'
         });
     }
 }

@@ -15,6 +15,7 @@ import BoardContextMenu from "./menus/BoardContextMenu";
 import thm from "./styles/main.css";
 import {initGradients} from "./styles/gradients";
 import SelectorLayer from "./layers/SelectorLayer";
+import Plate from "./core/Plate";
 
 const LAYOUTS = {
     Basic: {
@@ -181,6 +182,26 @@ export default class Breadboard {
         this._filters_defined = false;
 
         this._setOptions(options)
+    }
+
+    static drawPlate(parent, type, extra) {
+        const grid = new Grid(10, 10, 1000, 700);
+        const div_wrap = SVG(parent);
+
+
+        const plate_type = PlateLayer.typeToPlateClass(type);
+
+        const plate = new plate_type(div_wrap, grid, false, false, null, extra);
+
+        plate.draw(grid.cell(0, 0), 'west');
+        plate.move_to_point(0, 0);
+
+        const width = plate._container.width(),
+              height = plate._container.width();
+
+        plate._container.center(width / 2, height / 2);
+
+        div_wrap.viewbox(0, 0, width, height);
     }
 
     getContainer() {

@@ -1,0 +1,58 @@
+.testkit {
+  padding: 15px;
+}
+
+.testkit__heading {
+  margin: 0;
+}
+
+.testkit__subheading {
+  margin: 0;
+  font-size: 0.7em;
+}
+
+.testkit__list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 10px;
+
+  margin: 1em 0;
+
+  max-height: 320px;
+  overflow-y: scroll;
+
+  & > div {
+    text-align: center;
+  }
+}
+
+.testkit-item {
+  padding: 10px;
+  border-radius: 5px;
+
+  transition: background-color ease-in-out 100ms;
+
+  &:hover {
+    background-color: #c5d9ff;
+  }
+
+  &_active {
+    background-color: #005aff;
+    color: white;
+
+    &:hover {
+      background-color: #1767ff;
+    }
+  }
+}
+
+.testkit-item__plate {}
+
+.testkit-item__description {
+  font-size: 0.8em;
+  margin: 0;
+}
+
+.testkit-item__input {
+  width: 40px;
+}
