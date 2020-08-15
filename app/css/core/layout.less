@@ -13,13 +13,13 @@
   left: 0;
 
   // non-main layers should not lock main layer
-  &:not(&layer_main) {
+  &:not(&_main) {
     pointer-events: none;
 
     // nest is necessary but shouldn't interrupt pointer events by itself;
     // any children content should be able to catch its own pointer events
     > .nest > * {
-      pointer-events: all;
+      pointer-events: auto;
     }
   }
 }

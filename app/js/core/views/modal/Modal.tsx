@@ -14,8 +14,10 @@ export interface IModalProps {
 }
 
 const Modal = (props: IModalProps) => {
-    const onClose = (e: React.MouseEvent<HTMLElement>) => {
-        props.onClose && props.onClose(e);
+    const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
+        if (e.currentTarget.classList.contains('mdl-overlay')) {
+            props.onClose && props.onClose(e);
+        }
     };
 
     // Список классов, которые должны использоваться в зависимости от свойств
@@ -31,11 +33,12 @@ const Modal = (props: IModalProps) => {
     })
 
     return (
-        <div className={klasses_overlay} onClick={onClose}>
+        <React.Fragment>
+            <div className={klasses_overlay} onClick={onOverlayClick} />
             <div className={klasses_modal} style={{width: props.width, height: props.height}}>
                 {props.children}
             </div>
-        </div>
+        </React.Fragment>
     )
 };
 
