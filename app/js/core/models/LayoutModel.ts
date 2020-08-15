@@ -18,7 +18,7 @@ type Pane = {
     title?: string;
     size_min?: string|number;
     size_max?: string|number;
-    resizable?: Boolean;
+    resizable?: boolean;
     fixed?: string|number;
     size?: string;
     widgets?: Widget[];
@@ -180,6 +180,8 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
 
         if (pane.resizable == null) {
             resizable = true;
+        } else {
+            resizable = pane.resizable;
         }
 
         if (size_min == size_max && size_max != null) {
