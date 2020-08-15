@@ -9,7 +9,7 @@ import Datasource from "./model/Datasource";
  *
  * @param event_types
  */
-export function on<V extends AbstractEvent<V>>(...event_types: V[]) {
+export function on(...event_types: typeof AbstractEvent[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (target.routes == null) {
             target.routes = new Map();
@@ -28,7 +28,7 @@ export function on<V extends AbstractEvent<V>>(...event_types: V[]) {
  *
  * @param action_type
  */
-export function action<A extends Action<A>>(action_type: A) {
+export function action(action_type: typeof Action) {
     return on(action_type);
 }
 
@@ -40,7 +40,7 @@ export function action<A extends Action<A>>(action_type: A) {
  * @see View
  */
 export default class Presenter<V extends View<IViewOptions, IViewState>> {
-    public readonly routes: Map<AbstractEvent<any>, string>;
+    public readonly routes: Map<typeof AbstractEvent, string>;
 
     protected view: V;
     private svc_model: IModelService;

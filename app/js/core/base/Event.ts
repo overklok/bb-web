@@ -9,21 +9,21 @@ export const enum BasicEventType {
  * A class representing data that flows between systems components typically via IEventService.
  */
 export abstract class AbstractEvent<T> extends DTO<T> {
-    abstract type: BasicEventType;
+    static type: BasicEventType;
 }
 
 /**
  * A subset of AbstractEvent which describes data streamed between Views and Presenters.
  */
 export abstract class ViewEvent<T> extends AbstractEvent<T> {
-    type = BasicEventType.View;
+    static type = BasicEventType.View;
 }
 
 /**
  * A subset of AbstractEvent which describes data streamed between Models and Presenters.
  */
 export abstract class ModelEvent<T> extends AbstractEvent<T> {
-    type = BasicEventType.Model;
+    static type = BasicEventType.Model;
 }
 
 /**

@@ -2,7 +2,7 @@ import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
 import IModelService from "../../services/interfaces/IModelService";
 import Presenter from "../Presenter";
-import {AbstractEvent, Action} from "../Event";
+import {AbstractEvent, Action, BasicEventType} from "../Event";
 import {IViewOptions, IViewState, View} from "./View";
 import {PresenterType} from "../../helpers/types";
 
@@ -31,7 +31,7 @@ export default class ViewConnector {
     private readonly svc_model: IModelService;
 
     /** @property Handler keys that kept here to unsubscribe in the future (i.e. in case of re-attaching the View) */
-    private handler_keys: [AbstractEvent<any>, number][] = [];
+    private handler_keys: [typeof AbstractEvent, number][] = [];
 
     /** @property An array of presenter prototypes to construct Presenter instances when the View is attached */
     public readonly presenter_types: PresenterType<View<IViewOptions, IViewState>>[];
@@ -66,7 +66,7 @@ export default class ViewConnector {
     attach(view: View<IViewOptions, IViewState>) {
         this.view = view;
 
-        this.unsubscribeCurrentPresenters();
+        this.unsubscribePresenterHandlers();
 
         // this.presenters = [];
         for (const presenter_type of this.presenter_types) {
@@ -81,12 +81,7 @@ export default class ViewConnector {
             // this.presenters.push(presenter);
 
             // Activate presenter routes
-            for (const [evt_type, prop_handler] of presenter.routes.entries()) {
-                const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
-                const hdlr_key = this.svc_event.subscribe(evt_type, hdlr);
-
-                this.handler_keys.push([evt_type, hdlr_key]);
-            }
+            this.subscribePresenterHandlers(presenter);
         }
     }
 
@@ -96,7 +91,9 @@ export default class ViewConnector {
      * @param event the event to be passed
      */
     emit<E>(event: AbstractEvent<E>) {
-        this.svc_event.emit(event);
+        const anchor = this.getEventAnchorByInstance(event);
+
+        this.svc_event.emit(event, anchor);
     }
 
     /**
@@ -138,15 +135,36 @@ export default class ViewConnector {
         }
     }
 
+    private subscribePresenterHandlers(presenter: Presenter<any>) {
+        for (const [evt_type, prop_handler] of presenter.routes.entries()) {
+            const anchor = this.getEventAnchorByType(evt_type);
+
+            const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
+            const hdlr_key = this.svc_event.subscribe(evt_type, hdlr, anchor);
+
+            this.handler_keys.push([evt_type, hdlr_key]);
+        }
+    }
+
     /**
      * Clear all the handlers from the {@link EventService} to keep state clean
      */
-    private unsubscribeCurrentPresenters() {
-        // this.svc_event.resetObject(this);
+    private unsubscribePresenterHandlers() {
+       // this.svc_event.resetObject(this);
        for (const [evt_type, hdlr_key] of this.handler_keys) {
-           this.svc_event.unsubscribe(evt_type, hdlr_key)
+           const anchor = this.getEventAnchorByType(evt_type);
+
+           this.svc_event.unsubscribe(evt_type, hdlr_key, anchor);
        }
 
        this.handler_keys = [];
+    }
+
+    private getEventAnchorByInstance<E extends AbstractEvent<any>>(evt_type: E): any {
+        return Object.getPrototypeOf(evt_type).constructor.type === BasicEventType.View ? this : null;
+    }
+
+    private getEventAnchorByType(evt_type: typeof AbstractEvent): any {
+        return Object.getPrototypeOf(evt_type).type === BasicEventType.View ? this : null;
     }
 }
