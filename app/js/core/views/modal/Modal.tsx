@@ -8,53 +8,47 @@ import {useState} from "react";
 
 export type ModalSize = 'sm'|'md'|'lg';
 
-export interface IModalProps {
+export interface IOverlayProps {
     onClose: Function;
+}
+
+export interface IModalProps {
     children?: string | JSX.Element | JSX.Element[];
     size?: ModalSize;
     width?: number|string;
     height?: number|string;
 }
 
-interface IState {}
+const Overlay = (props: IOverlayProps) => {
+    const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
+        props.onClose && props.onClose(e);
+    };
 
-class Modal extends React.Component<IModalProps, IState> {
-    constructor(p: IModalProps) {
-        super(p);
-    }
+    // Список классов, которые должны использоваться в зависимости от свойств
+    let klasses_overlay = classNames({
+        'mdl-overlay': true,
+    });
 
-    render() {
-        const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
-            this.props.onClose && this.props.onClose(e);
-        };
+    return (
+        <div className={klasses_overlay} onClick={onOverlayClick}/>
+    )
+}
 
-        // Список классов, которые должны использоваться в зависимости от свойств
-        let klasses_overlay = classNames({
-            'mdl-overlay': true,
-        });
+const Modal = (props: IModalProps) => {
+    // Список классов, которые должны использоваться в зависимости от свойств
+    let klasses_modal = classNames({
+        'mdl': true,
+        'mdl_sz_sm': props.size === 'sm',
+        'mdl_sz_md': props.size === 'md',
+        'mdl_sz_lg': props.size === 'lg',
+    })
 
-        let klasses_modal = classNames({
-            'mdl': true,
-            'mdl_sz_sm': this.props.size === 'sm',
-            'mdl_sz_md': this.props.size === 'md',
-            'mdl_sz_lg': this.props.size === 'lg',
-        })
-
-        return (
-            <React.Fragment>
-                <TransitionGroup component={null}>
-                    <CSSTransition key='k' timeout={600} classNames="mdl">
-                        <div className={klasses_overlay} onClick={onOverlayClick}/>
-                        </CSSTransition>
-                </TransitionGroup>
-
-                        <div className={klasses_modal} style={{width: this.props.width, height: this.props.height}}>
-                            {this.props.children}
-                        </div>
-
-            </React.Fragment>
-        )
-    }
+    return (
+        <div className={klasses_modal} style={{width: props.width, height: props.height}}>
+            {props.children}
+        </div>
+    )
 };
 
+export {Overlay};
 export default Modal;

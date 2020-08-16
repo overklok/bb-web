@@ -4,13 +4,11 @@ import '../../../../css/core/modal.less'
 import Modal, {IModalProps} from "./Modal";
 import Dialog, {IDialogProps} from "./Dialog";
 
-type IProps = IModalProps & IDialogProps;
+export type IDialogModalProps = IModalProps & IDialogProps;
 
-const DialogModal = (props: IProps) => {
+const DialogModal = (props: IDialogModalProps) => {
     return (
-        <Modal onClose={props.onClose}
-               size={props.size} width={props.width} height={props.height}
-        >
+        <Modal size={props.size} width={props.width} height={props.height}>
             <Dialog heading={props.heading} hint={props.hint} onClose={props.onClose}>
                 {props.children}
             </Dialog>

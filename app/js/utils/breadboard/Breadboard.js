@@ -196,8 +196,8 @@ export default class Breadboard {
         plate.draw(grid.cell(0, 0), 'west');
         plate.move_to_point(0, 0);
 
-        const width = plate._container.width(),
-              height = plate._container.width();
+        const width = plate._container.width() / 2,
+              height = plate._container.width() / 2;
 
         plate._container.center(width / 2, height / 2);
 

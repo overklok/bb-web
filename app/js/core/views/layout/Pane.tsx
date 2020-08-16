@@ -412,7 +412,7 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param {ILayoutPane}     data        модель панели
      * @param {RefObject<Pane>} ref         ref-объект (возврат по ссылке)
      */
-    renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>) {
+    renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>): JSX.Element {
         return (
             <CSSTransition
                 timeout={600}

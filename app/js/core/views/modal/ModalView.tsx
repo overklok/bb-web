@@ -1,9 +1,11 @@
 import * as React from "react";
-import Modal, {ModalSize} from "./Modal";
+import Modal, {IModalProps, ModalSize, Overlay} from "./Modal";
+import {cloneDeep} from "lodash";
 
 import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
-import DialogModal from "./DialogModal";
+import DialogModal, {IDialogModalProps} from "./DialogModal";
 import Nest from "../../base/view/Nest";
+import {CSSTransition, TransitionGroup} from "react-transition-group";
 
 export interface IModal {
     heading?: string;
@@ -31,7 +33,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
     }
 
     showModal(modal_data: IModal): void {
-        let modals_new = [...this.state.modals];
+        let modals_new = cloneDeep(this.state.modals);
 
         modals_new.push(modal_data);
 
@@ -41,34 +43,56 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
     }
 
     render(): React.ReactNode {
-        return this.state.modals.map((modal_data, i) => {
-            const {is_dialog, heading, hint, widget_alias, size, width, height} = modal_data;
+        return (
+            <TransitionGroup component={null}>
+                {this.state.modals.map((modal_data, i) => {
+                    const {is_dialog, widget_alias} = modal_data;
 
-            let content: string | JSX.Element = modal_data.content;
+                    let content: string | JSX.Element = modal_data.content;
 
-            if (widget_alias) {
-                content = this.renderNest(widget_alias);
-            }
+                    if (widget_alias) {
+                        content = this.renderNest(widget_alias);
+                    }
 
-            if (is_dialog) {
-                return (
-                    <DialogModal key={i} onClose={() => this.closeModal(i)}
-                                 heading={heading} hint={hint}
-                                 size={size} width={width} height={height}
-                    >
-                        {content}
-                    </DialogModal>
-                )
-            } else {
-                return (
-                    <Modal key={i} onClose={() => this.closeModal(i)}
-                           size={size} width={width} height={height}
-                    >
-                        {content}
-                    </Modal>
-                )
-            }
-        });
+                    if (is_dialog) {
+                        return [this.renderOverlay(i), this.renderDialogModal(i, modal_data, content)];
+                    } else {
+                        return [this.renderOverlay(i), this.renderModal(i, modal_data, content)];
+                    }
+                })}
+            </TransitionGroup>
+        )
+    }
+
+    private renderOverlay(key: number): JSX.Element {
+        return (
+            <CSSTransition key={'o' + key} classNames='mdl' timeout={0} unmountOnExit>
+                <Overlay onClose={() => this.closeModal(key)}/>
+            </CSSTransition>
+        );
+    }
+
+    private renderDialogModal(key: number, props: IDialogModalProps, content: string | JSX.Element) {
+        return (
+            <CSSTransition in out key={key} timeout={400} classNames="mdl" unmountOnExit>
+                <DialogModal onClose={() => this.closeModal(key)}
+                             heading={props.heading} hint={props.hint}
+                             size={props.size} width={props.width} height={props.height}
+                >
+                    {content}
+                </DialogModal>
+            </CSSTransition>
+        )
+    }
+
+    private renderModal(key: number, props: IModalProps, content: string | JSX.Element) {
+        return (
+            <CSSTransition in out key={key} timeout={400} classNames="mdl" unmountOnExit>
+                <Modal size={props.size} width={props.width} height={props.height}>
+                    {content}
+                </Modal>
+            </CSSTransition>
+        )
     }
 
     private renderNest(widget_alias: string) {
@@ -89,7 +113,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
     }
 
     private closeModal(index: number) {
-        let modals_new = [...this.state.modals];
+        let modals_new = cloneDeep(this.state.modals);
 
         modals_new.splice(index);
 
