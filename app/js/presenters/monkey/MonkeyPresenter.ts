@@ -1,5 +1,5 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import MonkeyView, {ConfigureEvent} from "../../views/monkey/MonkeyView";
+import MonkeyView, {ConfigureClick} from "../../views/monkey/MonkeyView";
 import ModalModel from "../../core/models/ModalModel";
 
 export default class MonkeyPresenter extends Presenter<MonkeyView> {
@@ -9,7 +9,7 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
         this.modal = this.getModel(ModalModel);
     }
 
-    @on(ConfigureEvent)
+    @on(ConfigureClick)
     protected runConfigurator() {
         this.modal.showModal({
             widget_alias: 'testkit',

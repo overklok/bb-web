@@ -1,3 +1,5 @@
+@import "../animations";
+
 /*
   | View composers
   |----------------
@@ -217,10 +219,10 @@ ul.ddmenu {
 
   &.pane_animated {
     &.pane-h {
-      transition: opacity   0.6s cubic-bezier(0.33, 1, 0.68, 1),
-                  width     0.6s cubic-bezier(0.33, 1, 0.68, 1),
-                  min-width 0.6s cubic-bezier(0.33, 1, 0.68, 1),
-                  max-width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+      transition: opacity   0.6s @ease,
+                  width     0.6s @ease,
+                  min-width 0.6s @ease,
+                  max-width 0.6s @ease;
 
       &.pane-enter {opacity: 0;}
       &.pane-enter-active {opacity: 1;}
@@ -243,10 +245,10 @@ ul.ddmenu {
     }
 
     &.pane-v {
-      transition: opacity   0.6s cubic-bezier(0.33, 1, 0.68, 1),
-                  height      0.6s cubic-bezier(0.33, 1, 0.68, 1),
-                  min-height  0.6s cubic-bezier(0.33, 1, 0.68, 1),
-                  max-height  0.6s cubic-bezier(0.33, 1, 0.68, 1);
+      transition: opacity   0.6s   @ease,
+                  height      0.6s @ease,
+                  min-height  0.6s @ease,
+                  max-height  0.6s @ease;
 
       &.pane-enter:not(.pane-enter-active), &.pane-exit {
         opacity: 0;

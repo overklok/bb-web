@@ -1,11 +1,56 @@
+@import 'colors';
+@import 'animations';
+
 .btn {
   display: inline-block;
-  padding: 2px 5px;
+  padding: .375rem .75rem;
 
-  border: solid #a1a1a1 1px;
-  border-radius: 2px;
-  background-color: #bababa;
+  border-radius: 4px;
 
   cursor: pointer;
   user-select: none;
+
+  text-align: center;
+
+  transition: background-color .1s @ease,
+              transform .2s @ease;
+
+  &:active, &.btn-active {
+    transform: scale(0.95);
+  }
+
+  &.btn-default {
+    background-color: @default;
+    color: @text_light;
+
+    &:hover {background-color: @default_deep;}
+  }
+
+  &.btn-primary {
+    background-color: @primary;
+    color: @text_light;
+
+    &:hover {background-color: @primary_deep;}
+  }
+
+  &.btn-success {
+    background-color: @success;
+    color: @text_light;
+
+    &:hover {background-color: @success_deep;}
+  }
+
+  &.btn-warning {
+    background-color: @warning;
+    color: @text_dark;
+
+    &:hover {background-color: @warning_deep;}
+  }
+
+  &.btn-danger {
+    background-color: @danger;
+    color: @text_light;
+
+    &:hover {background-color: @danger_deep;}
+  }
 }

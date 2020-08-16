@@ -1,3 +1,5 @@
+@import "../animations";
+
 @xs-min: 0;       @xs-max: 575.98px;
 @sm-min: 576px;   @sm-max: 767.98px;
 @md-min: 768px;   @md-max: 991.98px;
@@ -116,11 +118,11 @@
 
 // Animation
 .mdl, .mdl-overlay {
-  transition: opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  transition: opacity 0.4s @ease;
   opacity: 0;
 
   .mdl-dlg {
-    transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    transition: transform 0.4s @ease;
     transform: scale(0.8);
   }
 }

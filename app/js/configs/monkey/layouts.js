@@ -15,9 +15,9 @@ export default {
                     widgets: [{alias: 'board_ref', label: 'Reference board'}]
                 },
                 {
-                    name: 'settings', fixed: '20%',
+                    name: 'settings', fixed: '300px',
                     panes: [
-                        {name: 'controls', fixed: '10%', widgets: [{alias: 'controls', label: 'Controls'}]},
+                        {name: 'controls', fixed: '150px', widgets: [{alias: 'controls', label: 'Controls'}]},
                         {name: 'list'},
                     ]
                 },
