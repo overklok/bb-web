@@ -30,7 +30,8 @@ import TestkitModel from "./models/monkey/TestkitModel";
 class MonkeytestApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
     private dds: DummyDatasource;
-    private mdl_modal: Model<undefined, DummyDatasource>;
+    private mdl_modal: ModalModel;
+    private mdl_layout: LayoutModel;
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
@@ -56,13 +57,16 @@ class MonkeytestApplication extends Application {
 
         svc_view.registerWidgetTypes(widgets_config);
 
-        this.mdl_modal = svc_model.register(ModalModel, new DummyDatasource());
+        svc_model.register(ModalModel, this.dds);
+        svc_model.register(LayoutModel, this.dds, layouts_config);
 
         svc_model.launch(this.ads);
-        svc_model.register(LayoutModel, this.dds, layouts_config);
         svc_model.register(ConnectionModel, this.ads);
         svc_model.register(BreadboardModel, this.ads);
         svc_model.register(TestkitModel, this.dds);
+
+        this.mdl_modal = svc_model.retrieve(ModalModel);
+        this.mdl_layout = svc_model.retrieve(LayoutModel);
 
         this.instance(IViewService).compose(element);
     }

@@ -3,6 +3,7 @@ import {ILayoutMode, ILayoutPane} from "../views/layout/LayoutView";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {PaneOrientation} from "../views/layout/Pane";
 import {WidgetInfo} from "../helpers/types";
+import {ModelEvent} from "../base/Event";
 
 const UNITS_ALLOWED = [
     "px", '%'
@@ -39,6 +40,10 @@ interface LayoutModelState {
     options?: LayoutOptions
 }
 
+export class SetModeEvent extends ModelEvent<SetModeEvent> {
+    mode: string;
+}
+
 /**
  * Модель разметки
  *
@@ -59,6 +64,14 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
 
     getOptions(): LayoutOptions {
         return this.state.options;
+    }
+
+    setMode(mode: string) {
+        if (mode in this.state.modes) {
+            this.emit(new SetModeEvent({mode}));
+        } else {
+            console.error(`Mode '${mode}' does not exist`);
+        }
     }
 
     /**

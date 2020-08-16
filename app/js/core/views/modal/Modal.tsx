@@ -42,14 +42,16 @@ class Modal extends React.Component<IModalProps, IState> {
 
         return (
             <React.Fragment>
-                <div className={klasses_overlay} onClick={onOverlayClick}/>
                 <TransitionGroup component={null}>
                     <CSSTransition key='k' timeout={600} classNames="mdl">
+                        <div className={klasses_overlay} onClick={onOverlayClick}/>
+                        </CSSTransition>
+                </TransitionGroup>
+
                         <div className={klasses_modal} style={{width: this.props.width, height: this.props.height}}>
                             {this.props.children}
                         </div>
-                    </CSSTransition>
-                </TransitionGroup>
+
             </React.Fragment>
         )
     }

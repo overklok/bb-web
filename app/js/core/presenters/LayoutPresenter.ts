@@ -1,6 +1,6 @@
 import Presenter, {on} from "../base/Presenter";
 import LayoutView, {LayoutMountEvent} from "../views/layout/LayoutView";
-import LayoutModel from "../models/LayoutModel";
+import LayoutModel, {SetModeEvent} from "../models/LayoutModel";
 
 export default class LayoutPresenter extends Presenter<LayoutView> {
     private model: LayoutModel;
@@ -19,5 +19,10 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
         const modes = this.model.getModes();
 
         this.view.setModes(modes);
+    }
+
+    @on(SetModeEvent)
+    setMode(evt: SetModeEvent) {
+        this.view.setMode(evt.mode);
     }
 }

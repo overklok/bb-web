@@ -43,7 +43,7 @@ export default class EventService extends IEventService {
             throw new Error("Invalid handler key has been passed to unsubscribe");
         }
 
-        handlers.splice(key);
+        delete handlers[key];
     }
 
     emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
@@ -54,6 +54,7 @@ export default class EventService extends IEventService {
         const handlers = map.get(Object.getPrototypeOf(event).constructor) || [];
 
         for (const handler of handlers) {
+            if (!handler) continue;
             handler(event);
         }
     }

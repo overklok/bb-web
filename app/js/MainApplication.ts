@@ -26,6 +26,7 @@ import widgets_config from "./configs/teacher/widgets";
 import "../css/global.less";
 
 class MainApplication extends Application {
+    private mdl_layout: any;
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
@@ -65,6 +66,8 @@ class MainApplication extends Application {
         this.instance(IViewService).registerWidgetTypes(widgets_config);
 
         this.instance(IViewService).compose(element);
+
+        this.mdl_layout = this.instance(IModelService).retrieve(LayoutModel);
     }
 }
 
