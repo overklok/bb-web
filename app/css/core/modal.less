@@ -118,11 +118,27 @@
 .mdl, .mdl-overlay {
   transition: opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1);
   opacity: 0;
+
+  .mdl-dlg {
+    transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    transform: scale(0.8);
+  }
 }
 
-.mdl-enter {opacity: 0;}
-.mdl-enter-active {opacity: 1;}
-.mdl-enter-done {opacity: 1;}
-.mdl-exit {opacity: 1;}
-.mdl-exit-active {opacity: 0;}
-.mdl-exit-done {opacity: 0;}
+.mdl-enter {
+  opacity: 0;
+
+  .mdl-dlg {
+    transform: scale(0.8);
+  }
+}
+
+.mdl-enter-active, .mdl-enter-done {
+  opacity: 1;
+  .mdl-dlg {
+    transform: scale(1);
+  }
+}
+
+//.mdl-exit {opacity: 1;}
+//.mdl-exit-active, .mdl-exit-done {opacity: 0;}
