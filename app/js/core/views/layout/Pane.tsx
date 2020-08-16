@@ -1,4 +1,3 @@
-// @ts-ignore (used here just to suppress IDE warning)
 import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
 
 import * as React from "react";

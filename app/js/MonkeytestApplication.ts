@@ -25,6 +25,7 @@ import layouts_config from "./configs/monkey/layouts";
 import widgets_config from "./configs/monkey/widgets";
 import ModalModel from "./core/models/ModalModel";
 import Model from "./core/base/model/Model";
+import TestkitModel from "./models/monkey/TestkitModel";
 
 class MonkeytestApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
@@ -61,6 +62,7 @@ class MonkeytestApplication extends Application {
         svc_model.register(LayoutModel, this.dds, layouts_config);
         svc_model.register(ConnectionModel, this.ads);
         svc_model.register(BreadboardModel, this.ads);
+        svc_model.register(TestkitModel, this.dds);
 
         this.instance(IViewService).compose(element);
     }

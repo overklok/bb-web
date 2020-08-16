@@ -8,8 +8,11 @@ function coverOptions(options: {[key: string]: any}, defaults: {[key: string]: a
     /// Если не заданы опции - выдать опции по умолчанию
     if (typeof options === "undefined") return defaults;
 
-    /// Если options - не объект, то возвратить значение
-    if (typeof options !== 'object' || Array.isArray(options)) return options;
+    /// Если options - массив, то возвратить копию значения
+    if (Array.isArray(options)) return [...options];
+
+    /// Если options - не объект, то возвратить копию значения
+    if (typeof options !== 'object') return options;
 
     /// Для каждой заданной опции выполнить рекурсивно поиск опции
     for (const option_key of Object.keys(defaults)) {

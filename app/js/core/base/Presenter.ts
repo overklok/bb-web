@@ -69,8 +69,17 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> {
      * Retrieve an instance of the Model.
      *
      * @param model_type
+     * @param suppress_errors
      */
-    protected getModel<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(model_type: M): InstanceType<M> {
-        return this.svc_model.retrieve(model_type);
+    protected getModel<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>
+        (model_type: M, suppress_errors: boolean = false): InstanceType<M>
+    {
+        const model = this.svc_model.retrieve(model_type);
+
+        if (!model && !suppress_errors) {
+            throw new Error(`Model ${model_type.name} does not exist.`);
+        }
+
+        return model;
     }
 }

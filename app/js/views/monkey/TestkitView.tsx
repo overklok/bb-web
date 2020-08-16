@@ -16,7 +16,7 @@ interface IProps {
 interface IState {}
 
 export class TestkitItemComponent extends React.Component<IProps, IState>{
-    ref: React.RefObject<HTMLDivElement> = React.createRef();
+    private ref: React.RefObject<HTMLDivElement> = React.createRef();
 
     componentDidMount() {
         Breadboard.drawPlate(this.ref.current, this.props.type, this.props.extra);
@@ -53,39 +53,47 @@ export class TestkitItemComponent extends React.Component<IProps, IState>{
 type TestkitItem = {title: string, type: string, extra?: any, quantity: number};
 
 interface TestkitViewState extends IViewState {
-    items: TestkitItem[];
+    quantities: number[];
 }
 
 interface TestkitViewOptions {
     items: TestkitItem[];
+    qtys_initial?: number[];
 }
 
 export default class TestkitView extends View<TestkitViewOptions, TestkitViewState> {
     static defaultOptions: TestkitViewOptions = {
-        items: []
+        items: [],
+        qtys_initial: []
     }
 
     constructor(props: IViewProps<TestkitViewOptions>) {
         super(props);
 
         this.state = {
-            items: this.options.items
+            quantities: this.options.items.map((v, i) =>
+                this.options.qtys_initial[i] != null ? this.options.qtys_initial[i] : v.quantity
+            )
         }
     }
 
-    setItemQuantity(key: number, quantity: number) {
-        const items_new = [...this.state.items];
+    public getItemQuantities(): number[] {
+        return [...this.state.quantities];
+    }
 
-        if (key < 0 || key > items_new.length) {
+    public setItemQuantity(key: number, quantity: number) {
+        const qtys_new = [...this.state.quantities];
+
+        if (key < 0 || key > qtys_new.length) {
             throw new Error("Invalid item key");
         }
 
-        items_new[key].quantity = quantity;
+        qtys_new[key] = quantity;
 
-        this.setState({items: items_new});
+        this.setState({quantities: qtys_new});
     }
 
-    render(): React.ReactNode {
+    public render(): React.ReactNode {
         const {items} = this.options;
 
         return (
@@ -103,7 +111,7 @@ export default class TestkitView extends View<TestkitViewOptions, TestkitViewSta
                             type={item.type}
                             extra={item.extra}
                             key={i}
-                            quantity={item.quantity}
+                            quantity={this.state.quantities[i]}
                             onQuantityChange={(q: number) => this.setItemQuantity(i, q)}
                         />
                     })}

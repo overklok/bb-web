@@ -4,9 +4,9 @@ import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
 export type TestKitItem = {title: string, type: string, extra?: string|number, quantity: number};
 export type TestKit = TestKitItem[];
 
-export type TestKitItemIndices = number[];
+export type TestKitItemQuanitites = number[];
 
-export default class TestkitModel extends Model<TestKitItemIndices, DummyDatasource> {
+export default class TestkitModel extends Model<TestKitItemQuanitites, DummyDatasource> {
     static FullTestKit: TestKit = [
         {title: 'Перемычка-2',          type: 'bridge',         quantity: 1, extra: 2},
         {title: 'Перемычка-3',          type: 'bridge',         quantity: 1, extra: 3},
@@ -18,8 +18,8 @@ export default class TestkitModel extends Model<TestKitItemIndices, DummyDatasou
         {title: 'Резистор 3 кОм',       type: 'resistor',       quantity: 1, extra: 3000},
         {title: 'Резистор 10 кОм',      type: 'resistor',       quantity: 1, extra: 10000},
 
-        {title: 'Конденсатор 100 мкФ',  type: 'capacitor',      quantity: 1, extra: 1e4},
-        {title: 'Конденсатор 1000 мкФ', type: 'capacitor',      quantity: 1, extra: 1e5},
+        {title: 'Конденсатор 100 мкФ',  type: 'capacitor',      quantity: 1, extra: 1e-4},
+        {title: 'Конденсатор 1000 мкФ', type: 'capacitor',      quantity: 1, extra: 1e-3},
 
         {title: 'Светодиод (красный)',  type: 'LED',            quantity: 1, extra: 'R'},
         {title: 'Светодиод (зелёный)',  type: 'LED',            quantity: 1, extra: 'G'},
@@ -37,7 +37,15 @@ export default class TestkitModel extends Model<TestKitItemIndices, DummyDatasou
     /**
      * Define default state for TestkitModel
      */
-    protected defaultState: TestKitItemIndices =
+    protected defaultState: TestKitItemQuanitites =
         // generate an array with 0 .. N sequence
-        Array(TestkitModel.FullTestKit.length).fill(0).map((_, i) => i);
+        Array(TestkitModel.FullTestKit.length).fill(0).map((_, i) => TestkitModel.FullTestKit[i].quantity);
+
+    setQuantities(qtys: TestKitItemQuanitites) {
+        this.setState(qtys);
+    }
+
+    getQuantites(): TestKitItemQuanitites {
+        return this.getState();
+    }
 }

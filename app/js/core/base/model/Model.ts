@@ -1,3 +1,4 @@
+import {cloneDeep} from "lodash";
 import Datasource from "./Datasource";
 import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";
@@ -53,7 +54,7 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
     }
 
     public getState() {
-        return this.state;
+        return cloneDeep(this.state);
     }
 
     protected emit<E>(evt: ModelEvent<E>) {
