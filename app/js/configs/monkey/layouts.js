@@ -1,6 +1,6 @@
 export default {
     options: {
-        show_headers: false,
+        show_headers: true,
     },
     modes: {
         default: {
@@ -8,17 +8,17 @@ export default {
             panes: [
                 {
                     name: 'board-left', resizable: false,
-                    widgets: [{alias: 'board_disp', label: 'Display board'}]
+                    widgets: [{alias: 'board_disp', label: 'Сборочная доска'}]
                 },
                 {
                     name: 'board-right',
-                    widgets: [{alias: 'board_ref', label: 'Reference board'}]
+                    widgets: [{alias: 'board_ref', label: 'Эталонная доска'}]
                 },
                 {
-                    name: 'settings', fixed: '300px',
+                    name: 'settings', fixed: '350px',
                     panes: [
-                        {name: 'controls', fixed: '150px', widgets: [{alias: 'controls', label: 'Controls'}]},
-                        {name: 'list'},
+                        {name: 'Управление', fixed: '150px', widgets: [{alias: 'controls', label: 'Управление'}]},
+                        {name: 'Журнал'},
                     ]
                 },
             ]

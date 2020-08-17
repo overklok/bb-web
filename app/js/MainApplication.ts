@@ -14,7 +14,7 @@ import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
 import LayoutModel from "./core/models/LayoutModel";
-import BreadboardModel from "./models/common/BreadboardModel";
+import BoardModel from "./models/common/BoardModel";
 
 import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";
 
@@ -55,7 +55,7 @@ class MainApplication extends Application {
 
         this.instance(IModelService).register(UserModel, hds);
         this.instance(IModelService).register(LayoutModel, dds, layouts_config);
-        this.instance(IModelService).register(BreadboardModel, ads);
+        this.instance(IModelService).register(BoardModel, ads);
 
         hds.registerMiddleware([
             new JWTAuthMiddleware(

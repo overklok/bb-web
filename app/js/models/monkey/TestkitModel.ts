@@ -1,10 +1,6 @@
 import Model from "../../core/base/model/Model";
 import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
-
-export type TestKitItem = {title: string, type: string, extra?: string|number, quantity: number};
-export type TestKit = TestKitItem[];
-
-export type TestKitItemQuanitites = number[];
+import {TestKit, TestKitItemQuanitites} from "./types";
 
 export default class TestkitModel extends Model<TestKitItemQuanitites, DummyDatasource> {
     static FullTestKit: TestKit = [

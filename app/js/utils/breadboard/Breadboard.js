@@ -15,129 +15,7 @@ import BoardContextMenu from "./menus/BoardContextMenu";
 import thm from "./styles/main.css";
 import {initGradients} from "./styles/gradients";
 import SelectorLayer from "./layers/SelectorLayer";
-import Plate from "./core/Plate";
-
-const LAYOUTS = {
-    Basic: {
-        WRAP_WIDTH:     1200, // Ширина рабочей области
-        WRAP_HEIGHT:    1350, // Высота рабочей области
-
-        GRID_WIDTH:     1000,
-        GRID_HEIGHT:    1100,
-
-        GRID_GAP_X:     20,
-        GRID_GAP_Y:     20,
-
-        GRID_ROWS:      11,   // Количество рядов в сетке точек
-        GRID_COLS:      10,   // Количество колонок в сетке точек
-
-        GRID_POS_X:     120,
-        GRID_POS_Y:     200,
-
-        DOMAINS: [
-            // Линия аналоговых пинов
-            {
-                horz: true, from: {x: 0, y: 0}, to: {x: -1, y: 0},
-                style: BackgroundLayer.DomainSchematicStyles.None,
-                role: LabelLayer.CellRoles.Analog
-            },
-
-            // Верхняя линия "+"
-            {horz: true,    from: {x: 0, y: 1},     to: {x: -1, y: 1}, inv: true},
-
-            // Нижняя линия "-"
-            {horz: true,    from: {x: 0, y: -1},    to: {x: -1, y: -1}},
-
-            // Две группы вертикальных линий
-            {horz: false,   from: {x: 0, y: 2},     to: {x: -1, y: 5}},
-            {horz: false,   from: {x: 0, y: 6},     to: {x: -1, y: 9}},
-        ],
-
-        POINTS: [
-            Grid.AuxPointCats.Source,
-        ],
-
-        CONTROLS: {horz: true}
-    },
-
-    Advanced: {
-        WRAP_WIDTH:     850,  // Ширина рабочей области
-        WRAP_HEIGHT:    1300, // Высота рабочей области
-
-        GRID_WIDTH:     580,
-        GRID_HEIGHT:    1180,
-
-        GRID_GAP_X:     10,
-        GRID_GAP_Y:     10,
-
-        GRID_ROWS:      16,   // Количество рядов в сетке точек
-        GRID_COLS:      8,   // Количество колонок в сетке точек
-
-        GRID_POS_X:     190,
-        GRID_POS_Y:     70,
-
-        DOMAINS: [
-            // Верхняя линия
-            {
-                horz: true, from: {x: 0, y: 0}, to: {x: 3, y: 0},
-                role: LabelLayer.CellRoles.Plus, inv: true,
-                label_pos: "top",
-            },
-            {
-                horz: true, from: {x: 4, y: 0}, to: {x: -1, y: 0},
-                role: LabelLayer.CellRoles.Analog,
-                style: BackgroundLayer.DomainSchematicStyles.Dotted,
-                pins_from: 0, inv: true,
-                before: 1,
-                label_pos: "top"
-            },
-
-            // Нижняя линия
-            {
-                horz: true,
-                from: {x: 0, y: 15}, to: {x: 3, y: 15},
-                role: LabelLayer.CellRoles.Plus,
-                label_pos: "bottom",
-            },
-            {
-                horz: true,
-                from: {x: 4, y: 15}, to: {x: -1, y: 15},
-                role: LabelLayer.CellRoles.Analog,
-                style: BackgroundLayer.DomainSchematicStyles.Dotted,
-                pins_to: 11,
-                before: 1,
-                label_pos: "bottom"
-            },
-
-            // Три группы вертикальных линий
-            {horz: false, from: {x: 0, y: 1},   to: {x: -2, y: 5}},
-            {horz: false, from: {x: 0, y: 6},   to: {x: -2, y: 9}},
-            {horz: false, from: {x: 0, y: 10},  to: {x: -2, y: 14}},
-
-            // Тройные линии в верхней и нижней группах
-            {horz: false, from: {x: -1, y: 1},  to: {x: -1, y: 3}},
-            {horz: false, from: {x: -1, y: 12}, to: {x: -1, y: 14}},
-
-            // Двойные линии в средней группе
-            {horz: false, from: {x: -1, y: 8},  to: {x: -1, y: 9}},
-            {horz: false, from: {x: -1, y: 6},  to: {x: -1, y: 7}},
-
-            // Одиночные контакты - аналоговые пины
-            {horz: false, from: {x: -1, y: 4},  to: {x: -1, y: 4},  role: LabelLayer.CellRoles.Analog, pins_from: 4},
-            {horz: false, from: {x: -1, y: 5},  to: {x: -1, y: 5},  role: LabelLayer.CellRoles.Analog, pins_from: 5},
-            {horz: false, from: {x: -1, y: 10}, to: {x: -1, y: 10}, role: LabelLayer.CellRoles.Analog, pins_from: 6},
-            {horz: false, from: {x: -1, y: 11}, to: {x: -1, y: 11}, role: LabelLayer.CellRoles.Analog, pins_from: 7},
-        ],
-
-        POINTS: [
-            Grid.AuxPointCats.Usb1,
-            Grid.AuxPointCats.Usb3,
-        ],
-
-        CONTROLS: {horz: false},
-    }
-}
-
+import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 
 /**
  * Основной класс платы.
@@ -145,7 +23,6 @@ const LAYOUTS = {
  */
 export default class Breadboard {
     static get CellRadius() {return 5}
-    static get Layouts() {return LAYOUTS}
 
     constructor(options) {
         if (!SVG.supported) {
@@ -170,7 +47,11 @@ export default class Breadboard {
             dragstart: () => {},
             shortcircuitstart: () => {},
             shortcircuitend: () => {},
+            layoutchange: () => {},
         };
+
+        this._layouts = {};
+        this.registerLayouts(DEFAULT_LAYOUTS);
 
         this._cache = {
             current: undefined,
@@ -254,19 +135,19 @@ export default class Breadboard {
 
         /// базовая кисть
         this._brush = SVG(div_wrap);
-        this._brush.node.setAttribute("viewBox", "0 0 " + this._options.layout.WRAP_WIDTH + " " + this._options.layout.WRAP_HEIGHT);
+        this._brush.node.setAttribute("viewBox", "0 0 " + this._options.layout.wrap_width + " " + this._options.layout.wrap_height);
         this._brush.node.style.width = "100%";
         this._brush.node.style.height = "100%";
 
         this._brush.style({"user-select": "none"});
 
         this.__grid = new Grid(
-            this._options.layout.GRID_ROWS,  this._options.layout.GRID_COLS,
-            this._options.layout.GRID_WIDTH, this._options.layout.GRID_HEIGHT,
-            this._options.layout.GRID_POS_X, this._options.layout.GRID_POS_Y,
-            this._options.layout.GRID_GAP_X, this._options.layout.GRID_GAP_Y,
-            this._options.layout.WRAP_WIDTH, this._options.layout.WRAP_HEIGHT,
-            this._options.layout.POINTS
+            this._options.layout.grid_rows,  this._options.layout.grid_cols,
+            this._options.layout.grid_width, this._options.layout.grid_height,
+            this._options.layout.grid_pos_x, this._options.layout.grid_pos_y,
+            this._options.layout.grid_gap_x, this._options.layout.grid_gap_y,
+            this._options.layout.wrap_width, this._options.layout.wrap_height,
+            this._options.layout.points
         );
 
         /// создать фильтры
@@ -296,8 +177,21 @@ export default class Breadboard {
         // this._attachControlsEvents();
     }
 
-    setLayout(layout) {
-        this.reinject({layout});
+    registerLayouts(layouts) {
+        if (!layouts) return;
+
+        for (const [alias, layout] of Object.entries(layouts)) {
+            this._layouts[alias] = layout;
+
+            if (this._layers.controls) {
+                this._layers.controls.addMenuItem(`layout-${alias}`, `Разметка: ${alias}`);
+            }
+        }
+    }
+
+    setLayout(alias) {
+        this.reinject({layout: alias});
+        this._callbacks.layoutchange(alias);
     }
 
     /**
@@ -456,6 +350,12 @@ export default class Breadboard {
         this._callbacks.shortcircuitend = cb;
     }
 
+    onLayoutChange(cb) {
+        if (!cb) {this._callbacks.layoutchange = () => {}}
+
+        this._callbacks.layoutchange = cb;
+    }
+
     switchSchematic(on, detailed) {
         // TODO: Merge detailed and schematic modes
         if (this._options.schematic === on && this._options.detailed === detailed) return;
@@ -572,9 +472,9 @@ export default class Breadboard {
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
 
-        this._layers.background.setDomainConfig(this._options.layout.DOMAINS);
-        this._layers.controls.setLayoutConfig(this._options.layout.CONTROLS);
-        this._layers.label.setDomainConfig(this._options.layout.DOMAINS);
+        this._layers.background.setDomainConfig(this._options.layout.domains);
+        this._layers.controls.setLayoutConfig(this._options.layout.controls);
+        this._layers.label.setDomainConfig(this._options.layout.domains);
 
         /// внутренняя компоновка каждого слоя
         this._layers.background.compose();
@@ -624,12 +524,22 @@ export default class Breadboard {
     _setOptions(options) {
         options = options || {};
 
+        if (options.layouts) {
+            this.registerLayouts(options.layouts);
+        }
+
+        console.log(options.layout);
+
+        if (options.layout) {
+            if (!this._layouts[options.layout]) throw new RangeError(`Layout ${options.layout} does not exist`);
+        }
+
         this._options = {
             verbose:    options.verbose || false,
             detailed:   options.detailed || false,
             schematic:  options.schematic || false,
 
-            layout:                 (options.layout === undefined ? Breadboard.Layouts.Basic : options.layout),
+            layout:                 (options.layout === undefined ? this._layouts['default'] : this._layouts[options.layout]),
             readOnly:               (options.readOnly === undefined ? true : options.readOnly),
             showControlsDefault:    (options.showControlsDefault === undefined ? true : options.showControlsDefault),
             showSourceCurrents:     (options.showSourceCurrents === undefined ? true : options.showSourceCurrents)
@@ -702,14 +612,19 @@ export default class Breadboard {
                 case BoardContextMenu.CMI_MOD_VERBOS_INP:
                     this.switchVerbose(value);
                     break;
-                case BoardContextMenu.CMI_LAY_BASIC:
-                    this.setLayout(Breadboard.Layouts.Basic);
-                    break;
-                case BoardContextMenu.CMI_LAY_ADVAN:
-                    this.setLayout(Breadboard.Layouts.Advanced);
-                    break;
+            }
+
+            for (const layout_alias of Object.keys(this._layouts)) {
+                if (alias === `layout-${layout_alias}`) {
+                    this.setLayout(layout_alias);
+                }
             }
         });
+
+        /// переопределить пункты меню, определяющие разметку
+        for (const [alias, layout] of Object.entries(this._layouts)) {
+            this._layers.controls.addMenuItem(`layout-${alias}`, `Разметка: ${alias}`);
+        }
 
         /// начало перетаскивания плашки
         this._layers.plate.onDragStart(() => {
@@ -800,11 +715,11 @@ export default class Breadboard {
         if (!svg_node) {return}
 
         let canvas = document.createElement("canvas");
-        canvas.style.minWidth = this._options.layout.WRAP_WIDTH;
-        canvas.style.minHeight = this._options.layout.WRAP_HEIGHT;
+        canvas.style.minWidth = this._options.layout.wrap_width;
+        canvas.style.minHeight = this._options.layout.wrap_height;
 
-        canvas.setAttribute('width', this._options.layout.WRAP_WIDTH);
-        canvas.setAttribute('height', this._options.layout.WRAP_HEIGHT);
+        canvas.setAttribute('width', this._options.layout.wrap_width);
+        canvas.setAttribute('height', this._options.layout.wrap_height);
 
         document.body.appendChild(canvas);
 
@@ -815,7 +730,7 @@ export default class Breadboard {
         let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
 
         if (rasterize) {
-            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: this._options.layout.WRAP_HEIGHT});
+            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: this._options.layout.wrap_height});
 
             let img = canvas.toDataURL("image/png");
 

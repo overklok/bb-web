@@ -12,8 +12,6 @@ export default class BoardContextMenu extends ContextMenu {
     static get CMI_MOD_DETAIL() {return "cmi_mod_det"}
     static get CMI_MOD_VERBOS() {return "cmi_mod_vbs"}
     static get CMI_MOD_VERBOS_INP() {return "cmi_mod_vbs_inp"}
-    static get CMI_LAY_BASIC() {return "cmi_lay_basic"}
-    static get CMI_LAY_ADVAN() {return "cmi_lay_advan"}
 
     constructor(container, grid, item_height) {
         super(container, grid, item_height);
@@ -70,20 +68,15 @@ export default class BoardContextMenu extends ContextMenu {
                     beforeClick: () => {return this._beforeVerboseClick()}
                 }
             },
-            {
-                alias: BoardContextMenu.CMI_LAY_BASIC,
-                label: 'Базовая тапанда [6.3.1]',
-                active: true
-            },
-            {
-                alias: BoardContextMenu.CMI_LAY_ADVAN,
-                label: 'Расширенная тапанда',
-                active: true
-            },
-
         ];
 
         this._verbose_on = false;
+    }
+
+    addItem(alias, label, active=true) {
+        this._items_data.push({
+            alias, label, active
+        });
     }
 
     _beforeVerboseClick() {

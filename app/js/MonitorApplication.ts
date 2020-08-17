@@ -13,9 +13,9 @@ import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
-import BoardMonitorPresenter from "./presenters/monitor/BoardMonitorPresenter";
+import BoardPresenter from "./presenters/common/BoardPresenter";
 
-import BreadboardModel from "./models/common/BreadboardModel";
+import BoardModel from "./models/common/BoardModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
 import BoardView from "./views/board/BoardView";
@@ -25,6 +25,7 @@ import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewCompose
 
 class MonitorApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
+    private bb: BoardModel;
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
@@ -53,14 +54,16 @@ class MonitorApplication extends Application {
               svc_model = this.instance(IModelService);
 
         svc_view.registerWidgetTypes({
-            main: {view_type: BoardView, presenter_types: [BoardMonitorPresenter], view_options: {
+            main: {view_type: BoardView, presenter_types: [BoardPresenter], view_options: {
                 schematic: true,
             }},
         });
 
         svc_model.launch(this.ads);
         svc_model.register(ConnectionModel, this.ads);
-        svc_model.register(BreadboardModel, this.ads);
+        svc_model.register(BoardModel, this.ads);
+
+        this.bb = svc_model.retrieve(BoardModel);
 
         this.instance(IViewService).compose(element);
     }

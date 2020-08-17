@@ -74,7 +74,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
 
     private renderDialogModal(key: number, props: IDialogModalProps, content: string | JSX.Element) {
         return (
-            <CSSTransition in out key={key} timeout={400} classNames="mdl" unmountOnExit>
+            <CSSTransition in out key={key} timeout={200} classNames="mdl" unmountOnExit>
                 <DialogModal onClose={() => this.closeModal(key)}
                              heading={props.heading} hint={props.hint}
                              size={props.size} width={props.width} height={props.height}
@@ -87,7 +87,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
 
     private renderModal(key: number, props: IModalProps, content: string | JSX.Element) {
         return (
-            <CSSTransition in out key={key} timeout={400} classNames="mdl" unmountOnExit>
+            <CSSTransition in out key={key} timeout={200} classNames="mdl" unmountOnExit>
                 <Modal size={props.size} width={props.width} height={props.height}>
                     {content}
                 </Modal>

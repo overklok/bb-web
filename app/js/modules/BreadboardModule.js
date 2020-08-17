@@ -1,6 +1,7 @@
 import Module from "../core/Module";
 
 import Breadboard from "../utils/breadboard/Breadboard";
+import {LAYOUTS} from "../utils/breadboard/extras/layouts";
 
 /**
  * Модуль для работы с макетной платой
@@ -32,6 +33,7 @@ export default class BreadboardModule extends Module {
         };
 
         this._board = new Breadboard();
+        this._board.registerLayouts(LAYOUTS);
 
         this._subscribeToWrapperEvents();
     }
@@ -52,7 +54,7 @@ export default class BreadboardModule extends Module {
                 // this._board.inject(dom_node, false);
                 this._board.inject(dom_node, {
                     readOnly: !this._options.modeAdmin,
-                    layout: this._options.layoutAdvanced ? Breadboard.Layouts.Advanced : Breadboard.Layouts.Basic
+                    layout: this._options.layoutAdvanced ? 'v8x' : 'default'
                 });
 
                 this._state.display = true;
@@ -176,12 +178,8 @@ export default class BreadboardModule extends Module {
         this._board.switchSpareFilters(on);
     }
 
-    setLayoutAdvanced(advanced=false) {
-        if (advanced) {
-            this._board.setLayout(Breadboard.Layouts.Advanced);
-        } else {
-            this._board.setLayout(Breadboard.Layouts.Basic);
-        }
+    setLayout(alias) {
+        this._board.setLayout(alias);
     }
 
     getLayout() {

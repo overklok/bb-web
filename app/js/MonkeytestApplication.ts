@@ -14,7 +14,7 @@ import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasourc
 import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
 import LayoutModel from "./core/models/LayoutModel";
-import BreadboardModel from "./models/common/BreadboardModel";
+import BoardModel from "./models/common/BoardModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
 import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
@@ -24,7 +24,6 @@ import "../css/global.less";
 import layouts_config from "./configs/monkey/layouts";
 import widgets_config from "./configs/monkey/widgets";
 import ModalModel from "./core/models/ModalModel";
-import Model from "./core/base/model/Model";
 import TestkitModel from "./models/monkey/TestkitModel";
 
 class MonkeytestApplication extends Application {
@@ -62,7 +61,7 @@ class MonkeytestApplication extends Application {
 
         svc_model.launch(this.ads);
         svc_model.register(ConnectionModel, this.ads);
-        svc_model.register(BreadboardModel, this.ads);
+        svc_model.register(BoardModel, this.ads);
         svc_model.register(TestkitModel, this.dds);
 
         this.mdl_modal = svc_model.retrieve(ModalModel);

@@ -67,8 +67,12 @@ export default class ControlsLayer extends Layer {
 
         this._hide();
 
-        this._ctxmenu       = new BoardContextMenu(this._menugroup, this.__grid);
+        this._ctxmenu = new BoardContextMenu(this._menugroup, this.__grid);
         this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)})
+    }
+
+    addMenuItem(alias, label, active) {
+        this._ctxmenu.addItem(alias, label, active);
     }
 
     setVisibility(is_visible) {

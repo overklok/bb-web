@@ -42,7 +42,7 @@ export default class SocketDatasource extends AsynchronousDatasource {
             console.debug('[SocketIPC] connecting...');
 
             // if (!this.socket.hasListeners('connect')) {
-                this.socket.on('xconnect', (cli_descriptor: string) => {
+                this.socket.once('xconnect', (cli_descriptor: string) => {
                     // of course you can use 'connect' instead of 'xconnect' here
 
                     this._status = AsyncDatasourceStatus.Connected;

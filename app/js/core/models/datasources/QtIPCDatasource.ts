@@ -19,7 +19,7 @@ enum QtWebStatus {
 
 export default class QtIPCDatasource extends AsynchronousDatasource {
     // Connection retrieval options
-    private static readonly AttemptLimit = 5;
+    private static readonly AttemptLimit = 15;
     private static readonly AttemptPeriodInit = 50; // ms
     private static readonly AttemptPeriodConnect = 500; // ms
 
@@ -69,23 +69,31 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
 
             QtIPCDatasource.Status = QtWebStatus.Disconnected;
 
+            this.once('connect', (cli_descriptor: string) => {
+                QtIPCDatasource.Status = QtWebStatus.Connected;
+
+                console.log(`connection established. Client: ${cli_descriptor}`);
+
+                clearInterval(rep);
+                this.emit_connect();
+                resolve(true);
+            });
+
             const rep = setInterval(() => {
                 if (!QtIPCDatasource.isReady()) {
                     console.debug("[QtIPC] waiting for readiness...");
                 } else {
-                    console.debug("[QtIPC] ready, connecting...");
+                    console.debug("[QtIPC] ready, preparing the connector...");
 
                     new QWebChannel(window.qt.webChannelTransport, channel => {
                         QtIPCDatasource.Connector = channel.objects.connector;
 
                         if (QtIPCDatasource.isConnected()) {
                             QtIPCDatasource.Connector.event_sig.connect(this.onEventSig.bind(this));
-                            QtIPCDatasource.Status = QtWebStatus.Connected;
 
-                            console.debug('[QtIPC] connected.');
-                            clearInterval(rep);
-                            this.emit_connect();
-                            resolve(true);
+                            console.debug('[QtIPC] a connection is possible now, connecting...');
+
+                            QtIPCDatasource.Connector.emit('connect', null);
                         } else {
                             clearInterval(rep);
                             QtIPCDatasource.Status = QtWebStatus.Disconnected;

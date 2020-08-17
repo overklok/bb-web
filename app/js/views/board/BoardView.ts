@@ -5,6 +5,7 @@ import {IViewOptions, IViewProps} from "../../core/base/view/View";
 
 export class ChangeEvent extends ViewEvent<ChangeEvent> {}
 export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
+export class LayoutChangeEvent extends ViewEvent<LayoutChangeEvent> {}
 
 export interface BoardViewOptions extends IViewOptions {
     schematic?: boolean;
@@ -44,6 +45,10 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
 
     setReadOnly(readonly: boolean = true) {
         this.bb.setReadOnly(readonly);
+    }
+
+    getLayout() {
+        return this.bb.getLayout();
     }
 
     getPlates() {
@@ -88,5 +93,6 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
     private setup() {
         this.bb.onChange(() => this.emit(new ChangeEvent({})))
         this.bb.onDragStart(() => this.emit(new PlateDragStartEvent({})))
+        this.bb.onLayoutChange(() => this.emit(new LayoutChangeEvent({})))
     }
 }
