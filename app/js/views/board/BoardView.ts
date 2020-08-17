@@ -14,20 +14,35 @@ export interface BoardViewOptions extends IViewOptions {
 }
 
 export default class BoardView extends ImperativeView<BoardViewOptions> {
-    private bb: Breadboard;
-
     static defaultOptions: BoardViewOptions = {
         schematic: true,
         readonly: true,
         verbose: false
     }
 
+    private readonly bb: Breadboard;
+    private layouts: object;
+    private layout_name: string;
+
     constructor(props: IViewProps<BoardViewOptions>) {
         super(props);
 
-        this.bb = new Breadboard();
+        this.bb = new Breadboard({
+            layouts: this.layouts,
+            layout_name: this.layout_name
+        });
 
         this.setup();
+    }
+
+    registerLayouts(layouts: object): void {
+        if (this.bb) {
+            // register immediately
+            this.bb.registerLayouts(layouts);
+        } else {
+            // or wait till breadboard is not created
+            this.layouts = layouts;
+        }
     }
 
     inject(container: HTMLDivElement): void {
@@ -45,6 +60,22 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
 
     setReadOnly(readonly: boolean = true) {
         this.bb.setReadOnly(readonly);
+    }
+
+    setRandom(protos: {type: string, extra: any, quantity: number}[],
+          size_mid?: number,
+          size_deviation?: number,
+          attempts_max?: number
+    ) {
+        this.bb.setRandomPlates(protos, size_mid, size_deviation, attempts_max);
+    }
+
+    setLayout(layout_name: string) {
+        if (this.bb) {
+            this.bb.setLayout(layout_name);
+        } else {
+            this.layout_name = layout_name;
+        }
     }
 
     getLayout() {

@@ -165,6 +165,10 @@ export default class Plate {
         return this._params.size.x;
     }
 
+    get rels() {
+        return this._params.rels;
+    }
+
     /**
      * Возвратить текущее состояние плашки
      *

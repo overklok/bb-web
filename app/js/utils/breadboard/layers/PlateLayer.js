@@ -108,6 +108,100 @@ export default class PlateLayer extends Layer {
         return this._plates[plate_id];
     }
 
+    setRandom(protos, size_mid=10, size_deviation=2, attempts_max=40) {
+        const orientations = [
+            Plate.Orientations.East,
+            Plate.Orientations.West,
+            Plate.Orientations.North,
+            Plate.Orientations.South
+        ];
+
+        let remaining = size_mid + this.getRandomInt(-size_deviation, size_deviation);
+
+        while (remaining > 0) {
+            const proto = protos[this.getRandomInt(0, protos.length - 1)];
+
+            let placed = false,
+                attempts = 0;
+
+            while (!placed && attempts < attempts_max) {
+                let orientation = orientations[this.getRandomInt(0, orientations.length - 1)],
+                    x = this.getRandomInt(0, this.__grid.dim.x-1),
+                    y = this.getRandomInt(0, this.__grid.dim.y-1);
+
+                placed = this.addPlate(
+                    proto.type, x, y, orientation, null, proto.extra, false, true
+                );
+
+                if (placed) {
+                    if (this.hasIntersections(placed)) {
+                        this.removePlate(placed);
+                        placed = false;
+                    }
+                }
+
+                attempts++;
+            }
+
+            remaining--;
+        }
+    }
+
+    getRandomInt(min, max) {
+        return Math.floor(min + Math.random() * (max + 1 - min));
+    }
+
+    hasIntersections(plate_id) {
+        const plate = this._plates[plate_id],
+              {x: px0, y: py0} = plate.pos,
+              plate_rels = plate.rels;
+
+        for (const p of Object.values(this._plates)) {
+            const {x: x0, y: y0} = p.pos,
+                  p_rels = p.rels;
+
+            if (p.id === plate.id) continue;
+
+            if ((x0 === px0) && (y0 === py0)) return true;
+
+            for (const p_rel of p_rels) {
+                const {x, y} = Plate._orientXYObject(p_rel, p.state.orientation);
+
+                for (const plate_rel of plate_rels) {
+                    const {x: px, y: py} = Plate._orientXYObject(plate_rel, plate.state.orientation);
+
+                    if ((px0 + px === x0 + x) && (py0 + py === y0 + y)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    _isAreaOccupied(from, to) {
+        const [x_begin, x_end] = from.x > to.x ? [from.x, to.x] : [to.x, from.x],
+              [y_begin, y_end] = from.y > to.y ? [from.y, to.y] : [to.y, from.y];
+
+        for (let x = x_begin; x <= x_end; x++) {
+            for (let y = y_begin; y <= y_end; y++) {
+                if (grid[x] && grid[x][y]) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    _getRandomCell(grid_width, grid_height) {
+        return [
+            Math.floor(Math.random() * grid_width + 1),
+            Math.floor(Math.random() * grid_height + 1)
+        ];
+    }
+
     /**
      * Включить режим редактирования плашки
      *
@@ -159,7 +253,7 @@ export default class PlateLayer extends Layer {
      *
      * @returns {null|int} идентификатор плашки
      */
-    addPlate(type, x, y, orientation, id=null, extra=null, animate=false) {
+    addPlate(type, x, y, orientation, id=null, extra=null, animate=false, suppress_error=false) {
         if (!(typeof x !== "undefined") || !(typeof y !== "undefined") || !orientation) {
             throw new TypeError("All of 'type', 'x', 'y', and 'orientation' arguments must be defined");
         }
@@ -184,7 +278,10 @@ export default class PlateLayer extends Layer {
         try {
             plate.draw(this.__grid.cell(x, y), orientation, animate);
         } catch (err) {
-            console.error("Cannot draw the plate", err);
+            if (!suppress_error) {
+                console.error("Cannot draw the plate", err);
+            }
+
             plate.dispose();
 
             return null;

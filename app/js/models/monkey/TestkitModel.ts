@@ -1,6 +1,11 @@
 import Model from "../../core/base/model/Model";
 import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
 import {TestKit, TestKitItemQuanitites} from "./types";
+import {ModelEvent} from "../../core/base/Event";
+
+export class TestkitChangeEvent extends ModelEvent<TestkitChangeEvent> {
+    qtys: TestKitItemQuanitites;
+}
 
 export default class TestkitModel extends Model<TestKitItemQuanitites, DummyDatasource> {
     static FullTestKit: TestKit = [
@@ -39,6 +44,7 @@ export default class TestkitModel extends Model<TestKitItemQuanitites, DummyData
 
     setQuantities(qtys: TestKitItemQuanitites) {
         this.setState(qtys);
+        this.emit(new TestkitChangeEvent(qtys));
     }
 
     getQuantites(): TestKitItemQuanitites {

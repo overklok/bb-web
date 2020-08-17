@@ -1,4 +1,6 @@
-import {cloneDeep} from "lodash";
+import {LAYOUTS as CORE_LAYOUTS} from "../../utils/breadboard/core/extras/layouts";
+import {LAYOUTS} from "../../utils/breadboard/extras/layouts";
+
 import AsynchronousModel, {listen} from "../../core/base/model/AsynchronousModel";
 import {ModelState} from "../../core/base/model/Model";
 import {ModelEvent} from "../../core/base/Event";
@@ -17,24 +19,33 @@ interface BreadboardModelState extends ModelState {
     plates: Plate[];
     threads: Thread[];
     arduino_pins: ArduinoPin[];
-    layout: string;
+    layout_name: string;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
+    static Layouts: {[key: string]: BoardLayout} = {
+        default: CORE_LAYOUTS['default'],
+        v8x: LAYOUTS['v8x']
+    };
+
     protected defaultState: BreadboardModelState = {
         plates: [],
         threads: [],
         arduino_pins: [],
-        layout: undefined,
+        layout_name: 'default',
     }
 
-    setBoardLayout(layout: string): void {
-        this.setState({layout});
-        this.emit(new BoardLayoutEvent());
+    setBoardLayout(layout_name: string): void {
+        if (!layout_name) return;
+
+        if (this.state.layout_name != layout_name) {
+            this.setState({layout_name});
+            this.emit(new BoardLayoutEvent({layout_name}));
+        }
     }
 
     getBoardLayout(): string {
-        return this.state.layout;
+        return this.state.layout_name;
     }
 
     sendPlates(plates: Plate[]): void {
@@ -98,6 +109,11 @@ export type Thread = {
     to: number;
 }
 
+export type BoardLayout = {
+    grid_rows: number;
+    grid_cols: number;
+}
+
 // Event data types
 interface ElectronicDataPackage {
     threads: Thread[], elements: PlateDiff[], arduino_pins: ArduinoPin[]
@@ -117,5 +133,5 @@ export class BoardOptionsEvent extends ModelEvent<BoardOptionsEvent> {
 }
 
 export class BoardLayoutEvent extends ModelEvent<BoardLayoutEvent> {
-    layout: string;
+    layout_name: string;
 }

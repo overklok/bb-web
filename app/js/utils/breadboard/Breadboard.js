@@ -133,21 +133,24 @@ export default class Breadboard {
         /// применить опции
         this._setOptions(options);
 
+        /// установить разметку
+        this._layout = this._layouts[this._options.layout_name];
+
         /// базовая кисть
         this._brush = SVG(div_wrap);
-        this._brush.node.setAttribute("viewBox", "0 0 " + this._options.layout.wrap_width + " " + this._options.layout.wrap_height);
+        this._brush.node.setAttribute("viewBox", "0 0 " + this._layout.wrap_width + " " + this._layout.wrap_height);
         this._brush.node.style.width = "100%";
         this._brush.node.style.height = "100%";
 
         this._brush.style({"user-select": "none"});
 
         this.__grid = new Grid(
-            this._options.layout.grid_rows,  this._options.layout.grid_cols,
-            this._options.layout.grid_width, this._options.layout.grid_height,
-            this._options.layout.grid_pos_x, this._options.layout.grid_pos_y,
-            this._options.layout.grid_gap_x, this._options.layout.grid_gap_y,
-            this._options.layout.wrap_width, this._options.layout.wrap_height,
-            this._options.layout.points
+            this._layout.grid_rows,  this._layout.grid_cols,
+            this._layout.grid_width, this._layout.grid_height,
+            this._layout.grid_pos_x, this._layout.grid_pos_y,
+            this._layout.grid_gap_x, this._layout.grid_gap_y,
+            this._layout.wrap_width, this._layout.wrap_height,
+            this._layout.points
         );
 
         /// создать фильтры
@@ -160,11 +163,14 @@ export default class Breadboard {
         this.setReadOnly(this._options.readOnly);
     };
 
+    setRandomPlates(protos, size_mid, size_deviation, attempts_max) {
+        this._layers.plate.setRandom(protos, size_mid, size_deviation, attempts_max);
+    }
 
     /**
      * Задать запрет на создание/движение плашек
      *
-     * @param {boolean}
+     * @param readOnly {boolean}
      */
     setReadOnly(readOnly) {
         this._options.readOnly = readOnly;
@@ -180,18 +186,18 @@ export default class Breadboard {
     registerLayouts(layouts) {
         if (!layouts) return;
 
-        for (const [alias, layout] of Object.entries(layouts)) {
-            this._layouts[alias] = layout;
+        for (const [name, layout] of Object.entries(layouts)) {
+            this._layouts[name] = layout;
 
             if (this._layers.controls) {
-                this._layers.controls.addMenuItem(`layout-${alias}`, `Разметка: ${alias}`);
+                this._layers.controls.addMenuItem(`layout-${name}`, `Разметка: ${name}`);
             }
         }
     }
 
-    setLayout(alias) {
-        this.reinject({layout: alias});
-        this._callbacks.layoutchange(alias);
+    setLayout(layout_name) {
+        this.reinject({layout_name});
+        this._callbacks.layoutchange(layout_name);
     }
 
     /**
@@ -260,7 +266,7 @@ export default class Breadboard {
     }
 
     getLayout() {
-        return this._options.layout;
+        return this._options.layout_name;
     }
 
     /**
@@ -472,9 +478,9 @@ export default class Breadboard {
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
 
-        this._layers.background.setDomainConfig(this._options.layout.domains);
-        this._layers.controls.setLayoutConfig(this._options.layout.controls);
-        this._layers.label.setDomainConfig(this._options.layout.domains);
+        this._layers.background.setDomainConfig(this._layout.domains);
+        this._layers.controls.setLayoutConfig(this._layout.controls);
+        this._layers.label.setDomainConfig(this._layout.domains);
 
         /// внутренняя компоновка каждого слоя
         this._layers.background.compose();
@@ -528,10 +534,8 @@ export default class Breadboard {
             this.registerLayouts(options.layouts);
         }
 
-        console.log(options.layout);
-
-        if (options.layout) {
-            if (!this._layouts[options.layout]) throw new RangeError(`Layout ${options.layout} does not exist`);
+        if (options.layout_name) {
+            if (!this._layouts[options.layout_name]) throw new RangeError(`Layout ${options.layout_name} does not exist`);
         }
 
         this._options = {
@@ -539,8 +543,8 @@ export default class Breadboard {
             detailed:   options.detailed || false,
             schematic:  options.schematic || false,
 
-            layout:                 (options.layout === undefined ? this._layouts['default'] : this._layouts[options.layout]),
             readOnly:               (options.readOnly === undefined ? true : options.readOnly),
+            layout_name:            (options.layout_name === undefined ? 'default' : options.layout_name),
             showControlsDefault:    (options.showControlsDefault === undefined ? true : options.showControlsDefault),
             showSourceCurrents:     (options.showSourceCurrents === undefined ? true : options.showSourceCurrents)
         }
@@ -715,11 +719,11 @@ export default class Breadboard {
         if (!svg_node) {return}
 
         let canvas = document.createElement("canvas");
-        canvas.style.minWidth = this._options.layout.wrap_width;
-        canvas.style.minHeight = this._options.layout.wrap_height;
+        canvas.style.minWidth = this._layout.wrap_width;
+        canvas.style.minHeight = this._layout.wrap_height;
 
-        canvas.setAttribute('width', this._options.layout.wrap_width);
-        canvas.setAttribute('height', this._options.layout.wrap_height);
+        canvas.setAttribute('width', this._layout.wrap_width);
+        canvas.setAttribute('height', this._layout.wrap_height);
 
         document.body.appendChild(canvas);
 
@@ -730,7 +734,7 @@ export default class Breadboard {
         let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
 
         if (rasterize) {
-            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: this._options.layout.wrap_height});
+            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: this._layout.wrap_height});
 
             let img = canvas.toDataURL("image/png");
 
