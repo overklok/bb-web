@@ -34,17 +34,17 @@ export default class MonkeyView extends View<IViewOptions, MonkeyViewState>{
         const klasses_btn_approve = classNames({
             'monkey__btn': true,
             'btn': true,
-            'btn-success': true,
-            'btn-disabled': !this.state.approve_active
+            'btn_success': true,
+            'btn_disabled': !this.state.approve_active
         });
 
         return (
             <div className='monkey'>
-                <div className='monkey__btn btn btn-default' onClick={() => this.emit(new ConfigureClick())}>Настроить...</div>
+                <div className='monkey__btn btn btn_default' onClick={() => this.emit(new ConfigureClick())}>Настроить...</div>
                 <div className={klasses_btn_approve} onClick={() => this.emit(new ApproveClick())}>Схема собрана</div>
 
-                <div className='monkey__btn btn btn-danger' onClick={() => this.emit(new NocompClick())}>Не хватает компонентов</div>
-                <div className='monkey__btn btn btn-warning' onClick={() => this.emit(new DiagClick())}>Выполнить диагностику</div>
+                <div className='monkey__btn btn btn_danger' onClick={() => this.emit(new NocompClick())}>Не хватает компонентов</div>
+                <div className='monkey__btn btn btn_warning' onClick={() => this.emit(new DiagClick())}>Выполнить диагностику</div>
             </div>
         )
     }

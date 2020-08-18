@@ -31,12 +31,11 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
     }
 
     @on(ApproveClick)
-    protected approveAssembly() {
+    protected async approveAssembly() {
         if (!this.is_equal) {
-            this.modal.showModal({
-                heading: 'а че такое',
+            const answer = await this.modal.showQuestionModal({
+                dialog: {heading: 'а че такое',},
                 content: 'а как какать',
-                is_dialog: true,
             })
         }
     }
@@ -45,9 +44,10 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
     protected runConfigurator() {
         this.modal.showModal({
             widget_alias: 'testkit',
-            heading: 'Изменить набор плашек',
-            is_dialog: true,
-            size: 'lg'
+            size: 'lg',
+            dialog: {
+                heading: 'Изменить набор плашек'
+            }
         });
     }
 

@@ -4,8 +4,9 @@
 .btn {
   display: inline-block;
   padding: .375rem .75rem;
+  font-size: 1em;
 
-  border-radius: 4px;
+  border-radius: .125em;
 
   cursor: pointer;
   user-select: none;
@@ -19,38 +20,54 @@
     transform: scale(0.95);
   }
 
-  &.btn-default {
+  &.btn_sm {
+    font-size: 0.725rem;
+  }
+
+  &.btn_default {
     background-color: @default;
     color: @text_light;
 
     &:hover {background-color: @default_deep;}
   }
 
-  &.btn-primary {
+  &.btn_primary {
     background-color: @primary;
     color: @text_light;
 
     &:hover {background-color: @primary_deep;}
   }
 
-  &.btn-success {
+  &.btn_success {
     background-color: @success;
     color: @text_light;
 
     &:hover {background-color: @success_deep;}
   }
 
-  &.btn-warning {
+  &.btn_warning {
     background-color: @warning;
     color: @text_dark;
 
     &:hover {background-color: @warning_deep;}
   }
 
-  &.btn-danger {
+  &.btn_danger {
     background-color: @danger;
     color: @text_light;
 
     &:hover {background-color: @danger_deep;}
+  }
+}
+
+.btn-bar {
+  display: inline-block;
+
+  &.btn-bar_right {
+    float: right;
+  }
+
+  > .btn {
+    margin: 5px;
   }
 }

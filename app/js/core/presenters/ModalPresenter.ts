@@ -5,6 +5,10 @@ import {ShowModalEvent} from "../models/ModalModel";
 export default class ModalPresenter extends Presenter<ModalView> {
     @on(ShowModalEvent)
     private onShowModal(evt: ShowModalEvent) {
-        this.view.showModal(evt.modal_data);
+        const {modal_data} = evt;
+
+        console.log(evt);
+
+        this.view.showModal(modal_data);
     }
 }
