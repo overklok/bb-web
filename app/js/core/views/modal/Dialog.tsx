@@ -38,7 +38,8 @@ const Dialog = (props: IDialogProps) => {
     });
 
     let footer = null,
-        hint = null;
+        hint = null,
+        header = null;
 
     if (props.on_accept || props.on_dismiss) {
         footer = (
@@ -65,8 +66,8 @@ const Dialog = (props: IDialogProps) => {
         );
     }
 
-    return (
-        <div className={klasses_dialog}>
+    if (props.is_closable || props.heading) {
+        header = (
             <div className='mdl-dlg__header'>
                 <div className='mdl-dlg__heading' children={props.heading} />
                 <div className='mdl-dlg__buttons'>
@@ -76,6 +77,12 @@ const Dialog = (props: IDialogProps) => {
                     }
                 </div>
             </div>
+        )
+    }
+
+    return (
+        <div className={klasses_dialog}>
+            {header}
             <div className='mdl-dlg__body'>
                 {props.children}
             </div>

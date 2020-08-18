@@ -50,7 +50,8 @@ export default class MonkeyPresenter extends Presenter<BoardView> {
             protos[i] = {type: tki.type, extra: tki.extra, quantity: this.testkit_qtys[i]}
         }
 
-        this.view.setRandom(protos);
+        this.view.setPlates([]);
+        this.view.setRandom(protos, 2, 0);
         this.reference.setReference(this.view.getPlates());
     }
 }

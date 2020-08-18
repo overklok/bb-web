@@ -24,6 +24,24 @@ import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 export default class Breadboard {
     static get CellRadius() {return 5}
 
+    static comparePlates(layout, plate1, plate2) {
+        const grid = Breadboard.buildGrid(layout);
+        const svg = SVG(document.createElement("div"));
+
+        return PlateLayer.comparePlates(svg, grid, plate1, plate2);
+    }
+
+    static buildGrid(layout) {
+        return new Grid(
+            layout.grid_rows,  layout.grid_cols,
+            layout.grid_width, layout.grid_height,
+            layout.grid_pos_x, layout.grid_pos_y,
+            layout.grid_gap_x, layout.grid_gap_y,
+            layout.wrap_width, layout.wrap_height,
+            layout.points
+        );
+    }
+
     constructor(options) {
         if (!SVG.supported) {
             alert("SVG is not supported. Please use any modern browser.");
@@ -144,14 +162,7 @@ export default class Breadboard {
 
         this._brush.style({"user-select": "none"});
 
-        this.__grid = new Grid(
-            this._layout.grid_rows,  this._layout.grid_cols,
-            this._layout.grid_width, this._layout.grid_height,
-            this._layout.grid_pos_x, this._layout.grid_pos_y,
-            this._layout.grid_gap_x, this._layout.grid_gap_y,
-            this._layout.wrap_width, this._layout.wrap_height,
-            this._layout.points
-        );
+        this.__grid = Breadboard.buildGrid(this._layout);
 
         /// создать фильтры
         this._defineFilters();

@@ -1,9 +1,10 @@
+import {isEqual} from "lodash";
 import Layer from "../core/Layer";
+
 import Plate from "../core/Plate";
-
 import ContextMenu from "../core/ContextMenu";
-import PlateContextMenu from "../menus/PlateContextMenu";
 
+import PlateContextMenu from "../menus/PlateContextMenu";
 import ResistorPlate        from "../plates/ResistorPlate";
 import PhotoresistorPlate   from "../plates/PhotoresistorPlate";
 import RheostatPlate        from "../plates/RheostatPlate";
@@ -28,6 +29,61 @@ import Breadboard from "../Breadboard";
  */
 export default class PlateLayer extends Layer {
     static get Class() {return "bb-layer-plate"}
+
+    static get TypesReversible() {
+        return [
+            'bridge', 'resistor', 'photoresistor', 'capacitor', 'button', 'tbutton', 'inductor', 'buzzer', 'dummy'
+        ];
+    }
+
+    static comparePlates(svg, grid, plate1_data, plate2_data) {
+        if (plate1_data.type !== plate2_data.type) return false;
+        if (plate1_data.extra !== plate2_data.extra) return false;
+
+        let is_orientation_equal = plate1_data.orientation === plate2_data.orientation;
+
+        if (PlateLayer.TypesReversible.indexOf(plate1_data.type) === -1) {
+            if (!is_orientation_equal) return false;
+            if (plate1_data.x !== plate2_data.x || plate1_data.y !== plate2_data.y) return false;
+        } else {
+            const plate1 = PlateLayer.jsonToPlate(svg, grid, plate1_data),
+                  plate2 = PlateLayer.jsonToPlate(svg, grid, plate2_data);
+
+            const {x: p1_x0, y: p1_y0} = plate1.pos,
+                  {x: p2_x0, y: p2_y0} = plate2.pos,
+                  p1_surf_points = plate1.surface,
+                  p2_surf_points = plate2.surface;
+
+            for (const p1_surf_point of p1_surf_points) {
+                const {x: p1_x, y: p1_y} = Plate._orientXYObject(p1_surf_point, plate1.state.orientation);
+
+                let has_same_point = false;
+
+                for (const p2_surf_point of p2_surf_points) {
+                    const {x: p2_x, y: p2_y} = Plate._orientXYObject(p2_surf_point, plate2.state.orientation);
+
+                    if ((p1_x0 + p1_x === p2_x0 + p2_x) && (p1_y0 + p1_y === p2_y0 + p2_y)) {
+                        has_same_point = true;
+                        break;
+                    }
+                }
+
+                if (has_same_point === false) return false;
+            }
+        }
+
+        return true;
+    }
+
+    static jsonToPlate(svg, grid, plate_data) {
+        const {type, x,y, orientation, extra} = plate_data;
+
+        const plate_class = PlateLayer.typeToPlateClass(type);
+        const plate = new plate_class(svg, grid, false, false, false, extra);
+        plate.draw(grid.cell(x, y), orientation, false);
+
+        return plate;
+    }
 
     constructor(container, grid, schematic=false, verbose=false) {
         super(container, grid, schematic, verbose);

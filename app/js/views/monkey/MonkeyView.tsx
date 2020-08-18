@@ -1,7 +1,6 @@
 import * as React from "react";
 import {IViewOptions, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
-import classNames from "classnames";
 
 require('../../../css/button.less')
 require('../../../css/monkey.less')
@@ -11,11 +10,7 @@ export class ApproveClick extends ViewEvent<ApproveClick> {}
 export class NocompClick extends ViewEvent<NocompClick> {}
 export class DiagClick extends ViewEvent<DiagClick> {}
 
-interface MonkeyViewState extends IViewState {
-    approve_active: boolean;
-}
-
-export default class MonkeyView extends View<IViewOptions, MonkeyViewState>{
+export default class MonkeyView extends View<IViewOptions, IViewState>{
     constructor(p: IViewProps<IViewOptions>) {
         super(p);
 
@@ -24,11 +19,6 @@ export default class MonkeyView extends View<IViewOptions, MonkeyViewState>{
         };
     }
 
-    setApproveActive(is_active: boolean) {
-        this.setState({
-            approve_active: is_active
-        });
-    }
 
     render(): React.ReactNode {
         return (

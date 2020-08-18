@@ -2,8 +2,9 @@ import Presenter, {on} from "../../core/base/Presenter";
 import MonkeyView, {ApproveClick, ConfigureClick} from "../../views/monkey/MonkeyView";
 import ModalModel from "../../core/models/ModalModel";
 import ReferenceBoardModel, {ReferenceEvent} from "../../models/monkey/ReferenceBoardModel";
-import {Plate, PlateEvent} from "../../models/common/BoardModel";
+import BoardModel, {Plate, PlateEvent, UserPlateEvent} from "../../models/common/BoardModel";
 import {isEqual, sortBy} from "lodash";
+import Breadboard from "../../utils/breadboard/Breadboard";
 
 export default class MonkeyPresenter extends Presenter<MonkeyView> {
     private modal: ModalModel;
@@ -12,13 +13,15 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
 
     private reference_board: ReferenceBoardModel;
     private is_equal: boolean;
+    private assembly_board: BoardModel;
 
     protected ready() {
         this.modal = this.getModel(ModalModel);
         this.reference_board = this.getModel(ReferenceBoardModel);
+        this.assembly_board = this.getModel(BoardModel);
     }
 
-    @on(PlateEvent)
+    @on(PlateEvent, UserPlateEvent)
     protected setAssembly(evt: PlateEvent) {
         this.assembly = evt.plates;
         this.comparePlates();
@@ -34,9 +37,10 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
     protected async approveAssembly() {
         if (!this.is_equal) {
             const answer = await this.modal.showQuestionModal({
-                dialog: {heading: 'а че такое',},
-                content: 'а как какать',
-            })
+                dialog: {heading: 'Рассмотреть схему как собранную', label_accept: 'Да', label_dismiss: 'Нет'},
+                content: 'Вы уверены?',
+                is_closable: false,
+            });
         }
     }
 
@@ -52,8 +56,48 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
     }
 
     private comparePlates() {
-        this.is_equal = isEqual(sortBy(this.assembly), sortBy(this.reference));
+        if (!this.assembly || !this.reference) return;
 
-        this.view.setApproveActive(this.is_equal);
+        const is_equal = this.isPlateSetsEqual();
+
+        if (!this.is_equal && is_equal) {
+            this.is_equal = true;
+            this.reference_board.requestNew();
+        } else {
+            this.is_equal = false;
+        }
+    }
+
+    private isPlateSetsEqual(): boolean {
+        let is_equal = this.assembly.length === this.reference.length;
+
+        if (is_equal) {
+            for (const plate_a of this.assembly) {
+                let has_matches = false;
+
+                for (const plate_r of this.reference) {
+                    is_equal = this.isPlatesEqual(plate_a, plate_r);
+
+                    if (is_equal) {
+                        has_matches = true;
+                        break;
+                    }
+                }
+
+                if (!has_matches) {
+                    is_equal = false;
+                    console.log(plate_a);
+                    break;
+                }
+            }
+        }
+
+        return is_equal;
+    }
+
+    private isPlatesEqual(plate_a: Plate, plate_b: Plate): boolean {
+        const layout = BoardModel.Layouts[this.assembly_board.getBoardLayout()];
+
+        return Breadboard.comparePlates(layout, plate_a, plate_b);
     }
 }

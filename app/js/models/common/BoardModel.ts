@@ -48,9 +48,10 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         return this.state.layout_name;
     }
 
-    sendPlates(plates: Plate[]): void {
+    setPlates(plates: Plate[]): void {
         this.setState({plates});
         this.send(ChannelsTo.Plates, plates);
+        this.emit(new UserPlateEvent({plates}));
     }
 
     /**
@@ -117,6 +118,10 @@ export type BoardLayout = {
 // Event data types
 interface ElectronicDataPackage {
     threads: Thread[], elements: PlateDiff[], arduino_pins: ArduinoPin[]
+}
+
+export class UserPlateEvent extends ModelEvent<PlateEvent> {
+    plates: Plate[];
 }
 
 export class PlateEvent extends ModelEvent<PlateEvent> {

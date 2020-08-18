@@ -8,7 +8,7 @@ export default class ResistorPlate extends LinearPlate {
     constructor(container, grid, schematic=false, verbose=false, id, resistance) {
         super(container, grid, schematic, verbose, id, resistance);
 
-        this._params.extra = (resistance <= 0) ? 200 : resistance;
+        this._params.extra = Number((resistance <= 0) ? 200 : resistance);
     }
 
     /**

@@ -22,7 +22,7 @@ export default class BoardPresenter extends Presenter<BoardView> {
 
     @on(ChangeEvent)
     private onUserChange(evt: ChangeEvent) {
-        this.model.sendPlates(this.view.getPlates());
+        this.model.setPlates(this.view.getPlates());
     }
 
     @on(PlateEvent)
