@@ -161,6 +161,10 @@ export default class ViewConnector {
     }
 
     private getEventAnchorByInstance<E extends AbstractEvent<any>>(evt_type: E): any {
+        const event_ctype = Object.getPrototypeOf(evt_type).constructor.type;
+
+        if (!event_ctype) throw new Error("Event should have a static type");
+
         return Object.getPrototypeOf(evt_type).constructor.type === BasicEventType.View ? this : null;
     }
 

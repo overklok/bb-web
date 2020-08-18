@@ -16,9 +16,14 @@ export default class LinearPlate extends Plate {
         // Единица - размер ячейки (в каждом измерении)
 
         this._params.rels = [];
+        this._params.surface = [];
 
         for (let i = 0; i < this.__length__; i++) {
             this._params.rels.push({x: i, y: 0, adj: {x: 0, y: 0}});
+        }
+
+        for (let i = 0; i < this.__length__; i++) {
+            this._params.surface.push({x: i, y: 0});
         }
     }
 

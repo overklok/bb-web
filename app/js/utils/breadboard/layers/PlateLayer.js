@@ -154,24 +154,34 @@ export default class PlateLayer extends Layer {
     hasIntersections(plate_id) {
         const plate = this._plates[plate_id],
               {x: px0, y: py0} = plate.pos,
-              plate_rels = plate.rels;
+              plate_rels = plate.surface;
+
+        if (!plate.surface) {
+            console.log(plate);
+        }
 
         for (const p of Object.values(this._plates)) {
             const {x: x0, y: y0} = p.pos,
-                  p_rels = p.rels;
+                  p_rels = p.surface;
 
             if (p.id === plate.id) continue;
 
             if ((x0 === px0) && (y0 === py0)) return true;
 
+            if (!p.surface) {
+               console.log(p);
+            }
+
             for (const p_rel of p_rels) {
                 const {x, y} = Plate._orientXYObject(p_rel, p.state.orientation);
 
-                for (const plate_rel of plate_rels) {
-                    const {x: px, y: py} = Plate._orientXYObject(plate_rel, plate.state.orientation);
+                if (plate_rels) {
+                    for (const plate_rel of plate_rels) {
+                        const {x: px, y: py} = Plate._orientXYObject(plate_rel, plate.state.orientation);
 
-                    if ((px0 + px === x0 + x) && (py0 + py === y0 + y)) {
-                        return true;
+                        if ((px0 + px === x0 + x) && (py0 + py === y0 + y)) {
+                            return true;
+                        }
                     }
                 }
             }

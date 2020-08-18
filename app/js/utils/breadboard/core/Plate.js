@@ -169,6 +169,10 @@ export default class Plate {
         return this._params.rels;
     }
 
+    get surface() {
+        return this._params.surface;
+    }
+
     /**
      * Возвратить текущее состояние плашки
      *

@@ -164,6 +164,7 @@ export default class Breadboard {
     };
 
     setRandomPlates(protos, size_mid, size_deviation, attempts_max) {
+        if (!this._layers.plate) throw new Error("Breadboard must be injected first");
         this._layers.plate.setRandom(protos, size_mid, size_deviation, attempts_max);
     }
 

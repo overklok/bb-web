@@ -1,14 +1,12 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import LinearPlate from "../core/plate/LinearPlate";
 
-export default class TransistorPlate extends Plate {
+export default class TransistorPlate extends LinearPlate {
     static get Alias() {return "transistor"}
 
     constructor(container, grid, schematic=false, verbose=false, id) {
         super(container, grid, schematic, verbose, id);
-
-        // Размер плашки в стандартной ориентации
-        this._params.size = {x: 3, y: 1};
 
         // Относительные точки плашки (координаты в стандартной ориентации)
         // Единица - размер ячейки (в кадом измерении)
@@ -23,6 +21,14 @@ export default class TransistorPlate extends Plate {
         this._params.adjs = {};
         this._params.adjs[Plate.Orientations.North] = {x: 0, y: 0};
         this._params.adjs[Plate.Orientations.South] = {x: 0, y: 0};
+    }
+
+    /**
+     * @returns {number}
+     * @private
+     */
+    get __length__() {
+        return 3;
     }
 
     /**

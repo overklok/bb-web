@@ -21,10 +21,10 @@ export interface IViewState {
 
 }
 
-export class RenderEvent extends AbstractEvent<RenderEvent>     {}
-export class MountEvent extends AbstractEvent<MountEvent>       {}
-export class UnmountEvent extends AbstractEvent<UnmountEvent>   {}
-export class ResizeEvent extends AbstractEvent<ResizeEvent>     {}
+export class RenderEvent extends ViewEvent<RenderEvent>     {}
+export class MountEvent extends ViewEvent<MountEvent>       {}
+export class UnmountEvent extends ViewEvent<UnmountEvent>   {}
+export class ResizeEvent extends ViewEvent<ResizeEvent>     {}
 
 export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
     public static defaultOptions: IViewOptions;

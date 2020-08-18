@@ -1,5 +1,5 @@
 import * as React from "react";
-import {IViewProps, IViewState, View} from "./View";
+import {IViewProps, IViewState, MountEvent, View} from "./View";
 
 export abstract class ImperativeView<O> extends View<O, IViewState> {
     public static notifyNestMount: boolean = true;
@@ -14,11 +14,13 @@ export abstract class ImperativeView<O> extends View<O, IViewState> {
     public componentDidUpdate(prevProps: Readonly<IViewProps<O>>, prevState: Readonly<IViewState>, snapshot?: any) {
         if (prevProps.nest_mounted === false && this.props.nest_mounted === true) {
             this.inject(this.props.ref_parent.current);
+            this.emit(new MountEvent({}));
         }
     }
 
     public componentDidMount() {
-        super.componentDidMount();
+        this.mounted = true;
+        this.viewDidMount();
 
         if (this.props.nest_mounted === true) {
             this.inject(this.props.ref_parent.current);
