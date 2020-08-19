@@ -1,0 +1,69 @@
+@import "../colors";
+@import "../animations";
+
+.log-group {
+  background-color: @primary;
+
+  padding: 1/2em;
+
+  border-bottom: solid 1px black;
+
+  &__header {
+    overflow: hidden;
+    display: flex;
+  }
+
+  &__statusbar {
+
+  }
+
+  &__details {
+    margin: 1/2em 0;
+
+    transition: height .2s @ease;
+  }
+
+  &__headings {
+    width: 80%;
+  }
+
+  &__controls {
+    position: relative;
+    width: 20%;
+  }
+
+  &__expander {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translateY(-50%);
+
+    width: 0;
+    height: 0;
+
+    border-left: 3/4em solid transparent;
+    border-right: 3/4em solid transparent;
+    border-top: 1em solid #f00;
+
+    cursor: pointer;
+
+    &_active {
+      transform: translateY(-50%) rotate(180deg);
+    }
+  }
+
+  &__heading {
+    margin: 1/2em 0;
+  }
+
+  &__subheading {
+    margin: 1/4em 0;
+
+    font-size: 3/4em;
+  }
+
+  &_danger {
+    background-color: @danger;
+  }
+}

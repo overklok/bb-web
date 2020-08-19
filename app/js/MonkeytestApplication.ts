@@ -25,7 +25,7 @@ import layouts_config from "./configs/monkey/layouts";
 import widgets_config from "./configs/monkey/widgets";
 import ModalModel from "./core/models/ModalModel";
 import TestkitModel from "./models/monkey/TestkitModel";
-import ReferenceBoardModel from "./models/monkey/ReferenceBoardModel";
+import BoardLogModel from "./models/monkey/BoardLogModel";
 
 class MonkeytestApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
@@ -64,8 +64,8 @@ class MonkeytestApplication extends Application {
         svc_model.launch(this.ads);
         svc_model.register(ConnectionModel, this.ads);
         svc_model.register(BoardModel, this.ads);
-        svc_model.register(ReferenceBoardModel, this.dds);
         svc_model.register(TestkitModel, this.dds);
+        svc_model.register(BoardLogModel, this.dds);
 
         this.mdl_board = svc_model.retrieve(BoardModel);
         this.mdl_modal = svc_model.retrieve(ModalModel);

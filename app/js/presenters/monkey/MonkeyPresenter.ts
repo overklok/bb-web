@@ -1,30 +1,38 @@
 import Presenter, {on} from "../../core/base/Presenter";
 import MonkeyView, {ApproveClick, ConfigureClick} from "../../views/monkey/MonkeyView";
 import ModalModel from "../../core/models/ModalModel";
-import ReferenceBoardModel, {ReferenceEvent} from "../../models/monkey/ReferenceBoardModel";
-import BoardModel, {Plate, PlateEvent, UserPlateEvent} from "../../models/common/BoardModel";
-import {isEqual, sortBy} from "lodash";
+import BoardModel, {BoardErrorEvent, Plate, PlateEvent, UserPlateEvent} from "../../models/common/BoardModel";
 import Breadboard from "../../utils/breadboard/Breadboard";
+import TestkitModel, {ReferenceEvent} from "../../models/monkey/TestkitModel";
+import BoardLogModel from "../../models/monkey/BoardLogModel";
 
 export default class MonkeyPresenter extends Presenter<MonkeyView> {
     private modal: ModalModel;
     private assembly: Plate[];
     private reference: Plate[];
+    private log: BoardLogModel;
 
-    private reference_board: ReferenceBoardModel;
+    private testkit: TestkitModel;
     private is_equal: boolean;
     private assembly_board: BoardModel;
 
     protected ready() {
         this.modal = this.getModel(ModalModel);
-        this.reference_board = this.getModel(ReferenceBoardModel);
+        this.testkit = this.getModel(TestkitModel);
         this.assembly_board = this.getModel(BoardModel);
+        this.log = this.getModel(BoardLogModel);
     }
 
     @on(PlateEvent, UserPlateEvent)
     protected setAssembly(evt: PlateEvent) {
+        this.log.addPlates(evt.plates);
         this.assembly = evt.plates;
         this.comparePlates();
+    }
+
+    @on(BoardErrorEvent)
+    protected setError(evt: BoardErrorEvent) {
+        this.log.addError({...evt});
     }
 
     @on(ReferenceEvent)
@@ -62,7 +70,8 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
 
         if (!this.is_equal && is_equal) {
             this.is_equal = true;
-            this.reference_board.requestNew();
+            this.testkit.requestNewReference();
+            this.log.finishGroup();
         } else {
             this.is_equal = false;
         }

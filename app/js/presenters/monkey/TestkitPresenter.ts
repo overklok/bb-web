@@ -9,13 +9,17 @@ export default class TestkitPresenter extends Presenter<TestkitView> {
     protected ready() {
         this.testkit = this.getModel(TestkitModel);
 
+        const {qtys, size, size_deviation} = this.testkit.getState();
+
         this.view.setOptions({
-            qtys_initial: this.testkit.getQuantites()
-        })
+            qtys_initial: qtys,
+            size_initial: size,
+            size_deviation_initial: size_deviation
+        });
     }
 
     @on(UnmountEvent)
     private saveValues() {
-        this.testkit.setQuantities(this.view.getItemQuantities());
+        this.testkit.setQuantities(this.view.getItemQuantities(), this.view.getSize(), this.view.getSizeDeviation());
     }
 }

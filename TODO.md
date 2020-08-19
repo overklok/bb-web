@@ -1,5 +1,7 @@
 TO-DO:
 
+!!! Move React View rendering to Presenter !!!
+
 0. Сигналы - события без параметров
 
 1. Стоит ли создавать Presenter'ы в конструкторе View?

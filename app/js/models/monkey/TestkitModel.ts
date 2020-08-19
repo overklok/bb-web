@@ -2,12 +2,26 @@ import Model from "../../core/base/model/Model";
 import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
 import {TestKit, TestKitItemQuanitites} from "./types";
 import {ModelEvent} from "../../core/base/Event";
+import {Plate} from "../common/BoardModel";
 
 export class TestkitChangeEvent extends ModelEvent<TestkitChangeEvent> {
     qtys: TestKitItemQuanitites;
+    size: number;
+    size_deviation: number;
 }
 
-export default class TestkitModel extends Model<TestKitItemQuanitites, DummyDatasource> {
+export class ReferenceRequestEvent extends ModelEvent<ReferenceRequestEvent> {}
+export class ReferenceEvent extends ModelEvent<ReferenceEvent> {
+    plates: Plate[];
+}
+
+interface TestkitModelState {
+    qtys: TestKitItemQuanitites;
+    size: number;
+    size_deviation: number;
+}
+
+export default class TestkitModel extends Model<TestkitModelState, DummyDatasource> {
     static FullTestKit: TestKit = [
         {title: 'Перемычка-2',          type: 'bridge',         quantity: 1, extra: 2},
         {title: 'Перемычка-3',          type: 'bridge',         quantity: 1, extra: 3},
@@ -15,9 +29,9 @@ export default class TestkitModel extends Model<TestKitItemQuanitites, DummyData
         {title: 'Перемычка-5',          type: 'bridge',         quantity: 1, extra: 5},
 
         {title: 'Резистор 100 Ом',      type: 'resistor',       quantity: 1, extra: 100},
-        {title: 'Резистор 1 кОм',       type: 'resistor',       quantity: 1, extra: 1000},
-        {title: 'Резистор 3 кОм',       type: 'resistor',       quantity: 1, extra: 3000},
-        {title: 'Резистор 10 кОм',      type: 'resistor',       quantity: 1, extra: 10000},
+        {title: 'Резистор 1 кОм',       type: 'resistor',       quantity: 0, extra: 1000},
+        {title: 'Резистор 3 кОм',       type: 'resistor',       quantity: 0, extra: 3000},
+        {title: 'Резистор 10 кОм',      type: 'resistor',       quantity: 0, extra: 10000},
 
         {title: 'Конденсатор 100 мкФ',  type: 'capacitor',      quantity: 1, extra: 1e-4},
         {title: 'Конденсатор 1000 мкФ', type: 'capacitor',      quantity: 1, extra: 1e-3},
@@ -38,16 +52,24 @@ export default class TestkitModel extends Model<TestKitItemQuanitites, DummyData
     /**
      * Define default state for TestkitModel
      */
-    protected defaultState: TestKitItemQuanitites =
+    protected defaultState: TestkitModelState = {
         // generate an array with 0 .. N sequence
-        Array(TestkitModel.FullTestKit.length).fill(0).map((_, i) => TestkitModel.FullTestKit[i].quantity);
-
-    setQuantities(qtys: TestKitItemQuanitites) {
-        this.setState(qtys);
-        this.emit(new TestkitChangeEvent(qtys));
+        qtys: Array(TestkitModel.FullTestKit.length).fill(0).map((_, i) => TestkitModel.FullTestKit[i].quantity),
+        size: 10,
+        size_deviation: 2
     }
 
-    getQuantites(): TestKitItemQuanitites {
-        return this.getState();
+    setQuantities(qtys: TestKitItemQuanitites, size: number, size_deviation: number) {
+        this.setState({qtys, size, size_deviation});
+
+        this.emit(new TestkitChangeEvent({qtys, size, size_deviation}));
+    }
+
+    public setReference(plates: Plate[]) {
+        this.emit(new ReferenceEvent({plates}));
+    }
+
+    public requestNewReference() {
+        this.emit(new ReferenceRequestEvent());
     }
 }

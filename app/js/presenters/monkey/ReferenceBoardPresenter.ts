@@ -1,26 +1,30 @@
 import Presenter, {on} from "../../core/base/Presenter";
 import BoardView from "../../views/board/BoardView";
 import BoardModel, {BoardLayoutEvent, PlateEvent} from "../../models/common/BoardModel";
-import TestkitModel, {TestkitChangeEvent} from "../../models/monkey/TestkitModel";
+import TestkitModel, {ReferenceRequestEvent, TestkitChangeEvent} from "../../models/monkey/TestkitModel";
 import {TestKitItemQuanitites} from "../../models/monkey/types";
-import ReferenceBoardModel, {ReferenceRequestEvent} from "../../models/monkey/ReferenceBoardModel";
 import {MountEvent} from "../../core/base/view/View";
 
 export default class MonkeyPresenter extends Presenter<BoardView> {
     private testkit: TestkitModel;
     private board: BoardModel;
     private layout_name: string;
+
     private testkit_qtys: TestKitItemQuanitites;
-    private reference: ReferenceBoardModel;
+    private testkit_size: number;
+    private testkit_size_deviation: number;
 
     protected ready() {
         this.view.registerLayouts(BoardModel.Layouts);
 
         this.board = this.getModel(BoardModel);
         this.testkit = this.getModel(TestkitModel);
-        this.reference = this.getModel(ReferenceBoardModel);
 
-        this.testkit_qtys = this.testkit.getQuantites();
+        const {qtys, size, size_deviation} = this.testkit.getState();
+
+        this.testkit_qtys = qtys;
+        this.testkit_size = size;
+        this.testkit_size_deviation = size_deviation;
     }
 
     @on(MountEvent)
@@ -33,11 +37,15 @@ export default class MonkeyPresenter extends Presenter<BoardView> {
         this.layout_name = evt.layout_name
 
         this.view.setLayout(evt.layout_name);
+        this.generateNewReference();
     }
 
     @on(TestkitChangeEvent)
     private setReferenceTestkit(evt: TestkitChangeEvent) {
         this.testkit_qtys = evt.qtys;
+        this.testkit_size = evt.size;
+        this.testkit_size_deviation = evt.size_deviation;
+        this.generateNewReference();
     }
 
     @on(ReferenceRequestEvent)
@@ -51,7 +59,7 @@ export default class MonkeyPresenter extends Presenter<BoardView> {
         }
 
         this.view.setPlates([]);
-        this.view.setRandom(protos, 2, 0);
-        this.reference.setReference(this.view.getPlates());
+        this.view.setRandom(protos, this.testkit_size, this.testkit_size_deviation);
+        this.testkit.setReference(this.view.getPlates());
     }
 }

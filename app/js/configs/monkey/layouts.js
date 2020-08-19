@@ -18,7 +18,7 @@ export default {
                     name: 'settings', fixed: '350px',
                     panes: [
                         {name: 'Управление', fixed: '150px', widgets: [{alias: 'controls', label: 'Управление'}]},
-                        {name: 'Журнал'},
+                        {name: 'Журнал', widgets: [{alias: 'log', label: 'Журнал'}]},
                     ]
                 },
             ]

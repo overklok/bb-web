@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 
 import {IViewProps, IViewState, View} from "../../core/base/view/View";
-import "../../../css/testkit.less";
+import "../../../css/blocks/testkit.less";
 import Breadboard from "../../utils/breadboard/Breadboard";
 
 interface IProps {
@@ -54,11 +54,15 @@ type TestkitItem = {title: string, type: string, extra?: any, quantity: number};
 
 interface TestkitViewState extends IViewState {
     quantities: number[];
+    size: number;
+    size_deviation: number;
 }
 
 interface TestkitViewOptions {
     items: TestkitItem[];
     qtys_initial?: number[];
+    size_initial?: number;
+    size_deviation_initial?: number;
 }
 
 export default class TestkitView extends View<TestkitViewOptions, TestkitViewState> {
@@ -73,7 +77,9 @@ export default class TestkitView extends View<TestkitViewOptions, TestkitViewSta
         this.state = {
             quantities: this.options.items.map((v, i) =>
                 this.options.qtys_initial[i] != null ? this.options.qtys_initial[i] : v.quantity
-            )
+            ),
+            size: this.options.size_initial || 0,
+            size_deviation: this.options.size_deviation_initial || 0,
         }
     }
 
@@ -81,7 +87,35 @@ export default class TestkitView extends View<TestkitViewOptions, TestkitViewSta
         return [...this.state.quantities];
     }
 
-    public setItemQuantity(key: number, quantity: number) {
+    public getSize(): number {
+        return this.state.size;
+    }
+
+    public getSizeDeviation(): number {
+        return this.state.size_deviation;
+    }
+
+    private onChangeSize(e: React.ChangeEvent<HTMLInputElement>) {
+        let val = Number(e.target.value);
+
+        val = val < this.state.size_deviation ? this.state.size_deviation : val;
+
+        this.setState({
+            size: val
+        });
+    }
+
+    private onChangeSizeDeviation(e: React.ChangeEvent<HTMLInputElement>) {
+        let val = Number(e.target.value);
+
+        val = val > this.state.size ? this.state.size : val;
+
+        this.setState({
+            size_deviation: val
+        });
+    }
+
+    private setItemQuantity(key: number, quantity: number) {
         const qtys_new = [...this.state.quantities];
 
         if (key < 0 || key > qtys_new.length) {
@@ -115,6 +149,14 @@ export default class TestkitView extends View<TestkitViewOptions, TestkitViewSta
                             onQuantityChange={(q: number) => this.setItemQuantity(i, q)}
                         />
                     })}
+                </div>
+
+                <div className="testkit__params">
+                    Количество плашек&nbsp;
+                    <input type="number" min={1} max={99} value={this.state.size} onChange={e => this.onChangeSize(e)}/>
+                    <br/>
+                    Макс. отклонение&nbsp;
+                    <input type="number" min={0} max={this.state.size} value={this.state.size_deviation} onChange={e => this.onChangeSizeDeviation(e)}/>
                 </div>
             </div>
         );

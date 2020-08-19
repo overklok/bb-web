@@ -1,4 +1,3 @@
-import {isEqual} from "lodash";
 import Layer from "../core/Layer";
 
 import Plate from "../core/Plate";
@@ -17,12 +16,12 @@ import InductorPlate        from "../plates/InductorPlate";
 import RelayPlate           from "../plates/RelayPlate";
 import StripPlate           from "../plates/StripPlate";
 import DiodePlate           from "../plates/LEDPlate";
-import MotorPlate from "../plates/MotorPlate";
-import RGBPlate from "../plates/RGBPlate";
-import DummyPlate from "../plates/DummyPlate";
-import BuzzerPlate from "../plates/BuzzerPlate";
-import TButtonPlate from "../plates/TButtonPlate";
-import Breadboard from "../Breadboard";
+import MotorPlate           from "../plates/MotorPlate";
+import RGBPlate             from "../plates/RGBPlate";
+import DummyPlate           from "../plates/DummyPlate";
+import BuzzerPlate          from "../plates/BuzzerPlate";
+import TButtonPlate         from "../plates/TButtonPlate";
+import Breadboard           from "../Breadboard";
 
 /**
  * Слой плашек
@@ -30,9 +29,18 @@ import Breadboard from "../Breadboard";
 export default class PlateLayer extends Layer {
     static get Class() {return "bb-layer-plate"}
 
+    // TODO: Move this information to Plate classes
     static get TypesReversible() {
         return [
-            'bridge', 'resistor', 'photoresistor', 'capacitor', 'button', 'tbutton', 'inductor', 'buzzer', 'dummy'
+            BridgePlate.Alias,
+            ResistorPlate.Alias,
+            PhotoresistorPlate.Alias,
+            CapacitorPlate.Alias,
+            ButtonPlate.Alias,
+            TButtonPlate.Alias,
+            InductorPlate.Alias,
+            BuzzerPlate.Alias,
+            DummyPlate.Alias
         ];
     }
 
@@ -164,7 +172,9 @@ export default class PlateLayer extends Layer {
         return this._plates[plate_id];
     }
 
-    setRandom(protos, size_mid=10, size_deviation=2, attempts_max=40) {
+    setRandom(_protos, size_mid=10, size_deviation=2, attempts_max=40) {
+        const protos = [];
+
         const orientations = [
             Plate.Orientations.East,
             Plate.Orientations.West,
@@ -172,10 +182,25 @@ export default class PlateLayer extends Layer {
             Plate.Orientations.South
         ];
 
+        for (const proto of _protos) {
+            if (proto.quantity > 0) {
+                protos.push({type: proto.type, extra: proto.extra, qty: proto.quantity})
+            }
+        }
+
         let remaining = size_mid + this.getRandomInt(-size_deviation, size_deviation);
 
         while (remaining > 0) {
-            const proto = protos[this.getRandomInt(0, protos.length - 1)];
+            if (protos.length === 0) return;
+
+            const p_index = this.getRandomInt(0, protos.length - 1)
+            const proto = {type: protos[p_index].type, extra: protos[p_index].extra, qty: protos[p_index].qty};
+
+            if (proto.qty === 1) {
+                protos.splice(p_index, 1);
+            }
+
+            proto.qty--;
 
             let placed = false,
                 attempts = 0;

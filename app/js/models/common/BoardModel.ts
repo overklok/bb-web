@@ -11,8 +11,9 @@ const enum ChannelsTo {
 }
 
 const enum ChannelsFrom {
+    Error = 'error',
     Plates = 'draw_plates',
-    Currents = 'draw_currents'
+    Currents = 'draw_currents',
 }
 
 interface BreadboardModelState extends ModelState {
@@ -83,7 +84,12 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
             arduino_pins: arduino_pins
         });
 
-        this.emit(new ElectronicEvent({threads, elements, arduino_pins}))
+        this.emit(new ElectronicEvent({threads, elements, arduino_pins}));
+    }
+
+    @listen(ChannelsFrom.Error)
+    private onError({message, code}: ErrorDataPackage) {
+        this.emit(new BoardErrorEvent({message, code}));
     }
 }
 
@@ -120,6 +126,10 @@ interface ElectronicDataPackage {
     threads: Thread[], elements: PlateDiff[], arduino_pins: ArduinoPin[]
 }
 
+interface ErrorDataPackage {
+    code: number, message: string
+}
+
 export class UserPlateEvent extends ModelEvent<PlateEvent> {
     plates: Plate[];
 }
@@ -131,6 +141,11 @@ export class PlateEvent extends ModelEvent<PlateEvent> {
 export class ElectronicEvent extends ModelEvent<ElectronicEvent> {
     threads: Thread[];
     arduino_pins: ArduinoPin[];
+}
+
+export class BoardErrorEvent extends ModelEvent<BoardErrorEvent> {
+    code: number;
+    message: string;
 }
 
 export class BoardOptionsEvent extends ModelEvent<BoardOptionsEvent> {

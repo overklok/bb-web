@@ -1,0 +1,31 @@
+@import "../colors";
+
+.magazine {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+
+  &__bullet {
+    width: 100%;
+    height: 1em;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    background-color: @primary_deep;
+    border-left: 1px solid #898989;
+
+    &_success {
+      background-color: @success_deep;
+    }
+
+    &_danger {
+      background-color: @danger_deep;
+    }
+  }
+}

@@ -2,8 +2,8 @@ import * as React from "react";
 import {IViewOptions, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
-require('../../../css/button.less')
-require('../../../css/monkey.less')
+require('../../../css/blocks/btn.less')
+require('../../../css/blocks/monkey.less')
 
 export class ConfigureClick extends ViewEvent<ConfigureClick> {}
 export class ApproveClick extends ViewEvent<ApproveClick> {}
