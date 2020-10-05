@@ -156,6 +156,12 @@ class AdminBoardApplication {
             this._on_change_callback(data);
         });
 
+        this._dispatcher.on('bb:layout-change', () => {
+            const board_info = this.bb.getBoardInfo();
+
+            this.ls.sendBoardInfo(board_info);
+        });
+
         this._dispatcher.on('bb:short-circuit', () => {
             console.warn("Short circuit detected!");
         });

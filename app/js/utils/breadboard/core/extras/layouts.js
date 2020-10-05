@@ -22,16 +22,26 @@ export const LAYOUTS = {
         domains: [
             // Линия аналоговых пинов
             {
-                horz: true, from: {x: 0, y: 0}, to: {x: -1, y: 0},
+                horz: true,
+                from: {x: 0, y: 0}, to: {x: -1, y: 0},
+                minus_from: {x: 0, y: -1}, minus_to: {x: -1, y: -1},
                 style: BackgroundLayer.DomainSchematicStyles.None,
                 role: LabelLayer.CellRoles.Analog
             },
 
             // Верхняя линия "+"
-            {horz: true, from: {x: 0, y: 1}, to: {x: -1, y: 1}, inv: true},
+            {
+                horz: true, from: {x: 0, y: 1}, to: {x: -1, y: 1}, inv: true,
+                role: LabelLayer.CellRoles.Plus,
+                no_labels: true
+            },
 
             // Нижняя линия "-"
-            {horz: true, from: {x: 0, y: -1}, to: {x: -1, y: -1}},
+            {
+                horz: true, from: {x: 0, y: -1}, to: {x: -1, y: -1},
+                role: LabelLayer.CellRoles.Minus,
+                no_labels: true
+            },
 
             // Две группы вертикальных линий
             {horz: false, from: {x: 0, y: 2}, to: {x: -1, y: 5}},

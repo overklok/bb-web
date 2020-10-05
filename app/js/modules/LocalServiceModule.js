@@ -250,6 +250,12 @@ export default class LocalServiceModule extends Module {
         this._ipc.send('plates', plates);
     }
 
+    sendBoardInfo(board_info) {
+        if (this._options.modeDummy) {return}
+
+        this._ipc.send('board-info', board_info);
+    }
+
     /**
      * @deprecated
      *

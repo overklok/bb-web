@@ -16,6 +16,7 @@ import thm from "./styles/main.css";
 import {initGradients} from "./styles/gradients";
 import SelectorLayer from "./layers/SelectorLayer";
 import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
+import {layoutToBoardInfo} from "./core/extras/board_info";
 
 /**
  * Основной класс платы.
@@ -103,6 +104,12 @@ export default class Breadboard {
         div_wrap.viewbox(0, 0, width, height);
     }
 
+    getBoardInfo() {
+        if (!this._layout) throw Error("No layout specified yet");
+
+        return layoutToBoardInfo(this._layout);
+    }
+
     getContainer() {
         if (!this._brush) {
             return null;
@@ -172,6 +179,8 @@ export default class Breadboard {
         this._composeLayers();
 
         this.setReadOnly(this._options.readOnly);
+
+        console.log(this.getBoardInfo());
     };
 
     setRandomPlates(protos, size_mid, size_deviation, attempts_max) {

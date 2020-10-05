@@ -107,6 +107,8 @@ export default class LabelLayer extends Layer {
                 text_bias = (this.__schematic && this.__detailed) ? 10 : -4;
 
         for (const domain of this._domain_config) {
+            if (domain.no_labels) continue;
+
             const d_from = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
                   d_to   = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
 

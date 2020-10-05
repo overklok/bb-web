@@ -27,7 +27,9 @@ export const LAYOUTS = {
                 label_pos: "top",
             },
             {
-                horz: true, from: {x: 4, y: 0}, to: {x: -1, y: 0},
+                horz: true,
+                from: {x: 4, y: 0}, to: {x: -1, y: 0},
+                minus_from: {x: 0, y: 15}, minus_to: {x: 3, y: 15},
                 role: LabelLayer.CellRoles.Analog,
                 style: BackgroundLayer.DomainSchematicStyles.Dotted,
                 pins_from: 0, inv: true,
@@ -39,12 +41,13 @@ export const LAYOUTS = {
             {
                 horz: true,
                 from: {x: 0, y: 15}, to: {x: 3, y: 15},
-                role: LabelLayer.CellRoles.Plus,
+                role: LabelLayer.CellRoles.Minus,
                 label_pos: "bottom",
             },
             {
                 horz: true,
                 from: {x: 4, y: 15}, to: {x: -1, y: 15},
+                minus_from: {x: 0, y: 15}, minus_to: {x: 3, y: 15},
                 role: LabelLayer.CellRoles.Analog,
                 style: BackgroundLayer.DomainSchematicStyles.Dotted,
                 pins_to: 11,
@@ -66,13 +69,34 @@ export const LAYOUTS = {
             {horz: false, from: {x: -1, y: 6},  to: {x: -1, y: 7}},
 
             // Одиночные контакты - аналоговые пины
-            {horz: false, from: {x: -1, y: 4},  to: {x: -1, y: 4},  role: LabelLayer.CellRoles.Analog, pins_from: 4},
-            {horz: false, from: {x: -1, y: 5},  to: {x: -1, y: 5},  role: LabelLayer.CellRoles.Analog, pins_from: 5},
-            {horz: false, from: {x: -1, y: 10}, to: {x: -1, y: 10}, role: LabelLayer.CellRoles.Analog, pins_from: 6},
-            {horz: false, from: {x: -1, y: 11}, to: {x: -1, y: 11}, role: LabelLayer.CellRoles.Analog, pins_from: 7},
+            {
+                horz: false,
+                from: {x: -1, y: 4}, to: {x: -1, y: 4},
+                minus: {x: 3, y: 15},
+                role: LabelLayer.CellRoles.Analog, pins_from: 4
+            },
+            {
+                horz: false,
+                from: {x: -1, y: 5}, to: {x: -1, y: 5},
+                minus: {x: 3, y: 15},
+                role: LabelLayer.CellRoles.Analog, pins_from: 5
+            },
+            {
+                horz: false,
+                from: {x: -1, y: 10}, to: {x: -1, y: 10},
+                minus: {x: 3, y: 15},
+                role: LabelLayer.CellRoles.Analog, pins_from: 6
+            },
+            {
+                horz: false,
+                from: {x: -1, y: 11}, to: {x: -1, y: 11},
+                minus: {x: 3, y: 15},
+                role: LabelLayer.CellRoles.Analog, pins_from: 7
+            },
         ],
 
         points: [
+            Grid.AuxPointCats.Source,
             Grid.AuxPointCats.Usb1,
             Grid.AuxPointCats.Usb3,
         ],

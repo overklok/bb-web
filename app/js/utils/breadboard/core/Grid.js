@@ -225,7 +225,7 @@ export default class Grid {
                 y: this.cell(0, 5).center.y + celldist_y / 2
             };
 
-               this._aux_points[Grid.AuxPoints.Vcc] = {
+            this._aux_points[Grid.AuxPoints.Vcc] = {
                 idx: {x: -1, y: 1},
                 pos: {x: source_center.x, y: source_center.y - 20},
                 cell: this.cell(0, 1, Grid.BorderTypes.Wrap),

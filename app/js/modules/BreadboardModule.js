@@ -8,7 +8,9 @@ import {LAYOUTS} from "../utils/breadboard/extras/layouts";
  */
 export default class BreadboardModule extends Module {
     static get eventspace_name() {return "bb"}
-    static get event_types() {return ["change", "drag-start", "shortcircuit-start", "shortcircuit-end"]}
+    static get event_types() {return [
+        "change", "drag-start", "shortcircuit-start", "shortcircuit-end", "layout-change"
+    ]}
 
     static defaults() {
         return {
@@ -186,6 +188,10 @@ export default class BreadboardModule extends Module {
         return this._board.getLayout();
     }
 
+    getBoardInfo() {
+        return this._board.getBoardInfo();
+    }
+
     switchSchematic(on, detailed=false) {
         if (!this._state.display) {
             this._state.schematic = on;
@@ -222,5 +228,9 @@ export default class BreadboardModule extends Module {
         this._board.onShortCircuitEnd(() => {
             this.emitEvent("shortcircuit-end", null);
         });
+
+        this._board.onLayoutChange(() => {
+            this.emitEvent("layout-change", null);
+        })
     }
 }
