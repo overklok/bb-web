@@ -11,6 +11,12 @@ export default class InductorPlate extends LinearPlate {
         this._params.extra = Number(inductance) || 100;
     }
 
+    get props() {
+        return {
+            ind: this._params.extra
+        }
+    }
+
     /**
      * Нарисовать перемычку
      *

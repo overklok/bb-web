@@ -11,6 +11,12 @@ export default class CapacitorPlate extends LinearPlate {
         this._params.extra = Number(capacity) || 0.001;
     }
 
+    get props() {
+        return {
+            cap: this._params.extra
+        }
+    }
+
     /**
      * Нарисовать конденсатор
      *

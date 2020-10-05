@@ -173,6 +173,10 @@ export default class Plate {
         return this._params.surface;
     }
 
+    get props() {
+        return {}
+    }
+
     /**
      * Возвратить текущее состояние плашки
      *
@@ -234,10 +238,21 @@ export default class Plate {
             length:         this.length,
             orientation:    this.state.orientation,
             input:          this.input,
-            // cell_num:       this._state.cell_num,
-            // contr_num:      this._state.contr_num,
-            // currents:       this._state.currents,
-            // voltages:       this._state.voltages,
+
+            // New format fields
+            format: 'extended',
+            position: {
+                cell: {
+                    x: this.pos.x,
+                    y: this.pos.y
+                },
+                orientation: this.state.orientation
+            },
+            properties: this.props,
+            dynamic: {
+                input: this.state.input,
+                output: this.state.output,
+            }
         }
     }
 

@@ -11,6 +11,12 @@ export default class ResistorPlate extends LinearPlate {
         this._params.extra = Number((resistance <= 0) ? 200 : resistance);
     }
 
+    get props() {
+        return {
+            res: this._params.extra
+        }
+    }
+
     /**
      * Нарисовать резистор
      *

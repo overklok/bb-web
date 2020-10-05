@@ -29,6 +29,12 @@ export default class BridgePlate extends LinearPlate {
         return this._params.extra;
     }
 
+    get props() {
+        return {
+            length: this._params.extra
+        }
+    }
+
     /**
      * Нарисовать перемычку
      *

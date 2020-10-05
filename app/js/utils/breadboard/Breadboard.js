@@ -120,7 +120,7 @@ export default class Breadboard {
     }
 
     getPlates() {
-        return this._layers.plate.getCurrentPlatesData();
+        return this._layers.plate.getSerializedPlates();
     }
 
     /**

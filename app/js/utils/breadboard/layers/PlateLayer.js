@@ -122,7 +122,7 @@ export default class PlateLayer extends Layer {
     recompose(schematic, verbose) {
         super.recompose(schematic, false, verbose);
 
-        let plates_data = this.getCurrentPlatesData();
+        let plates_data = this.getSerializedPlates();
 
         this.removeAllPlates();
 
@@ -146,7 +146,7 @@ export default class PlateLayer extends Layer {
      *
      * @returns {Array} данные текущих плашек
      */
-    getCurrentPlatesData() {
+    getSerializedPlates() {
         let data = [];
 
         for (let plate_id in this._plates) {

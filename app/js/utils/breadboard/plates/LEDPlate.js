@@ -21,6 +21,12 @@ export default class LEDPlate extends LinearPlate {
         this._params.extra = colour;
     }
 
+    get props() {
+        return {
+            clr: this._params.extra
+        }
+    }
+
     /**
      * Нарисовать диод
      *
