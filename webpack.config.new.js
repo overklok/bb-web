@@ -110,6 +110,12 @@ function getCopypaths(env) {
         ];
     }
 
+    if (env.monkey === true && dotenv.parsed.PATH_DIST_MONKEY) {
+        copypaths = [...copypaths,
+            {from: './dist/monkey.js',     to: dotenv.parsed.PATH_DIST_MONKEY + '/monkey.js'}
+        ];
+    }
+
     return copypaths;
 }
 

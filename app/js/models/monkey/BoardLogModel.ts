@@ -32,6 +32,15 @@ export default class BoardLogModel extends Model<IBoardLog, DummyDatasource> {
         groups: []
     };
 
+    setLog(log: IBoardLog) {
+        this.setState(log);
+        this.emit(new BoardLogUpdate());
+    }
+
+    getLog(): IBoardLog {
+        return this.getState();
+    }
+
     getGroup(grp_idx: number): IBoardLogGroup {
         if (grp_idx in this.state.groups ) {
             const grp = this.state.groups[grp_idx]

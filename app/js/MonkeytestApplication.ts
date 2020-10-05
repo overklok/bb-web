@@ -28,11 +28,12 @@ import TestkitModel from "./models/monkey/TestkitModel";
 import BoardLogModel from "./models/monkey/BoardLogModel";
 
 class MonkeytestApplication extends Application {
+    public bb: BoardModel;
+    public log: BoardLogModel;
+
     private ads: AdaptiveAsyncDatasource;
     private dds: DummyDatasource;
-    private mdl_modal: ModalModel;
-    private mdl_layout: LayoutModel;
-    private mdl_board: BoardModel;
+
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
@@ -67,9 +68,8 @@ class MonkeytestApplication extends Application {
         svc_model.register(TestkitModel, this.dds);
         svc_model.register(BoardLogModel, this.dds);
 
-        this.mdl_board = svc_model.retrieve(BoardModel);
-        this.mdl_modal = svc_model.retrieve(ModalModel);
-        this.mdl_layout = svc_model.retrieve(LayoutModel);
+        this.bb = svc_model.retrieve(BoardModel);
+        this.log = svc_model.retrieve(BoardLogModel);
 
         this.instance(IViewService).compose(element);
     }
