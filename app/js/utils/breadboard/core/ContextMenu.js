@@ -188,20 +188,18 @@ export default class ContextMenu {
     }
 
     _attachItemEvents(rect, item_data, input, input_node) {
-        rect.mousedown(() => {
-            rect.addClass('bb-cm-item-flash');
-
+        const apply = () => {
             setTimeout(() => {
                 if (input && input.type === 'file') {
                     input_node.click();
                     input_node.addEventListener("change", evt => {
-                        let value = evt.target.files[0];
+                        const value = evt.target.files[0];
 
                         this._itemClick(item_data, value);
                     });
                 }
 
-                let value = input_node ? input_node.value : undefined;
+                const value = input_node ? input_node.value : undefined;
 
                 this.dispose();
 
@@ -209,7 +207,17 @@ export default class ContextMenu {
                     this._itemClick(item_data, value);
                 }
             }, 100);
-        });
+        };
+
+        rect.mousedown(() => apply());
+
+        if (input && input.type !== 'file') {
+            input_node.addEventListener("keyup", (event) => {
+                if (event.keyCode === 13) {
+                    apply();
+                }
+            })
+        }
     }
 
     /**
