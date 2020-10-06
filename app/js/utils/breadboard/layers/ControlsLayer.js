@@ -57,7 +57,7 @@ export default class ControlsLayer extends Layer {
         };
     }
 
-    compose(plate_types, plate_captions) {
+    compose() {
         this._logogroup = this._container.group().id("logogroup");
         this._menugroup = this._container.group();
         this._buttongroup = this._container.nested();

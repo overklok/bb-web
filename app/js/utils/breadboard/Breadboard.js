@@ -509,7 +509,7 @@ export default class Breadboard {
         this._layers.current.compose();
         this._layers.plate.compose();
         this._layers.region.compose();
-        this._layers.controls.compose(Breadboard.getAllPlateTypes(), Breadboard.getAllPlateCaptions());
+        this._layers.controls.compose();
         this._layers.selector.compose();
 
         /// включение / отключение режима только чтения
@@ -848,24 +848,6 @@ export default class Breadboard {
 
     _defineGradients() {
         initGradients(this._brush.group("gradients"));
-    }
-
-    /**
-     * Возвратить список всех типов плашек
-     *
-     * @returns {Array<string>}
-     */
-    static getAllPlateTypes() {
-        return PlateLayer._getAllPlateTypes();
-    }
-
-    /**
-     * Возвратить список всех названий типов плашек
-     *
-     * @returns {Array<string>}
-     */
-    static getAllPlateCaptions() {
-        return PlateLayer._getAllPlateCaptions();
     }
 
     /**

@@ -9,7 +9,6 @@ import ResistorPlate from "../plates/ResistorPlate";
 import PhotoresistorPlate from "../plates/PhotoresistorPlate";
 import RheostatPlate from "../plates/RheostatPlate";
 import ButtonPlate from "../plates/ButtonPlate";
-import TButtonPlate from "../plates/TButtonPlate";
 import CapacitorPlate from "../plates/CapacitorPlate";
 import DummyPlate from "../plates/DummyPlate";
 import TransistorPlate from "../plates/TransistorPlate";
@@ -92,12 +91,6 @@ const ITEMS = [
         title: "Кнопка",
         tags: "кнопка button",
         type: ButtonPlate,
-        options: [{title: "Обычная"}]
-    },
-    {
-        title: "Кнопка-3",
-        tags: "кнопка button",
-        type: TButtonPlate,
         options: [{title: "Обычная"}]
     },
     {

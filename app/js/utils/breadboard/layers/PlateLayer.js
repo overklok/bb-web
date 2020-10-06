@@ -20,7 +20,6 @@ import MotorPlate           from "../plates/MotorPlate";
 import RGBPlate             from "../plates/RGBPlate";
 import DummyPlate           from "../plates/DummyPlate";
 import BuzzerPlate          from "../plates/BuzzerPlate";
-import TButtonPlate         from "../plates/TButtonPlate";
 import Breadboard           from "../Breadboard";
 
 /**
@@ -37,7 +36,6 @@ export default class PlateLayer extends Layer {
             PhotoresistorPlate.Alias,
             CapacitorPlate.Alias,
             ButtonPlate.Alias,
-            TButtonPlate.Alias,
             InductorPlate.Alias,
             BuzzerPlate.Alias,
             DummyPlate.Alias
@@ -971,65 +969,6 @@ export default class PlateLayer extends Layer {
     }
 
     /**
-     * Возвратить массив всех типов плашек
-     *
-     * @returns {Array<string>}
-     *
-     * @private
-     */
-    static _getAllPlateTypes() {
-        return [
-            ResistorPlate.Alias,
-            PhotoresistorPlate.Alias,
-            RheostatPlate.Alias,
-            BridgePlate.Alias,
-            ButtonPlate.Alias,
-            TButtonPlate.Alias,
-            SwitchPlate.Alias,
-            CapacitorPlate.Alias,
-            TransistorPlate.Alias,
-            InductorPlate.Alias,
-            RelayPlate.Alias,
-            DiodePlate.Alias,
-            BuzzerPlate.Alias,
-            StripPlate.Alias,
-            RGBPlate.Alias,
-            DummyPlate.Alias,
-        ]
-    }
-
-    /**
-     * Возвратить словарь всех названий типов плашек по типам плашек
-     *
-     * @returns {Array<string>} словарь названий типов плашек
-     *
-     * @private
-     */
-    static _getAllPlateCaptions() {
-        let captions = {};
-
-        captions[ResistorPlate.Alias]       = 'резистор';
-        captions[PhotoresistorPlate.Alias]  = 'фоторезистор';
-        captions[RheostatPlate.Alias]       = 'реостат';
-        captions[BridgePlate.Alias]         = 'перемычка';
-        captions[ButtonPlate.Alias]         = 'кнопка';
-        captions[TButtonPlate.Alias]        = 'кнопка (T-образная)';
-        captions[SwitchPlate.Alias]         = 'ключ';
-        captions[CapacitorPlate.Alias]      = 'конденсатор';
-        captions[TransistorPlate.Alias]     = 'транзистор';
-        captions[InductorPlate.Alias]       = 'индуктор';
-        captions[RelayPlate.Alias]          = 'реле';
-        captions[DiodePlate.Alias]          = 'светодиод';
-        captions[BuzzerPlate.Alias]         = 'зуммер';
-        captions[StripPlate.Alias]          = 'лента';
-        captions[MotorPlate.Alias]          = 'электромотор';
-        captions[RGBPlate.Alias]            = 'RGB-светодиод';
-        captions[DummyPlate.Alias]          = 'dummy';
-
-        return captions;
-    }
-
-    /**
      * Перевести тип плашки в класс
      *
      * @param {string} type строковый тип плашки
@@ -1047,7 +986,6 @@ export default class PlateLayer extends Layer {
             case RheostatPlate.Alias:       {return RheostatPlate}
             case BridgePlate.Alias:         {return BridgePlate}
             case ButtonPlate.Alias:         {return ButtonPlate}
-            case TButtonPlate.Alias:        {return TButtonPlate}
             case SwitchPlate.Alias:         {return SwitchPlate}
             case CapacitorPlate.Alias:      {return CapacitorPlate}
             case TransistorPlate.Alias:     {return TransistorPlate}
