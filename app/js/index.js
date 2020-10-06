@@ -122,7 +122,7 @@ class Application {
             'ins:start', 'ins:progress', 'ins:mission',
             'ls:*', 'lay:*', 'log:*',
             'gui:hash-command', 'gui:stop', 'gui:menu', 'gui:ready', 'gui:reconnect',
-            'bb:change', 'bb:drag-start', 'bb:shortcircuit-start', 'bb:shortcircuit-end'
+            'bb:change', 'bb:drag-start', 'bb:shortcircuit-start', 'bb:shortcircuit-end', 'bb:layout-change'
         ]);
     }
 
@@ -580,6 +580,9 @@ class Application {
                 this.gui.emphasize(data.is_socket);
             }
 
+            const board_info = this.bb.getBoardInfo();
+            this.ls.sendBoardInfo(board_info);
+
             // if (data && data.dev_type === 3) {
             //     this.bb.switchSpareFilters(true);
             // } else {
@@ -751,6 +754,12 @@ class Application {
          */
         this._dispatcher.on('gui:load-file', tree => {
             this.ws.loadTree(tree);
+        });
+
+        this._dispatcher.on('bb:layout-change', () => {
+            const board_info = this.bb.getBoardInfo();
+
+            this.ls.sendBoardInfo(board_info);
         });
 
         this._dispatcher.on('bb:change', data => {

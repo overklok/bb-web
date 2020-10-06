@@ -1,13 +1,15 @@
+import {layoutToBoardInfo} from "../../utils/breadboard/core/extras/board_info";
 import {LAYOUTS as CORE_LAYOUTS} from "../../utils/breadboard/core/extras/layouts";
 import {LAYOUTS} from "../../utils/breadboard/extras/layouts";
 
-import AsynchronousModel, {listen} from "../../core/base/model/AsynchronousModel";
+import AsynchronousModel, {listen, connect} from "../../core/base/model/AsynchronousModel";
 import {ModelState} from "../../core/base/model/Model";
 import {ModelEvent} from "../../core/base/Event";
 
 // Event channels
 const enum ChannelsTo {
     Plates = 'plates',
+    BoardInfo = 'board-info'
 }
 
 const enum ChannelsFrom {
@@ -42,6 +44,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         if (this.state.layout_name != layout_name) {
             this.setState({layout_name});
             this.emit(new BoardLayoutEvent({layout_name}));
+            this.sendCurrentBoardInfo();
         }
     }
 
@@ -66,6 +69,16 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      */
     setAdminMode(is_admin: boolean) {
         this.emit(new BoardOptionsEvent({readonly: !is_admin}))
+    }
+
+    @connect()
+    private sendCurrentBoardInfo() {
+        const layout_name = this.state.layout_name;
+
+        if (!layout_name) return;
+
+        const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
+        this.send(ChannelsTo.BoardInfo, board_info);
     }
 
     @listen(ChannelsFrom.Plates)

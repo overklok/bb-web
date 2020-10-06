@@ -67,6 +67,7 @@ function layoutToBoardInfo(layout) {
                         throw Error("Analog domain specified but minus mapping were not provided");
                     }
 
+                    // Map arduino cells to minus cells
                     let minus_map_horz = domain.minus_horz ? domain.minus_horz : domain.horz;
                     let minus_coords = [];
 
