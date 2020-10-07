@@ -252,7 +252,7 @@ export default class Grid {
             this._aux_points[Grid.AuxPoints.Vcc] = {
                 idx: {x: -1, y: 0},
                 pos: {x: source_center.x, y: source_center.y - 20},
-                cell: this.cell(0, 1, Grid.BorderTypes.Wrap),
+                cell: this.cell(0, 0, Grid.BorderTypes.Wrap),
                 cat: Grid.AuxPointCats.SourceV8,
                 name: Grid.AuxPoints.Vcc
             };

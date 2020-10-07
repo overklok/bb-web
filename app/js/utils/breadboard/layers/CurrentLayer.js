@@ -276,10 +276,10 @@ export default class CurrentLayer extends Layer {
                                  : this.__grid.cell(points.to.x, points.to.y);
 
             switch (aux_point.cat) {
-                case Grid.AuxPointCats.SourceV5:    return this._getLinePathSource(c_arb, aux_point, to_aux);
-                case Grid.AuxPointCats.SourceV8:    return this._getLinePathSource(c_arb, aux_point, to_aux);
-                case Grid.AuxPointCats.Usb1:        return this._getLinePathUsb(c_arb, aux_point, to_aux);
-                case Grid.AuxPointCats.Usb3:        return this._getLinePathUsb(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.SourceV5:  return this._getLinePathSource(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.SourceV8:  return this._getLinePathSource(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb1:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+                case Grid.AuxPointCats.Usb3:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
             }
         }
 
