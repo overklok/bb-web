@@ -96,7 +96,7 @@ export const LAYOUTS = {
         ],
 
         points: [
-            Grid.AuxPointCats.Source,
+            Grid.AuxPointCats.SourceV8,
             Grid.AuxPointCats.Usb1,
             Grid.AuxPointCats.Usb3,
         ],

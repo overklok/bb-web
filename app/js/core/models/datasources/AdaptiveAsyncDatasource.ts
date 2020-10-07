@@ -75,6 +75,12 @@ export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
         this.data_source.send(channel, data);
     }
 
+    handle(channel: string, data: object): void {
+        if (!this.data_source) return;
+
+        this.data_source.handle(channel, data);
+    }
+
     private moveEarlyHandlers() {
         for (const [channel, handlers] of Object.entries(this.handlers)) {
             for (const {func, disposable} of handlers) {

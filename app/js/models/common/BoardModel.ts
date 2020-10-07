@@ -53,7 +53,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     }
 
     setPlates(plates: Plate[]): void {
-        this.setState({plates});
+        this.setState({plates, layout_name: this.state.layout_name});
         this.send(ChannelsTo.Plates, plates);
         this.emit(new UserPlateEvent({plates}));
     }
@@ -73,7 +73,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
     @connect()
     private sendCurrentBoardInfo() {
-        const layout_name = this.state.layout_name;
+        const layout_name = this.getState().layout_name;
 
         if (!layout_name) return;
 
@@ -84,7 +84,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     @listen(ChannelsFrom.Plates)
     private onPlates(plates: Plate[]) {
         this.setState({
-            plates
+            plates,
         });
 
         this.emit(new PlateEvent({plates}));
@@ -94,7 +94,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     private onCurrents({threads, elements, arduino_pins}: ElectronicDataPackage) {
         this.setState({
             threads: threads,
-            arduino_pins: arduino_pins
+            arduino_pins: arduino_pins,
         });
 
         this.emit(new ElectronicEvent({threads, elements, arduino_pins}));

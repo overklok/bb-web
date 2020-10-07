@@ -14,7 +14,6 @@ function layoutToBoardInfo(layout) {
 
     let cell_str_idx = 0;
 
-    let minus_node_y, plus_node_y;
     let arduino_nodes = [];
 
     for (const domain of domains) {
@@ -101,11 +100,9 @@ function layoutToBoardInfo(layout) {
                     break;
                 }
                 case LabelLayer.CellRoles.Plus:
-                    plus_node_y = from.y;
                     cell_structure[cell_str_idx++] = ([{x: -1, y: from.y}, ...coords]);
                     break;
                 case LabelLayer.CellRoles.Minus: {
-                    minus_node_y = from.y;
                     cell_structure[cell_str_idx++] = ([{x: -1, y: from.y}, ...coords]);
                     break;
                 }
@@ -116,12 +113,11 @@ function layoutToBoardInfo(layout) {
         }
     }
 
-    if (layout.points && layout.points.indexOf(Grid.AuxPointCats.Source) > -1) {
-        if (minus_node_y == null || plus_node_y == null) {
-            throw Error("Source element required but no plus and minus points were added");
-        }
+    const point_minus = grid.auxPoint(Grid.AuxPoints.Gnd),
+          point_vcc = grid.auxPoint(Grid.AuxPoints.Vcc);
 
-        embedded_plates.push(getVoltageSourcePlate(plus_node_y, minus_node_y));
+    if (point_minus && point_vcc) {
+        embedded_plates.push(getVoltageSourcePlate(point_minus.idx, point_vcc.idx));
     }
 
     return {
@@ -130,14 +126,14 @@ function layoutToBoardInfo(layout) {
     }
 }
 
-function getVoltageSourcePlate(plus_node_y, minus_node_y) {
+function getVoltageSourcePlate(coords_minus, coords_vcc) {
     return {
         type: 'Vss',
         id: -100,
         position: {
             cells: [
-                {x: -1, y: minus_node_y},
-                {x: -1, y: plus_node_y},
+                coords_minus,
+                coords_vcc,
             ]
         },
         properties: {

@@ -42,7 +42,7 @@ export default class SocketDatasource extends AsynchronousDatasource {
             console.debug('[SocketIPC] connecting...');
 
             // if (!this.socket.hasListeners('connect')) {
-                this.socket.once('xconnect', (cli_descriptor: string) => {
+                this.socket.on('xconnect', (cli_descriptor: string) => {
                     // of course you can use 'connect' instead of 'xconnect' here
 
                     this._status = AsyncDatasourceStatus.Connected;
@@ -70,6 +70,10 @@ export default class SocketDatasource extends AsynchronousDatasource {
     }
 
     on(channel: string, handler: Function) {
+        super.on(channel, handler);
+        // basic 'on' is enough for internal channels (__<name-rounded-with-double-underscores>__)
+        if (channel.startsWith('__') && channel.endsWith('__')) return;
+
         if (!this.socket) throw new Error("Datasource is not connected to socket");
 
         this.socket.on(channel, (data: object) => {
@@ -79,6 +83,10 @@ export default class SocketDatasource extends AsynchronousDatasource {
     }
 
     once(channel: string, handler: Function) {
+        super.once(channel, handler);
+        // basic 'once' is enough for internal channels (__<name-rounded-with-double-underscores>__)
+        if (channel.startsWith('__') && channel.endsWith('__')) return;
+
         if (!this.socket) throw new Error("Datasource is not connected to socket");
 
         this.socket.once(channel, (data: object) => {

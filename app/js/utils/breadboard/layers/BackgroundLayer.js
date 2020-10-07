@@ -308,7 +308,10 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawAuxPointSource() {
-        if (!this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.Source)) return;
+        if (
+            !this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.SourceV5) &&
+            !this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.SourceV8)
+        ) return;
 
         const   p_vcc = this.__grid.auxPoint(Grid.AuxPoints.Vcc),
                 p_gnd = this.__grid.auxPoint(Grid.AuxPoints.Gnd);

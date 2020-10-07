@@ -49,7 +49,7 @@ export const LAYOUTS = {
         ],
 
         points: [
-            Grid.AuxPointCats.Source,
+            Grid.AuxPointCats.SourceV5,
         ],
 
         controls: {horz: true}

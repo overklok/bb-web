@@ -24,7 +24,8 @@ const AUX_POINTS = {
 };
 
 const AUX_POINT_CATEGORIES = {
-    Source: 'source',
+    SourceV5: 'source-v5',
+    SourceV8: 'source-v8',
     Usb1: 'usb1',
     Usb3: 'usb3',
 };
@@ -219,7 +220,7 @@ export default class Grid {
         const celldist_y = this.cell(0, 1).pos.y - this.cell(0, 0).pos.y;
 
 
-        if (this.isAuxPointCatRequired(Grid.AuxPointCats.Source)) {
+        if (this.isAuxPointCatRequired(Grid.AuxPointCats.SourceV5)) {
             const source_center = {
                 x: 80,
                 y: this.cell(0, 5).center.y + celldist_y / 2
@@ -229,7 +230,7 @@ export default class Grid {
                 idx: {x: -1, y: 1},
                 pos: {x: source_center.x, y: source_center.y - 20},
                 cell: this.cell(0, 1, Grid.BorderTypes.Wrap),
-                cat: Grid.AuxPointCats.Source,
+                cat: Grid.AuxPointCats.SourceV5,
                 name: Grid.AuxPoints.Vcc
             };
 
@@ -237,7 +238,30 @@ export default class Grid {
                 idx: {x: -1, y: this.dim.y - 1},
                 pos: {x: source_center.x, y: source_center.y + 20},
                 cell: this.cell(0, -1, Grid.BorderTypes.Wrap),
-                cat: Grid.AuxPointCats.Source,
+                cat: Grid.AuxPointCats.SourceV5,
+                name: Grid.AuxPoints.Gnd
+            };
+        }
+
+        if (this.isAuxPointCatRequired(Grid.AuxPointCats.SourceV8)) {
+            const source_center = {
+                x: 80,
+                y: this.cell(0, 8).center.y + celldist_y / 2
+            };
+
+            this._aux_points[Grid.AuxPoints.Vcc] = {
+                idx: {x: -1, y: 0},
+                pos: {x: source_center.x, y: source_center.y - 20},
+                cell: this.cell(0, 1, Grid.BorderTypes.Wrap),
+                cat: Grid.AuxPointCats.SourceV8,
+                name: Grid.AuxPoints.Vcc
+            };
+
+            this._aux_points[Grid.AuxPoints.Gnd] = {
+                idx: {x: -1, y: this.dim.y - 1},
+                pos: {x: source_center.x, y: source_center.y + 20},
+                cell: this.cell(0, -1, Grid.BorderTypes.Wrap),
+                cat: Grid.AuxPointCats.SourceV8,
                 name: Grid.AuxPoints.Gnd
             };
         }

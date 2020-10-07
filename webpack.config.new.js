@@ -73,11 +73,7 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new CopyWebpackPlugin(getCopypaths(env)),
-            new HtmlWebpackPlugin({
-                template: './app/html/main.html',
-                inject: 'body',
-                filename: 'main.html'
-            }),
+            ...getHtmlCopyPluginInstances(env),
             new BuildNotifierPlugin({
                 title: "Tapanda [New]",
                 logo: path.resolve("./img/favicon.png"),
@@ -146,4 +142,29 @@ function getVersionTarget(env, mode=null) {
     if (env.main === true)      return `main`;
     if (env.monitor === true)   return `monitor`;
     if (env.monkey === true)    return `monkey`;
+}
+
+function getHtmlCopyPluginInstances(env) {
+    // HTML Webpack files
+    let htmls = [];
+    if (env.main === true) {
+        htmls = [...htmls,
+            new HtmlWebpackPlugin({
+                template: './app/html/main.html',
+                inject: 'body',
+                filename: 'main.html'
+            }),
+        ];
+    }
+    if (env.monitor === true) {
+        htmls = [...htmls,
+            new HtmlWebpackPlugin({
+                template: './app/html/monitor.html',
+                inject: 'body',
+                filename: 'monitor.html'
+            }),
+        ];
+    }
+
+    return htmls;
 }

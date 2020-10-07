@@ -45,8 +45,12 @@ export default abstract class AsynchronousModel<MS> extends Model<MS, Asynchrono
     public readonly handler_connect:       Function;
     public readonly handler_disconnect:    Function;
 
+    public counter: number;
+
     constructor(data_source: AsynchronousDatasource, svc_event: IEventService) {
         super(data_source, svc_event);
+
+        this.counter = 0;
 
         if (this.handlers) {
             for (const [channel, handler] of Object.entries(this.handlers)) {
