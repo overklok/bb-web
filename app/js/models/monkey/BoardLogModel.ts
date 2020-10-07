@@ -8,6 +8,7 @@ import {ModelEvent} from "../../core/base/Event";
 export interface IBoardLogEntry {
     rts: number;
     plates?: Plate[];
+    layout_name: string;
     error?: {
         code?: number,
         message?: string
@@ -55,7 +56,7 @@ export default class BoardLogModel extends Model<IBoardLog, DummyDatasource> {
         this.is_group_finished = true;
     }
 
-    addPlates(plates: Plate[]) {
+    addPlates(plates: Plate[], layout_name: string) {
         this.createNewGroupIfRequired();
 
         const idx_grp = this.state.groups.length - 1;
@@ -63,7 +64,8 @@ export default class BoardLogModel extends Model<IBoardLog, DummyDatasource> {
 
         grp.entries.push({
             rts: Date.now() - grp.ts_start,
-            plates: cloneDeep(plates)
+            plates: cloneDeep(plates),
+            layout_name: layout_name,
         });
 
         this.emit(new BoardLogUpdate());
@@ -77,7 +79,8 @@ export default class BoardLogModel extends Model<IBoardLog, DummyDatasource> {
 
         grp.entries.push({
             rts: Date.now() - grp.ts_start,
-            error: cloneDeep(error)
+            error: cloneDeep(error),
+            layout_name: undefined,
         });
 
         this.emit(new BoardLogUpdate());

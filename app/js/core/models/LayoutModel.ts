@@ -55,13 +55,6 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
         modes: {}
     };
 
-    init(state: LayoutModelState) {
-        this.setState({
-            options: state.options,
-            modes: state.modes
-        });
-    }
-
     getOptions(): LayoutOptions {
         return this.state.options;
     }

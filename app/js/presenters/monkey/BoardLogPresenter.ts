@@ -44,6 +44,7 @@ export default class BoardLogPresenter extends Presenter<BoardLogView> {
 
         if (entry.plates) {
             BoardPreviewPresenter.previewBoard.plates = entry.plates;
+            BoardPreviewPresenter.previewBoard.layout = entry.layout_name;
 
             this.mdl_modal.showModal({
                 widget_alias: 'board_preview',

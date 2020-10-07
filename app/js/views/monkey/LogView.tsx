@@ -35,6 +35,7 @@ export default class LogView extends View<IViewOptions, IBoardLogState> {
                     rts: entry.rts,
                     plates: entry.plates,
                     error: entry.error,
+                    layout_name: entry.layout_name
                 })
             }
 

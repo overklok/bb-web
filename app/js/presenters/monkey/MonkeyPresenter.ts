@@ -25,7 +25,7 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
 
     @on(PlateEvent, UserPlateEvent)
     protected setAssembly(evt: PlateEvent) {
-        this.log.addPlates(evt.plates);
+        this.log.addPlates(evt.plates, this.assembly_board.getState().layout_name);
         this.assembly = evt.plates;
         this.comparePlates();
     }
