@@ -103,25 +103,25 @@ export default class ControlsLayer extends Layer {
     }
 
     toggleLogoActive(on=true, animate=true) {
-        if (on) {
-            if (animate) {
-                this._logo_text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-                this._logo_flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
-            } else {
-                this._logo_text.fill(LOGO_COLOR_ACTIVE);
-                this._logo_flower.fill(LOGO_COLOR_ACTIVE);
-            }
-        } else {
-            if (animate) {
-                this._logo_text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-                this._logo_flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
-            } else {
-                this._logo_text.fill(LOGO_COLOR_DEFAULT);
-                this._logo_flower.fill(LOGO_COLOR_DEFAULT);
-            }
-        }
-
-        this._is_logo_clicked = on;
+        // if (on) {
+        //     if (animate) {
+        //         this._logo_text.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+        //         this._logo_flower.animate('100ms').fill(LOGO_COLOR_ACTIVE);
+        //     } else {
+        //         this._logo_text.fill(LOGO_COLOR_ACTIVE);
+        //         this._logo_flower.fill(LOGO_COLOR_ACTIVE);
+        //     }
+        // } else {
+        //     if (animate) {
+        //         this._logo_text.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+        //         this._logo_flower.animate('100ms').fill(LOGO_COLOR_DEFAULT);
+        //     } else {
+        //         this._logo_text.fill(LOGO_COLOR_DEFAULT);
+        //         this._logo_flower.fill(LOGO_COLOR_DEFAULT);
+        //     }
+        // }
+        //
+        // this._is_logo_clicked = on;
     }
 
     onMenuClick(cb) {
@@ -216,49 +216,49 @@ export default class ControlsLayer extends Layer {
     }
 
     _drawLogo() {
-        let image = this._logogroup
-            .nested();
-
-        let text = this._logogroup.path(logoSVG());
-
-        let flower = image.group();
-        let leaf = flower.symbol();
-
-        leaf.path(leafSVG()).scale(4);
-
-        flower.use(leaf).rotate(0, 32, 65.5);
-        flower.use(leaf).rotate(60, 32, 65.5);
-        flower.use(leaf).rotate(120, 32, 65.5);
-        flower.use(leaf).rotate(180, 32, 65.5);
-        flower.use(leaf).rotate(240, 32, 65.5);
-        flower.use(leaf).rotate(300, 32, 65.5);
-
-        flower.move(18,0);
-        flower.scale(0.7);
-
-        text.move(-70, 5);
-
-        text.scale(0.5);
-
-        this._logo_text = text;
-        this._logo_flower = flower;
-
-        if (this._params.logo_horz) {
-            this._logogroup.cx(100 + this.__grid.size.x / 2);
-        } else {
-            this._logogroup.cy(100 + this.__grid.size.y / 2)
-                .x(-140)
-                .rotate(-90)
-        }
-
-        this._logogroup.style({cursor: 'pointer'});
-
-        this._logogroup.click((evt) => {
-            this.toggleLogoActive(!this._is_logo_clicked);
-
-            this._callbacks.logoclick();
-            this.switchVisibility();
-        });
+        // let image = this._logogroup
+        //     .nested();
+        //
+        // let text = this._logogroup.path(logoSVG());
+        //
+        // let flower = image.group();
+        // let leaf = flower.symbol();
+        //
+        // leaf.path(leafSVG()).scale(4);
+        //
+        // flower.use(leaf).rotate(0, 32, 65.5);
+        // flower.use(leaf).rotate(60, 32, 65.5);
+        // flower.use(leaf).rotate(120, 32, 65.5);
+        // flower.use(leaf).rotate(180, 32, 65.5);
+        // flower.use(leaf).rotate(240, 32, 65.5);
+        // flower.use(leaf).rotate(300, 32, 65.5);
+        //
+        // flower.move(18,0);
+        // flower.scale(0.7);
+        //
+        // text.move(-70, 5);
+        //
+        // text.scale(0.5);
+        //
+        // this._logo_text = text;
+        // this._logo_flower = flower;
+        //
+        // if (this._params.logo_horz) {
+        //     this._logogroup.cx(100 + this.__grid.size.x / 2);
+        // } else {
+        //     this._logogroup.cy(100 + this.__grid.size.y / 2)
+        //         .x(-140)
+        //         .rotate(-90)
+        // }
+        //
+        // this._logogroup.style({cursor: 'pointer'});
+        //
+        // this._logogroup.click((evt) => {
+        //     this.toggleLogoActive(!this._is_logo_clicked);
+        //
+        //     this._callbacks.logoclick();
+        //     this.switchVisibility();
+        // });
     }
 
     _show() {
