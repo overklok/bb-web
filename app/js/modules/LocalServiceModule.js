@@ -25,7 +25,7 @@ export default class LocalServiceModule extends Module {
     static get eventspace_name()    {return "ls"}
     static get event_types()        {return [
         "connect", "disconnect", "client_swap", "command", "variable",
-        "terminate", "plates", "currents", "pins_values", "board-status", "timeout", "error",
+        "terminate", "plates", "currents", "pins_values", "board-status", "board-layout-name", "timeout", "error",
         // "request_calc",
     ]};
 
@@ -50,6 +50,8 @@ export default class LocalServiceModule extends Module {
             connected: false,
             board_status: undefined,
             board_version: undefined,
+            board_layout_name: undefined,
+            allow_board_data: false,
             check_later: false,
             running: false,
             mode: undefined,
@@ -93,7 +95,9 @@ export default class LocalServiceModule extends Module {
             }
 
             return this._launchIPC(socket_addr, socket_port)
-                .then(() => this._subscribeToWrapperEvents());
+                .then(() => {
+                    this._subscribeToWrapperEvents()
+                });
         }
     }
 
@@ -250,10 +254,11 @@ export default class LocalServiceModule extends Module {
         this._ipc.send('plates', plates);
     }
 
-    sendBoardInfo(board_info) {
+    requestBoardLayoutChange(board_layout_name, board_info) {
         if (this._options.modeDummy) {return}
 
-        this._ipc.send('board-info', board_info);
+        this._ipc.send('board-layout', {layout_name: board_layout_name, board_info});
+        this._state.board_layout_name = board_layout_name;
     }
 
     /**
@@ -446,6 +451,12 @@ export default class LocalServiceModule extends Module {
             this.emitEvent('board-status', 'search');
         });
 
+        this._ipc.on('board-layout-name', (evt, layout_name) => {
+            if (this._state.board_layout_name === layout_name) {
+                this._state.allow_board_data = true;
+            }
+        });
+
         this._ipc.on('board-connect', () => {
             this._state.board_status = 'connect';
             this.emitEvent('board-status', {
@@ -485,10 +496,20 @@ export default class LocalServiceModule extends Module {
         });
 
         this._ipc.on('draw_plates', (evt, data) => {
+            // if (!this._state.allow_board_data) {
+            //     console.warn("draw_plates received but service didn't report a layout change");
+            //     return;
+            // }
+
            this.emitEvent('plates', data);
         });
 
         this._ipc.on('draw_currents', (evt, data) => {
+            // if (!this._state.allow_board_data) {
+            //     console.warn("draw_plates received but service didn't report a layout change");
+            //     return;
+            // }
+
             let arduino_pins = undefined;
 
             if (data.hasOwnProperty('arduino_pins')) {

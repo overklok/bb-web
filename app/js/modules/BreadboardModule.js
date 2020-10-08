@@ -184,8 +184,8 @@ export default class BreadboardModule extends Module {
         this._board.setLayout(alias);
     }
 
-    getLayout() {
-        return this._board.getLayout();
+    getLayoutName() {
+        return this._board.getLayoutName();
     }
 
     getBoardInfo() {

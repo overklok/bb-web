@@ -12,7 +12,7 @@ export default class BoardPresenter extends Presenter<BoardView> {
 
     @on(LayoutChangeEvent)
     private onLayoutChange(evt: LayoutChangeEvent) {
-        this.model.setBoardLayout(this.view.getLayout());
+        this.model.setBoardLayout(this.view.getLayoutName());
     }
 
     @on(BoardOptionsEvent)

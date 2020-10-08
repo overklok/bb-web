@@ -130,6 +130,13 @@ class AdminBoardApplication {
             this.bb.inject(document.getElementById(this._container_id));
         });
 
+        this._dispatcher.on('ls:connect', data => {
+            const layout_name = this.bb.getLayoutName();
+            const board_info = this.bb.getBoardInfo();
+
+            this.ls.requestBoardLayoutChange(layout_name, board_info);
+        });
+
         /**
          * Изменены плашки
          */
@@ -158,8 +165,9 @@ class AdminBoardApplication {
 
         this._dispatcher.on('bb:layout-change', () => {
             const board_info = this.bb.getBoardInfo();
+            const layout_name = this.bb.getLayoutName();
 
-            this.ls.sendBoardInfo(board_info);
+            this.ls.requestBoardLayoutChange(layout_name, board_info);
         });
 
         this._dispatcher.on('bb:short-circuit', () => {

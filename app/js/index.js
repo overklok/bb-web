@@ -581,7 +581,9 @@ class Application {
             }
 
             const board_info = this.bb.getBoardInfo();
-            this.ls.sendBoardInfo(board_info);
+            const layout_name = this.bb.getLayoutName();
+
+            this.ls.requestBoardLayoutChange(layout_name, board_info);
 
             // if (data && data.dev_type === 3) {
             //     this.bb.switchSpareFilters(true);
@@ -758,8 +760,9 @@ class Application {
 
         this._dispatcher.on('bb:layout-change', () => {
             const board_info = this.bb.getBoardInfo();
+            const layout_name = this.bb.getLayoutName();
 
-            this.ls.sendBoardInfo(board_info);
+            this.ls.requestBoardLayoutChange(layout_name, board_info);
         });
 
         this._dispatcher.on('bb:change', data => {

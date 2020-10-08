@@ -9,13 +9,14 @@ import {ModelEvent} from "../../core/base/Event";
 // Event channels
 const enum ChannelsTo {
     Plates = 'plates',
-    BoardInfo = 'board-info'
+    BoardLayout = 'board-layout'
 }
 
 const enum ChannelsFrom {
     Error = 'error',
     Plates = 'draw_plates',
     Currents = 'draw_currents',
+    BoardLayoutName = 'board-layout-name'
 }
 
 interface BreadboardModelState extends ModelState {
@@ -23,6 +24,7 @@ interface BreadboardModelState extends ModelState {
     threads: Thread[];
     arduino_pins: ArduinoPin[];
     layout_name: string;
+    allow_board_data: boolean;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
@@ -36,6 +38,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         threads: [],
         arduino_pins: [],
         layout_name: 'default',
+        allow_board_data: false,
     }
 
     setBoardLayout(layout_name: string): void {
@@ -77,12 +80,24 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
         if (!layout_name) return;
 
+        // disallow board data before confirmation
+        this.setState({allow_board_data: false});
         const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
-        this.send(ChannelsTo.BoardInfo, board_info);
+        this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
+    }
+
+    @listen(ChannelsFrom.BoardLayoutName)
+    private onBoardLayoutName(layout_name: string) {
+        if (this.state.layout_name === layout_name) {
+            // confirm board data change
+            this.setState({allow_board_data: true});
+        }
     }
 
     @listen(ChannelsFrom.Plates)
     private onPlates(plates: Plate[]) {
+        if (!this.state.allow_board_data) return;
+
         this.setState({
             plates,
         });
@@ -92,6 +107,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
     @listen(ChannelsFrom.Currents)
     private onCurrents({threads, elements, arduino_pins}: ElectronicDataPackage) {
+        if (!this.state.allow_board_data) return;
+
         this.setState({
             threads: threads,
             arduino_pins: arduino_pins,

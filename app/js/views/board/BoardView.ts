@@ -78,8 +78,8 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
         }
     }
 
-    getLayout() {
-        return this.bb.getLayout();
+    getLayoutName() {
+        return this.bb.getLayoutName();
     }
 
     getPlates() {

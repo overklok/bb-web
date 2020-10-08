@@ -286,7 +286,7 @@ export default class Breadboard {
         this._layers.plate.removeAllPlates();
     }
 
-    getLayout() {
+    getLayoutName() {
         return this._options.layout_name;
     }
 
