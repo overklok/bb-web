@@ -29,7 +29,7 @@ interface BreadboardModelState extends ModelState {
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
     static Layouts: {[key: string]: BoardLayout} = {
-        default: CORE_LAYOUTS['default'],
+        v5x: CORE_LAYOUTS['v5x'],
         v8x: LAYOUTS['v8x']
     };
 

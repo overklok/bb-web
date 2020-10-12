@@ -3,7 +3,7 @@ import LabelLayer from "../../layers/LabelLayer";
 import Grid from "../Grid";
 
 export const LAYOUTS = {
-    default: {
+    v5x: {
         wrap_width: 1200, // Ширина рабочей области
         wrap_height: 1350, // Высота рабочей области
 
