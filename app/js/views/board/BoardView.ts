@@ -51,6 +51,7 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
             schematic: this.options.schematic,
             detailed: this.options.schematic,
             verbose: this.options.verbose,
+            layout_name: this.layout_name,
         });
     }
 

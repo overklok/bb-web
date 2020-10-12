@@ -5,7 +5,7 @@ import TestkitModel, {ReferenceRequestEvent, TestkitChangeEvent} from "../../mod
 import {TestKitItemQuanitites} from "../../models/monkey/types";
 import {MountEvent} from "../../core/base/view/View";
 
-export default class MonkeyPresenter extends Presenter<BoardView> {
+export default class ReferenceBoardPresenter extends Presenter<BoardView> {
     private testkit: TestkitModel;
     private board: BoardModel;
     private layout_name: string;
@@ -15,10 +15,11 @@ export default class MonkeyPresenter extends Presenter<BoardView> {
     private testkit_size_deviation: number;
 
     protected ready() {
-        this.view.registerLayouts(BoardModel.Layouts);
-
         this.board = this.getModel(BoardModel);
         this.testkit = this.getModel(TestkitModel);
+
+        this.view.registerLayouts(BoardModel.Layouts);
+        this.view.setLayout(this.board.getState().layout_name);
 
         const {qtys, size, size_deviation} = this.testkit.getState();
 

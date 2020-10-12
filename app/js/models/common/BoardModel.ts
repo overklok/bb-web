@@ -37,7 +37,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         plates: [],
         threads: [],
         arduino_pins: [],
-        layout_name: 'default',
+        layout_name: 'v8x',
         allow_board_data: false,
     }
 

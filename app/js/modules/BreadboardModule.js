@@ -56,7 +56,7 @@ export default class BreadboardModule extends Module {
                 // this._board.inject(dom_node, false);
                 this._board.inject(dom_node, {
                     readOnly: !this._options.modeAdmin,
-                    layout: this._options.layoutAdvanced ? 'v8x' : 'default'
+                    layout_name: this._options.layoutAdvanced ? 'v8x' : 'default'
                 });
 
                 this._state.display = true;
