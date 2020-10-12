@@ -6,15 +6,14 @@
     </head>
     <body style="width: 100vw; height: 100vh; margin: 0;">
         <div id="version" style="font-size: 10px; font-family: 'IBM Plex Sans', monospace; position:absolute; bottom: 0; z-index: 1; background-color: aquamarine;"></div>
-        <div id="board" style="width: 100%; height: 100%;">
+        <div id="monkey" style="width: 100%; height: 100%;">
         </div>
 
-    <script type="text/javascript" src="monitor.js"></script>
+    <script type="text/javascript" src="monkey.js"></script>
     </body>
     <script>
         window.app = new Application();
-        window.app.run(document.getElementById('board'));
+        window.app.run(document.getElementById('monkey'));
         document.getElementById("version").innerText = window.app.version;
-        window.app.bb.setAdminMode(true);
     </script>
 </html>

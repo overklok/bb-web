@@ -2,6 +2,7 @@ import Breadboard from "../Breadboard";
 import Cell from "./Cell";
 import Grid from "../core/Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
+import {coverObjects} from "./extras/helpers";
 
 function mod(n, m) {
   return ((n % m) + m) % m;
@@ -40,7 +41,7 @@ export default class Plate {
     static get LEDSizeDefault()     {return 16}
     static get LabelSizeDefault()   {return 16}
 
-    constructor(container_parent, grid, schematic=false, verbose=false, id=null, extra=0) {
+    constructor(container_parent, grid, schematic=false, verbose=false, id=null, props) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
@@ -67,7 +68,7 @@ export default class Plate {
         this._group_editable = this._group.group();                     // для режима редактирования
         this._error_highlighter = undefined;
 
-        /// Параметры - постоянные свойства плашки
+        /// Параметры - неизменяемые атрибуты плашки
         this._params = {
             size:       {x: 0, y: 0},   // кол-во ячеек, занимаемое плашкой на доске
             size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
@@ -75,12 +76,18 @@ export default class Plate {
             surface:    undefined,      // контур плашки
             rels:       undefined,      // относительные позиции занимаемых ячеек
             adjs:       undefined,      // корректировки положения плашки
-            extra:      extra,          // доп. параметр
             schematic:  schematic,       // схематическое отображение плашки
             verbose:    verbose,       // схематическое отображение плашки
         };
 
-        /// Состояние - изменяемые свойства плашки
+        /// Свойства плашки - неизменяемые изнутри атрибуты плашки
+        this._props = this.__defaultProps__;
+
+        if (props) {
+            this.__setProps__(props);
+        }
+
+        /// Состояние - изменяемые атрибуты плашки
         this._state = {
             cell:           new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
             orientation:    Plate.Orientations.East,        // ориентация плашки
@@ -157,10 +164,6 @@ export default class Plate {
         return this._state.cell.idx;
     }
 
-    get extra() {
-        return this._params.extra;
-    }
-
     get length() {
         return this._params.size.x;
     }
@@ -174,7 +177,7 @@ export default class Plate {
     }
 
     get props() {
-        return {}
+        return this._props;
     }
 
     /**
@@ -197,6 +200,10 @@ export default class Plate {
      */
     get container() {
         return this._container;
+    }
+
+    get __defaultProps__() {
+        return {};
     }
 
     __cm_class__() {
@@ -228,19 +235,16 @@ export default class Plate {
         throw new Error("Method should be implemented");
     }
 
+    __setProps__(props) {
+        this._props = coverObjects(props, this._props);
+    }
+
     serialize() {
         return {
             id:             this.id,
             type:           this.alias,
-            x:              this.pos.x,
-            y:              this.pos.y,
-            extra:          this.extra,
             length:         this.length,
-            orientation:    this.state.orientation,
-            input:          this.input,
 
-            // New format fields
-            format: 'extended',
             position: {
                 cell: {
                     x: this.pos.x,

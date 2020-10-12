@@ -23,7 +23,7 @@ import BoardView from "./views/board/BoardView";
 import "../css/global.less";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 
-class MonitorApplication extends Application {
+class BoardApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
     private bb: BoardModel;
     protected providerClasses(): Array<typeof ServiceProvider> {
@@ -75,4 +75,4 @@ declare global {
   }
 }
 
-window.Application = MonitorApplication;
+window.Application = BoardApplication;

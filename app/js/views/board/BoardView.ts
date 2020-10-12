@@ -62,7 +62,7 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
         this.bb.setReadOnly(readonly);
     }
 
-    setRandom(protos: {type: string, extra: any, quantity: number}[],
+    setRandom(protos: {type: string, properties: any, quantity: number}[],
           size_mid?: number,
           size_deviation?: number,
           attempts_max?: number

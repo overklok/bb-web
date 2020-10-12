@@ -5,13 +5,10 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}
 
-    constructor(container, grid, schematic=false, verbose=false, id, length=2) {
-        super(container, grid, schematic, verbose, id, length);
+    static get PROP_LENGTH() {return 'length'}
 
-        length = Number(length);
-        length = Number.isInteger(length) ? length : 2;
-
-        this._params.extra = (length < 2) ? 2 : length;
+    constructor(container, grid, schematic=false, verbose=false, id, props) {
+        super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: this.__length__, y: 1};
 
@@ -25,14 +22,25 @@ export default class BridgePlate extends LinearPlate {
         }
     }
 
-    get __length__() {
-        return this._params.extra;
+    get __defaultProps__() {
+        return {
+            [BridgePlate.PROP_LENGTH]: 2
+        }
     }
 
-    get props() {
-        return {
-            length: this._params.extra
-        }
+    /**
+     * @returns {number}
+     * @protected
+     */
+    get __length__() {
+        return this.props[BridgePlate.PROP_LENGTH];
+    }
+
+    __setProps__(props) {
+        super.__setProps__(props);
+
+        let length = Number(props[BridgePlate.PROP_LENGTH]);
+        this._props[BridgePlate.PROP_LENGTH] = Number.isInteger(length) ? length : 2;
     }
 
     /**

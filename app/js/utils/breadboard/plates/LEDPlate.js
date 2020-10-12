@@ -2,14 +2,35 @@ import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
 
+const LED_COLOURS = {
+    RED: 0,
+    GREEN: 1
+}
+
 export default class LEDPlate extends LinearPlate {
     static get Alias() {return "LED"}
 
-    constructor(container, grid, schematic=false, verbose=false, id, colour=0) {
-        super(container, grid, schematic, verbose, id, colour);
+    static get PROP_COLOUR() {return "clr"}
 
-        if (colour === 'R') {colour = 0}
-        if (colour === 'G') {colour = 1}
+    static get COLOURS() {return LED_COLOURS}
+
+    constructor(container, grid, schematic=false, verbose=false, id, props) {
+        super(container, grid, schematic, verbose, id, props);
+    }
+
+    get __defaultProps__() {
+        return {
+            [LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED
+        }
+    }
+
+    __setProps__(props) {
+        super.__setProps__(props);
+
+        let colour = this._props[LEDPlate.PROP_COLOUR];
+
+        if (colour === 'R') {colour = LEDPlate.COLOURS.RED}
+        if (colour === 'G') {colour = LEDPlate.COLOURS.GREEN}
 
         colour = Number(colour);
 
@@ -18,13 +39,7 @@ export default class LEDPlate extends LinearPlate {
             console.error("Colour of LED must be one of R, G, 0, 1. Fall back to 0");
         }
 
-        this._params.extra = colour;
-    }
-
-    get props() {
-        return {
-            clr: this._params.extra
-        }
+        this._props[LEDPlate.PROP_COLOUR] = colour;
     }
 
     /**
@@ -35,7 +50,7 @@ export default class LEDPlate extends LinearPlate {
      */
     __draw__(position, orientation) {
         this._drawPicture();
-        this._drawLabel(this._params.extra === 0 ? 'R' : 'G');
+        this._drawLabel(this._props[LEDPlate.PROP_COLOUR] === LEDPlate.COLOURS.RED ? 'R' : 'G');
 
         if (this._params.verbose) {
             this._redrawOutput(this._state.output);

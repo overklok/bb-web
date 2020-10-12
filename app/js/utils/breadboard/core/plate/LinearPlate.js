@@ -7,8 +7,8 @@ import Plate from "../Plate";
  * @abstract
  */
 export default class LinearPlate extends Plate {
-    constructor(container, grid, schematic=false, verbose=false, id, extra) {
-        super(container, grid, schematic, verbose, id, extra);
+    constructor(container, grid, schematic=false, verbose=false, id, props) {
+        super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: this.__length__, y: 1};
 
@@ -29,7 +29,7 @@ export default class LinearPlate extends Plate {
 
     /**
      * @returns {number}
-     * @private
+     * @protected
      */
     get __length__() {
         return 2;

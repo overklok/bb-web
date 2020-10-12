@@ -17,7 +17,7 @@ const TerserPlugin          = require('terser-webpack-plugin');
 const HtmlWebpackPlugin     = require('html-webpack-plugin');
 const CopyWebpackPlugin     = require('copy-webpack-plugin');
 const BuildNotifierPlugin   = require('webpack-build-notifier');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 
 module.exports = (env, argv) => {
@@ -94,15 +94,15 @@ function getCopypaths(env) {
     // Copy paths
     let copypaths = [];
 
-    if (env.monitor === true && dotenv.parsed.PATH_DIST_MONITOR) {
+    if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR) {
         copypaths = [...copypaths,
-            {from: './dist/monitor.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/board.js'}
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/board.js'}
         ];
     }
 
     if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR_SOCK) {
         copypaths = [...copypaths,
-            {from: './dist/monitor.js',     to: dotenv.parsed.PATH_DIST_MONITOR_SOCK + '/board.js'}
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR_SOCK + '/board.js'}
         ];
     }
 
@@ -119,8 +119,8 @@ function getEntries(env) {
     // Bundle entries
     let entries = {};
     if (env.main === true)      entries['main']     = './app/js/MainApplication.ts';
-    if (env.monitor === true)   entries['monitor']  = './app/js/MonitorApplication.ts';
-    if (env.monkey === true)    entries['monkey']   = './app/js/MonkeytestApplication.ts';
+    if (env.board === true)   entries['board']      = './app/js/BoardApplication.ts';
+    if (env.monkey === true)    entries['monkey']   = './app/js/MonkeyApplication.ts';
 
     return entries;
 }
@@ -140,7 +140,7 @@ function getVersionTarget(env, mode=null) {
     if (matches > 1) return `mixed`;
 
     if (env.main === true)      return `main`;
-    if (env.monitor === true)   return `monitor`;
+    if (env.board === true)     return `board`;
     if (env.monkey === true)    return `monkey`;
 }
 
@@ -156,12 +156,21 @@ function getHtmlCopyPluginInstances(env) {
             }),
         ];
     }
-    if (env.monitor === true) {
+    if (env.board === true) {
         htmls = [...htmls,
             new HtmlWebpackPlugin({
-                template: './app/html/monitor.html',
+                template: './app/html/board.html',
                 inject: 'body',
-                filename: 'monitor.html'
+                filename: 'board.html'
+            }),
+        ];
+    }
+    if (env.monkey === true) {
+        htmls = [...htmls,
+            new HtmlWebpackPlugin({
+                template: './app/html/monkey.html',
+                inject: 'body',
+                filename: 'monkey.html'
             }),
         ];
     }

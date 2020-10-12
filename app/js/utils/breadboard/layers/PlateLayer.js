@@ -14,13 +14,13 @@ import CapacitorPlate       from "../plates/CapacitorPlate";
 import TransistorPlate      from "../plates/TransistorPlate";
 import InductorPlate        from "../plates/InductorPlate";
 import RelayPlate           from "../plates/RelayPlate";
-import StripPlate           from "../plates/StripPlate";
 import DiodePlate           from "../plates/LEDPlate";
 import MotorPlate           from "../plates/MotorPlate";
 import RGBPlate             from "../plates/RGBPlate";
 import DummyPlate           from "../plates/DummyPlate";
 import BuzzerPlate          from "../plates/BuzzerPlate";
 import Breadboard           from "../Breadboard";
+import {isEqual} from "lodash";
 
 /**
  * Слой плашек
@@ -44,7 +44,7 @@ export default class PlateLayer extends Layer {
 
     static comparePlates(svg, grid, plate1_data, plate2_data) {
         if (plate1_data.type !== plate2_data.type) return false;
-        if (plate1_data.extra !== plate2_data.extra) return false;
+        if (!isEqual(plate1_data.properties, plate2_data.properties)) return false;
 
         let is_orientation_equal = plate1_data.orientation === plate2_data.orientation;
 
@@ -82,10 +82,10 @@ export default class PlateLayer extends Layer {
     }
 
     static jsonToPlate(svg, grid, plate_data) {
-        const {type, x,y, orientation, extra} = plate_data;
+        const {type, position: {cell: {x, y}, orientation}, properties} = plate_data;
 
         const plate_class = PlateLayer.typeToPlateClass(type);
-        const plate = new plate_class(svg, grid, false, false, false, extra);
+        const plate = new plate_class(svg, grid, false, false, false, properties);
         plate.draw(grid.cell(x, y), orientation, false);
 
         return plate;
@@ -133,7 +133,7 @@ export default class PlateLayer extends Layer {
                 plate_data.y,
                 plate_data.orientation,
                 plate_data.id,
-                plate_data.extra,
+                plate_data.properties,
                 false
             );
         }
@@ -182,7 +182,7 @@ export default class PlateLayer extends Layer {
 
         for (const proto of _protos) {
             if (proto.quantity > 0) {
-                protos.push({type: proto.type, extra: proto.extra, qty: proto.quantity})
+                protos.push({type: proto.type, properties: proto.properties, qty: proto.quantity})
             }
         }
 
@@ -192,7 +192,7 @@ export default class PlateLayer extends Layer {
             if (protos.length === 0) return;
 
             const p_index = this.getRandomInt(0, protos.length - 1)
-            const proto = {type: protos[p_index].type, extra: protos[p_index].extra, qty: protos[p_index].qty};
+            const proto = {type: protos[p_index].type, properties: protos[p_index].properties, qty: protos[p_index].qty};
 
             if (proto.qty === 1) {
                 protos.splice(p_index, 1);
@@ -209,7 +209,7 @@ export default class PlateLayer extends Layer {
                     y = this.getRandomInt(0, this.__grid.dim.y-1);
 
                 placed = this.addPlate(
-                    proto.type, x, y, orientation, null, proto.extra, false, true
+                    proto.type, x, y, orientation, null, proto.properties, false, true
                 );
 
                 if (placed) {
@@ -312,14 +312,9 @@ export default class PlateLayer extends Layer {
     }
 
     takePlate(plate_data, plate_x, plate_y, cursor_x, cursor_y) {
-        const id = this.addPlate(
-            plate_data.type,
-            plate_data.x, plate_data.y,
-            plate_data.orientation,
-            null,
-            plate_data.extra,
-            false
-        )
+        const id = this.addPlateSerialized(
+            plate_data.type, plate_data.position, null, plate_data.properties, false
+        );
 
         const plate = this._plates[id];
         let plate_point = Breadboard.getCursorPoint(this._container.node, plate_x, plate_y);
@@ -337,12 +332,15 @@ export default class PlateLayer extends Layer {
      * @param {int}         y           позиция плашки по оси Y
      * @param {string}      orientation ориентация плашки
      * @param {null|int}    id          идентификатор плашки
-     * @param {*}           extra       резервное поле
+     * @param {*}           properties  свойства плашки
      * @param {boolean}     animate     анимировать появление плашки
+     * @param suppress_error
      *
      * @returns {null|int} идентификатор плашки
      */
-    addPlate(type, x, y, orientation, id=null, extra=null, animate=false, suppress_error=false) {
+    addPlate(type, x, y, orientation,
+             id=null, properties=null, animate=false, suppress_error=false
+    ) {
         if (!(typeof x !== "undefined") || !(typeof y !== "undefined") || !orientation) {
             throw new TypeError("All of 'type', 'x', 'y', and 'orientation' arguments must be defined");
         }
@@ -354,13 +352,13 @@ export default class PlateLayer extends Layer {
             return id;
         } else {
             plate_class = PlateLayer.typeToPlateClass(type);
-            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, extra);
+            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, properties);
         }
 
         if (this._editable) {
             this._attachEventsEditable(plate);
 
-            /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
+            /// показать на плашке группу, отвечающую за инGформацию в состоянии редактируемости
             plate.showGroupEditable(true);
         }
 
@@ -379,6 +377,12 @@ export default class PlateLayer extends Layer {
         this._plates[plate.id] = plate;
 
         return plate.id;
+    }
+
+    addPlateSerialized(type, position, id, properties, animate, suppress_error) {
+        const {cell: {x, y}, orientation} = position;
+
+        return this.addPlate(type, x, y, orientation, id, properties, animate, suppress_error);
     }
 
     /**
@@ -416,7 +420,7 @@ export default class PlateLayer extends Layer {
             plate.extra = plate.extra || plate.number;
 
             /// добавить плашку, если таковой нет
-            id = this.addPlate(plate.type, plate.x, plate.y, plate.orientation, plate.id, plate.extra);
+            id = this.addPlateSerialized(plate.type, plate.position, plate.id, plate.extra);
 
             /// если плашка создана без ошибок / существует
             if (id) {
@@ -993,7 +997,6 @@ export default class PlateLayer extends Layer {
             case RelayPlate.Alias:          {return RelayPlate}
             case DiodePlate.Alias:          {return DiodePlate}
             case BuzzerPlate.Alias:         {return BuzzerPlate}
-            case StripPlate.Alias:          {return StripPlate}
             case MotorPlate.Alias:          {return MotorPlate}
             case RGBPlate.Alias:            {return RGBPlate}
             case DummyPlate.Alias:          {return DummyPlate}

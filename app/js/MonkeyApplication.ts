@@ -27,7 +27,7 @@ import ModalModel from "./core/models/ModalModel";
 import TestkitModel from "./models/monkey/TestkitModel";
 import BoardLogModel from "./models/monkey/BoardLogModel";
 
-class MonkeytestApplication extends Application {
+class MonkeyApplication extends Application {
     public bb: BoardModel;
     public log: BoardLogModel;
 
@@ -81,4 +81,4 @@ declare global {
   }
 }
 
-window.Application = MonkeytestApplication;
+window.Application = MonkeyApplication;

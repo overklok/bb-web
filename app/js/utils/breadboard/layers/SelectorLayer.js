@@ -16,6 +16,7 @@ import InductorPlate from "../plates/InductorPlate";
 import RelayPlate from "../plates/RelayPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
 import Plate from "../core/Plate";
+import LinearPlate from "../core/plate/LinearPlate";
 
 const ITEMS = [
     {
@@ -23,14 +24,15 @@ const ITEMS = [
         type: BridgePlate,
         tags: "перемычка мост bridge",
         options: [
-            {title: "2 клетки", extra: 2},
-            {title: "3 клетки", extra: 3},
-            {title: "4 клетки", extra: 4},
-            {title: "5 клеток", extra: 5},
-            {title: "6 клеток", extra: 6},
+            {title: "2 клетки", properties: {[BridgePlate.PROP_LENGTH]: 2}},
+            {title: "3 клетки", properties: {[BridgePlate.PROP_LENGTH]: 3}},
+            {title: "4 клетки", properties: {[BridgePlate.PROP_LENGTH]: 4}},
+            {title: "5 клеток", properties: {[BridgePlate.PROP_LENGTH]: 5}},
+            {title: "6 клеток", properties: {[BridgePlate.PROP_LENGTH]: 6}},
         ],
         custom: {
-            default: {title: "Свой размер", extra: 2}
+            default: {title: "Свой размер", properties: {[BridgePlate.PROP_LENGTH]: 2}},
+            property_key: BridgePlate.PROP_LENGTH
         }
     },
     {
@@ -38,8 +40,8 @@ const ITEMS = [
         tags: "светодиод лампа свет led diode light",
         type: LEDPlate,
         options: [
-            {title: "Зелёный", extra: "G"},
-            {title: "Красный", extra: "R"}
+            {title: "Зелёный", properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.GREEN}},
+            {title: "Красный", properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED}}
         ]
     },
     {
@@ -47,13 +49,14 @@ const ITEMS = [
         tags: "резистор сопротивление resistor",
         type: ResistorPlate,
         options: [
-            {title: "200 Ом",   extra: 200},
-            {title: "1 кОм",    extra: 1000},
-            {title: "10 кОм",   extra: 10000},
-            {title: "30 кОм",   extra: 30000},
+            {title: "200 Ом",   properties: {[ResistorPlate.PROP_RESISTANCE]: 200}},
+            {title: "1 кОм",    properties: {[ResistorPlate.PROP_RESISTANCE]: 1000}},
+            {title: "10 кОм",   properties: {[ResistorPlate.PROP_RESISTANCE]: 10000}},
+            {title: "30 кОм",   properties: {[ResistorPlate.PROP_RESISTANCE]: 30000}},
         ],
         custom: {
-            default: {title: "Свой номинал (кОм)", extra: 100}
+            default: {title: "Свой номинал (кОм)", properties: {[ResistorPlate.PROP_RESISTANCE]: 100}},
+            property_key: ResistorPlate.PROP_RESISTANCE,
         }
     },
     {
@@ -61,11 +64,12 @@ const ITEMS = [
         tags: "конденсатор ёмкость емкость capacitor",
         type: CapacitorPlate,
         options: [
-            {title: "100 мкФ", extra: 1e-4},
-            {title: "1000 мкФ", extra: 1e-3},
+            {title: "100 мкФ", properties: {[CapacitorPlate.PROP_CAPACITANCE]: 1e-4}},
+            {title: "1000 мкФ", properties: {[CapacitorPlate.PROP_CAPACITANCE]: 1e-3}},
         ],
         custom: {
-            default: {title: "Своя ёмкость (пкФ)", extra: 200}
+            default: {title: "Своя ёмкость (пкФ)", properties: {[CapacitorPlate.PROP_CAPACITANCE]: 200}},
+            property_key: CapacitorPlate.PROP_CAPACITANCE,
         }
     },
 
@@ -346,6 +350,7 @@ export default class SelectorLayer extends Layer {
             inp_custom.style.display = "none";
         } else {
             const option = settings.custom.default;
+            const prop_key = settings.custom.property_key;
 
             inp_custom.style.display = "display";
 
@@ -359,7 +364,9 @@ export default class SelectorLayer extends Layer {
                 this._updateSlide(
                     slide, svg, subtitle, settings, {
                         title: `${option.title} [${inp_custom.value}]`,
-                        extra: inp_custom.value
+                        properties: {
+                            [prop_key]: inp_custom.value
+                        }
                     }
                 );
             })
@@ -425,7 +432,7 @@ export default class SelectorLayer extends Layer {
             error_message = null;
 
         try {
-            plate = new settings_item.type(svg, this.__grid, false, false, undefined, settings.extra);
+            plate = new settings_item.type(svg, this.__grid, false, false, undefined, settings.properties);
             plate.draw(gcell, 'west');
         } catch (e) {
             plate = new DummyPlate(svg, this.__grid, false, false);

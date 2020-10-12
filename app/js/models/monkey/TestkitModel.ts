@@ -23,21 +23,21 @@ interface TestkitModelState {
 
 export default class TestkitModel extends Model<TestkitModelState, DummyDatasource> {
     static FullTestKit: TestKit = [
-        {title: 'Перемычка-2',          type: 'bridge',         quantity: 1, extra: 2},
-        {title: 'Перемычка-3',          type: 'bridge',         quantity: 1, extra: 3},
-        {title: 'Перемычка-4',          type: 'bridge',         quantity: 1, extra: 4},
-        {title: 'Перемычка-5',          type: 'bridge',         quantity: 1, extra: 5},
+        {title: 'Перемычка-2',          type: 'bridge',         quantity: 1, properties: {length: 2}},
+        {title: 'Перемычка-3',          type: 'bridge',         quantity: 1, properties: {length: 3}},
+        {title: 'Перемычка-4',          type: 'bridge',         quantity: 1, properties: {length: 4}},
+        {title: 'Перемычка-5',          type: 'bridge',         quantity: 1, properties: {length: 5}},
 
-        {title: 'Резистор 100 Ом',      type: 'resistor',       quantity: 1, extra: 100},
-        {title: 'Резистор 1 кОм',       type: 'resistor',       quantity: 0, extra: 1000},
-        {title: 'Резистор 3 кОм',       type: 'resistor',       quantity: 0, extra: 3000},
-        {title: 'Резистор 10 кОм',      type: 'resistor',       quantity: 0, extra: 10000},
+        {title: 'Резистор 100 Ом',      type: 'resistor',       quantity: 1, properties: {res: 100}},
+        {title: 'Резистор 1 кОм',       type: 'resistor',       quantity: 0, properties: {res: 1000}},
+        {title: 'Резистор 3 кОм',       type: 'resistor',       quantity: 0, properties: {res: 3000}},
+        {title: 'Резистор 10 кОм',      type: 'resistor',       quantity: 0, properties: {res: 10000}},
 
-        {title: 'Конденсатор 100 мкФ',  type: 'capacitor',      quantity: 1, extra: 1e-4},
-        {title: 'Конденсатор 1000 мкФ', type: 'capacitor',      quantity: 1, extra: 1e-3},
+        {title: 'Конденсатор 100 мкФ',  type: 'capacitor',      quantity: 1, properties: {cap: 1e-4}},
+        {title: 'Конденсатор 1000 мкФ', type: 'capacitor',      quantity: 1, properties: {cap: 1e-3}},
 
-        {title: 'Светодиод (красный)',  type: 'LED',            quantity: 1, extra: 'R'},
-        {title: 'Светодиод (зелёный)',  type: 'LED',            quantity: 1, extra: 'G'},
+        {title: 'Светодиод (красный)',  type: 'LED',            quantity: 1, properties: {clr: 'R'}},
+        {title: 'Светодиод (зелёный)',  type: 'LED',            quantity: 1, properties: {clr: 'G'}},
 
         {title: 'Кнопка',               type: 'button',         quantity: 1},
         {title: 'Ключ',                 type: 'switch',         quantity: 1},

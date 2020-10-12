@@ -5,16 +5,22 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class InductorPlate extends LinearPlate {
     static get Alias() {return "inductor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id, inductance) {
-        super(container, grid, schematic, verbose, id, inductance);
+    static get PROP_INDUCTANCE() {return "ind"}
 
-        this._params.extra = Number(inductance) || 100;
+    constructor(container, grid, schematic=false, verbose=false, id, props) {
+        super(container, grid, schematic, verbose, id, props);
     }
 
-    get props() {
+    get __defaultProps__() {
         return {
-            ind: this._params.extra
+            [InductorPlate.PROP_INDUCTANCE]: 100
         }
+    }
+
+    __setProps__(props) {
+        super.__setProps__(props);
+
+        this._props[InductorPlate.PROP_INDUCTANCE] = Number(this._props[InductorPlate.PROP_INDUCTANCE]);
     }
 
     /**

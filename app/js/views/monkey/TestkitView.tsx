@@ -8,7 +8,7 @@ import Breadboard from "../../utils/breadboard/Breadboard";
 interface IProps {
     title: string;
     type: string;
-    extra?: any;
+    plate_properties?: any;
     quantity: number;
     onQuantityChange?: (q: number) => void;
 }
@@ -19,7 +19,7 @@ export class TestkitItemComponent extends React.Component<IProps, IState>{
     private ref: React.RefObject<HTMLDivElement> = React.createRef();
 
     componentDidMount() {
-        Breadboard.drawPlate(this.ref.current, this.props.type, this.props.extra);
+        Breadboard.drawPlate(this.ref.current, this.props.type, this.props.plate_properties);
     }
 
     onQuantityChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -50,7 +50,7 @@ export class TestkitItemComponent extends React.Component<IProps, IState>{
     }
 }
 
-type TestkitItem = {title: string, type: string, extra?: any, quantity: number};
+type TestkitItem = {title: string, type: string, properties?: any, quantity: number};
 
 interface TestkitViewState extends IViewState {
     quantities: number[];
@@ -143,7 +143,7 @@ export default class TestkitView extends View<TestkitViewOptions, TestkitViewSta
                         return <TestkitItemComponent
                             title={item.title}
                             type={item.type}
-                            extra={item.extra}
+                            plate_properties={item.properties}
                             key={i}
                             quantity={this.state.quantities[i]}
                             onQuantityChange={(q: number) => this.setItemQuantity(i, q)}

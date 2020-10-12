@@ -5,16 +5,28 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class ResistorPlate extends LinearPlate {
     static get Alias() {return "resistor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id, resistance) {
-        super(container, grid, schematic, verbose, id, resistance);
+    static get PROP_RESISTANCE() {return "res"}
 
-        this._params.extra = Number((resistance <= 0) ? 200 : resistance);
+    constructor(container, grid, schematic=false, verbose=false, id, props) {
+        super(container, grid, schematic, verbose, id, props);
     }
 
-    get props() {
+    get __defaultProps__() {
         return {
-            res: this._params.extra
+            [ResistorPlate.PROP_RESISTANCE]: 200
+        };
+    }
+
+    __setProps__(props) {
+        let resistance = Number(props[ResistorPlate.PROP_RESISTANCE]);
+
+        if (resistance <= 0) {
+            throw RangeError("Resistance cannot be less than 0");
         }
+
+        super.__setProps__(props);
+
+        this._props[ResistorPlate.PROP_RESISTANCE] = resistance;
     }
 
     /**
@@ -25,9 +37,7 @@ export default class ResistorPlate extends LinearPlate {
      */
     __draw__(position, orientation) {
         this._drawPicture();
-        this._drawLabel(this._params.extra);
-
-        // this._group.text(`Resistor ${this._params.extra} Ohm`).font({size: 20});
+        this._drawLabel(this._props[ResistorPlate.PROP_RESISTANCE]);
     };
 
     /**
@@ -35,18 +45,21 @@ export default class ResistorPlate extends LinearPlate {
      *
      * @param {int} dx смещение резистора по оси X
      * @param {int} dy смещение резистора по оси Y
+     * @param prevent_overflow
      */
-    shift(dx, dy) {
-        super.shift(dx, dy);
+    shift(dx, dy, prevent_overflow) {
+        super.shift(dx, dy, prevent_overflow);
     }
 
     /**
      * Повернуть резистор
      *
      * @param {string} orientation ориентация резистора
+     * @param suppress_events
+     * @param prevent_overflow
      */
-    rotate(orientation) {
-        super.rotate(orientation);
+    rotate(orientation, suppress_events, prevent_overflow) {
+        super.rotate(orientation, suppress_events, prevent_overflow);
     }
 
     /**

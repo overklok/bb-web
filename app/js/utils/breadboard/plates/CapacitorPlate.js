@@ -5,16 +5,22 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class CapacitorPlate extends LinearPlate {
     static get Alias() {return "capacitor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id, capacity) {
-        super(container, grid, schematic, verbose, id, capacity);
+    static get PROP_CAPACITANCE() {return "cap"}
 
-        this._params.extra = Number(capacity) || 0.001;
+    constructor(container, grid, schematic=false, verbose=false, id, props) {
+        super(container, grid, schematic, verbose, id, props);
     }
 
-    get props() {
+    get __defaultProps__() {
         return {
-            cap: this._params.extra
+            [CapacitorPlate.PROP_CAPACITANCE]: 0.001
         }
+    }
+
+    __setProps__(props) {
+        super.__setProps__(props);
+
+        this._props[CapacitorPlate.PROP_CAPACITANCE] = Number(this._props[CapacitorPlate.PROP_CAPACITANCE]);
     }
 
     /**
@@ -26,7 +32,7 @@ export default class CapacitorPlate extends LinearPlate {
     __draw__(position, orientation) {
         this._drawPicture();
 
-        this._drawLabel(this._params.extra);
+        this._drawLabel(this._props[CapacitorPlate.PROP_CAPACITANCE]);
     };
 
     /**

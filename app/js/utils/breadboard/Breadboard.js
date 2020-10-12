@@ -84,14 +84,14 @@ export default class Breadboard {
         this._setOptions(options)
     }
 
-    static drawPlate(parent, type, extra) {
+    static drawPlate(parent, type, properties) {
         const grid = new Grid(10, 10, 1000, 700);
         const div_wrap = SVG(parent);
 
 
         const plate_type = PlateLayer.typeToPlateClass(type);
 
-        const plate = new plate_type(div_wrap, grid, false, false, null, extra);
+        const plate = new plate_type(div_wrap, grid, false, false, null, properties);
 
         plate.draw(grid.cell(0, 0), 'west');
         plate.move_to_point(0, 0);
@@ -247,16 +247,14 @@ export default class Breadboard {
      * Добавить плашку
      *
      * @param {string}      type        тип плашки
-     * @param {int}         x           позиция плашки по оси X
-     * @param {int}         y           позиция плашки по оси Y
-     * @param {string}      orientation ориентация плашки
+     * @param {int}         position    положение плашки
      * @param {null|int}    id          идентификатор плашки
-     * @param {*}           extra       резервное поле
+     * @param {*}           properties       свойства плашки
      *
      * @returns {null|int} идентификатор плашки
      */
-    addPlate(type, x=0, y=0, orientation='west', id=null, extra) {
-        return this._layers.plate.addPlate(type, x, y, orientation, id, extra);
+    addPlate(type, position, id=null, properties) {
+        return this._layers.plate.addPlateSerialized(type, position, id, properties);
     }
 
     /**
@@ -684,7 +682,7 @@ export default class Breadboard {
             this.clearPlates();
 
             for (let plate of plates) {
-                this.addPlate(plate.type, plate.x, plate.y, plate.orientation, plate.id, plate.extra);
+                this.addPlate(plate.type, plate.position, plate.id, plate.properties);
 
                 this.setPlateState(plate.id, {
                     adc: plate.adc,

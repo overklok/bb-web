@@ -55,7 +55,7 @@ export default class MonkeyPresenter extends Presenter<BoardView> {
         let protos = [];
 
         for (const [i, tki] of TestkitModel.FullTestKit.entries()) {
-            protos[i] = {type: tki.type, extra: tki.extra, quantity: this.testkit_qtys[i]}
+            protos[i] = {type: tki.type, properties: tki.properties, quantity: this.testkit_qtys[i]}
         }
 
         this.view.setPlates([]);

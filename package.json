@@ -98,7 +98,7 @@
     "build-new:monitor": "webpack --config webpack.config.new.js         --mode production  --env.monitor",
     "build-new:monkey": "webpack --config webpack.config.new.js --watch --mode production  --env.monkey",
     "watch-new:main": "webpack --config webpack.config.new.js --watch --mode development --env.main",
-    "watch-new:monitor": "webpack --config webpack.config.new.js --watch --mode development --env.monitor",
+    "watch-new:board": "webpack --config webpack.config.new.js --watch --mode development --env.board",
     "watch-new:monkey": "webpack --config webpack.config.new.js --watch --mode development --env.monkey",
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",

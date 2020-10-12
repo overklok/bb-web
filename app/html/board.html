@@ -2,31 +2,38 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Webpack App</title>
+        <title>Tapanda Monitor Web</title>
     </head>
-    <body style="width: 100vw; height: 100vh;">
+    <body style="width: 100vw; height: 100vh; margin: 0;">
+        <div id="version" style="font-size: 10px; font-family: 'IBM Plex Sans', monospace; position:absolute; bottom: 0; z-index: 1; background-color: aquamarine;"></div>
         <div id="board" style="width: 100%; height: 100%;">
         </div>
 
-
-<!--         <img> -->
-<!--             <svg id="workspace" viewBox="0 0 600 680" style="width: 100%; height: 100%;"> -->
-<!--             </svg> -->
-<!--         </img> -->
-
+    <script type="text/javascript" src="board.js"></script>
     </body>
     <script>
-        var app = new AdminBoardApplication();
+        if (window.hasOwnProperty('AdminBoardApplication')) {
+            window.app = new AdminBoardApplication();
 
-        app.configure({
-            containerId: "board",
-        });
+            window.app.configure({
+                containerId: "board",
+                modeAdmin: false,
+                //boardAdvanced: true,
+            });
 
-        app.run();
+            window.app.run();
 
-        app.bb.switchSpareFilters(true);
-        app.bb.switchSchematic(true, true);
+            window.app.bb.switchSpareFilters(true);
+            window.app.bb.switchSchematic(true, true);
 
-        // window.BOARD_VERSION;
+            document.getElementById("version").innerText = window.app.version;
+        } else {
+            console.log("Failed to use classic Board, using new version")
+            window.app = new Application();
+            window.app.run(document.getElementById('board'));
+            document.getElementById("version").innerText = window.app.version;
+        }
+
+        window.app.bb.setAdminMode(true);
     </script>
 </html>
