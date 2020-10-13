@@ -18,7 +18,7 @@ export default class LaunchPresenter extends Presenter<LaunchView> {
 
             this.modal_model.showModal({
                 dialog: {heading: 'Программа пуста'},
-                content: 'Чтобы запустить программу, необходимо добавить команды в поле редактора'
+                content: 'Чтобы запустить программу, необходимо добавить команды в поле редактора.'
             });
         }
 

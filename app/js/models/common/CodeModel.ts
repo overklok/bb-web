@@ -3,6 +3,7 @@ import {ModelState} from "../../core/base/model/Model";
 import {ModelEvent} from "../../core/base/Event";
 import {PlateDiff, Thread} from "./BoardModel";
 import {AsyncDatasourceStatus} from "../../core/base/model/datasources/AsynchronousDatasource";
+import {logoSVG} from "../../utils/breadboard/styles/paths";
 
 // Event channels
 const enum ChannelsTo {
@@ -35,7 +36,7 @@ export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
     public isMainChainEmpty() {
         const chainset = this.state.chainset;
 
-        return !chainset || !chainset.main;
+        return !chainset || !chainset.main || chainset.main.commands.length === 0;
     }
 
     public setChainset(chainset: any) {
