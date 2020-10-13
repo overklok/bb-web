@@ -100,6 +100,7 @@
     "watch-new:main": "webpack --config webpack.config.new.js --watch --mode development --env.main",
     "watch-new:board": "webpack --config webpack.config.new.js --watch --mode development --env.board",
     "watch-new:monkey": "webpack --config webpack.config.new.js --watch --mode development --env.monkey",
+    "watch-new:playground": "webpack --config webpack.config.new.js --watch --mode development --env.playground",
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",
     "docs": "./node_modules/.bin/esdoc"

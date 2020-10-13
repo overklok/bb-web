@@ -34,6 +34,7 @@ export interface ILayoutPane {
     resizable: boolean;
     panes: ILayoutPane[];
     widgets: WidgetInfo[];
+    composer: string;
 
     _widgets?: Widget<any>[];
 }

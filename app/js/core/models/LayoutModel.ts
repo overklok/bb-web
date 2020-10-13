@@ -24,6 +24,7 @@ type Pane = {
     size?: string;
     widgets?: Widget[];
     panes?: Pane[];
+    composer?: string;
 }
 
 type LayoutMode = {
@@ -112,6 +113,7 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
         const size = this.formatPaneSize(pane);
         const {size_min, size_max, resizable} = this.formatPaneLimits(pane);
         const widgets = this.formatPaneViews(pane);
+        const composer = pane.composer;
 
         return {
             name: pane.name,
@@ -122,6 +124,7 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
             resizable,
             widgets,
             panes,
+            composer,
         };
     }
 

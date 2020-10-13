@@ -94,15 +94,15 @@ function getCopypaths(env) {
     // Copy paths
     let copypaths = [];
 
-    if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR) {
+    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD) {
         copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/board.js'}
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD + '/board.js'}
         ];
     }
 
-    if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR_SOCK) {
+    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD_SOCK) {
         copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR_SOCK + '/board.js'}
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD_SOCK + '/board.js'}
         ];
     }
 
@@ -112,15 +112,22 @@ function getCopypaths(env) {
         ];
     }
 
+    if (env.playground === true && dotenv.parsed.PATH_DIST_PLAYGROUND) {
+        copypaths = [...copypaths,
+            {from: './dist/playground.js',     to: dotenv.parsed.PATH_DIST_PLAYGROUND + '/playground.js'}
+        ];
+    }
+
     return copypaths;
 }
 
 function getEntries(env) {
     // Bundle entries
     let entries = {};
-    if (env.main === true)      entries['main']     = './app/js/MainApplication.ts';
-    if (env.board === true)   entries['board']      = './app/js/BoardApplication.ts';
-    if (env.monkey === true)    entries['monkey']   = './app/js/MonkeyApplication.ts';
+    if (env.main === true)          entries['main']         = './app/js/MainApplication.ts';
+    if (env.board === true)         entries['board']        = './app/js/BoardApplication.ts';
+    if (env.monkey === true)        entries['monkey']       = './app/js/MonkeyApplication.ts';
+    if (env.playground === true)    entries['playground']   = './app/js/PlaygroundApplication.ts';
 
     return entries;
 }
@@ -134,14 +141,15 @@ function getVersionMode(mode) {
 }
 
 function getVersionTarget(env, mode=null) {
-    let matches = [env.main, env.board, env.blockly, env.timeline]
+    let matches = [env.main, env.board, env.monkey, env.playground]
         .reduce((total, v_curr) => total += (v_curr === true), 0);
 
     if (matches > 1) return `mixed`;
 
-    if (env.main === true)      return `main`;
-    if (env.board === true)     return `board`;
-    if (env.monkey === true)    return `monkey`;
+    if (env.main === true)          return `main`;
+    if (env.board === true)         return `board`;
+    if (env.monkey === true)        return `monkey`;
+    if (env.playground === true)    return `playground`;
 }
 
 function getHtmlCopyPluginInstances(env) {
@@ -171,6 +179,15 @@ function getHtmlCopyPluginInstances(env) {
                 template: './app/html/monkey.html',
                 inject: 'body',
                 filename: 'monkey.html'
+            }),
+        ];
+    }
+    if (env.playground === true) {
+        htmls = [...htmls,
+            new HtmlWebpackPlugin({
+                template: './app/html/playground.html',
+                inject: 'body',
+                filename: 'playground.html'
             }),
         ];
     }

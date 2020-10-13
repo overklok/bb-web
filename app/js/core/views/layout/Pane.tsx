@@ -12,6 +12,7 @@ import TabViewComposer from "../../base/view/viewcomposers/tab/TabViewComposer";
 import Cover from "./Cover";
 import {ILayoutPane} from "./LayoutView";
 import {Widget} from "../../services/interfaces/IViewService";
+import OverlayViewComposer from "../../base/view/viewcomposers/OverlayViewComposer";
 
 export enum PaneOrientation {
     Vertical = 'vertical',
@@ -32,6 +33,8 @@ interface IProps {
     panes?: ILayoutPane[];
     // варианты Видов
     _widgets?: Widget<any>[];
+    // композитор Видов
+    composer?: string;
 
     // ориентация панели
     orientation: PaneOrientation;
@@ -87,6 +90,7 @@ export default class Pane extends React.Component<IProps, IState> {
         panes: [] as ILayoutPane[],
         view_aliases: [] as string[],
         view_types: [] as typeof View[],
+        composer: 'tab',
 
         name: 'unnamed',
         is_root: false,
@@ -385,6 +389,23 @@ export default class Pane extends React.Component<IProps, IState> {
 
         const overlay_node = this.props.overlay_node;
 
+        if (this.props.composer === 'overlay') {
+            return (
+                <Frame covered={this.state.covered}>
+                    <OverlayViewComposer>
+                        {this.props._widgets.map((widget, index) => {
+                            const ref: RefObject<Nest> = React.createRef();
+
+                            const nest = this.renderNest(index, widget, ref);
+                            this.nests.push(ref);
+
+                            return nest;
+                        })}
+                    </OverlayViewComposer>
+                </Frame>
+            )
+        }
+
         return (
             <Frame covered={this.state.covered}>
                 <TabViewComposer overlay_node={overlay_node} show_headers={this.props.show_headers}>
@@ -393,7 +414,7 @@ export default class Pane extends React.Component<IProps, IState> {
 
                         const nest = this.renderNest(index, widget, ref);
                         this.nests.push(ref);
-                        
+
                         return nest;
                     })}
                 </TabViewComposer>
@@ -433,6 +454,7 @@ export default class Pane extends React.Component<IProps, IState> {
                     size_max={data.size_max}
                     resizable={data.resizable}
                     panes={data.panes}
+                    composer={data.composer}
                     orientation={orientation}
                     _widgets={data._widgets}
                     covered={this.state.covered}
