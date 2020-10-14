@@ -106,6 +106,12 @@ function getCopypaths(env) {
         ];
     }
 
+    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD_ADMIN) {
+        copypaths = [...copypaths,
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD_ADMIN + '/board.js'}
+        ];
+    }
+
     if (env.monkey === true && dotenv.parsed.PATH_DIST_MONKEY) {
         copypaths = [...copypaths,
             {from: './dist/monkey.js',     to: dotenv.parsed.PATH_DIST_MONKEY + '/monkey.js'}

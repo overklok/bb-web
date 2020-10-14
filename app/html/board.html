@@ -17,7 +17,7 @@
 
             window.app.configure({
                 containerId: "board",
-                modeAdmin: false,
+                modeAdmin: true,
                 boardAdvanced: true,
             });
 
@@ -33,7 +33,5 @@
             window.app.run(document.getElementById('board'));
             document.getElementById("version").innerText = window.app.version;
         }
-
-        window.app.bb.setAdminMode(true);
     </script>
 </html>

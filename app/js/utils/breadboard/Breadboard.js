@@ -219,6 +219,10 @@ export default class Breadboard {
     setLayout(layout_name) {
         this.reinject({layout_name});
         this._callbacks.layoutchange(layout_name);
+        this._callbacks.change({
+            id: null,
+            action: 'clear'
+        });
     }
 
     /**

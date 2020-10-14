@@ -32,7 +32,6 @@
     "sweetalert2": "^9.17.1",
     "ts-loader": "^6.0.2",
     "typescript": "^3.7.5",
-    "vis-timeline": "^6.5.2",
     "webpack": "^4.44.1"
   },
   "devDependencies": {
@@ -84,23 +83,23 @@
     "webpack-notifier": "^1.8.0"
   },
   "scripts": {
-    "build": "webpack -p --env.main --env.board --env.blockly --env.timeline",
-    "build:main": "webpack -p --env.main",
-    "build:board": "webpack -p --env.board",
-    "build:blockly": "webpack -p --env.blockly",
-    "build:timeline": "webpack -p --env.timeline",
-    "watch": "webpack --watch --mode development --env.main --env.board --env.blockly --env.timeline",
-    "watch:main": "webpack --watch --mode development --env.main",
-    "watch:board": "webpack --watch --mode development --env.board",
-    "watch:blockly": "webpack --watch --mode development --env.blockly",
-    "watch:timeline": "webpack --watch --mode development --env.timeline",
-    "build-new:main": "webpack --config webpack.config.new.js         --mode production  --env.main",
-    "build-new:monitor": "webpack --config webpack.config.new.js         --mode production  --env.monitor",
-    "build-new:monkey": "webpack --config webpack.config.new.js --watch --mode production  --env.monkey",
-    "watch-new:main": "webpack --config webpack.config.new.js --watch --mode development --env.main",
-    "watch-new:board": "webpack --config webpack.config.new.js --watch --mode development --env.board",
-    "watch-new:monkey": "webpack --config webpack.config.new.js --watch --mode development --env.monkey",
+    "build":                "webpack          --mode production --env.main --env.board --env.blockly",
+    "build:main":           "webpack          --mode production --env.main",
+    "build:board":          "webpack          --mode production --env.board",
+    "build:blockly":        "webpack          --mode production --env.blockly",
+    "watch":                "webpack --watch  --mode development --env.main --env.board --env.blockly",
+    "watch:main":           "webpack --watch  --mode development --env.main",
+    "watch:board":          "webpack --watch  --mode development --env.board",
+    "watch:blockly":        "webpack --watch  --mode development --env.blockly",
+
+    "build-new:main":       "webpack --config webpack.config.new.js         --mode production  --env.main",
+    "build-new:monitor":    "webpack --config webpack.config.new.js         --mode production  --env.monitor",
+    "build-new:monkey":     "webpack --config webpack.config.new.js --watch --mode production  --env.monkey",
+    "watch-new:main":       "webpack --config webpack.config.new.js --watch --mode development --env.main",
+    "watch-new:board":      "webpack --config webpack.config.new.js --watch --mode development --env.board",
+    "watch-new:monkey":     "webpack --config webpack.config.new.js --watch --mode development --env.monkey",
     "watch-new:playground": "webpack --config webpack.config.new.js --watch --mode development --env.playground",
+
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",
     "docs": "./node_modules/.bin/esdoc"

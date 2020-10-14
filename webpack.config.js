@@ -20,6 +20,7 @@ const BuildNotifierPlugin   = require('webpack-build-notifier');
 const lib_dir = __dirname + '/vendor/js';
 
 module.exports = (env, argv) => {
+    const is_dev = env.mode === "development";
     const [ver, tgt, mode] = [getVersionNumber(), getVersionTarget(env), getVersionMode(argv.mode)]
     const VERSION = mode ? `${tgt}/${ver}-${mode}` : `${tgt}/${ver}`;
     
@@ -27,7 +28,7 @@ module.exports = (env, argv) => {
 
     return {
         entry: getEntries(env),
-        devtool: 'source-map', // 'source-map' for production
+        devtool: is_dev ? 'eval-source-map' : 'source-map', // 'source-map' for production
         output: {
             filename: '[name].js',
             path: path.resolve(__dirname, 'dist')
@@ -122,7 +123,7 @@ function getVersionMode(mode) {
 }
 
 function getVersionTarget(env, mode=null) {
-    let matches = [env.main, env.board, env.blockly, env.timeline]
+    let matches = [env.main, env.board, env.blockly]
         .reduce((total, v_curr) => total += (v_curr === true), 0);
 
     if (matches > 1) return `mixed`;
@@ -130,7 +131,6 @@ function getVersionTarget(env, mode=null) {
     if (env.main === true)      return `main`;
     if (env.board === true)     return `board`;
     if (env.blockly === true)   return `blockly`;
-    if (env.timeline === true)  return `timeline`;
 }
 
 function getEntries(env) {
@@ -139,7 +139,6 @@ function getEntries(env) {
     if (env.main === true)      entries['main'] = './app/js/index.js';
     if (env.board === true)     entries['board'] = './app/js/admin_board.js';
     if (env.blockly === true)   entries['blockly'] = './app/js/admin_blockly.js';
-    if (env.timeline === true)  entries['timeline'] = './app/js/timeline.js';
 
     return entries;
 }
@@ -164,31 +163,25 @@ function getCopypaths(env) {
         ];
     }
 
+    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD_ADMIN) {
+        copypaths = [...copypaths,
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD_ADMIN + '/admin_board.js'}
+        ];
+    }
     if (env.board === true && dotenv.parsed.PATH_DIST_BOARD) {
         copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD + '/js/admin_board.js'}
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD + '/board.js'}
         ];
     }
-    if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR) {
+    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD_SOCK) {
         copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/board.js'}
-        ];
-    }
-    if (env.board === true && dotenv.parsed.PATH_DIST_MONITOR_SOCK) {
-        copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_MONITOR_SOCK + '/board.js'}
-        ];
-    }
-
-    if (env.timeline === true && dotenv.parsed.PATH_DIST_MONITOR) {
-        copypaths = [...copypaths,
-            {from: './dist/timeline.js',     to: dotenv.parsed.PATH_DIST_MONITOR + '/timeline.js'}
+            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD_SOCK + '/board.js'}
         ];
     }
 
     if (env.blockly === true && dotenv.parsed.PATH_DIST_BLOCKLY) {
         copypaths = [...copypaths,
-            {from: './dist/blockly.js',   to: dotenv.parsed.PATH_DIST_BLOCKLY + '/js/admin_blockly.js'},
+            {from: './dist/blockly.js',   to: dotenv.parsed.PATH_DIST_BLOCKLY + '/admin_blockly.js'},
         ];
     }
 
@@ -221,15 +214,6 @@ function getHtmlCopyPluginInstances(env) {
                 template: './app/html/admin.html',
                 inject: 'body',
                 filename: 'admin.html'
-            }),
-        ];
-    }
-    if (env.timeline === true) {
-        htmls = [...htmls,
-            new HtmlWebpackPlugin({
-                template: './app/html/timeline.html',
-                inject: 'body',
-                filename: 'timeline.html'
             }),
         ];
     }

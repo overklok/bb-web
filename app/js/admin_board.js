@@ -59,6 +59,14 @@ class AdminBoardApplication {
         this._dispatcher.always(['bb:*', 'ls:*']);
     }
 
+    setBoardLayout(layout_name) {
+        this.bb.setLayout(layout_name);
+    }
+
+    getBoardLayoutName() {
+        return this.bb.getLayoutName();
+    }
+
     /**
      * Обновить данные приложения
      *
