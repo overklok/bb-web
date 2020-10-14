@@ -3,9 +3,9 @@ import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
 import {IViewOptions, IViewProps} from "../../core/base/view/View";
 
-export class ChangeEvent extends ViewEvent<ChangeEvent> {}
+export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}
 export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
-export class LayoutChangeEvent extends ViewEvent<LayoutChangeEvent> {}
+export class BoardLayoutChangeEvent extends ViewEvent<BoardLayoutChangeEvent> {}
 
 export interface BoardViewOptions extends IViewOptions {
     schematic?: boolean;
@@ -123,8 +123,8 @@ export default class BoardView extends ImperativeView<BoardViewOptions> {
     }
 
     private setup() {
-        this.bb.onChange(() => this.emit(new ChangeEvent({})))
+        this.bb.onChange(() => this.emit(new BoardChangeEvent({})))
         this.bb.onDragStart(() => this.emit(new PlateDragStartEvent({})))
-        this.bb.onLayoutChange(() => this.emit(new LayoutChangeEvent({})))
+        this.bb.onLayoutChange(() => this.emit(new BoardLayoutChangeEvent({})))
     }
 }

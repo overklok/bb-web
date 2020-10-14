@@ -95,6 +95,7 @@
     "build-new:main":       "webpack --config webpack.config.new.js         --mode production  --env.main",
     "build-new:monitor":    "webpack --config webpack.config.new.js         --mode production  --env.monitor",
     "build-new:monkey":     "webpack --config webpack.config.new.js --watch --mode production  --env.monkey",
+    "build-new:playground": "webpack --config webpack.config.new.js --watch --mode production  --env.playground",
     "watch-new:main":       "webpack --config webpack.config.new.js --watch --mode development --env.main",
     "watch-new:board":      "webpack --config webpack.config.new.js --watch --mode development --env.board",
     "watch-new:monkey":     "webpack --config webpack.config.new.js --watch --mode development --env.monkey",
