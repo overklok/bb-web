@@ -38,7 +38,7 @@ export default class TButtonPlate extends ButtonPlate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=Plate.QuadSizeDefault) {
+    _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(2, 0);
         let cell3 = this.__grid.cell(1, 0);

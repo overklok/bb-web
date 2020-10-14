@@ -67,7 +67,7 @@ export default class ResistorPlate extends LinearPlate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=Plate.QuadSizeDefault) {
+    _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
@@ -87,21 +87,21 @@ export default class ResistorPlate extends LinearPlate {
             .fill('none')
             .move(rect1.cx(), rect2.cy());
 
-        this._group.rect(line_len / 2.5, qs / 1.5)
+        this._group.rect(line_len / 2.5, qs / 2)
             .stroke({width: 1})
             .fill("#fffffd")
             .cx(rect1.cx() + line_len / 2)
             .cy(rect1.cy())
     }
 
-    _drawLabel(text="", size=Plate.LabelSizeDefault) {
+    _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
         let num = Number(text);
 
         if (num / 1000 >= 1)    {text = num / 1000      + 'k'}
         if (num / 1000000 >= 1) {text = num / 1000000   + 'M'}
 
         this._group.text(String(text))
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
+            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
             .cx(this._container.width() / 2)
             .cy(this._container.height() / 4)
             .stroke({width: 0.5})

@@ -38,7 +38,7 @@ export default class StripPlate extends Plate {
      * @param {number} ls размер лампочки / высота указателя
      * @private
      */
-    _drawPicture(ls=Plate.LEDSizeDefault) {
+    _drawPicture(ls=Plate.LEDSizePreferred) {
         let pointer_offset_x = (this._group.x() - this._bezel.x()) / 2;
 
         let plpath = [

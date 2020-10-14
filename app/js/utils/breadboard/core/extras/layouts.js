@@ -4,6 +4,15 @@ import Grid from "../Grid";
 
 export const LAYOUTS = {
     v5x: {
+        plate_style: {
+            label_font_size: 16,
+        },
+
+        label_style: {
+            font_size: 28,
+            text_bias: 14,
+        },
+
         wrap_width: 1200, // Ширина рабочей области
         wrap_height: 1350, // Высота рабочей области
 

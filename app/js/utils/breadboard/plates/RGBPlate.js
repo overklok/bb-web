@@ -30,7 +30,7 @@ export default class RGBPlate extends Plate {
      * @param {number} ls размер светодиода
      * @private
      */
-    _drawPicture(ls=Plate.LEDSizeDefault) {
+    _drawPicture(ls=Plate.LEDSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, 0);
 
@@ -54,30 +54,30 @@ export default class RGBPlate extends Plate {
             .fill('#e2e2e2');
     }
 
-    _drawLabel(text="", size=Plate.LabelSizeDefault) {
+    _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
         let cell0 = this.__grid.cell(0, 0),
             cell1 = this.__grid.cell(1, 0),
             cell2 = this.__grid.cell(2, 0),
             cell3 = this.__grid.cell(3, 0);
 
         this._group.text("R")
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"})
+            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight, anchor: "end"})
             .center(cell0.center_rel.x, cell0.center_rel.y);
 
         this._group.text("G")
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"})
+            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight, anchor: "end"})
             .center(cell1.center_rel.x, cell1.center_rel.y);
 
         this._group.text("B")
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"})
+            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight, anchor: "end"})
             .center(cell2.center_rel.x, cell2.center_rel.y);
 
         this._group.text("C")
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"})
+            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight, anchor: "end"})
             .center(cell3.center_rel.x, cell3.center_rel.y);
 
         let label = this._group.text(String(text))
-            .font({size: size/2, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"});
+            .font({size: size/2, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight, anchor: "end"});
 
 
         label.x(this._container.width())

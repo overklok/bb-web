@@ -494,7 +494,7 @@ export default class Breadboard {
 
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed);
-        this._layers.label      = new LabelLayer(label_panes, this.__grid);
+        this._layers.label      = new LabelLayer(label_panes, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.current    = new CurrentLayer(current, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.plate      = new PlateLayer(plate, this.__grid, this._options.schematic, this._options.verbose);
         this._layers.region     = new RegionLayer(region, this.__grid);
@@ -504,6 +504,8 @@ export default class Breadboard {
         this._layers.background.setDomainConfig(this._layout.domains);
         this._layers.controls.setLayoutConfig(this._layout.controls);
         this._layers.label.setDomainConfig(this._layout.domains);
+        this._layers.plate.setPlateStyle(this._layout.plate_style);
+        this._layers.label.setLabelStyle(this._layout.label_style);
 
         /// внутренняя компоновка каждого слоя
         this._layers.background.compose();

@@ -164,7 +164,7 @@ export default class ContextMenu {
     }
 
     _drawItemText(container, label, shortcut, active) {
-        let text = container.text(label).y(this._size.y).font({size: 24});
+        let text = container.text(label).y(this._size.y).font({family: 'IBM Plex Sans, monospace', size: 24});
 
         text.build(true);
 

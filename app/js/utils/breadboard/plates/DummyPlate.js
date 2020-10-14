@@ -35,7 +35,7 @@ export default class DummyPlate extends Plate {
      * @private
      * @param qs
      */
-    _drawPicture(qs=Plate.QuadSizeDefault) {
+    _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, 0);
 

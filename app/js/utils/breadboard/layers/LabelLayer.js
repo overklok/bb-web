@@ -12,13 +12,18 @@ const CELL_ROLES = {
     None: 'none'
 }
 
+const LABEL_STYLE_DEFAULT = {
+    font_size: 20,
+    text_bias: 10,
+}
+
 export default class LabelLayer extends Layer {
     static get Class() {return "bb-layer-label"}
 
     static get CellRoles() {return CELL_ROLES}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    constructor(container, grid, schematic=false, detailed=false) {
+        super(container, grid, schematic, detailed);
 
         this._container.addClass(LabelLayer.Class);
 
@@ -33,6 +38,11 @@ export default class LabelLayer extends Layer {
         this._domain_config = undefined;
 
         this._pinval_labels = [];
+
+        this._label_style = {
+            font_size: LABEL_STYLE_DEFAULT.font_size,
+            text_bias: LABEL_STYLE_DEFAULT.text_bias,
+        }
 
         this._initGroups();
     }
@@ -50,6 +60,20 @@ export default class LabelLayer extends Layer {
 
         this._initGroups();
         this.compose();
+    }
+
+    setLabelStyle(style) {
+        if (style && style.font_size != null) {
+            this._label_style.font_size = style.font_size;
+        } else {
+            this._label_style.font_size = LABEL_STYLE_DEFAULT.font_size;
+        }
+
+        if (style && style.text_bias != null) {
+            this._label_style.text_bias = style.text_bias;
+        } else {
+            this._label_style.text_bias = LABEL_STYLE_DEFAULT.text_bias;
+        }
     }
 
     _initGroups() {
@@ -103,8 +127,8 @@ export default class LabelLayer extends Layer {
     _drawLabels() {
         if (!this._domain_config) return;
 
-        const   font_size = (this.__schematic && this.__detailed) ? 30 : 20,
-                text_bias = (this.__schematic && this.__detailed) ? 10 : -4;
+        const   font_size = this._label_style.font_size,
+                text_bias = this._label_style.text_bias;
 
         for (const domain of this._domain_config) {
             if (domain.no_labels) continue;
@@ -136,7 +160,7 @@ export default class LabelLayer extends Layer {
                     switch (domain.label_pos) {
                         case "top":     pos_y = cell.center.y - cell.size.y - text_bias/2; break;
                         case "bottom":  pos_y = cell.center.y + cell.size.y + text_bias/2; break;
-                        default:        pos_y = cell.pos.y + text_bias; break;
+                        default:        pos_y = cell.center.y - cell.size.y/2 - text_bias; break;
                     }
 
                     const label = this._drawLabelText(cell.center.x, pos_y, text, font_size);
@@ -151,50 +175,10 @@ export default class LabelLayer extends Layer {
         }
     }
 
-    _drawLabelsTop() {
-        let i = 0;
-
-        for (let col of this.__grid.cells) {
-            const cell = col[0];
-
-            const pos_x = cell.center.x,
-                  pos_y_pin = cell.pos.y - this._params.thickness * 1.3,
-                  pos_y_pinval = cell.pos.y - this._params.thickness / 2;
-
-            this._drawLabelText(pos_x, pos_y_pin, "A" + (i), this._params.thickness / 2);
-
-            this._pinval_labels.push(
-                this._drawLabelText(pos_x, pos_y_pinval, "0", 36, "900")
-            );
-
-            i++;
-        }
-    }
-
-    _drawLabelsLeft() {
-        let cell_cols = this.__grid.cells.length;
-        let i = 0;
-
-        for (let cell of this.__grid.cells[0]) {
-            let pos_x = cell.pos.x - this._params.thickness / 2;
-            let pos_y = cell.center.y;
-
-            if (i === cell_cols) {
-                // this._drawLabelText(pos_x, pos_y, "-", this._params.thickness);
-            }
-
-            if (i === 1) {
-                // this._drawLabelText(pos_x, pos_y, "+", this._params.thickness);
-            }
-
-            i++;
-        }
-    }
-
     _drawLabelText(pos_x, pos_y, text, size, weight="bold") {
         return this._domaingroup
             .text(text)
-            .font({size, weight, family: "'Lucida Console', Monaco, monospace"})
+            .font({size, weight, family: "'IBM Plex Mono', 'Lucida Console', Monaco, monospace"})
             .center(pos_x, pos_y);
 
         // .rect(this._params.width, this._params.thickness)

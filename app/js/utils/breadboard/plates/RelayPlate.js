@@ -49,7 +49,7 @@ export default class RelayPlate extends LinearPlate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=Plate.QuadSizeDefault) {
+    _drawPicture(qs=Plate.QuadSizePreferred) {
         let cells = [];
         let rects = [];
         let paths = [];

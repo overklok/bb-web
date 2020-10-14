@@ -139,6 +139,26 @@ export default class PlateLayer extends Layer {
         }
     }
 
+    setPlateStyle(style) {
+        if (style && style.quad_size != null) {
+            Plate.QuadSizePreferred = style.quad_size;
+        } else {
+            Plate.QuadSizePreferred = Plate.QuadSizeDefault;
+        }
+
+        if (style && style.led_size != null) {
+            Plate.LEDSizePreferred = style.led_size;
+        } else {
+            Plate.LEDSizePreferred = Plate.LEDSizeDefault;
+        }
+
+        if (style && style.label_font_size != null) {
+            Plate.LabelFontSizePreferred = style.label_font_size;
+        } else {
+            Plate.LabelFontSizePreferred = Plate.LabelFontSizeDefault;
+        }
+    }
+
     /**
      * Возвратить данные текущих плашек
      *

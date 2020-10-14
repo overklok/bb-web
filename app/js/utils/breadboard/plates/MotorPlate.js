@@ -28,7 +28,7 @@ export default class MotorPlate extends LinearPlate {
      * @param {number} qs размер квадрата
      * @private
      */
-    _drawPicture(qs=Plate.QuadSizeDefault) {
+    _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
@@ -81,7 +81,7 @@ export default class MotorPlate extends LinearPlate {
             .fill('none');
     }
 
-    _drawLabel(text="", size=Plate.LabelSizeDefault) {
+    _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
         let label = this._group.text(String(text))
             .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"});
 

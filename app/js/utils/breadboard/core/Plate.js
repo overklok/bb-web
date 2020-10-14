@@ -21,6 +21,14 @@ const ORIENTATIONS = {
     Dummy:  'dummy',
 };
 
+const QUAD_SIZE_DEFAULT = 24,
+      LED_SIZE_DEFAULT = 16,
+      LABEL_FONT_SIZE_DEFAULT = 16;
+
+let QUAD_SIZE = QUAD_SIZE_DEFAULT,
+    LED_SIZE = LED_SIZE_DEFAULT,
+    LABEL_FONT_SIZE = LABEL_FONT_SIZE_DEFAULT;
+
 /**
  * Класс плашки доски
  *
@@ -37,9 +45,19 @@ export default class Plate {
     // CSS-класс изображения тени
     static get ShadowImgClass() {return "bb-plate-shadow-img"}
 
-    static get QuadSizeDefault()    {return 24}
-    static get LEDSizeDefault()     {return 16}
-    static get LabelSizeDefault()   {return 16}
+    static get CaptionFontFamily() {return "'IBM Plex Mono', 'Lucida Console', Monaco, monospace"}
+    static get CaptionFontWeight() {return "normal"}
+
+    static get QuadSizeDefault()            {return QUAD_SIZE_DEFAULT}
+    static get LEDSizeDefault()             {return LED_SIZE_DEFAULT}
+    static get LabelFontSizeDefault()       {return LABEL_FONT_SIZE_DEFAULT}
+
+    static get QuadSizePreferred()          {return QUAD_SIZE};
+    static get LEDSizePreferred()           {return LED_SIZE};
+    static get LabelFontSizePreferred()     {return LABEL_FONT_SIZE};
+    static set QuadSizePreferred(v)         {QUAD_SIZE = v};
+    static set LEDSizePreferred(v)          {LED_SIZE = v};
+    static set LabelFontSizePreferred(v)    {LABEL_FONT_SIZE = v};
 
     constructor(container_parent, grid, schematic=false, verbose=false, id=null, props) {
         if (!container_parent || !grid) {

@@ -4,6 +4,16 @@ import Grid from "../core/Grid";
 
 export const LAYOUTS = {
     v8x: {
+        plate_style: {
+            label_font_size: 16,
+            quad_size: 22,
+        },
+
+        label_style: {
+            font_size: 20,
+            text_bias: 10,
+        },
+
         wrap_width:     850,  // Ширина рабочей области
         wrap_height:    1300, // Высота рабочей области
 
