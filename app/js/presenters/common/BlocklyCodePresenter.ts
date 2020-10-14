@@ -5,6 +5,7 @@ import CodeModel, {
     CodeLaunchedEvent,
     CodeTerminatedEvent
 } from "../../models/common/CodeModel";
+import {KeyUpEvent} from "../../core/models/KeyboardModel";
 
 export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
     private model: CodeModel;
@@ -21,7 +22,7 @@ export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
 
     @on(CodeLaunchedEvent)
     private onCodeLaunched() {
-        // TODO
+        this.view.lock();
     }
 
     @on(CodeCommandExecutedEvent)
@@ -32,5 +33,11 @@ export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
     @on(CodeTerminatedEvent)
     private onCodeTerminated() {
         this.view.highlightBlock(null);
+        this.view.unlock();
+    }
+
+    @on(KeyUpEvent)
+    private onKeyUp(evt: KeyUpEvent) {
+        this.model.executeButtonHandlerChain(evt.key);
     }
 }

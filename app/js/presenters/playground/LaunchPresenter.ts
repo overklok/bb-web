@@ -14,15 +14,15 @@ export default class LaunchPresenter extends Presenter<LaunchView> {
 
     @on(LaunchClickEvent)
     protected onLaunchClick(evt: LaunchClickEvent) {
-        if (this.model.isMainChainEmpty()) {
-
-            this.modal_model.showModal({
-                dialog: {heading: 'Программа пуста'},
-                content: 'Чтобы запустить программу, необходимо добавить команды в поле редактора.'
-            });
-        }
-
         if (evt.start) {
+            if (this.model.isMainChainEmpty()) {
+
+                this.modal_model.showModal({
+                    dialog: {heading: 'Программа пуста'},
+                    content: 'Чтобы запустить программу, необходимо добавить команды в поле редактора.'
+                });
+            }
+
             this.view.setLocked(true);
             this.model.executeMainChain();
         } else {

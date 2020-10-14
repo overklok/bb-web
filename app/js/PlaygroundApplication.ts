@@ -24,6 +24,7 @@ import layouts_config from "./configs/playground/layouts";
 import widgets_config from "./configs/playground/widgets";
 import ModalModel from "./core/models/ModalModel";
 import CodeModel from "./models/common/CodeModel";
+import KeyboardModel from "./core/models/KeyboardModel";
 
 class PlaygroundApplication extends Application {
     public bb: BoardModel;
@@ -57,6 +58,7 @@ class PlaygroundApplication extends Application {
 
         svc_view.registerWidgetTypes(widgets_config);
 
+        svc_model.register(KeyboardModel, this.dds);
         svc_model.register(ModalModel, this.dds);
         svc_model.register(LayoutModel, this.dds, layouts_config);
         svc_model.register(CodeModel, this.ads);

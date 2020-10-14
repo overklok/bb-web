@@ -9,7 +9,7 @@ export default {
                 {
                     name: 'blockly',
                     composer: 'overlay',
-                    widgets: [{alias: 'blockly', label: 'Программа'}, {alias: 'launcher'}]
+                    widgets: [{alias: 'blockly', label: 'Программа'}, {alias: 'launcher', label: 'Панель запуска'}]
                 },
                 {
                     name: 'board', size: '30%',

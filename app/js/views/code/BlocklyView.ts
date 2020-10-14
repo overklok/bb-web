@@ -35,10 +35,6 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
         this.blockly.resize();
     }
 
-    resize() {
-        this.blockly.resize();
-    }
-
     eject(container: HTMLDivElement): void {
         this.blockly.eject();
     }
@@ -113,6 +109,18 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
      */
     clearErrorBlocks() {
         this.blockly.clearErrorBlocks();
+    }
+
+    lock() {
+        this.blockly.lock();
+    }
+
+    unlock() {
+        this.blockly.unlock();
+    }
+
+    resize() {
+        this.blockly.resize();
     }
 
     private setup() {

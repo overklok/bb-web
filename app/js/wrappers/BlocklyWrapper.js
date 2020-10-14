@@ -1066,7 +1066,7 @@ export default class BlocklyWrapper extends Wrapper {
      * @private
      */
     _getDimmerStyle() {
-        return "position: absolute; width: 98%; height: 98%; z-index: 21;";
+        return "position: absolute; width: 100%; height: 100%; z-index: 21;";
     }
 
     _getFlyoutWidth(last_nonzero=false) {
