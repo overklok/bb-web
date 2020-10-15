@@ -338,19 +338,16 @@ export default class Current {
 
         this.hideParticles();
 
-        const len = this._line.node.getTotalLength();
-        const dur = len;
-
         let animname = `cur-${this._id}-burn`;
 
         this._rule_idx_burn_kfs =
-            this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, 0));
+            this._sheet.insertRule(this._generateKeyframeRuleBurn(this._id, 1000));
 
         this._rule_idx_burn =
             this._sheet.insertRule(`.${animname} {
-            stroke-dasharray: ${len/5};
-            stroke-dashoffset: ${len};
-            animation: dash-${this._id} ${dur}ms linear infinite;
+            stroke-dasharray: 100;
+            
+            animation: dash-${this._id} 600ms linear reverse infinite;
         }`);
 
         this._line.node.classList.add(animname);

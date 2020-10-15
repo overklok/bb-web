@@ -61,6 +61,14 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.emit(new UserPlateEvent({plates}));
     }
 
+    forcePlates(plates: Plate[]): void {
+        this.setState({
+            plates,
+        });
+
+        this.emit(new PlateEvent({plates}));
+    }
+
     /**
      * Switch admin mode (used for external apps)
      *
@@ -91,6 +99,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         if (this.state.layout_name === layout_name) {
             // confirm board data change
             this.setState({allow_board_data: true});
+            this.send(ChannelsTo.Plates, this.state.plates);
         }
     }
 
@@ -98,11 +107,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     private onPlates(plates: Plate[]) {
         if (!this.state.allow_board_data) return;
 
-        this.setState({
-            plates,
-        });
-
-        this.emit(new PlateEvent({plates}));
+        this.forcePlates(plates);
     }
 
     @listen(ChannelsFrom.Currents)

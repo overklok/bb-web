@@ -15,15 +15,13 @@ import TransistorPlate from "../plates/TransistorPlate";
 import InductorPlate from "../plates/InductorPlate";
 import RelayPlate from "../plates/RelayPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
-import Plate from "../core/Plate";
-import LinearPlate from "../core/plate/LinearPlate";
 import RGBPlate from "../plates/RGBPlate";
 
 const ITEMS = [
     {
         title: "Перемычка",
         type: BridgePlate,
-        tags: "перемычка мост bridge",
+        tags: "перемычка мост bridge gthtvsxrf vjcn икшвпу",
         options: [
             {title: "2 клетки", properties: {[BridgePlate.PROP_LENGTH]: 2}},
             {title: "3 клетки", properties: {[BridgePlate.PROP_LENGTH]: 3}},
@@ -38,7 +36,7 @@ const ITEMS = [
     },
     {
         title: "Светодиод",
-        tags: "светодиод лампа свет led diode light",
+        tags: "светодиод лампа свет led diode light cdtnjlbjl kfvgf cdtn дув вшщву дшпре",
         type: LEDPlate,
         options: [
             {title: "Зелёный", properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.GREEN}},
@@ -47,7 +45,7 @@ const ITEMS = [
     },
     {
         title: "Резистор",
-        tags: "резистор сопротивление resistor",
+        tags: "резистор сопротивление resistor htpbcnjh cjghjnbdktybt куышыещк",
         type: ResistorPlate,
         options: [
             {title: "200 Ом",   properties: {[ResistorPlate.PROP_RESISTANCE]: 200}},
@@ -62,7 +60,7 @@ const ITEMS = [
     },
     {
         title: "Конденсатор",
-        tags: "конденсатор ёмкость емкость capacitor",
+        tags: "конденсатор ёмкость емкость capacitor rjyltycfnjh `vrjcnm tvrjcnm сфзфсшещк",
         type: CapacitorPlate,
         options: [
             {title: "100 мкФ", properties: {[CapacitorPlate.PROP_CAPACITANCE]: 1e-4}},
@@ -76,61 +74,61 @@ const ITEMS = [
 
     {
         title: "Транзистор",
-        tags: "транзистор transistor",
+        tags: "транзистор transistor nhfypbcnjh екфтышыещк",
         type: TransistorPlate,
         options: [{title: "Обычный"}],
     },
     {
         title: "Фоторезистор",
-        tags: "фоторезистор photoresistor",
+        tags: "фоторезистор photoresistor ajnjhtpbcnjh зрщещкуышыещк",
         type: PhotoresistorPlate,
         options: [{title: "Обычный"}]
     },
     {
         title: "Реостат",
-        tags: "реостат резистор переменный rheostat resistor variable",
+        tags: "реостат резистор переменный rheostat resistor variable htjcnfn htpbcnjh gthtvtyysq крущыефе куышыещк",
         type: RheostatPlate,
         options: [{title: "Обычный"}]
     },
     {
         title: "Кнопка",
-        tags: "кнопка button",
+        tags: "кнопка button ryjgrf игввещт",
         type: ButtonPlate,
         options: [{title: "Обычная"}]
     },
     {
         title: "Ключ",
-        tags: "ключ switch",
+        tags: "ключ switch rk.x ыцшеср",
         type: SwitchPlate,
         options: [{title: "Обычный"}]
     },
     {
         title: "Индуктор",
-        tags: "индуктор индуктивность катушка inductor inductance coil",
+        tags: "индуктор индуктивность катушка inductor inductance coil bylernjh bylernbdyjcnm rfneirf штвгсещк сщшд",
         type: InductorPlate,
         options: [{title: "Обычный"}]
     },
     {
         title: "Реле",
-        tags: "реле relay",
+        tags: "реле relay htkt кудфн",
         type: RelayPlate,
         options: [{title: "Обычное"}]
     },
     {
         title: "RGB",
-        tags: "ргб диод rgb diode",
+        tags: "ргб диод rgb diode hu, lbjl кпи вшщву",
         type: RGBPlate,
         options: [{title: "Обычная"}]
     },
     {
         title: "Зуммер",
-        tags: "зуммер пищалка buzzer beeper",
+        tags: "зуммер пищалка buzzer beeper pevvth gbofkrf игяяук иуузук",
         type: BuzzerPlate,
         options: [{title: "Обычный"}]
     },
     {
         title: "Dummy",
-        tags: "dummy",
+        tags: "dummy вгььн",
         type: DummyPlate,
         options: [{title: "Обычная"}]
     },
