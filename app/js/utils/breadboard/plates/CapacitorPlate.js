@@ -79,6 +79,6 @@ export default class CapacitorPlate extends LinearPlate {
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
             .cx(this._container.width() / 2)
             .y(this._container.height() - size - 2)
-            // .stroke({width: 0.5})
+            .stroke({width: 0.5})
     }
 }

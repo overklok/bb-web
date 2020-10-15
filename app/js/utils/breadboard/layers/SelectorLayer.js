@@ -17,6 +17,7 @@ import RelayPlate from "../plates/RelayPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
 import Plate from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
+import RGBPlate from "../plates/RGBPlate";
 
 const ITEMS = [
     {
@@ -114,6 +115,12 @@ const ITEMS = [
         tags: "реле relay",
         type: RelayPlate,
         options: [{title: "Обычное"}]
+    },
+    {
+        title: "RGB",
+        tags: "ргб диод rgb diode",
+        type: RGBPlate,
+        options: [{title: "Обычная"}]
     },
     {
         title: "Зуммер",

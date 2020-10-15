@@ -159,8 +159,8 @@ export default class LEDPlate extends LinearPlate {
     _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
         this._group.text(String(text))
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
-            .cx(this._container.width() - size/2)
-            .cy(this._container.height() - size/2)
+            .cx(this._container.width() - size/1.5)
+            .cy(this._container.height() - size/1.5)
             .stroke({width: 0.5})
     }
 }
