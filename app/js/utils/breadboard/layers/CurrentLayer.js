@@ -195,7 +195,10 @@ export default class CurrentLayer extends Layer {
                 } else {
                     // добавить новый ток
                     let cur = this._addCurrent(thread, spare, show_source);
-                    cur.___touched = true;
+
+                    if (cur) {
+                        cur.___touched = true;
+                    }
                 }
             }
         }
@@ -239,13 +242,15 @@ export default class CurrentLayer extends Layer {
      * @param {Object} thread       контур тока
      * @param {boolean} spare       щадящий режим
      * @param {boolean} show_source показывать путь тока от источника напряжения
-     * @returns {Current}
+     * @returns {Current|null}
      * @private
      */
     _addCurrent(thread, spare, show_source=true) {
         if (!thread || thread.length === 0) {}
 
         let line_path = this._buildCurrentLinePath(thread);
+        if (line_path.length === 0) return null;
+
         let current = new Current(this._currentgroup, thread, this.__schematic);
 
         this._currents[current.id] = current;
@@ -265,6 +270,12 @@ export default class CurrentLayer extends Layer {
      * @private
      */
     _buildCurrentLinePath(points) {
+        if (this.__grid.virtualPoint(points.from.x, points.from.y) ||
+            this.__grid.virtualPoint(points.to.x, points.to.y)
+        ) {
+            return [];
+        }
+
         const   aux_point_from  = this.__grid.auxPoint(points.from.x, points.from.y),
                 aux_point_to    = this.__grid.auxPoint(points.to.x, points.to.y);
 

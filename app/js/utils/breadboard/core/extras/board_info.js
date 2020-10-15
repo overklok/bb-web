@@ -1,6 +1,7 @@
 import Grid from "../Grid";
 import Breadboard from "../../Breadboard";
 import LabelLayer from "../../layers/LabelLayer";
+import {boundsToCoordList, pointsToCoordList} from "./helpers";
 
 let ard_plate_ser_num = 0;
 
@@ -10,32 +11,51 @@ function layoutToBoardInfo(layout) {
     let cell_structure = {};
     let embedded_plates = [];
 
-    const {domains, points, grid_rows, grid_cols} = layout;
+    const {domains} = layout;
 
     let cell_str_idx = 0;
 
     let arduino_nodes = [];
 
+    let minus_coords_idx = undefined;
+
     for (const domain of domains) {
         const   from  = grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
                 to    = grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
 
-        let minus_from, minus_to;
+        let anal_minus_from, anal_minus_to;
+        let is_minus_virtual = false;
 
         if (domain.minus_from) {
-            minus_from = grid.cell(domain.minus_from.x, domain.minus_from.y, Grid.BorderTypes.Wrap).idx;
+            if (grid.virtualPoint(domain.minus_from.x, domain.minus_from.y)) {
+                anal_minus_from = domain.minus_from;
+                is_minus_virtual = true;
+            } else {
+                anal_minus_from = grid.cell(domain.minus_from.x, domain.minus_from.y, Grid.BorderTypes.Wrap).idx;
+            }
         }
 
         if (domain.minus_to) {
-            minus_to = grid.cell(domain.minus_to.x, domain.minus_to.y, Grid.BorderTypes.Wrap).idx;
+            if (grid.virtualPoint(domain.minus_to.x, domain.minus_to.y)) {
+                anal_minus_to = domain.minus_to;
+                is_minus_virtual = true;
+            } else {
+                anal_minus_to = grid.cell(domain.minus_to.x, domain.minus_to.y, Grid.BorderTypes.Wrap).idx;
+            }
         }
 
         if (domain.minus) {
-            minus_from = grid.cell(domain.minus.x, domain.minus.y, Grid.BorderTypes.Wrap).idx;
-            minus_to = minus_from;
+            if (grid.virtualPoint(domain.minus.x, domain.minus.y)) {
+                anal_minus_from = domain.minus;
+                is_minus_virtual = true;
+            } else {
+                anal_minus_from = grid.cell(domain.minus.x, domain.minus.y, Grid.BorderTypes.Wrap).idx;
+            }
+
+            anal_minus_to = anal_minus_from;
         }
 
-        let coords;
+        let coords = [];
 
         let idx_from, idx_to,
             bound_from, bound_to;
@@ -58,39 +78,42 @@ function layoutToBoardInfo(layout) {
                 coords = boundsToCoordList(bound_from, bound_to, idx, null);
             }
 
-            if (!coords) continue;
+            if (domain.virtual) {
+                coords.push(...pointsToCoordList(domain.virtual.from, domain.virtual.to));
+            }
 
             switch(domain.role) {
                 case LabelLayer.CellRoles.Analog: {
-                    if (!minus_from || !minus_to) {
+                    if (!anal_minus_from || !anal_minus_to) {
                         throw Error("Analog domain specified but minus mapping were not provided");
                     }
 
                     // Map arduino cells to minus cells
-                    let minus_map_horz = domain.minus_horz ? domain.minus_horz : domain.horz;
-                    let minus_coords = [];
+                    let anal_minus_map_horz = domain.minus_horz ? domain.minus_horz : domain.horz;
+                    // In-domain analog minus coordinates
+                    let anal_minus_coords = [];
 
-                    if (minus_map_horz) {
-                        minus_coords = boundsToCoordList(
-                            minus_from.x, minus_to.x, null, idxs_from_begin + minus_from.y
+                    if (anal_minus_map_horz) {
+                        anal_minus_coords = boundsToCoordList(
+                            anal_minus_from.x, anal_minus_to.x, null, idxs_from_begin + anal_minus_from.y
                         );
                     } else {
-                        minus_coords = boundsToCoordList(
-                            minus_from.y, minus_to.y, idxs_from_begin + minus_from.x, null
+                        anal_minus_coords = boundsToCoordList(
+                            anal_minus_from.y, anal_minus_to.y, idxs_from_begin + anal_minus_from.x, null
                         );
                     }
 
                     if (domain.minus) {
-                        minus_coords = Array(coords.length).fill(minus_from);
+                        anal_minus_coords = Array(coords.length).fill(anal_minus_from);
                     }
 
-                    if ((minus_coords.length !== coords.length)) {
+                    if ((anal_minus_coords.length !== coords.length)) {
                         throw Error("Invalid domain to minus mapping dimensions");
                     }
 
                     for (let i = 0; i < coords.length; i++) {
                         const coord = coords[i],
-                              minus_coord = minus_coords[i];
+                              minus_coord = anal_minus_coords[i];
 
                         cell_structure[cell_str_idx++] = [coord];
                         arduino_nodes.push(coord);
@@ -100,10 +123,11 @@ function layoutToBoardInfo(layout) {
                     break;
                 }
                 case LabelLayer.CellRoles.Plus:
-                    cell_structure[cell_str_idx++] = ([{x: -1, y: from.y}, ...coords]);
+                    cell_structure[cell_str_idx++] = [{x: -1, y: from.y}, ...coords];
                     break;
                 case LabelLayer.CellRoles.Minus: {
-                    cell_structure[cell_str_idx++] = ([{x: -1, y: from.y}, ...coords]);
+                    minus_coords_idx = cell_str_idx;
+                    cell_structure[cell_str_idx++] = [{x: -1, y: from.y}, ...coords];
                     break;
                 }
                 default: {
@@ -159,26 +183,6 @@ function getArduinoPinPlate(arduino_node, minus_node) {
     };
 }
 
-function boundsToCoordList(from, to, x_val, y_val) {
-    if (x_val != null && y_val != null) {
-        throw Error("Only one of the dimensions might be fixed");
-    }
 
-    if (x_val == null && y_val == null) {
-        throw Error("One of the dimensions should be fixed");
-    }
-
-    const list = [];
-
-    for (let i = from; i <= to; i++) {
-        if (x_val != null) {
-            list.push({x: x_val, y: i});
-        } else if (y_val != null) {
-            list.push({x: i, y: y_val});
-        }
-    }
-
-    return list;
-}
 
 export {layoutToBoardInfo}

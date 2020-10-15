@@ -1,5 +1,6 @@
 import Current from './Current';
 import Cell from "./Cell";
+import {boundsToCoordList, pointsToCoordList} from "./extras/helpers";
 
 const BORDER_TYPES = {
     None: 'none',
@@ -44,7 +45,8 @@ export default class Grid {
         pos_x=0, pos_y=0,
         gap_x=0, gap_y=0,
         wrap_x=0, wrap_y = 0,
-        aux_points_categories=null
+        aux_points_categories=null,
+        domains=null,
     ) {
         if (rows == null || cols == null || width == null || height == null) {
             throw new TypeError("All required arguments should be defined");
@@ -85,8 +87,10 @@ export default class Grid {
         /// Ячейки сетки
         this._cells = [];
         this._aux_points = {};
+        this._virtual_points = [];
         this._createCells();
         this._initAuxPoints();
+        this._initVirtualPoints(domains);
     }
 
     get dim() {
@@ -182,6 +186,24 @@ export default class Grid {
         }
     }
 
+    virtualPoint(x, y) {
+        if (!this._virtual_points) return;
+
+        for (const point of this._virtual_points) {
+            if (!point) continue;
+
+            if (point.x === x && point.y === y) {
+                return point;
+            }
+        }
+
+        return undefined;
+    }
+
+    isAuxPointCatRequired(cat) {
+        return this._aux_points_cats.indexOf(cat) !== -1;
+    }
+
     /**
      * Расположить ячейки сетки
      *
@@ -218,7 +240,6 @@ export default class Grid {
 
     _initAuxPoints() {
         const celldist_y = this.cell(0, 1).pos.y - this.cell(0, 0).pos.y;
-
 
         if (this.isAuxPointCatRequired(Grid.AuxPointCats.SourceV5)) {
             const source_center = {
@@ -367,8 +388,14 @@ export default class Grid {
         }
     }
 
-    isAuxPointCatRequired(cat) {
-        return this._aux_points_cats.indexOf(cat) !== -1;
+    _initVirtualPoints(domains) {
+        for (const domain of domains) {
+            if (domain.virtual) {
+                const coord_list = pointsToCoordList(domain.virtual.from, domain.virtual.to);
+
+                this._virtual_points.push(...coord_list);
+            }
+        }
     }
 
     /**

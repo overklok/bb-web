@@ -31,11 +31,7 @@ module.exports = (env, argv) => {
         entry: getEntries(env),
         devtool: is_dev ? 'eval-source-map' : 'source-map',
         optimization: {
-            minimizer: [new TerserPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: false,
-            })]
+            minimizer: getMinimizer(is_dev)
         },
         module: {
             rules: [
@@ -84,6 +80,16 @@ module.exports = (env, argv) => {
         ]
     }
 };
+
+function getMinimizer(is_dev) {
+    if (is_dev) return [];
+
+    return [new TerserPlugin({
+        cache: !is_dev,
+        parallel: true,
+        sourceMap: is_dev,
+    })];
+}
 
 function getCopypaths(env) {
     if (!dotenv.parsed) {

@@ -2,6 +2,8 @@ import BackgroundLayer from "../layers/BackgroundLayer";
 import LabelLayer from "../layers/LabelLayer";
 import Grid from "../core/Grid";
 
+const ARD_GND_Y = -144;
+
 export const LAYOUTS = {
     v8x: {
         plate_style: {
@@ -39,12 +41,38 @@ export const LAYOUTS = {
             {
                 horz: true,
                 from: {x: 4, y: 0}, to: {x: -1, y: 0},
-                minus_from: {x: 0, y: 15}, minus_to: {x: 3, y: 15},
+                minus_from: {x: 0, y: ARD_GND_Y}, minus_to: {x: 3, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog,
                 style: BackgroundLayer.DomainSchematicStyles.Dotted,
                 pins_from: 0, inv: true,
                 before: 1,
                 label_pos: "top"
+            },
+
+            // Одиночные контакты - аналоговые пины
+            {
+                horz: false,
+                from: {x: -1, y: 4}, to: {x: -1, y: 4},
+                minus: {x: 4, y: ARD_GND_Y},
+                role: LabelLayer.CellRoles.Analog, pins_from: 4
+            },
+            {
+                horz: false,
+                from: {x: -1, y: 5}, to: {x: -1, y: 5},
+                minus: {x: 5, y: ARD_GND_Y},
+                role: LabelLayer.CellRoles.Analog, pins_from: 5
+            },
+            {
+                horz: false,
+                from: {x: -1, y: 10}, to: {x: -1, y: 10},
+                minus: {x: 6, y: ARD_GND_Y},
+                role: LabelLayer.CellRoles.Analog, pins_from: 6
+            },
+            {
+                horz: false,
+                from: {x: -1, y: 11}, to: {x: -1, y: 11},
+                minus: {x: 7, y: ARD_GND_Y},
+                role: LabelLayer.CellRoles.Analog, pins_from: 7
             },
 
             // Нижняя линия
@@ -53,11 +81,15 @@ export const LAYOUTS = {
                 from: {x: 0, y: 15}, to: {x: 3, y: 15},
                 role: LabelLayer.CellRoles.Minus,
                 label_pos: "bottom",
+                virtual: {
+                    // Arduino plate ground pins that analog cells are mapped to
+                    from: {x: 0, y: ARD_GND_Y}, to: {x: 11, y: ARD_GND_Y}
+                }
             },
             {
                 horz: true,
                 from: {x: 4, y: 15}, to: {x: -1, y: 15},
-                minus_from: {x: 0, y: 15}, minus_to: {x: 3, y: 15},
+                minus_from: {x: 8, y: ARD_GND_Y}, minus_to: {x: 11, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog,
                 style: BackgroundLayer.DomainSchematicStyles.Dotted,
                 pins_to: 11,
@@ -77,32 +109,6 @@ export const LAYOUTS = {
             // Двойные линии в средней группе
             {horz: false, from: {x: -1, y: 8},  to: {x: -1, y: 9}},
             {horz: false, from: {x: -1, y: 6},  to: {x: -1, y: 7}},
-
-            // Одиночные контакты - аналоговые пины
-            {
-                horz: false,
-                from: {x: -1, y: 4}, to: {x: -1, y: 4},
-                minus: {x: 3, y: 15},
-                role: LabelLayer.CellRoles.Analog, pins_from: 4
-            },
-            {
-                horz: false,
-                from: {x: -1, y: 5}, to: {x: -1, y: 5},
-                minus: {x: 3, y: 15},
-                role: LabelLayer.CellRoles.Analog, pins_from: 5
-            },
-            {
-                horz: false,
-                from: {x: -1, y: 10}, to: {x: -1, y: 10},
-                minus: {x: 3, y: 15},
-                role: LabelLayer.CellRoles.Analog, pins_from: 6
-            },
-            {
-                horz: false,
-                from: {x: -1, y: 11}, to: {x: -1, y: 11},
-                minus: {x: 3, y: 15},
-                role: LabelLayer.CellRoles.Analog, pins_from: 7
-            },
         ],
 
         points: [

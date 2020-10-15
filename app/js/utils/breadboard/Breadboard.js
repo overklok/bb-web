@@ -39,7 +39,8 @@ export default class Breadboard {
             layout.grid_pos_x, layout.grid_pos_y,
             layout.grid_gap_x, layout.grid_gap_y,
             layout.wrap_width, layout.wrap_height,
-            layout.points
+            layout.points,
+            layout.domains
         );
     }
 

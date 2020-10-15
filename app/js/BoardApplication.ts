@@ -23,7 +23,6 @@ import BoardView from "./views/board/BoardView";
 import "../css/global.less";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";
-import {coverOptions} from "./core/helpers/functions";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;
