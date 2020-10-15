@@ -812,9 +812,12 @@ export default class Plate {
             case Plate.Orientations.South:  {x = cx + gx;           y = cy + gy - spx;  break;}
         }
 
+        /// Клетка, над которой находится верхняя левая ячейка плашки
         let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
+        /// Клетка, над которой находится опорная ячейка плашки
         let cell_orig = this._getCellOriginal(cell);
 
+        /// Ограничения для левой верхней ячейки плашки
         let [Ox, Oy, Nx, Ny] = this._getPlacementConstraints(this._state.orientation);
 
         /// Индекс ячейки, находящейся под опорной ячейкой плашки
@@ -836,15 +839,15 @@ export default class Plate {
         let neighbors = [];
 
         /// Соседи по краям
-        if (ix + 1 < Nx)    neighbors.push(this.__grid.cell(ix + 1, iy));
+        if (ix + 1 <= Nx)    neighbors.push(this.__grid.cell(ix + 1, iy));
         if (ix - 1 >= Ox)   neighbors.push(this.__grid.cell(ix - 1, iy));
-        if (iy + 1 < Ny)    neighbors.push(this.__grid.cell(ix, iy + 1));
+        if (iy + 1 <= Ny)    neighbors.push(this.__grid.cell(ix, iy + 1));
         if (iy - 1 >= Oy)   neighbors.push(this.__grid.cell(ix, iy - 1));
 
         /// Соседи по диагоналям
-        if (ix + 1 < Nx && iy + 1 < Ny)     neighbors.push(this.__grid.cell(ix + 1, iy + 1));
-        if (ix + 1 < Nx && iy - 1 >= Oy)    neighbors.push(this.__grid.cell(ix + 1, iy - 1));
-        if (ix - 1 >= Ox && iy + 1 < Ny)    neighbors.push(this.__grid.cell(ix - 1, iy + 1));
+        if (ix + 1 <= Nx && iy + 1 <= Ny)     neighbors.push(this.__grid.cell(ix + 1, iy + 1));
+        if (ix + 1 <= Nx && iy - 1 >= Oy)    neighbors.push(this.__grid.cell(ix + 1, iy - 1));
+        if (ix - 1 >= Ox && iy + 1 <= Ny)    neighbors.push(this.__grid.cell(ix - 1, iy + 1));
         if (ix - 1 >= Ox && iy - 1 >= Oy)   neighbors.push(this.__grid.cell(ix - 1, iy - 1));
 
         /// Ближайший сосед

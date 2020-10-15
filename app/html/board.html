@@ -32,17 +32,17 @@
             window.app = new Application({
                 readonly: false,
                 layout_name: 'v8x',
-                silent: false,
+                silent: true,
             });
             window.app.run(document.getElementById('board'));
             document.getElementById("version").innerText = window.app.version;
 
-            window.app.bb.forcePlates([
-                {position: {cell: {x: 0, y: 0}, orientation: 'north'}, type: 'bridge'},
-                {position: {cell: {x: 0, y: 5}, orientation: 'north'}, type: 'bridge'},
-                {position: {cell: {x: 0, y: 9}, orientation: 'north'}, type: 'bridge'},
-                {position: {cell: {x: 0, y: 14}, orientation: 'north'}, type: 'bridge'}
-            ]);
+            // window.app.bb.forcePlates([
+            //     {position: {cell: {x: 0, y: 0}, orientation: 'north'}, type: 'bridge'},
+            //     {position: {cell: {x: 0, y: 5}, orientation: 'north'}, type: 'bridge'},
+            //     {position: {cell: {x: 0, y: 9}, orientation: 'north'}, type: 'bridge'},
+            //     {position: {cell: {x: 0, y: 14}, orientation: 'north'}, type: 'bridge'}
+            // ]);
         }
     </script>
 </html>
