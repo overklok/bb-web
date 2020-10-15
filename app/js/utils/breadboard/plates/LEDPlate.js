@@ -1,6 +1,7 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
+import PlateLayer from "../layers/PlateLayer";
 
 const LED_COLOURS = {
     RED: 0,
@@ -157,9 +158,9 @@ export default class LEDPlate extends LinearPlate {
 
     _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
         this._group.text(String(text))
-            .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder"})
-            .cx(this._container.width() - size)
-            .cy(this._container.height() - size)
+            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
+            .cx(this._container.width() - size/2)
+            .cy(this._container.height() - size/2)
             .stroke({width: 0.5})
     }
 }

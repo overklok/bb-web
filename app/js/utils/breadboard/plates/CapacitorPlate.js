@@ -62,8 +62,8 @@ export default class CapacitorPlate extends LinearPlate {
             .fill('none')
             .move(rect1.cx(), rect2.cy());
 
-        let line1 = this._group.line(0, 0, 0, qs*2).stroke({width: 1}).x(rect1.x() + line_len/2 + qs/4).cy(rect1.cy());
-        let line2 = this._group.line(0, 0, 0, qs*2).stroke({width: 1}).x(rect2.x() - line_len/2 + qs*3/4).cy(rect2.cy());
+        let line1 = this._group.line(0, 0, 0, qs*1.5).stroke({width: 1}).x(rect1.x() + line_len/2 + qs/4).cy(rect1.cy());
+        let line2 = this._group.line(0, 0, 0, qs*1.5).stroke({width: 1}).x(rect2.x() - line_len/2 + qs*3/4).cy(rect2.cy());
 
         this._group.text("+").move(line2.x() + 4, line2.y() - 8);
     }

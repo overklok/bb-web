@@ -8,7 +8,7 @@ export const LAYOUTS = {
     v8x: {
         plate_style: {
             label_font_size: 16,
-            quad_size: 22,
+            quad_size: 18,
         },
 
         label_style: {
