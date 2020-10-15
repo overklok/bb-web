@@ -7,7 +7,7 @@ export default class ModelService extends IModelService {
     private bindings: Map<ModelConstructor<any, any>, Model<any, any>> = new Map();
 
     register<MS extends ModelState, DS extends Datasource>(
-        abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: MS
+        abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: Partial<MS>
     ): Model<MS, DS>
     {
         const model = new abstrakt(data_source, this.svc_event);

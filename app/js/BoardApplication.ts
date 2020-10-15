@@ -1,4 +1,4 @@
-import Application from "./core/Application";
+import Application, {AppConf} from "./core/Application";
 
 import IViewService from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
@@ -22,10 +22,20 @@ import BoardView from "./views/board/BoardView";
 
 import "../css/global.less";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
+import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";
+import {coverOptions} from "./core/helpers/functions";
 
-class BoardApplication extends Application {
+interface BoardApplicationConfig extends AppConf {
+    silent?: boolean;
+    readonly?: boolean;
+    layout_name?: string;
+}
+
+class BoardApplication extends Application<BoardApplicationConfig> {
+    protected config: BoardApplicationConfig;
     private ads: AdaptiveAsyncDatasource;
     private bb: BoardModel;
+
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [
             ViewServiceProvider,
@@ -35,10 +45,16 @@ class BoardApplication extends Application {
     }
 
     protected setup() {
-        this.ads = new AdaptiveDatasource([
-            new QtIPCDatasource(),
-            new SocketDatasource('127.0.0.1', 8005),
-        ]);
+        let data_sources: AsynchronousDatasource[] = [];
+
+        if (!this.config.silent) {
+            data_sources = [
+                new QtIPCDatasource(),
+                new SocketDatasource('127.0.0.1', 8005),
+            ]
+        }
+
+        this.ads = new AdaptiveDatasource(data_sources);
     }
 
     protected boot() {
@@ -56,12 +72,15 @@ class BoardApplication extends Application {
         svc_view.registerWidgetTypes({
             main: {view_type: BoardView, presenter_types: [BoardPresenter], view_options: {
                 schematic: true,
+                readonly: this.config.readonly,
             }},
         });
 
         svc_model.launch(this.ads);
         svc_model.register(ConnectionModel, this.ads);
-        svc_model.register(BoardModel, this.ads);
+        svc_model.register(BoardModel, this.ads, {
+            layout_name: this.config.layout_name,
+        });
 
         this.bb = svc_model.retrieve(BoardModel);
 

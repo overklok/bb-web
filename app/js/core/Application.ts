@@ -1,10 +1,15 @@
 import ServiceProvider from "./providers/ServiceProvider";
 import IBindable from "./helpers/IBindable";
+import {coverOptions} from "./helpers/functions";
 
 // passed by DefinePlugin in Webpack config
 declare var __VERSION__: string;
 
-export default abstract class Application {
+export interface AppConf {}
+
+export default abstract class Application<AC extends AppConf = AppConf> {
+    protected config: AppConf;
+
     private bindings:   Map<string|IBindable, Function> = new Map();
     private instances:  Map<string|IBindable, any>      = new Map();
 
@@ -12,7 +17,9 @@ export default abstract class Application {
 
     public readonly version: string;
 
-    constructor() {
+    constructor(config?: AppConf) {
+        this.configure(config);
+
         this.init();
         this.setup();
         this.boot();
@@ -27,6 +34,10 @@ export default abstract class Application {
     protected providerClasses(): Array<typeof ServiceProvider> {
         return [];
     }
+
+    protected configure(config: AppConf = {}): void {
+        this.config = coverOptions(this.config, config);
+    };
 
     /**
      * Инициализировать Приложение

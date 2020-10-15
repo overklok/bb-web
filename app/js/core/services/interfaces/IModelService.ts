@@ -17,7 +17,7 @@ export default class IModelService {
     }
     
     public register<MS extends ModelState, DS extends Datasource, MC extends ModelConstructor<MS, DS>> (
-        abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: MS
+        abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: Partial<MS>
     ): Model<MS, DS>
     {
         throw new Error('abstract');

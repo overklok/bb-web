@@ -38,7 +38,7 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
 
     protected abstract defaultState: MS;
 
-    public init(state: MS): void {
+    public init(state: Partial<MS>): void {
         this.state = this.defaultState;
 
         if (state) {
@@ -46,9 +46,7 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
         }
     }
 
-    public setState<K extends keyof MS>(
-        state: ((prevState: Readonly<MS>) => (Pick<MS, K> | MS | null)) | (Pick<MS, K> | MS | null)
-    ): void {
+    public setState(state: Partial<MS>): void {
         this.state = coverOptions(state, this.state) as MS;
     }
 
