@@ -440,7 +440,7 @@ export default class PlateLayer extends Layer {
             plate.extra = plate.extra || plate.number;
 
             /// добавить плашку, если таковой нет
-            id = this.addPlateSerialized(plate.type, plate.position, plate.id, plate.extra);
+            id = this.addPlateSerialized(plate.type, plate.position, plate.id, plate.properties);
 
             /// если плашка создана без ошибок / существует
             if (id) {
@@ -945,7 +945,7 @@ export default class PlateLayer extends Layer {
             plate.pos.y,
             plate.state.orientation,
             null,
-            plate.extra,
+            plate.props,
             true
         );
 
