@@ -4,6 +4,7 @@ import classNames from "classnames";
 import ViewConnector from "./ViewConnector";
 import {ViewType} from "../../helpers/types";
 import {Widget} from "../../services/interfaces/IViewService";
+import ErrorBoundary from "./ErrorBoundary";
 
 
 interface IProps<O extends IViewOptions> {
@@ -56,14 +57,16 @@ export default class Nest extends React.Component<IProps<any>, IState> {
 
         return (
             <div className={klasses} ref={this.ref}>
-                <SpecificView
-                    ref={this.ref_view}
-                    widgets={this.props.widgets}
-                    connector={this.props.connector}
-                    ref_parent={this.ref}
-                    options={this.props.view_options}
-                    nest_mounted={this.state.mounted}
-                />
+                <ErrorBoundary view_type={this.props.view_type}>
+                    <SpecificView
+                        ref={this.ref_view}
+                        widgets={this.props.widgets}
+                        connector={this.props.connector}
+                        ref_parent={this.ref}
+                        options={this.props.view_options}
+                        nest_mounted={this.state.mounted}
+                    />
+                </ErrorBoundary>
             </div>
         )
     }
