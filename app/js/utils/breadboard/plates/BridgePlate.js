@@ -5,7 +5,7 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}
 
-    static get PROP_LENGTH() {return 'length'}
+    static get PROP_LENGTH() {return 'len'}
 
     constructor(container, grid, schematic=false, verbose=false, id, props) {
         super(container, grid, schematic, verbose, id, props);
