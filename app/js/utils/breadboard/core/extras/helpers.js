@@ -57,13 +57,22 @@ export function boundsToCoordList(from, to, x_val, y_val) {
         throw Error("One of the dimensions should be fixed");
     }
 
+    let is_inversed = false;
+
+    if (from > to) {
+        [from, to] = [to, from];
+        is_inversed = true;
+    }
+
     const list = [];
 
     for (let i = from; i <= to; i++) {
-        if (x_val != null) {
-            list.push({x: x_val, y: i});
-        } else if (y_val != null) {
-            list.push({x: i, y: y_val});
+        let item = x_val != null ? {x: x_val, y: i} : {x: i, y: y_val};
+
+        if (is_inversed) {
+            list.unshift(item);
+        } else {
+            list.push(item);
         }
     }
 

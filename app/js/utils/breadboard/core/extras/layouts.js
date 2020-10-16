@@ -40,7 +40,7 @@ export const LAYOUTS = {
 
             // Верхняя линия "+"
             {
-                horz: true, from: {x: 0, y: 1}, to: {x: -1, y: 1}, inv: true,
+                horz: true, from: {x: 0, y: 1}, to: {x: -1, y: 1}, bias_inv: true,
                 role: LabelLayer.CellRoles.Plus,
                 no_labels: true
             },

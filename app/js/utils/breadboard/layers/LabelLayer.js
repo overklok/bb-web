@@ -147,8 +147,11 @@ export default class LabelLayer extends Layer {
                 case LabelLayer.CellRoles.Minus:    {text = "-"; break;}
             }
 
-            for (let row = d_from.y; row <= d_to.y; row++) {
-                for (let col = d_from.x; col <= d_to.x; col++) {
+            const [d_from_y, d_to_y] = d_from.y > d_to.y ? [d_to.y, d_from.y] : [d_from.y, d_to.y],
+                  [d_from_x, d_to_x] = d_from.x > d_to.x ? [d_to.x, d_from.x] : [d_from.x, d_to.x];
+
+            for (let row = d_from_y; row <= d_to_y; row++) {
+                for (let col = d_from_x; col <= d_to_x; col++) {
                     const cell = this.__grid.cell(col, row);
 
                     if (domain.role === LabelLayer.CellRoles.Analog) {

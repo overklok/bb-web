@@ -99,6 +99,8 @@ export default class BackgroundLayer extends Layer {
             if (domain.style === BackgroundLayer.DomainSchematicStyles.None) continue;
 
             if (domain.horz) {
+                if (d_from.x > d_to.x) [d_from, d_to] = [d_to, d_from];
+
                 for (let row = d_from.y; row <= d_to.y; row++) {
                     this._drawDomain(
                         this._domaingroup,
@@ -106,12 +108,14 @@ export default class BackgroundLayer extends Layer {
                         this.__grid.cell(d_to.x, row),
                         this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ,
                         domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
-                        !!domain.inv,
-                        domain.after,
-                        domain.before
+                        !!domain.bias_inv,
+                        domain.line_after,
+                        domain.line_before
                     );
                 }
             } else {
+                if (d_from.y > d_to.y) [d_from, d_to] = [d_to, d_from];
+
                 for (let col = d_from.x; col <= d_to.x; col++) {
                     this._drawDomain(
                         this._domaingroup,
@@ -119,9 +123,9 @@ export default class BackgroundLayer extends Layer {
                         this.__grid.cell(col, d_to.y),
                         this.__schematic ? '#777' : GRADIENTS.GOLD.VERT,
                         domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
-                        !!domain.inv,
-                        domain.after,
-                        domain.before
+                        !!domain.bias_inv,
+                        domain.line_after,
+                        domain.line_before
                     );
                 }
             }
