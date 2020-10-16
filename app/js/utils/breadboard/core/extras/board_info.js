@@ -109,8 +109,6 @@ function layoutToBoardInfo(layout) {
                         throw Error("Invalid domain to minus mapping dimensions");
                     }
 
-                    console.log(coords);
-
                     for (let i = 0; i < coords.length; i++) {
                         const coord = coords[i],
                               minus_coord = anal_minus_coords[i];
