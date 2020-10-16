@@ -15,8 +15,6 @@ function layoutToBoardInfo(layout) {
 
     let cell_str_idx = 0;
 
-    let arduino_nodes = [];
-
     let minus_coords_idx = undefined;
 
     for (const domain of domains) {
@@ -111,12 +109,13 @@ function layoutToBoardInfo(layout) {
                         throw Error("Invalid domain to minus mapping dimensions");
                     }
 
+                    console.log(coords);
+
                     for (let i = 0; i < coords.length; i++) {
                         const coord = coords[i],
                               minus_coord = anal_minus_coords[i];
 
                         cell_structure[cell_str_idx++] = [coord];
-                        arduino_nodes.push(coord);
                         embedded_plates.push(getArduinoPinPlate(coord, minus_coord));
                     }
 
