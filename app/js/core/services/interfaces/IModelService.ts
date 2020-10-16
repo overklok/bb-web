@@ -2,9 +2,11 @@ import Model, {ModelConstructor, ModelState} from "../../base/model/Model";
 import Datasource from "../../base/model/Datasource";
 import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
 import IEventService from "./IEventService";
+import {getClassNameAlias} from "../../helpers/functions";
 
 export default class IModelService {
     protected svc_event: IEventService;
+    protected models: Model<any, any>[] = [];
 
     public setup(svc_event: IEventService): void {
         this.svc_event = svc_event
@@ -25,6 +27,19 @@ export default class IModelService {
 
     public retrieve<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(abstrakt: M): InstanceType<M> {
         throw new Error('abstract');
+    }
+
+    public getModels(): {[name: string]: Model<any, any>} {
+        const models: {[name: string]: Model<any, any>} = {};
+
+        for (const model of this.models) {
+            const model_name = model.constructor.name;
+            const model_alias = getClassNameAlias(model_name, 'Model');
+
+            models[model_alias] = model;
+        }
+
+        return models;
     }
 
     private static async launchDataSource(data_source: AsynchronousDatasource) {

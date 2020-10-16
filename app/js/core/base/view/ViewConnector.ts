@@ -2,7 +2,7 @@ import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
 import IModelService from "../../services/interfaces/IModelService";
 import Presenter from "../Presenter";
-import {AbstractEvent, Action, BasicEventType} from "../Event";
+import {AbstractEvent, Action, ModelEvent, ViewEvent} from "../Event";
 import {IViewOptions, IViewState, View} from "./View";
 import {PresenterType} from "../../helpers/types";
 
@@ -24,7 +24,7 @@ import {PresenterType} from "../../helpers/types";
  */
 export default class ViewConnector {
     /** @property An instance of View that is available directly to Presenters */
-    private view: View<any, any>;
+    public view: View<any, any>;
     /** @property An instance of EventService that is used to pass events from Presenters or the View */
     private readonly svc_event: IEventService;
     /** @property An instance of ModelService that is used to extract Model instances for Presenters */
@@ -85,12 +85,18 @@ export default class ViewConnector {
         }
     }
 
+    detach() {
+        delete this.view;
+
+        this.unsubscribePresenterHandlers();
+    }
+
     /**
-     * Emit an event by the {@link View} or by one of {@link Presenter} instances
+     * Emit an event by the {@link View} or by one of {@link Presenter} instances (i.e. Actions)
      *
      * @param event the event to be passed
      */
-    emit<E>(event: AbstractEvent<E>) {
+    emit<E>(event: ViewEvent<E>) {
         const anchor = this.getEventAnchorByInstance(event);
 
         this.svc_event.emit(event, anchor);
@@ -160,15 +166,31 @@ export default class ViewConnector {
        this.handler_keys = [];
     }
 
+    /**
+     * Define appropriate anchor to use when emitting events
+     *
+     * Emitting is possible only by attached View, so View should emit only to presenter attached to this connector.
+     * If needed to emit another types of events, it should be possible to listen to globally,
+     * so in this case use (null).
+     *
+     * @param evt_type
+     */
     private getEventAnchorByInstance<E extends AbstractEvent<any>>(evt_type: E): any {
-        const event_ctype = Object.getPrototypeOf(evt_type).constructor.type;
-
-        if (!event_ctype) throw new Error("Event should have a static type");
-
-        return Object.getPrototypeOf(evt_type).constructor.type === BasicEventType.View ? this : null;
+        // use 'this' if event is derived from ViewEvent
+        return ((evt_type as any).__proto__ instanceof ViewEvent || (evt_type as any) === ViewEvent) ? this : null;
     }
 
+    /**
+     * Define appropriate anchor to use when subscribing to events
+     *
+     * When presenter subscribes, it have to listen to its View events only, so in this case we need to
+     * isolate events to (this). But presenter still can listen to models' events that emits globally so here this
+     * function returns (null).
+     *
+     * @param evt_type
+     */
     private getEventAnchorByType(evt_type: typeof AbstractEvent): any {
-        return Object.getPrototypeOf(evt_type).type === BasicEventType.View ? this : null;
+        // use 'this' if event is derived from ViewEvent
+        return (evt_type.prototype instanceof ViewEvent || evt_type === ViewEvent) ? this : null;
     }
 }

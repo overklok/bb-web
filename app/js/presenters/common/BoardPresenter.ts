@@ -1,6 +1,7 @@
 import Presenter, {on} from "../../core/base/Presenter";
 import BoardView, {BoardChangeEvent, BoardLayoutChangeEvent} from "../../views/board/BoardView";
 import BoardModel, {ElectronicEvent, BoardOptionsEvent, PlateEvent} from "../../models/common/BoardModel";
+import {ModelEvent, ViewEvent} from "../../core/base/Event";
 
 export default class BoardPresenter extends Presenter<BoardView> {
     private model: BoardModel;
@@ -34,5 +35,10 @@ export default class BoardPresenter extends Presenter<BoardView> {
     @on(ElectronicEvent)
     private onelec(evt: ElectronicEvent) {
         this.view.setCurrents(evt.threads);
+    }
+
+    @on(ViewEvent)
+    private onviewevt(evt: ViewEvent<any>) {
+        console.log('ove', evt);
     }
 }

@@ -145,12 +145,16 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
     }
 
     protected viewDidMount() {
+        super.viewDidMount();
+
         this.root_ref.current.appendChild(this.overlay_node);
 
         this.emit(new LayoutMountEvent({}));
     }
 
     protected viewWillUnmount() {
+        super.viewWillUnmount();
+
         this.root_ref.current.removeChild(this.overlay_node);
     }
 

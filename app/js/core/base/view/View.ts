@@ -76,8 +76,15 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
 
     public resize() {}
 
-    protected viewDidMount() {}
-    protected viewWillUnmount() {}
+    protected viewDidMount() {
+        console.log(this.constructor.name, 'mount');
+    }
+
+    protected viewWillUnmount() {
+        console.log(this.constructor.name, 'unmount');
+
+        this.props.connector.detach();
+    }
 
     protected emit<E>(event: ViewEvent<E>) {
         this.props.connector.emit(event);

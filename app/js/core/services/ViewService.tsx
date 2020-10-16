@@ -7,6 +7,7 @@ import ViewConnector from "../base/view/ViewConnector";
 import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 import Nest from "../base/view/Nest";
 import {IViewOptions} from "../base/view/View";
+import {getClassNameAlias} from "../helpers/functions";
 
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
@@ -14,6 +15,9 @@ export default class ViewService extends IViewService {
     private element: HTMLElement;
 
     private view_composer: typeof React.Component;
+
+    private view_connectors_internal: ViewConnector[] = [];
+    private view_connectors_external: [string, ViewConnector][] = [];
 
     public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = []) {
         this.widgets = {};
@@ -38,6 +42,8 @@ export default class ViewService extends IViewService {
 
             const connector = new ViewConnector(this.app, presenter_types);
 
+            this.view_connectors_external.push([alias, connector]);
+
             this.widgets[alias] = {connector, view_type, label: label || alias, view_options} as Widget<any>;
         }
 
@@ -53,13 +59,41 @@ export default class ViewService extends IViewService {
         }
     }
 
+    /**
+     * Get views currently attached
+     */
+    public getViews(): {[name: string]: any} {
+        const views: {[name: string]: any} = {};
+
+        for (const connector of this.view_connectors_internal) {
+            if (connector.view) {
+                const view_name = connector.view.constructor.name;
+                const view_alias = getClassNameAlias(view_name, 'View');
+
+                views[view_alias] = connector.view;
+            }
+        }
+
+        for (const [alias, connector] of this.view_connectors_external) {
+            if (connector.view) {
+                views[alias] = connector.view;
+            }
+        }
+
+        return views;
+    }
+
     protected recompose() {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
+
+        this.view_connectors_internal = [];
 
         const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
             const {view_type: SpecificView, presenter_types, label, view_options} = widget_type;
 
             const view_connector = new ViewConnector(this.app, presenter_types);
+
+            this.view_connectors_internal.push(view_connector);
 
             return <Nest
                 key={index}

@@ -15,6 +15,8 @@ export default class ModelService extends IModelService {
 
         this.bindings.set(abstrakt, model);
 
+        this.models.push(model);
+
         return model;
     }
 

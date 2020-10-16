@@ -1,5 +1,5 @@
 import IEventService from "./interfaces/IEventService";
-import {AbstractEvent} from "../base/Event";
+import {AbstractEvent, ViewEvent} from "../base/Event";
 
 export default class EventService extends IEventService {
     private handlers: Map<any, Map<typeof AbstractEvent, Function[]>> = new Map();
@@ -51,7 +51,24 @@ export default class EventService extends IEventService {
 
         if (map == null) return;
 
-        const handlers = map.get(Object.getPrototypeOf(event).constructor) || [];
+        let handlers = [];
+
+        // get prototype for class of this event, constructor of this prototype is event's class
+        let proto = (event as any).__proto__;
+
+        do {
+            // get class of the prototype
+            const evt_class = proto.constructor;
+
+            const handlers_for_class = map.get(evt_class);
+
+            if (handlers_for_class) {
+                handlers.push(...handlers_for_class);
+            }
+
+            // prototype is now a prototype of parent class
+            proto = proto.__proto__;
+        } while (proto.constructor !== AbstractEvent)
 
         for (const handler of handlers) {
             if (!handler) continue;
