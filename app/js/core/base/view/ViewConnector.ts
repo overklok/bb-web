@@ -43,13 +43,14 @@ export default class ViewConnector {
      * View connectors are usually built by ViewService at the registration of Widget
      * and stays permanent throughout the entire lifecycle of application.
      *
-     * @param app
+     * @param svc_event
+     * @param svc_model
      * @param presenter_types
      */
-    constructor(app: Application, presenter_types: PresenterType<View<IViewOptions, IViewState>>[]) {
+    constructor(svc_event: IEventService, svc_model: IModelService, presenter_types: PresenterType<View<IViewOptions, IViewState>>[]) {
         // Get an instances of services needed
-        this.svc_event = app.instance(IEventService);
-        this.svc_model = app.instance(IModelService);
+        this.svc_event = svc_event;
+        this.svc_model = svc_model;
 
         this.presenter_types = presenter_types;
 
@@ -142,13 +143,13 @@ export default class ViewConnector {
     }
 
     private subscribePresenterHandlers(presenter: Presenter<any>) {
-        for (const [evt_type, prop_handler] of presenter.routes.entries()) {
-            const anchor = this.getEventAnchorByType(evt_type);
+        for (const [evt_descr, prop_handler] of presenter.presets.entries()) {
+            const anchor = this.getEventAnchorByType(evt_descr.event_type);
 
             const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
-            const hdlr_key = this.svc_event.subscribe(evt_type, hdlr, anchor);
+            const hdlr_key = this.svc_event.subscribe(evt_descr.event_type, hdlr, anchor, evt_descr.restore);
 
-            this.handlers.push([evt_type, hdlr]);
+            this.handlers.push([evt_descr.event_type, hdlr]);
         }
     }
 

@@ -8,6 +8,8 @@ import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 import Nest from "../base/view/Nest";
 import {IViewOptions} from "../base/view/View";
 import {getClassNameAlias} from "../helpers/functions";
+import IEventService from "./interfaces/IEventService";
+import IModelService from "./interfaces/IModelService";
 
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
@@ -18,10 +20,15 @@ export default class ViewService extends IViewService {
 
     private view_connectors_internal: ViewConnector[] = [];
     private view_connectors_external: [string, ViewConnector][] = [];
+    private svc_event: IEventService;
+    private svc_model: IModelService;
 
     public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = []) {
         this.widgets = {};
         this.view_composer = view_composer;
+
+        this.svc_event = this.app.instance(IEventService);
+        this.svc_model = this.app.instance(IModelService);
 
         if (typeof widget_types === 'string') {
             this.widget_type_key = widget_types;
@@ -40,7 +47,7 @@ export default class ViewService extends IViewService {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
             const {view_type, presenter_types, label, view_options} = widget_type;
 
-            const connector = new ViewConnector(this.app, presenter_types);
+            const connector = new ViewConnector(this.svc_event, this.svc_model, presenter_types);
 
             this.view_connectors_external.push([alias, connector]);
 
@@ -91,7 +98,7 @@ export default class ViewService extends IViewService {
         const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
             const {view_type: SpecificView, presenter_types, label, view_options} = widget_type;
 
-            const view_connector = new ViewConnector(this.app, presenter_types);
+            const view_connector = new ViewConnector(this.svc_event, this.svc_model, presenter_types);
 
             this.view_connectors_internal.push(view_connector);
 

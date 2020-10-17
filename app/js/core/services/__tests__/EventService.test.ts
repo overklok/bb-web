@@ -4,6 +4,9 @@ import EventService from "../EventService";
 class FooEvent extends AbstractEvent<any> {}
 class BarEvent extends AbstractEvent<any> {}
 
+class SubBarEvent extends BarEvent {}
+class SubSubBarEvent extends SubBarEvent {}
+
 let event_svc: EventService;
 
 const handler = jest.fn();
@@ -123,3 +126,20 @@ test('does not re-emit last previously emitted event after subscription when req
     expect(handler).toBeCalledTimes(0);
 });
 
+/**
+ * =========== EVENT TYPE INHERITANCE ===========
+ */
+test('runs handlers of parent event type subscriptions', () => {
+    // subscribe to BarEvent, SubBarEvent's parent
+    event_svc.subscribe(BarEvent, handler);
+
+    // emit event of SubBarEvent, BarEvent's child
+    event_svc.emit(new SubBarEvent());
+
+    expect(handler).toBeCalledTimes(1);
+
+    // it even should work recursively
+    event_svc.emit(new SubSubBarEvent());
+
+    expect(handler).toBeCalledTimes(2);
+});

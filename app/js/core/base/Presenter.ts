@@ -4,19 +4,62 @@ import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
 
+type EventTypeParam = typeof AbstractEvent;
+type RestorableEventTypeParam = [typeof AbstractEvent, boolean];
+
+type SubscriptionPreset = {event_type: typeof AbstractEvent, restorable: boolean};
+
+interface Subscriptable {
+    presets: Map<string, SubscriptionPreset[]>;
+}
+
 /**
  * Decorator function applied to Presenter methods to subscribe them to events
  *
- * @param event_types
+ * @param event_type_objs
  */
-export function on(...event_types: typeof AbstractEvent[]) {
+export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        if (target.routes == null) {
-            target.routes = new Map();
+        if (target.presets == null) {
+            target.presets = new Map();
         }
 
-        for (const event_type of event_types) {
-            target.routes.set(event_type, propertyKey)
+        for (const event_type_obj of event_type_objs) {
+            let restorable = false;
+            let event_type;
+
+            if (Array.isArray(event_type_obj)) {
+                event_type = event_type_obj[0];
+                restorable = event_type_obj[1];
+            } else {
+                event_type = event_type_obj;
+            }
+
+            if (target.presets.has(propertyKey)) {
+                target.presets.get(propertyKey).push({event_type, restorable});
+            } else {
+                target.presets.set(propertyKey, [{event_type, restorable}]);
+            }
+        }
+
+        return target;
+    }
+}
+
+export function restore() {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        if (target.presets == null) {
+            throw Error("The presenter does not have any methods that handle events");
+        }
+
+        if (!target.presets.has(propertyKey)) {
+            throw Error(`There are no specified event types for method ${propertyKey}`);
+        }
+
+        const presets = target.presets.get(propertyKey);
+
+        for (const preset of presets) {
+            preset.restorable = true;
         }
 
         return target;
@@ -39,8 +82,9 @@ export function action(action_type: typeof Action) {
  * @see Model
  * @see View
  */
-export default class Presenter<V extends View<IViewOptions, IViewState>> {
-    public readonly routes: Map<typeof AbstractEvent, string>;
+export default class Presenter<V extends View<IViewOptions, IViewState>> implements Subscriptable {
+    // Map method name to subscription preset
+    public readonly presets: Map<string, SubscriptionPreset[]>;
 
     protected view: V;
     private svc_model: IModelService;
@@ -52,7 +96,7 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> {
      * @param svc_model   an instance of model service
      */
     constructor(view: V, svc_model: IModelService) {
-        if (this.routes == null) {this.routes = new Map();}
+        if (this.presets == null) {this.presets = new Map();}
 
         this.view = view;
         this.svc_model = svc_model;
