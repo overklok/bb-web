@@ -4,12 +4,17 @@ import {AbstractEvent} from "../base/Event";
 type HandlerPool = Map<any, Map<typeof AbstractEvent, Set<Function>>>;
 
 /**
- * An implementation of event service based on Map and Set
+ * An implementation of IEventService based on Map and Set.
+ *
+ * @inheritDoc
  */
 export default class EventService extends IEventService {
     private handler_pool: HandlerPool = new Map();
     private last_events: Map<typeof AbstractEvent, AbstractEvent<any>> = new Map();
 
+    /**
+     * @inheritDoc
+     */
     subscribe(event_type: typeof AbstractEvent, handler: Function, anchor: any = null, emit_last = false): number {
         let subpool = this.handler_pool.get(anchor);
 
@@ -39,15 +44,24 @@ export default class EventService extends IEventService {
         return handlers.size - 1;
     }
 
+    /**
+     * @inheritDoc
+     */
     reset(event_type: typeof AbstractEvent, anchor: any = null) {
         let map = this.handler_pool.get(anchor);
         map.set(event_type, null);
     }
 
+    /**
+     * @inheritDoc
+     */
     resetObject(obj: any = null) {
         this.handler_pool.set(obj, null);
     }
 
+    /**
+     * @inheritDoc
+     */
     unsubscribe(event_type: typeof AbstractEvent, handler: Function, anchor: any = null) {
         let subpool = this.handler_pool.get(anchor);
 
@@ -58,6 +72,9 @@ export default class EventService extends IEventService {
         handlers.delete(handler);
     }
 
+    /**
+     * @inheritDoc
+     */
     emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
         const event_type: typeof AbstractEvent = (event as any).__proto__.constructor;
 
