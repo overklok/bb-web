@@ -31,7 +31,7 @@ export default class ViewConnector {
     private readonly svc_model: IModelService;
 
     /** @property Handler keys that kept here to unsubscribe in the future (i.e. in case of re-attaching the View) */
-    private handler_keys: [typeof AbstractEvent, number][] = [];
+    private handlers: [typeof AbstractEvent, Function][] = [];
 
     /** @property An array of presenter prototypes to construct Presenter instances when the View is attached */
     public readonly presenter_types: PresenterType<View<IViewOptions, IViewState>>[];
@@ -148,7 +148,7 @@ export default class ViewConnector {
             const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
             const hdlr_key = this.svc_event.subscribe(evt_type, hdlr, anchor);
 
-            this.handler_keys.push([evt_type, hdlr_key]);
+            this.handlers.push([evt_type, hdlr]);
         }
     }
 
@@ -157,13 +157,13 @@ export default class ViewConnector {
      */
     private unsubscribePresenterHandlers() {
        // this.svc_event.resetObject(this);
-       for (const [evt_type, hdlr_key] of this.handler_keys) {
+       for (const [evt_type, hdlr] of this.handlers) {
            const anchor = this.getEventAnchorByType(evt_type);
 
-           this.svc_event.unsubscribe(evt_type, hdlr_key, anchor);
+           this.svc_event.unsubscribe(evt_type, hdlr, anchor);
        }
 
-       this.handler_keys = [];
+       this.handlers = [];
     }
 
     /**
