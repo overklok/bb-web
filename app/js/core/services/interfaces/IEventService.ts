@@ -30,6 +30,8 @@ export default class IEventService {
      * @param handler       a function to fire when events will be emitted
      * @param anchor        an object that will be used to filter handlers to fire
      * @param emit_last     automatically re-emit last emitted event (available for non-default anchors only)
+     *
+     * @return number of presenters of event provided and attached to anchor provided
      */
     subscribe(event_type: typeof AbstractEvent,
               handler: Function,

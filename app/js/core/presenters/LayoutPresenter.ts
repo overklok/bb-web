@@ -1,4 +1,4 @@
-import Presenter, {on} from "../base/Presenter";
+import Presenter, {on, restore} from "../base/Presenter";
 import LayoutView, {LayoutMountEvent} from "../views/layout/LayoutView";
 import LayoutModel, {SetModeEvent} from "../models/LayoutModel";
 import {RouterEvent} from "../base/Event";
@@ -29,7 +29,7 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
         this.view.setModes(modes);
     }
 
-    @on(SetModeEvent, LayoutRouterEvent)
+    @restore() @on(SetModeEvent, LayoutRouterEvent)
     protected setMode(evt: SetModeEvent|LayoutRouterEvent) {
         this.view.setMode(evt.mode);
     }

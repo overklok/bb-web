@@ -24,6 +24,9 @@ export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam
             target.presets = new Map();
         }
 
+        // Temporary storage to track down types and then to remove duplicates
+        const types_added = [];
+
         for (const event_type_obj of event_type_objs) {
             let restorable = false;
             let event_type;
@@ -33,6 +36,12 @@ export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam
                 restorable = event_type_obj[1];
             } else {
                 event_type = event_type_obj;
+            }
+
+            if (types_added.indexOf(event_type) !== -1) {
+                continue;
+            } else {
+                types_added.push(event_type);
             }
 
             if (target.presets.has(propertyKey)) {
@@ -46,7 +55,7 @@ export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam
     }
 }
 
-export function restore() {
+export function restore(...event_types: typeof AbstractEvent[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (target.presets == null) {
             throw Error("The presenter does not have any methods that handle events");
@@ -59,7 +68,14 @@ export function restore() {
         const presets = target.presets.get(propertyKey);
 
         for (const preset of presets) {
-            preset.restorable = true;
+            if (event_types) {
+                if (event_types.indexOf(preset.event_type) > -1) {
+                    preset.restorable = true;
+                    break;
+                }
+            } else {
+                preset.restorable = true;
+            }
         }
 
         return target;
@@ -105,7 +121,7 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> impleme
     };
 
     /**
-     * Prepare Presenter for use in application workflow.
+     * Prepare Presenter to use in application workflow.
      */
     protected ready() {}
 

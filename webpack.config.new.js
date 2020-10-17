@@ -33,6 +33,12 @@ module.exports = (env, argv) => {
         optimization: {
             minimizer: getMinimizer(is_dev)
         },
+        devServer: {
+            contentBase: path.join(__dirname, 'dist'),
+            index: getHtmlIndexFile(env),
+            compress: true,
+            port: 9000
+        },
         module: {
             rules: [
                 {
@@ -205,4 +211,11 @@ function getHtmlCopyPluginInstances(env) {
     }
 
     return htmls;
+}
+
+function getHtmlIndexFile(env) {
+    if (env.main === true) return 'main.html';
+    if (env.board === true) return 'board.html';
+    if (env.monkey === true) return 'monkey.html';
+    if (env.playground === true) return 'playground.html';
 }

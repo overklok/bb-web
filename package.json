@@ -83,6 +83,7 @@
     "webpack-build-notifier": "^2.0.0",
     "webpack-bundle-analyzer": "^3.1.0",
     "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.11.0",
     "webpack-notifier": "^1.8.0"
   },
   "scripts": {
@@ -102,6 +103,7 @@
     "watch-new:board": "webpack --config webpack.config.new.js --watch --mode development --env.board",
     "watch-new:monkey": "webpack --config webpack.config.new.js --watch --mode development --env.monkey",
     "watch-new:playground": "webpack --config webpack.config.new.js --watch --mode development --env.playground",
+    "serve:playground": "webpack-dev-server --config webpack.config.new.js --watch --mode development --env.playground",
     "test:single": "rm -rf tmp/ && karma start karma.conf.js --single-run --browsers Chrome",
     "test:watch": "karma start karma.conf.js --browsers Chrome",
     "test": "jest",

@@ -41,7 +41,7 @@ export default class EventService extends IEventService {
             }
         }
 
-        return handlers.size - 1;
+        return handlers.size;
     }
 
     /**

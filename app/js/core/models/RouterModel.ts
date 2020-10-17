@@ -15,4 +15,21 @@ export default class RouterModel extends Model<RouterModelState, DummyDatasource
     defaultState = {
         routes: {}
     };
+
+    init(state: Partial<RouterModelState>) {
+        super.init(state);
+
+        console.log('rm loaded');
+
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = '';
+
+            console.log('location changed!');
+        });
+
+        window.onbeforeunload = function() {
+            return "";
+        }
+    }
 }

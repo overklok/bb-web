@@ -143,13 +143,18 @@ export default class ViewConnector {
     }
 
     private subscribePresenterHandlers(presenter: Presenter<any>) {
-        for (const [evt_descr, prop_handler] of presenter.presets.entries()) {
-            const anchor = this.getEventAnchorByType(evt_descr.event_type);
+        for (const [method_name, preset] of presenter.presets.entries()) {
+            for (const {event_type, restorable} of preset) {
+                const anchor = this.getEventAnchorByType(event_type);
 
-            const hdlr = function() {(presenter as any)[prop_handler](...arguments)};
-            const hdlr_key = this.svc_event.subscribe(evt_descr.event_type, hdlr, anchor, evt_descr.restore);
+                const hdlr = function () {
+                    (presenter as any)[method_name](...arguments)
+                };
 
-            this.handlers.push([evt_descr.event_type, hdlr]);
+                this.svc_event.subscribe(event_type, hdlr, anchor, restorable);
+
+                this.handlers.push([event_type, hdlr]);
+            }
         }
     }
 
