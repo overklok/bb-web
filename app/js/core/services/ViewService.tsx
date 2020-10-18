@@ -6,10 +6,10 @@ import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 import ViewConnector from "../base/ViewConnector";
 import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 import Nest from "../base/view/Nest";
-import {IViewOptions} from "../base/view/View";
 import {getClassNameAlias} from "../helpers/functions";
 import IEventService from "./interfaces/IEventService";
 import IModelService from "./interfaces/IModelService";
+import Application from "../Application";
 
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
@@ -22,6 +22,13 @@ export default class ViewService extends IViewService {
     private view_connectors_external: [string, ViewConnector][] = [];
     private svc_event: IEventService;
     private svc_model: IModelService;
+
+    constructor(app: Application) {
+        super(app);
+
+        this.widgets = {};
+        this.widget_types = [];
+    }
 
     public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = []) {
         this.widgets = {};

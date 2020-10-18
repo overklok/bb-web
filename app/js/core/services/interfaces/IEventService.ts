@@ -1,4 +1,5 @@
 import {AbstractEvent} from "../../base/Event";
+import Application from "../../Application";
 
 /**
  * A service that supports basic lifecycle of Event objects and provides management API
@@ -35,8 +36,8 @@ export default class IEventService {
      */
     subscribe(event_type: typeof AbstractEvent,
               handler: Function,
-              anchor: any = null,
-              emit_last = false
+              anchor?: any,
+              emit_last?: boolean
     ): number {throw new Error('abstract')}
 
     /**
@@ -46,7 +47,7 @@ export default class IEventService {
      * @param anchor        an object that will be used to filter handlers to remove
      */
     public reset(event_type: typeof AbstractEvent,
-                 anchor: any = null
+                 anchor?: any
     ): void {throw new Error('abstract')}
 
     /**
@@ -54,7 +55,7 @@ export default class IEventService {
      *
      * @param obj           an object for that all corresponding handlers will be removed
      */
-    public resetObject(obj: any = null): void {throw new Error('abstract')}
+    public resetObject(obj?: any): void {throw new Error('abstract')}
 
     /**
      * Remove a specific handler of specific type of Event
@@ -66,7 +67,7 @@ export default class IEventService {
     public unsubscribe(
         event_type: typeof AbstractEvent,
         handler: Function,
-        anchor: any = null
+        anchor?: any
     ): void {throw new Error('abstract')}
 
     /**
@@ -80,6 +81,6 @@ export default class IEventService {
      */
     public emit<E extends AbstractEvent<E>>(
         event: E,
-        anchor: any = null
+        anchor?: any
     ): void {throw new Error('abstract')}
 }

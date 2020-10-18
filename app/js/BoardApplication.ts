@@ -3,7 +3,7 @@ import Application, {AppConf} from "./core/Application";
 import IViewService from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
 
-import ServiceProvider from "./core/providers/ServiceProvider";
+import IServiceProvider from "./core/providers/ServiceProvider";
 import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
@@ -35,7 +35,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
     private ads: AdaptiveAsyncDatasource;
     private bb: BoardModel;
 
-    protected providerClasses(): Array<typeof ServiceProvider> {
+    protected providerClasses(): Array<IServiceProvider> {
         return [
             ViewServiceProvider,
             ModelServiceProvider,

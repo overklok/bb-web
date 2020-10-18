@@ -1,4 +1,4 @@
-import ServiceProvider from "./ServiceProvider";
+import {ServiceProvider} from "./ServiceProvider";
 import Application from "../Application";
 import IModelService from "../services/interfaces/IModelService";
 import ModelService from "../services/ModelService";
