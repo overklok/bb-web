@@ -54,10 +54,6 @@ class BoardApplication extends Application<BoardApplicationConfig> {
         }
 
         this.ads = new AdaptiveDatasource(data_sources);
-    }
-
-    protected boot() {
-        super.boot();
 
         this.instance(IViewService).setup(SingleViewComposer, 'main');
     }

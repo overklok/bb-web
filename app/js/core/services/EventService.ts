@@ -16,6 +16,12 @@ export default class EventService extends IEventService {
      * @inheritDoc
      */
     subscribe(event_type: typeof AbstractEvent, handler: Function, anchor: any = null, emit_last = false): number {
+        if (anchor != null) {
+            this.subscribe(event_type, handler, null, false);
+        }
+
+        console.log('subscribed', event_type.name, anchor, emit_last);
+
         let subpool = this.handler_pool.get(anchor);
 
         if (subpool == null) {
@@ -49,13 +55,37 @@ export default class EventService extends IEventService {
      */
     reset(event_type: typeof AbstractEvent, anchor: any = null) {
         let map = this.handler_pool.get(anchor);
+        if (!map) return;
+
+        if (anchor != null) {
+            const handlers = map.get(event_type);
+
+            for (const handler of handlers.values()) {
+                this.unsubscribe(event_type, handler, null);
+            }
+        }
+
         map.set(event_type, null);
+
     }
 
     /**
      * @inheritDoc
      */
     resetObject(obj: any = null) {
+        let map = this.handler_pool.get(obj);
+        if (!map) return;
+
+        if (obj != null) {
+            for (const [event_type, handlers] of map.entries()) {
+                if (!handlers) continue;
+
+                for (const handler of handlers.values()) {
+                    this.unsubscribe(event_type, handler, null);
+                }
+            }
+        }
+
         this.handler_pool.set(obj, null);
     }
 
@@ -63,8 +93,11 @@ export default class EventService extends IEventService {
      * @inheritDoc
      */
     unsubscribe(event_type: typeof AbstractEvent, handler: Function, anchor: any = null) {
-        let subpool = this.handler_pool.get(anchor);
+        if (anchor != null) {
+            this.unsubscribe(event_type, handler, null);
+        }
 
+        let subpool = this.handler_pool.get(anchor);
         if (subpool == null) return;
 
         let handlers = subpool.get(event_type);
@@ -76,6 +109,8 @@ export default class EventService extends IEventService {
      * @inheritDoc
      */
     emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
+        console.log('emiited', event.constructor.name, anchor);
+
         const event_type: typeof AbstractEvent = (event as any).__proto__.constructor;
 
         this.last_events.set(event_type, event);

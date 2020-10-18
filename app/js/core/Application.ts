@@ -20,9 +20,10 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     constructor(config?: AppConf) {
         this.configure(config);
 
-        this.init();
+        this.initProviders();
+        this.setupProviders();
         this.setup();
-        this.boot();
+        this.bootProviders();
 
         this.version = __VERSION__;
         console.log(`Loaded ${this.version}`);
@@ -42,7 +43,7 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     /**
      * Инициализировать Приложение
      */
-    protected init() {
+    private initProviders() {
         // регистрация Служб
         for (const provider_class of this.providerClasses()) {
             const provider = new provider_class(this);
@@ -56,9 +57,19 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     protected setup(): void {};
 
     /**
-     * Запустить Приложение
+     * Настроить службы
      */
-    protected boot() {
+    private setupProviders() {
+        // настройка Служб
+        for (const provider of this.providers) {
+            provider.setup();
+        }
+    }
+    
+    /**
+     * Запустить службы
+     */
+    private bootProviders() {
         // запуск Служб
         for (const provider of this.providers) {
             provider.boot();

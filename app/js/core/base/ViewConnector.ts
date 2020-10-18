@@ -200,6 +200,6 @@ export default class ViewConnector {
      */
     private getEventAnchorByType(evt_type: typeof AbstractEvent): any {
         // use 'this' if event is derived from ViewEvent
-        return (evt_type.prototype instanceof ViewEvent || evt_type === ViewEvent) ? this : null;
+        return (evt_type.prototype instanceof ViewEvent || evt_type === ViewEvent) ? this : this;
     }
 }

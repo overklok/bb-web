@@ -11,6 +11,7 @@ export abstract class ServiceProvider {
         this.app = app;
     }
 
+    public setup(): void {};
     public boot(): void {};
     public register(): void {};
 }

@@ -25,6 +25,9 @@ import widgets_config from "./configs/playground/widgets";
 import ModalModel from "./core/models/ModalModel";
 import CodeModel from "./models/common/CodeModel";
 import KeyboardModel from "./core/models/KeyboardModel";
+import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
+import IRoutingService from "./core/services/interfaces/IRoutingService";
+import LayoutRouter from "./core/routers/LayoutRouter";
 
 class PlaygroundApplication extends Application {
     public bb: BoardModel;
@@ -38,6 +41,7 @@ class PlaygroundApplication extends Application {
             ViewServiceProvider,
             ModelServiceProvider,
             EventServiceProvider,
+            RoutingServiceProvider,
         ];
     }
 
@@ -48,6 +52,18 @@ class PlaygroundApplication extends Application {
         ]);
 
         this.dds = new DummyDatasource();
+
+        const svc_model = this.instance(IModelService),
+              svc_routing = this.instance(IRoutingService);
+
+        svc_routing.setRouter(LayoutRouter);
+
+        svc_model.launch(this.ads);
+        svc_model.register(KeyboardModel, this.dds);
+        svc_model.register(ModalModel, this.dds);
+        svc_model.register(LayoutModel, this.dds, layouts_config);
+        svc_model.register(CodeModel, this.ads);
+        svc_model.register(BoardModel, this.ads);
     }
 
     async run(element: HTMLElement) {
@@ -56,15 +72,9 @@ class PlaygroundApplication extends Application {
         const svc_view = this.instance(IViewService),
               svc_model = this.instance(IModelService);
 
+        // svc_routing.setRouter()
+
         svc_view.registerWidgetTypes(widgets_config);
-
-        svc_model.register(KeyboardModel, this.dds);
-        svc_model.register(ModalModel, this.dds);
-        svc_model.register(LayoutModel, this.dds, layouts_config);
-        svc_model.register(CodeModel, this.ads);
-
-        svc_model.launch(this.ads);
-        svc_model.register(BoardModel, this.ads);
 
         this.bb = svc_model.retrieve(BoardModel);
         this.cm = svc_model.retrieve(CodeModel);

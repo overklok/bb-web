@@ -1,4 +1,6 @@
 import IModelService from "../services/interfaces/IModelService";
+import {ModelConstructor, ModelState} from "./model/Model";
+import Datasource from "./model/Datasource";
 
 type RouteDestination = unknown;
 
@@ -36,26 +38,31 @@ export function route(name: string, pathexp: string) {
     }
 }
 
+export interface IRouter {
+    new(svc_model: IModelService): Router<any>;
+}
+
 export default abstract class Router<RD extends RouteDestination> {
     private svc_model: IModelService;
-    public readonly routes: Route<RD>[];
-    private readonly method_routes: MethodRoute[];
-    private readonly routes_compiled: Map<string, CompiledRoute<RD>>;
+    public readonly routes: Route<RD>[] = [];
+    private readonly method_routes: MethodRoute[]  = [];
+    private readonly routes_compiled: Map<string, CompiledRoute<RD>> = new Map();
 
-    protected constructor(svc_model: IModelService) {
+    constructor(svc_model: IModelService) {
         this.svc_model = svc_model;
 
         this.compileRoutes();
     }
 
+    public abstract launch(): void;
     protected abstract direct(destination: RD): void;
 
     public redirect(path: string) {
         const resolved = this.resolve(path);
 
         if (resolved == null) {
-            console.error('Route map used to resolve', this.routes_compiled);
-            throw new Error("Cannot resolve path");
+            console.error(`Cannot resolve path '${path}'. Route map used to resolve`, this.routes_compiled);
+            return;
         }
 
         const [route, params] = resolved;
@@ -112,6 +119,18 @@ export default abstract class Router<RD extends RouteDestination> {
         }
 
         return null;
+    }
+
+    protected getModel<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>
+        (model_type: M, suppress_errors: boolean = false): InstanceType<M>
+    {
+        const model = this.svc_model.retrieve(model_type);
+
+        if (!model && !suppress_errors) {
+            throw new Error(`Model ${model_type.name} does not exists. Did you forgot to register it?`);
+        }
+
+        return model;
     }
 
     private compileRoutes() {

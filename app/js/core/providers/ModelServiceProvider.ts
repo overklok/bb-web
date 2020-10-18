@@ -11,7 +11,7 @@ export default class ModelServiceProvider extends ServiceProvider {
         });
     }
 
-    boot() {
+    setup() {
         this.app.instance(IModelService).setup(this.app.instance(IEventService));
     }
 }
