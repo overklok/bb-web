@@ -3,7 +3,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 
-import ViewConnector from "../base/view/ViewConnector";
+import ViewConnector from "../base/ViewConnector";
 import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 import Nest from "../base/view/Nest";
 import {IViewOptions} from "../base/view/View";

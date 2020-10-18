@@ -1,5 +1,5 @@
 import Application from "../../Application";
-import ViewConnector from "../../base/view/ViewConnector";
+import ViewConnector from "../../base/ViewConnector";
 import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
 import {PresenterType, ViewComposerType, ViewType} from "../../helpers/types";
 

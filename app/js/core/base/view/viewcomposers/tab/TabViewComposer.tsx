@@ -2,7 +2,7 @@ import * as React from "react";
 import SingleTab from "./SingleTab";
 import Tab from "./Tab";
 import TabMenu from "./TabMenu";
-import ViewConnector from "../../ViewConnector";
+import ViewConnector from "../../../ViewConnector";
 import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
 interface IProps extends IVCProps {

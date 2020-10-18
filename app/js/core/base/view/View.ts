@@ -1,5 +1,5 @@
 import * as React from "react";
-import ViewConnector from "./ViewConnector";
+import ViewConnector from "../ViewConnector";
 import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";

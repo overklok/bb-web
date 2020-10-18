@@ -1,10 +1,10 @@
-import Application from "../../Application";
-import IEventService from "../../services/interfaces/IEventService";
-import IModelService from "../../services/interfaces/IModelService";
-import Presenter from "../Presenter";
-import {AbstractEvent, Action, ModelEvent, ViewEvent} from "../Event";
-import {IViewOptions, IViewState, View} from "./View";
-import {PresenterType} from "../../helpers/types";
+import Application from "../Application";
+import IEventService from "../services/interfaces/IEventService";
+import IModelService from "../services/interfaces/IModelService";
+import Presenter from "./Presenter";
+import {AbstractEvent, Action, ModelEvent, ViewEvent} from "./Event";
+import {IViewOptions, IViewState, View} from "./view/View";
+import {PresenterType} from "../helpers/types";
 
 /**
  * ViewConnector is a class that makes possible to Views be communicated with logical layer of application
@@ -47,7 +47,10 @@ export default class ViewConnector {
      * @param svc_model
      * @param presenter_types
      */
-    constructor(svc_event: IEventService, svc_model: IModelService, presenter_types: PresenterType<View<IViewOptions, IViewState>>[]) {
+    constructor(svc_event: IEventService,
+                svc_model: IModelService,
+                presenter_types: PresenterType<View<IViewOptions, IViewState>>[]
+    ) {
         // Get an instances of services needed
         this.svc_event = svc_event;
         this.svc_model = svc_model;

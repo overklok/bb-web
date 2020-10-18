@@ -8,11 +8,10 @@ describe('@on decorator', () => {
 
     beforeEach(() => {
         event_svc = new EventService();
-    })
+    });
 
     class FooEvent extends ViewEvent<FooEvent> {}
-    class BarEvent extends ViewEvent<FooEvent> {}
-    class BazEvent extends ViewEvent<FooEvent> {}
+    class BarEvent extends ViewEvent<BarEvent> {}
     class FooView extends View<any, any> {}
 
     it('routes simple ViewEvents to method of Presenter', () => {

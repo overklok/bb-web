@@ -35,6 +35,9 @@ module.exports = (env, argv) => {
         },
         devServer: {
             contentBase: path.join(__dirname, 'dist'),
+            historyApiFallback: {
+                index: getHtmlIndexFile(env),
+            },
             index: getHtmlIndexFile(env),
             compress: true,
             port: 9000

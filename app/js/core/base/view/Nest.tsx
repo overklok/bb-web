@@ -1,7 +1,7 @@
 import * as React from "react";
 import {IViewOptions, View} from "./View";
 import classNames from "classnames";
-import ViewConnector from "./ViewConnector";
+import ViewConnector from "../ViewConnector";
 import {ViewType} from "../../helpers/types";
 import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
