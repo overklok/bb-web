@@ -15,11 +15,12 @@ type MethodRoute = Route<null> & {
 type CompiledRoute<RD extends RouteDestination> = {
     regexp: RegExp;
     pathexp?: string;
+    param_types?: string[];
     destination?: RD;
     method_name?: string;
 }
 
-const PATHEXP_REGEXP = /({([a-z0-9]+):([a-z0-9]+)})/gmi;
+const PATHEXP_REGEXP = /({([a-z0-9]+)})/gmi;
 
 export function route(name: string, pathexp: string) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -70,26 +71,40 @@ export default abstract class Router<RD extends RouteDestination> {
         }
     }
 
-    public reverse(name: string, params?: (string|number)[]): string {
-        const route = this.routes_compiled.get(name);
+    public reverse(route_name: string, params?: (string|number)[]): string {
+        const route = this.routes_compiled.get(route_name);
 
         if (!route) {
-            throw Error(`Route ${name} does not exist!`);
+            throw Error(`Route ${route_name} does not exist!`);
         }
 
-        if (!route.regexp) {
-            throw Error(`Route ${name} cannot be reversed because it uses raw regexp to resolve`);
+        if (!route.pathexp) {
+            throw Error(`Route ${route_name} cannot be reversed because it uses raw regexp to resolve`);
         }
 
-        // TODO
-        const path = '';
+        let i = 0;
+
+        const path = route.pathexp.replace(PATHEXP_REGEXP, (full, _, type) => {
+            const param_value = params[i];
+
+            if (param_value == null) {
+                throw Error(`Not enough parameters provided for route ${route_name}`);
+            }
+
+            if (type === 'int') return Number(param_value).toString();
+            if (type === 'str') return String(param_value);
+
+            throw new Error(
+                `Invalid type literal in path of '${route_name}' route: '${type}', 'int' or 'str' expected`
+            );
+        });
 
         return path;
     }
 
     public resolve(path: string): null|[CompiledRoute<RD>, (string|number)[]] {
         for (const route of Object.values(this.routes_compiled)) {
-            const params = Router.applyPathToRegexp(route.regexp, path);
+            const params = Router.applyPathToRegexp(route.regexp, path, route.param_types);
 
             if (params != null) {
                 return [route, params];
@@ -110,8 +125,8 @@ export default abstract class Router<RD extends RouteDestination> {
             }
 
             if (typeof pathexp === 'string') {
-                const [regexp] = this.compileRoute(route_name, pathexp);
-                this.routes_compiled.set(route_name, {pathexp, regexp, destination, method_name});
+                const [regexp, param_types] = this.compileRoute(route_name, pathexp, method_name);
+                this.routes_compiled.set(route_name, {pathexp, regexp, destination, method_name, param_types});
             } else if (pathexp instanceof RegExp) {
                 this.routes_compiled.set(route_name, {regexp: pathexp, destination, method_name});
             } else {
@@ -121,21 +136,21 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     private compileRoute(route_name: string, pathexp: string, method_name: string): [RegExp, string[]] {
-        const param_names: string[] = [];
+        const param_types: string[] = [];
 
-        const pathexp_escaped = pathexp.replace(/\//g, "_");
+        // const pathexp_escaped = pathexp.replace(/\//g, "_");
 
         let param_qty = 0;
 
-        let regexp_str = pathexp_escaped.replace(PATHEXP_REGEXP, (full, _, type, name): string => {
-            param_names.push(name);
+        let regexp_str = pathexp.replace(PATHEXP_REGEXP, (full, _, type): string => {
+            param_types.push(type);
             param_qty += 1;
 
             if (type === 'int') return "([0-9]+)";
             if (type === 'str') return "([a-zA-Z0-9]+)";
 
             throw new Error(
-                `Invalid type literal in path of '${route_name} route': '${type}', 'int' or 'str' expected`
+                `Invalid type literal in path of '${route_name}' route: '${type}', 'int' or 'str' expected`
             );
         });
 
@@ -155,11 +170,11 @@ export default abstract class Router<RD extends RouteDestination> {
             }
         }
 
-        return [new RegExp(regexp_str, 'g'), param_names];
+        return [new RegExp(regexp_str, 'g'), param_types];
     }
 
-    private static applyPathToRegexp(regexp: RegExp, path: string): null|(string|number)[] {
-        let params: string|number[] = [];
+    private static applyPathToRegexp(regexp: RegExp, path: string, types: null|string[]): null|(string|number)[] {
+        let params: (string|number)[] = [];
 
         const param_qty_expected = (new RegExp(regexp.source + '|')).exec('').length - 1;
 
@@ -167,6 +182,27 @@ export default abstract class Router<RD extends RouteDestination> {
 
         // minus one original
         if (match.length - 1 !== param_qty_expected) return null;
+
+        let i = 0;
+
+        while (match = regexp.exec(path)) {
+            const param_value = match[2],
+                  type = types[i];
+
+            if (type === 'int') {
+                let value = Number(param_value);
+                if (Number.isNaN(value)) return null;
+                if (!Number.isInteger(value)) return null;
+
+                params.push(value);
+            }
+
+            if (type === 'str') {
+                params.push(param_value);
+            }
+
+            i += 1;
+        }
 
         return params;
     }
