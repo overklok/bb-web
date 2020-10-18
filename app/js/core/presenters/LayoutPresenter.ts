@@ -20,8 +20,6 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
         this.view.setOptions({
             show_headers: options.show_headers
         });
-
-        console.log(this.presets);
     }
 
     @on(LayoutMountEvent)
@@ -33,8 +31,6 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
 
     @restore() @on(SetModeEvent, LayoutRouterEvent)
     protected setMode(evt: SetModeEvent|LayoutRouterEvent) {
-        console.log('set mode', evt.mode);
-
         this.view.setMode(evt.mode);
     }
 }

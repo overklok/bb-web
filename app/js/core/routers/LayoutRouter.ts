@@ -6,8 +6,8 @@ export default class LayoutRouter extends Router<string> {
 
     public launch(): void {
         this.model_layout = this.getModel(LayoutModel);
-        this.model_layout.setMode('default');
-        console.log('requested set default');
+        this.model_layout.setMode('test');
+        console.log('requested set test');
     }
 
     protected direct(destination: string): void {

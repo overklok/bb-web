@@ -20,8 +20,6 @@ export default class EventService extends IEventService {
             this.subscribe(event_type, handler, null, false);
         }
 
-        console.log('subscribed', event_type.name, anchor, emit_last);
-
         let subpool = this.handler_pool.get(anchor);
 
         if (subpool == null) {
@@ -109,8 +107,6 @@ export default class EventService extends IEventService {
      * @inheritDoc
      */
     emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
-        console.log('emiited', event.constructor.name, anchor);
-
         const event_type: typeof AbstractEvent = (event as any).__proto__.constructor;
 
         this.last_events.set(event_type, event);

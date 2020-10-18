@@ -13,8 +13,10 @@ export abstract class ImperativeView<O> extends View<O, IViewState> {
 
     public componentDidUpdate(prevProps: Readonly<IViewProps<O>>, prevState: Readonly<IViewState>, snapshot?: any) {
         if (prevProps.nest_mounted === false && this.props.nest_mounted === true) {
-            this.inject(this.props.ref_parent.current);
-            this.emit(new MountEvent({}));
+            setTimeout(() => {
+                this.inject(this.props.ref_parent.current);
+                this.emit(new MountEvent({}));
+            }, 0);
         }
     }
 

@@ -90,8 +90,10 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
             }
         };
 
-        this.state = {
-            mode_name: 'default'
+        if (!this.state) {
+            this.state = {
+               mode_name: 'default'
+            }
         }
 
         this.overlay_node = document.createElement('div');
@@ -115,32 +117,45 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
      * @param mode название режима разметки из конфигурации
      */
     public setMode(mode: string) {
-        this.setState({
-            mode_name: mode
-        });
+        if (this.mounted) {
+            this.setState({
+                mode_name: mode
+            });
+        } else {
+            this.state = {
+                mode_name: mode
+            };
+        }
     }
 
     public render() {
         super.render();
 
-        const orientation = this.modes[this.state.mode_name].policy;
+        return (
+            <div ref={this.root_ref} className='layout'>
+                {this.renderInside()}
+            </div>
+        );
+    }
 
+    private renderInside() {
+        if (!this.modes[this.state.mode_name]) return null;
+
+        const orientation = this.modes[this.state.mode_name].policy;
         const panes = this.modes[this.state.mode_name].panes;
 
         return (
-            <div ref={this.root_ref} className='layout'>
-                <DndProvider backend={HTML5Backend}>
-                    <Pane is_root={true}
-                          panes={panes}
-                          name='root'
-                          title='root'
-                          orientation={orientation}
-                          ref={this.pane_ref}
-                          overlay_node={this.overlay_node}
-                          show_headers={this.options.show_headers}
-                    />
-                </DndProvider>
-            </div>
+            <DndProvider backend={HTML5Backend}>
+                <Pane is_root={true}
+                      panes={panes}
+                      name='root'
+                      title='root'
+                      orientation={orientation}
+                      ref={this.pane_ref}
+                      overlay_node={this.overlay_node}
+                      show_headers={this.options.show_headers}
+                />
+            </DndProvider>
         );
     }
 

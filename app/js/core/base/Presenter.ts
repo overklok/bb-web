@@ -68,7 +68,7 @@ export function restore(...event_types: typeof AbstractEvent[]) {
         const presets = target.presets.get(propertyKey);
 
         for (const preset of presets) {
-            if (event_types) {
+            if (event_types.length) {
                 if (event_types.indexOf(preset.event_type) > -1) {
                     preset.restorable = true;
                     break;
