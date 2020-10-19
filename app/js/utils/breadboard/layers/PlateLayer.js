@@ -443,7 +443,7 @@ export default class PlateLayer extends Layer {
             id = this.addPlateSerialized(plate.type, plate.position, plate.id, plate.properties);
 
             /// если плашка создана без ошибок / существует
-            if (id) {
+            if (id != null) {
                 /// пометить её
                 this._plates[id].___touched = true;
 
