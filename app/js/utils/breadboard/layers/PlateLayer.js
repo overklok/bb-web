@@ -369,7 +369,8 @@ export default class PlateLayer extends Layer {
 
         let plate_class, plate;
 
-        if (id in this._plates) {
+        // TODO: Move to separate method. Use then in setPlates().
+        if (id in this._plates && this._plates[id].type === type) {
             this._plates[id].rotate(orientation);
             return id;
         } else {
@@ -380,7 +381,7 @@ export default class PlateLayer extends Layer {
         if (this._editable) {
             this._attachEventsEditable(plate);
 
-            /// показать на плашке группу, отвечающую за инGформацию в состоянии редактируемости
+            /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
             plate.showGroupEditable(true);
         }
 
@@ -394,6 +395,14 @@ export default class PlateLayer extends Layer {
             plate.dispose();
 
             return null;
+        }
+
+        // Move old plate with same id to prevent overwriting
+        // If this plate will exist after full board refresh, it can help when debugging
+        if (plate.id in this._plates) {
+            const old_plate = this._plates[plate.id];
+            const randpostfix = Math.floor(Math.random() * (10 ** 6));
+            this._plates[`${plate.id}_old_#${randpostfix}`] = old_plate;
         }
 
         this._plates[plate.id] = plate;
@@ -439,7 +448,7 @@ export default class PlateLayer extends Layer {
             let id;
 
             /// экстра-параметр может называться по-другому
-            plate.extra = plate.extra || plate.number;
+            // plate.extra = plate.extra || plate.number;
 
             /// добавить плашку, если таковой нет
             id = this.addPlateSerialized(plate.type, plate.position, plate.id, plate.properties);
@@ -514,7 +523,7 @@ export default class PlateLayer extends Layer {
 
         plate.dispose();
 
-        delete this._plates[plate.id];
+        delete this._plates[id];
 
         this._callbacks.change({
             id: plate.id,

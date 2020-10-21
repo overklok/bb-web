@@ -92,10 +92,13 @@
     "watch:board":          "webpack --watch  --mode development --env.board",
     "watch:blockly":        "webpack --watch  --mode development --env.blockly",
 
+    "build-new":            "webpack --config webpack.config.new.js         --mode production  --env.all",
     "build-new:main":       "webpack --config webpack.config.new.js         --mode production  --env.main",
     "build-new:monitor":    "webpack --config webpack.config.new.js         --mode production  --env.monitor",
-    "build-new:monkey":     "webpack --config webpack.config.new.js --watch --mode production  --env.monkey",
-    "build-new:playground": "webpack --config webpack.config.new.js --watch --mode production  --env.playground",
+    "build-new:monkey":     "webpack --config webpack.config.new.js         --mode production  --env.monkey",
+    "build-new:playground": "webpack --config webpack.config.new.js         --mode production  --env.playground",
+
+    "watch-new":            "webpack --config webpack.config.new.js --watch --mode development --env.all",
     "watch-new:main":       "webpack --config webpack.config.new.js --watch --mode development --env.main",
     "watch-new:board":      "webpack --config webpack.config.new.js --watch --mode development --env.board",
     "watch-new:monkey":     "webpack --config webpack.config.new.js --watch --mode development --env.monkey",
