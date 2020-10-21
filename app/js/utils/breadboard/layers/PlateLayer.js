@@ -402,7 +402,7 @@ export default class PlateLayer extends Layer {
         if (plate.id in this._plates) {
             const old_plate = this._plates[plate.id];
             const randpostfix = Math.floor(Math.random() * (10 ** 6));
-            this._plates[`${plate.id}_old_#${randpostfix}`] = old_plate;
+            this._plates[`_old_${plate.id}_#${randpostfix}`] = old_plate;
         }
 
         this._plates[plate.id] = plate;
