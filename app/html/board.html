@@ -30,9 +30,9 @@
         } else {
             console.log("Failed to use classic Board, using new version")
             window.app = new Application({
-                readonly: true,
+                readonly: false,
                 layout_name: 'v8x',
-                silent: false,
+                silent: true,
             });
             window.app.run(document.getElementById('board'));
             document.getElementById("version").innerText = window.app.version;

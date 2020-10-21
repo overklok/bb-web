@@ -21,6 +21,7 @@ import DummyPlate           from "../plates/DummyPlate";
 import BuzzerPlate          from "../plates/BuzzerPlate";
 import Breadboard           from "../Breadboard";
 import {isEqual} from "lodash";
+import UnkPlate from "../plates/UnkPlate";
 
 /**
  * Слой плашек
@@ -38,7 +39,8 @@ export default class PlateLayer extends Layer {
             ButtonPlate.Alias,
             InductorPlate.Alias,
             BuzzerPlate.Alias,
-            DummyPlate.Alias
+            DummyPlate.Alias,
+            UnkPlate.Alias,
         ];
     }
 
@@ -1020,6 +1022,7 @@ export default class PlateLayer extends Layer {
             case MotorPlate.Alias:          {return MotorPlate}
             case RGBPlate.Alias:            {return RGBPlate}
             case DummyPlate.Alias:          {return DummyPlate}
+            case UnkPlate.Alias:            {return UnkPlate}
             default:                        {throw new RangeError(`Unknown plate type '${type}'`)}
         }
     }
