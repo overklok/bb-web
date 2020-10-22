@@ -24,7 +24,7 @@ interface BreadboardModelState extends ModelState {
     threads: Thread[];
     arduino_pins: ArduinoPin[];
     layout_name: string;
-    allow_board_data: boolean;
+    layout_confirmed: boolean;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
@@ -38,10 +38,15 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         threads: [],
         arduino_pins: [],
         layout_name: 'v8x',
-        allow_board_data: false,
+        layout_confirmed: false,
     }
 
-    setBoardLayout(layout_name: string): void {
+    /**
+     * Set board layout (structure and visual options) by layout name
+     *
+     * @param layout_name
+     */
+    public setBoardLayout(layout_name: string): void {
         if (!layout_name) return;
 
         if (this.state.layout_name != layout_name) {
@@ -51,37 +56,40 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         }
     }
 
-    getBoardLayout(): string {
+    /**
+     * Get board layout currently applied to the board
+     */
+    public getBoardLayout(): string {
         return this.state.layout_name;
     }
 
-    setPlates(plates: Plate[]): void {
-        this.setState({plates, layout_name: this.state.layout_name});
+    /**
+     * Set plates defined by the client via editor
+     *
+     * @param plates
+     */
+    public setPlates(plates: Plate[]): void {
+        this.setState({plates});
         this.send(ChannelsTo.Plates, plates);
         this.emit(new UserPlateEvent({plates}));
-    }
-
-    forcePlates(plates: Plate[]): void {
-        this.setState({
-            plates,
-        });
-
-        this.emit(new PlateEvent({plates}));
     }
 
     /**
      * Switch admin mode (used for external apps)
      *
-     * TODO: This function is here just for compatibility with older edition of JS code
+     * TODO: This function is here just for compatibility with older edition of JS code,
      *       and it should be removed after finishing migration to TypeScript edition
      *       and replaced with more native approach.
      *
      * @param is_admin
      */
-    setAdminMode(is_admin: boolean) {
+    public setAdminMode(is_admin: boolean) {
         this.emit(new BoardOptionsEvent({readonly: !is_admin}))
     }
 
+    /**
+     * Send meta information about the board (incl. layout name and structure)
+     */
     @connect()
     private sendCurrentBoardInfo() {
         const layout_name = this.getState().layout_name;
@@ -89,30 +97,56 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         if (!layout_name) return;
 
         // disallow board data before confirmation
-        this.setState({allow_board_data: false});
+        this.setState({layout_confirmed: false});
         const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
     }
 
+    /**
+     * Receive board layout name to update the visual configuration and
+     * to validate new data packages correctly
+     *
+     * This handler calls usually after {@link sendCurrentBoardInfo} request
+     * to verify successful layout switch on the backend.
+     *
+     * @param layout_name
+     */
     @listen(ChannelsFrom.BoardLayoutName)
-    private onBoardLayoutName(layout_name: string) {
+    private receiveBoardLayoutName(layout_name: string) {
         if (this.state.layout_name === layout_name) {
             // confirm board data change
-            this.setState({allow_board_data: true});
+            this.setState({layout_confirmed: true});
             this.send(ChannelsTo.Plates, this.state.plates);
         }
     }
 
+    /**
+     * Receive plate data update from the backend
+     *
+     * This method verifies the layout currently applied.
+     * If you need to force the data you may need to call {@link acceptPlates} from developer console.
+     *
+     * @param plates an array of plate data objects
+     */
     @listen(ChannelsFrom.Plates)
-    private onPlates(plates: Plate[]) {
-        if (!this.state.allow_board_data) return;
+    private receivePlates(plates: Plate[]) {
+        if (!this.state.layout_confirmed) return;
 
-        this.forcePlates(plates);
+        this.acceptPlates(plates);
     }
 
+    /**
+     * Receive electronic data update from the backend
+     *
+     * This method verifies the layout currently applied.
+     *
+     * @param threads       data objects describing current parts
+     * @param elements      data objects describing electronic props of plates mounted currently on the board
+     * @param arduino_pins  data objects describing state of Arduino pins
+     */
     @listen(ChannelsFrom.Currents)
-    private onCurrents({threads, elements, arduino_pins}: ElectronicDataPackage) {
-        if (!this.state.allow_board_data) return;
+    private receiveElectronics({threads, elements, arduino_pins}: ElectronicDataPackage) {
+        if (!this.state.layout_confirmed) return;
 
         this.setState({
             threads: threads,
@@ -122,9 +156,30 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.emit(new ElectronicEvent({threads, elements, arduino_pins}));
     }
 
+    /**
+     * Receive error data reported by the backend
+     *
+     * @param message
+     * @param code
+     */
     @listen(ChannelsFrom.Error)
-    private onError({message, code}: ErrorDataPackage) {
+    private receiveError({message, code}: ErrorDataPackage) {
         this.emit(new BoardErrorEvent({message, code}));
+    }
+
+    /**
+     * Accept incoming plates from backend
+     *
+     * This method may be useful when debugging.
+     * Call it manually if you need to reproduce the situation when the model
+     * receives plates from the backend.
+     *
+     * @param plates
+     */
+    private acceptPlates(plates: Plate[]): void {
+        this.setState({plates});
+
+        this.emit(new PlateEvent({plates}));
     }
 }
 

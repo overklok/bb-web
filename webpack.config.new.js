@@ -21,7 +21,9 @@ const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerP
 
 
 module.exports = (env, argv) => {
-    const is_dev = env.mode === "development";
+    resolveEnvEntries(env);
+
+    const is_dev = argv.mode === "development";
     const [ver, tgt, mode] = [getVersionNumber(), getVersionTarget(env), getVersionMode(argv.mode)]
     const VERSION = mode ? `${tgt}/${ver}-${mode} [new]` : `${tgt}/${ver} [new]`;
 
@@ -29,7 +31,7 @@ module.exports = (env, argv) => {
 
     return {
         entry: getEntries(env),
-        devtool: is_dev ? 'eval-source-map' : 'source-map',
+        devtool: is_dev ? 'eval-source-map' : 'eval-cheap-source-map',
         optimization: {
             minimizer: getMinimizer(is_dev)
         },
@@ -77,7 +79,7 @@ module.exports = (env, argv) => {
             modules: [path.resolve(__dirname, './app'), 'node_modules']
         },
         plugins: [
-            new CopyWebpackPlugin(getCopypaths(env)),
+            new CopyWebpackPlugin(getCopypaths(env, is_dev)),
             ...getHtmlCopyPluginInstances(env),
             new BuildNotifierPlugin({
                 title: "Tapanda [New]",
@@ -100,46 +102,14 @@ function getMinimizer(is_dev) {
     })];
 }
 
-function getCopypaths(env) {
-    if (!dotenv.parsed) {
-        console.warn("Nothing to copy.");
-        return [];
+function resolveEnvEntries(env) {
+    if (env.all) {
+        console.warn("WARNING: 'main' entry has been temporarily excluded for mixed build");
+        // env.main = true;
+        env.board = true;
+        env.monkey = true;
+        env.playground = true;
     }
-
-    // Copy paths
-    let copypaths = [];
-
-    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD) {
-        copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD + '/board.js'}
-        ];
-    }
-
-    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD_SOCK) {
-        copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD_SOCK + '/board.js'}
-        ];
-    }
-
-    if (env.board === true && dotenv.parsed.PATH_DIST_BOARD_ADMIN) {
-        copypaths = [...copypaths,
-            {from: './dist/board.js',     to: dotenv.parsed.PATH_DIST_BOARD_ADMIN + '/board.js'}
-        ];
-    }
-
-    if (env.monkey === true && dotenv.parsed.PATH_DIST_MONKEY) {
-        copypaths = [...copypaths,
-            {from: './dist/monkey.js',     to: dotenv.parsed.PATH_DIST_MONKEY + '/monkey.js'}
-        ];
-    }
-
-    if (env.playground === true && dotenv.parsed.PATH_DIST_PLAYGROUND) {
-        copypaths = [...copypaths,
-            {from: './dist/playground.js',     to: dotenv.parsed.PATH_DIST_PLAYGROUND + '/playground.js'}
-        ];
-    }
-
-    return copypaths;
 }
 
 function getEntries(env) {
@@ -221,4 +191,63 @@ function getHtmlIndexFile(env) {
     if (env.board === true) return 'board.html';
     if (env.monkey === true) return 'monkey.html';
     if (env.playground === true) return 'playground.html';
+}
+
+function getCopypaths(env, is_dev) {
+    if (!dotenv.parsed) {
+        console.warn("Nothing to copy.");
+        return [];
+    }
+
+    const settings = [
+        {
+            enable: env.board === true,
+            paths: [
+                dotenv.parsed.PATH_DIST_BOARD,
+                dotenv.parsed.PATH_DIST_BOARD_SOCK,
+                dotenv.parsed.PATH_DIST_BOARD_ADMIN
+            ],
+            entry: 'board'
+        },
+        {
+            enable: env.monkey === true,
+            paths: [dotenv.parsed.PATH_DIST_MONKEY],
+            entry: 'monkey'
+        },
+        {
+            enable: env.playground === true,
+            paths: [dotenv.parsed.PATH_DIST_PLAYGROUND],
+            entry: 'playground'
+        }
+
+    ]
+
+    console.log("Copy settings", settings);
+
+    // Copy paths
+    let copypaths = [];
+
+    for (const setting of settings) {
+        for (const path of setting.paths) {
+            if (setting.enable && path) {
+                copypaths = [...copypaths,
+                    {
+                        from: `./dist/${setting.entry}.js`,
+                        to: path + `/${setting.entry}.js`
+                    },
+                ];
+
+                if (is_dev) {
+                    copypaths = [...copypaths,
+                        {
+                            from: `./dist/${setting.entry}.js.map`,
+                            to: path + `/${setting.entry}.js.map`
+                        },
+                    ];
+                }
+            }
+        }
+    }
+
+    return copypaths;
 }

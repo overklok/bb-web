@@ -1,4 +1,4 @@
-import BoardView from "../../views/board/BoardView";
+import {BoardView} from "../../views/board/BoardView";
 import Presenter, {on} from "../../core/base/Presenter";
 import BoardModel, {Plate} from "../../models/common/BoardModel";
 import {MountEvent} from "../../core/base/view/View";
@@ -8,7 +8,7 @@ interface PreviewBoard {
     layout: string;
 }
 
-export default class BoardPreviewPresenter extends Presenter<BoardView> {
+export default class BoardPreviewPresenter extends Presenter<BoardView.BoardView> {
     public static previewBoard: PreviewBoard = {
         plates: [],
         layout: 'default'
