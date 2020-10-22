@@ -1,8 +1,8 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import BoardView, {BoardChangeEvent, BoardLayoutChangeEvent} from "../../views/board/BoardView";
+import {BoardView} from "../../views/board/BoardView";
 import BoardModel, {ElectronicEvent, BoardOptionsEvent, PlateEvent} from "../../models/common/BoardModel";
 
-export default class BoardPresenter extends Presenter<BoardView> {
+export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     private model: BoardModel;
 
     protected ready() {
@@ -11,19 +11,19 @@ export default class BoardPresenter extends Presenter<BoardView> {
         this.view.setLayout(this.model.getState().layout_name);
     }
 
-    @on(BoardLayoutChangeEvent)
-    private onLayoutChange(evt: BoardLayoutChangeEvent) {
+    @on(BoardView.LayoutChangeEvent)
+    private onLayoutChange(evt: BoardView.LayoutChangeEvent) {
         this.model.setBoardLayout(this.view.getLayoutName());
+    }
+    
+    @on(BoardView.BoardChangeEvent)
+    private onUserChange(evt: BoardView.BoardChangeEvent) {
+        this.model.setPlates(this.view.getPlates());
     }
 
     @on(BoardOptionsEvent)
     private onOptionsChange(evt: BoardOptionsEvent) {
         this.view.setReadOnly(evt.readonly);
-    }
-
-    @on(BoardChangeEvent)
-    private onUserChange(evt: BoardChangeEvent) {
-        this.model.setPlates(this.view.getPlates());
     }
 
     @on(PlateEvent)

@@ -18,7 +18,7 @@ import BoardPresenter from "./presenters/common/BoardPresenter";
 import BoardModel from "./models/common/BoardModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
-import BoardView from "./views/board/BoardView";
+import {BoardView} from "./views/board/BoardView";
 
 import "../css/global.less";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
@@ -69,7 +69,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
               svc_model = this.instance(IModelService);
 
         svc_view.registerWidgetTypes({
-            main: {view_type: BoardView, presenter_types: [BoardPresenter], view_options: {
+            main: {view_type: BoardView.BoardView, presenter_types: [BoardPresenter], view_options: {
                 schematic: true,
                 readonly: this.config.readonly,
             }},

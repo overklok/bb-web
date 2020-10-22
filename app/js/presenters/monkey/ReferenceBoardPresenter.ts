@@ -1,11 +1,11 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import BoardView from "../../views/board/BoardView";
+import {BoardView} from "../../views/board/BoardView";
 import BoardModel, {BoardLayoutEvent, PlateEvent} from "../../models/common/BoardModel";
 import TestkitModel, {ReferenceRequestEvent, TestkitChangeEvent} from "../../models/monkey/TestkitModel";
 import {TestKitItemQuanitites} from "../../models/monkey/types";
 import {MountEvent} from "../../core/base/view/View";
 
-export default class ReferenceBoardPresenter extends Presenter<BoardView> {
+export default class ReferenceBoardPresenter extends Presenter<BoardView.BoardView> {
     private testkit: TestkitModel;
     private board: BoardModel;
     private layout_name: string;
