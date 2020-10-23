@@ -1,5 +1,3 @@
-import draw from 'svgjs';
-
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 

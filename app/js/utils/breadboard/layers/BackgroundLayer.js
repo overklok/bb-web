@@ -1,8 +1,8 @@
 import Breadboard from "../Breadboard";
 import Layer from "../core/Layer";
+import Plate from "../core/Plate";
 import Grid from "../core/Grid";
 import Cell from "../core/Cell";
-import PlateContextMenu from "../menus/PlateContextMenu";
 
 import {GRADIENTS} from "../styles/gradients";
 
@@ -20,7 +20,7 @@ export default class BackgroundLayer extends Layer {
 
     static get DomainSchematicStyles() {return DOMAIN_SCHEMATIC_STYLES}
 
-    constructor(container, grid, schematic=false, detailed=false) {
+    constructor(container, grid, schematic=false, detailed=false, debug_mode=false) {
         super(container, grid, schematic, detailed);
 
         this._container.addClass(BackgroundLayer.Class);
@@ -32,6 +32,12 @@ export default class BackgroundLayer extends Layer {
         this._decogroup     = undefined;
 
         this._domain_config = undefined;
+
+        this._debug_mode = debug_mode;
+        this._gcells = [];
+        this._gcells_hovered = [];
+        this._cell_last_hovered = undefined;
+        this._debug_text = undefined;
 
         this._initGroups();
     }
@@ -47,6 +53,13 @@ export default class BackgroundLayer extends Layer {
             .fill({color: "#f9f9f9"})
             .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
+
+        if (this._debug_mode) {
+            this._debug_text = this._boardgroup
+                .text('debug mode enabled')
+                .move('100%', 0)
+                .font({family: Plate.CaptionFontFamily, anchor: 'end', fill: 'magenta'})
+        }
 
         this._drawAuxPoints();
         this._drawDomains();
@@ -67,6 +80,8 @@ export default class BackgroundLayer extends Layer {
         this._domaingroup   = this._container.group();
         this._currentgroup  = this._container.group();
         this._decogroup     = this._container.group();
+
+        this._attachHandlers();
     }
 
     _clearGroups() {
@@ -76,12 +91,69 @@ export default class BackgroundLayer extends Layer {
         if (this._decogroup)    this._decogroup.remove();
     }
 
+    _attachHandlers() {
+        if (!this._debug_mode) return;
+
+        this._gcells_hovered = [];
+        this._cell_last_hovered = undefined;
+
+        this._boardgroup.on('mousemove', evt => {
+            this._hover_pos = {x: evt.clientX, y: evt.clientY};
+
+            if (this._scheduled_animation_frame) return;
+
+            requestAnimationFrame(this._hoverCell.bind(this));
+
+            this._scheduled_animation_frame = true;
+        });
+    }
+
+    _hoverCell() {
+        this._scheduled_animation_frame = false;
+
+        const svg_main = this._container.node;
+        const cursor_point = Breadboard.getCursorPoint(svg_main, this._hover_pos.x, this._hover_pos.y);
+
+        const cell = this.__grid.getCellByPos(cursor_point.x, cursor_point.y);
+
+        let last_idx;
+
+        if (this._cell_last_hovered) {
+            last_idx = this._cell_last_hovered.idx;
+        }
+
+        if (!last_idx || cell.idx.x !== last_idx.x || cell.idx.y !== last_idx.y) {
+            if (cell.idx.x in this._gcells && cell.idx.y in this._gcells[cell.idx.x]) {
+                const gcell = this._gcells[cell.idx.x][cell.idx.y];
+                gcell.stop(true, true);
+                gcell.stroke({color: 'magenta', width: 5});
+
+                this._gcells_hovered.push({x: cell.idx.x, y: cell.idx.y, gcell});
+                this._cell_last_hovered = cell;
+
+                this._debug_text.text(`x: ${cell.idx.x}, y: ${cell.idx.y}`);
+            }
+        }
+
+        for (const [idx, {x, y, gcell}] of this._gcells_hovered.entries()) {
+            if (gcell == null) continue;
+
+            if (x === cell.idx.x && y === cell.idx.y) continue;
+
+            gcell.stroke({color: null, width: 0});
+            this._gcells_hovered.splice(0, idx)
+        }
+    }
+
     _drawAuxPoints() {
         this._drawAuxPointSource();
         this._drawAuxPointUsbs();
     }
 
     _drawCells() {
+        this._gcells = [];
+        this._cell_hovered = undefined;
+
         for (let col of this.__grid.cells) {
             for (let cell of col) {
                 this._drawCell(this._currentgroup, cell);
@@ -198,21 +270,26 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawCell(container, cell) {
+        if (this._gcells[cell.idx.x] == null) {
+            this._gcells[cell.idx.x] = [];
+        }
+
         if (this.__schematic) {
             // в простом    схематическом режиме отображать точки только в 0 ряду
             // в детальном  схематическом режиме отображать точки везде
             if (cell.isAt(null, 0) || this.__detailed) {
-                container
+                this._gcells[cell.idx.x][cell.idx.y] =
+                    container
                     .circle(10, 10)
                     .center(cell.center.x, cell.center.y)
-                    .fill({color: "#555"})
+                    .fill({color: "#555"});
             }
 
             return;
         }
 
         // quad style
-        container
+        this._gcells[cell.idx.x][cell.idx.y] = container
             .rect(cell.size.x, cell.size.y)
             .move(cell.pos.x, cell.pos.y)
             .fill({color: "#D4AF37", opacity: 1})
