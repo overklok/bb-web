@@ -494,7 +494,7 @@ export default class Breadboard {
         this._div_wrap.appendChild(selector);
 
         /// инициализация слоёв
-        this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed);
+        this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed, true);
         this._layers.label      = new LabelLayer(label_panes, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.current    = new CurrentLayer(current, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.plate      = new PlateLayer(plate, this.__grid, this._options.schematic, this._options.verbose);
@@ -509,7 +509,7 @@ export default class Breadboard {
         this._layers.label.setLabelStyle(this._layout.label_style);
 
         /// внутренняя компоновка каждого слоя
-        this._layers.background.compose();
+        this._layers.background.compose(true);
         this._layers.label.compose();
         this._layers.current.compose();
         this._layers.plate.compose();
@@ -886,9 +886,9 @@ export default class Breadboard {
     /**
      * Получить положение курсора в системе координат SVG
      *
-     * @param {HTMLElement} svg_main    SVG-узел, в системе координат которого нужна точка
-     * @param {number}      clientX     Положение курсора по оси X
-     * @param {number}      clientY     Положение курсора по оси Y
+     * @param {SVGSVGElement}   svg_main    SVG-узел, в системе координат которого нужна точка
+     * @param {number}          clientX     Положение курсора по оси X
+     * @param {number}          clientY     Положение курсора по оси Y
      *
      * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
      *                      в системе координат заданного SVG-узла

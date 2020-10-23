@@ -23,6 +23,7 @@ const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerP
 module.exports = (env, argv) => {
     resolveEnvEntries(env);
 
+    const no_copy = !!argv.liveReload;
     const is_dev = argv.mode === "development";
     const [ver, tgt, mode] = [getVersionNumber(), getVersionTarget(env), getVersionMode(argv.mode)]
     const VERSION = mode ? `${tgt}/${ver}-${mode} [new]` : `${tgt}/${ver} [new]`;
@@ -34,6 +35,15 @@ module.exports = (env, argv) => {
         devtool: is_dev ? 'eval-source-map' : 'eval-cheap-source-map',
         optimization: {
             minimizer: getMinimizer(is_dev)
+        },
+        devServer: {
+            contentBase: path.join(__dirname, 'dist'),
+            historyApiFallback: {
+                index: getHtmlIndexFile(env),
+            },
+            index: getHtmlIndexFile(env),
+            compress: true,
+            port: 9000
         },
         module: {
             rules: [
@@ -70,12 +80,12 @@ module.exports = (env, argv) => {
             modules: [path.resolve(__dirname, './app'), 'node_modules']
         },
         plugins: [
-            new CopyWebpackPlugin(getCopypaths(env, is_dev)),
             ...getHtmlCopyPluginInstances(env),
             new BuildNotifierPlugin({
                 title: "Tapanda [New]",
                 logo: path.resolve("./img/favicon.png"),
             }),
+            new CopyWebpackPlugin(getCopypaths(env, is_dev, no_copy)),
             new webpack.DefinePlugin({
                 '__VERSION__': `'${VERSION}'`,
             }),
@@ -177,8 +187,15 @@ function getHtmlCopyPluginInstances(env) {
     return htmls;
 }
 
-function getCopypaths(env, is_dev) {
-    if (!dotenv.parsed) {
+function getHtmlIndexFile(env) {
+    if (env.main === true) return 'main.html';
+    if (env.board === true) return 'board.html';
+    if (env.monkey === true) return 'monkey.html';
+    if (env.playground === true) return 'playground.html';
+}
+
+function getCopypaths(env, is_dev, no_copy) {
+    if (!dotenv.parsed || no_copy) {
         console.warn("Nothing to copy.");
         return [];
     }
