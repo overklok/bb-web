@@ -98,7 +98,7 @@ export default class BackgroundLayer extends Layer {
         this._gcells_hovered = [];
         this._cell_last_hovered = undefined;
 
-        this._boardgroup.on('mousemove', evt => {
+        document.addEventListener('mousemove', evt => {
             this._hover_pos = {x: evt.clientX, y: evt.clientY};
 
             if (this._scheduled_animation_frame) return;
