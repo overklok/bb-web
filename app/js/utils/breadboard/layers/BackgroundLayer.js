@@ -166,7 +166,7 @@ export default class BackgroundLayer extends Layer {
         if (!this._domain_config) return;
 
         for (const domain of this._domain_config) {
-            const   d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
+            let     d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
                     d_to    = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
 
             if (domain.style === BackgroundLayer.DomainSchematicStyles.None) continue;

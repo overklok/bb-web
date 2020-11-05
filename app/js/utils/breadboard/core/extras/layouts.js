@@ -35,7 +35,8 @@ export const LAYOUTS = {
                 from: {x: 0, y: 0}, to: {x: -1, y: 0},
                 minus_from: {x: 0, y: -1}, minus_to: {x: -1, y: -1},
                 style: BackgroundLayer.DomainSchematicStyles.None,
-                role: LabelLayer.CellRoles.Analog
+                role: LabelLayer.CellRoles.Analog,
+                value_orientation: 'north'
             },
 
             // Верхняя линия "+"

@@ -19,8 +19,8 @@ export const LAYOUTS = {
         wrap_width:     850,  // Ширина рабочей области
         wrap_height:    1300, // Высота рабочей области
 
-        grid_width:     580,
-        grid_height:    1180,
+        grid_width:     560,
+        grid_height:    1140,
 
         grid_gap_x:     10,
         grid_gap_y:     10,
@@ -29,7 +29,7 @@ export const LAYOUTS = {
         grid_cols:      8,   // Количество колонок в сетке точек
 
         grid_pos_x:     190,
-        grid_pos_y:     70,
+        grid_pos_y:     90,
 
         domains: [
             // Верхняя линия
@@ -46,7 +46,8 @@ export const LAYOUTS = {
                 style: BackgroundLayer.DomainSchematicStyles.Dotted,
                 pins_from: 0, bias_inv: true,
                 line_before: 1,
-                label_pos: "top"
+                label_pos: "top",
+                value_orientation: 'north'
             },
 
             // Одиночные контакты - аналоговые пины
@@ -54,25 +55,29 @@ export const LAYOUTS = {
                 horz: false,
                 from: {x: -1, y: 4}, to: {x: -1, y: 4},
                 minus: {x: 4, y: ARD_GND_Y},
-                role: LabelLayer.CellRoles.Analog, pins_from: 4
+                role: LabelLayer.CellRoles.Analog, pins_from: 4,
+                value_orientation: 'east'
             },
             {
                 horz: false,
                 from: {x: -1, y: 5}, to: {x: -1, y: 5},
                 minus: {x: 5, y: ARD_GND_Y},
-                role: LabelLayer.CellRoles.Analog, pins_from: 5
+                role: LabelLayer.CellRoles.Analog, pins_from: 5,
+                value_orientation: 'east'
             },
             {
                 horz: false,
                 from: {x: -1, y: 10}, to: {x: -1, y: 10},
                 minus: {x: 6, y: ARD_GND_Y},
-                role: LabelLayer.CellRoles.Analog, pins_from: 6
+                role: LabelLayer.CellRoles.Analog, pins_from: 6,
+                value_orientation: 'east'
             },
             {
                 horz: false,
                 from: {x: -1, y: 11}, to: {x: -1, y: 11},
                 minus: {x: 7, y: ARD_GND_Y},
-                role: LabelLayer.CellRoles.Analog, pins_from: 7
+                role: LabelLayer.CellRoles.Analog, pins_from: 7,
+                value_orientation: 'east'
             },
 
             // Нижняя линия
@@ -84,7 +89,7 @@ export const LAYOUTS = {
                 virtual: {
                     // Arduino plate ground pins that analog cells are mapped to
                     from: {x: 0, y: ARD_GND_Y}, to: {x: 11, y: ARD_GND_Y}
-                }
+                },
             },
             {
                 horz: true,
@@ -94,7 +99,8 @@ export const LAYOUTS = {
                 style: BackgroundLayer.DomainSchematicStyles.Dotted,
                 pins_to: 11,
                 line_before: 1,
-                label_pos: "bottom"
+                label_pos: "bottom",
+                value_orientation: 'south'
             },
 
             // Три группы вертикальных линий

@@ -115,9 +115,9 @@ export default class LabelLayer extends Layer {
             }
 
             if (mode !== null) {
-                pinval_label.text(`${value}${arrow}`).fill(color);
+                pinval_label.text(`${value}${arrow}`).fill(color).font({anchor: 'middle'});
             } else {
-                pinval_label.text(`A${i}`).fill('black');
+                pinval_label.text(``).fill('black').font({anchor: 'middle'});
             }
 
             i++;
@@ -166,10 +166,21 @@ export default class LabelLayer extends Layer {
                         default:        pos_y = cell.center.y - cell.size.y/2 - text_bias; break;
                     }
 
-                    const label = this._drawLabelText(cell.center.x, pos_y, text, font_size);
+                    this._drawLabelText(cell.center.x, pos_y, text, font_size);
 
                     if (domain.role === LabelLayer.CellRoles.Analog) {
-                        this._pinval_labels[pin_num] = label;
+                        let cx = cell.center.x,
+                            cy = pos_y;
+
+                        switch (domain.value_orientation) {
+                            case 'north':   {cy -= cell.size.y * .6; break;}
+                            case 'south':   {cy += cell.size.y * .6; break;}
+                            case 'west':    {cx -= cell.size.x * 1.2; break;}
+                            case "east":    {cx += cell.size.x * 1.2; break;}
+                        }
+
+                        this._pinval_labels[pin_num] =
+                            this._drawLabelText(cx, cy, '', font_size + 4);
                     }
 
                     pin_num += pin_dir;
