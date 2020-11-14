@@ -137,7 +137,7 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> impleme
         const model = this.svc_model.retrieve(model_type);
 
         if (!model && !suppress_errors) {
-            throw new Error(`Model ${model_type.name} does not exists. Did you forgot to register it?`);
+            throw new Error(`Model ${model_type.name} does not exist. Did you forgot to register it?`);
         }
 
         return model;

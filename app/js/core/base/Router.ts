@@ -7,7 +7,7 @@ type RouteDestination = unknown;
 /**
  * An arbitrary route that matches a path expression
  */
-type Route<RD extends RouteDestination> = {
+export type Route<RD extends RouteDestination> = {
     /* Route name */
     name: string;
     /* The unique destination of the route */
