@@ -1,14 +1,7 @@
 import Presenter, {on, restore} from "../base/Presenter";
 import LayoutView, {LayoutMountEvent} from "../views/layout/LayoutView";
 import LayoutModel, {SetModeEvent} from "../models/LayoutModel";
-import {RouterEvent} from "../base/Event";
 
-/**
- * A special kind of RouterEvent which can be used to switch layouts with route switching simultaneously
- */
-export abstract class LayoutRouterEvent extends RouterEvent<LayoutRouterEvent> {
-    mode: string;
-}
 
 export default class LayoutPresenter extends Presenter<LayoutView> {
     private model: LayoutModel;
@@ -29,8 +22,9 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
         this.view.setModes(modes);
     }
 
-    @restore() @on(SetModeEvent, LayoutRouterEvent)
-    protected setMode(evt: SetModeEvent|LayoutRouterEvent) {
+    @restore() @on(SetModeEvent)
+
+    protected setMode(evt: SetModeEvent) {
         this.view.setMode(evt.mode);
     }
 }

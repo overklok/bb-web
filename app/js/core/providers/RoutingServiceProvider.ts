@@ -4,7 +4,7 @@ import IModelService from "../services/interfaces/IModelService";
 import IRoutingService from "../services/interfaces/IRoutingService";
 import RoutingService from "../services/RoutingService";
 
-export default class ModelServiceProvider extends ServiceProvider {
+export default class RoutingServiceProvider extends ServiceProvider {
     register() {
         this.app.bind(IRoutingService, function (app: Application): any {
             return new RoutingService();
