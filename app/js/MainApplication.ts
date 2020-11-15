@@ -20,42 +20,45 @@ import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";
 
 import UserModel from "./models/UserModel";
 
-import layouts_config from "./configs/teacher/layouts";
-import widgets_config from "./configs/teacher/widgets";
+import layouts_config from "./configs/main/layouts";
+import widgets_config from "./configs/main/widgets";
 
 import "../css/global.less";
+import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
+import IRoutingService from "./core/services/interfaces/IRoutingService";
+import LayoutRouter from "./core/routers/LayoutRouter";
+import KeyboardModel from "./core/models/KeyboardModel";
+import CodeModel from "./models/common/CodeModel";
 
 class MainApplication extends Application {
-    private mdl_layout: any;
     protected providerClasses(): Array<IServiceProvider> {
         return [
             ViewServiceProvider,
             ModelServiceProvider,
             EventServiceProvider,
+            RoutingServiceProvider,
         ];
     }
 
     protected setup() {
-
-    }
-
-    async run(element: HTMLElement) {
-        if (element == null) throw new Error("Please pass a valid DOM element to run an application");
-
         const dds = new DummyDatasource();
 
         const ads = new AdaptiveDatasource([
-            new QtIPCDatasource(),
-            new SocketDatasource('127.0.0.1', 8085),
+            // new QtIPCDatasource(),
+            // new SocketDatasource('127.0.0.1', 8085),
         ]);
 
         const hds = new HttpDatasource('127.0.0.1', 8000);
 
-        this.instance(IModelService).launch(ads);
+        const svc_routing = this.instance(IRoutingService),
+              svc_model = this.instance(IModelService);
 
-        this.instance(IModelService).register(UserModel, hds);
-        this.instance(IModelService).register(LayoutModel, dds, layouts_config);
-        this.instance(IModelService).register(BoardModel, ads);
+        svc_model.launch(ads);
+        svc_model.register(UserModel, hds);
+        svc_model.register(CodeModel, ads);
+        svc_model.register(BoardModel, ads);
+        svc_model.register(KeyboardModel, dds);
+        svc_model.register(LayoutModel, dds, layouts_config);
 
         hds.registerMiddleware([
             new JWTAuthMiddleware(
@@ -63,11 +66,24 @@ class MainApplication extends Application {
             )
         ]);
 
-        this.instance(IViewService).registerWidgetTypes(widgets_config);
+        svc_routing.setRouter(LayoutRouter);
+    }
+
+    async run(element: HTMLElement) {
+        if (element == null) throw new Error("Please pass a valid DOM element to run an application");
+
+        const svc_view = this.instance(IViewService);
+        svc_view.registerWidgetTypes(widgets_config);
 
         this.instance(IViewService).compose(element);
+    }
 
-        this.mdl_layout = this.instance(IModelService).retrieve(LayoutModel);
+    get views() {
+        return this.instance(IViewService).getViews();
+    }
+
+    get models() {
+        return this.instance(IModelService).getModels();
     }
 }
 

@@ -263,13 +263,18 @@ export default abstract class Router<RD extends RouteDestination> {
      * program to match a path instead of human-readable 'pathexp' format.
      */
     private compileRoutes() {
+        let routes        = this.routes;
         let method_routes = this.method_routes;
+
+        if (!routes) {
+            routes = [];
+        }
 
         if (!method_routes) {
             method_routes = [];
         }
 
-        for (const route of [...this.routes, ...method_routes]) {
+        for (const route of [...routes, ...method_routes]) {
             const {name: route_name, pathexp, destination} = route;
 
             const method_name = (route as any).method_name;

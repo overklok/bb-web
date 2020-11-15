@@ -41,7 +41,6 @@ class PlaygroundApplication extends Application {
             ViewServiceProvider,
             ModelServiceProvider,
             EventServiceProvider,
-            RoutingServiceProvider,
         ];
     }
 
@@ -53,10 +52,7 @@ class PlaygroundApplication extends Application {
 
         this.dds = new DummyDatasource();
 
-        const svc_model = this.instance(IModelService),
-              svc_routing = this.instance(IRoutingService);
-
-        svc_routing.setRouter(LayoutRouter);
+        const svc_model = this.instance(IModelService);
 
         svc_model.launch(this.ads);
         svc_model.register(KeyboardModel, this.dds);
