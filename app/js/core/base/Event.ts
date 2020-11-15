@@ -19,17 +19,18 @@ export abstract class ModelEvent<T> extends AbstractEvent<T> {
 }
 
 /**
+ * A subset of AbstractEvent which is used to work with routing.
+ */
+export class RouterEvent<T> extends AbstractEvent<T> {
+
+}
+
+/**
  * A special kind of ViewEvent which can be visually represented in Views
  * to emit events directly from UI components.
  */
 export class Action<T> extends ViewEvent<T> {
     static Alias: string = 'undefined';
-}
-
-/**
- * A special kind of ModelEvent which is used to work with routing.
- */
-export class RouterEvent<T> extends ModelEvent<T> {
 }
 
 /**

@@ -3,6 +3,9 @@ import {AbstractEvent, Action} from "./Event";
 import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
+import IRoutingService from "../services/interfaces/IRoutingService";
+import Router from "./Router";
+import RoutingService from "../services/RoutingService";
 
 type EventTypeParam = typeof AbstractEvent;
 type RestorableEventTypeParam = [typeof AbstractEvent, boolean];
@@ -104,18 +107,21 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> impleme
 
     protected view: V;
     private svc_model: IModelService;
+    private readonly svc_routing: IRoutingService;
 
     /**
      * Create a Presenter.
      *
      * @param view        an instance of some kind of View
      * @param svc_model   an instance of model service
+     * @param svc_routing      an instance of Router, if used
      */
-    constructor(view: V, svc_model: IModelService) {
+    constructor(view: V, svc_model: IModelService, svc_routing?: RoutingService) {
         if (this.presets == null) {this.presets = new Map();}
 
         this.view = view;
         this.svc_model = svc_model;
+        this.svc_routing = svc_routing;
 
         this.ready();
     };
@@ -141,5 +147,12 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> impleme
         }
 
         return model;
+    }
+
+    protected forward(route_name: string, params: []) {
+        if (!this.svc_routing) {
+            throw new Error("No router is available for the application");
+        }
+        const path = this.svc_routing.forward(route_name, params);
     }
 }

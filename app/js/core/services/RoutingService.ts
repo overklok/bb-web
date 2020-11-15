@@ -1,5 +1,5 @@
 import IRoutingService from "./interfaces/IRoutingService";
-import Router, {IRouter} from "../base/Router";
+import Router, {IRouter, Route} from "../base/Router";
 import IModelService from "./interfaces/IModelService";
 
 export default class RoutingService extends IRoutingService {
@@ -14,12 +14,23 @@ export default class RoutingService extends IRoutingService {
         this.router = new router_class(this.svc_model);
     }
 
+    loadRoutes(routes: Route<any>[]) {
+        this.router.addRoutes(routes);
+    }
+
     launch() {
         if (!this.router) {
             return;
         }
-        const path = "/";
+
         this.router.launch();
+        this.router.redirect(window.location.pathname);
+    }
+
+    forward(route_name: string, params: []) {
+        const path = this.router.reverse(route_name, params);
         this.router.redirect(path);
+
+        window.history.pushState({route_name, params}, 'nothing', window.location.hostname + path);
     }
 }

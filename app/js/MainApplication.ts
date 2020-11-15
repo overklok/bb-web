@@ -22,6 +22,7 @@ import UserModel from "./models/UserModel";
 
 import layouts_config from "./configs/main/layouts";
 import widgets_config from "./configs/main/widgets";
+import routes_config from "./configs/main/routes";
 
 import "../css/global.less";
 import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
@@ -67,6 +68,7 @@ class MainApplication extends Application {
         ]);
 
         svc_routing.setRouter(LayoutRouter);
+        svc_routing.loadRoutes(routes_config);
     }
 
     async run(element: HTMLElement) {

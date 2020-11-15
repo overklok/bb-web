@@ -54,7 +54,7 @@ export default class ViewService extends IViewService {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
             const {view_type, presenter_types, label, view_options} = widget_type;
 
-            const connector = new ViewConnector(this.svc_event, this.svc_model, presenter_types);
+            const connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model);
 
             this.view_connectors_external.push([alias, connector]);
 
@@ -105,7 +105,7 @@ export default class ViewService extends IViewService {
         const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
             const {view_type: SpecificView, presenter_types, label, view_options} = widget_type;
 
-            const view_connector = new ViewConnector(this.svc_event, this.svc_model, presenter_types);
+            const view_connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model);
 
             this.view_connectors_internal.push(view_connector);
 

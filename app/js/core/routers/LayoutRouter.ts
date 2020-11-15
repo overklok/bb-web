@@ -8,11 +8,9 @@ export default class LayoutRouter extends Router<string> {
         super.launch();
 
         this.model_layout = this.getModel(LayoutModel);
-        this.model_layout.setMode('test');
-        console.log('requested set test');
     }
 
     protected direct(destination: string): void {
-
+        this.model_layout.setMode(destination);
     }
 }

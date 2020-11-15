@@ -5,6 +5,8 @@ import Presenter from "./Presenter";
 import {AbstractEvent, Action, ModelEvent, ViewEvent} from "./Event";
 import {IViewOptions, IViewState, View} from "./view/View";
 import {PresenterType} from "../helpers/types";
+import IRoutingService from "../services/interfaces/IRoutingService";
+import Router from "./Router";
 
 /**
  * ViewConnector is a class that makes possible to Views be communicated with logical layer of application
@@ -29,6 +31,8 @@ export default class ViewConnector {
     private readonly svc_event: IEventService;
     /** @property An instance of ModelService that is used to extract Model instances for Presenters */
     private readonly svc_model: IModelService;
+    /** @property An instance of RoutingService if Router needed in application */
+    private readonly svc_routing: IRoutingService;
 
     /** @property Handler keys that kept here to unsubscribe in the future (i.e. in case of re-attaching the View) */
     private handlers: [typeof AbstractEvent, Function][] = [];
@@ -46,14 +50,17 @@ export default class ViewConnector {
      * @param svc_event
      * @param svc_model
      * @param presenter_types
+     * @param svc_routing
      */
-    constructor(svc_event: IEventService,
+    constructor(presenter_types: PresenterType<View<IViewOptions, IViewState>>[],
+                svc_event: IEventService,
                 svc_model: IModelService,
-                presenter_types: PresenterType<View<IViewOptions, IViewState>>[]
+                svc_routing?: IRoutingService,
     ) {
-        // Get an instances of services needed
+        // Get instances of required services
         this.svc_event = svc_event;
         this.svc_model = svc_model;
+        this.svc_routing = svc_routing;
 
         this.presenter_types = presenter_types;
 
@@ -77,7 +84,7 @@ export default class ViewConnector {
             let presenter: Presenter<View<IViewOptions, IViewState>>;
 
             // try {
-                presenter = new presenter_type(view, this.svc_model);
+                presenter = new presenter_type(view, this.svc_model, this.svc_routing);
             // } catch (e) {
                 // TODO: PresenterError
                 // throw Error("Uncaught PresenterError [TODO]");
