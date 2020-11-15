@@ -271,13 +271,13 @@ export default class BlocklyWrapper extends Wrapper {
      * @private
      */
     resize(shrink=false) {
-        this.container.style.width   = (this.area.offsetWidth - 24) + 'px';
-        this.container.style.height  = (this.area.offsetHeight - 24) + 'px';
+        this.container.style.width   = (this.area.offsetWidth) + 'px';
+        this.container.style.height  = (this.area.offsetHeight) + 'px';
         Blockly.svgResize(this.workspace);
         // this._alignHistoryBlockSequence();
 
         if (shrink && this._container_width_old) {
-            let container_width_new = this._getContainerWidth() + 48;
+            let container_width_new = this._getContainerWidth();
 
             let frac = container_width_new / this._container_width_old;
 

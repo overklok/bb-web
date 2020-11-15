@@ -5,7 +5,7 @@ export default {
             panes: [
                 {name: 'menubar', fixed: 60},
                 {name: 'content', panes: [
-                    {name: 'left',   size: '45%', widgets: [{alias: 'blockly', label: 'Blockly'}], title: 'Blockly'},
+                    {name: 'left',   size: '55%', widgets: [{alias: 'blockly', label: 'Blockly'}], title: 'Blockly'},
                     {name: 'center', size: '35%', widgets: [{alias: 'board', label: 'Board'}], title: 'Board'},
                     {name: 'right',  size: '20%', panes: [
                         {name: 'rtop', widgets: []},
@@ -21,7 +21,7 @@ export default {
                 {name: 'menubar', fixed: 60},
                 {name: 'content', panes: [
                     {name: 'left',  size: '80%', widgets: [{alias: 'blockly', label: 'Blockly'}], title: 'Blockly'},
-                    {name: 'right', size: '20%', panes: [
+                    {name: 'right', size_min: '10%', size: '20%', panes: [
                         {name: 'rtop', widgets: []},
                         {name: 'rcenter', widgets: []},
                         {name: 'rbottom', widgets: []},
@@ -33,9 +33,7 @@ export default {
             policy: 'horizontal',
             panes: [
                 {name: 'menubar', fixed: 60},
-                {name: 'content', panes: [
-                    {name: 'center', size: '100%', widgets: [], title: 'Courses'},
-                ]}
+                {name: 'content'}
             ]
         },
     }
