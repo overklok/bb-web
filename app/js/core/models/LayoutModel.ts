@@ -45,6 +45,10 @@ export class SetModeEvent extends ModelEvent<SetModeEvent> {
     mode: string;
 }
 
+export class FinishModeEvent extends ModelEvent<FinishModeEvent> {
+    mode: string;
+}
+
 /**
  * Модель разметки
  *
@@ -66,6 +70,12 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
         } else {
             console.error(`Mode '${mode}' does not exist`);
         }
+    }
+
+    reportModeFinished(mode: string) {
+        if (!(mode in this.state.modes)) throw new Error(`Mode ${mode} does not exist`);
+
+        this.emit(new FinishModeEvent({mode}));
     }
 
     /**

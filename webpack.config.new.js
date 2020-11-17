@@ -36,10 +36,13 @@ module.exports = (env, argv) => {
         optimization: {
             minimizer: getMinimizer(is_dev)
         },
+        output: {
+            publicPath: "/"
+        },
         devServer: {
             contentBase: path.join(__dirname, 'dist'),
             historyApiFallback: {
-                index: getHtmlIndexFile(env),
+                index: '/',
             },
             index: getHtmlIndexFile(env),
             compress: true,

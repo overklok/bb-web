@@ -16,12 +16,12 @@ export type RestSchema = {
     [action in CRUDAction]?: PathGenerator;
 };
 
-type PathParams = {[key: string]: number|string};
+export type PathParams = {[key: string]: number|string};
 
 export default abstract class RestModel<MS> extends HttpModel<MS, HttpDatasource> {
     protected abstract schema(): RestSchema;
 
-    async list(params: PathParams, query?: Query) {
+    async list(params: PathParams = {}, query?: Query) {
         if (!this.schema()[CRUDAction.List]) throw Error("Batch reading is not available for this model");
 
         const path = this.schema()[CRUDAction.List](params);

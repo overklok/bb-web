@@ -1,14 +1,26 @@
 import RestModel, {CRUDAction, RestSchema} from "../core/base/model/RestModel";
 
-type Course = {
-    id: number,
+type CourseLesson = {
+    pk: number;
+    fields: {
+        name: string;
+        description: string;
+    }
+}
 
+type Course = {
+    pk: number;
+    lessons: CourseLesson[];
+    fields: {
+        name: string;
+        description: string;
+    }
 }
 
 export default class CourseModel extends RestModel<Course> {
     protected schema(): RestSchema {
         return {
-            [CRUDAction.Read]: ({id}) => `courses/${id}`,
+            [CRUDAction.List]: () => `courses`,
         }
     }
 

@@ -22,7 +22,6 @@ import UserModel from "./models/UserModel";
 
 import layouts_config from "./configs/main/layouts";
 import widgets_config from "./configs/main/widgets";
-import routes_config from "./configs/main/routes";
 
 import "../css/global.less";
 import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
@@ -30,6 +29,8 @@ import IRoutingService from "./core/services/interfaces/IRoutingService";
 import LayoutRouter from "./core/routers/LayoutRouter";
 import KeyboardModel from "./core/models/KeyboardModel";
 import CodeModel from "./models/common/CodeModel";
+import MainRouter from "./routers/MainRouter";
+import ExerciseModel from "./models/ExerciseModel";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {
@@ -56,6 +57,8 @@ class MainApplication extends Application {
 
         svc_model.launch(ads);
         svc_model.register(UserModel, hds);
+        svc_model.register(ExerciseModel, hds);
+
         svc_model.register(CodeModel, ads);
         svc_model.register(BoardModel, ads);
         svc_model.register(KeyboardModel, dds);
@@ -67,8 +70,7 @@ class MainApplication extends Application {
             )
         ]);
 
-        svc_routing.setRouter(LayoutRouter);
-        svc_routing.loadRoutes(routes_config);
+        svc_routing.setRouter(MainRouter);
     }
 
     async run(element: HTMLElement) {

@@ -31,6 +31,6 @@ export default class RoutingService extends IRoutingService {
         const path = this.router.reverse(route_name, params);
         this.router.redirect(path);
 
-        window.history.pushState({route_name, params}, 'nothing', window.location.hostname + path);
+        window.history.pushState({route_name, params}, 'nothing', path);
     }
 }

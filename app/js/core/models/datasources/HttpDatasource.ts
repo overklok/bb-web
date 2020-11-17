@@ -94,7 +94,7 @@ export default class HttpDatasource extends SynchronousDatasource {
 
         path = path.replace(/^\/+|\/+$/gm, '');
 
-        const response = await fetch(`${this.hostname}/${path}?${q}`, {
+        let fetch_init: any = {
             method:         params.method,
             redirect:       params.redirect,
             mode:           this.options.mode,
@@ -105,8 +105,13 @@ export default class HttpDatasource extends SynchronousDatasource {
                 'Content-Type': 'application/json',
                 ...params.headers
             },
-            body: JSON.stringify(params.data)
-        });
+        }
+
+        if (params.method != RequestMethod.GET && params.method != RequestMethod.DELETE) {
+            fetch_init.body = JSON.stringify(params.data);
+        }
+
+        const response = await fetch(`${this.hostname}/${path}?${q}`, fetch_init);
 
         return await response.json();
     }

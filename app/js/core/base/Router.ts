@@ -61,8 +61,6 @@ const PATHEXP_REGEXP = /({([a-z0-9]+)})/gmi;
  * of parameters of the path.
  * It's also not available to use regexps as route's path in this case.
  *
- * TODO: Move to Presenter. Remove inheritors.
- *
  * @param pathexp   path expression, see {@see Route.pathexp}
  * @param name      route name
  */
@@ -170,7 +168,11 @@ export default abstract class Router<RD extends RouteDestination> {
         if (route.method_name) {
             if (Object(this)[route.method_name]) {
                 (this as any)[route.method_name](...params);
+            } else {
+                throw new Error(`${this.constructor.name}.${route.method_name} is undefined`);
             }
+
+            return;
         }
 
         if (route.destination) {
@@ -205,7 +207,7 @@ export default abstract class Router<RD extends RouteDestination> {
         let i = 0;
 
         const path = route.pathexp.replace(PATHEXP_REGEXP, (full, _, type) => {
-            const param_value = params[i];
+            let param_value = params[i];
 
             if (param_value == null) {
                 throw Error(`Not enough parameters provided for route ${route_name}`);
@@ -213,7 +215,15 @@ export default abstract class Router<RD extends RouteDestination> {
 
             i++;
 
-            if (type === 'int') return Number(param_value).toString();
+            if (type === 'int') {
+                param_value = Number(param_value);
+                if (Number.isNaN(param_value)) {
+                    throw new Error(`Invalid parameter type (${i-1})`);
+                }
+
+                return String(param_value);
+            }
+
             if (type === 'str') return String(param_value);
 
             throw new Error(
@@ -230,7 +240,7 @@ export default abstract class Router<RD extends RouteDestination> {
      * @param path  a path to be resolved
      */
     public resolve(path: string): null|[CompiledRoute<RD>, (string|number)[]] {
-        for (const route of this.routes_compiled.values()) {
+       for (const route of this.routes_compiled.values()) {
             const params = Router.applyPathToRegexp(route.regexp, route.param_types, path);
 
             if (params != null) {
@@ -356,6 +366,8 @@ export default abstract class Router<RD extends RouteDestination> {
 
         const param_qty_expected = (new RegExp(regexp.source + '|')).exec('').length - 1;
 
+        // reset regexp state
+        regexp.lastIndex = 0;
         let match = regexp.exec(path);
 
         // minus one original

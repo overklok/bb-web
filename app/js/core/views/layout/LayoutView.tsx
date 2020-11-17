@@ -13,6 +13,9 @@ import {ViewEvent} from "../../base/Event";
 require('../../../../css/core/layout.less');
 
 export class LayoutMountEvent extends ViewEvent<LayoutMountEvent> {}
+export class LayoutFinishedEvent extends ViewEvent<LayoutFinishedEvent> {
+    mode_name: string;
+}
 
 export enum DraggableItemTypes {
     Tab = 'tab'
@@ -138,7 +141,15 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
         );
     }
 
-    private renderInside() {
+    public componentDidUpdate(
+        prevProps: Readonly<IViewProps<ILayoutOptions>>,
+        prevState: Readonly<ILayoutState>,
+        snapshot?: any
+    ) {
+        this.emit(new LayoutFinishedEvent({mode_name: this.state.mode_name}));
+    }
+
+    protected renderInside() {
         if (!this.modes[this.state.mode_name]) return null;
 
         const orientation = this.modes[this.state.mode_name].policy;

@@ -1,5 +1,5 @@
 import Presenter, {on, restore} from "../base/Presenter";
-import LayoutView, {LayoutMountEvent} from "../views/layout/LayoutView";
+import LayoutView, {LayoutFinishedEvent, LayoutMountEvent} from "../views/layout/LayoutView";
 import LayoutModel, {SetModeEvent} from "../models/LayoutModel";
 
 
@@ -23,8 +23,12 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
     }
 
     @restore() @on(SetModeEvent)
-
     protected setMode(evt: SetModeEvent) {
         this.view.setMode(evt.mode);
+    }
+
+    @on(LayoutFinishedEvent)
+    protected reportLayoutModeFinished(evt: LayoutFinishedEvent) {
+        this.model.reportModeFinished(evt.mode_name);
     }
 }
