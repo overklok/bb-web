@@ -5,8 +5,8 @@
 
 import Wrapper from '../core/Wrapper'
 
-import Blockly  from 'node-blockly/browser'
-import Ru       from 'node-blockly/lib/i18n/ru';
+import Blockly from 'blockly';
+import * as Ru from 'blockly/msg/ru';
 
 import '../../css/blockly-overrides.css';
 import '../../css/blockly-dimmer.css';
@@ -1220,16 +1220,16 @@ export default class BlocklyWrapper extends Wrapper {
         }
 
         if (event.type === Blockly.Events.MOVE) {
-            let block = this.workspace.getBlockById(event.blockId);
-
-            if (block) {
-                let pos_x = block.getRelativeToSurfaceXY().x,
-                    flyout_width = this._getFlyoutWidth();
-
-                if (pos_x < flyout_width) {
-                    block.moveBy(flyout_width - pos_x, 0);
-                }
-            }
+            // let block = this.workspace.getBlockById(event.blockId);
+            //
+            // if (block) {
+            //     let pos_x = block.getRelativeToSurfaceXY().x,
+            //         flyout_width = this._getFlyoutWidth();
+            //
+            //     if (pos_x < flyout_width) {
+            //         block.moveBy(flyout_width - pos_x, 0);
+            //     }
+            // }
         }
 
         // if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {

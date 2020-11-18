@@ -22,8 +22,8 @@ interface IState {
 }
 
 export default class Nest extends React.Component<IProps<any>, IState> {
-    private readonly ref = React.createRef<HTMLDivElement>()
-    private readonly ref_view = React.createRef<View<any, any>>()
+    private readonly ref = React.createRef<HTMLDivElement>();
+    private readonly ref_view = React.createRef<View<any, any>>();
 
     constructor(props: IProps<any>) {
         super(props);
@@ -38,7 +38,13 @@ export default class Nest extends React.Component<IProps<any>, IState> {
             this.setState({mounted: true});
         }
     }
-    
+
+    componentDidUpdate(prevProps: Readonly<IProps<any>>, prevState: Readonly<IState>, snapshot?: any) {
+        if (this.ref_view.current) {
+            this.ref_view.current.attachConnector(this.props.connector);
+        }
+    }
+
     notifyResizeView() {
         this.props.connector.resizeView();
     }
@@ -51,9 +57,9 @@ export default class Nest extends React.Component<IProps<any>, IState> {
             'nest': true,
         });
 
-        if (this.ref_view.current) {
-            this.ref_view.current.attachConnector(this.props.connector);
-        }
+        // if (this.ref_view.current) {
+        //     this.ref_view.current.attachConnector(this.props.connector);
+        // }
 
         return (
             <div className={klasses} ref={this.ref}>

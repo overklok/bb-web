@@ -38,7 +38,8 @@ type LayoutOptions = {
 
 interface LayoutModelState {
     modes: {[key: string]: LayoutMode};
-    options?: LayoutOptions
+    current_mode: string;
+    options?: LayoutOptions;
 }
 
 export class SetModeEvent extends ModelEvent<SetModeEvent> {
@@ -57,6 +58,7 @@ export class FinishModeEvent extends ModelEvent<FinishModeEvent> {
 export default class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
     protected defaultState: LayoutModelState = {
         options: {show_headers: true},
+        current_mode: 'default',
         modes: {}
     };
 
@@ -66,7 +68,9 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
 
     setMode(mode: string) {
         if (mode in this.state.modes) {
+            this.setState({current_mode: mode});
             this.emit(new SetModeEvent({mode}));
+            console.log('SET MODEL', this.getState());
         } else {
             console.error(`Mode '${mode}' does not exist`);
         }

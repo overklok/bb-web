@@ -1,4 +1,4 @@
-import Blockly from 'node-blockly/browser';
+import Blockly from 'blockly';
 import {DATATYPES, POSTFIXES} from '../constants';
 import {getPredef, getArgument, getArguments} from '../_common';
 

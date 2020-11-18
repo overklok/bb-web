@@ -56,6 +56,12 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
         }
     }
 
+    public detachConnector() {
+        if (this.props.connector) {
+            this.props.connector.detach();
+        }
+    }
+
     public componentDidMount() {
         this.mounted = true;
         this.viewDidMount();
@@ -83,7 +89,7 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
     protected viewWillUnmount() {
         console.log(this.constructor.name, 'unmount');
 
-        this.props.connector.detach();
+        this.detachConnector();
     }
 
     protected emit<E>(event: ViewEvent<E>) {

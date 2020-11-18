@@ -9,7 +9,6 @@ import WorkspaceModule      from "./modules/WorkspaceModule";
 import InstructorModule     from './modules/InstructorModule';
 import LocalServiceModule   from "./modules/LocalServiceModule";
 import GlobalServiceModule  from "./modules/GlobalServiceModule";
-import Blockly from "node-blockly/browser";
 
 const BUTTON_CODES = [
     48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // 0-9

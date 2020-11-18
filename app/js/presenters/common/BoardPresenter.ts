@@ -8,6 +8,7 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
 
     protected ready() {
         this.model = this.getModel(BoardModel);
+        console.log(this.view);
         this.view.registerLayouts(BoardModel.Layouts);
         this.view.setLayout(this.model.getState().layout_name);
     }

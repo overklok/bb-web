@@ -17,8 +17,7 @@ export default class MainRouter extends LayoutRouter {
 
     @route('/lessons/{int}/exercises/{int}', 'exercise')
     async runExercise(lesson_id: number, exercise_id: number) {
-        console.log(lesson_id, exercise_id);
-        const exercises = await this.model_exercise.list({l_id: lesson_id});
-        console.log(exercises);
+        const exercise = await this.model_exercise.read({lesson_id, exercise_id});
+        this.direct(exercise.layout_mode);
     }
 }

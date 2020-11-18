@@ -1,4 +1,4 @@
-import Blockly from "node-blockly/browser";
+import Blockly from "blockly";
 
 let BlocklyJSONGenerators = {
     math_mul: block => {

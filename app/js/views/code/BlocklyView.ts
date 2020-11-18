@@ -61,6 +61,7 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
 
         try {
             let _handlers: any = this.blockly.getJSONHandlers();
+            console.log(_handlers);
 
             let code_main = BlocklyView.preprocessCode(_handlers.main);
 
@@ -74,7 +75,7 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
                 }
             }
         } catch (err) {
-            console.error(err);
+            throw err;
             return chains;
         }
 
