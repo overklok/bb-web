@@ -1,7 +1,7 @@
 import {ImperativeView} from "../../core/base/view/ImperativeView";
 import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
-import {IViewOptions, IViewProps} from "../../core/base/view/View";
+import {IViewOptions, IViewProps, IViewState} from "../../core/base/view/View";
 
 export namespace BoardView {
     export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}

@@ -11,7 +11,6 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
         const options = this.model.getOptions();
 
         const mode = this.model.getState().current_mode;
-        console.log(mode);
         if (mode) this.view.setMode(mode);
 
         this.view.setOptions({

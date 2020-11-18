@@ -70,7 +70,6 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
         if (mode in this.state.modes) {
             this.setState({current_mode: mode});
             this.emit(new SetModeEvent({mode}));
-            console.log('SET MODEL', this.getState());
         } else {
             console.error(`Mode '${mode}' does not exist`);
         }

@@ -75,13 +75,9 @@ export default class ViewConnector {
      * @param view
      */
     attach(view: View<IViewOptions, IViewState>) {
-        console.log('pre-attach', this.view);
-
         if (this.view) {
             this.detach();
         }
-
-        console.log('attach', view);
 
         this.view = view;
 
@@ -105,8 +101,6 @@ export default class ViewConnector {
     }
 
     detach() {
-        console.log('detach', this.view);
-
         delete this.view;
 
         this.unsubscribePresenterHandlers();

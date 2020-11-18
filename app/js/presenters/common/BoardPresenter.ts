@@ -8,7 +8,6 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
 
     protected ready() {
         this.model = this.getModel(BoardModel);
-        console.log(this.view);
         this.view.registerLayouts(BoardModel.Layouts);
         this.view.setLayout(this.model.getState().layout_name);
     }
@@ -36,10 +35,5 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     @on(ElectronicEvent)
     private onelec(evt: ElectronicEvent) {
         this.view.setCurrents(evt.threads);
-    }
-
-    @on(ViewEvent)
-    private onviewevt(evt: ViewEvent<any>) {
-        console.log('ove', evt);
     }
 }
