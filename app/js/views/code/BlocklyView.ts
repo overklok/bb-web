@@ -3,18 +3,24 @@ import BlocklyWrapper from '../../wrappers/BlocklyWrapper'
 
 import JSONBlocks       from '../../utils/blockly/extras/blocks';
 import JSONGenerators   from '../../utils/blockly/extras/generators';
-import {IViewOptions, IViewProps} from "../../core/base/view/View";
+import {deferUntilMounted, IViewOptions, IViewProps} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
 export class BlocklyCodeChangeEvent extends ViewEvent<BlocklyCodeChangeEvent> {}
 
-export default class BlocklyView extends ImperativeView<IViewOptions> {
+interface BlocklyViewOptions extends IViewOptions {
+    force_all_blocks: boolean;
+}
+
+export default class BlocklyView extends ImperativeView<BlocklyViewOptions> {
     private readonly blockly: BlocklyWrapper;
 
-    // TODO: Move to Model
-    private pause_duration: number;
+    private block_types: { [p: string]: number };
 
-    constructor(props: IViewProps<IViewOptions>) {
+    // TODO: Move to Model
+    private readonly pause_duration: number;
+
+    constructor(props: IViewProps<BlocklyViewOptions>) {
         super(props);
 
         this.blockly = new BlocklyWrapper();
@@ -30,16 +36,19 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
     public async inject(container: HTMLDivElement) {
         this.blockly.inject(container);
 
-        this.blockly.updateBlockTypes(JSONGenerators as Object[]);
+        if (this.block_types) {
+            this.setBlockTypes(this.block_types);
+            this.block_types = {};
+        }
 
         this.blockly.resize();
     }
 
-    eject(container: HTMLDivElement): void {
+    public eject(container: HTMLDivElement): void {
         this.blockly.eject();
     }
 
-    getMainChain() {
+    public getMainChain() {
         let chains = this.blockly.getJSONHandlers();
 
         let code = BlocklyView.preprocessCode(chains.main);
@@ -56,12 +65,11 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
      *
      * @returns {Object} основной код и коды обработчиков
      */
-    getChainset() {
+    public getChainset() {
         let chains: any = null;
 
         try {
             let _handlers: any = this.blockly.getJSONHandlers();
-            console.log(_handlers);
 
             let code_main = BlocklyView.preprocessCode(_handlers.main);
 
@@ -75,11 +83,31 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
                 }
             }
         } catch (err) {
-            throw err;
             return chains;
         }
 
         return chains;
+    }
+
+    /**
+     * Установить используемые блоки
+     *
+     * @param block_types массив строк с названиями типов блоков
+     */
+    @deferUntilMounted
+    public setBlockTypes(block_types: { [block_type: string]: number }) {
+       if (this.options.force_all_blocks) {
+            this.blockly.updateBlockTypes(Object.keys(JSONGenerators));
+        } else {
+            this.blockly.updateBlockTypes(block_types);
+        }
+    }
+
+    /**
+     * Возвратить используемые блоки
+     */
+    public getBlockTypes() {
+        return this.blockly.getBlockTypes();
     }
 
     /**
@@ -90,7 +118,8 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
      *
      * @param {string|null} block_id идентификатор блока
      */
-    highlightBlock(block_id: string|null) {
+    @deferUntilMounted
+    public highlightBlock(block_id: string|null) {
         this.blockly.highlightBlock(block_id);
     }
 
@@ -99,7 +128,8 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
      *
      * @param {Array<string>} block_ids идентификаторы блоков
      */
-    highlightErrorBlocks(block_ids: string[]) {
+    @deferUntilMounted
+    public highlightErrorBlocks(block_ids: string[]) {
         for (let block_id of block_ids) {
             this.blockly.highlightErrorBlock(block_id);
         }
@@ -108,19 +138,91 @@ export default class BlocklyView extends ImperativeView<IViewOptions> {
     /**
      * Удалить выделения ошибочных блоков
      */
-    clearErrorBlocks() {
+    @deferUntilMounted
+    public clearErrorBlocks() {
         this.blockly.clearErrorBlocks();
     }
 
-    lock() {
+    /**
+     * Установить предел количества блоков
+     *
+     * @param {number} [max_block_count=0] максимальное количество блоков
+     */
+    @deferUntilMounted
+    public setBlockLimit(max_block_count=0) {
+        this.blockly.updateBlockLimit(max_block_count);
+    }
+
+    /**
+     * Возвратить значения полей ввода пределов количества блоков по типам
+     *
+     * Формат возвращаемого объекта:
+     *      - ключ:     {string} тип блока
+     *      - значение: {number} предел количества блоков по типу
+     *
+     * @returns {Object},
+     */
+    public getBlockLimitInputsByType() {
+        return this.blockly.getBlockLimitInputsByType();
+    }
+
+    /**
+     * Установить значения полей ввода пределов количества блоков по типам
+     *
+     * @param block_counts - объект, в котором:
+     *      - ключ      - тип блока
+     *      - значение  - предел количества блоков по типу
+     */
+    @deferUntilMounted
+    public setBlockLimitInputsByType(block_counts: {[block_type: string]: number}) {
+        this.blockly.setBlockLimitInputsByType(block_counts);
+    }
+
+    /**
+     * Получить строку с XML-кодом состояния рабочей области Blockly
+     *
+     * @returns {string} строка, содержащая XML-представление набранного кода
+     */
+    public getCodeTree(): string {
+        return this.blockly.getXMLText();
+    }
+
+    /**
+     * Задать состояние рабочей области Blockly через строку с XML-кодом
+     *
+     * @param text строка, содержащая XML-представление кода Blockly
+     */
+
+    @deferUntilMounted
+    public setCodeTree(text: string) {
+        this.blockly.setXMLText(text);
+    }
+
+    /**
+     * Заставить Blockly генерировать дополнительные поля (для админки)
+     * Работает только с wakeUp()
+     *
+     * @param {boolean} on генерировать ли поля
+     */
+
+    @deferUntilMounted
+    public generateExtraFields(on: boolean) {
+        if (this.blockly.silent) return;
+
+        this.blockly.extra_fields = on;
+    }
+
+    @deferUntilMounted
+    public lock() {
         this.blockly.lock();
     }
 
-    unlock() {
+    @deferUntilMounted
+    public unlock() {
         this.blockly.unlock();
     }
 
-    resize() {
+    public resize() {
         this.blockly.resize();
     }
 

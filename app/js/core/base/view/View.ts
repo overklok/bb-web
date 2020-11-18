@@ -26,12 +26,43 @@ export class MountEvent extends ViewEvent<MountEvent>       {}
 export class UnmountEvent extends ViewEvent<UnmountEvent>   {}
 export class ResizeEvent extends ViewEvent<ResizeEvent>     {}
 
+export function deferUntilMounted(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    // save a reference to the original method this way we keep the values currently in the
+    // descriptor and don't overwrite what another decorator might have done to the descriptor.
+    if (descriptor === undefined) {
+        descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+    }
+
+    let original_method = descriptor.value;
+
+    //editing the descriptor/value parameter
+    const deferree = function () {
+        const args = arguments;
+
+        if (this.mounted) {
+            return original_method.bind(this)(...arguments);
+        }
+
+        if (this.deferrees_mount == null) {
+            this.deferrees_mount = [];
+        }
+
+        this.deferrees_mount.push(function(): void {
+            original_method.bind(this)(...args);
+        });
+    }
+
+    descriptor.value = deferree;
+}
+
 export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
     public static defaultOptions: IViewOptions;
     public static notifyNestMount: boolean = false;
 
     protected options: Readonly<O>;
     protected mounted: boolean;
+
+    private deferrees_mount: Function[];
 
     constructor(props: IViewProps<O>) {
         super(props);
@@ -84,6 +115,7 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
 
     protected viewDidMount() {
         console.log(this.constructor.name, 'mount');
+        this.callDeferredUntilMount();
     }
 
     protected viewWillUnmount() {
@@ -94,5 +126,15 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
 
     protected emit<E>(event: ViewEvent<E>) {
         this.props.connector.emit(event);
+    }
+
+    private callDeferredUntilMount() {
+        if (!this.deferrees_mount) return;
+
+        let call = undefined;
+
+        while (call = this.deferrees_mount.pop()) {
+            call.bind(this)();
+        }
     }
 }

@@ -352,7 +352,7 @@ export default class BlocklyWrapper extends Wrapper {
      *
      * Обновляется список допустимых типов блоков в редакторе
      *
-     * @param {Array<Object>} block_types массив объектов типа {тип_блока: макс. кол-во}
+     * @param {Array<Object>|} block_types массив объектов типа {тип_блока: макс. кол-во}
      */
     updateBlockTypes(block_types) {
         if (this._read_only) return;
@@ -512,7 +512,7 @@ export default class BlocklyWrapper extends Wrapper {
      * Установить значения полей, определяющих максимально допустимое количество блоков,
      * по всем типам блоков
      *
-     * @param block_counts {Array<Object>} массив объектов типа {тип_блока: макс. кол-во}
+     * @param block_counts {Object} объект типа {тип_блока: макс. кол-во}
      */
     setBlockLimitInputsByType(block_counts) {
         if (!this.workspace) {return false}
