@@ -2,6 +2,7 @@ import * as React from "react";
 
 export interface IVCProps {
     children: JSX.Element[];
+    refCallback?: (e: HTMLDivElement) => {};
 } 
 
 export interface IVCState {

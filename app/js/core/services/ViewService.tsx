@@ -97,7 +97,7 @@ export default class ViewService extends IViewService {
         return views;
     }
 
-    protected recompose() {
+    protected async recompose() {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
         this.view_connectors_internal = [];
@@ -120,11 +120,18 @@ export default class ViewService extends IViewService {
             />;
         });
 
-        this.composer_instance = this.render(this.view_composer, children, this.element, null) as ViewComposerAny;
+        this.composer_instance = await this.render(this.view_composer, children, this.element, null) as ViewComposerAny;
     }
 
-    protected render(component: typeof React.Component, children: any, target_node: any, callback: any) {
-        const react_element = React.createElement(component, {}, children);
-        return ReactDOM.render(react_element, target_node, callback);
+    protected async render(component: typeof React.Component, children: any, target_node: HTMLElement, callback: any) {
+        return new Promise(resolve => {
+            const refCallback = (ref: any) => {
+                target_node.appendChild(ref);
+                resolve(ref);
+            }
+
+            const react_element = React.createElement(component, {refCallback} as any, children);
+            ReactDOM.render(react_element, target_node, callback);
+        });
     }
 }

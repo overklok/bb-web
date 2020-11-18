@@ -113,7 +113,7 @@ export default class TabViewComposer extends ViewComposer<IProps, IState> {
         this.resetViewConnectors();
 
         return (
-            <div className='tab-display'>
+            <div className='tab-display' ref={this.props.refCallback}>
                 {!show_headers
                     ? null
                     :
