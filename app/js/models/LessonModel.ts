@@ -73,21 +73,28 @@ type Exercise = {
     }
 }
 
-type Lesson = {
+type Mission = {
     id: number;
     name: string;
     description: string;
     exercises: Exercise[];
 }
 
-export default class ExerciseModel extends RestModel<Exercise> {
-    protected defaultState: Exercise = undefined;
+export type Lesson = {
+    id: number;
+    name: string;
+    description: string;
+    missions: Mission[];
+}
+
+export default class LessonModel extends RestModel<Lesson> {
+    protected defaultState: Lesson = undefined;
 
     private lesson: Lesson;
 
     protected schema(): RestSchema {
         return {
-            [CRUDAction.List]: ({l_id}) => `coursesvc/lesson/${l_id}`,
+            [CRUDAction.Read]: ({l_id}) => `coursesvc/lesson/${l_id}`,
         }
     }
 
@@ -96,22 +103,13 @@ export default class ExerciseModel extends RestModel<Exercise> {
         this.lesson = undefined;
     }
 
-    async list(params: {l_id: number}, query?: Query): Promise<Lesson> {
+    async read(params: {lesson_id: number, exercise_id: number}, query?: Query): Promise<Lesson> {
         if (!(this.lesson && params.l_id == this.lesson.id)) {
             const lesson_raw = await super.list(params, query);
-            this.lesson = ExerciseModel.processLesson(lesson_raw);
+            this.lesson = LessonModel.processLesson(lesson_raw);
         }
 
         return this.lesson;
-    }
-
-    async read(params: {lesson_id: number, exercise_id: number}): Promise<Exercise> {
-        const lesson = await this.list({l_id: params.lesson_id});
-        const exercise = lesson.exercises[params.exercise_id];
-
-        this.setState(exercise);
-
-        return exercise;
     }
 
     static processLesson(_lesson: any): Lesson {
@@ -119,29 +117,23 @@ export default class ExerciseModel extends RestModel<Exercise> {
             throw new Error("Lesson does not have any missions");
         }
 
-        let exercises: Exercise[] = [];
+        let missions: Mission[] = [];
 
-        for (let mission of _lesson.missions) {
-            let mission_exercises = this.extractExercisesFromMission(mission);
-
-            if (mission_exercises) {
-                exercises = exercises.concat(mission_exercises);
-            }
+        for (let _mission of _lesson.missions) {
+            missions.push(
+                this.processMission(_mission)
+            );
         }
 
         return {
             id: _lesson.pk,
             name: _lesson.name || "NONAME",
             description: _lesson.description || "NODESC",
-            exercises: exercises
+            missions: missions
         };
     }
 
-    static extractExercisesFromMission(_mission: any): Exercise[] {
-        if (!(_mission.exercises) || _mission.exercises.length === 0) {
-            return null;
-        }
-
+    static processMission(_mission: any): Mission {
         let exercises = [];
 
         for (let _exercise of _mission.exercises) {
@@ -150,7 +142,12 @@ export default class ExerciseModel extends RestModel<Exercise> {
             if (exercise) exercises.push(exercise);
         }
 
-        return exercises;
+        return {
+            id: _mission.id,
+            name: _mission.name,
+            description: _mission.description,
+            exercises: exercises
+        }
     }
 
     static processExercise(_exercise: any): Exercise {

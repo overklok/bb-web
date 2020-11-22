@@ -8,7 +8,7 @@ interface KeyboardModelState {}
 export default class KeyboardModel extends Model<KeyboardModelState, DummyDatasource> {
     defaultState = {}
 
-    init(state: KeyboardModelState) {
+    public init(state: KeyboardModelState) {
         super.init(state);
 
         document.addEventListener("keyup", evt => {

@@ -30,7 +30,7 @@ import LayoutRouter from "./core/routers/LayoutRouter";
 import KeyboardModel from "./core/models/KeyboardModel";
 import CodeModel from "./models/common/CodeModel";
 import MainRouter from "./routers/MainRouter";
-import ExerciseModel from "./models/ExerciseModel";
+import LessonModel from "./models/LessonModel";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {
@@ -57,7 +57,7 @@ class MainApplication extends Application {
 
         svc_model.launch(ads);
         svc_model.register(UserModel, hds);
-        svc_model.register(ExerciseModel, hds);
+        svc_model.register(LessonModel, hds);
 
         svc_model.register(CodeModel, ads);
         svc_model.register(BoardModel, ads);

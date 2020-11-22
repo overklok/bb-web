@@ -6,16 +6,16 @@ import CodeModel, {
     CodeTerminatedEvent
 } from "../../models/common/CodeModel";
 import {KeyUpEvent} from "../../core/models/KeyboardModel";
-import ExerciseModel from "../../models/ExerciseModel";
+import LessonModel from "../../models/LessonModel";
 import {FinishModeEvent} from "../../core/models/LayoutModel";
 
 export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
     private model: CodeModel;
-    private exercise: ExerciseModel;
+    private exercise: LessonModel;
 
     protected ready() {
         this.model = this.getModel(CodeModel);
-        this.exercise = this.getModel(ExerciseModel);
+        this.exercise = this.getModel(LessonModel);
     }
 
     @on(FinishModeEvent)
