@@ -3,24 +3,24 @@ import DummyDatasource from "../core/base/model/datasources/DummyDatasource";
 import {Lesson} from "./LessonModel";
 
 type MissionProgress = {
-    skidding: boolean;
-    exercise_count: number;
+    exercise_last: number;
     exercise_idx: number;
-    exercise_idx_last: number;
     exercise_idx_available: number;
 }
 
 type Progress = {
-    mission_idx: number;
-    missions: MissionProgress[];
     locked: boolean;
+    missions: MissionProgress[];
+    mission_idx: number;
+    mission_idx_last: number;
 }
 
 export default class InstructorModel extends Model<Progress, DummyDatasource> {
     protected defaultState: Progress = {
-        mission_idx: undefined,
+        locked: true,
         missions: [],
-        locked: true
+        mission_idx: undefined,
+        mission_idx_last: undefined
     };
     private button_seq_model: string[];
     private button_seq_idx: number;
@@ -36,18 +36,19 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
         const progress: Progress = {
             missions: [],
             mission_idx: undefined,
+            mission_idx_last: undefined,
             locked: this.state.locked
         };
 
         for (const mission of lesson.missions) {
             progress.missions.push({
                 exercise_idx: 0,
-                exercise_idx_last: -1,
-                skidding: false,
                 exercise_idx_available: 0,
-                exercise_count: mission.exercises.length
+                exercise_last: mission.exercises.length - 1
             });
         }
+
+        progress.mission_idx_last = progress.missions.length - 1;
 
         this.setState(progress);
     }
@@ -63,12 +64,70 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
     }
 
     /**
-     * Запустить следующее упражнение
-     *
-     * @param skid режим "буксовки" - только переключить указатели
+     * Pass the current exercise
      */
-    public proceedExercise(skid=false) {
-        // launchExerciseNext
+    public passExercise() {
+        const mission_progress = this.state.missions[this.state.mission_idx];
+
+        // this case may occur when switching exercises manually
+        if (mission_progress.exercise_idx > mission_progress.exercise_idx_available) {
+            // this case is available in admin mode only
+            if (this.state.locked) throw new RangeError(`Trying to pass exercise that is not available yet.`);
+
+            // sync available index to current (this means admin unfairly passes all previous exercises)
+            mission_progress.exercise_idx_available = mission_progress.exercise_idx;
+        }
+
+        // current exercise is being passed another time (index isn't synced)
+        if (mission_progress.exercise_idx < mission_progress.exercise_idx_available) {
+            // TODO: this.emit('exercise passed', 'another time')
+            return;
+        }
+
+        // `current` index is synced with `available` index
+        if (mission_progress.exercise_last < mission_progress.exercise_idx_available) {
+            // fairly increment the `available` index
+            mission_progress.exercise_idx_available += 1;
+            // TODO: this.emit('exercise passed', 'first time')
+        } else {
+            // if it's required to pass the last exercise, it's time to pass the entire mission
+            this.passMission();
+        }
+    }
+
+    /**
+     * Run the next exercise in current mission if available
+     */
+    public stepForwardMission() {
+        const mission_progress = this.state.missions[this.state.mission_idx];
+
+        // current exercise is being passed another time (index isn't synced)
+        if (mission_progress.exercise_idx < mission_progress.exercise_idx_available) {
+            // just move current index forward until it syncs with the `available` index
+            mission_progress.exercise_idx += 1;
+        }
+
+        // TODO: this.emit('run exercise')
+    }
+
+    /**
+     * Run the last exercise available in current mission
+     */
+    public fastForwardMission() {
+        const mission_progress = this.state.missions[this.state.mission_idx];
+
+        mission_progress.exercise_idx = mission_progress.exercise_idx_available;
+
+        // TODO: this.emit('run exercise')
+    }
+
+    /**
+     * Run the first exercise in current mission
+     */
+    public restartMission() {
+        this.state.missions[this.state.mission_idx].exercise_idx = 0;
+
+        // TODO: this.emit('run exercise')
     }
 
     /**
@@ -77,95 +136,43 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
      * @param mission_idx  индекс миссии
      * @param exercise_idx индекс упражнения
      */
-    public forceExercise(mission_idx: number, exercise_idx: number) {
+    public switchExercise(mission_idx: number, exercise_idx: number) {
         mission_idx = mission_idx | 0;
         exercise_idx = exercise_idx | 0;
 
+        if (!(mission_idx in this.state.missions)) {
+            throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
+        }
+
+        if (!(exercise_idx < this.state.missions[mission_idx].exercise_last)) {
+            throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
+        }
+
         if (this.state.locked) {
-            if (exercise_idx !== 0 && exercise_idx > this.state.missions[mission_idx].exercise_idx_last) {
+            if (exercise_idx !== 0 && exercise_idx > this.state.missions[mission_idx].exercise_idx_available) {
                 return;
             }
         }
 
-        mission_idx = this.state.mission_idx;
-        exercise_idx = this.state.missions[this.state.mission_idx].exercise_idx;
-
-        if (!(mission_idx in this.state.missions)) {
-            throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
-        }
-
-        if (!(exercise_idx < this.state.missions[mission_idx].exercise_count)) {
-            throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
-        }
-
         if (this.state.mission_idx !== mission_idx) {
             this.state.mission_idx = mission_idx;
-            // TODO: this.emit('mission')
+            // TODO: this.emit('run exercise')
         }
-
-        this.launchExercise(exercise_idx, true);
     }
 
     /**
-     * Запустить задание
+     * Pass the current mission
      *
-     * @param mission_idx индекс задания
+     * @private
      */
-    private launchMission(mission_idx: number) {
-        if (!(mission_idx in this.state.missions)) {
-            throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
+    private passMission() {
+        if (this.state.mission_idx < this.state.mission_idx_last) {
+            this.state.mission_idx += 1;
+            this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
+            // TODO: this.emit('mission passed')
+        } else {
+            // TODO: this.emit('lesson passed')
         }
-
-        const mission_progress = this.state.missions[mission_idx];
-
-        // launch last available exercise in the mission by default
-        let exercise_idx = mission_progress.exercise_idx_available;
-
-        // if same mission required and skidding is not enabled, reset the mission
-        if (mission_idx === this.state.mission_idx && !mission_progress.skidding) {
-            exercise_idx = 0;
-        }
-
-        // disable skidding
-        mission_progress.skidding = false;
-
-        // update current mission index
-        this.state.mission_idx = mission_idx;
-
-        // launch appropriate exercise within the mission
-        this.launchExercise(exercise_idx);
-    }
-
-
-    /**
-     * Запустить упражнение
-     *
-     * @param exercise_idx    индекс упражнения в текущей миссии
-     * @param forced
-     */
-    private launchExercise(exercise_idx: number, forced: boolean = false) {
-        const mission_idx = this.state.mission_idx,
-              mission_progress = this.state.missions[mission_idx];
-
-        if (!(0 <= exercise_idx && exercise_idx < mission_progress.exercise_count)) {
-            throw new Error(`Exercise ${exercise_idx} in mission ${mission_idx} not found`);
-        }
-
-        // update exercise index within current mission
-        this.state.missions[mission_idx].exercise_idx = exercise_idx;
-        this.state.missions[mission_idx].exercise_idx_available = exercise_idx;
-
-        // it makes no sense to emit exercise launch event if skidding is enabled
-        if (forced || !mission_progress.skidding) {
-            // TODO: this.emit("start")
-        }
-
-        // some users still can move manually in unlocked mode (as admin) so consider this a skid
-        if (forced && !this.state.locked) {
-            this.state.missions[mission_idx].skidding = true;
-            this.state.missions[mission_idx].exercise_idx_available = exercise_idx;
-        }
-
     }
 
     /**
@@ -201,27 +208,5 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
         this.button_seq_idx = 0;
 
         return false;
-    }
-
-    /**
-     * Проверить, нужно ли обновлять прогресс
-     *
-     * Возможна ситуация, когда задание проходится второй раз.
-     * В таких случаях прогресс остаётся неизменным.
-     *
-     * @param mission_idx индекс миссии
-     *
-     * @private
-     */
-    private _checkLessonProgress(mission_idx: number) {
-        if (typeof mission_idx === "undefined") {return false}
-
-        const mission_progress = this.state.missions[mission_idx];
-
-        if (mission_progress.exercise_idx_last <= mission_progress.exercise_idx) {
-            // TODO: this.emit("progress", {});
-
-            mission_progress.exercise_idx_last = mission_progress.exercise_idx;
-        }
     }
 }
