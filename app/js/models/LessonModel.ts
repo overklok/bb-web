@@ -90,26 +90,27 @@ export type Lesson = {
 export default class LessonModel extends RestModel<Lesson> {
     protected defaultState: Lesson = undefined;
 
-    private lesson: Lesson;
-
     protected schema(): RestSchema {
         return {
-            [CRUDAction.Read]: ({l_id}) => `coursesvc/lesson/${l_id}`,
+            [CRUDAction.Read]: ({lesson_id}) => `coursesvc/lesson/${lesson_id}/`,
         }
     }
 
-    init(state: Partial<Exercise>) {
+    public init(state: Partial<Exercise>) {
         super.init(state);
-        this.lesson = undefined;
     }
 
-    async read(params: {lesson_id: number, exercise_id: number}, query?: Query): Promise<Lesson> {
-        if (!(this.lesson && params.l_id == this.lesson.id)) {
-            const lesson_raw = await super.list(params, query);
-            this.lesson = LessonModel.processLesson(lesson_raw);
+    public async read(params: {lesson_id: number}, query?: Query): Promise<Lesson> {
+        if (!(this.state && params.lesson_id == this.state.id)) {
+            const lesson_raw = await super.read(params, query);
+            this.state = LessonModel.processLesson(lesson_raw);
         }
 
-        return this.lesson;
+        return this.getState();
+    }
+
+    public getExercise(mission_idx: number, exercise_idx: number) {
+        return this.getState().missions[mission_idx].exercises[exercise_idx];
     }
 
     static processLesson(_lesson: any): Lesson {
@@ -120,9 +121,11 @@ export default class LessonModel extends RestModel<Lesson> {
         let missions: Mission[] = [];
 
         for (let _mission of _lesson.missions) {
-            missions.push(
-                this.processMission(_mission)
-            );
+            if (_mission.exercises.length > 0) {
+                missions.push(
+                    this.processMission(_mission)
+                );
+            }
         }
 
         return {

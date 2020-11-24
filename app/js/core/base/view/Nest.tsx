@@ -61,8 +61,12 @@ export default class Nest extends React.Component<IProps<any>, IState> {
         //     this.ref_view.current.attachConnector(this.props.connector);
         // }
 
+        const vopts = this.props.view_options;
+        let overflow = vopts ? vopts.overflow : null;
+        overflow = overflow || 'auto';
+
         return (
-            <div className={klasses} ref={this.ref}>
+            <div className={klasses} ref={this.ref} style={{overflow}}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
                         ref={this.ref_view}

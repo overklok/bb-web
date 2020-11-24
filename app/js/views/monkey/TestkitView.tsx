@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 
-import {IViewProps, IViewState, View} from "../../core/base/view/View";
+import {IViewOptions, IViewProps, IViewState, View} from "../../core/base/view/View";
 import "../../../css/blocks/testkit.less";
 import Breadboard from "../../utils/breadboard/Breadboard";
 
@@ -58,7 +58,7 @@ interface TestkitViewState extends IViewState {
     size_deviation: number;
 }
 
-interface TestkitViewOptions {
+interface TestkitViewOptions extends IViewOptions {
     items: TestkitItem[];
     qtys_initial?: number[];
     size_initial?: number;

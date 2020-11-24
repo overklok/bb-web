@@ -27,6 +27,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewOptions> {
 
         this.blockly.registerBlockTypes(JSONBlocks);
         this.blockly.registerGenerators(JSONGenerators);
+        console.log(JSONBlocks);
 
         this.pause_duration = 0.2;
 

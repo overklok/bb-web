@@ -3,7 +3,7 @@ import IConstructable from "./helpers/IConstructable";
 import {coverOptions} from "./helpers/functions";
 
 // passed by DefinePlugin in Webpack config
-declare var __VERSION__: string;
+declare const __VERSION__: string;
 
 export interface AppConf {}
 

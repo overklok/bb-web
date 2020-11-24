@@ -1,6 +1,7 @@
 import Model from "../core/base/model/Model";
 import DummyDatasource from "../core/base/model/datasources/DummyDatasource";
 import {Lesson} from "./LessonModel";
+import {ModelEvent} from "../core/base/Event";
 
 type MissionProgress = {
     exercise_last: number;
@@ -13,30 +14,47 @@ type Progress = {
     missions: MissionProgress[];
     mission_idx: number;
     mission_idx_last: number;
+    lesson_id: number;
 }
 
-export default class InstructorModel extends Model<Progress, DummyDatasource> {
+export class LessonPassEvent extends ModelEvent<LessonPassEvent> {}
+export class MissionPassEvent extends ModelEvent<MissionPassEvent> {
+    mission_idx: number
+}
+export class ExercisePassEvent extends ModelEvent<ExercisePassEvent> {
+    mission_idx: number;
+    lesson_idx: number;
+}
+export class ExerciseRunEvent extends ModelEvent<ExerciseRunEvent> {
+    mission_idx: number;
+    lesson_idx: number;
+}
+
+export default class ProgressModel extends Model<Progress, DummyDatasource> {
     protected defaultState: Progress = {
         locked: true,
         missions: [],
         mission_idx: undefined,
-        mission_idx_last: undefined
+        mission_idx_last: undefined,
+        lesson_id: undefined,
     };
     private button_seq_model: string[];
     private button_seq_idx: number;
 
     /**
-     * Загрузить урок в модуль
+     * Reset model state with the new lesson structure
      *
-     * Происходит первичная обработка данных и установка указателей
-     *
-     * @param lesson JSON-пакет с данными урока
+     * @param lesson lesson data object
+     * @param force  reload even if the same lesson is provided
      */
-    public loadLesson(lesson: Lesson) {
+    public loadLesson(lesson: Lesson, force: boolean = false) {
+        if (this.state.lesson_id === lesson.id && !force) return;
+
         const progress: Progress = {
+            lesson_id: lesson.id,
             missions: [],
-            mission_idx: undefined,
-            mission_idx_last: undefined,
+            mission_idx: 0,
+            mission_idx_last: 0,
             locked: this.state.locked
         };
 
@@ -80,7 +98,10 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
 
         // current exercise is being passed another time (index isn't synced)
         if (mission_progress.exercise_idx < mission_progress.exercise_idx_available) {
-            // TODO: this.emit('exercise passed', 'another time')
+            this.emit(new ExercisePassEvent({
+                mission_idx: this.state.mission_idx,
+                exercise_idx: mission_progress.exercise_idx
+            }));
             return;
         }
 
@@ -88,7 +109,11 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
         if (mission_progress.exercise_last < mission_progress.exercise_idx_available) {
             // fairly increment the `available` index
             mission_progress.exercise_idx_available += 1;
-            // TODO: this.emit('exercise passed', 'first time')
+
+            this.emit(new ExercisePassEvent({
+                mission_idx: this.state.mission_idx,
+                exercise_idx: mission_progress.exercise_idx
+            }));
         } else {
             // if it's required to pass the last exercise, it's time to pass the entire mission
             this.passMission();
@@ -107,7 +132,10 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
             mission_progress.exercise_idx += 1;
         }
 
-        // TODO: this.emit('run exercise')
+        this.emit(new ExerciseRunEvent({
+            mission_idx: this.state.mission_idx,
+            exercise_idx: mission_progress.exercise_idx
+        }));
     }
 
     /**
@@ -118,7 +146,10 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
 
         mission_progress.exercise_idx = mission_progress.exercise_idx_available;
 
-        // TODO: this.emit('run exercise')
+        this.emit(new ExerciseRunEvent({
+            mission_idx: this.state.mission_idx,
+            exercise_idx: mission_progress.exercise_idx
+        }));
     }
 
     /**
@@ -127,7 +158,10 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
     public restartMission() {
         this.state.missions[this.state.mission_idx].exercise_idx = 0;
 
-        // TODO: this.emit('run exercise')
+        this.emit(new ExerciseRunEvent({
+            mission_idx: this.state.mission_idx,
+            exercise_idx: 0
+        }));
     }
 
     /**
@@ -156,7 +190,7 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
 
         if (this.state.mission_idx !== mission_idx) {
             this.state.mission_idx = mission_idx;
-            // TODO: this.emit('run exercise')
+            this.emit(new ExerciseRunEvent({mission_idx, exercise_idx}));
         }
     }
 
@@ -169,9 +203,12 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
         if (this.state.mission_idx < this.state.mission_idx_last) {
             this.state.mission_idx += 1;
             this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
-            // TODO: this.emit('mission passed')
+
+            this.emit(new MissionPassEvent({
+                mission_idx: this.state.mission_idx,
+            }));
         } else {
-            // TODO: this.emit('lesson passed')
+            this.emit(new LessonPassEvent());
         }
     }
 
@@ -188,9 +225,11 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
     /**
      * Проверить правильность нажатия клавиши
      *
-     * @param code
+     * @param button_code
+     *
+     * @returns sequence matches to model
      */
-    public validateButtonPress(button_code: string) {
+    public validateButtonPress(button_code: string): boolean {
         if (this.button_seq_model.length === 0) return;
 
         if (button_code === this.button_seq_model[this.button_seq_idx]) {
@@ -198,11 +237,10 @@ export default class InstructorModel extends Model<Progress, DummyDatasource> {
                 this.button_seq_idx = 0;
 
                 // TODO: this.emit('pass')
+                return true;
             } else {
                 this.button_seq_idx += 1;
             }
-
-            return true;
         }
 
         this.button_seq_idx = 0;

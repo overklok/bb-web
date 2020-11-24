@@ -6,7 +6,7 @@ import {Widget} from "../../services/interfaces/IViewService";
 import {coverOptions} from "../../helpers/functions";
 
 export interface IViewOptions {
-
+    overflow?: string;
 }
 
 export interface IViewProps<O extends IViewOptions> {

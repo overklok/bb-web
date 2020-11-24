@@ -11,7 +11,7 @@ export default {
         full: {
             policy: 'horizontal',
             panes: [
-                {name: 'menubar', fixed: 60},
+                {name: 'menubar', fixed: 55, widgets: [{alias: 'navbar', label: ''}]},
                 {name: 'content', panes: [
                     {name: 'left',   size: '55%', widgets: [{alias: 'blockly', label: 'Blockly'}], title: 'Blockly'},
                     {name: 'center', size: '35%', widgets: [{alias: 'board', label: 'Board'}], title: 'Board'},
@@ -26,7 +26,7 @@ export default {
         code: {
             policy: 'horizontal',
             panes: [
-                {name: 'menubar', fixed: 60},
+                {name: 'menubar', fixed: 55, widgets: [{alias: 'navbar', label: ''}]},
                 {name: 'content', panes: [
                     {name: 'left', size: '35%', widgets: [{alias: 'blockly', label: 'Blockly'}], title: 'Blockly'},
                     {name: 'right', size_min: '10%', size: '20%', panes: [
@@ -40,7 +40,7 @@ export default {
         board: {
             policy: 'horizontal',
             panes: [
-                {name: 'menubar', fixed: 60},
+                {name: 'menubar', fixed: 55, widgets: [{alias: 'navbar', label: ''}]},
                 {name: 'content', panes: [
                     {name: 'left', size: '35%', widgets: [{alias: 'board', label: 'Board'}], title: 'Board'},
                     {name: 'right', size_min: '10%', size: '20%', panes: [
@@ -54,7 +54,7 @@ export default {
         courses: {
             policy: 'horizontal',
             panes: [
-                {name: 'menubar', fixed: 60},
+                {name: 'menubar', fixed: 55, widgets: [{alias: 'navbar', label: ''}]},
                 {name: 'content'}
             ]
         },

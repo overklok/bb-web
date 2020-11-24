@@ -31,6 +31,7 @@ import KeyboardModel from "./core/models/KeyboardModel";
 import CodeModel from "./models/common/CodeModel";
 import MainRouter from "./routers/MainRouter";
 import LessonModel from "./models/LessonModel";
+import ProgressModel from "./models/ProgressModel";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {
@@ -62,6 +63,7 @@ class MainApplication extends Application {
         svc_model.register(CodeModel, ads);
         svc_model.register(BoardModel, ads);
         svc_model.register(KeyboardModel, dds);
+        svc_model.register(ProgressModel, dds);
         svc_model.register(LayoutModel, dds, layouts_config);
 
         hds.registerMiddleware([

@@ -34,7 +34,7 @@ export default abstract class RestModel<MS> extends HttpModel<MS, HttpDatasource
 
         const path = this.schema()[CRUDAction.Read](params);
 
-        return await this.request(path, {query, method: RequestMethod.POST});
+        return await this.request(path, {query, method: RequestMethod.GET});
     }
 
     async create(params: PathParams, query?: Query, data?: object) {

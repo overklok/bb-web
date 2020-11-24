@@ -76,6 +76,15 @@ module.exports = (env, argv) => {
                         path.resolve(__dirname, "app"),
                     ]
                 },
+                {
+                    test: require.resolve('jquery'),
+                    use: [
+                        {
+                            loader: 'expose-loader',
+                            options: '$'
+                        },
+                    ]
+                }
             ]
         },
         resolve: {
@@ -87,6 +96,9 @@ module.exports = (env, argv) => {
             new BuildNotifierPlugin({
                 title: "Tapanda [New]",
                 logo: path.resolve("./img/favicon.png"),
+            }),
+            new webpack.ProvidePlugin({
+                $: 'jquery',
             }),
             new CopyWebpackPlugin(getCopypaths(env, is_dev, no_copy)),
             new webpack.DefinePlugin({
