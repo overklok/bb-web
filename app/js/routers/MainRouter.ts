@@ -20,8 +20,12 @@ export default class MainRouter extends LayoutRouter {
 
     @route('/lessons/{int}', 'exercise')
     async runExercise(lesson_id: number) {
+        console.log('mro', lesson_id)
+
         const lesson = await this.model_lesson.read({lesson_id});
         this.model_progress.loadLesson(lesson);
+
+        console.log('awa mro', lesson_id)
 
         const [mission_idx, exercise_idx] = this.model_progress.getExerciseCurrent();
         const exercise = this.model_lesson.getExercise(mission_idx, exercise_idx);

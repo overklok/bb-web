@@ -9,6 +9,9 @@ import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
 import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
 import {ViewEvent} from "../../base/Event";
+import Blockly from "blockly/blockly";
+import loggingCallback = Blockly.navigation.loggingCallback;
+import lookupFiles = Mocha.utils.lookupFiles;
 
 require('../../../../css/core/layout.less');
 

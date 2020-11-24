@@ -18,18 +18,18 @@ export default class RoutingService extends IRoutingService {
         this.router.addRoutes(routes);
     }
 
-    launch() {
+    async launch() {
         if (!this.router) {
             return;
         }
 
         this.router.launch();
-        this.router.redirect(window.location.pathname);
+        await this.router.redirect(window.location.pathname);
     }
 
-    forward(route_name: string, params: []) {
+    async forward(route_name: string, params: []) {
         const path = this.router.reverse(route_name, params);
-        this.router.redirect(path);
+        await this.router.redirect(path);
 
         window.history.pushState({route_name, params}, 'nothing', path);
     }

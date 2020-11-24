@@ -155,7 +155,7 @@ export default abstract class Router<RD extends RouteDestination> {
      *
      * @param path  a path requested by the user
      */
-    public redirect(path: string) {
+    public async redirect(path: string) {
         const resolved = this.resolve(path);
 
         if (resolved == null) {
@@ -167,7 +167,7 @@ export default abstract class Router<RD extends RouteDestination> {
 
         if (route.method_name) {
             if (Object(this)[route.method_name]) {
-                (this as any)[route.method_name](...params);
+                await (this as any)[route.method_name](...params);
             } else {
                 throw new Error(`${this.constructor.name}.${route.method_name} is undefined`);
             }
@@ -176,7 +176,7 @@ export default abstract class Router<RD extends RouteDestination> {
         }
 
         if (route.destination) {
-            this.direct(route.destination, params);
+            await this.direct(route.destination, params);
         }
 
         return resolved;
