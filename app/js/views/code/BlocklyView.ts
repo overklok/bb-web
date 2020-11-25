@@ -37,7 +37,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewOptions> {
     public async inject(container: HTMLDivElement) {
         this.blockly.inject(container);
 
-        if (this.block_types) {
+        if (this.block_types || this.options.force_all_blocks) {
             this.setBlockTypes(this.block_types);
             this.block_types = {};
         }

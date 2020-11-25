@@ -19,8 +19,21 @@ export default {
         {view_type: ModalView, presenter_types: [ModalPresenter]}
     ],
     widgets: {
-        board: {view_type: BoardView.BoardView, presenter_types: [BoardPresenter], view_options: {readonly: false}},
-        blockly: {view_type: BlocklyView, presenter_types: [BlocklyCodePresenter]},
-        launcher: {view_type: LaunchView, presenter_types: [LaunchPresenter]}
+        board: {
+            view_type: BoardView.BoardView,
+            presenter_types: [BoardPresenter],
+            view_options: {readonly: false}
+        },
+
+        blockly: {
+            view_type: BlocklyView,
+            presenter_types: [BlocklyCodePresenter],
+            view_options: {force_all_blocks: true}
+        },
+
+        launcher: {
+            view_type: LaunchView,
+            presenter_types: [LaunchPresenter],
+        }
     }
 }

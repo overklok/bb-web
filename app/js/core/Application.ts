@@ -87,13 +87,15 @@ export default abstract class Application<AC extends AppConf = AppConf> {
         this.bindings.set(abstrakt, concrete);
     }
 
-    public instance<V extends IConstructable>(abstrakt: V|string): InstanceType<V> {
+    public instance<V extends IConstructable>(abstrakt: V|string, throw_error: boolean = true): InstanceType<V> {
         const inst = this.instances.get(abstrakt);
 
         if (inst == null) {
             const itypename = typeof abstrakt === 'string' ? abstrakt : abstrakt.name;
 
-            throw new Error(`InstanceType "${itypename}" has not been bound to this application`);
+            if (throw_error) {
+                throw new Error(`InstanceType "${itypename}" has not been bound to this application`);
+            }
         }
 
         return inst;

@@ -5,6 +5,11 @@ export class LessonRouteEvent extends RouteEvent<LessonRouteEvent> {
     lesson_id: number;
 }
 
+export class MissionRouteEvent extends RouteEvent<MissionRouteEvent> {
+    lesson_id: number;
+    mission_id: number;
+}
+
 export default class MainRouter extends LayoutRouter {
     routes = [
         {
@@ -17,7 +22,13 @@ export default class MainRouter extends LayoutRouter {
         },
         {
             pathexp: '/lessons/{int}', name: 'exercise',
-            destination: (lesson_id: number) => this.emit(new LessonRouteEvent({lesson_id}))
+            destination: (lesson_id: number) =>
+                this.emit(new LessonRouteEvent({lesson_id}))
+        },
+        {
+            pathexp: '/lessons/{int}/missions/{int}', name: 'mission',
+            destination: (lesson_id: number, mission_id: number) =>
+                this.emit(new MissionRouteEvent({lesson_id, mission_id}))
         }
     ]
 }

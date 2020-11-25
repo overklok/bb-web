@@ -21,13 +21,15 @@ export class LessonPassEvent extends ModelEvent<LessonPassEvent> {}
 export class MissionPassEvent extends ModelEvent<MissionPassEvent> {
     mission_idx: number
 }
+
+export class LessonRunEvent extends ModelEvent<LessonRunEvent> {}
 export class ExercisePassEvent extends ModelEvent<ExercisePassEvent> {
     mission_idx: number;
-    lesson_idx: number;
+    exercise_idx: number;
 }
 export class ExerciseRunEvent extends ModelEvent<ExerciseRunEvent> {
     mission_idx: number;
-    lesson_idx: number;
+    exercise_idx: number;
 }
 
 export default class ProgressModel extends Model<Progress, DummyDatasource> {
@@ -69,6 +71,8 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
         progress.mission_idx_last = progress.missions.length - 1;
 
         this.setState(progress);
+
+        this.emit(new LessonRunEvent());
     }
 
     /**
@@ -170,7 +174,7 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
      * @param mission_idx  индекс миссии
      * @param exercise_idx индекс упражнения
      */
-    public switchExercise(mission_idx: number, exercise_idx: number) {
+    public switchExercise(mission_idx: number, exercise_idx: number = 0) {
         mission_idx = mission_idx | 0;
         exercise_idx = exercise_idx | 0;
 

@@ -7,10 +7,11 @@ import {NavbarView} from "../../views/controls/NavbarView";
 import ModalPresenter       from "../../core/presenters/ModalPresenter";
 import LayoutPresenter      from "../../presenters/common/LayoutPresenter";
 import BoardPresenter       from "../../presenters/common/BoardPresenter";
-import NavbarPresenter      from "../../presenters/controls/NavbarViewPresenter";
+import NavbarPresenter      from "../../presenters/controls/NavbarPresenter";
 import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";
 
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
+import BlocklyLessonPresenter from "../../presenters/common/BlocklyLessonPresenter";
 
 export default {
     composer: OverlayViewComposer,
@@ -31,7 +32,7 @@ export default {
         },
         blockly: {
             view_type: BlocklyView,
-            presenter_types: [BlocklyCodePresenter]
+            presenter_types: [BlocklyCodePresenter, BlocklyLessonPresenter],
         }
     }
 }

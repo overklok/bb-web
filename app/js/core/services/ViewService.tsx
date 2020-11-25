@@ -10,6 +10,7 @@ import {getClassNameAlias} from "../helpers/functions";
 import IEventService from "./interfaces/IEventService";
 import IModelService from "./interfaces/IModelService";
 import Application from "../Application";
+import IRoutingService from "./interfaces/IRoutingService";
 
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
@@ -22,6 +23,7 @@ export default class ViewService extends IViewService {
     private view_connectors_external: [string, ViewConnector][] = [];
     private svc_event: IEventService;
     private svc_model: IModelService;
+    private svc_routing: IRoutingService;
 
     constructor(app: Application) {
         super(app);
@@ -35,6 +37,7 @@ export default class ViewService extends IViewService {
 
         this.svc_event = this.app.instance(IEventService);
         this.svc_model = this.app.instance(IModelService);
+        this.svc_routing = this.app.instance(IRoutingService, false);
     }
 
     public compose(element: HTMLElement) {
@@ -58,7 +61,7 @@ export default class ViewService extends IViewService {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
             const {view_type, presenter_types, label, view_options} = widget_type;
 
-            const connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model);
+            const connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
 
             this.view_connectors_external.push([alias, connector]);
 
@@ -109,7 +112,7 @@ export default class ViewService extends IViewService {
         const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
             const {view_type: SpecificView, presenter_types, label, view_options} = widget_type;
 
-            const view_connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model);
+            const view_connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
 
             this.view_connectors_internal.push(view_connector);
 

@@ -124,8 +124,8 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
         this.detachConnector();
     }
 
-    protected async emit<E>(event: ViewEvent<E>) {
-        await this.props.connector.emit(event);
+    protected emit<E>(event: ViewEvent<E>) {
+        return this.props.connector.emit(event);
     }
 
     private callDeferredUntilMount() {

@@ -183,7 +183,7 @@ export default abstract class Router<RD extends RouteDestination> {
         }
 
         if (route.destination instanceof Function) {
-            await route.destination(params);
+            await route.destination(...params);
         } else {
             await this.direct(route.destination, params);
         }

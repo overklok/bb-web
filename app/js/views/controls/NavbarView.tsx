@@ -1,6 +1,7 @@
 import {ImperativeView} from "../../core/base/view/ImperativeView";
 import {deferUntilMounted, IViewOptions, IViewProps, IViewState} from "../../core/base/view/View";
 import LessonPaneWrapper from "../../wrappers/LessonPaneWrapper";
+import {ViewEvent} from "../../core/base/Event";
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;
@@ -18,8 +19,23 @@ interface NavbarViewOptions extends IViewOptions {
     devMode: boolean;
 }
 
+interface NavbarViewState extends IViewState {
+
+}
+
 export namespace NavbarView {
-    export class NavbarView extends ImperativeView<NavbarViewOptions> {
+    export class MissionSelectEvent extends ViewEvent<MissionSelectEvent> {
+        mission_idx: number;
+    }
+
+    export class ExerciseSelectEvent extends ViewEvent<ExerciseSelectEvent> {
+        mission_idx: number;
+        exercise_idx: number;
+    }
+
+    export class StatusClickEvent extends ViewEvent<StatusClickEvent> {}
+
+    export class NavbarView extends ImperativeView<NavbarViewOptions, NavbarViewState> {
         static defaultOptions: NavbarViewOptions = {
             logoText: "Tapanda",
             imagesPath: "",
@@ -184,11 +200,11 @@ export namespace NavbarView {
 
         private setup() {
             this.lesson_pane.onMissionClick((idx: number) => {
-                console.log('on mission click', idx);
+                this.emit(new MissionSelectEvent({mission_idx: idx}));
             });
 
-            this.lesson_pane.onMenuClick(() => {
-                console.log('on menu click');
+            this.lesson_pane.onMenuClick(function() {
+                console.log('on menu click', arguments);
             });
 
             this.lesson_pane.onReturnClick(() => {
@@ -200,11 +216,11 @@ export namespace NavbarView {
             });
 
             this.lesson_pane.onUserExerciseClick((mission_idx: number, exercise_idx: number) => {
-                console.log('on user_exercise click', mission_idx, exercise_idx);
+                this.emit(new MissionSelectEvent({mission_idx, exercise_idx}));
             });
 
             this.lesson_pane.onStatusClick(() => {
-                console.log('reconnect');
+                this.emit(new StatusClickEvent());
             });
         }
     }

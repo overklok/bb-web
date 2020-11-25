@@ -149,10 +149,11 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> impleme
         return model;
     }
 
-    protected forward(route_name: string, params: []) {
+    protected forward(route_name: string, params: any[]) {
         if (!this.svc_routing) {
             throw new Error("No router is available for the application");
         }
-        const path = this.svc_routing.forward(route_name, params);
+
+        return this.svc_routing.forward(route_name, params);
     }
 }

@@ -2,7 +2,7 @@ import * as React from "react";
 import {IViewProps, IViewState, MountEvent, View} from "./View";
 import {sleep} from "../../helpers/functions";
 
-export abstract class ImperativeView<O> extends View<O, IViewState> {
+export abstract class ImperativeView<O, S=IViewState> extends View<O, S> {
     public static notifyNestMount: boolean = true;
 
     protected constructor(props: IViewProps<O>) {

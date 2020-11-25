@@ -7,5 +7,5 @@ export default class IRoutingService {
     setRouter(router_class: IRouter)                            {throw new Error("abstract");}
     loadRoutes(routes: Route<any>[])                            {throw new Error("abstract");}
     launch()                                                    {throw new Error("abstract");}
-    forward(route_name: string, params: [])                     {throw new Error("abstract");}
+    forward(route_name: string, params: any[])                  {throw new Error("abstract");}
 }

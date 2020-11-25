@@ -30,10 +30,9 @@ export default class RoutingService extends IRoutingService {
         await this.router.redirect(window.location.pathname);
     }
 
-    async forward(route_name: string, params: []) {
+    async forward(route_name: string, params: any[]) {
         const path = this.router.reverse(route_name, params);
-        await this.router.redirect(path);
-
         window.history.pushState({route_name, params}, 'nothing', path);
+        await this.router.redirect(path);
     }
 }
