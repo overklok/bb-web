@@ -106,7 +106,7 @@ export default class EventService extends IEventService {
     /**
      * @inheritDoc
      */
-    emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
+    async emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
         const event_type: typeof AbstractEvent = (event as any).__proto__.constructor;
 
         this.last_events.set(event_type, event);
@@ -134,9 +134,14 @@ export default class EventService extends IEventService {
             proto = proto.__proto__;
         } while (proto.constructor !== AbstractEvent)
 
+        let promises = [];
+
         for (const handler of handlers) {
             if (!handler) continue;
-            handler(event);
+            promises.push(handler(event));
         }
+
+        // run all handlers in parallel
+        await Promise.all(promises);
     }
 }

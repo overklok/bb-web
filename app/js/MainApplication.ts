@@ -26,17 +26,11 @@ import widgets_config from "./configs/main/widgets";
 import "../css/global.less";
 import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
 import IRoutingService from "./core/services/interfaces/IRoutingService";
-import LayoutRouter from "./core/routers/LayoutRouter";
 import KeyboardModel from "./core/models/KeyboardModel";
 import CodeModel from "./models/common/CodeModel";
 import MainRouter from "./routers/MainRouter";
 import LessonModel from "./models/LessonModel";
 import ProgressModel from "./models/ProgressModel";
-import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
-import LayoutView from "./core/views/layout/LayoutView";
-import LayoutPresenter from "./core/presenters/LayoutPresenter";
-import ModalView from "./core/views/modal/ModalView";
-import ModalPresenter from "./core/presenters/ModalPresenter";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {

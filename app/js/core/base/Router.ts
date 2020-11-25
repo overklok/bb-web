@@ -1,6 +1,8 @@
 import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
+import {ModelEvent, RouterEvent} from "./Event";
+import IEventService from "../services/interfaces/IEventService";
 
 type RouteDestination = unknown;
 
@@ -114,8 +116,12 @@ export default abstract class Router<RD extends RouteDestination> {
     /* An instance of model service to give a read-only access to model repository. */
     private svc_model: IModelService;
 
-    constructor(svc_model: IModelService) {
+    /* An instance of event service to give an ability to emit events from the router. */
+    private svc_event: IEventService;
+
+    constructor(svc_model: IModelService, svc_event: IEventService) {
         this.svc_model = svc_model;
+        this.svc_event = svc_event;
     }
 
     /**
@@ -273,6 +279,10 @@ export default abstract class Router<RD extends RouteDestination> {
         }
 
         return model;
+    }
+
+    protected emit<E>(evt: RouterEvent<E>) {
+        this.svc_event.emit(evt);
     }
 
     /**

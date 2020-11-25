@@ -1,19 +1,22 @@
-import BoardView from "../../views/board/BoardView";
-import TestkitView from "../../views/monkey/TestkitView";
-import MonkeyView from "../../views/monkey/MonkeyView";
-import MonkeyPresenter from "../../presenters/monkey/MonkeyPresenter";
-import TestkitPresenter from "../../presenters/monkey/TestkitPresenter";
-import TestkitModel from "../../models/monkey/TestkitModel";
-import BoardPresenter from "../../presenters/common/BoardPresenter";
-import ReferenceBoardPresenter from "../../presenters/monkey/ReferenceBoardPresenter";
-import LogView from "../../views/monkey/LogView";
-import BoardLogPresenter from "../../presenters/monkey/BoardLogPresenter";
-import BoardPreviewPresenter from "../../presenters/common/BoardPreviewPresenter";
+import ModalView    from "../../core/views/modal/ModalView";
+import LayoutView   from "../../core/views/layout/LayoutView";
+import {BoardView}  from "../../views/board/BoardView";
+import TestkitView  from "../../views/monkey/TestkitView";
+import MonkeyView   from "../../views/monkey/MonkeyView";
+import LogView      from "../../views/monkey/LogView";
+
+import LayoutPresenter          from "../../core/presenters/LayoutPresenter";
+import ModalPresenter           from "../../core/presenters/ModalPresenter";
+import BoardLogPresenter        from "../../presenters/monkey/BoardLogPresenter";
+import BoardPresenter           from "../../presenters/common/BoardPresenter";
+import MonkeyPresenter          from "../../presenters/monkey/MonkeyPresenter";
+import TestkitPresenter         from "../../presenters/monkey/TestkitPresenter";
+import ReferenceBoardPresenter  from "../../presenters/monkey/ReferenceBoardPresenter";
+import BoardPreviewPresenter    from "../../presenters/common/BoardPreviewPresenter";
+
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
-import LayoutView from "../../core/views/layout/LayoutView";
-import LayoutPresenter from "../../core/presenters/LayoutPresenter";
-import ModalView from "../../core/views/modal/ModalView";
-import ModalPresenter from "../../core/presenters/ModalPresenter";
+
+import TestkitModel from "../../models/monkey/TestkitModel";
 
 export default {
     composer: OverlayViewComposer,
@@ -23,13 +26,13 @@ export default {
     ],
     widgets: {
         board_disp: {
-            view_type: BoardView,
+            view_type: BoardView.BoardView,
             presenter_types: [BoardPresenter],
             view_options: {schematic: false, readonly: false}
         },
 
         board_ref: {
-            view_type: BoardView,
+            view_type: BoardView.BoardView,
             presenter_types: [ReferenceBoardPresenter],
             view_options: {schematic: false}
         },
@@ -51,7 +54,7 @@ export default {
         },
 
         board_preview: {
-            view_type: BoardView,
+            view_type: BoardView.BoardView,
             presenter_types: [BoardPreviewPresenter],
             view_options: {readonly: true, schematic: false}
         },

@@ -1,13 +1,15 @@
-import {BoardView} from "../../views/board/BoardView";
-import BoardPresenter from "../../presenters/common/BoardPresenter";
-import BlocklyView from "../../views/code/BlocklyView";
-import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";
+import ModalView    from "../../core/views/modal/ModalView";
+import LayoutView   from "../../core/views/layout/LayoutView";
+import BlocklyView  from "../../views/code/BlocklyView";
+import {BoardView}  from "../../views/board/BoardView";
 import {NavbarView} from "../../views/controls/NavbarView";
-import NavbarPresenter from "../../presenters/controls/NavbarViewPresenter";
-import LayoutView from "../../core/views/layout/LayoutView";
-import LayoutPresenter from "../../core/presenters/LayoutPresenter";
-import ModalView from "../../core/views/modal/ModalView";
-import ModalPresenter from "../../core/presenters/ModalPresenter";
+
+import ModalPresenter       from "../../core/presenters/ModalPresenter";
+import LayoutPresenter      from "../../core/presenters/LayoutPresenter";
+import BoardPresenter       from "../../presenters/common/BoardPresenter";
+import NavbarPresenter      from "../../presenters/controls/NavbarViewPresenter";
+import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";
+
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
 
 export default {

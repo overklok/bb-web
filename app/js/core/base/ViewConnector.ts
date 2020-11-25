@@ -111,10 +111,10 @@ export default class ViewConnector {
      *
      * @param event the event to be passed
      */
-    emit<E>(event: ViewEvent<E>) {
+    async emit<E>(event: ViewEvent<E>) {
         const anchor = this.getEventAnchorByInstance(event);
 
-        this.svc_event.emit(event, anchor);
+        await this.svc_event.emit(event, anchor);
     }
 
     /**
