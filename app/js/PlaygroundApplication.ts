@@ -28,6 +28,11 @@ import KeyboardModel from "./core/models/KeyboardModel";
 import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
 import IRoutingService from "./core/services/interfaces/IRoutingService";
 import LayoutRouter from "./core/routers/LayoutRouter";
+import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
+import LayoutView from "./core/views/layout/LayoutView";
+import LayoutPresenter from "./core/presenters/LayoutPresenter";
+import ModalView from "./core/views/modal/ModalView";
+import ModalPresenter from "./core/presenters/ModalPresenter";
 
 class PlaygroundApplication extends Application {
     public bb: BoardModel;
@@ -68,9 +73,8 @@ class PlaygroundApplication extends Application {
         const svc_view = this.instance(IViewService),
               svc_model = this.instance(IModelService);
 
-        // svc_routing.setRouter()
-
-        svc_view.registerWidgetTypes(widgets_config);
+        svc_view.setRootWidgets(widgets_config.composer, widgets_config.root);
+        svc_view.registerWidgetTypes(widgets_config.widgets);
 
         this.bb = svc_model.retrieve(BoardModel);
         this.cm = svc_model.retrieve(CodeModel);

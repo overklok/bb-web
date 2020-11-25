@@ -55,7 +55,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
 
         this.ads = new AdaptiveDatasource(data_sources);
 
-        this.instance(IViewService).setup(SingleViewComposer, 'main');
+        this.instance(IViewService).setRootWidgets(SingleViewComposer, 'main');
     }
 
     async run(element: HTMLElement) {

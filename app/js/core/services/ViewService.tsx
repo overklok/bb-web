@@ -30,24 +30,28 @@ export default class ViewService extends IViewService {
         this.widget_types = [];
     }
 
-    public setup(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = []) {
+    public setup() {
         this.widgets = {};
-        this.view_composer = view_composer;
 
         this.svc_event = this.app.instance(IEventService);
         this.svc_model = this.app.instance(IModelService);
-
-        if (typeof widget_types === 'string') {
-            this.widget_type_key = widget_types;
-        } else {
-            this.widget_types = widget_types;
-        }
     }
 
     public compose(element: HTMLElement) {
         this.element = element;
 
         this.recompose();
+    }
+
+    public setRootWidgets(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = []) {
+        this.widgets = {};
+        this.view_composer = view_composer;
+
+        if (typeof widget_types === 'string') {
+            this.widget_type_key = widget_types;
+        } else {
+            this.widget_types = widget_types;
+        }
     }
 
     public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {

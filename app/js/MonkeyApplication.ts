@@ -26,6 +26,11 @@ import widgets_config from "./configs/monkey/widgets";
 import ModalModel from "./core/models/ModalModel";
 import TestkitModel from "./models/monkey/TestkitModel";
 import BoardLogModel from "./models/monkey/BoardLogModel";
+import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
+import LayoutView from "./core/views/layout/LayoutView";
+import LayoutPresenter from "./core/presenters/LayoutPresenter";
+import ModalView from "./core/views/modal/ModalView";
+import ModalPresenter from "./core/presenters/ModalPresenter";
 
 class MonkeyApplication extends Application {
     public bb: BoardModel;
@@ -57,7 +62,8 @@ class MonkeyApplication extends Application {
         const svc_view = this.instance(IViewService),
               svc_model = this.instance(IModelService);
 
-        svc_view.registerWidgetTypes(widgets_config);
+        svc_view.setRootWidgets(widgets_config.composer, widgets_config.root);
+        svc_view.registerWidgetTypes(widgets_config.widgets);
 
         svc_model.register(ModalModel, this.dds);
         svc_model.register(LayoutModel, this.dds, layouts_config);

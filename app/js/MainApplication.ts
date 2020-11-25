@@ -32,6 +32,11 @@ import CodeModel from "./models/common/CodeModel";
 import MainRouter from "./routers/MainRouter";
 import LessonModel from "./models/LessonModel";
 import ProgressModel from "./models/ProgressModel";
+import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
+import LayoutView from "./core/views/layout/LayoutView";
+import LayoutPresenter from "./core/presenters/LayoutPresenter";
+import ModalView from "./core/views/modal/ModalView";
+import ModalPresenter from "./core/presenters/ModalPresenter";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {
@@ -79,7 +84,8 @@ class MainApplication extends Application {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         const svc_view = this.instance(IViewService);
-        svc_view.registerWidgetTypes(widgets_config);
+        svc_view.setRootWidgets(widgets_config.composer, widgets_config.root);
+        svc_view.registerWidgetTypes(widgets_config.widgets);
 
         this.instance(IViewService).compose(element);
     }
