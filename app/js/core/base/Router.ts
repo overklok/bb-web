@@ -1,8 +1,9 @@
 import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
-import {ModelEvent, RouterEvent} from "./Event";
+import {ModelEvent, RouteEvent} from "./Event";
 import IEventService from "../services/interfaces/IEventService";
+import {CallbackFunctionVariadic} from "../helpers/types";
 
 type RouteDestination = unknown;
 
@@ -13,7 +14,7 @@ export type Route<RD extends RouteDestination> = {
     /* Route name, required to reverse */
     name: string;
     /* The unique destination of the route */
-    destination: RD;
+    destination: RD|CallbackFunctionVariadic;
     /**
      * Path expression of the route
      *
@@ -44,7 +45,7 @@ type CompiledRoute<RD extends RouteDestination> = {
     regexp: RegExp;
     pathexp?: string;
     param_types?: string[];
-    destination?: RD;
+    destination?: RD|CallbackFunctionVariadic;
     method_name?: string;
 }
 
@@ -84,7 +85,7 @@ export function route(pathexp: string, name: string) {
  * A helper interface to describe the object that constructs {@see Router} objects.
  */
 export interface IRouter {
-    new(svc_model: IModelService): Router<any>;
+    new(svc_model: IModelService, svc_event: IEventService): Router<any>;
 }
 
 /**
@@ -181,7 +182,9 @@ export default abstract class Router<RD extends RouteDestination> {
             return;
         }
 
-        if (route.destination) {
+        if (route.destination instanceof Function) {
+            await route.destination(params);
+        } else {
             await this.direct(route.destination, params);
         }
 
@@ -260,8 +263,8 @@ export default abstract class Router<RD extends RouteDestination> {
     /**
      * Find a model in global repository
      *
-     * This method isolates {@see Route}'s inheritors to write access to repository, giving an ability
-     * to just retrieve the {@see Model} instances.
+     * This method isolates {@see Route}'s inheritors to write access to repository, enabling to
+     * retrieve the {@see Model} instances.
      *
      * Note that the models may not be available before the {@see launch} method is called
      * because of the {@see IRoutingService} lifecycle conventions (see {@see RoutingServiceProvider} ).
@@ -281,8 +284,8 @@ export default abstract class Router<RD extends RouteDestination> {
         return model;
     }
 
-    protected emit<E>(evt: RouterEvent<E>) {
-        this.svc_event.emit(evt);
+    protected emit<E>(evt: RouteEvent<E>) {
+        return this.svc_event.emit(evt);
     }
 
     /**
@@ -314,7 +317,7 @@ export default abstract class Router<RD extends RouteDestination> {
             }
 
             if (typeof pathexp === 'string') {
-                const [regexp, param_types] = this.compileRoute(route_name, pathexp, method_name);
+                const [regexp, param_types] = this.compileRoute(route_name, pathexp, destination, method_name);
                 this.routes_compiled.set(route_name, {pathexp, regexp, destination, method_name, param_types});
             } else if (pathexp instanceof RegExp) {
                 this.routes_compiled.set(route_name, {regexp: pathexp, destination, method_name});
@@ -331,7 +334,13 @@ export default abstract class Router<RD extends RouteDestination> {
      * @param pathexp       original path expression to convert to regexp format
      * @param method_name   a method to call if specified
      */
-    private compileRoute(route_name: string, pathexp: string, method_name: string): [RegExp, string[]] {
+    private compileRoute(
+        route_name: string,
+        pathexp: string,
+        destination: RD|CallbackFunctionVariadic,
+        method_name: string
+    ): [RegExp, string[]]
+    {
         const param_types: string[] = [];
 
         let param_qty = 0;
@@ -365,6 +374,17 @@ export default abstract class Router<RD extends RouteDestination> {
 
             } else {
                 throw new Error(`Method named '${method_name}' does not exist in ${this.constructor.name}`);
+            }
+        }
+
+        if (destination instanceof Function) {
+            // get number of required arguments
+            let param_qty_required = destination.length;
+
+            if (param_qty_required > param_qty) {
+                throw new Error(
+                    `Route '${route_name}' path specifies less arguments than its callback handler function`
+                );
             }
         }
 

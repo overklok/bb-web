@@ -1,17 +1,20 @@
 import IRoutingService from "./interfaces/IRoutingService";
 import Router, {IRouter, Route} from "../base/Router";
 import IModelService from "./interfaces/IModelService";
+import IEventService from "./interfaces/IEventService";
 
 export default class RoutingService extends IRoutingService {
     private router: Router<any>;
     private svc_model: IModelService;
+    private svc_event: IEventService;
 
-    setup(svc_model: IModelService) {
+    setup(svc_model: IModelService, svc_event: IEventService) {
         this.svc_model = svc_model;
+        this.svc_event = svc_event;
     }
 
     setRouter(router_class: IRouter) {
-        this.router = new router_class(this.svc_model);
+        this.router = new router_class(this.svc_model, this.svc_event);
     }
 
     loadRoutes(routes: Route<any>[]) {

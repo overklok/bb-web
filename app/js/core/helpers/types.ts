@@ -18,4 +18,6 @@ type ViewComposerType<P extends IVCProps, S extends IVCState> =
 
 type ViewComposerAny = ViewComposer<any, any>;
 
-export {ViewType, PresenterType, ViewComposerType, WidgetInfo, ViewComposerAny};
+type CallbackFunctionVariadic = (...args: any[]) => void;
+
+export {ViewType, PresenterType, ViewComposerType, WidgetInfo, ViewComposerAny, CallbackFunctionVariadic};

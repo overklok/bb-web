@@ -21,7 +21,7 @@ export abstract class ModelEvent<T> extends AbstractEvent<T> {
 /**
  * A subset of ModelEvent which is used to work with routing.
  */
-export class RouterEvent<T> extends ModelEvent<T> {}
+export class RouteEvent<T> extends ModelEvent<T> {}
 
 /**
  * A special kind of ViewEvent which can be visually represented in Views

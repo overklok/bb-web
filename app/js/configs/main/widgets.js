@@ -5,7 +5,7 @@ import {BoardView}  from "../../views/board/BoardView";
 import {NavbarView} from "../../views/controls/NavbarView";
 
 import ModalPresenter       from "../../core/presenters/ModalPresenter";
-import LayoutPresenter      from "../../core/presenters/LayoutPresenter";
+import LayoutPresenter      from "../../presenters/common/LayoutPresenter";
 import BoardPresenter       from "../../presenters/common/BoardPresenter";
 import NavbarPresenter      from "../../presenters/controls/NavbarViewPresenter";
 import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";

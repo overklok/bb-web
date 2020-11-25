@@ -60,6 +60,6 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
             return;
         }
 
-        this.svc_event.emit(evt);
+        return this.svc_event.emit(evt);
     }
 }

@@ -64,7 +64,7 @@ describe('Router', () => {
         call_mock.mockClear();
         direct_mock.mockClear();
 
-        router = new FooRouter(model_svc);
+        router = new FooRouter(model_svc, null);
         router.launch();
     });
 
@@ -183,8 +183,8 @@ describe('Router', () => {
             expect(show_album_photo_mock).toBeCalledWith('foo', 34);
         });
 
-        it('should return nothing if path cannot be resolved', () => {
-            const result = router.redirect('/nonexistent/path');
+        it('should return nothing if path cannot be resolved', async () => {
+            const result = await router.redirect('/nonexistent/path');
 
             expect(result).toBeUndefined();
         });
@@ -202,7 +202,7 @@ describe('Router', () => {
             protected direct(destination: string): void {}
         }
 
-        const router = new InvalidRouter(model_svc);
+        const router = new InvalidRouter(model_svc, null);
 
         expect(router.launch).toThrowError();
     });
@@ -217,10 +217,14 @@ describe('Router', () => {
             public methodWithTwoArguments(arg_1: any, arg_2: any) {}
         }
 
-        const router = new InvalidRouter(model_svc);
+        const router = new InvalidRouter(model_svc, null);
 
         expect(router.launch).toThrowError();
     });
+
+    // TODO: Functional routes
+
+    // TODO: Promises
 
     // working with Models
 

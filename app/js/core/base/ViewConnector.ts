@@ -111,10 +111,10 @@ export default class ViewConnector {
      *
      * @param event the event to be passed
      */
-    async emit<E>(event: ViewEvent<E>) {
+    emit<E>(event: ViewEvent<E>) {
         const anchor = this.getEventAnchorByInstance(event);
 
-        await this.svc_event.emit(event, anchor);
+        return this.svc_event.emit(event, anchor);
     }
 
     /**
@@ -162,7 +162,7 @@ export default class ViewConnector {
                 const anchor = this.getEventAnchorByType(event_type);
 
                 const hdlr = function () {
-                    (presenter as any)[method_name](...arguments)
+                    return (presenter as any)[method_name](...arguments);
                 };
 
                 this.svc_event.subscribe(event_type, hdlr, anchor, restorable);
