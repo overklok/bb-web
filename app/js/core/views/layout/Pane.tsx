@@ -342,9 +342,9 @@ export default class Pane extends React.Component<IProps, IState> {
         return (
             <div className={klasses} ref={div_element => {this.div_element = div_element}}>
                 {/*Показывать обложку для панели, если в ней нет вложенных панелей*/}
-                <Cover enabled={!this.panes.length && this.state.covered}
-                       title={this.props.title}
-                />
+                {/*<Cover enabled={!this.panes.length && this.state.covered}*/}
+                {/*       title={this.props.title}*/}
+                {/*/>*/}
                 {components}
             </div>
         );

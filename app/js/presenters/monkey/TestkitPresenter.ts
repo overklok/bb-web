@@ -20,6 +20,10 @@ export default class TestkitPresenter extends Presenter<TestkitView> {
 
     @on(UnmountEvent)
     private saveValues() {
-        this.testkit.setQuantities(this.view.getItemQuantities(), this.view.getSize(), this.view.getSizeDeviation());
+        this.testkit.setQuantities(
+            this.view.getItemQuantities(),
+            this.view.getSize(),
+            this.view.getSizeDeviation()
+        );
     }
 }

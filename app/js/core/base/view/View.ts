@@ -112,13 +112,13 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
 
     protected viewDidMount() {
         console.log(this.constructor.name, 'mount');
+        this.props.connector.attach(this);
         this.callDeferredUntilMount();
     }
 
     protected viewWillUnmount() {
-        console.log(this.constructor.name, 'unmount');
-
         this.detachConnector();
+        console.log(this.constructor.name, 'unmount');
     }
 
     protected emit<E>(event: ViewEvent<E>) {

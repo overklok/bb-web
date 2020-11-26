@@ -1,5 +1,5 @@
 import * as React from "react";
-import {IViewProps, View} from "./View";
+import {AllProps, IViewProps, MountEvent, UnmountEvent, View} from "./View";
 import classNames from "classnames";
 import ViewConnector from "../ViewConnector";
 import {ViewType} from "../../helpers/types";
@@ -23,8 +23,8 @@ interface INestState {
 
 export default class Nest extends React.Component<INestProps<any>, INestState> {
     private readonly ref = React.createRef<HTMLDivElement>();
-    private readonly ref_view = React.createRef<View>();
     private view: View;
+    private view_props: AllProps<any>
 
     constructor(props: INestProps<any>) {
         super(props);
@@ -34,6 +34,9 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
         };
 
         this.onRefUpdated = this.onRefUpdated.bind(this);
+
+        this.view_props = this.props.connector.collectProps();
+        this.view_props = {...this.props.view_props, ...this.view_props};
     }
 
     componentDidMount() {
@@ -53,8 +56,20 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
     }
 
     onRefUpdated(view: View) {
-        this.view = view;
-        this.props.connector.attach(view);
+        // view created
+        if (view && !this.view) {
+            this.view = view;
+        }
+
+        // view updated
+        if (view && this.view && view !== this.view) {
+            this.view = view;
+        }
+
+        // view destroyed
+        if (!view && this.view) {
+            this.view = view;
+        }
     }
 
     render() {
@@ -65,13 +80,11 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
             'nest': true,
         });
 
-        const view_props = this.props.connector.collectProps();
-
         return (
             <div className={klasses} ref={this.ref}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
-                        {...view_props}
+                        {...this.view_props}
                         ref={this.onRefUpdated}
                         widgets={this.props.widgets}
                         connector={this.props.connector}

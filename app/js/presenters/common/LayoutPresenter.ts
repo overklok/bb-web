@@ -8,11 +8,11 @@ export default class LayoutPresenter extends LayoutPresenterCore {
     private model_lesson: LessonModel;
     private model_progress: ProgressModel;
 
-    public ready() {
-        super.getInitialProps();
-
+    public getInitialProps() {
         this.model_lesson = this.getModel(LessonModel);
         this.model_progress = this.getModel(ProgressModel);
+
+        return super.getInitialProps();
     }
 
     @restore() @on(LessonRouteEvent, MissionRouteEvent)

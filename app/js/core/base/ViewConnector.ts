@@ -105,14 +105,15 @@ export default class ViewConnector {
         this.unsubscribePresenterHandlers();
 
         for (const presenter of this.presenters) {
+            presenter.attachView(view);
             this.subscribePresenterHandlers(presenter);
         }
     }
 
     detach() {
-        delete this.view;
-
         this.unsubscribePresenterHandlers();
+
+        delete this.view;
     }
 
     /**

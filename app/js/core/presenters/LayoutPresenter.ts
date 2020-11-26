@@ -9,13 +9,18 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
         this.model_layout = this.getModel(LayoutModel);
         const modes = this.model_layout.getModes();
 
-        const mode_name = this.model_layout.getState().current_mode;
+        const {current_mode, options} = this.model_layout.getState();
 
-        return {mode_name, modes};
+        return {
+            mode_name: current_mode,
+            show_headers: options.show_headers,
+            modes
+        };
     }
 
     @restore() @on(SetModeEvent)
     protected setMode(evt: SetModeEvent) {
+        console.log(this.view);
         this.view.setMode(evt.mode);
     }
 
