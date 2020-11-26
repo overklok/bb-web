@@ -7,7 +7,7 @@ import BoardPreviewPresenter from "../common/BoardPreviewPresenter";
 export default class BoardLogPresenter extends Presenter<BoardLogView> {
     private mdl_log: BoardLogModel;
     private mdl_modal: ModalModel;
-    protected ready() {
+    public ready() {
         this.mdl_log = this.getModel(BoardLogModel);
         this.mdl_modal = this.getModel(ModalModel);
     }

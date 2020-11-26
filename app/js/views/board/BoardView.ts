@@ -1,21 +1,21 @@
 import {ImperativeView} from "../../core/base/view/ImperativeView";
 import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
-import {IViewOptions, IViewProps} from "../../core/base/view/View";
+import {AllProps, IViewProps} from "../../core/base/view/View";
 
 export namespace BoardView {
     export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}
     export class LayoutChangeEvent extends ViewEvent<LayoutChangeEvent> {}
     export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
 
-    export interface BoardViewOptions extends IViewOptions {
+    export interface BoardViewProps extends IViewProps {
         schematic?: boolean;
         verbose?: boolean;
         readonly?: boolean
     }
 
-    export class BoardView extends ImperativeView<BoardViewOptions> {
-        static defaultOptions: BoardViewOptions = {
+    export class BoardView extends ImperativeView<BoardViewProps> {
+        static defaultProps: BoardViewProps = {
             schematic: true,
             readonly: true,
             verbose: false
@@ -25,7 +25,7 @@ export namespace BoardView {
         private layouts: object;
         private layout_name: string;
 
-        constructor(props: IViewProps<BoardViewOptions>) {
+        constructor(props: AllProps<BoardViewProps>) {
             super(props);
 
             this.bb = new Breadboard({
@@ -48,10 +48,10 @@ export namespace BoardView {
 
         inject(container: HTMLDivElement): void {
             this.bb.inject(container, {
-                readOnly: this.options.readonly,
-                schematic: this.options.schematic,
-                detailed: this.options.schematic,
-                verbose: this.options.verbose,
+                readOnly: this.props.readonly,
+                schematic: this.props.schematic,
+                detailed: this.props.schematic,
+                verbose: this.props.verbose,
                 layout_name: this.layout_name,
             });
         }

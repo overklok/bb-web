@@ -10,7 +10,7 @@ import {KeyUpEvent} from "../../core/models/KeyboardModel";
 export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
     private model: CodeModel;
 
-    protected ready() {
+    public ready() {
         this.model = this.getModel(CodeModel);
     }
 

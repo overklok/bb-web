@@ -5,13 +5,10 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import Pane, {PaneOrientation} from "./Pane";
 
 import {RefObject} from "react";
-import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
 import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
 import {ViewEvent} from "../../base/Event";
-import Blockly from "blockly/blockly";
-import loggingCallback = Blockly.navigation.loggingCallback;
-import lookupFiles = Mocha.utils.lookupFiles;
 
 require('../../../../css/core/layout.less');
 
@@ -64,7 +61,7 @@ interface ILayoutState extends IViewState {
     mode_name: string
 }
 
-interface ILayoutOptions extends IViewOptions {
+interface ILayoutProps extends IViewProps {
     show_headers: boolean;
 }
 
@@ -75,18 +72,18 @@ interface ILayoutOptions extends IViewOptions {
  * компонуя панели в соответствии с выбранным режимом разметки.
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
-export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
+export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     private pane_ref: RefObject<Pane> = React.createRef();
     private modes: {[key: string]: ILayoutMode};
 
     private root_ref: RefObject<HTMLDivElement> = React.createRef();
     private overlay_node: HTMLDivElement;
 
-    static defaultOptions: ILayoutOptions = {
+    static defaultOptions: ILayoutProps = {
         show_headers: true
     }
 
-    constructor(props: IViewProps<ILayoutOptions>) {
+    constructor(props: AllProps<ILayoutProps>) {
         super(props);
 
         this.modes = {
@@ -145,7 +142,7 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
     }
 
     public componentDidUpdate(
-        prevProps: Readonly<IViewProps<ILayoutOptions>>,
+        prevProps: Readonly<AllProps<ILayoutProps>>,
         prevState: Readonly<ILayoutState>,
         snapshot?: any
     ) {
@@ -167,7 +164,7 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
                       orientation={orientation}
                       ref={this.pane_ref}
                       overlay_node={this.overlay_node}
-                      show_headers={this.options.show_headers}
+                      show_headers={this.props.show_headers}
                 />
             </DndProvider>
         );

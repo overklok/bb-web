@@ -1,12 +1,10 @@
-import Application from "../Application";
 import IEventService from "../services/interfaces/IEventService";
 import IModelService from "../services/interfaces/IModelService";
 import Presenter from "./Presenter";
-import {AbstractEvent, Action, ModelEvent, ViewEvent} from "./Event";
-import {IViewOptions, IViewState, View} from "./view/View";
+import {AbstractEvent, Action, ViewEvent} from "./Event";
+import {IViewProps, View} from "./view/View";
 import {PresenterType} from "../helpers/types";
 import IRoutingService from "../services/interfaces/IRoutingService";
-import Router from "./Router";
 
 /**
  * ViewConnector is a class that makes possible to Views be communicated with logical layer of application
@@ -38,10 +36,12 @@ export default class ViewConnector {
     private handlers: [typeof AbstractEvent, Function][] = [];
 
     /** @property An array of presenter prototypes to construct Presenter instances when the View is attached */
-    public readonly presenter_types: PresenterType<View<IViewOptions, IViewState>>[];
+    public readonly presenter_types: PresenterType<View>[];
 
     /** @property An array of {@link Action} bindings - the title, an Action type */
     public actions: Array<[string, Action<any>, Function]> = [];
+
+    private presenters: Presenter<any>[];
 
     /**
      * View connectors are usually built by ViewService at the registration of Widget
@@ -52,7 +52,7 @@ export default class ViewConnector {
      * @param presenter_types
      * @param svc_routing
      */
-    constructor(presenter_types: PresenterType<View<IViewOptions, IViewState>>[],
+    constructor(presenter_types: PresenterType<View>[],
                 svc_event: IEventService,
                 svc_model: IModelService,
                 svc_routing?: IRoutingService,
@@ -68,13 +68,31 @@ export default class ViewConnector {
         this.activateActionBindings();
     }
 
+    collectProps(): IViewProps {
+        let props = {};
+
+        this.presenters = [];
+
+        for (const presenter_type of this.presenter_types) {
+            let presenter: Presenter<View>;
+
+            presenter = new presenter_type(this.svc_model, this.svc_routing);
+            const local_props = presenter.ready();
+            props = {...props, ...local_props};
+
+            this.presenters.push(presenter);
+        }
+
+        return props;
+    }
+
     /**
      * Attach a {@link View} instance that is created by the {@link ViewService}.
      * The instance will be available for {@link Presenter} instances.
      *
      * @param view
      */
-    attach(view: View<IViewOptions, IViewState>) {
+    attach(view: View) {
         if (this.view) {
             this.detach();
         }
@@ -83,19 +101,7 @@ export default class ViewConnector {
 
         this.unsubscribePresenterHandlers();
 
-        // this.presenters = [];
-        for (const presenter_type of this.presenter_types) {
-            let presenter: Presenter<View<IViewOptions, IViewState>>;
-
-            // try {
-                presenter = new presenter_type(view, this.svc_model, this.svc_routing);
-            // } catch (e) {
-                // TODO: PresenterError
-                // throw Error("Uncaught PresenterError [TODO]");
-            // }
-            // this.presenters.push(presenter);
-
-            // Activate presenter routes
+        for (const presenter of this.presenters) {
             this.subscribePresenterHandlers(presenter);
         }
     }

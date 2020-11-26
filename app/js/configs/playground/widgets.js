@@ -22,13 +22,13 @@ export default {
         board: {
             view_type: BoardView.BoardView,
             presenter_types: [BoardPresenter],
-            view_options: {readonly: false}
+            view_props: {readonly: false}
         },
 
         blockly: {
             view_type: BlocklyView,
             presenter_types: [BlocklyCodePresenter],
-            view_options: {force_all_blocks: true}
+            view_props: {force_all_blocks: true}
         },
 
         launcher: {

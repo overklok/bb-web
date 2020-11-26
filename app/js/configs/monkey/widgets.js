@@ -28,13 +28,13 @@ export default {
         board_disp: {
             view_type: BoardView.BoardView,
             presenter_types: [BoardPresenter],
-            view_options: {schematic: false, readonly: false}
+            view_props: {schematic: false, readonly: false}
         },
 
         board_ref: {
             view_type: BoardView.BoardView,
             presenter_types: [ReferenceBoardPresenter],
-            view_options: {schematic: false}
+            view_props: {schematic: false}
         },
 
         controls: {
@@ -45,7 +45,7 @@ export default {
         testkit: {
             view_type: TestkitView,
             presenter_types: [TestkitPresenter],
-            view_options: {items: TestkitModel.FullTestKit}
+            view_props: {items: TestkitModel.FullTestKit}
         },
 
         log: {
@@ -56,7 +56,7 @@ export default {
         board_preview: {
             view_type: BoardView.BoardView,
             presenter_types: [BoardPreviewPresenter],
-            view_options: {readonly: true, schematic: false}
+            view_props: {readonly: true, schematic: false}
         },
     }
 }

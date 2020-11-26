@@ -15,7 +15,7 @@ describe('Presenter', () => {
 
     let model_svc: ModelService;
 
-    class FooView extends View<any, any> {
+    class FooView extends View {
         public callMockFunction() {
             call_mock();
         }
@@ -43,7 +43,7 @@ describe('Presenter', () => {
             }
         }
 
-        const fp = new FooPresenter(null, model_svc);
+        const fp = new FooPresenter(model_svc);
 
         fp.callModelMethod();
 
@@ -58,9 +58,10 @@ describe('Presenter', () => {
         }
 
         const fp = new FooPresenter(
-            new FooView({nest_mounted: false, connector: fake_connector as any}),
             null
         );
+
+        fp.attachView(new FooView(null));
 
         fp.callViewMethod();
 

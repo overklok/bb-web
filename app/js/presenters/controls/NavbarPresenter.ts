@@ -7,7 +7,7 @@ export default class NavbarPresenter extends Presenter<NavbarView.NavbarView> {
     private model_lesson: LessonModel;
     private model_progress: ProgressModel;
 
-    protected ready() {
+    public ready() {
         this.model_lesson = this.getModel(LessonModel);
         this.model_progress = this.getModel(ProgressModel);
     }

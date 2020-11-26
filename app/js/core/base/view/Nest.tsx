@@ -1,5 +1,5 @@
 import * as React from "react";
-import {IViewOptions, View} from "./View";
+import {IViewProps, View} from "./View";
 import classNames from "classnames";
 import ViewConnector from "../ViewConnector";
 import {ViewType} from "../../helpers/types";
@@ -7,25 +7,25 @@ import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
 
 
-interface IProps<O extends IViewOptions> {
+interface INestProps<P=IViewProps> {
     connector: ViewConnector;
 
     widgets?: {[key: string]: Widget<any>};
-    view_type: ViewType<O, any>;
-    view_options?: O;
+    view_type: ViewType<P, any>;
+    view_props: P;
     label: string;
     index: number;
 }
 
-interface IState {
+interface INestState {
     mounted: boolean;
 }
 
-export default class Nest extends React.Component<IProps<any>, IState> {
+export default class Nest extends React.Component<INestProps<any>, INestState> {
     private readonly ref = React.createRef<HTMLDivElement>();
-    private readonly ref_view = React.createRef<View<any, any>>();
+    private readonly ref_view = React.createRef<View>();
 
-    constructor(props: IProps<any>) {
+    constructor(props: INestProps<any>) {
         super(props);
 
         this.state = {
@@ -39,7 +39,7 @@ export default class Nest extends React.Component<IProps<any>, IState> {
         }
     }
 
-    componentDidUpdate(prevProps: Readonly<IProps<any>>, prevState: Readonly<IState>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<INestProps>, prevState: Readonly<INestState>, snapshot?: any) {
         if (this.ref_view.current) {
             this.ref_view.current.attachConnector(this.props.connector);
         }
@@ -57,23 +57,19 @@ export default class Nest extends React.Component<IProps<any>, IState> {
             'nest': true,
         });
 
-        // if (this.ref_view.current) {
-        //     this.ref_view.current.attachConnector(this.props.connector);
-        // }
+        const view_props = {}
 
-        const vopts = this.props.view_options;
-        let overflow = vopts ? vopts.overflow : null;
-        overflow = overflow || 'auto';
+        this.props.connector.collectProps();
 
         return (
-            <div className={klasses} ref={this.ref} style={{overflow}}>
+            <div className={klasses} ref={this.ref}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
+                        {...view_props}
                         ref={this.ref_view}
                         widgets={this.props.widgets}
                         connector={this.props.connector}
                         ref_parent={this.ref}
-                        options={this.props.view_options}
                         nest_mounted={this.state.mounted}
                     />
                 </ErrorBoundary>

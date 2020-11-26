@@ -6,7 +6,7 @@ import {ModelEvent, ViewEvent} from "../../core/base/Event";
 export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     private model: BoardModel;
 
-    protected ready() {
+    public ready() {
         this.model = this.getModel(BoardModel);
         this.view.registerLayouts(BoardModel.Layouts);
         this.view.setLayout(this.model.getState().layout_name);

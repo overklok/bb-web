@@ -65,7 +65,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
               svc_model = this.instance(IModelService);
 
         svc_view.registerWidgetTypes({
-            main: {view_type: BoardView.BoardView, presenter_types: [BoardPresenter], view_options: {
+            main: {view_type: BoardView.BoardView, presenter_types: [BoardPresenter], view_props: {
                 schematic: true,
                 readonly: this.config.readonly,
             }},

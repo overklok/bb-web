@@ -1,5 +1,5 @@
 import {ImperativeView} from "../../core/base/view/ImperativeView";
-import {deferUntilMounted, IViewOptions, IViewProps, IViewState} from "../../core/base/view/View";
+import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/base/view/View";
 import LessonPaneWrapper from "../../wrappers/LessonPaneWrapper";
 import {ViewEvent} from "../../core/base/Event";
 
@@ -13,7 +13,7 @@ const BOARD_STATUSES = {
     NONE: 'none',
 };
 
-interface NavbarViewOptions extends IViewOptions {
+interface NavbarViewProps extends IViewProps {
     logoText: string;
     imagesPath: string;
     devMode: boolean;
@@ -35,8 +35,8 @@ export namespace NavbarView {
 
     export class StatusClickEvent extends ViewEvent<StatusClickEvent> {}
 
-    export class NavbarView extends ImperativeView<NavbarViewOptions, NavbarViewState> {
-        static defaultOptions: NavbarViewOptions = {
+    export class NavbarView extends ImperativeView<NavbarViewProps, NavbarViewState> {
+        static defaultOptions: NavbarViewProps = {
             logoText: "Tapanda",
             imagesPath: "",
             devMode: false
@@ -44,14 +44,14 @@ export namespace NavbarView {
 
         private lesson_pane: LessonPaneWrapper;
 
-        constructor(props: IViewProps<NavbarViewOptions>) {
+        constructor(props: AllProps<NavbarViewProps>) {
             super(props);
 
             this.lesson_pane = new LessonPaneWrapper();
             this.lesson_pane.registerLogoText("Tapanda");
             this.setMenuStructure();
 
-            if (this.options.devMode) {
+            if (this.props.devMode) {
                 this.clickDeveloperMenuBarItem(true);
             } else {
                 this.clickDeveloperMenuBarItem(false);

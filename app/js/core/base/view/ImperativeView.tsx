@@ -1,18 +1,18 @@
 import * as React from "react";
-import {IViewProps, IViewState, MountEvent, View} from "./View";
+import {AllProps, IViewProps, IViewState, MountEvent, View} from "./View";
 import {sleep} from "../../helpers/functions";
 
-export abstract class ImperativeView<O, S=IViewState> extends View<O, S> {
+export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
     public static notifyNestMount: boolean = true;
 
-    protected constructor(props: IViewProps<O>) {
+    protected constructor(props: AllProps<P>) {
         super(props);
     }
 
     protected abstract inject(container: HTMLElement): void;
     protected abstract eject(container: HTMLElement): void;
 
-    public async componentDidUpdate(prevProps: Readonly<IViewProps<O>>, prevState: Readonly<IViewState>, snapshot?: any) {
+    public async componentDidUpdate(prevProps: Readonly<AllProps<P>>, prevState: Readonly<IViewState>, snapshot?: any) {
         if (prevProps.nest_mounted === false && this.props.nest_mounted === true) {
             await sleep(0);
 
@@ -21,7 +21,8 @@ export abstract class ImperativeView<O, S=IViewState> extends View<O, S> {
 
             this.mounted = true;
             this.viewDidMount();
-            this.emit(new MountEvent({}));
+            this.emit(new MountEvent());
+
         }
     }
 
@@ -32,7 +33,7 @@ export abstract class ImperativeView<O, S=IViewState> extends View<O, S> {
             // re-injection (i.e. nest already exists)
             this.mounted = true;
             this.viewDidMount();
-            this.emit(new MountEvent({}));
+            this.emit(new MountEvent());
         }
     }
 

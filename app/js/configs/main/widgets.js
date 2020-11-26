@@ -23,12 +23,12 @@ export default {
         navbar: {
             view_type: NavbarView.NavbarView,
             presenter_types: [NavbarPresenter],
-            view_options: {overflow: 'hidden'}
+            view_props: {overflow: 'hidden'}
         },
         board: {
             view_type: BoardView.BoardView,
             presenter_types: [BoardPresenter],
-            view_options: {readonly: false}
+            view_props: {readonly: false}
         },
         blockly: {
             view_type: BlocklyView,

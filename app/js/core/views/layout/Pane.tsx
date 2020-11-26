@@ -1,11 +1,11 @@
-import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
 import * as React from "react";
 import {RefObject} from "react";
 import classNames from "classnames";
 
 import Handle from "./Handle";
-import {IViewOptions, View} from "../../base/view/View";
+import {View} from "../../base/view/View";
 import Nest from "../../base/view/Nest";
 import Frame from "./Frame";
 import TabViewComposer from "../../base/view/viewcomposers/tab/TabViewComposer";
@@ -464,7 +464,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 key={index}
                 index={index}
                 view_type={widget.view_type}
-                view_options={widget.view_options}
+                view_props={widget.view_props}
                 connector={widget.connector}
                 label={widget.label}
                 ref={ref}

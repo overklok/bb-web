@@ -8,7 +8,7 @@ export default class LayoutPresenter extends LayoutPresenterCore {
     private model_lesson: LessonModel;
     private model_progress: ProgressModel;
 
-    protected ready() {
+    public ready() {
         super.ready();
 
         this.model_lesson = this.getModel(LessonModel);

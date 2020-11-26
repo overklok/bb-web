@@ -3,16 +3,16 @@ import BlocklyWrapper from '../../wrappers/BlocklyWrapper'
 
 import JSONBlocks       from '../../utils/blockly/extras/blocks';
 import JSONGenerators   from '../../utils/blockly/extras/generators';
-import {deferUntilMounted, IViewOptions, IViewProps} from "../../core/base/view/View";
+import {AllProps, deferUntilMounted, IViewProps} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
 export class BlocklyCodeChangeEvent extends ViewEvent<BlocklyCodeChangeEvent> {}
 
-interface BlocklyViewOptions extends IViewOptions {
+export interface BlocklyViewProps extends IViewProps {
     force_all_blocks: boolean;
 }
 
-export default class BlocklyView extends ImperativeView<BlocklyViewOptions> {
+export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     private readonly blockly: BlocklyWrapper;
 
     private block_types: { [p: string]: number };
@@ -20,7 +20,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewOptions> {
     // TODO: Move to Model
     private readonly pause_duration: number;
 
-    constructor(props: IViewProps<BlocklyViewOptions>) {
+    constructor(props: AllProps<BlocklyViewProps>) {
         super(props);
 
         this.blockly = new BlocklyWrapper();
@@ -37,7 +37,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewOptions> {
     public async inject(container: HTMLDivElement) {
         this.blockly.inject(container);
 
-        if (this.block_types || this.options.force_all_blocks) {
+        if (this.block_types || this.props.force_all_blocks) {
             this.setBlockTypes(this.block_types);
             this.block_types = {};
         }
@@ -97,7 +97,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewOptions> {
      */
     @deferUntilMounted
     public setBlockTypes(block_types: { [block_type: string]: number }) {
-       if (this.options.force_all_blocks) {
+       if (this.props.force_all_blocks) {
             this.blockly.updateBlockTypes(Object.keys(JSONGenerators));
         } else {
             this.blockly.updateBlockTypes(block_types);

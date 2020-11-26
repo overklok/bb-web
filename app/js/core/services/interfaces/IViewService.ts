@@ -1,19 +1,19 @@
 import Application from "../../Application";
 import ViewConnector from "../../base/ViewConnector";
-import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
+import {IViewProps, IViewState, View} from "../../base/view/View";
 import {PresenterType, ViewComposerType, ViewType} from "../../helpers/types";
 
-export type Widget<O extends IViewOptions> = {
+export type Widget<P extends IViewProps> = {
     connector: ViewConnector,
-    view_type: ViewType<O, any>,
-    view_options?: O,
+    view_type: ViewType<P, any>,
+    view_props?: P,
     label?: string
 };
 
-export type WidgetType<O extends IViewOptions> = {
-    view_type: ViewType<O, IViewState>;
-    presenter_types: PresenterType<View<O, IViewState>>[];
-    view_options?: O;
+export type WidgetType<P extends IViewProps> = {
+    view_type: ViewType<P, IViewState>;
+    presenter_types: PresenterType<View<P>>[];
+    view_props?: P;
     label?: string;
 };
 

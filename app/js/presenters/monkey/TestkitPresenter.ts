@@ -6,16 +6,16 @@ import {MountEvent, UnmountEvent} from "../../core/base/view/View";
 export default class TestkitPresenter extends Presenter<TestkitView> {
     private testkit: TestkitModel;
 
-    protected ready() {
+    public ready() {
         this.testkit = this.getModel(TestkitModel);
 
         const {qtys, size, size_deviation} = this.testkit.getState();
 
-        this.view.setOptions({
+        return {
             qtys_initial: qtys,
             size_initial: size,
             size_deviation_initial: size_deviation
-        });
+        };
     }
 
     @on(UnmountEvent)

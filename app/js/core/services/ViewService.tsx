@@ -59,13 +59,13 @@ export default class ViewService extends IViewService {
 
     public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
-            const {view_type, presenter_types, label, view_options} = widget_type;
+            const {view_type, presenter_types, label, view_props} = widget_type;
 
             const connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
 
             this.view_connectors_external.push([alias, connector]);
 
-            this.widgets[alias] = {connector, view_type, label: label || alias, view_options} as Widget<any>;
+            this.widgets[alias] = {connector, view_type, label: label || alias, view_props} as Widget<any>;
         }
 
         if (this.widget_type_key) {
@@ -110,7 +110,7 @@ export default class ViewService extends IViewService {
         this.view_connectors_internal = [];
 
         const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
-            const {view_type: SpecificView, presenter_types, label, view_options} = widget_type;
+            const {view_type: SpecificView, presenter_types, label, view_props} = widget_type;
 
             const view_connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
 
@@ -120,7 +120,7 @@ export default class ViewService extends IViewService {
                 key={index}
                 index={index}
                 view_type={SpecificView}
-                view_options={view_options}
+                view_props={view_props}
                 connector={view_connector}
                 widgets={this.widgets}
                 label={label}

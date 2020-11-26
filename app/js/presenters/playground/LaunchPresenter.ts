@@ -7,7 +7,7 @@ export default class LaunchPresenter extends Presenter<LaunchView> {
     model: CodeModel;
     modal_model: ModalModel;
 
-    protected ready() {
+    public ready() {
         this.model = this.getModel(CodeModel);
         this.modal_model = this.getModel(ModalModel);
     }

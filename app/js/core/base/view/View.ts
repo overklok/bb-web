@@ -5,16 +5,26 @@ import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";
 import {coverOptions} from "../../helpers/functions";
 
-export interface IViewOptions {
-    overflow?: string;
-}
+// export interface IViewOptions {
+//     overflow?: string;
+// }
 
-export interface IViewProps<O extends IViewOptions> {
+export interface IViewBasicProps {
     nest_mounted: boolean;
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     widgets?: {[key: string]: Widget<any>};
-    options?: O;
+}
+
+export type AllProps<P> = P & IViewBasicProps;
+
+/**
+ * Helper type that infers nested IViewProps based on View that uses it
+ */
+export type ViewPropsOf<V extends View<any, any>> = V extends View<infer P, any> ? P: never;
+
+export interface IViewProps {
+
 }
 
 export interface IViewState {
@@ -55,30 +65,17 @@ export function deferUntilMounted(target: any, propertyKey: string, descriptor: 
     descriptor.value = deferree;
 }
 
-export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
-    public static defaultOptions: IViewOptions;
+export abstract class View<P extends IViewProps = IViewProps, S extends IViewState = IViewState> extends React.Component<AllProps<P>, S> {
     public static notifyNestMount: boolean = false;
 
-    protected options: Readonly<O>;
     protected mounted: boolean;
 
     private deferrees_mount: Function[];
 
-    constructor(props: IViewProps<O>) {
+    constructor(props: AllProps<P>) {
         super(props);
 
         this.mounted = false;
-
-        const defaults = Object.getPrototypeOf(this).constructor.defaultOptions;
-        this.options = coverOptions(this.props.options, defaults) as O;
-
-        this.props.connector.attach(this);
-    }
-
-    public setOptions<K extends keyof O>(
-        options: ((prevState: Readonly<O>) => (Pick<O, K> | O | null)) | (Pick<O, K> | O | null)
-    ) {
-        this.options = coverOptions(options, this.props.options) as O;
     }
 
     public attachConnector(connector: ViewConnector) {

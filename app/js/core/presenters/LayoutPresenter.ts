@@ -5,16 +5,12 @@ import LayoutModel, {SetModeEvent} from "../models/LayoutModel";
 export default class LayoutPresenter extends Presenter<LayoutView> {
     protected model_layout: LayoutModel;
 
-    protected ready() {
+    public ready() {
         this.model_layout = this.getModel(LayoutModel);
         const options = this.model_layout.getOptions();
 
         const mode = this.model_layout.getState().current_mode;
         if (mode) this.view.setMode(mode);
-
-        this.view.setOptions({
-            show_headers: options.show_headers
-        });
     }
 
     @on(LayoutMountEvent)

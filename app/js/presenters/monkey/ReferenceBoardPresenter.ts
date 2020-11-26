@@ -14,7 +14,7 @@ export default class ReferenceBoardPresenter extends Presenter<BoardView.BoardVi
     private testkit_size: number;
     private testkit_size_deviation: number;
 
-    protected ready() {
+    public ready() {
         this.board = this.getModel(BoardModel);
         this.testkit = this.getModel(TestkitModel);
 

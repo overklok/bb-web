@@ -2,7 +2,7 @@ import * as React from "react";
 import Modal, {IModalProps, ModalSize, Overlay} from "./Modal";
 import {cloneDeep} from "lodash";
 
-import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
 import Nest from "../../base/view/Nest";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import Dialog, {IDialogProps} from "./Dialog";
@@ -35,8 +35,8 @@ interface ModalViewState extends IViewState {
     modals: IModal[];
 }
 
-export default class ModalView extends View<IViewOptions, ModalViewState> {
-    constructor(props: IViewProps<IViewOptions>) {
+export default class ModalView extends View<IViewProps, ModalViewState> {
+    constructor(props: AllProps<IViewProps>) {
         super(props);
 
         this.state = {
@@ -123,7 +123,7 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
                   index={0}
                   label={widget.label}
                   view_type={widget.view_type}
-                  view_options={widget.view_options}
+                  view_props={widget.view_props}
             />
         )
     }

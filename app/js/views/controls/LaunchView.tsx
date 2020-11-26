@@ -1,14 +1,10 @@
 import * as React from "react";
 import classNames from "classnames";
-import {IViewOptions, IViewProps, IViewState, View} from "../../core/base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
 require('../../../css/blocks/btn.less')
 require('../../../css/blocks/fabdesk.less')
-
-export interface LaunchViewOptions extends IViewOptions {
-
-}
 
 interface LaunchViewState extends IViewState {
     is_locked: boolean;
@@ -19,8 +15,8 @@ export class LaunchClickEvent extends ViewEvent<LaunchClickEvent> {
     start: boolean;
 }
 
-export default class LaunchView extends View<LaunchViewOptions, LaunchViewState> {
-    constructor(props: IViewProps<IViewOptions>) {
+export default class LaunchView extends View<IViewProps, LaunchViewState> {
+    constructor(props: AllProps<IViewProps>) {
         super(props);
 
         this.state = {

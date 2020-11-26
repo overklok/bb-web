@@ -1,10 +1,9 @@
-import {IViewOptions, IViewState, View} from "./view/View";
+import {IViewProps, IViewState, View, ViewPropsOf} from "./view/View";
 import {AbstractEvent, Action} from "./Event";
 import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
 import IRoutingService from "../services/interfaces/IRoutingService";
-import Router from "./Router";
 import RoutingService from "../services/RoutingService";
 
 type EventTypeParam = typeof AbstractEvent;
@@ -101,7 +100,7 @@ export function action(action_type: typeof Action) {
  * @see Model
  * @see View
  */
-export default class Presenter<V extends View<IViewOptions, IViewState>> implements Subscriptable {
+export default class Presenter<V extends View> implements Subscriptable {
     // Map method name to subscription preset
     public readonly presets: Map<string, SubscriptionPreset[]>;
 
@@ -116,10 +115,9 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> impleme
      * @param svc_model   an instance of model service
      * @param svc_routing      an instance of Router, if used
      */
-    constructor(view: V, svc_model: IModelService, svc_routing?: RoutingService) {
+    constructor(svc_model: IModelService, svc_routing?: RoutingService) {
         if (this.presets == null) {this.presets = new Map();}
 
-        this.view = view;
         this.svc_model = svc_model;
         this.svc_routing = svc_routing;
 
@@ -129,7 +127,11 @@ export default class Presenter<V extends View<IViewOptions, IViewState>> impleme
     /**
      * Prepare Presenter to use in application workflow.
      */
-    protected ready() {}
+    public ready(): ViewPropsOf<V> | void {}
+
+    public attachView(view: V) {
+        this.view = view;
+    }
 
     /**
      * Retrieve an instance of the Model.

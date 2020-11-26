@@ -4,11 +4,11 @@ import LessonModel from "../../models/LessonModel";
 import {FinishModeEvent} from "../../core/models/LayoutModel";
 import ProgressModel from "../../models/ProgressModel";
 
-export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
+export default class BlocklyLessonPresenter extends Presenter<BlocklyView> {
     private lesson: LessonModel;
     private progress: ProgressModel;
 
-    protected ready() {
+    public ready() {
         this.lesson = this.getModel(LessonModel);
         this.progress = this.getModel(ProgressModel);
     }

@@ -78,9 +78,7 @@ class Timeline {
      * @private
      */
     _defineChains() {
-        $(document).ready(() => {
-            this.tl.inject(document.getElementById(this._container_id));
-        });
+        $(document).ready();
     }
 }
 

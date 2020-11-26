@@ -14,7 +14,7 @@ export default class BoardPreviewPresenter extends Presenter<BoardView.BoardView
         layout: 'default'
     }
 
-    protected ready() {
+    public ready() {
         this.view.registerLayouts(BoardModel.Layouts);
     }
 
