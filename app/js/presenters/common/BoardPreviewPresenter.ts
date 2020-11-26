@@ -11,12 +11,13 @@ interface PreviewBoard {
 export default class BoardPreviewPresenter extends Presenter<BoardView.BoardView> {
     public static previewBoard: PreviewBoard = {
         plates: [],
-        layout: 'default'
+        layout: 'v5x'
     }
 
     public getInitialProps() {
         return {
             layouts: BoardModel.Layouts,
+            layout_name: BoardPreviewPresenter.previewBoard.layout
         }
     }
 
