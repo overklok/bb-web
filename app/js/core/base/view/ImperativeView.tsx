@@ -27,6 +27,8 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
     }
 
     public async componentDidMount() {
+        console.log('test');
+
         if (this.props.nest_mounted === true) {
             await this.injectAsync();
 
@@ -34,6 +36,7 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
             this.mounted = true;
             this.viewDidMount();
             this.emit(new MountEvent());
+
         }
     }
 
@@ -54,7 +57,7 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
     }
 
     private async injectAsync() {
-        await new Promise((resolve) => {
+        await new Promise<void>((resolve) => {
             setTimeout(() => {
                 this.inject(this.props.ref_parent.current);
                 resolve();

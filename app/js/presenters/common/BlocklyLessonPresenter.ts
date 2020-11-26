@@ -8,7 +8,7 @@ export default class BlocklyLessonPresenter extends Presenter<BlocklyView> {
     private lesson: LessonModel;
     private progress: ProgressModel;
 
-    public ready() {
+    public getInitialProps() {
         this.lesson = this.getModel(LessonModel);
         this.progress = this.getModel(ProgressModel);
     }

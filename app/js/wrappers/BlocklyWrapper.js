@@ -267,8 +267,6 @@ export default class BlocklyWrapper extends Wrapper {
      * Изменить размер графики Blockly
      *
      * @see https://developers.google.com/blockly/guides/configure/web/resizable
-     *
-     * @private
      */
     resize(shrink=false) {
         this.container.style.width   = (this.area.offsetWidth) + 'px';

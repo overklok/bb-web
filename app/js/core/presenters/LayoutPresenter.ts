@@ -1,23 +1,17 @@
 import Presenter, {on, restore} from "../base/Presenter";
-import LayoutView, {LayoutFinishedEvent, LayoutMountEvent} from "../views/layout/LayoutView";
+import LayoutView, {LayoutFinishedEvent} from "../views/layout/LayoutView";
 import LayoutModel, {SetModeEvent} from "../models/LayoutModel";
 
 export default class LayoutPresenter extends Presenter<LayoutView> {
     protected model_layout: LayoutModel;
 
-    public ready() {
+    public getInitialProps() {
         this.model_layout = this.getModel(LayoutModel);
-        const options = this.model_layout.getOptions();
-
-        const mode = this.model_layout.getState().current_mode;
-        if (mode) this.view.setMode(mode);
-    }
-
-    @on(LayoutMountEvent)
-    protected mounted() {
         const modes = this.model_layout.getModes();
 
-        this.view.setModes(modes);
+        const mode_name = this.model_layout.getState().current_mode;
+
+        return {mode_name, modes};
     }
 
     @restore() @on(SetModeEvent)

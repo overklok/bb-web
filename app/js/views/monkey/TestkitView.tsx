@@ -66,7 +66,7 @@ interface TestkitViewProps extends IViewProps {
 }
 
 export default class TestkitView extends View<TestkitViewProps, TestkitViewState> {
-    static defaultOptions: TestkitViewProps = {
+    static defaultProps: TestkitViewProps = {
         items: [],
         qtys_initial: []
     }

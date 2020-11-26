@@ -24,6 +24,7 @@ interface INestState {
 export default class Nest extends React.Component<INestProps<any>, INestState> {
     private readonly ref = React.createRef<HTMLDivElement>();
     private readonly ref_view = React.createRef<View>();
+    private view: View;
 
     constructor(props: INestProps<any>) {
         super(props);
@@ -31,22 +32,29 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
         this.state = {
             mounted: false,
         };
+
+        this.onRefUpdated = this.onRefUpdated.bind(this);
     }
 
     componentDidMount() {
-        if (Object.getPrototypeOf(this.ref_view.current).constructor.notifyNestMount) {
+        if (Object.getPrototypeOf(this.view).constructor.notifyNestMount) {
             this.setState({mounted: true});
         }
     }
 
     componentDidUpdate(prevProps: Readonly<INestProps>, prevState: Readonly<INestState>, snapshot?: any) {
-        if (this.ref_view.current) {
-            this.ref_view.current.attachConnector(this.props.connector);
+        if (this.view) {
+            this.view.attachConnector(this.props.connector);
         }
     }
 
     notifyResizeView() {
         this.props.connector.resizeView();
+    }
+
+    onRefUpdated(view: View) {
+        this.view = view;
+        this.props.connector.attach(view);
     }
 
     render() {
@@ -57,16 +65,14 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
             'nest': true,
         });
 
-        const view_props = {}
-
-        this.props.connector.collectProps();
+        const view_props = this.props.connector.collectProps();
 
         return (
             <div className={klasses} ref={this.ref}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
                         {...view_props}
-                        ref={this.ref_view}
+                        ref={this.onRefUpdated}
                         widgets={this.props.widgets}
                         connector={this.props.connector}
                         ref_parent={this.ref}

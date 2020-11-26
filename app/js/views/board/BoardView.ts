@@ -11,39 +11,33 @@ export namespace BoardView {
     export interface BoardViewProps extends IViewProps {
         schematic?: boolean;
         verbose?: boolean;
-        readonly?: boolean
+        readonly?: boolean;
+        layouts: object;
+        layout_name: string;
     }
 
     export class BoardView extends ImperativeView<BoardViewProps> {
         static defaultProps: BoardViewProps = {
             schematic: true,
             readonly: true,
-            verbose: false
+            verbose: false,
+            layouts: [],
+            layout_name: 'default'
         }
 
         private readonly bb: Breadboard;
-        private layouts: object;
-        private layout_name: string;
 
         constructor(props: AllProps<BoardViewProps>) {
             super(props);
 
             this.bb = new Breadboard({
-                layouts: this.layouts,
-                layout_name: this.layout_name
+                layouts: this.props.layouts,
+                layout_name: this.props.layout_name
             });
 
-            this.setup();
-        }
+            this.bb.registerLayouts(this.props.layouts);
 
-        registerLayouts(layouts: object): void {
-            if (this.bb) {
-                // register immediately
-                this.bb.registerLayouts(layouts);
-            } else {
-                // or wait till breadboard is not created
-                this.layouts = layouts;
-            }
+            this.setup();
         }
 
         inject(container: HTMLDivElement): void {
@@ -52,7 +46,7 @@ export namespace BoardView {
                 schematic: this.props.schematic,
                 detailed: this.props.schematic,
                 verbose: this.props.verbose,
-                layout_name: this.layout_name,
+                layout_name: this.props.layout_name,
             });
         }
 
@@ -73,11 +67,11 @@ export namespace BoardView {
         }
 
         setLayout(layout_name: string) {
-            if (this.bb) {
-                this.bb.setLayout(layout_name);
-            } else {
-                this.layout_name = layout_name;
-            }
+            // if (this.bb) {
+            //     this.bb.setLayout(layout_name);
+            // } else {
+            //     this.layout_name = layout_name;
+            // }
         }
 
         getLayoutName() {

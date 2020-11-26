@@ -77,8 +77,11 @@ export default class ViewConnector {
             let presenter: Presenter<View>;
 
             presenter = new presenter_type(this.svc_model, this.svc_routing);
-            const local_props = presenter.ready();
-            props = {...props, ...local_props};
+            const local_props = presenter.getInitialProps();
+
+            if (local_props) {
+                props = {...props, ...local_props};
+            }
 
             this.presenters.push(presenter);
         }

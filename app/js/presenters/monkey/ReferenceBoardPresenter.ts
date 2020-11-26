@@ -14,18 +14,20 @@ export default class ReferenceBoardPresenter extends Presenter<BoardView.BoardVi
     private testkit_size: number;
     private testkit_size_deviation: number;
 
-    public ready() {
+    public getInitialProps() {
         this.board = this.getModel(BoardModel);
         this.testkit = this.getModel(TestkitModel);
-
-        this.view.registerLayouts(BoardModel.Layouts);
-        this.view.setLayout(this.board.getState().layout_name);
 
         const {qtys, size, size_deviation} = this.testkit.getState();
 
         this.testkit_qtys = qtys;
         this.testkit_size = size;
         this.testkit_size_deviation = size_deviation;
+
+        return {
+            layouts: BoardModel.Layouts,
+            layout_name: this.board.getState().layout_name
+        }
     }
 
     @on(MountEvent)

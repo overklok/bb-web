@@ -14,9 +14,9 @@ export default abstract class AsynchronousDatasource extends Datasource {
 
     get status() {return this._status};
 
-    abstract async init(): Promise<boolean>;
-    abstract async connect(): Promise<boolean>;
-    abstract async disconnect(): Promise<void>;
+    abstract init(): Promise<boolean>;
+    abstract connect(): Promise<boolean>;
+    abstract disconnect(): Promise<void>;
 
     abstract send(channel: string, data: object): void;
 

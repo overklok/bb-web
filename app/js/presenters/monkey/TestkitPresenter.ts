@@ -6,7 +6,7 @@ import {MountEvent, UnmountEvent} from "../../core/base/view/View";
 export default class TestkitPresenter extends Presenter<TestkitView> {
     private testkit: TestkitModel;
 
-    public ready() {
+    public getInitialProps() {
         this.testkit = this.getModel(TestkitModel);
 
         const {qtys, size, size_deviation} = this.testkit.getState();

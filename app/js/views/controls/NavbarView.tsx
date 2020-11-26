@@ -36,7 +36,7 @@ export namespace NavbarView {
     export class StatusClickEvent extends ViewEvent<StatusClickEvent> {}
 
     export class NavbarView extends ImperativeView<NavbarViewProps, NavbarViewState> {
-        static defaultOptions: NavbarViewProps = {
+        static defaultProps: NavbarViewProps = {
             logoText: "Tapanda",
             imagesPath: "",
             devMode: false

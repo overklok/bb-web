@@ -58,11 +58,13 @@ export interface ILayoutMode {
  */
 interface ILayoutState extends IViewState {
     // название текущего режима разметки
-    mode_name: string
+    mode_name: string;
 }
 
 interface ILayoutProps extends IViewProps {
-    show_headers: boolean;
+    show_headers?: boolean;
+    mode_name: string;
+    modes: {[key: string]: ILayoutMode};
 }
 
 /**
@@ -74,44 +76,33 @@ interface ILayoutProps extends IViewProps {
  */
 export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     private pane_ref: RefObject<Pane> = React.createRef();
-    private modes: {[key: string]: ILayoutMode};
 
     private root_ref: RefObject<HTMLDivElement> = React.createRef();
-    private overlay_node: HTMLDivElement;
+    private readonly overlay_node: HTMLDivElement;
 
-    static defaultOptions: ILayoutProps = {
-        show_headers: true
-    }
-
-    constructor(props: AllProps<ILayoutProps>) {
-        super(props);
-
-        this.modes = {
+    static defaultProps: ILayoutProps = {
+        show_headers: true,
+        mode_name: 'default',
+        modes: {
             default: {
                 policy: PaneOrientation.Horizontal,
                 panes: [] as ILayoutPane[],
             }
-        };
+        }
+    }
 
-        if (!this.state) {
-            this.state = {
-               mode_name: 'default'
-            }
+
+    constructor(props: AllProps<ILayoutProps>) {
+        super(props);
+
+        this.state = {
+            mode_name: props.mode_name || 'default'
         }
 
         this.overlay_node = document.createElement('div');
         this.overlay_node.classList.add('layout-overlay');
 
         window.addEventListener('resize', this.onResize());
-    }
-
-    public setModes(modes: {[key: string]: ILayoutMode}) {
-        if (!modes) return;
-        this.modes = this.resolveWidgets(modes);
-
-        if (this.mounted) {
-            this.setState({});
-        }
     }
 
     /**
@@ -150,10 +141,12 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     }
 
     protected renderInside() {
-        if (!this.modes[this.state.mode_name]) return null;
+        const modes = this.resolveWidgets(this.props.modes);
 
-        const orientation = this.modes[this.state.mode_name].policy;
-        const panes = this.modes[this.state.mode_name].panes;
+        if (!modes[this.state.mode_name]) return null;
+
+        const orientation = modes[this.state.mode_name].policy;
+        const panes = modes[this.state.mode_name].panes;
 
         return (
             <DndProvider backend={HTML5Backend}>

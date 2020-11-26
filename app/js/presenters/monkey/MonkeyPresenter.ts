@@ -16,7 +16,7 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
     private is_equal: boolean;
     private assembly_board: BoardModel;
 
-    public ready() {
+    public getInitialProps() {
         this.modal = this.getModel(ModalModel);
         this.testkit = this.getModel(TestkitModel);
         this.assembly_board = this.getModel(BoardModel);

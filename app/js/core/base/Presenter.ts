@@ -1,4 +1,4 @@
-import {IViewProps, IViewState, View, ViewPropsOf} from "./view/View";
+import {View, ViewPropsOf} from "./view/View";
 import {AbstractEvent, Action} from "./Event";
 import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
@@ -121,13 +121,13 @@ export default class Presenter<V extends View> implements Subscriptable {
         this.svc_model = svc_model;
         this.svc_routing = svc_routing;
 
-        this.ready();
+        this.getInitialProps();
     };
 
     /**
      * Prepare Presenter to use in application workflow.
      */
-    public ready(): ViewPropsOf<V> | void {}
+    public getInitialProps(): ViewPropsOf<V> | any {}
 
     public attachView(view: V) {
         this.view = view;
