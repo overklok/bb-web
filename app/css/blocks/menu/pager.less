@@ -25,17 +25,7 @@
   }
 }
 
-ul.pager__list {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-
-  list-style-type: none;
-  margin: 0;
-  padding: 5px; // must be enough to contain items
-                // scaled inside preventing cutting via overflow: hidden
-
-  overflow: hidden;
+.pager__listwrap {
   position: relative;
 
   &:after {
@@ -47,6 +37,21 @@ ul.pager__list {
     height: 100%;
     background: linear-gradient(90deg, @primary 0%, ~"rgb(0 0 0 / 0%) 2.5%", ~"rgb(0 0 0 / 0%) 97.5%", @primary 100%);
   }
+
+  overflow: hidden;
+}
+
+ul.pager__list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+
+  list-style-type: none;
+  margin: 0;
+  padding: 5px; // must be enough to contain items
+                // scaled inside preventing cutting via overflow: hidden
+
+
 }
 
 li.pager__item {
