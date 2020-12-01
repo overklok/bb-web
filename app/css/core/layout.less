@@ -219,11 +219,11 @@ ul.ddmenu {
 
   &.pane_animated {
     &.pane-h {
-      transition: opacity   0.6s @ease,
-                  width     0.6s @ease,
-                  min-width 0.6s @ease,
-                  max-width 0.6s @ease,
-                  flex-basis 0.6s @ease;
+      transition: opacity   0.6s @fade,
+                  width     0.6s @fade,
+                  min-width 0.6s @fade,
+                  max-width 0.6s @fade,
+                  flex-basis 0.6s @fade;
 
       &.panefade-enter {opacity: 0;}
       &.panefade-enter-active {opacity: 1;}
@@ -246,10 +246,10 @@ ul.ddmenu {
     }
 
     &.pane-v {
-      transition: opacity   0.6s   @ease,
-                  height      0.6s @ease,
-                  min-height  0.6s @ease,
-                  max-height  0.6s @ease;
+      transition: opacity   0.6s @fade,
+                  height      0.6s @fade,
+                  min-height  0.6s @fade,
+                  max-height  0.6s @fade;
 
       &.pane-enter:not(.pane-enter-active), &.pane-exit {
         opacity: 0;

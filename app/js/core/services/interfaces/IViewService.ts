@@ -2,11 +2,13 @@ import Application from "../../Application";
 import ViewConnector from "../../base/ViewConnector";
 import {IViewProps, IViewState, View} from "../../base/view/View";
 import {PresenterType, ViewComposerType, ViewType} from "../../helpers/types";
+import {CSSProperties} from "react";
 
 export type Widget<P extends IViewProps> = {
     connector: ViewConnector,
     view_type: ViewType<P, any>,
     view_props?: P,
+    nest_style?: CSSProperties,
     label?: string
 };
 
@@ -14,6 +16,7 @@ export type WidgetType<P extends IViewProps> = {
     view_type: ViewType<P, IViewState>;
     presenter_types: PresenterType<View<P>>[];
     view_props?: P;
+    nest_style?: CSSProperties;
     label?: string;
 };
 

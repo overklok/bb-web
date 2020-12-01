@@ -465,6 +465,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 index={index}
                 view_type={widget.view_type}
                 view_props={widget.view_props}
+                nest_style={widget.nest_style}
                 connector={widget.connector}
                 label={widget.label}
                 ref={ref}

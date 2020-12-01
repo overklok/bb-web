@@ -5,6 +5,7 @@ import ViewConnector from "../ViewConnector";
 import {ViewType} from "../../helpers/types";
 import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
+import {CSSProperties} from "react";
 
 
 interface INestProps<P=IViewProps> {
@@ -13,6 +14,7 @@ interface INestProps<P=IViewProps> {
     widgets?: {[key: string]: Widget<any>};
     view_type: ViewType<P, any>;
     view_props: P;
+    nest_style?: CSSProperties;
     label: string;
     index: number;
 }
@@ -81,7 +83,7 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
         });
 
         return (
-            <div className={klasses} ref={this.ref}>
+            <div className={klasses} ref={this.ref} style={this.props.nest_style}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
                         {...this.view_props}

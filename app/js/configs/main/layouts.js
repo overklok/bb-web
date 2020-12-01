@@ -6,6 +6,7 @@ export default {
         default: {
             policy: 'horizontal',
             panes: [
+                {name: 'menubar', fixed: 55, widgets: [{alias: 'navbar_react', label: ''}]},
             ]
         },
         full: {

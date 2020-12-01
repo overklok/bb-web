@@ -12,6 +12,7 @@ import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";
 
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
 import BlocklyLessonPresenter from "../../presenters/common/BlocklyLessonPresenter";
+import {TopbarView} from "../../views/controls/TopbarView";
 
 export default {
     composer: OverlayViewComposer,
@@ -20,10 +21,15 @@ export default {
         {view_type: ModalView, presenter_types: [ModalPresenter]}
     ],
     widgets: {
+        navbar_react: {
+            view_type: TopbarView.TopbarView,
+            presenter_types: [],
+            nest_style: {overflow: 'hidden'}
+        },
         navbar: {
             view_type: NavbarView.NavbarView,
             presenter_types: [NavbarPresenter],
-            view_props: {overflow: 'hidden'}
+            nest_style: {overflow: 'hidden'}
         },
         board: {
             view_type: BoardView.BoardView,

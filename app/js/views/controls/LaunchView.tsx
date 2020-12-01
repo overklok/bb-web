@@ -3,7 +3,7 @@ import classNames from "classnames";
 import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
-require('../../../css/blocks/btn.less')
+require('../../../css/blocks/generic/btn.less')
 require('../../../css/blocks/fabdesk.less')
 
 interface LaunchViewState extends IViewState {

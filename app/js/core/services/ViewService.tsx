@@ -59,13 +59,13 @@ export default class ViewService extends IViewService {
 
     public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
-            const {view_type, presenter_types, label, view_props} = widget_type;
+            const {view_type, presenter_types, label, view_props, nest_style} = widget_type;
 
             const connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
 
             this.view_connectors_external.push([alias, connector]);
 
-            this.widgets[alias] = {connector, view_type, label: label || alias, view_props} as Widget<any>;
+            this.widgets[alias] = {connector, view_type, label: label || alias, view_props, nest_style} as Widget<any>;
         }
 
         if (this.widget_type_key) {

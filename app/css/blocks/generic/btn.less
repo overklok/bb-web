@@ -1,5 +1,5 @@
-@import '../colors';
-@import '../animations';
+@import '../../colors';
+@import '../../animations';
 
 .btn {
   display: inline-block;
@@ -13,8 +13,8 @@
 
   text-align: center;
 
-  transition: background-color .1s @ease,
-              transform .2s @ease;
+  transition: background-color .1s @fade,
+              transform .2s @fade;
 
   &:active, &.btn-active {
     transform: scale(0.95);
@@ -64,6 +64,13 @@
     color: #a7a7a7;
     cursor: not-allowed;
     pointer-events: none;
+  }
+
+  &.btn_contoured {
+    border-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 1/4em;
   }
 }
 
