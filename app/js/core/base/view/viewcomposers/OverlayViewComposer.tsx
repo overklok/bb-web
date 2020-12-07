@@ -14,9 +14,11 @@ export default class OverlayViewComposer extends ViewComposer<IVCProps, IVCState
                 'layer_main': i === 0,
             });
 
-            return <div key={i} className={klasses} ref={this.props.refCallback}>
-                {child}
-            </div>
+            return (
+                <div key={i} className={klasses} ref={this.props.refCallback}>
+                    {child}
+                </div>
+            )
         });
     }
 };

@@ -1,10 +1,7 @@
-import {TransitionGroup, Transition, CSSTransition} from 'react-transition-group';
-
 import * as React from "react";
 import classNames from "classnames";
 
 import '../../../../css/core/modal.less'
-import {useState} from "react";
 
 export type ModalSize = 'sm'|'md'|'lg';
 

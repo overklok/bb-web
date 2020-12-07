@@ -1,0 +1,44 @@
+@import '../../colors';
+@import '../../animations';
+
+ul.combolist {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  li.combolist__item {
+
+  }
+}
+
+.cl-item {
+  display: flex;
+  flex-direction: row;
+
+  cursor: pointer;
+
+  padding: 0 .125em;
+
+  border-radius: .125em;
+
+  transition: background-color .2s @fade,
+                transform .2s @scale;
+
+  &:hover {
+    background-color: @primary;
+  }
+
+  .cl-item__caption {
+
+  }
+
+  .cl-item__context {
+
+  }
+}
+
+.cl-context {
+  .cl-context__action {
+
+  }
+}

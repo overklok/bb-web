@@ -1,0 +1,52 @@
+@import '../../animations';
+@import '../../colors';
+
+.mission {
+  position: absolute;
+  display: inline-block;
+
+  opacity: 0;
+  pointer-events: none;
+
+  border-radius: .375em;
+
+  padding: 0;
+
+  background-color: @light_deep;
+
+  transition: padding @scale .5s;
+
+  &_visible {
+    opacity: 1;
+    pointer-events: auto;
+
+    padding: .25em;
+  }
+
+  &__head {
+    display: flex;
+
+    &_reversed {
+      flex-direction: row-reverse;
+    }
+  }
+
+  &__body {
+    padding: .25em 0;
+  }
+
+  &__brief {
+    padding: 0 .25em;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__subtitle {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}

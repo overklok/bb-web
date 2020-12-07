@@ -3,6 +3,9 @@ import * as React from "react";
 import {ViewEvent} from "../../core/base/Event";
 import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 
+import MissionLi from "./topbar/MissionLi";
+import {scrollTo} from "../../core/helpers/functions";
+
 require('../../../css/blocks/menu/navbar.less')
 require('../../../css/blocks/menu/progressbar.less')
 require('../../../css/blocks/menu/pager.less')
@@ -39,14 +42,23 @@ export namespace TopbarView {
         private onScrollableUpdate(ref: HTMLElement) {
             if (!ref) return;
 
+            let scroll_pos = ref.scrollLeft;
+
             ref.addEventListener('wheel', function(e) {
                 if (e.deltaY > 0) {
-                    ref.scrollTo(ref.scrollLeft + 10, 0);
+                    scroll_pos = scroll_pos - 40;
                 }
 
                 if (e.deltaY < 0) {
-                    ref.scrollTo(ref.scrollLeft + 10, 0);
+                    scroll_pos = scroll_pos + 40;
                 }
+
+                if (scroll_pos < 0) scroll_pos = 0;
+                if (scroll_pos > ref.scrollWidth - ref.offsetWidth) scroll_pos = ref.scrollWidth - ref.offsetWidth;
+
+                scrollTo(ref,  scroll_pos, () => {
+                    scroll_pos = ref.scrollLeft;
+                });
             });
         }
 
@@ -70,22 +82,23 @@ export namespace TopbarView {
                                 <div className="pager__arrow pager__arrow_left"/>
                                 <div className="pager__listwrap">
                                     <ul className="pager__list" ref={this.onScrollableUpdate}>
-                                        <li className="pager__item cask">1</li>
-                                        <li className="pager__item cask">2</li>
-                                        <li className="pager__item cask">3</li>
-                                        <li className="pager__item cask">4</li>
-                                        <li className="pager__item cask">5</li>
-                                        <li className="pager__item cask">6</li>
-                                        <li className="pager__item cask">7</li>
-                                        <li className="pager__item cask">8</li>
-                                        <li className="pager__item cask">9</li>
-                                        <li className="pager__item cask">A</li>
-                                        <li className="pager__item cask">B</li>
-                                        <li className="pager__item cask">C</li>
-                                        <li className="pager__item cask">D</li>
-                                        <li className="pager__item cask">E</li>
-                                        <li className="pager__item cask">F</li>
-                                        <li className="pager__item cask">G</li>
+                                        <MissionLi caption='1' />
+                                        <MissionLi caption='2' />
+                                        <MissionLi caption='3' />
+                                        <MissionLi caption='4' />
+                                        <MissionLi caption='5' />
+                                        <MissionLi caption='6' />
+                                        <MissionLi caption='7' />
+                                        <MissionLi caption='8' />
+                                        <MissionLi caption='9' />
+                                        <MissionLi caption='A' />
+                                        <MissionLi caption='B' />
+                                        <MissionLi caption='C' />
+                                        <MissionLi caption='D' />
+                                        <MissionLi caption='E' />
+                                        <MissionLi caption='F' />
+                                        <MissionLi caption='G' />
+
                                     </ul>
                                 </div>
                                 <div className="pager__arrow pager__arrow_right"/>

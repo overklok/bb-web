@@ -10,19 +10,22 @@
 
   font-weight: 600;
 
-  cursor: pointer;
   user-select: none;
 
   text-align: center;
 
-  transition: background-color .2s @fade,
-              transform .2s @scale;
+  &_active {
+    cursor: pointer;
 
-  &:hover {
-    transform: scale(1.1);
-  }
+    transition: background-color .2s @fade,
+                transform .2s @scale;
 
-  &:active {
-    transform: scale(.9);
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(1);
+    }
   }
 }
