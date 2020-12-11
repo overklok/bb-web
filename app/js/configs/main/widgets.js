@@ -2,17 +2,16 @@ import ModalView    from "../../core/views/modal/ModalView";
 import LayoutView   from "../../core/views/layout/LayoutView";
 import BlocklyView  from "../../views/code/BlocklyView";
 import {BoardView}  from "../../views/board/BoardView";
-import {NavbarView} from "../../views/controls/NavbarView";
 
 import ModalPresenter       from "../../core/presenters/ModalPresenter";
 import LayoutPresenter      from "../../presenters/common/LayoutPresenter";
 import BoardPresenter       from "../../presenters/common/BoardPresenter";
-import NavbarPresenter      from "../../presenters/controls/NavbarPresenter";
 import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";
 
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
 import BlocklyLessonPresenter from "../../presenters/common/BlocklyLessonPresenter";
 import {TopbarView} from "../../views/controls/TopbarView";
+import TopbarPresenter from "../../presenters/controls/TopbarPresenter";
 
 export default {
     composer: OverlayViewComposer,
@@ -21,14 +20,9 @@ export default {
         {view_type: ModalView, presenter_types: [ModalPresenter]}
     ],
     widgets: {
-        navbar_react: {
-            view_type: TopbarView.TopbarView,
-            presenter_types: [],
-            nest_style: {overflow: 'hidden'}
-        },
         navbar: {
-            view_type: NavbarView.NavbarView,
-            presenter_types: [NavbarPresenter],
+            view_type: TopbarView.TopbarView,
+            presenter_types: [TopbarPresenter],
             nest_style: {overflow: 'hidden'}
         },
         board: {

@@ -34,7 +34,7 @@ export class ExerciseRunEvent extends ModelEvent<ExerciseRunEvent> {
 
 export default class ProgressModel extends Model<Progress, DummyDatasource> {
     protected defaultState: Progress = {
-        locked: true,
+        locked: false,
         missions: [],
         mission_idx: undefined,
         mission_idx_last: undefined,
@@ -42,6 +42,7 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
     };
     private button_seq_model: string[];
     private button_seq_idx: number;
+    private exercise_preferred: number;
 
     /**
      * Reset model state with the new lesson structure
@@ -176,13 +177,15 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
      */
     public switchExercise(mission_idx: number, exercise_idx: number = 0) {
         mission_idx = mission_idx | 0;
-        exercise_idx = exercise_idx | 0;
+        exercise_idx = exercise_idx | this.exercise_preferred | 0;
+
+        this.exercise_preferred = 0;
 
         if (!(mission_idx in this.state.missions)) {
             throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
         }
 
-        if (!(exercise_idx < this.state.missions[mission_idx].exercise_last)) {
+        if (exercise_idx > this.state.missions[mission_idx].exercise_last) {
             throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
         }
 
@@ -192,10 +195,16 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
             }
         }
 
-        if (this.state.mission_idx !== mission_idx) {
+        if (this.state.mission_idx !== mission_idx || this.state.missions[mission_idx].exercise_idx !== exercise_idx) {
             this.state.mission_idx = mission_idx;
+            this.state.missions[mission_idx].exercise_idx = exercise_idx;
+
             this.emit(new ExerciseRunEvent({mission_idx, exercise_idx}));
         }
+    }
+
+    public preferExercise(exercise_idx: number) {
+        this.exercise_preferred = exercise_idx;
     }
 
     /**

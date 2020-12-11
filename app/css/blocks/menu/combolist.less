@@ -25,11 +25,23 @@ ul.combolist {
                 transform .2s @scale;
 
   &:hover {
+    background-color: @primary_deep;
+  }
+
+  &_active {
     background-color: @primary;
   }
 
-  .cl-item__caption {
+  .cl-item__prefix {
+    font-weight: 600;
+    margin: 0 .25em;
+  }
 
+  .cl-item__caption {
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .cl-item__context {

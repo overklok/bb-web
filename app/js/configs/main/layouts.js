@@ -3,10 +3,9 @@ export default {
         show_headers: false,
     },
     modes: {
-        default: {
+        index: {
             policy: 'horizontal',
             panes: [
-                {name: 'menubar', fixed: 55, widgets: [{alias: 'navbar_react', label: ''}]},
             ]
         },
         full: {

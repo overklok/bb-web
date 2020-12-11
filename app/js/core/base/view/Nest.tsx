@@ -45,12 +45,17 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
         if (Object.getPrototypeOf(this.view).constructor.notifyNestMount) {
             this.setState({mounted: true});
         }
+
+        this.props.connector.onPropsUpdate((props: IViewProps) => {
+            this.view_props = {...this.view_props, ...props};
+            this.render();
+        });
     }
 
     componentDidUpdate(prevProps: Readonly<INestProps>, prevState: Readonly<INestState>, snapshot?: any) {
-        if (this.view) {
-            this.view.attachConnector(this.props.connector);
-        }
+        // if (this.view) {
+        //     this.view.attachConnector(this.props.connector);
+        // }
     }
 
     notifyResizeView() {
@@ -81,6 +86,8 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
         let klasses = classNames({
             'nest': true,
         });
+
+        console.log('nest', SpecificView, this.view_props);
 
         return (
             <div className={klasses} ref={this.ref} style={this.props.nest_style}>

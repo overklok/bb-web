@@ -1,15 +1,24 @@
 import * as React from "react";
 import classNames from "classnames";
 import CaskProgress from "./CaskProgress";
-import Combolist from "./Combolist";
 import {CSSTransition} from "react-transition-group";
 
+export interface Exercise {
+    id: number;
+    name: string;
+}
+
 interface MCMProps {
-    caption: string;
+    index: number;
     visible: boolean;
     btn_pos_x: number;
     btn_pos_y: number;
-    progress: number;
+    percent: number;
+    title: string;
+    description: string;
+    exercises: Exercise[];
+    current_exercise_idx: number;
+    on_exercise_select?: (idx: number) => void;
 }
 
 interface MCMState {
@@ -35,6 +44,10 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
             corr_x: 0,
             corr_y: 0
         }
+    }
+
+    handleExerciseClick(idx: number) {
+        this.props.on_exercise_select && this.props.on_exercise_select(idx);
     }
 
     render() {
@@ -71,24 +84,54 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
                     <div className={klasses_head}>
                         <div className="mission__dropcap">
                             <div className="cask" ref={this.ref_cask}>
-                                <CaskProgress percent={this.props.progress} simple={true} />
+                                <CaskProgress percent={this.props.percent} simple={true} />
 
                                 <div className="cask__content">
-                                    {this.props.caption}
+                                    {this.props.index + 1}
                                 </div>
                             </div>
                         </div>
                         <div className="mission__brief">
                             <div className="mission__title">
-                                Mission title
+                                {this.props.title}
                             </div>
                             <div className="mission__subtitle">
-                                Mission subtitle
+                                {this.props.description}
                             </div>
                         </div>
                     </div>
                     <div className="mission__body">
-                        <Combolist />
+                        <ul className='combolist'>
+                            {this.props.exercises.map((exercise, idx) => {
+                                const klasses = classNames({
+                                    'combolist__item': true,
+                                    'cl-item': true,
+                                    'cl-item_active': idx == this.props.current_exercise_idx
+                                });
+
+                                return (
+                                    <li key={idx}
+                                        className={klasses}
+                                        onClick={() => this.handleExerciseClick(idx)}
+                                    >
+                                        <div className="cl-item__prefix">
+                                            {idx + 1}
+                                        </div>
+
+                                        <div className="cl-item__caption">
+                                            {exercise.name}
+                                        </div>
+
+                                        {/*TODO: Add actions later*/}
+                                        {/*<div className="cl-item__context cl-context">*/}
+                                        {/*    <div className="cl-context__action">*/}
+                                        {/*    </div>*/}
+                                        {/*</div>*/}
+                                    </li>
+                                    )
+                                }
+                            )}
+                        </ul>
                     </div>
                 </div>
             </CSSTransition>

@@ -23,8 +23,12 @@
     z-index: 1;
   }
 
+  &.exit {
+    transition: padding @scale .2s, opacity @scale .2s;
+  }
+
   &.exit-active {
-    opacity: 1;
+    opacity: 0;
     pointer-events: auto;
     padding: 0;
     z-index: 0;
@@ -32,7 +36,6 @@
 
   &.exit-done {
     opacity: 0;
-    transition: padding @scale .5s, opacity @scale .5s;
   }
 
   &__head {
@@ -44,7 +47,9 @@
   }
 
   &__body {
-    padding: .25em 0;
+    padding: .125em 0;
+    margin-top: .375em;
+    border-top: black solid 1px;
   }
 
   &__brief {
@@ -55,10 +60,18 @@
     font-size: 14px;
     font-weight: 600;
     white-space: nowrap;
+
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   &__subtitle {
     font-size: 12px;
     white-space: nowrap;
+
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }

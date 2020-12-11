@@ -42,6 +42,7 @@ export default class ViewConnector {
     public actions: Array<[string, Action<any>, Function]> = [];
 
     private presenters: Presenter<any>[];
+    private on_props_cb: (props: IViewProps) => void;
 
     /**
      * View connectors are usually built by ViewService at the registration of Widget
@@ -78,6 +79,7 @@ export default class ViewConnector {
 
             presenter = new presenter_type(this.svc_model, this.svc_routing);
             const local_props = presenter.getInitialProps();
+            presenter.onPropsUpdate(this.setViewProps.bind(this));
 
             if (local_props) {
                 props = {...props, ...local_props};
@@ -87,6 +89,10 @@ export default class ViewConnector {
         }
 
         return props;
+    }
+
+    setViewProps(props: IViewProps) {
+        this.on_props_cb && this.on_props_cb(props);
     }
 
     /**
@@ -134,6 +140,10 @@ export default class ViewConnector {
         if (this.view) {
             this.view.resize();
         }
+    }
+
+    onPropsUpdate(cb: (props: IViewProps) => void) {
+        this.on_props_cb = cb;
     }
 
     /**

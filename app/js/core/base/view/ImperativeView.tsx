@@ -27,8 +27,6 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
     }
 
     public async componentDidMount() {
-        console.log('test');
-
         if (this.props.nest_mounted === true) {
             await this.injectAsync();
 

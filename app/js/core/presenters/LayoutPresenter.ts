@@ -20,7 +20,6 @@ export default class LayoutPresenter extends Presenter<LayoutView> {
 
     @restore() @on(SetModeEvent)
     protected setMode(evt: SetModeEvent) {
-        console.log(this.view);
         this.view.setMode(evt.mode);
     }
 
