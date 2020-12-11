@@ -1,11 +1,15 @@
 import * as React from "react";
 import classNames from "classnames";
+import CaskProgress from "./CaskProgress";
+import Combolist from "./Combolist";
+import {CSSTransition} from "react-transition-group";
 
 interface MCMProps {
     caption: string;
     visible: boolean;
     btn_pos_x: number;
     btn_pos_y: number;
+    progress: number;
 }
 
 interface MCMState {
@@ -17,6 +21,7 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
     static defaultProps = {
         visible: false,
     }
+
     private readonly ref_cont: React.RefObject<HTMLDivElement>;
     private readonly ref_cask: React.RefObject<HTMLDivElement>;
 
@@ -55,68 +60,38 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
         if (this.props.btn_pos_x) pos_x = this.props.btn_pos_x - dx;
         if (this.props.btn_pos_y) pos_y = this.props.btn_pos_y;
 
-        const klasses = classNames({
-            'mission': true,
-            'mission_visible': this.props.visible
-        });
-
         const klasses_head = classNames({
             'mission__head': true,
             'mission__head_reversed': reverse_head,
-        })
+        });
 
         return (
-            <div className={klasses} style={{left: pos_x, top: pos_y}} ref={this.ref_cont}>
-                <div className={klasses_head}>
-                    <div className="mission__dropcap">
-                        <div className="cask" ref={this.ref_cask}>
-                            {this.props.caption}
+            <CSSTransition in={this.props.visible} timeout={300}>
+                <div className="mission" style={{left: pos_x, top: pos_y}} ref={this.ref_cont}>
+                    <div className={klasses_head}>
+                        <div className="mission__dropcap">
+                            <div className="cask" ref={this.ref_cask}>
+                                <CaskProgress percent={this.props.progress} simple={true} />
+
+                                <div className="cask__content">
+                                    {this.props.caption}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mission__brief">
+                            <div className="mission__title">
+                                Mission title
+                            </div>
+                            <div className="mission__subtitle">
+                                Mission subtitle
+                            </div>
                         </div>
                     </div>
-                    <div className="mission__brief">
-                        <div className="mission__title">
-                            Mission title
-                        </div>
-                        <div className="mission__subtitle">
-                            Mission subtitle
-                        </div>
+                    <div className="mission__body">
+                        <Combolist />
                     </div>
                 </div>
-                <div className="mission__body">
-                    <ul className='combolist'>
-                        <li className='combolist__item cl-item'>
-                            <div className="cl-item__caption">
-                                Exercise 1
-                            </div>
-                            <div className="cl-item__context cl-context">
-                                <div className="cl-context__action">
-
-                                </div>
-                            </div>
-                        </li>
-                        <li className='combolist__item cl-item'>
-                            <div className="cl-item__caption">
-                                Exercise 2
-                            </div>
-                            <div className="cl-item__context cl-context">
-                                <div className="cl-context__action">
-
-                                </div>
-                            </div>
-                        </li>
-                        <li className='combolist__item cl-item'>
-                            <div className="cl-item__caption">
-                                Exercise 3
-                            </div>
-                            <div className="cl-item__context cl-context">
-                                <div className="cl-context__action">
-
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            </CSSTransition>
         )
     }
 }

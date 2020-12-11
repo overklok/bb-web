@@ -43,19 +43,33 @@
     height: 100%;
     bottom: -100%;
 
-    background: @warning;
+    background-color: @default;
+
+    transition: bottom .5s;
   }
+
+  &_cl_primary    &__progress {background-color: @primary;}
+  &_cl_secondary  &__progress {background-color: @secondary;}
+  &_cl_success    &__progress {background-color: @success;}
+  &_cl_dark       &__progress {background-color: @dark;}
+  &_cl_warning    &__progress {background-color: @warning;}
+  &_cl_danger     &__progress {background-color: @danger;}
+  &_cl_light      &__progress {background-color: @light;}
+  &_cl_default    &__progress {background-color: @default;}
 }
 
-@wave_width: 70%;
+@wave_width:  70%;
 @wave_height: 60%;
 
 @wave_right_right: -25%;
-@wave_left_left: -25%;
-@wave_inv_left: 15%;
+@wave_left_left:   -25%;
+@wave_inv_left:     15%;
 
-@wave_bottom: 44%;
+@wave_bottom:     44%;
 @wave_inv_bottom: 95%;
+
+@wave_bottom_down:     @wave_bottom     - 50%;
+@wave_inv_bottom_down: @wave_inv_bottom - 50%;
 
 @wave_anim_dur: 3s;
 
@@ -65,10 +79,15 @@
 @wave_alt_left_left:    @wave_left_left   + 25%;
 @wave_alt_inv_left:     @wave_inv_left + 25%;
 
-@wave_alt_bottom: @wave_bottom + 4;
-@wave_alt_inv_bottom: @wave_inv_bottom + 4;
+@wave_alt_bottom:         @wave_bottom + 4;
+@wave_alt_inv_bottom:     @wave_inv_bottom + 4;
+
+@wave_alt_bottom_down:     @wave_alt_bottom - 50%;
+@wave_alt_inv_bottom_down: @wave_inv_bottom - 50%;
 
 @wave_alt_anim_del: 1s;
+
+@wave_transition: bottom .5s ease-in-out, opacity .5s ease-out;
 
 .wavefront {
   &::before {
@@ -83,19 +102,13 @@
     background-color: #ffffff;
     border-radius: 50%;
 
+    transition: @wave_transition;
     animation: wave @wave_anim_dur infinite linear;
     animation-direction: reverse;
   }
 
-  &_half {
-    opacity: .3;
-
-    &::before {
-      left: @wave_alt_inv_left;
-      bottom: @wave_alt_inv_bottom;
-      animation-delay: @wave_alt_anim_del;
-      animation-direction: normal;
-    }
+  &_disabled&::before {
+    opacity: 0;
   }
 
   &__wave {
@@ -103,9 +116,10 @@
     width: @wave_width;
     height: @wave_height;
 
-    background-color: @warning;
+    background-color: @default;
     border-radius: 50%;
 
+    transition: @wave_transition;
     animation: wave @wave_anim_dur infinite linear;
 
     &_right {
@@ -117,21 +131,55 @@
       left: @wave_left_left;
       bottom: @wave_bottom;
     }
+  }
 
-    &_right&_half {
+  &_disabled &__wave {
+    bottom: @wave_bottom_down;
+  }
+
+  &_alt {
+    opacity: .3;
+
+    &::before {
+      left: @wave_alt_inv_left;
+      bottom: @wave_alt_inv_bottom;
+      animation-delay: @wave_alt_anim_del;
+      animation-direction: normal;
+    }
+  }
+
+  &_alt&_disabled&::before {
+    opacity: 0;
+  }
+
+  &_alt &__wave {
+    &_right {
       right: @wave_alt_right_right;
       bottom: @wave_alt_bottom;
       animation-delay: @wave_alt_anim_del;
       animation-direction: reverse;
     }
 
-    &_left&_half  {
+    &_left  {
       left: @wave_alt_left_left;
       bottom: @wave_alt_bottom;
       animation-delay: @wave_alt_anim_del;
       animation-direction: reverse;
     }
   }
+
+  &_alt&_disabled &__wave {
+    bottom: @wave_alt_bottom_down;
+  }
+
+  &_cl_primary    &__wave {background-color: @primary;}
+  &_cl_secondary  &__wave {background-color: @secondary;}
+  &_cl_success    &__wave {background-color: @success;}
+  &_cl_dark       &__wave {background-color: @dark;}
+  &_cl_warning    &__wave {background-color: @warning;}
+  &_cl_danger     &__wave {background-color: @danger;}
+  &_cl_light      &__wave {background-color: @light;}
+  &_cl_default    &__wave {background-color: @default;}
 }
 
 

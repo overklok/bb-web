@@ -98,7 +98,7 @@ export namespace TopbarView {
                                 <div className="pager__arrow pager__arrow_left" onClick={() => this.scrollToBegin()}/>
                                 <div className="pager__listwrap">
                                     <ul className="pager__list" ref={this.onScrollableUpdate}>
-                                        <MissionLi caption='1' progress={50}/>
+                                        <MissionLi caption='1' progress={0}/>
                                         <MissionLi caption='2' progress={0}/>
                                         <MissionLi caption='3' progress={0}/>
                                         <MissionLi caption='4' progress={0}/>
@@ -112,8 +112,27 @@ export namespace TopbarView {
                                         <MissionLi caption='C' progress={80}/>
                                         <MissionLi caption='D' progress={90}/>
                                         <MissionLi caption='E' progress={100}/>
-                                        <MissionLi caption='F' progress={100}/>
-                                        <MissionLi caption='G' progress={100}/>
+                                        <MissionLi caption='F' progress={90}/>
+                                        <MissionLi caption='G' progress={80}/>
+                                        <MissionLi caption='H' progress={70}/>
+                                        <MissionLi caption='I' progress={60}/>
+                                        <MissionLi caption='J' progress={50}/>
+                                        <MissionLi caption='K' progress={40}/>
+                                        <MissionLi caption='L' progress={30}/>
+                                        <MissionLi caption='M' progress={20}/>
+                                        <MissionLi caption='N' progress={10}/>
+                                        <MissionLi caption='O' progress={0}/>
+                                        <MissionLi caption='P' progress={10}/>
+                                        <MissionLi caption='Q' progress={20}/>
+                                        <MissionLi caption='R' progress={30}/>
+                                        <MissionLi caption='S' progress={40}/>
+                                        <MissionLi caption='T' progress={50}/>
+                                        <MissionLi caption='U' progress={60}/>
+                                        <MissionLi caption='V' progress={70}/>
+                                        <MissionLi caption='W' progress={80}/>
+                                        <MissionLi caption='X' progress={90}/>
+                                        <MissionLi caption='Y' progress={100}/>
+                                        <MissionLi caption='Z' progress={100}/>
                                     </ul>
                                 </div>
                                 <div className="pager__arrow pager__arrow_right" onClick={() => this.scrollToEnd()}/>

@@ -5,7 +5,6 @@
   position: absolute;
   display: inline-block;
 
-  opacity: 0;
   pointer-events: none;
 
   border-radius: .375em;
@@ -14,13 +13,26 @@
 
   background-color: @light_deep;
 
+  opacity: 0;
   transition: padding @scale .5s;
 
-  &_visible {
+  &.enter-active, &.enter-done {
     opacity: 1;
     pointer-events: auto;
-
     padding: .25em;
+    z-index: 1;
+  }
+
+  &.exit-active {
+    opacity: 1;
+    pointer-events: auto;
+    padding: 0;
+    z-index: 0;
+  }
+
+  &.exit-done {
+    opacity: 0;
+    transition: padding @scale .5s, opacity @scale .5s;
   }
 
   &__head {
