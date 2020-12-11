@@ -2,6 +2,9 @@
 @import '../../animations';
 
 .cask {
+  position: relative;
+  overflow: hidden;
+
   width: 2em;
   height: 2em;
   line-height: 2em;
@@ -28,4 +31,111 @@
       transform: scale(1);
     }
   }
+
+  &__content {
+    position: absolute;
+    width: 100%;
+  }
+
+  &__progress {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    bottom: -100%;
+
+    background: @warning;
+  }
+}
+
+@wave_width: 70%;
+@wave_height: 60%;
+
+@wave_right_right: -25%;
+@wave_left_left: -25%;
+@wave_inv_left: 15%;
+
+@wave_bottom: 44%;
+@wave_inv_bottom: 95%;
+
+@wave_anim_dur: 3s;
+
+
+
+@wave_alt_right_right:  @wave_right_right - 25%;
+@wave_alt_left_left:    @wave_left_left   + 25%;
+@wave_alt_inv_left:     @wave_inv_left + 25%;
+
+@wave_alt_bottom: @wave_bottom + 4;
+@wave_alt_inv_bottom: @wave_inv_bottom + 4;
+
+@wave_alt_anim_del: 1s;
+
+.wavefront {
+  &::before {
+    content: '';
+    position: absolute;
+    width: @wave_width;
+    height: @wave_height;
+
+    bottom: @wave_inv_bottom;
+    left: @wave_inv_left;
+
+    background-color: #ffffff;
+    border-radius: 50%;
+
+    animation: wave @wave_anim_dur infinite linear;
+    animation-direction: reverse;
+  }
+
+  &_half {
+    opacity: .3;
+
+    &::before {
+      left: @wave_alt_inv_left;
+      bottom: @wave_alt_inv_bottom;
+      animation-delay: @wave_alt_anim_del;
+      animation-direction: normal;
+    }
+  }
+
+  &__wave {
+    position: absolute;
+    width: @wave_width;
+    height: @wave_height;
+
+    background-color: @warning;
+    border-radius: 50%;
+
+    animation: wave @wave_anim_dur infinite linear;
+
+    &_right {
+      right: @wave_right_right;
+      bottom: @wave_bottom;
+    }
+
+    &_left {
+      left: @wave_left_left;
+      bottom: @wave_bottom;
+    }
+
+    &_right&_half {
+      right: @wave_alt_right_right;
+      bottom: @wave_alt_bottom;
+      animation-delay: @wave_alt_anim_del;
+      animation-direction: reverse;
+    }
+
+    &_left&_half  {
+      left: @wave_alt_left_left;
+      bottom: @wave_alt_bottom;
+      animation-delay: @wave_alt_anim_del;
+      animation-direction: reverse;
+    }
+  }
+}
+
+
+@keyframes wave {
+  from { transform: rotate(0deg);}
+  from { transform: rotate(360deg);}
 }

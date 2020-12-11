@@ -46,12 +46,12 @@ function cumulativeOffset(element: any): {top: number, left: number} {
  * @param offset - offset to scroll to
  * @param callback - callback function
  */
-function scrollTo(element: HTMLElement, offset: number, callback: Function) {
+function scrollTo(element: HTMLElement, offset: number, callback?: Function) {
     const fixedOffset = offset.toFixed(),
         onScroll = function () {
             if (element.scrollLeft.toFixed() === fixedOffset) {
                 element.removeEventListener('scroll', onScroll);
-                callback();
+                callback && callback();
             }
         }
 
@@ -64,4 +64,8 @@ function scrollTo(element: HTMLElement, offset: number, callback: Function) {
     });
 }
 
-export {sleep, coverOptions, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};
+function clamp(min: number, max: number, val: number) {
+    return Math.min(Math.max(val, min), max);
+}
+
+export {sleep, clamp, coverOptions, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};
