@@ -28,6 +28,10 @@ export default class RoutingService extends IRoutingService {
 
         this.router.launch();
         await this.router.redirect(window.location.pathname);
+
+        window.addEventListener('popstate', (e: PopStateEvent) => {
+            this.router.redirect(document.location.pathname);
+        });
     }
 
     async forward(route_name: string, params: any[]) {

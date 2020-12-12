@@ -97,7 +97,11 @@ export default class ViewConnector {
         if (this.on_props_cb) {
             this.on_props_cb(props);
         } else {
-            this.props_deferred = props;
+            if (this.props_deferred) {
+                this.props_deferred = {...props, ...this.props_deferred};
+            } else {
+                this.props_deferred = {...props};
+            }
         }
     }
 

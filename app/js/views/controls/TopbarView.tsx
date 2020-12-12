@@ -103,8 +103,6 @@ export namespace TopbarView {
         }
 
         public render(): React.ReactNode {
-            console.log(this.props.progress.missions);
-
             return (
                 <React.Fragment>
                     <div className="navbar">

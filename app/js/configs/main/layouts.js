@@ -6,7 +6,7 @@ export default {
         index: {
             policy: 'horizontal',
             panes: [
-                {name: 'intro', widgets: [{alias: 'courses', label: 'Courses'}]}
+                {name: 'content', widgets: [{alias: 'courses', label: 'Courses'}]}
             ]
         },
         full: {

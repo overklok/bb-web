@@ -13,7 +13,7 @@ import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
-import BoardPresenter from "./presenters/common/BoardPresenter";
+import BoardPresenter from "./presenters/board/BoardPresenter";
 
 import BoardModel from "./models/common/BoardModel";
 import ConnectionModel from "./models/common/ConnectionModel";

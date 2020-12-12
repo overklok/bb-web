@@ -51,10 +51,14 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
         });
     }
 
+    componentWillUnmount() {
+        this.props.connector.onPropsUpdate(null);
+    }
+
     componentDidUpdate(prevProps: Readonly<INestProps>, prevState: Readonly<INestState>, snapshot?: any) {
-        // if (this.view) {
-        //     this.view.attachConnector(this.props.connector);
-        // }
+        if (this.view) {
+            this.view.attachConnector(this.props.connector);
+        }
     }
 
     notifyResizeView() {
