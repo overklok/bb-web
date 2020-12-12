@@ -104,7 +104,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
         return (
             <li className="pager__item cask cask_active cask_cl_success" >
-                <CaskProgress percent={percentage} />
+                <CaskProgress percent={percentage} simple={true} />
 
                 <div ref={this.ref_root}
                      className="cask__content"

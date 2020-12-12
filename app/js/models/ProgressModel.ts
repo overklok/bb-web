@@ -79,7 +79,7 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
     /**
      * Возвратить индекс текущего упражнения
      */
-    public getExerciseCurrent() {
+    public getExerciseCurrent(): [number, number] {
         let missionIDX = this.state.mission_idx;
         let exerciseIDX = this.state.missions[missionIDX].exercise_idx;
 

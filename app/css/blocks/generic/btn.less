@@ -13,8 +13,9 @@
 
   text-align: center;
 
-  transition: background-color .1s @fade,
-              transform .2s @fade;
+  transition: color .5s,
+              background-color .5s,
+              transform ease-in-out .5s;
 
   &:active, &.btn-active {
     transform: scale(0.95);
@@ -36,6 +37,11 @@
     color: @text_light;
 
     &:hover {background-color: @primary_deep;}
+  }
+
+  &.btn_inv.btn_primary {
+    background-color: @text_light;
+    color: @primary;
   }
 
   &.btn_success {

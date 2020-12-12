@@ -44,4 +44,11 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         this.model_progress.preferExercise(evt.exercise_idx);
         await this.forward('mission', [lesson_id, evt.mission_idx]);
     }
+
+    @on(TopbarView.MenuItemEvent)
+    private onMenuItem(evt: TopbarView.MenuItemEvent) {
+        switch (evt.item) {
+            case "lessons": this.forward('index', []); break;
+        }
+    }
 }

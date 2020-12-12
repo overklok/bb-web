@@ -1,50 +1,101 @@
 @import '../../colors';
+@import '../../animations';
 
 .navbar {
   background-color: @primary;
+  color: @text_light;
 
   width: 100%;
   height: 55px;
-
-  padding: 5px;
 
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
   align-items: center;
   justify-content: flex-start;
-}
 
-.navbar_collapsed {
-  height: 50px;
-}
-
-.navbar__section {
-  padding: 5px;
-
-  &_half {
-    max-width: 50%;
+  &_collapsed {
+    height: 50px;
   }
-}
 
-.navbar__delimiter {
-  color: white;
-  font-size: 1.25em;
-  font-weight: 600;
+  &_inv {
+    background-color: @text_light;
+    color: @primary;
+  }
 
-  &:before {content: '|';}
-}
+  &__section {
+    box-sizing: border-box;
 
-.navbar__spacer {
-  flex-grow: 1;
-}
+    padding: 10px;
 
-.navbar__title {
-  white-space: nowrap;
+    &_pagerwrap {
+      max-width: 50vw;
+    }
+  }
 
-  color: white;
-  font-size: 1.25em;
-  font-weight: 600;
+  &__delimiter {
+    color: white;
+    font-size: 1.25em;
+    font-weight: 700;
 
-  margin: 0 2px;
+    &:before {
+      content: '|';
+    }
+  }
+
+  &__spacer {
+    flex-grow: 1;
+  }
+
+  &__title, &__menuitem, &__description {
+    white-space: nowrap;
+
+    font-size: 1em;
+    font-weight: 700;
+
+    margin: 0;
+  }
+
+  &__title {
+    font-size: 1.25em;
+  }
+
+  &__menuitem {
+    cursor: pointer;
+
+    transition: transform @scale .3s;
+
+    &:hover {transform: scale(1.05)}
+    &:active {transform: scale(.95)}
+  }
+
+  &__description {
+    color: @default;
+
+    font-size: 1em;
+
+    text-align: end;
+
+    &_small {
+
+      font-size: .75em;
+    }
+  }
+
+  &__slider, &__slide {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__slider {
+    overflow: hidden;
+  }
+
+  &__slide {
+    transition: transform @move .3s;
+
+    &_raised {
+      transform: translateY(-100%);
+    }
+  }
 }

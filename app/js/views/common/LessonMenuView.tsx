@@ -22,11 +22,13 @@ export namespace LessonMenuView {
 
     export interface Props extends IViewProps {
         courses: Course[];
+        lesson_id: number;
     }
 
     export class LessonMenuView extends View<Props, undefined> {
         static defaultProps: Props = {
-            courses: []
+            courses: [],
+            lesson_id: undefined
         }
 
         constructor(props: AllProps<Props>) {
@@ -57,8 +59,18 @@ export namespace LessonMenuView {
                                     {course.lessons.map((lesson, idx) =>
                                         <li className="lesson" key={idx}>
                                             <a role="button" onClick={() => this.handleLessonClick(lesson.id)}>
-                                                <div className="head">Урок {idx+1}</div>
-                                                <div className="body">{lesson.name}</div>
+                                                <div className="head">
+                                                    Урок {idx+1}
+                                                </div>
+                                                <div className="body">
+                                                    {lesson.name}
+                                                    <br/>
+                                                    <small>
+                                                        <i>
+                                                            {this.props.lesson_id === lesson.id ? 'Продолжить' : ''}
+                                                        </i>
+                                                    </small>
+                                                </div>
                                             </a>
                                         </li>
                                     )}

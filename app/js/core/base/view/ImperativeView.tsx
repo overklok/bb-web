@@ -59,7 +59,7 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
             setTimeout(() => {
                 this.inject(this.props.ref_parent.current);
                 resolve();
-            }, 0)
+            }, 300)
         });
     }
 }
