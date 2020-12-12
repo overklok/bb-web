@@ -6,6 +6,7 @@ export default {
         index: {
             policy: 'horizontal',
             panes: [
+                {name: 'intro', widgets: [{alias: 'courses', label: 'Courses'}]}
             ]
         },
         full: {
@@ -16,7 +17,7 @@ export default {
                     {name: 'left',   size: '55%', widgets: [{alias: 'blockly', label: 'Blockly'}], title: 'Blockly'},
                     {name: 'center', size: '35%', widgets: [{alias: 'board', label: 'Board'}], title: 'Board'},
                     {name: 'right',  size: '20%', panes: [
-                        {name: 'rtop', widgets: []},
+                        {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
                         {name: 'rcenter', widgets: []},
                         {name: 'rbottom', widgets: []},
                     ]}
@@ -30,7 +31,7 @@ export default {
                 {name: 'content', panes: [
                     {name: 'left', size: '35%', widgets: [{alias: 'blockly', label: 'Blockly'}], title: 'Blockly'},
                     {name: 'right', size_min: '10%', size: '20%', panes: [
-                        {name: 'rtop', widgets: []},
+                        {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
                         {name: 'rcenter', widgets: []},
                         {name: 'rbottom', widgets: []},
                     ]}
@@ -44,9 +45,7 @@ export default {
                 {name: 'content', panes: [
                     {name: 'left', size: '35%', widgets: [{alias: 'board', label: 'Board'}], title: 'Board'},
                     {name: 'right', size_min: '10%', size: '20%', panes: [
-                        {name: 'rtop', widgets: []},
-                        {name: 'rcenter', widgets: []},
-                        {name: 'rbottom', widgets: []},
+                        {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
                     ]}
                 ]},
             ]

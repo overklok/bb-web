@@ -1,31 +1,63 @@
-import RestModel, {CRUDAction, RestSchema} from "../core/base/model/RestModel";
+import RestModel, {CRUDAction, PathParams, RestSchema} from "../core/base/model/RestModel";
+import {Query} from "../core/models/datasources/HttpDatasource";
 
 type CourseLesson = {
-    pk: number;
-    fields: {
-        name: string;
-        description: string;
-    }
+    id: number;
+    name: string;
+    description: string;
 }
 
-type Course = {
-    pk: number;
+export type Course = {
+    id: number;
+    name: string;
+    description: string;
     lessons: CourseLesson[];
-    fields: {
-        name: string;
-        description: string;
-    }
 }
 
 export default class CourseModel extends RestModel<Course> {
     protected schema(): RestSchema {
         return {
-            [CRUDAction.List]: () => `courses`,
+            [CRUDAction.List]: () => `coursesvc`,
         }
     }
 
-    async test() {
-        await this.read({id: 12});
+    public async list(params: PathParams = {}, query?: Query): Promise<Course[]> {
+        const courses_raw = await super.list(params, query);
+
+        const courses = [];
+
+        for (const course_raw of courses_raw) {
+            courses.push(
+                CourseModel.processCourse(course_raw)
+            );
+        }
+
+        return courses;
+    }
+
+    static processCourse(_course: any): Course {
+        const lessons: CourseLesson[] = [];
+
+        for (const lesson of _course.lessons) {
+            lessons.push(
+                this.processLesson(lesson)
+            );
+        }
+
+        return {
+            id: _course.pk,
+            name: _course.fields.name,
+            description: _course.fields.description,
+            lessons: lessons
+        }
+    }
+
+    static processLesson(_lesson: any): CourseLesson {
+        return {
+            id: _lesson.pk,
+            name: _lesson.fields.name,
+            description: _lesson.fields.description
+        }
     }
 
     protected defaultState: Course = undefined;

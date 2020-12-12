@@ -2,7 +2,6 @@ import Presenter, {on, restore} from "../../core/base/Presenter";
 import {TopbarView} from "../../views/controls/TopbarView";
 import LessonModel from "../../models/LessonModel";
 import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
-import {NavbarView} from "../../views/controls/NavbarView";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private model_lesson: LessonModel;
@@ -34,13 +33,13 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     }
 
     @on(TopbarView.MissionSelectEvent)
-    private async onMissionSelected(evt: NavbarView.MissionSelectEvent) {
+    private async onMissionSelected(evt: TopbarView.MissionSelectEvent) {
         const lesson_id = this.model_progress.getState().lesson_id;
         await this.forward('mission', [lesson_id, evt.mission_idx]);
     }
 
     @on(TopbarView.ExerciseSelectEvent)
-    private async onExerciseSelected(evt: NavbarView.ExerciseSelectEvent) {
+    private async onExerciseSelected(evt: TopbarView.ExerciseSelectEvent) {
         const lesson_id = this.model_progress.getState().lesson_id;
         this.model_progress.preferExercise(evt.exercise_idx);
         await this.forward('mission', [lesson_id, evt.mission_idx]);

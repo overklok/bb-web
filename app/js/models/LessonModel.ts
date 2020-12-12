@@ -63,6 +63,7 @@ type Exercise = {
     name: string;
     is_sandbox: boolean;
     message_success: string;
+    task_description: string;
     layout_mode: string;
     launch_mode: LaunchMode;
     popovers: Popover[];
@@ -109,7 +110,7 @@ export default class LessonModel extends RestModel<Lesson> {
         return this.getState();
     }
 
-    public getExercise(mission_idx: number, exercise_idx: number) {
+    public getExercise(mission_idx: number, exercise_idx: number): Exercise {
         return this.getState().missions[mission_idx].exercises[exercise_idx];
     }
 
@@ -269,6 +270,7 @@ export default class LessonModel extends RestModel<Lesson> {
             name: _exercise.name || "unnamed",
             popovers: cloneDeep(_exercise.popovers),
             message_success: _exercise.message_success,
+            task_description: _exercise.task_description,
 
             is_sandbox: _exercise.is_sandbox || false,
             layout_mode: layout_mode,

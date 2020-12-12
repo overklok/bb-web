@@ -21,7 +21,7 @@ export default class MainRouter extends LayoutRouter {
             destination: 'course_list'
         },
         {
-            pathexp: '/lessons/{int}', name: 'exercise',
+            pathexp: '/lessons/{int}', name: 'lesson',
             destination: (lesson_id: number) =>
                 this.emit(new LessonRouteEvent({lesson_id}))
         },

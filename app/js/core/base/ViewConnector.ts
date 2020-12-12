@@ -42,6 +42,8 @@ export default class ViewConnector {
     public actions: Array<[string, Action<any>, Function]> = [];
 
     private presenters: Presenter<any>[];
+
+    private props_deferred: IViewProps;
     private on_props_cb: (props: IViewProps) => void;
 
     /**
@@ -92,7 +94,11 @@ export default class ViewConnector {
     }
 
     setViewProps(props: IViewProps) {
-        this.on_props_cb && this.on_props_cb(props);
+        if (this.on_props_cb) {
+            this.on_props_cb(props);
+        } else {
+            this.props_deferred = props;
+        }
     }
 
     /**
@@ -144,6 +150,11 @@ export default class ViewConnector {
 
     onPropsUpdate(cb: (props: IViewProps) => void) {
         this.on_props_cb = cb;
+
+        if (this.props_deferred) {
+            this.setViewProps(this.props_deferred);
+            this.props_deferred = undefined;
+        }
     }
 
     /**

@@ -121,8 +121,6 @@ export default class Presenter<V extends View> implements Subscriptable {
 
         this.svc_model = svc_model;
         this.svc_routing = svc_routing;
-
-        this.getInitialProps();
     };
 
     /**

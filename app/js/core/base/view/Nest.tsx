@@ -21,24 +21,22 @@ interface INestProps<P=IViewProps> {
 
 interface INestState {
     mounted: boolean;
+    view_props: AllProps<any>;
 }
 
-export default class Nest extends React.Component<INestProps<any>, INestState> {
+export default class Nest extends React.PureComponent<INestProps<any>, INestState> {
     private readonly ref = React.createRef<HTMLDivElement>();
     private view: View;
-    private view_props: AllProps<any>
 
     constructor(props: INestProps<any>) {
         super(props);
 
-        this.state = {
-            mounted: false,
-        };
-
         this.onRefUpdated = this.onRefUpdated.bind(this);
 
-        this.view_props = this.props.connector.collectProps();
-        this.view_props = {...this.props.view_props, ...this.view_props};
+        this.state = {
+            mounted: false,
+            view_props: this.props.connector.collectProps()
+        };
     }
 
     componentDidMount() {
@@ -47,8 +45,9 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
         }
 
         this.props.connector.onPropsUpdate((props: IViewProps) => {
-            this.view_props = {...this.view_props, ...props};
-            this.render();
+            this.setState({
+                view_props: {...this.state.view_props, ...props}
+            })
         });
     }
 
@@ -87,13 +86,11 @@ export default class Nest extends React.Component<INestProps<any>, INestState> {
             'nest': true,
         });
 
-        console.log('nest', SpecificView, this.view_props);
-
         return (
             <div className={klasses} ref={this.ref} style={this.props.nest_style}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
-                        {...this.view_props}
+                        {...this.state.view_props}
                         ref={this.onRefUpdated}
                         widgets={this.props.widgets}
                         connector={this.props.connector}

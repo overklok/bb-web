@@ -31,6 +31,7 @@ import CodeModel from "./models/common/CodeModel";
 import MainRouter from "./routers/MainRouter";
 import LessonModel from "./models/LessonModel";
 import ProgressModel from "./models/ProgressModel";
+import CourseModel from "./models/CourseModel";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {
@@ -56,14 +57,16 @@ class MainApplication extends Application {
               svc_model = this.instance(IModelService);
 
         svc_model.launch(ads);
-        svc_model.register(UserModel, hds);
+        svc_model.register(UserModel,   hds);
+        svc_model.register(CourseModel, hds);
         svc_model.register(LessonModel, hds);
 
-        svc_model.register(CodeModel, ads);
-        svc_model.register(BoardModel, ads);
-        svc_model.register(KeyboardModel, dds);
-        svc_model.register(ProgressModel, dds);
-        svc_model.register(LayoutModel, dds, layouts_config);
+        svc_model.register(CodeModel,       ads);
+        svc_model.register(BoardModel,      ads);
+
+        svc_model.register(KeyboardModel,   dds);
+        svc_model.register(ProgressModel,   dds);
+        svc_model.register(LayoutModel,     dds, layouts_config);
 
         hds.registerMiddleware([
             new JWTAuthMiddleware(

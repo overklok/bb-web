@@ -95,12 +95,10 @@ export namespace TopbarView {
         }
 
         private chooseMission(mission_idx: number) {
-            console.log('choose m', mission_idx);
             this.emit(new MissionSelectEvent({mission_idx}));
         }
 
         private chooseExercise(mission_idx: number, exercise_idx: number) {
-            console.log('choose e', mission_idx, exercise_idx);
             this.emit(new ExerciseSelectEvent({mission_idx, exercise_idx}));
         }
 
