@@ -143,11 +143,11 @@ export namespace TopbarView {
 
             return (
                 <React.Fragment>
-                    <div className="navbar navbar_primary">
-                        <div className="navbar__section">
+                    <div className="nav">
+                        <div className="nav__prefix">
                             <div className={menu_btn_klasses} onClick={this.toggleMenu}>Меню</div>
                         </div>
-                        <div className="navbar__slider">
+                        <div className="nav__content navslider">
                             {this.renderMain()}
                             {this.renderMenu()}
                         </div>
@@ -162,8 +162,8 @@ export namespace TopbarView {
         private renderMain() {
             const navbar_slide_main_klasses = classNames({
                 'navbar': true,
-                'navbar__slide': true,
-                'navbar__slide_raised': this.state.menu_active
+                'navslider__slide': true,
+                'navslider__slide_raised': this.state.menu_active
             });
 
             return (
@@ -171,7 +171,6 @@ export namespace TopbarView {
                     <div className="navbar__section">
                         <div className="logo logo_light logo__icon logo__icon_small" />
                     </div>
-                    <div className="navbar__delimiter"/>
                     <div className="navbar__section">
                         <h2 className='navbar__title'>Lesson Title</h2>
                     </div>
@@ -207,32 +206,23 @@ export namespace TopbarView {
             const navbar_slide_menu_klasses = classNames({
                 'navbar': true,
                 'navbar_inv': true,
-                'navbar__slide': true,
-                'navbar__slide_raised': this.state.menu_active
+                'navslider__slide': true,
+                'navslider__slide_raised': this.state.menu_active
             });
 
             return (
                 <div className={navbar_slide_menu_klasses}>
-                    <div className="navbar__section">
-                        <div className='navbar__menuitem'
-                             onClick={() => this.chooseMenuItem(MenuItem.Lessons)}>
-                            Уроки
-                        </div>
+                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Lessons)}>
+                        Уроки
                     </div>
-                    <div className="navbar__section">
-                        <div className='navbar__menuitem' onClick={() => this.chooseMenuItem(MenuItem.Settings)}>
-                            Настройки
-                        </div>
+                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Settings)}>
+                        Настройки
                     </div>
-                    <div className="navbar__section">
-                        <div className='navbar__menuitem' onClick={() => this.chooseMenuItem(MenuItem.Developer)}>
-                            Разработчик
-                        </div>
+                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Developer)}>
+                        Разработчик
                     </div>
-                    <div className="navbar__section">
-                        <div className='navbar__menuitem' onClick={() => this.chooseMenuItem(MenuItem.Execute)}>
-                            Выполнить
-                        </div>
+                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Execute)}>
+                        Выполнить
                     </div>
                     <div className="navbar__spacer"/>
                     <div className="navbar__section">

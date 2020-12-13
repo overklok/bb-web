@@ -1,7 +1,7 @@
 @import '../../colors';
 @import '../../animations';
 
-.navbar {
+.nav, .navbar {
   background-color: @primary;
   color: @text_light;
 
@@ -13,6 +13,26 @@
   box-sizing: border-box;
   align-items: center;
   justify-content: flex-start;
+}
+
+.nav {
+  &__prefix {
+    box-sizing: border-box;
+    padding: 10px;
+  }
+
+  &__content {
+    box-sizing: border-box;
+    flex-grow: 1;
+  }
+}
+
+.navbar {
+  padding: 0 5px;
+
+  &_root {
+    padding: 0;
+  }
 
   &_collapsed {
     height: 50px;
@@ -25,12 +45,27 @@
 
   &__section {
     box-sizing: border-box;
-
-    padding: 10px;
+    padding: 5px;
 
     &_pagerwrap {
       max-width: 50vw;
     }
+  }
+
+  &__button {
+    padding: 5px 10px;
+
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: transform @scale .3s, background-color @fade .3s;
+
+    &:hover {transform: scale(1.05); background-color: @light;}
+    &:active {transform: scale(.95); background-color: @light;}
   }
 
   &__delimiter {
@@ -47,7 +82,7 @@
     flex-grow: 1;
   }
 
-  &__title, &__menuitem, &__description {
+  &__title, &__button, &__description {
     white-space: nowrap;
 
     font-size: 1em;
@@ -58,15 +93,6 @@
 
   &__title {
     font-size: 1.25em;
-  }
-
-  &__menuitem {
-    cursor: pointer;
-
-    transition: transform @scale .3s;
-
-    &:hover {transform: scale(1.05)}
-    &:active {transform: scale(.95)}
   }
 
   &__description {
@@ -82,13 +108,17 @@
     }
   }
 
-  &__slider, &__slide {
+
+}
+
+.navslider {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &__slide {
     width: 100%;
     height: 100%;
-  }
-
-  &__slider {
-    overflow: hidden;
   }
 
   &__slide {
