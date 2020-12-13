@@ -8,6 +8,7 @@ import {scrollTo} from "../../core/helpers/functions";
 import {Exercise} from "./topbar/MissionContextMenu";
 import classNames from "classnames";
 
+require('../../../css/logo.less');
 require('../../../css/blocks/menu/navbar.less');
 require('../../../css/blocks/menu/progressbar.less');
 require('../../../css/blocks/menu/pager.less');
@@ -144,7 +145,7 @@ export namespace TopbarView {
                 <React.Fragment>
                     <div className="navbar navbar_primary">
                         <div className="navbar__section">
-                            <div className={menu_btn_klasses} onClick={this.toggleMenu}>Menu</div>
+                            <div className={menu_btn_klasses} onClick={this.toggleMenu}>Меню</div>
                         </div>
                         <div className="navbar__slider">
                             {this.renderMain()}
@@ -168,7 +169,7 @@ export namespace TopbarView {
             return (
                 <div className={navbar_slide_main_klasses}>
                     <div className="navbar__section">
-                        <h2 className='navbar__title'>Tapanda</h2>
+                        <div className="logo logo_light logo__icon logo__icon_small" />
                     </div>
                     <div className="navbar__delimiter"/>
                     <div className="navbar__section">

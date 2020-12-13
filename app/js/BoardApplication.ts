@@ -23,6 +23,7 @@ import {BoardView} from "./views/board/BoardView";
 import "../css/global.less";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";
+import IEventService from "./core/services/interfaces/IEventService";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;
@@ -44,6 +45,8 @@ class BoardApplication extends Application<BoardApplicationConfig> {
     }
 
     protected setup() {
+        const svc_event = this.instance(IEventService);
+
         let data_sources: AsynchronousDatasource[] = [];
 
         if (!this.config.silent) {

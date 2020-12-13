@@ -32,6 +32,7 @@ import MainRouter from "./routers/MainRouter";
 import LessonModel from "./models/LessonModel";
 import ProgressModel from "./models/ProgressModel";
 import CourseModel from "./models/CourseModel";
+import IEventService from "./core/services/interfaces/IEventService";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {
@@ -44,6 +45,9 @@ class MainApplication extends Application {
     }
 
     protected setup() {
+        const svc_routing = this.instance(IRoutingService),
+              svc_model = this.instance(IModelService);
+
         const dds = new DummyDatasource();
 
         const ads = new AdaptiveDatasource([
@@ -52,9 +56,6 @@ class MainApplication extends Application {
         ]);
 
         const hds = new HttpDatasource('127.0.0.1', 8000);
-
-        const svc_routing = this.instance(IRoutingService),
-              svc_model = this.instance(IModelService);
 
         svc_model.launch(ads);
         svc_model.register(UserModel,   hds);

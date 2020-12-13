@@ -1,14 +1,15 @@
 import ModalView        from "../../core/views/modal/ModalView";
 import LayoutView       from "../../core/views/layout/LayoutView";
+
 import BlocklyView      from "../../views/code/BlocklyView";
 import {BoardView}      from "../../views/board/BoardView";
 import {TopbarView}     from "../../views/controls/TopbarView";
 import {RichTextView}   from "../../views/common/RichTextView";
 import {LessonMenuView} from "../../views/common/LessonMenuView";
 
-import ModalPresenter       from "../../core/presenters/ModalPresenter";
-import LayoutPresenter      from "../../presenters/common/LayoutPresenter";
-import BoardPresenter       from "../../presenters/board/BoardPresenter";
+import ModalPresenter           from "../../core/presenters/ModalPresenter";
+import LayoutPresenter          from "../../presenters/common/LayoutPresenter";
+import BoardPresenter           from "../../presenters/board/BoardPresenter";
 
 import TopbarPresenter          from "../../presenters/controls/TopbarPresenter";
 import BlocklyCodePresenter     from "../../presenters/code/BlocklyCodePresenter";

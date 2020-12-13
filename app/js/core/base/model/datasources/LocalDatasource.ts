@@ -1,4 +1,4 @@
 import SynchronousDatasource from "./SynchronousDatasource";
 
-export default abstract class LocalDatasource extends SynchronousDatasource {
+export default class LocalDatasource extends SynchronousDatasource {
 }

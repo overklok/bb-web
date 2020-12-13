@@ -25,14 +25,7 @@ import widgets_config from "./configs/playground/widgets";
 import ModalModel from "./core/models/ModalModel";
 import CodeModel from "./models/common/CodeModel";
 import KeyboardModel from "./core/models/KeyboardModel";
-import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
-import IRoutingService from "./core/services/interfaces/IRoutingService";
-import LayoutRouter from "./core/routers/LayoutRouter";
-import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
-import LayoutView from "./core/views/layout/LayoutView";
-import LayoutPresenter from "./core/presenters/LayoutPresenter";
-import ModalView from "./core/views/modal/ModalView";
-import ModalPresenter from "./core/presenters/ModalPresenter";
+import IEventService from "./core/services/interfaces/IEventService";
 
 class PlaygroundApplication extends Application {
     public bb: BoardModel;
@@ -50,6 +43,8 @@ class PlaygroundApplication extends Application {
     }
 
     protected setup() {
+        const svc_event = this.instance(IEventService);
+
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             new SocketDatasource('127.0.0.1', 8005),

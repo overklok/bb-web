@@ -31,6 +31,7 @@ import LayoutView from "./core/views/layout/LayoutView";
 import LayoutPresenter from "./core/presenters/LayoutPresenter";
 import ModalView from "./core/views/modal/ModalView";
 import ModalPresenter from "./core/presenters/ModalPresenter";
+import IEventService from "./core/services/interfaces/IEventService";
 
 class MonkeyApplication extends Application {
     public bb: BoardModel;
@@ -48,6 +49,8 @@ class MonkeyApplication extends Application {
     }
 
     protected setup() {
+        const svc_event = this.instance(IEventService);
+
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             // new SocketDatasource('127.0.0.1', 8005),
