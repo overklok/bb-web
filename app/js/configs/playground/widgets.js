@@ -6,8 +6,8 @@ import LaunchView   from "../../views/controls/LaunchView";
 
 import LayoutPresenter      from "../../core/presenters/LayoutPresenter";
 import ModalPresenter       from "../../core/presenters/ModalPresenter";
-import BoardPresenter       from "../../presenters/common/BoardPresenter";
-import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";
+import BoardPresenter       from "../../presenters/board/BoardPresenter";
+import BlocklyCodePresenter from "../../presenters/code/BlocklyCodePresenter";
 import LaunchPresenter      from "../../presenters/playground/LaunchPresenter";
 
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";

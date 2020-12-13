@@ -90,11 +90,13 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
             'nest': true,
         });
 
+        const props = {...this.state.view_props, ...this.props.view_props};
+
         return (
             <div className={klasses} ref={this.ref} style={this.props.nest_style}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
-                        {...this.state.view_props}
+                        {...props}
                         ref={this.onRefUpdated}
                         widgets={this.props.widgets}
                         connector={this.props.connector}

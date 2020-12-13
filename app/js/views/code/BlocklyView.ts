@@ -27,7 +27,6 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
 
         this.blockly.registerBlockTypes(JSONBlocks);
         this.blockly.registerGenerators(JSONGenerators);
-        console.log(JSONBlocks);
 
         this.pause_duration = 0.2;
 
@@ -37,9 +36,10 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     public async inject(container: HTMLDivElement) {
         this.blockly.inject(container);
 
-        if (this.block_types || this.props.force_all_blocks) {
+        console.log('test', this.props);
+
+        if (this.props.force_all_blocks) {
             this.setBlockTypes(this.block_types);
-            this.block_types = {};
         }
 
         this.blockly.resize();
