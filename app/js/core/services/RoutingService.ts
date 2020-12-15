@@ -36,11 +36,15 @@ export default class RoutingService extends IRoutingService {
 
     async forward(route_name: string, params: any[], override: boolean = false) {
         const path = this.router.reverse(route_name, params);
-        if (override) {
-            window.history.replaceState({route_name, params}, 'nothing', path);
-        } else {
-            window.history.pushState({route_name, params}, 'nothing', path);
+
+        if (window.location.pathname !== path) {
+            if (override) {
+                window.history.replaceState({route_name, params}, 'nothing', path);
+            } else {
+                window.history.pushState({route_name, params}, 'nothing', path);
+            }
         }
+
         await this.router.redirect(path);
     }
 }

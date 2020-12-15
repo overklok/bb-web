@@ -1,6 +1,6 @@
 import LayoutPresenterCore from "../../core/presenters/LayoutPresenter";
 import LessonModel from "../../models/LessonModel";
-import ProgressModel from "../../models/ProgressModel";
+import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
 import {LessonRouteEvent, MissionRouteEvent} from "../../routers/MainRouter";
 import {on, restore} from "../../core/base/Presenter";
 
@@ -18,7 +18,7 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
     }
 
     @restore() @on(LessonRouteEvent, MissionRouteEvent)
-    public async runExercise(evt: LessonRouteEvent|MissionRouteEvent) {
+    protected async runExercise(evt: LessonRouteEvent|MissionRouteEvent) {
         const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
         this.model_progress.loadLesson(lesson);
 
@@ -32,8 +32,6 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
 
         const progress = this.model_progress.getState();
 
-        document.title = `Tapanda | Lesson ${progress.lesson_id}, Mission ${mission_idx}`;
-
         if (evt instanceof MissionRouteEvent) {
             // Prevent insufficient redirect (if idx change is not confirmed, move to current mission)
             // We need to keep URL actual if mission jump was rejected by ProgressModel.
@@ -46,5 +44,13 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
                 return;
             }
         }
+    }
+
+    @restore() @on(ExerciseRunEvent)
+    protected onRunExercise() {
+        const progress = this.model_progress.getState();
+        const [mission_idx, exercise_idx] = this.model_progress.getExerciseCurrent();
+
+        document.title = `Tapanda | Lesson ${progress.lesson_id}, Mission ${mission_idx}`;
     }
 }

@@ -57,8 +57,8 @@ export default class ProgressModel extends HttpModel<Progress> {
         mission_idx: undefined,
         mission_idx_last: undefined,
         mission_idx_available: undefined,
-        lock_exercises: true,
-        lock_missions: true,
+        lock_exercises: false,
+        lock_missions: false,
     };
 
     private button_seq_model: string[];
@@ -236,7 +236,7 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         if (this.state.lock_missions) {
             if (mission_idx !== 0 && mission_idx > this.state.mission_idx_available) {
-                console.debug('Forbidden exercise switch prevented: `lock_missions` enabled');
+                console.debug('Forbidden mission switch prevented: `lock_missions` enabled');
                 return;
             }
         }
