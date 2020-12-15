@@ -4,7 +4,7 @@ import ProgressModel from "../../models/ProgressModel";
 import {LessonRouteEvent, MissionRouteEvent} from "../../routers/MainRouter";
 import {on, restore} from "../../core/base/Presenter";
 
-export default class LayoutPresenter extends LayoutPresenterCore {
+export default class LayoutLessonPresenter extends LayoutPresenterCore {
     private model_lesson: LessonModel;
     private model_progress: ProgressModel;
 

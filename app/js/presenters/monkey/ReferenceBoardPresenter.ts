@@ -1,5 +1,5 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import {BoardView} from "../../views/board/BoardView";
+import BoardView from "../../views/common/BoardView";
 import BoardModel, {BoardLayoutEvent, PlateEvent} from "../../models/common/BoardModel";
 import TestkitModel, {ReferenceRequestEvent, TestkitChangeEvent} from "../../models/monkey/TestkitModel";
 import {TestKitItemQuanitites} from "../../models/monkey/types";

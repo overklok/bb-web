@@ -1,5 +1,5 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
-import {RichTextView} from "../../views/common/RichTextView";
+import RichTextView from "../../views/common/RichTextView";
 import LessonModel from "../../models/LessonModel";
 import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 

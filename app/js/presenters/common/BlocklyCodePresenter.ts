@@ -1,5 +1,5 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import BlocklyView, {BlocklyCodeChangeEvent} from "../../views/code/BlocklyView";
+import BlocklyView, {BlocklyCodeChangeEvent} from "../../views/common/BlocklyView";
 import CodeModel, {
     CodeCommandExecutedEvent,
     CodeLaunchedEvent,

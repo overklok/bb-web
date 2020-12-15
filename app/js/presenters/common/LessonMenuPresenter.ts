@@ -1,5 +1,5 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import {LessonMenuView} from "../../views/common/LessonMenuView";
+import LessonMenuView from "../../views/common/LessonMenuView";
 import CourseModel from "../../models/CourseModel";
 import ProgressModel from "../../models/ProgressModel";
 import {RequestErrorEvent} from "../../core/base/model/HttpModel";

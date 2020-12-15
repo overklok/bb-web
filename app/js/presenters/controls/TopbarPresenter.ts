@@ -1,5 +1,5 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
-import {TopbarView} from "../../views/controls/TopbarView";
+import TopbarView from "../../views/controls/TopbarView";
 import LessonModel from "../../models/LessonModel";
 import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 

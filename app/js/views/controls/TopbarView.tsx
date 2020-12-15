@@ -38,7 +38,7 @@ const enum MenuItem {
     Execute = 'execute'
 }
 
-export namespace TopbarView {
+namespace TopbarView {
     export interface Props extends IViewProps {
         missions: Mission[],
         progress: Progress
@@ -234,3 +234,5 @@ export namespace TopbarView {
         }
     }
 }
+
+export default TopbarView;

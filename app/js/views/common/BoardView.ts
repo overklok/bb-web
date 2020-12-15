@@ -3,7 +3,7 @@ import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
 import {AllProps, IViewProps} from "../../core/base/view/View";
 
-export namespace BoardView {
+namespace BoardView {
     export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}
     export class LayoutChangeEvent extends ViewEvent<LayoutChangeEvent> {}
     export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
@@ -126,3 +126,5 @@ export namespace BoardView {
         }
     }
 }
+
+export default BoardView;

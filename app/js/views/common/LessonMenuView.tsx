@@ -16,7 +16,7 @@ interface Course {
     lessons: Lesson[];
 }
 
-export namespace LessonMenuView {
+namespace LessonMenuView {
     export class LessonSelectEvent extends ViewEvent<LessonSelectEvent> {
         lesson_id: number;
     }
@@ -104,3 +104,5 @@ export namespace LessonMenuView {
         }
     }
 }
+
+export default LessonMenuView;

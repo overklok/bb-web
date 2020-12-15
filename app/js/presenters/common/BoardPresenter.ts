@@ -1,5 +1,5 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import {BoardView} from "../../views/board/BoardView";
+import BoardView from "../../views/common/BoardView";
 import BoardModel, {ElectronicEvent, BoardOptionsEvent, PlateEvent} from "../../models/common/BoardModel";
 
 export default class BoardPresenter extends Presenter<BoardView.BoardView> {

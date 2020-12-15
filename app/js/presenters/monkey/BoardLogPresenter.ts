@@ -2,7 +2,7 @@ import Presenter, {on} from "../../core/base/Presenter";
 import BoardLogView, {LogEntryClickEvent} from "../../views/monkey/LogView";
 import BoardLogModel, {BoardLogUpdate} from "../../models/monkey/BoardLogModel";
 import ModalModel from "../../core/models/ModalModel";
-import BoardPreviewPresenter from "../board/BoardPreviewPresenter";
+import BoardPreviewPresenter from "../common/BoardPreviewPresenter";
 
 export default class BoardLogPresenter extends Presenter<BoardLogView> {
     private mdl_log: BoardLogModel;

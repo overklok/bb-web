@@ -1,7 +1,7 @@
 import * as React from "react";
 import {AllProps, IViewProps, View} from "../../core/base/view/View";
 
-export namespace RichTextView {
+namespace RichTextView {
     export interface Props extends IViewProps {
         content: string;
     }
@@ -18,3 +18,5 @@ export namespace RichTextView {
         }
     }
 }
+
+export default RichTextView;

@@ -1,5 +1,5 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
-import BlocklyView from "../../views/code/BlocklyView";
+import BlocklyView from "../../views/common/BlocklyView";
 import LessonModel from "../../models/LessonModel";
 import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
 import {MountEvent} from "../../core/base/view/View";

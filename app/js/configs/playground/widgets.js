@@ -1,14 +1,14 @@
 import ModalView    from "../../core/views/modal/ModalView";
 import LayoutView   from "../../core/views/layout/LayoutView";
-import {BoardView}  from "../../views/board/BoardView";
-import BlocklyView  from "../../views/code/BlocklyView";
+import BoardView  from "../../views/common/BoardView";
+import BlocklyView  from "../../views/common/BlocklyView";
 import LaunchView   from "../../views/controls/LaunchView";
 
 import LayoutPresenter      from "../../core/presenters/LayoutPresenter";
 import ModalPresenter       from "../../core/presenters/ModalPresenter";
-import BoardPresenter       from "../../presenters/board/BoardPresenter";
-import BlocklyCodePresenter from "../../presenters/code/BlocklyCodePresenter";
-import LaunchPresenter      from "../../presenters/playground/LaunchPresenter";
+import BoardPresenter       from "../../presenters/common/BoardPresenter";
+import BlocklyCodePresenter from "../../presenters/common/BlocklyCodePresenter";
+import LaunchPresenter      from "../../presenters/controls/LaunchPresenter";
 
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
 
@@ -32,7 +32,7 @@ export default {
         },
 
         launcher: {
-            view_type: LaunchView,
+            view_type: LaunchView.LaunchView,
             presenter_types: [LaunchPresenter],
         }
     }

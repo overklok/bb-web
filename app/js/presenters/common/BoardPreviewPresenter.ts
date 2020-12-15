@@ -1,4 +1,4 @@
-import {BoardView} from "../../views/board/BoardView";
+import BoardView from "../../views/common/BoardView";
 import Presenter, {on} from "../../core/base/Presenter";
 import BoardModel, {Plate} from "../../models/common/BoardModel";
 import {MountEvent} from "../../core/base/view/View";

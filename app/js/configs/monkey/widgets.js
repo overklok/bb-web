@@ -1,6 +1,6 @@
 import ModalView    from "../../core/views/modal/ModalView";
 import LayoutView   from "../../core/views/layout/LayoutView";
-import {BoardView}  from "../../views/board/BoardView";
+import BoardView  from "../../views/board/BoardView";
 import TestkitView  from "../../views/monkey/TestkitView";
 import MonkeyView   from "../../views/monkey/MonkeyView";
 import LogView      from "../../views/monkey/LogView";

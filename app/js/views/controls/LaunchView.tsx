@@ -6,52 +6,126 @@ import {ViewEvent} from "../../core/base/Event";
 require('../../../css/blocks/generic/btn.less')
 require('../../../css/blocks/fabdesk.less')
 
-interface LaunchViewState extends IViewState {
-    is_locked: boolean;
-    is_launching: boolean;
-}
 
-export class LaunchClickEvent extends ViewEvent<LaunchClickEvent> {
-    start: boolean;
-}
+namespace LaunchView {
+    export const enum Mode {
+        None,
+        CheckOnly,
+        ExecuteOnly,
+        CheckOrExecute,
+        CheckAndExecute
+    }
 
-export default class LaunchView extends View<IViewProps, LaunchViewState> {
-    constructor(props: AllProps<IViewProps>) {
-        super(props);
+    export const enum ButtonState {
+        Idle,
+        Busy,
+        Running
+    }
 
-        this.state = {
-            is_locked: false,
-            is_launching: false,
+    export interface Props extends IViewState {
+        mode: Mode;
+        is_checking: ButtonState;
+        is_executing: ButtonState;
+    }
+
+    export class ExecuteClickEvent extends ViewEvent<ExecuteClickEvent> {
+        start: boolean;
+    }
+
+    export class CheckClickEvent extends ViewEvent<CheckClickEvent> {
+        start: boolean;
+    }
+
+    export class LaunchView extends View<Props, undefined> {
+        static defaultProps = {
+            mode: Mode.ExecuteOnly,
+            is_checking: ButtonState.Idle,
+            is_executing: ButtonState.Idle
+        }
+
+        constructor(props: AllProps<Props>) {
+            super(props);
+        }
+
+        private handleExecuteClick() {
+            this.emit(new ExecuteClickEvent({start: !this.props.is_executing}));
+        }
+
+        private handleCheckClick() {
+            this.emit(new CheckClickEvent({start: !this.props.is_checking}));
+        }
+
+        public render(): React.ReactNode {
+            switch (this.props.mode) {
+                case Mode.None:            return null;
+                case Mode.CheckOnly:       return this.renderCheck();
+                case Mode.ExecuteOnly:     return this.renderExecute();
+                case Mode.CheckOrExecute:  return this.renderCheckAndExecute();
+                case Mode.CheckAndExecute: return this.renderExecute();
+            }
+        }
+
+        private renderExecute() {
+            const klasses_btn_execute = classNames({
+                'btn': true,
+                'btn_primary': true,
+                'btn_disabled': this.props.is_executing === ButtonState.Busy,
+                'fabdesk__fab': true
+            });
+
+            return (
+                <div className='fabdesk'>
+                    <div className={klasses_btn_execute} onClick={() => this.handleExecuteClick()}>
+                        {this.props.is_executing ? 'Остановить' : 'Запустить'}
+                    </div>
+                </div>
+            )
+        }
+
+        private renderCheck() {
+            const klasses_btn_check = classNames({
+                'btn': true,
+                'btn_primary': true,
+                'btn_disabled': this.props.is_checking === ButtonState.Busy,
+                'fabdesk__fab': true
+            });
+
+            return (
+                <div className='fabdesk'>
+                    <div className={klasses_btn_check} onClick={() => this.handleCheckClick()}>
+                        {this.props.is_executing ? 'Проверка...' : 'Проверить'}
+                    </div>
+                </div>
+            )
+        }
+
+        private renderCheckAndExecute() {
+            const klasses_btn_check = classNames({
+                'btn': true,
+                'btn_primary': true,
+                'btn_disabled': this.props.is_checking === ButtonState.Busy,
+                'fabdesk__fab': true
+            });
+
+            const klasses_btn_execute = classNames({
+                'btn': true,
+                'btn_primary': true,
+                'btn_disabled': this.props.is_executing === ButtonState.Busy,
+                'fabdesk__fab': true
+            });
+
+            return (
+                <div className='fabdesk'>
+                    <div className={klasses_btn_execute} onClick={() => this.handleExecuteClick()}>
+                        {this.props.is_executing ? 'Остановить' : 'Запустить'}
+                    </div>
+                    <div className={klasses_btn_check} onClick={() => this.handleCheckClick()}>
+                        {this.props.is_checking ? 'Проверка...' : 'Проверить'}
+                    </div>
+                </div>
+            )
         }
     }
-
-    public setLocked(is_locked: boolean) {
-        this.setState({is_locked});
-    }
-
-    public setLaunching(is_launching: boolean) {
-        this.setState({is_launching});
-    }
-
-    public render(): React.ReactNode {
-        const klasses_btn_launch = classNames({
-            'fabdesk__fab': true,
-            'btn': true,
-            'btn_primary': true,
-            'btn_disabled': this.state.is_locked
-        });
-
-        return (
-            <div className='fabdesk'>
-                <div className={klasses_btn_launch} onClick={() => this.onLaunchClick()}>
-                    {this.state.is_launching ? 'Остановить' : 'Запустить'}
-                </div>
-            </div>
-        )
-    }
-
-    private onLaunchClick() {
-        const is_launching = !this.state.is_launching;
-        this.emit(new LaunchClickEvent({start: is_launching}));
-    }
 }
+
+export default LaunchView;

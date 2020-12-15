@@ -13,12 +13,12 @@ import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
-import BoardPresenter from "./presenters/board/BoardPresenter";
+import BoardPresenter from "./presenters/common/BoardPresenter";
 
 import BoardModel from "./models/common/BoardModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
-import {BoardView} from "./views/board/BoardView";
+import BoardView from "./views/common/BoardView";
 
 import "../css/global.less";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
