@@ -20,11 +20,13 @@ type MissionProgress = {
 }
 
 type Progress = {
-    locked: boolean;
+    lesson_id: number;
     missions: MissionProgress[];
     mission_idx: number;
     mission_idx_last: number;
-    lesson_id: number;
+    mission_idx_available: number;
+    lock_exercises: boolean;
+    lock_missions: boolean;
 }
 
 export class LessonPassEvent extends ModelEvent<LessonPassEvent> {}
@@ -50,11 +52,13 @@ export class ExerciseSolutionValidatedEvent extends ModelEvent<ExerciseSolutionV
 
 export default class ProgressModel extends HttpModel<Progress> {
     protected defaultState: Progress = {
-        locked: false,
+        lesson_id: undefined,
         missions: [],
         mission_idx: undefined,
         mission_idx_last: undefined,
-        lesson_id: undefined,
+        mission_idx_available: undefined,
+        lock_exercises: true,
+        lock_missions: true,
     };
 
     private button_seq_model: string[];
@@ -76,7 +80,9 @@ export default class ProgressModel extends HttpModel<Progress> {
             missions: [],
             mission_idx: 0,
             mission_idx_last: 0,
-            locked: this.state.locked
+            mission_idx_available: 0,
+            lock_exercises: this.state.lock_exercises,
+            lock_missions: this.state.lock_missions,
         };
 
         for (const mission of lesson.missions) {
@@ -114,7 +120,7 @@ export default class ProgressModel extends HttpModel<Progress> {
         // this case may occur when switching exercises manually
         if (mission_progress.exercise_idx > mission_progress.exercise_idx_available) {
             // this case is available in admin mode only
-            if (this.state.locked) throw new RangeError(`Trying to pass exercise that is not available yet.`);
+            if (this.state.lock_exercises) throw new RangeError(`Trying to pass exercise that is not available yet.`);
 
             // sync available index to current (this means admin unfairly passes all previous exercises)
             mission_progress.exercise_idx_available = mission_progress.exercise_idx;
@@ -221,8 +227,16 @@ export default class ProgressModel extends HttpModel<Progress> {
             throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
         }
 
-        if (this.state.locked) {
+        if (this.state.lock_exercises) {
             if (exercise_idx !== 0 && exercise_idx > this.state.missions[mission_idx].exercise_idx_available) {
+                console.debug('Forbidden exercise switch prevented: `lock_exercises` enabled');
+                return;
+            }
+        }
+
+        if (this.state.lock_missions) {
+            if (mission_idx !== 0 && mission_idx > this.state.mission_idx_available) {
+                console.debug('Forbidden exercise switch prevented: `lock_missions` enabled');
                 return;
             }
         }
@@ -249,6 +263,7 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         if (this.state.mission_idx < this.state.mission_idx_last) {
             this.state.mission_idx += 1;
+            this.state.mission_idx_available += 1;
             this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
 
             this.emit(new MissionPassEvent({

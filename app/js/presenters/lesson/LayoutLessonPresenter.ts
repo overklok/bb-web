@@ -12,6 +12,8 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         this.model_lesson = this.getModel(LessonModel);
         this.model_progress = this.getModel(ProgressModel);
 
+        document.title = `Tapanda`;
+
         return super.getInitialProps();
     }
 
@@ -26,6 +28,23 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
 
         if (evt instanceof MissionRouteEvent) {
             this.model_progress.switchExercise(evt.mission_id);
+        }
+
+        const progress = this.model_progress.getState();
+
+        document.title = `Tapanda | Lesson ${progress.lesson_id}, Mission ${mission_idx}`;
+
+        if (evt instanceof MissionRouteEvent) {
+            // Prevent insufficient redirect (if idx change is not confirmed, move to current mission)
+            // We need to keep URL actual if mission jump was rejected by ProgressModel.
+            if (progress.mission_idx !== evt.mission_id) {
+                this.forward(
+                    'mission',
+                    [progress.lesson_id, progress.mission_idx],
+                    true
+                );
+                return;
+            }
         }
     }
 }

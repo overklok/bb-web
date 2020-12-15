@@ -15,6 +15,8 @@ export default class LessonMenuPresenter extends Presenter<LessonMenuView.Lesson
         const lesson_id = this.progress.getState().lesson_id;
 
         this.course.list().then((courses) => {this.setViewProps({courses, lesson_id})});
+
+        document.title = `Tapanda | Main menu`;
     }
 
     @on(LessonMenuView.LessonSelectEvent)
