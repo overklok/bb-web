@@ -34,6 +34,8 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
 
     @on(TopbarView.MissionSelectEvent)
     private async onMissionSelected(evt: TopbarView.MissionSelectEvent) {
+        // todo: reset if needed, forward if needed
+
         const lesson_id = this.model_progress.getState().lesson_id;
         await this.forward('mission', [lesson_id, evt.mission_idx]);
     }

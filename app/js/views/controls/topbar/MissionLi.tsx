@@ -3,6 +3,7 @@ import * as React from "react";
 import Portal from "../../../core/base/view/Portal";
 import MissionContextMenu, {Exercise} from "./MissionContextMenu";
 import CaskProgress from "./CaskProgress";
+import classNames from "classnames";
 
 require('../../../../css/blocks/menu/mission.less');
 require('../../../../css/blocks/menu/combolist.less');
@@ -19,6 +20,7 @@ interface MissionLiProps {
     exercises: Exercise[];
 
     title: string;
+    active: boolean;
     description: string;
     progress: MissionProgress;
 
@@ -28,6 +30,7 @@ interface MissionLiProps {
 
 interface MissionLiState {
     ctxmenu_active: boolean;
+    hovered: boolean;
     pos_x: number;
     pos_y: number;
 }
@@ -42,15 +45,15 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
             ctxmenu_active: false,
             pos_x: undefined,
             pos_y: undefined,
+            hovered: false,
         };
 
         this.ref_root = React.createRef();
 
         this.handleClick                = this.handleClick.bind(this);
         this.handleContextMenu          = this.handleContextMenu.bind(this);
+        this.handleMissionClick         = this.handleMissionClick.bind(this);
         this.handleContextMenuGlobal    = this.handleContextMenuGlobal.bind(this);
-
-        this.handleMissionClick = this.handleMissionClick.bind(this);
     }
 
     componentDidMount() {
@@ -92,7 +95,9 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
     handleContextMenuGlobal(e: MouseEvent) {
         if (!this.state.ctxmenu_active) return;
 
-        if (e.target !== this.ref_root.current) {
+        const index = (e.target as any).getAttribute('data-index');
+
+        if (Number(index) !== this.props.index) {
             this.setState({ctxmenu_active: false});
             document.removeEventListener("click", this.handleClick);
         }
@@ -100,29 +105,75 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
     render() {
         const progress = this.props.progress;
+        const exercise_num_total = progress.exercise_last + 1;
+        let exercise_num_current = 0;
+        let synced = false;
 
-        // Notice that exercise_idx_passed is -1 when no exercises were passed
-        // and equals to 0 when ONE exercise is passed
-        const percentage = 100 * ((progress.exercise_idx_passed + 1) / (progress.exercise_last + 1));
+        if (progress.exercise_idx_available === progress.exercise_idx) {
+            // Synced indices: user follows mission without switching to previous exercises
+            exercise_num_current = progress.exercise_idx_passed + 1;
+            synced = true;
+        } else if (progress.exercise_idx_available < progress.exercise_idx) {
+            // Admin switching: show progress as if user follows without skipping
+            exercise_num_current = progress.exercise_idx + 1;
+        } else {
+            // User switching: do not show that current exercise was passed
+            exercise_num_current = progress.exercise_idx;
+        }
+
+        const perc_pass  = 100 * exercise_num_current / exercise_num_total;
+        const perc_avail = 100 * ((progress.exercise_idx_passed + 1) / exercise_num_total);
+
+        const klasses_cask = classNames({
+            'pager__item': true,
+            'cask': true,
+            'cask_active': true,
+            'cask_selected': this.props.active,
+        })
+
+        const klasses_cask_content_main = classNames({
+            'cask__content': true,
+            'cask__content_disposable': this.props.active
+        });
+
+        const klasses_cask_content_alt = classNames({
+            'cask__content': true,
+            'cask__content_undisposable': this.props.active
+        });
 
         return (
-            <li className="pager__item cask cask_active cask_success" >
-                <CaskProgress percent={percentage} simple={true} />
+            <li className={klasses_cask}>
+                {/*{!synced ?*/}
+                {/*    <CaskProgress percent={perc_avail} color_modifier={"secondary"} />*/}
+                {/*    : null*/}
+                {/*}*/}
+                <CaskProgress percent={perc_pass} simple={!synced || !this.props.active} color_modifier={"success"} />
 
                 <div ref={this.ref_root}
-                     className="cask__content"
+                     className={klasses_cask_content_main}
                      onClick={this.handleMissionClick}
                      onContextMenu={this.handleContextMenu}
+                     data-index={this.props.index}
                 >
                     {this.props.index + 1}
                 </div>
+
+                {this.props.active ?
+                    <div className={klasses_cask_content_alt}
+                         onClick={this.handleMissionClick}
+                         onContextMenu={this.handleContextMenu}
+                         data-index={this.props.index}
+                    >
+                        ?
+                    </div>
+                : null}
 
                 <Portal>
                     <MissionContextMenu index={this.props.index}
                                         visible={this.state.ctxmenu_active}
                                         btn_pos_x={this.state.pos_x}
                                         btn_pos_y={this.state.pos_y}
-                                        percent={percentage}
+                                        percent={perc_pass}
 
                                         exercises={this.props.exercises}
 

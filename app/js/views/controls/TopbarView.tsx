@@ -185,6 +185,7 @@ namespace TopbarView {
                                     {this.props.missions.map((mission, idx) =>
                                         <MissionLi key={idx}
                                                    index={idx}
+                                                   active={this.props.progress.mission_idx === idx}
                                                    exercises={mission.exercises}
                                                    title={mission.name}
                                                    description={mission.description}

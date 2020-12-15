@@ -47,7 +47,7 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
     }
 
     @restore() @on(ExerciseRunEvent)
-    protected onRunExercise() {
+    protected updateWindowTitle() {
         const progress = this.model_progress.getState();
         const [mission_idx, exercise_idx] = this.model_progress.getExerciseCurrent();
 

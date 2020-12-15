@@ -20,6 +20,10 @@
 
   text-align: center;
 
+  &_selected {
+    background-color: @warning_surf;
+  }
+
   &_active {
     cursor: pointer;
 
@@ -38,6 +42,20 @@
   &__content {
     position: absolute;
     width: 100%;
+
+    &_disposable {opacity: 1};
+    &_undisposable {opacity: 0};
+  }
+
+  &:hover &__content {
+    &_disposable {
+      opacity: 0;
+    }
+
+    &_undisposable {
+      opacity: 1;
+      animation: 1s scale-easeInElastic 0s reverse;
+    }
   }
 
   &__progress {
@@ -50,24 +68,35 @@
 
     transition: bottom .5s;
 
-    &_primary    &__progress {background-color: @primary;}
-    &_secondary  &__progress {background-color: @secondary;}
-    &_success    &__progress {background-color: @success;}
-    &_dark       &__progress {background-color: @dark;}
-    &_warning    &__progress {background-color: @warning;}
-    &_danger     &__progress {background-color: @danger;}
-    &_light      &__progress {background-color: @light;}
-    &_default    &__progress {background-color: @default;}
+    &_primary    {background-color: @primary;}
+    &_secondary  {background-color: @secondary;}
+    &_success    {background-color: @success;}
+    &_dark       {background-color: @dark;}
+    &_warning    {background-color: @warning;}
+    &_danger     {background-color: @danger;}
+    &_light      {background-color: @light;}
+    &_default    {background-color: @default;}
   }
 
-  &_primary    &__progress {background-color: @primary;}
-  &_secondary  &__progress {background-color: @secondary;}
-  &_success    &__progress {background-color: @success;}
-  &_dark       &__progress {background-color: @dark;}
-  &_warning    &__progress {background-color: @warning;}
-  &_danger     &__progress {background-color: @danger;}
-  &_light      &__progress {background-color: @light;}
-  &_default    &__progress {background-color: @default;}
+  &_light      {background-color: @light;}
+  &_default      {background-color: @default;}
+}
+
+@keyframes scale-easeInElastic {
+	0% {transform: scale(1);}
+	4% {transform: scale(1);}
+	8% {transform: scale(1);}
+	14% {transform: scale(1);}
+	18% {transform: scale(1);}
+	26% {transform: scale(1.01);}
+	28% {transform: scale(1.01);}
+	40% {transform: scale(0.98);}
+	42% {transform: scale(0.98);}
+	56% {transform: scale(1.05);}
+	58% {transform: scale(1.04);}
+	72% {transform: scale(0.87);}
+	86% {transform: scale(1.27);}
+	100% {transform: scale(0);}
 }
 
 @wave_width:  70%;
@@ -111,7 +140,7 @@
     bottom: @wave_inv_bottom;
     left: @wave_inv_left;
 
-    background-color: #ffffff;
+    background-color: @warning_surf;
     border-radius: 50%;
 
     transition: @wave_transition;
@@ -128,7 +157,7 @@
     width: @wave_width;
     height: @wave_height;
 
-    background-color: @default;
+    background-color: @warning_surf;
     border-radius: 50%;
 
     transition: @wave_transition;
@@ -184,14 +213,14 @@
     bottom: @wave_alt_bottom_down;
   }
 
-  &_cl_primary    &__wave {background-color: @primary;}
-  &_cl_secondary  &__wave {background-color: @secondary;}
-  &_cl_success    &__wave {background-color: @success;}
-  &_cl_dark       &__wave {background-color: @dark;}
-  &_cl_warning    &__wave {background-color: @warning;}
-  &_cl_danger     &__wave {background-color: @danger;}
-  &_cl_light      &__wave {background-color: @light;}
-  &_cl_default    &__wave {background-color: @default;}
+  &_primary    &__wave {background-color: @primary;}
+  &_secondary  &__wave {background-color: @secondary;}
+  &_success    &__wave {background-color: @success;}
+  &_dark       &__wave {background-color: @dark;}
+  &_warning    &__wave {background-color: @warning;}
+  &_danger     &__wave {background-color: @danger;}
+  &_light      &__wave {background-color: @light;}
+  &_default    &__wave {background-color: @default;}
 }
 
 
