@@ -26,13 +26,15 @@ import widgets_config from "./configs/main/widgets";
 import "../css/global.less";
 import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
 import IRoutingService from "./core/services/interfaces/IRoutingService";
-import KeyboardModel from "./core/models/KeyboardModel";
-import CodeModel from "./models/common/CodeModel";
 import MainRouter from "./routers/MainRouter";
+
 import LessonModel from "./models/LessonModel";
-import ProgressModel from "./models/ProgressModel";
 import CourseModel from "./models/CourseModel";
-import IEventService from "./core/services/interfaces/IEventService";
+import ModalModel from "./core/models/ModalModel";
+import CodeModel from "./models/common/CodeModel";
+import ProgressModel from "./models/ProgressModel";
+import KeyboardModel from "./core/models/KeyboardModel";
+import CSRFMiddleware from "./core/models/middlewares/CSRFMiddleware";
 
 class MainApplication extends Application {
     protected providerClasses(): Array<IServiceProvider> {
@@ -51,13 +53,14 @@ class MainApplication extends Application {
         const dds = new DummyDatasource();
 
         const ads = new AdaptiveDatasource([
-            // new QtIPCDatasource(),
-            // new SocketDatasource('127.0.0.1', 8085),
+            new QtIPCDatasource(),
+            new SocketDatasource('127.0.0.1', 8085),
         ]);
 
         const hds = new HttpDatasource('127.0.0.1', 8000);
 
         svc_model.launch(ads);
+        svc_model.register(ModalModel,  dds);
         svc_model.register(UserModel,   hds);
         svc_model.register(CourseModel, hds);
         svc_model.register(LessonModel, hds);
@@ -66,10 +69,11 @@ class MainApplication extends Application {
         svc_model.register(BoardModel,      ads);
 
         svc_model.register(KeyboardModel,   dds);
-        svc_model.register(ProgressModel,   dds);
+        svc_model.register(ProgressModel,   hds);
         svc_model.register(LayoutModel,     dds, layouts_config);
 
         hds.registerMiddleware([
+            new CSRFMiddleware(),
             new JWTAuthMiddleware(
                 this.instance(IModelService).retrieve(UserModel)
             )

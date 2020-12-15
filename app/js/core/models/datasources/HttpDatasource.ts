@@ -93,6 +93,7 @@ export default class HttpDatasource extends SynchronousDatasource {
         const q = HttpDatasource.serializeQuery(params.query);
 
         path = path.replace(/^\/+|\/+$/gm, '');
+        path += '/';
 
         let fetch_init: any = {
             method:         params.method,
@@ -102,6 +103,7 @@ export default class HttpDatasource extends SynchronousDatasource {
             credentials:    this.options.credentials,
             referrerPolicy: "no-referrer",
             headers: {
+                'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 ...params.headers
             },

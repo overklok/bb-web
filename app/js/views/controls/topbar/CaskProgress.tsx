@@ -12,12 +12,12 @@ const CaskProgress = (props: ICaskProgressProps) => {
 
     const klasses_wavefront = {
         'wavefront': true,
-        'wavefront_cl_success': true,
+        'wavefront_success': true,
         'wavefront_disabled': progress_percent == 0, // deactivate animation when full
     };
 
     return (
-        <div className="cask__progress cask__progress_cl_success" style={{bottom: `-${progress_percent}%`}}>
+        <div className="cask__progress cask__progress_success" style={{bottom: `-${progress_percent}%`}}>
             {props.simple ? null : (
                 <div className={classNames(klasses_wavefront)}>
                     <div className="wavefront__wave wavefront__wave_left"></div>

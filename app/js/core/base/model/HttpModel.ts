@@ -4,7 +4,7 @@ import {ModelEvent} from "../Event";
 
 export class RequestErrorEvent extends ModelEvent<RequestErrorEvent> {}
 
-export default abstract class HttpModel<MS, DS extends HttpDatasource> extends Model<MS, DS> {
+export default abstract class HttpModel<MS, DS extends HttpDatasource=HttpDatasource> extends Model<MS, DS> {
     protected async request(path: string, request: RequestParams) {
         try {
             return await this.data_source.request(path, request);

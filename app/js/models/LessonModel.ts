@@ -1,25 +1,26 @@
 import {cloneDeep} from "lodash";
 import RestModel, {CRUDAction, PathParams, RestSchema} from "../core/base/model/RestModel";
 import {Query} from "../core/models/datasources/HttpDatasource";
+import {ModelEvent} from "../core/base/Event";
 
-const enum LaunchMode {
+export const enum LaunchMode {
     DoNothing = 0,
     CheckOnly = 1,
     ExecuteOnly = 2,
-    ExecuteAndCheck = 3
+    CheckAndExecute = 3
 }
 
-const enum CodeCheckType {
+export const enum CodeCheckType {
     Commands = 0,
     States = 1
 }
 
-const enum BoardCheckType {
+export const enum BoardCheckType {
     Hard = 0,
     Soft = 1
 }
 
-const enum ExerciseType {
+export const enum ExerciseType {
     CircuitAssembly     = 0,
     ProgramAssembly     = 1,
     ButtonPressSeq      = 2,
@@ -28,11 +29,16 @@ const enum ExerciseType {
     Arduino             = 6,
 }
 
-const enum BoardMode {
+export const enum BoardMode {
     Default = 'default',
     Programming = 'programming',
     Electronics = 'electronics',
     Arduino = 'arduino'
+}
+
+export type ExerciseSolution = {
+    code?: object;
+    board?: object;
 }
 
 type CodeModuleSettings = {
@@ -199,7 +205,7 @@ export default class LessonModel extends RestModel<Lesson> {
             }
             case ExerciseType.ProgramAssembly: {
                 layout_mode = 'code';
-                launch_mode = LaunchMode.ExecuteAndCheck;
+                launch_mode = LaunchMode.CheckAndExecute;
                 board.mode = BoardMode.Programming;
 
                 module_settings = {code};
@@ -217,7 +223,7 @@ export default class LessonModel extends RestModel<Lesson> {
             }
             case ExerciseType.Combined: {
                 layout_mode = _exercise.display_buttons ? 'full_with_buttons' : 'full';
-                launch_mode = LaunchMode.ExecuteAndCheck;
+                launch_mode = LaunchMode.CheckAndExecute;
                 board.mode = BoardMode.Programming;
 
                 module_settings = {code, board, button};
@@ -242,7 +248,7 @@ export default class LessonModel extends RestModel<Lesson> {
                     layout_mode = 'full_with_buttons';
                 }
 
-                launch_mode = LaunchMode.ExecuteAndCheck;
+                launch_mode = LaunchMode.CheckAndExecute;
                 board.mode = BoardMode.Arduino;
 
                 module_settings = {code, board, button};
@@ -255,7 +261,7 @@ export default class LessonModel extends RestModel<Lesson> {
         }
 
         // custom preference of launch mode is available if ExecuteAndCheck is available for the mode
-        if (launch_mode === LaunchMode.ExecuteAndCheck) {
+        if (launch_mode === LaunchMode.CheckAndExecute) {
             if (_exercise._launch_variant === 1) {
                 launch_mode = LaunchMode.CheckOnly
             }

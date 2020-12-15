@@ -9,6 +9,7 @@ require('../../../../css/blocks/menu/combolist.less');
 
 export interface MissionProgress {
     exercise_idx: number;
+    exercise_idx_passed: number;
     exercise_idx_available: number;
     exercise_last: number;
 }
@@ -100,10 +101,12 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
     render() {
         const progress = this.props.progress;
 
-        const percentage = 100 * (progress.exercise_idx_available / progress.exercise_last);
+        // Notice that exercise_idx_passed is -1 when no exercises were passed
+        // and equals to 0 when ONE exercise is passed
+        const percentage = 100 * ((progress.exercise_idx_passed + 1) / (progress.exercise_last + 1));
 
         return (
-            <li className="pager__item cask cask_active cask_cl_success" >
+            <li className="pager__item cask cask_active cask_success" >
                 <CaskProgress percent={percentage} simple={true} />
 
                 <div ref={this.ref_root}

@@ -1,12 +1,22 @@
-import Model from "../core/base/model/Model";
-import DummyDatasource from "../core/base/model/datasources/DummyDatasource";
-import {Lesson} from "./LessonModel";
+import {ExerciseSolution, Lesson} from "./LessonModel";
 import {ModelEvent} from "../core/base/Event";
+import {RequestMethod} from "../core/models/datasources/HttpDatasource";
+import HttpModel from "../core/base/model/HttpModel";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
+
+export type ValidationVerdict = {
+    message: string;
+    blocks: string[];
+    region: object;
+    is_passed: boolean;
+}
 
 type MissionProgress = {
     exercise_last: number;
     exercise_idx: number;
     exercise_idx_available: number;
+    exercise_idx_passed: number;
 }
 
 type Progress = {
@@ -32,7 +42,13 @@ export class ExerciseRunEvent extends ModelEvent<ExerciseRunEvent> {
     exercise_idx: number;
 }
 
-export default class ProgressModel extends Model<Progress, DummyDatasource> {
+export class ExerciseSolutionCommittedEvent extends ModelEvent<ExerciseSolutionCommittedEvent> {}
+export class ExerciseSolutionValidatedEvent extends ModelEvent<ExerciseSolutionValidatedEvent> {
+    error: string;
+    verdict: ValidationVerdict;
+}
+
+export default class ProgressModel extends HttpModel<Progress> {
     protected defaultState: Progress = {
         locked: false,
         missions: [],
@@ -40,9 +56,11 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
         mission_idx_last: undefined,
         lesson_id: undefined,
     };
+
     private button_seq_model: string[];
     private button_seq_idx: number;
     private exercise_preferred: number;
+    private in_progress: boolean = false;
 
     /**
      * Reset model state with the new lesson structure
@@ -65,6 +83,7 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
             progress.missions.push({
                 exercise_idx: 0,
                 exercise_idx_available: 0,
+                exercise_idx_passed: -1,
                 exercise_last: mission.exercises.length - 1
             });
         }
@@ -111,15 +130,18 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
         }
 
         // `current` index is synced with `available` index
-        if (mission_progress.exercise_last < mission_progress.exercise_idx_available) {
+        if (mission_progress.exercise_idx_available < mission_progress.exercise_last) {
             // fairly increment the `available` index
             mission_progress.exercise_idx_available += 1;
+            mission_progress.exercise_idx_passed += 1;
 
             this.emit(new ExercisePassEvent({
                 mission_idx: this.state.mission_idx,
                 exercise_idx: mission_progress.exercise_idx
             }));
         } else {
+            mission_progress.exercise_idx_passed += 1;
+
             // if it's required to pass the last exercise, it's time to pass the entire mission
             this.passMission();
         }
@@ -129,6 +151,8 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
      * Run the next exercise in current mission if available
      */
     public stepForwardMission() {
+        if (this.in_progress) return;
+
         const mission_progress = this.state.missions[this.state.mission_idx];
 
         // current exercise is being passed another time (index isn't synced)
@@ -136,6 +160,8 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
             // just move current index forward until it syncs with the `available` index
             mission_progress.exercise_idx += 1;
         }
+
+        console.log('sfw', mission_progress);
 
         this.emit(new ExerciseRunEvent({
             mission_idx: this.state.mission_idx,
@@ -147,6 +173,8 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
      * Run the last exercise available in current mission
      */
     public fastForwardMission() {
+        if (this.in_progress) return;
+
         const mission_progress = this.state.missions[this.state.mission_idx];
 
         mission_progress.exercise_idx = mission_progress.exercise_idx_available;
@@ -161,6 +189,8 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
      * Run the first exercise in current mission
      */
     public restartMission() {
+        if (this.in_progress) return;
+
         this.state.missions[this.state.mission_idx].exercise_idx = 0;
 
         this.emit(new ExerciseRunEvent({
@@ -176,6 +206,8 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
      * @param exercise_idx индекс упражнения
      */
     public switchExercise(mission_idx: number, exercise_idx: number = 0) {
+        if (this.in_progress) return;
+
         mission_idx = mission_idx | 0;
         exercise_idx = exercise_idx | this.exercise_preferred | 0;
 
@@ -213,6 +245,8 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
      * @private
      */
     private passMission() {
+        if (this.in_progress) return;
+
         if (this.state.mission_idx < this.state.mission_idx_last) {
             this.state.mission_idx += 1;
             this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
@@ -221,7 +255,10 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
                 mission_idx: this.state.mission_idx,
             }));
         } else {
-            this.emit(new LessonPassEvent());
+            this.emit(new MissionPassEvent({
+                mission_idx: this.state.mission_idx,
+            }));
+            // this.emit(new LessonPassEvent()); TODO: maybe needed, maybe not
         }
     }
 
@@ -259,5 +296,54 @@ export default class ProgressModel extends Model<Progress, DummyDatasource> {
         this.button_seq_idx = 0;
 
         return false;
+    }
+
+    public validateExerciseSolution(exercise_id: number, solution: ExerciseSolution) {
+        if (this.in_progress) return;
+
+        this.in_progress = true;
+
+        this.emit(new ExerciseSolutionCommittedEvent());
+
+        this.request(`/coursesvc/check/${exercise_id}`, {
+            method: RequestMethod.POST,
+            data: {
+                handlers: solution.code || {},
+                board: solution.board
+            }
+        }).then(res => {
+            if (res.error) {
+                console.error('Error', res);
+
+                this.in_progress = false;
+                this.emit(new ExerciseSolutionValidatedEvent({
+                    error: res.error.message,
+                    verdict: undefined
+                }));
+
+                return;
+            }
+
+            const verdict: ValidationVerdict = {
+                is_passed: res.status === "OK",
+                message: res.html,
+                blocks: res.blocks,
+                region: res.data ? res.data.lane : null,
+            };
+
+            this.in_progress = false;
+            this.emit(new ExerciseSolutionValidatedEvent({
+                message: undefined,
+                verdict: verdict
+            }));
+        }).catch(err => {
+            console.error('Error', err);
+
+            this.in_progress = false;
+            this.emit(new ExerciseSolutionValidatedEvent({
+                error: err.message,
+                verdict: undefined
+            }));
+        });
     }
 }

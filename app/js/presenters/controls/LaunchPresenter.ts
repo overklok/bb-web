@@ -7,11 +7,9 @@ import BoardModel from "../../models/common/BoardModel";
 export default class LaunchPresenter extends Presenter<LaunchView.LaunchView> {
     code: CodeModel;
     modal: ModalModel;
-    private board: BoardModel;
 
     public getInitialProps() {
         this.code = this.getModel(CodeModel);
-        this.board = this.getModel(BoardModel);
         this.modal = this.getModel(ModalModel);
 
         return {mode: LaunchView.Mode.ExecuteOnly};
@@ -32,13 +30,6 @@ export default class LaunchPresenter extends Presenter<LaunchView.LaunchView> {
         } else {
             this.setViewProps({is_executing: LaunchView.ButtonState.Busy});
             this.code.interruptMainChain();
-        }
-    }
-
-    @on(LaunchView.CheckClickEvent)
-    protected onCheckClick(evt: LaunchView.CheckClickEvent) {
-        if (evt.start) {
-            this.setViewProps({is_checking: LaunchView.ButtonState.Busy});
         }
     }
 
