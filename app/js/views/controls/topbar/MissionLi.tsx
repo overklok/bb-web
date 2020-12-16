@@ -112,6 +112,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         if (progress.exercise_idx_available === progress.exercise_idx) {
             // Synced indices: user follows mission without switching to previous exercises
             exercise_num_current = progress.exercise_idx_passed + 1;
+
             synced = true;
         } else if (progress.exercise_idx_available < progress.exercise_idx) {
             // Admin switching: show progress as if user follows without skipping
@@ -143,11 +144,11 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
         return (
             <li className={klasses_cask}>
-                {/*{!synced ?*/}
-                {/*    <CaskProgress percent={perc_avail} color_modifier={"secondary"} />*/}
-                {/*    : null*/}
-                {/*}*/}
-                <CaskProgress percent={perc_pass} simple={!synced || !this.props.active} color_modifier={"success"} />
+                {!synced ?
+                    <CaskProgress percent={perc_avail} light />
+                    : null
+                }
+                <CaskProgress percent={perc_pass} simple={!synced || !this.props.active} />
 
                 <div ref={this.ref_root}
                      className={klasses_cask_content_main}
@@ -164,7 +165,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
                          onContextMenu={this.handleContextMenu}
                          data-index={this.props.index}
                     >
-                        ?
+                        <i className="fa fa-redo-alt" aria-hidden="true"/>
                     </div>
                 : null}
 

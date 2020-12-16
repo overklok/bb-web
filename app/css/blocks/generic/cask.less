@@ -64,18 +64,11 @@
     height: 100%;
     bottom: -100%;
 
-    background-color: @default;
+    background-color: @success;
 
     transition: bottom .5s;
 
-    &_primary    {background-color: @primary;}
-    &_secondary  {background-color: @secondary;}
-    &_success    {background-color: @success;}
-    &_dark       {background-color: @dark;}
-    &_warning    {background-color: @warning;}
-    &_danger     {background-color: @danger;}
-    &_light      {background-color: @light;}
-    &_default    {background-color: @default;}
+    &_light      {background-color: @success_surf;}
   }
 
   &_light      {background-color: @light;}
@@ -157,7 +150,7 @@
     width: @wave_width;
     height: @wave_height;
 
-    background-color: @warning_surf;
+    background-color: @success;
     border-radius: 50%;
 
     transition: @wave_transition;
@@ -213,14 +206,7 @@
     bottom: @wave_alt_bottom_down;
   }
 
-  &_primary    &__wave {background-color: @primary;}
-  &_secondary  &__wave {background-color: @secondary;}
-  &_success    &__wave {background-color: @success;}
-  &_dark       &__wave {background-color: @dark;}
-  &_warning    &__wave {background-color: @warning;}
-  &_danger     &__wave {background-color: @danger;}
-  &_light      &__wave {background-color: @light;}
-  &_default    &__wave {background-color: @default;}
+  &_light  &__wave  {background-color: @success_surf;}
 }
 
 
