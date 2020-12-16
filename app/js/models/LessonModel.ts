@@ -1,4 +1,4 @@
-import {cloneDeep} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import RestModel, {CRUDAction, PathParams, RestSchema} from "../core/base/model/RestModel";
 import {Query} from "../core/models/datasources/HttpDatasource";
 import {ModelEvent} from "../core/base/Event";

@@ -4,7 +4,6 @@ import Breadboard from "../Breadboard";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import LabelLayer from "../layers/LabelLayer";
 import ContextMenu from "../core/ContextMenu";
-import {leafSVG, logoSVG} from "../styles/paths";
 
 const LOGO_COLOR_ACTIVE     = "#6B8FFF";
 const LOGO_COLOR_DEFAULT    = "#000000";

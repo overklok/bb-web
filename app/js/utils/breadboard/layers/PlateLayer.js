@@ -20,7 +20,7 @@ import RGBPlate             from "../plates/RGBPlate";
 import DummyPlate           from "../plates/DummyPlate";
 import BuzzerPlate          from "../plates/BuzzerPlate";
 import Breadboard           from "../Breadboard";
-import {isEqual} from "lodash";
+import isEqual from "lodash/isEqual";
 import UnkPlate from "../plates/UnkPlate";
 
 /**

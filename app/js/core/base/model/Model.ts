@@ -1,4 +1,4 @@
-import {cloneDeep} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import Datasource from "./Datasource";
 import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";

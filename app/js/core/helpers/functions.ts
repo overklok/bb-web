@@ -1,4 +1,6 @@
-import {isUndefined, partialRight, assignWith} from "lodash";
+import isUndefined from "lodash/isUndefined";
+import partialRight from "lodash/partialRight";
+import assignWith from "lodash/assignWith";
 
 async function sleep(ms: number): Promise<void> {await new Promise(r => setTimeout(r, ms))}
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import Modal, {IModalProps, ModalSize, Overlay} from "./Modal";
-import {cloneDeep} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
 import Nest from "../../base/view/Nest";
