@@ -57,8 +57,6 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
         this.setViewProps({is_checking: LaunchView.ButtonState.Idle});
 
         if (evt.verdict.is_passed) {
-            console.log('ovf', evt);
-
             this.progress.passExercise();
         }
     }

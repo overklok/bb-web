@@ -173,14 +173,19 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
         const {is_current} = this.props;
 
-        const klasses_cask = classNames({
+
+        const klasses_pager__item = classNames({
             'pager__item': true,
+            'pager__item_starred': progress.exercise_idx_passed == progress.exercise_last,
+            'pager__item_active': true
+        });
+
+        const klasses_cask = classNames({
             'cask': true,
-            'cask_active': true,
             'cask_bg_warning-weak': is_current,
         });
 
-        const klasses_cask_content_main = classNames({
+        const klasses_cask__content_main = classNames({
             'cask__content': true,
             'cask__content_disposable': is_current
         });
@@ -191,51 +196,53 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         });
 
         return (
-            <li className={klasses_cask}>
-                {detached ? <CaskProgress percent={perc_avail} is_simple={!is_current}
-                                          style_fg={is_current ? 'primary-weak' : 'primary-weak'}
-                                          style_bg={is_current ? 'warning-weak' : null}
-                            />
-                          : null
-                }
-                <CaskProgress percent={perc_pass} is_simple={detached || !is_current}
-                              style_fg={is_current ? 'success' : 'success-weak'}
-                              style_bg={is_current ? 'warning-weak' : null}
-                />
+            <li className={klasses_pager__item}>
+                <div className={klasses_cask}>
+                    {detached ? <CaskProgress percent={perc_avail} is_simple={!is_current}
+                                              style_fg={is_current ? 'primary-weak' : 'primary-weak'}
+                                              style_bg={is_current ? 'warning-weak' : null}
+                                />
+                              : null
+                    }
+                    <CaskProgress percent={perc_pass} is_simple={detached || !is_current}
+                                  style_fg={is_current ? 'success' : 'success-weak'}
+                                  style_bg={is_current ? 'warning-weak' : null}
+                    />
 
-                <div ref={this.ref_root}
-                     className={klasses_cask_content_main}
-                     onClick={this.handleMissionClick}
-                     onContextMenu={this.handleContextMenu}
-                     data-index={this.props.index}
-                >
-                    {this.props.index + 1}
-                </div>
-
-                {this.props.is_current ?
-                    <div className={klasses_cask_content_alt}
+                    <div ref={this.ref_root}
+                         className={klasses_cask__content_main}
                          onClick={this.handleMissionClick}
                          onContextMenu={this.handleContextMenu}
+                         data-index={this.props.index}
                     >
-                        {this.getActiveIcon()}
+                        {this.props.index + 1}
                     </div>
-                : null}
 
-                <Portal>
-                    <MissionContextMenu index={this.props.index}
-                                        visible={this.state.ctxmenu_active}
-                                        btn_pos_x={this.state.pos_x}
-                                        btn_pos_y={this.state.pos_y}
-                                        percent={perc_pass}
+                    {this.props.is_current ?
+                        <div className={klasses_cask_content_alt}
+                             onClick={this.handleMissionClick}
+                             onContextMenu={this.handleContextMenu}
+                        >
+                            {this.getActiveIcon()}
+                        </div>
+                    : null}
 
-                                        exercises={this.props.exercises}
+                    <Portal>
+                        <MissionContextMenu index={this.props.index}
+                                            visible={this.state.ctxmenu_active}
+                                            btn_pos_x={this.state.pos_x}
+                                            btn_pos_y={this.state.pos_y}
+                                            percent={perc_pass}
 
-                                        title={this.props.title}
-                                        description={this.props.description}
-                                        current_exercise_idx={this.props.progress.exercise_idx}
-                                        on_exercise_select={this.props.on_exercise_select}
-                    />
-                </Portal>
+                                            exercises={this.props.exercises}
+
+                                            title={this.props.title}
+                                            description={this.props.description}
+                                            current_exercise_idx={this.props.progress.exercise_idx}
+                                            on_exercise_select={this.props.on_exercise_select}
+                        />
+                    </Portal>
+                </div>
             </li>
         )
     }
