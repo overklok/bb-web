@@ -87,6 +87,10 @@ namespace TopbarView {
             };
         }
 
+        componentDidUpdate() {
+            this.scrollToCurrentItem();
+        }
+
         private onScrollableUpdate(el: HTMLElement) {
             if (!el) return;
 
@@ -115,13 +119,36 @@ namespace TopbarView {
         private scrollToBegin() {
             if (!this.el_scrollable) return;
 
-            scrollTo(this.el_scrollable, 0);
+            const pos_cur = this.getCurrentScrollPosition();
+            const pos_pref = this.getPreferredScrollPosition();
+
+            if (pos_cur - 10 > pos_pref) {
+                scrollTo(this.el_scrollable, pos_pref);
+            } else {
+                scrollTo(this.el_scrollable, 0);
+            }
         }
 
         private scrollToEnd() {
             if (!this.el_scrollable) return;
 
-            scrollTo(this.el_scrollable, this.el_scrollable.scrollWidth);
+            const pos_cur = this.getCurrentScrollPosition();
+            const pos_pref = this.getPreferredScrollPosition();
+
+            if (pos_cur + 10 < pos_pref) {
+                scrollTo(this.el_scrollable, pos_pref);
+            } else {
+                scrollTo(this.el_scrollable, this.el_scrollable.scrollWidth);
+            }
+        }
+
+        private scrollToCurrentItem() {
+            if (!this.el_scrollable) return;
+
+            this.el_scrollable.scrollTo({
+                left: this.getPreferredScrollPosition(),
+                behavior: 'smooth'
+            });
         }
 
         private chooseMission(mission_idx: number) {
@@ -251,6 +278,22 @@ namespace TopbarView {
                     </div>
                 </div>
             )
+        }
+
+        private getCurrentScrollPosition() {
+            if (!this.el_scrollable) return;
+
+            return this.el_scrollable.scrollLeft;
+        }
+
+        private getPreferredScrollPosition() {
+            if (!this.el_scrollable) return;
+
+            const index = this.props.progress.mission_idx;
+
+            const el: any = this.el_scrollable.children.item(index);
+
+            return el.offsetLeft - (this.el_scrollable.offsetWidth / 2) + (el.offsetWidth / 2);
         }
     }
 }

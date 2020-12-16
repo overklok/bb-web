@@ -171,13 +171,9 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         }
 
         let perc_pass  = 100 * exercise_num_current / exercise_num_total;
-        let perc_avail = 100 * (progress.exercise_idx_passed_max + 1) / exercise_num_total;
+        let perc_avail = 100 * progress.exercise_idx_passed_max / progress.exercise_idx_last;
 
         const {is_current} = this.props;
-
-        if (this.props.index === 2) {
-            console.log(this.props.progress, exercise_num_current, exercise_num_total, perc_pass, perc_avail);
-        }
 
         const klasses_pager__item = classNames({
             'pager__item': true,
