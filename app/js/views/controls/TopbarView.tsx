@@ -41,12 +41,12 @@ const enum MenuItem {
 
 namespace TopbarView {
     export interface Props extends IViewProps {
-        missions: Mission[],
-        progress: Progress
+        missions: Mission[];
+        progress: Progress;
     }
 
     export interface State extends IViewState {
-        menu_active: boolean
+        menu_active: boolean;
     }
 
     export class MissionSelectEvent extends ViewEvent<MissionSelectEvent> {
