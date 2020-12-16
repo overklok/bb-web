@@ -88,7 +88,7 @@ module.exports = (env, argv) => {
             new webpack.DefinePlugin({
                 '__VERSION__': `'${VERSION}'`,
             }),
-            new BundleAnalyzerPlugin()
+            // new BundleAnalyzerPlugin()
         ]
     }
 };

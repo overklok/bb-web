@@ -20,11 +20,14 @@ interface MissionLiProps {
     exercises: Exercise[];
 
     title: string;
-    active: boolean;
     description: string;
     progress: MissionProgress;
 
+    is_current: boolean;
+
     on_click?: () => void;
+    on_restart?: () => void;
+    on_forward?: () => void;
     on_exercise_select?: (idx: number) => void;
 }
 
@@ -65,22 +68,57 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         document.removeEventListener("contextmenu", this.handleContextMenuGlobal);
     }
 
+    /**
+     * Handle user left-click on the mission button
+     *
+     * @param e event object provided by React
+     */
     handleMissionClick(e: React.MouseEvent) {
+        if (this.props.is_current) {
+            if (this.isProgressDetached()) {
+                // On detached currently active mission,
+                // forward to the last exercise available in the mission
+                this.props.on_forward && this.props.on_forward();
+            } else {
+                // On synced currently active mission,
+                // restart the mission from the first exercise
+                this.props.on_restart && this.props.on_restart();
+            }
+        }
+
         this.props.on_click && this.props.on_click();
     }
 
+    /**
+     * Handle user left-click globally
+     *
+     * Close all context menu instances opened at the moment
+     * except context menu which is currently active
+     *
+     * @param e event object provided by the web API
+     */
     handleClick(e: MouseEvent) {
         if (this.state.ctxmenu_active) {
             this.setState({ctxmenu_active: false});
+
+            // Detach itself (attached previously by {@see handleContextMenu})
             document.removeEventListener("click", this.handleClick);
         }
     }
 
+    /**
+     * Handle context menu event
+     * Reject if fired not in the component
+     *
+     * @param e event object provided by React
+     */
     handleContextMenu(e: React.MouseEvent) {
         if (this.state.ctxmenu_active) return;
 
         e.preventDefault();
 
+        // Attach left-click global handler to close when user clicks outside the menu
+        // (it will be self-detached after execution)
         document.addEventListener("click", this.handleClick);
 
         const {top, left} = this.ref_root.current.getBoundingClientRect();
@@ -92,10 +130,20 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         });
     }
 
+    /**
+     * Handle context menu event globally
+     *
+     * Close all context menu instances opened at the moment
+     * Open context menu instance related to the component
+     *
+     * @param e event object provided by the web API
+     */
     handleContextMenuGlobal(e: MouseEvent) {
         if (!this.state.ctxmenu_active) return;
 
         const index = (e.target as any).getAttribute('data-index');
+
+        console.log(e.target, this.props.index, Number(index));
 
         if (Number(index) !== this.props.index) {
             this.setState({ctxmenu_active: false});
@@ -107,13 +155,11 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         const progress = this.props.progress;
         const exercise_num_total = progress.exercise_last + 1;
         let exercise_num_current = 0;
-        let synced = false;
+        let detached = this.isProgressDetached();
 
         if (progress.exercise_idx_available === progress.exercise_idx) {
             // Synced indices: user follows mission without switching to previous exercises
             exercise_num_current = progress.exercise_idx_passed + 1;
-
-            synced = true;
         } else if (progress.exercise_idx_available < progress.exercise_idx) {
             // Admin switching: show progress as if user follows without skipping
             exercise_num_current = progress.exercise_idx + 1;
@@ -129,26 +175,23 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
             'pager__item': true,
             'cask': true,
             'cask_active': true,
-            'cask_selected': this.props.active,
+            'cask_selected': this.props.is_current,
         })
 
         const klasses_cask_content_main = classNames({
             'cask__content': true,
-            'cask__content_disposable': this.props.active
+            'cask__content_disposable': this.props.is_current
         });
 
         const klasses_cask_content_alt = classNames({
             'cask__content': true,
-            'cask__content_undisposable': this.props.active
+            'cask__content_undisposable': this.props.is_current
         });
 
         return (
             <li className={klasses_cask}>
-                {!synced ?
-                    <CaskProgress percent={perc_avail} light />
-                    : null
-                }
-                <CaskProgress percent={perc_pass} simple={!synced || !this.props.active} />
+                {detached ? <CaskProgress percent={perc_avail} light />: null}
+                <CaskProgress percent={perc_pass} simple={detached || !this.props.is_current} />
 
                 <div ref={this.ref_root}
                      className={klasses_cask_content_main}
@@ -159,13 +202,12 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
                     {this.props.index + 1}
                 </div>
 
-                {this.props.active ?
+                {this.props.is_current ?
                     <div className={klasses_cask_content_alt}
                          onClick={this.handleMissionClick}
                          onContextMenu={this.handleContextMenu}
-                         data-index={this.props.index}
                     >
-                        <i className="fa fa-redo-alt" aria-hidden="true"/>
+                        {this.getActiveIcon()}
                     </div>
                 : null}
 
@@ -186,6 +228,29 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
                 </Portal>
             </li>
         )
+    }
+
+    private getActiveIcon() {
+        if (this.isProgressDetached()) {
+            // On detached currently active mission, suggest the user to
+            // forward to the last exercise available in the mission
+            return <i className="fa fa-fast-forward" aria-hidden="true"/>
+        } else {
+            // On synced currently active mission, suggest the user to
+            // restart the mission from the first exercise
+            return <i className="fa fa-redo-alt" aria-hidden="true"/>
+        }
+    }
+
+    /**
+     * Determine whether user follows the mission' exercises consistently.
+     * If user switches manually, this method returns `false`.
+     *
+     * @private
+     */
+    private isProgressDetached() {
+        const progress = this.props.progress;
+        return progress.exercise_idx_available !== progress.exercise_idx;
     }
 }
 

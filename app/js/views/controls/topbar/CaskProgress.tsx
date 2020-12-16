@@ -14,8 +14,9 @@ const CaskProgress = (props: ICaskProgressProps) => {
 
     const klasses_wavefront: {[key: string]: boolean} = {
         'wavefront': true,
+        'wavefront_light': props.light,
         'wavefront_disabled': props.simple || progress_percent == 0, // deactivate animation when full
-        'wavefront_light': props.light
+                                                                     // to eliminate the gaps caused by the waves
     };
 
     const klasses_cask_progress = classNames({

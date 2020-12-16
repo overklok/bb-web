@@ -167,8 +167,6 @@ export default class ProgressModel extends HttpModel<Progress> {
             mission_progress.exercise_idx += 1;
         }
 
-        console.log('sfw', mission_progress);
-
         this.emit(new ExerciseRunEvent({
             mission_idx: this.state.mission_idx,
             exercise_idx: mission_progress.exercise_idx
@@ -177,47 +175,40 @@ export default class ProgressModel extends HttpModel<Progress> {
 
     /**
      * Run the last exercise available in current mission
+     *
+     * This is a shortcut to {@see this.switchExercise()} method call
      */
     public fastForwardMission() {
         if (this.in_progress) return;
 
         const mission_progress = this.state.missions[this.state.mission_idx];
 
-        mission_progress.exercise_idx = mission_progress.exercise_idx_available;
-
-        this.emit(new ExerciseRunEvent({
-            mission_idx: this.state.mission_idx,
-            exercise_idx: mission_progress.exercise_idx
-        }));
+        this.switchExercise(this.state.mission_idx, mission_progress.exercise_idx_available);
     }
 
     /**
      * Run the first exercise in current mission
+     *
+     * This is a shortcut to {@see this.switchExercise()} method call
      */
     public restartMission() {
         if (this.in_progress) return;
 
-        this.state.missions[this.state.mission_idx].exercise_idx = 0;
-
-        this.emit(new ExerciseRunEvent({
-            mission_idx: this.state.mission_idx,
-            exercise_idx: 0
-        }));
+        this.switchExercise(this.state.mission_idx, 0);
     }
 
     /**
-     * Выполнить безусловный переход к упражнению
+     * Switch current exercise pointer in the mission
      *
-     * @param mission_idx  индекс миссии
-     * @param exercise_idx индекс упражнения
+     * Restrict if mission/exercise lock is enabled
+     *
+     * @param mission_idx   mission to switch the exercise pointer in
+     * @param exercise_idx  index of exercise to switch to
      */
-    public switchExercise(mission_idx: number, exercise_idx: number = 0) {
+    public switchExercise(mission_idx: number, exercise_idx: number = undefined) {
         if (this.in_progress) return;
 
-        mission_idx = mission_idx | 0;
-        exercise_idx = exercise_idx | this.exercise_preferred | 0;
-
-        this.exercise_preferred = 0;
+        exercise_idx = exercise_idx != null ? exercise_idx : this.exercise_preferred | 0;
 
         if (!(mission_idx in this.state.missions)) {
             throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
@@ -227,11 +218,45 @@ export default class ProgressModel extends HttpModel<Progress> {
             throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
         }
 
+        if (this.state.lock_missions) {
+            if (mission_idx !== 0 && mission_idx > this.state.mission_idx_available) {
+                console.debug('Forbidden mission switch prevented: `lock_missions` enabled');
+                return;
+            }
+        }
+
         if (this.state.lock_exercises) {
             if (exercise_idx !== 0 && exercise_idx > this.state.missions[mission_idx].exercise_idx_available) {
                 console.debug('Forbidden exercise switch prevented: `lock_exercises` enabled');
                 return;
             }
+        }
+
+        if (this.state.missions[mission_idx].exercise_idx !== exercise_idx) {
+            this.state.missions[mission_idx].exercise_idx = exercise_idx;
+
+            // Emit only if switching in the mission currently running
+            // External modules should switch to actual mission if they want to receive the run event
+            if (mission_idx === this.state.mission_idx) {
+                this.emit(new ExerciseRunEvent({mission_idx, exercise_idx}));
+            }
+        }
+    }
+
+    /**
+     * Switch mission pointer
+     *
+     * Restrict if mission lock is enabled
+     *
+     * @param mission_idx
+     */
+    public switchMission(mission_idx: number) {
+        if (this.in_progress) return;
+
+        mission_idx = mission_idx | 0;
+
+        if (!(mission_idx in this.state.missions)) {
+            throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
         }
 
         if (this.state.lock_missions) {
@@ -241,16 +266,12 @@ export default class ProgressModel extends HttpModel<Progress> {
             }
         }
 
-        if (this.state.mission_idx !== mission_idx || this.state.missions[mission_idx].exercise_idx !== exercise_idx) {
+        if (this.state.mission_idx !== mission_idx ) {
             this.state.mission_idx = mission_idx;
-            this.state.missions[mission_idx].exercise_idx = exercise_idx;
+            const exercise_idx = this.state.missions[mission_idx].exercise_idx;
 
             this.emit(new ExerciseRunEvent({mission_idx, exercise_idx}));
         }
-    }
-
-    public preferExercise(exercise_idx: number) {
-        this.exercise_preferred = exercise_idx;
     }
 
     /**

@@ -53,8 +53,8 @@ class MainApplication extends Application {
         const dds = new DummyDatasource();
 
         const ads = new AdaptiveDatasource([
-            new QtIPCDatasource(),
-            new SocketDatasource('127.0.0.1', 8085),
+            // new QtIPCDatasource(),
+            // new SocketDatasource('127.0.0.1', 8085),
         ]);
 
         const hds = new HttpDatasource('127.0.0.1', 8000);

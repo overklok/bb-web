@@ -10,10 +10,11 @@ import classNames from "classnames";
 
 require('../../../css/logo.less');
 require('../../../css/blocks/menu/navbar.less');
-require('../../../css/blocks/menu/progressbar.less');
 require('../../../css/blocks/menu/pager.less');
+require('../../../css/blocks/menu/progressbar.less');
 require('../../../css/blocks/generic/btn.less');
 require('../../../css/blocks/generic/cask.less');
+require('../../../css/blocks/generic/wavefront.less');
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;
@@ -49,6 +50,14 @@ namespace TopbarView {
     }
 
     export class MissionSelectEvent extends ViewEvent<MissionSelectEvent> {
+        mission_idx: number;
+    }
+
+    export class MissionRestartEvent extends ViewEvent<MissionRestartEvent> {
+        mission_idx: number;
+    }
+
+    export class MissionForwardEvent extends ViewEvent<MissionRestartEvent> {
         mission_idx: number;
     }
 
@@ -119,6 +128,14 @@ namespace TopbarView {
             this.emit(new MissionSelectEvent({mission_idx}));
         }
 
+        private restartMission(mission_idx: number) {
+            this.emit(new MissionRestartEvent({mission_idx}));
+        }
+
+        private forwardMission(mission_idx: number) {
+            this.emit(new MissionForwardEvent({mission_idx}));
+        }
+
         private chooseExercise(mission_idx: number, exercise_idx: number) {
             this.emit(new ExerciseSelectEvent({mission_idx, exercise_idx}));
         }
@@ -185,12 +202,14 @@ namespace TopbarView {
                                     {this.props.missions.map((mission, idx) =>
                                         <MissionLi key={idx}
                                                    index={idx}
-                                                   active={this.props.progress.mission_idx === idx}
+                                                   is_current={this.props.progress.mission_idx === idx}
                                                    exercises={mission.exercises}
                                                    title={mission.name}
                                                    description={mission.description}
                                                    progress={this.props.progress.missions[idx]}
                                                    on_click={() => this.chooseMission(idx)}
+                                                   on_restart={() => this.restartMission(idx)}
+                                                   on_forward={() => this.forwardMission(idx)}
                                                    on_exercise_select={e_idx => this.chooseExercise(idx, e_idx)}
                                         />
                                     )}

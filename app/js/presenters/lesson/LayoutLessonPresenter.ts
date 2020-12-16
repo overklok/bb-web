@@ -18,7 +18,7 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
     }
 
     @restore() @on(LessonRouteEvent, MissionRouteEvent)
-    protected async runExercise(evt: LessonRouteEvent|MissionRouteEvent) {
+    protected async runMission(evt: LessonRouteEvent|MissionRouteEvent) {
         const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
         this.model_progress.loadLesson(lesson);
 
@@ -27,7 +27,7 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         await this.model_layout.setMode(exercise.layout_mode);
 
         if (evt instanceof MissionRouteEvent) {
-            this.model_progress.switchExercise(evt.mission_id);
+            this.model_progress.switchMission(evt.mission_id);
         }
 
         const progress = this.model_progress.getState();
