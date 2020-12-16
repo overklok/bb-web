@@ -10,9 +10,10 @@ require('../../../../css/blocks/menu/combolist.less');
 
 export interface MissionProgress {
     exercise_idx: number;
+    exercise_idx_last: number;
     exercise_idx_passed: number;
+    exercise_idx_passed_max: number;
     exercise_idx_available: number;
-    exercise_last: number;
 }
 
 interface MissionLiProps {
@@ -153,13 +154,14 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
     render() {
         const progress = this.props.progress;
-        const exercise_num_total = progress.exercise_last + 1;
+        const exercise_num_total = progress.exercise_idx_last + 1;
         let exercise_num_current = 0;
-        let detached = this.isProgressDetached();
+        let detached = true;
 
-        if (progress.exercise_idx_available === progress.exercise_idx) {
+        if (progress.exercise_idx_passed_max === progress.exercise_idx_passed) {
             // Synced indices: user follows mission without switching to previous exercises
             exercise_num_current = progress.exercise_idx_passed + 1;
+            detached = false;
         } else if (progress.exercise_idx_available < progress.exercise_idx) {
             // Admin switching: show progress as if user follows without skipping
             exercise_num_current = progress.exercise_idx + 1;
@@ -168,16 +170,20 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
             exercise_num_current = progress.exercise_idx;
         }
 
-        const perc_pass  = 100 * exercise_num_current / exercise_num_total;
-        const perc_avail = 100 * ((progress.exercise_idx_passed + 1) / exercise_num_total);
+        let perc_pass  = 100 * exercise_num_current / exercise_num_total;
+        let perc_avail = 100 * (progress.exercise_idx_passed_max + 1) / exercise_num_total;
 
         const {is_current} = this.props;
 
+        if (this.props.index === 2) {
+            console.log(this.props.progress, exercise_num_current, exercise_num_total, perc_pass, perc_avail);
+        }
 
         const klasses_pager__item = classNames({
             'pager__item': true,
-            'pager__item_starred': progress.exercise_idx_passed == progress.exercise_last,
-            'pager__item_active': true
+            'pager__item_starred': progress.exercise_idx_passed == progress.exercise_idx_last,
+            'pager__item_active': true,
+            'pager__item_current': this.props.is_current,
         });
 
         const klasses_cask = classNames({

@@ -13,10 +13,17 @@ export type ValidationVerdict = {
 }
 
 type MissionProgress = {
-    exercise_last: number;
+    // Current index of exercise being passed
     exercise_idx: number;
-    exercise_idx_available: number;
+    // Maximum value of exercise index
+    exercise_idx_last: number;
+    // Value of lastly passed exercise index
     exercise_idx_passed: number;
+    // Maximum value of lastly passed exercise index
+    exercise_idx_passed_max: number;
+    // Maximum value of exercise index user can assign to
+    // (if lock_exercises is true)
+    exercise_idx_available: number;
 }
 
 type Progress = {
@@ -90,7 +97,8 @@ export default class ProgressModel extends HttpModel<Progress> {
                 exercise_idx: 0,
                 exercise_idx_available: 0,
                 exercise_idx_passed: -1,
-                exercise_last: mission.exercises.length - 1
+                exercise_idx_passed_max: -1,
+                exercise_idx_last: mission.exercises.length - 1
             });
         }
 
@@ -128,6 +136,8 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         // current exercise is being passed another time (index isn't synced)
         if (mission_progress.exercise_idx < mission_progress.exercise_idx_available) {
+            mission_progress.exercise_idx_passed += 1;
+
             this.emit(new ExercisePassEvent({
                 mission_idx: this.state.mission_idx,
                 exercise_idx: mission_progress.exercise_idx
@@ -136,17 +146,24 @@ export default class ProgressModel extends HttpModel<Progress> {
         }
 
         // `current` index is synced with `available` index
-        if (mission_progress.exercise_idx_available < mission_progress.exercise_last) {
+        if (mission_progress.exercise_idx_available < mission_progress.exercise_idx_last) {
             // fairly increment the `available` index
             mission_progress.exercise_idx_available += 1;
             mission_progress.exercise_idx_passed += 1;
+            mission_progress.exercise_idx_passed_max += 1;
 
             this.emit(new ExercisePassEvent({
                 mission_idx: this.state.mission_idx,
                 exercise_idx: mission_progress.exercise_idx
             }));
         } else {
-            mission_progress.exercise_idx_passed += 1;
+            if (mission_progress.exercise_idx_passed < mission_progress.exercise_idx_last) {
+                mission_progress.exercise_idx_passed += 1;
+            }
+
+            if (mission_progress.exercise_idx_passed_max < mission_progress.exercise_idx_last) {
+                mission_progress.exercise_idx_passed_max += 1;
+            }
 
             // if it's required to pass the last exercise, it's time to pass the entire mission
             this.passMission();
@@ -214,7 +231,7 @@ export default class ProgressModel extends HttpModel<Progress> {
             throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
         }
 
-        if (exercise_idx > this.state.missions[mission_idx].exercise_last) {
+        if (exercise_idx > this.state.missions[mission_idx].exercise_idx_last) {
             throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
         }
 
@@ -232,15 +249,16 @@ export default class ProgressModel extends HttpModel<Progress> {
             }
         }
 
-        if (this.state.missions[mission_idx].exercise_idx !== exercise_idx) {
+        // if (this.state.missions[mission_idx].exercise_idx !== exercise_idx) {
             this.state.missions[mission_idx].exercise_idx = exercise_idx;
+            this.state.missions[mission_idx].exercise_idx_passed = exercise_idx - 1;
 
             // Emit only if switching in the mission currently running
             // External modules should switch to actual mission if they want to receive the run event
             if (mission_idx === this.state.mission_idx) {
                 this.emit(new ExerciseRunEvent({mission_idx, exercise_idx}));
             }
-        }
+        // }
     }
 
     /**
@@ -285,7 +303,7 @@ export default class ProgressModel extends HttpModel<Progress> {
         if (this.state.mission_idx < this.state.mission_idx_last) {
             this.state.mission_idx += 1;
             this.state.mission_idx_available += 1;
-            this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
+            // this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
 
             this.emit(new MissionPassEvent({
                 mission_idx: this.state.mission_idx,
