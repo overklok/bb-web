@@ -16,7 +16,7 @@
   height: 2em;
   line-height: 2em;
   border-radius: .375em;
-  background-color: @text_light;
+  background-color: @light;
   color: @text_dark;
 
   box-shadow: @shadow;
@@ -26,10 +26,6 @@
   user-select: none;
 
   text-align: center;
-
-  &_selected {
-    background-color: @warning_surf;
-  }
 
   &_active {
     cursor: pointer;
@@ -75,15 +71,23 @@
     height: 100%;
     bottom: -100%;
 
-    background-color: @success;
+    background-color: @default;
 
     transition: bottom .5s;
 
-    &_light      {background-color: @success_surf;}
+    &_bg_primary        {background-color: @primary;}
+    &_bg_primary-weak   {background-color: @primary_weak;}
+    &_bg_secondary      {background-color: @secondary;}
+    &_bg_secondary-weak {background-color: @secondary_weak;}
+    &_bg_success        {background-color: @success;}
+    &_bg_success-weak   {background-color: @success_weak;}
+    &_bg_warning        {background-color: @warning;}
+    &_bg_warning-weak   {background-color: @warning_weak;}
+    &_bg_danger         {background-color: @danger;}
+    &_bg_danger-weak    {background-color: @danger_weak;}
   }
 
-  &_light      {background-color: @light;}
-  &_default      {background-color: @default;}
+  &_bg_warning-weak {background-color: @warning_weak;}
 }
 
 @keyframes scale-easeInElastic {

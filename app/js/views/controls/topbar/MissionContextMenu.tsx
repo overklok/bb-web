@@ -84,7 +84,7 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
                     <div className={klasses_head}>
                         <div className="mission__dropcap">
                             <div className="cask cask_success" ref={this.ref_cask}>
-                                <CaskProgress percent={this.props.percent} simple={true} />
+                                <CaskProgress percent={this.props.percent} is_simple={true} />
 
                                 <div className="cask__content">
                                     {this.props.index + 1}

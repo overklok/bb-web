@@ -50,7 +50,7 @@
     bottom: @wave_inv_bottom;
     left: @wave_inv_left;
 
-    background-color: @warning_surf;
+    background-color: @light;
     border-radius: 50%;
 
     transition: @wave_transition;
@@ -67,7 +67,7 @@
     width: @wave_width;
     height: @wave_height;
 
-    background-color: @success;
+    background-color: @default;
     border-radius: 50%;
 
     transition: @wave_transition;
@@ -123,7 +123,13 @@
     bottom: @wave_alt_bottom_down;
   }
 
-  &_light  &__wave  {background-color: @success_surf;}
+  &_fg_success        &__wave   {background-color: @success;}
+  &_fg_success-weak   &__wave   {background-color: @success_weak;}
+  &_fg_primary        &__wave   {background-color: @primary;}
+  &_fg_primary-weak   &__wave   {background-color: @primary_weak;}
+
+  &_bg_warning::before          {background-color: @warning;}
+  &_bg_warning-weak::before     {background-color: @warning_weak;}
 }
 
 

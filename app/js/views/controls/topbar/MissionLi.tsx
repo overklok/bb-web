@@ -171,27 +171,37 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         const perc_pass  = 100 * exercise_num_current / exercise_num_total;
         const perc_avail = 100 * ((progress.exercise_idx_passed + 1) / exercise_num_total);
 
+        const {is_current} = this.props;
+
         const klasses_cask = classNames({
             'pager__item': true,
             'cask': true,
             'cask_active': true,
-            'cask_selected': this.props.is_current,
-        })
+            'cask_bg_warning-weak': is_current,
+        });
 
         const klasses_cask_content_main = classNames({
             'cask__content': true,
-            'cask__content_disposable': this.props.is_current
+            'cask__content_disposable': is_current
         });
 
         const klasses_cask_content_alt = classNames({
             'cask__content': true,
-            'cask__content_undisposable': this.props.is_current
+            'cask__content_undisposable': is_current
         });
 
         return (
             <li className={klasses_cask}>
-                {detached ? <CaskProgress percent={perc_avail} light />: null}
-                <CaskProgress percent={perc_pass} simple={detached || !this.props.is_current} />
+                {detached ? <CaskProgress percent={perc_avail} is_simple={!is_current}
+                                          style_fg={is_current ? 'primary-weak' : 'primary-weak'}
+                                          style_bg={is_current ? 'warning-weak' : null}
+                            />
+                          : null
+                }
+                <CaskProgress percent={perc_pass} is_simple={detached || !is_current}
+                              style_fg={is_current ? 'success' : 'success-weak'}
+                              style_bg={is_current ? 'warning-weak' : null}
+                />
 
                 <div ref={this.ref_root}
                      className={klasses_cask_content_main}
