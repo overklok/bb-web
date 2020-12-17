@@ -45,14 +45,14 @@ const Dialog = (props: IDialogProps) => {
         footer = (
             <div className='mdl-dlg__footer'>
                 <div className='btn-bar btn-bar_right'>
-                    {props.on_accept
-                        ? <div className='btn btn_success'
-                               onClick={e => onAccept(e)}>{props.label_accept || 'Принять'}</div>
-                        : null
-                    }
                     {props.on_dismiss
                         ? <div className='btn btn_danger'
                                onClick={e => onDismiss(e)}>{props.label_dismiss || 'Отклонить'}</div>
+                        : null
+                    }
+                    {props.on_accept
+                        ? <div className='btn btn_success'
+                               onClick={e => onAccept(e)}>{props.label_accept || 'Принять'}</div>
                         : null
                     }
                 </div>

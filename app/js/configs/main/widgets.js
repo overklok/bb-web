@@ -22,15 +22,16 @@ import LaunchPresenter          from "../../presenters/controls/LaunchPresenter"
 import LessonTaskPresenter      from "../../presenters/common/LessonTaskPresenter";
 import LessonMenuPresenter      from "../../presenters/common/LessonMenuPresenter";
 
-/* Lesson-specific Presenters */
+/* Domain-specific Presenters */
 import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPresenter";
 import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
+import ModalLessonPresenter     from "../../presenters/lesson/ModalLessonPresenter";
 
 export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutLessonPresenter], view_options: {}},
-        {view_type: ModalView, presenter_types: [ModalPresenter]}
+        {view_type: ModalView, presenter_types: [ModalPresenter, ModalLessonPresenter]}
     ],
     widgets: {
         courses: {

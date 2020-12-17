@@ -63,17 +63,15 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
     @on(ExercisePassEvent)
     protected async onExercisePass() {
-        console.log('oep');
+        const go_forward = await this.modal.showQuestionModal({
+            dialog: {heading: 'Упражнение пройдено', label_accept: 'Продолжить', label_dismiss: 'Остаться'},
+            content: 'Молорик',
+            is_closable: false,
+        });
 
-        // const go_forward = await this.modal.showQuestionModal({
-        //     dialog: {heading: 'Упражнение пройдено', label_accept: 'Да', label_dismiss: 'Нет'},
-        //     content: 'Молорик',
-        //     is_closable: false,
-        // });
-        //
-        // if (go_forward) {
+        if (go_forward) {
             this.progress.stepForwardMission();
-        // }
+        }
     }
 
     @on(MissionPassEvent)
