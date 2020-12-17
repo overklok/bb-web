@@ -7,10 +7,12 @@ import MissionLi, {MissionProgress} from "./topbar/MissionLi";
 import {scrollTo} from "../../core/helpers/functions";
 import {Exercise} from "./topbar/MissionContextMenu";
 import classNames from "classnames";
+import StatusIndicator from "./topbar/StatusIndicator";
 
 require('../../../css/logo.less');
 require('../../../css/blocks/menu/navbar.less');
 require('../../../css/blocks/menu/pager.less');
+require('../../../css/blocks/menu/indicator.less');
 require('../../../css/blocks/menu/progressbar.less');
 require('../../../css/blocks/generic/btn.less');
 require('../../../css/blocks/generic/cask.less');
@@ -244,6 +246,9 @@ namespace TopbarView {
                             </div>
                             <div className="pager__arrow pager__arrow_right" onClick={() => this.scrollToEnd()}/>
                         </div>
+                    </div>
+                    <div className="navbar__section">
+                        <StatusIndicator status={"connected"} />
                     </div>
                 </div>
             )

@@ -13,7 +13,7 @@ namespace RichTextView {
 
         render(): React.ReactNode {
             return (
-                <div dangerouslySetInnerHTML={{ __html: this.props.content }} />
+                <div dangerouslySetInnerHTML={{ __html: this.props.content }} style={{padding: '1em'}}/>
             )
         }
     }

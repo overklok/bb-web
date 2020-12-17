@@ -1,0 +1,29 @@
+@import "../../colors";
+
+.popup {
+  position: absolute;
+
+  background-color: white;
+  border-radius: .25em;
+  width: 200px;
+
+  padding: .25em;
+  margin: .75em 0;
+
+  box-shadow: @shadow;
+
+  &::before {
+    position: absolute;
+    content: '';
+
+    bottom: calc(~'100% - 8px');
+    right: 8px;
+
+    width: 10px;
+    height: 14px;
+
+    transform: rotate(45deg);
+    background-color: white;
+    border-radius: 2px;
+  }
+}

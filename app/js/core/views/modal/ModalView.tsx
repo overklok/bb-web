@@ -82,7 +82,7 @@ export default class ModalView extends View<IViewProps, ModalViewState> {
     private renderOverlay(key: number): JSX.Element {
         return (
             <CSSTransition key={'o' + key} classNames='mdl' timeout={0} unmountOnExit>
-                <Overlay onClose={() => this.onOverlayClick(key)}/>
+                <Overlay onClose={() => this.onCloseRequest(key)}/>
             </CSSTransition>
         );
     }
@@ -128,7 +128,7 @@ export default class ModalView extends View<IViewProps, ModalViewState> {
         )
     }
 
-    private onOverlayClick(index: number) {
+    private onCloseRequest(index: number) {
         if (this.state.modals[index].is_closable) {
             this.closeModal(index);
         };

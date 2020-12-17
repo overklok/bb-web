@@ -18,19 +18,30 @@ export interface IDialogProps {
 const Dialog = (props: IDialogProps) => {
     const {} = props;
 
-    const onClose = (e: React.MouseEvent<HTMLElement>) => {
-        props.on_close && props.on_close(e);
+    const onClose = () => {
+        props.on_close && props.on_close();
     };
 
-    const onAccept = (e: React.MouseEvent<HTMLElement>) => {
+    const onAccept = () => {
         props.on_accept && props.on_accept();
-        onClose(e);
+        onClose();
     }
 
-    const onDismiss = (e: React.MouseEvent<HTMLElement>) => {
+    const onDismiss = () => {
         props.on_dismiss && props.on_dismiss();
-        onClose(e);
+        onClose();
     }
+
+    React.useEffect(() => {
+        const keyListener = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {onDismiss()}
+            if (e.key === 'Enter') {onAccept()}
+        }
+
+        document.addEventListener("keydown", keyListener);
+
+        return () => document.removeEventListener("keydown", keyListener);
+    });
 
     // Список классов, которые должны использоваться в зависимости от свойств
     const klasses_dialog = classNames({
@@ -47,12 +58,12 @@ const Dialog = (props: IDialogProps) => {
                 <div className='btn-bar btn-bar_right'>
                     {props.on_dismiss
                         ? <div className='btn btn_danger'
-                               onClick={e => onDismiss(e)}>{props.label_dismiss || 'Отклонить'}</div>
+                               onClick={e => onDismiss()}>{props.label_dismiss || 'Отклонить'}</div>
                         : null
                     }
                     {props.on_accept
                         ? <div className='btn btn_success'
-                               onClick={e => onAccept(e)}>{props.label_accept || 'Принять'}</div>
+                               onClick={e => onAccept()}>{props.label_accept || 'Принять'}</div>
                         : null
                     }
                 </div>
