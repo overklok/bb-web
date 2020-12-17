@@ -14,18 +14,19 @@ import LessonMenuView   from "../../views/common/LessonMenuView";
 
 /* Basic Presenters */
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
-import LayoutLessonPresenter    from "../../presenters/lesson/LayoutLessonPresenter";
 import BoardPresenter           from "../../presenters/common/BoardPresenter";
 import BlocklyCodePresenter     from "../../presenters/common/BlocklyCodePresenter";
 import TopbarPresenter          from "../../presenters/controls/TopbarPresenter";
 import LaunchPresenter          from "../../presenters/controls/LaunchPresenter";
-import LessonTaskPresenter      from "../../presenters/common/LessonTaskPresenter";
-import LessonMenuPresenter      from "../../presenters/common/LessonMenuPresenter";
+import LayoutLessonPresenter    from "../../presenters/lesson/LayoutLessonPresenter";
+import LessonTaskPresenter      from "../../presenters/lesson/LessonTaskPresenter";
+import LessonMenuPresenter      from "../../presenters/lesson/LessonMenuPresenter";
 
 /* Domain-specific Presenters */
 import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPresenter";
 import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
 import ModalLessonPresenter     from "../../presenters/lesson/ModalLessonPresenter";
+import PopoverLessonPresenter from "../../presenters/lesson/PopoverLessonPresenter";
 
 export default {
     composer: OverlayViewComposer,
@@ -60,5 +61,9 @@ export default {
             view_type: BlocklyView,
             presenter_types: [BlocklyCodePresenter, BlocklyLessonPresenter],
         },
+        popover_content: {
+            view_type: RichTextView.RichTextView,
+            presenter_types: [PopoverLessonPresenter]
+        }
     }
 }

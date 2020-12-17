@@ -1,34 +1,43 @@
-import Presenter, {on} from "../../core/base/Presenter";
+import Presenter, {on, restore} from "../../core/base/Presenter";
 import ModalView from "../../core/views/modal/ModalView";
-import {ExerciseRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 import LessonModel from "../../models/LessonModel";
 
-export default  class ModalLessonPresenter extends Presenter<ModalView> {
+export default class ModalLessonPresenter extends Presenter<ModalView> {
     private lesson: LessonModel;
+    private progress: ProgressModel;
 
     getInitialProps(): any {
         this.lesson = this.getModel(LessonModel);
+        this.progress = this.getModel(ProgressModel);
     }
 
-    @on(ExerciseRunEvent)
+    @restore() @on(LessonRunEvent, ExerciseRunEvent)
     private async showIntroModal(evt: ExerciseRunEvent) {
-        const exercise = this.lesson.getExercise(evt.mission_idx, evt.exercise_idx);
+        const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
+        const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
-        for (const popover of exercise.popovers) {
+        for (const [i, popover] of exercise.popovers.entries()) {
             const go_forward = await this.showPopoverModal(
-                popover.title || `Упражнение ${evt.exercise_idx + 1}`,
-                popover.content
+                mission_idx, exercise_idx, i,
+                popover.title || `Упражнение ${exercise_idx + 1}`,
             );
 
             if (!go_forward) break;
         }
     }
 
-    private showPopoverModal(title: string, content: string): Promise<boolean> {
+    private showPopoverModal(mission_idx: number,
+                             exercise_idx: number,
+                             popover_idx: number,
+                             title: string,
+    ): Promise<boolean> {
+        this.lesson.setActivePopover(mission_idx, exercise_idx, popover_idx);
+
         return new Promise(resolve => {
             this.view.showModal({
                 is_closable: false,
-                content: content,
+                widget_alias: 'popover_content',
                 dialog: {
                     heading: title,
                     label_accept: 'Продолжить',
