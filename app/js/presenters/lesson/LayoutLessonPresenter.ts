@@ -22,13 +22,15 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
         this.model_progress.loadLesson(lesson);
 
+        if (evt instanceof MissionRouteEvent) {
+            this.model_progress.switchMission(evt.mission_id);
+        } else {
+            this.model_progress.switchMission();
+        }
+
         const [mission_idx, exercise_idx] = this.model_progress.getExerciseCurrent();
         const exercise = this.model_lesson.getExercise(mission_idx, exercise_idx);
         await this.model_layout.setMode(exercise.layout_mode);
-
-        if (evt instanceof MissionRouteEvent) {
-            this.model_progress.switchMission(evt.mission_id);
-        }
 
         const progress = this.model_progress.getState();
 

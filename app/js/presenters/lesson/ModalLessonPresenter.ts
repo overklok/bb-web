@@ -12,27 +12,25 @@ export default class ModalLessonPresenter extends Presenter<ModalView> {
         this.progress = this.getModel(ProgressModel);
     }
 
-    @restore() @on(LessonRunEvent, ExerciseRunEvent)
+    @restore() @on(ExerciseRunEvent)
     private async showIntroModal(evt: ExerciseRunEvent) {
+        console.log(evt);
+
         const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
         for (const [i, popover] of exercise.popovers.entries()) {
             const go_forward = await this.showPopoverModal(
-                mission_idx, exercise_idx, i,
                 popover.title || `Упражнение ${exercise_idx + 1}`,
+                popover.content
             );
 
             if (!go_forward) break;
         }
     }
 
-    private showPopoverModal(mission_idx: number,
-                             exercise_idx: number,
-                             popover_idx: number,
-                             title: string,
-    ): Promise<boolean> {
-        this.lesson.setActivePopover(mission_idx, exercise_idx, popover_idx);
+    private showPopoverModal(title: string, content: string): Promise<boolean> {
+        this.lesson.setPopoverContent(content);
 
         return new Promise(resolve => {
             this.view.showModal({

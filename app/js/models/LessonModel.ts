@@ -94,7 +94,7 @@ export type Lesson = {
     missions: Mission[];
 }
 
-export class PopoverShowEvent extends ModelEvent<PopoverShowEvent> {
+export class PopoverContentUpdateEvent extends ModelEvent<PopoverContentUpdateEvent> {
     content: string;
 }
 
@@ -124,12 +124,8 @@ export default class LessonModel extends RestModel<Lesson> {
         return this.getState().missions[mission_idx].exercises[exercise_idx];
     }
 
-    public setActivePopover(mission_idx: number, exercise_idx: number, popover_idx: number) {
-        const exercise = this.getExercise(mission_idx, exercise_idx);
-
-        if (popover_idx in exercise.popovers) {
-            this.emit(new PopoverShowEvent(exercise.popovers[popover_idx]));
-        }
+    public setPopoverContent(content: string) {
+        this.emit(new PopoverContentUpdateEvent({content}));
     }
 
     static processLesson(_lesson: any): Lesson {

@@ -1,7 +1,7 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import TopbarView from "../../views/controls/TopbarView";
 import LessonModel from "../../models/LessonModel";
-import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private model_lesson: LessonModel;
@@ -25,7 +25,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         });
     }
 
-    @on(ExerciseRunEvent)
+    @on(ExerciseRunEvent, ExercisePassEvent)
     private updateProgress(evt: ExerciseRunEvent) {
         this.setViewProps({
             progress: this.model_progress.getState()

@@ -16,7 +16,7 @@ export default class LessonTaskPresenter extends Presenter<RichTextView.RichText
         };
     }
 
-    @restore() @on(LessonRunEvent, ExerciseRunEvent)
+    @restore() @on(ExerciseRunEvent)
     private onLessonLoaded() {
         const [misson_idx, exercise_idx] = this.progress.getExerciseCurrent();
         const exercise = this.lesson.getExercise(misson_idx, exercise_idx);

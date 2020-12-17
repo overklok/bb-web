@@ -85,7 +85,7 @@ export default class ProgressModel extends HttpModel<Progress> {
         const progress: Progress = {
             lesson_id: lesson.id,
             missions: [],
-            mission_idx: 0,
+            mission_idx: -1,
             mission_idx_last: 0,
             mission_idx_available: 0,
             lock_exercises: this.state.lock_exercises,
@@ -268,7 +268,7 @@ export default class ProgressModel extends HttpModel<Progress> {
      *
      * @param mission_idx
      */
-    public switchMission(mission_idx: number) {
+    public switchMission(mission_idx?: number) {
         if (this.in_progress) return;
 
         mission_idx = mission_idx | 0;
