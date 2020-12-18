@@ -12,6 +12,10 @@ export type ValidationVerdict = {
     is_passed: boolean;
 }
 
+export type ExerciseData = {
+    code: any;
+}
+
 type MissionProgress = {
     // Current index of exercise being passed
     exercise_idx: number;
@@ -24,6 +28,8 @@ type MissionProgress = {
     // Maximum value of exercise index user can assign to
     // (if lock_exercises is true)
     exercise_idx_available: number;
+
+    data: ExerciseData;
 }
 
 type Progress = {
@@ -36,19 +42,31 @@ type Progress = {
     lock_missions: boolean;
 }
 
-export class LessonPassEvent extends ModelEvent<LessonPassEvent> {}
+export class LessonPassEvent extends ModelEvent<LessonPassEvent> {
+
+}
+
 export class MissionPassEvent extends ModelEvent<MissionPassEvent> {
     mission_idx: number
 }
 
-export class LessonRunEvent extends ModelEvent<LessonRunEvent> {}
 export class ExercisePassEvent extends ModelEvent<ExercisePassEvent> {
     mission_idx: number;
     exercise_idx: number;
 }
+
+export class LessonRunEvent extends ModelEvent<LessonRunEvent> {
+
+}
+
 export class ExerciseRunEvent extends ModelEvent<ExerciseRunEvent> {
     mission_idx: number;
     exercise_idx: number;
+}
+
+export class MissionRunEvent extends ModelEvent<ExerciseRunEvent> {
+    mission_idx: number;
+    data: ExerciseData;
 }
 
 export class ExerciseSolutionCommittedEvent extends ModelEvent<ExerciseSolutionCommittedEvent> {}
@@ -98,7 +116,8 @@ export default class ProgressModel extends HttpModel<Progress> {
                 exercise_idx_available: 0,
                 exercise_idx_passed: -1,
                 exercise_idx_passed_max: -1,
-                exercise_idx_last: mission.exercises.length - 1
+                exercise_idx_last: mission.exercises.length - 1,
+                data: null,
             });
         }
 
@@ -117,6 +136,10 @@ export default class ProgressModel extends HttpModel<Progress> {
         let exerciseIDX = this.state.missions[missionIDX].exercise_idx;
 
         return [missionIDX, exerciseIDX];
+    }
+
+    public setMissionData(data: ExerciseData) {
+        this.state.missions[this.state.mission_idx].data = data;
     }
 
     /**
@@ -142,6 +165,7 @@ export default class ProgressModel extends HttpModel<Progress> {
                 mission_idx: this.state.mission_idx,
                 exercise_idx: mission_progress.exercise_idx
             }));
+
             return;
         }
 
@@ -256,7 +280,10 @@ export default class ProgressModel extends HttpModel<Progress> {
             // Emit only if switching in the mission currently running
             // External modules should switch to actual mission if they want to receive the run event
             if (mission_idx === this.state.mission_idx) {
-                this.emit(new ExerciseRunEvent({mission_idx, exercise_idx}));
+                this.emit(new ExerciseRunEvent({
+                    mission_idx,
+                    exercise_idx
+                }));
             }
         // }
     }
@@ -288,7 +315,15 @@ export default class ProgressModel extends HttpModel<Progress> {
             this.state.mission_idx = mission_idx;
             const exercise_idx = this.state.missions[mission_idx].exercise_idx;
 
-            this.emit(new ExerciseRunEvent({mission_idx, exercise_idx}));
+            this.emit(new ExerciseRunEvent({
+                mission_idx,
+                exercise_idx,
+            }));
+
+            this.emit(new MissionRunEvent({
+                mission_idx,
+                data: this.state.missions[mission_idx].data
+            }));
         }
     }
 

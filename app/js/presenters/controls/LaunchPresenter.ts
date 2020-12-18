@@ -20,6 +20,7 @@ export default class LaunchPresenter extends Presenter<LaunchView.LaunchView> {
         if (evt.start) {
             if (this.code.isMainChainEmpty()) {
                 this.modal.showModal({
+                    is_closable: true,
                     dialog: {heading: 'Программа пуста'},
                     content: 'Чтобы запустить программу, необходимо добавить команды в поле редактора.'
                 });

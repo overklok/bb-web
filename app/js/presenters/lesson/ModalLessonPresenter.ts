@@ -34,7 +34,7 @@ export default class ModalLessonPresenter extends Presenter<ModalView> {
 
         return new Promise(resolve => {
             this.view.showModal({
-                is_closable: false,
+                is_closable: true,
                 widget_alias: 'popover_content',
                 dialog: {
                     heading: title,

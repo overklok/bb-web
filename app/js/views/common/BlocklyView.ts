@@ -193,8 +193,12 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
      */
 
     @deferUntilMounted
-    public setCodeTree(text: string) {
-        this.blockly.setXMLText(text);
+    public setCodeTree(text?: string) {
+        this.blockly.clear();
+
+        if (text) {
+            this.blockly.setXMLText(text);
+        }
     }
 
     /**
