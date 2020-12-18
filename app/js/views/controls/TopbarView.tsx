@@ -7,7 +7,7 @@ import MissionLi, {MissionProgress} from "./topbar/MissionLi";
 import {scrollTo} from "../../core/helpers/functions";
 import {Exercise} from "./topbar/MissionContextMenu";
 import classNames from "classnames";
-import StatusIndicator from "./topbar/StatusIndicator";
+import StatusIndicator, {BoardStatus} from "./topbar/StatusIndicator";
 
 require('../../../css/logo.less');
 require('../../../css/blocks/menu/navbar.less');
@@ -45,6 +45,7 @@ namespace TopbarView {
     export interface Props extends IViewProps {
         missions: Mission[];
         progress: Progress;
+        board_status: BoardStatus;
     }
 
     export interface State extends IViewState {
@@ -85,7 +86,7 @@ namespace TopbarView {
             this.onScrollableUpdate = this.onScrollableUpdate.bind(this);
 
             this.state = {
-                menu_active: false
+                menu_active: false,
             };
         }
 
@@ -248,7 +249,7 @@ namespace TopbarView {
                         </div>
                     </div>
                     <div className="navbar__section">
-                        <StatusIndicator status={"no-server"} />
+                        <StatusIndicator status={this.props.board_status} />
                     </div>
                 </div>
             )

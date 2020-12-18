@@ -2,40 +2,57 @@ import * as React from "react";
 import Portal from "../../../core/base/view/Portal";
 import classNames from "classnames";
 
+const TIME_SHOW = 3000;
+
+require('../../../../css/blocks/menu/indicator.less');
 require('../../../../css/blocks/menu/popup.less');
 
 interface IProps {
-    status: 'connected' | 'waiting' | 'disconnected' | 'no-server';
+    status: BoardStatus;
 }
 
 interface IState {
     left: number;
     top: number;
+    is_popup_visible: boolean;
+}
+
+export const enum BoardStatus {
+    Default,
+    Connected,
+    Waiting,
+    Disconnected,
+    NoServer
 }
 
 
 export default class StatusIndicator extends React.Component<IProps, IState>{
     div_root: HTMLDivElement;
-    private ref_popup: React.RefObject<HTMLDivElement>;
-    private details: {[key: string]: [string, Function]};
+    private readonly ref_popup: React.RefObject<HTMLDivElement>;
+    private readonly details: {[key: string]: [string, string, Function]};
+    private show_timeout: NodeJS.Timeout;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            is_popup_visible: this.props.status !== BoardStatus.Connected,
             left: 0,
             top: 0
         };
 
         this.setRootRef = this.setRootRef.bind(this);
+        this.showPopup  = this.showPopup.bind(this);
+        this.disablePopupVisibility = this.disablePopupVisibility.bind(this);
 
         this.ref_popup = React.createRef();
 
         this.details = {
-            'connected':    ['Доска подключена',        this.renderContentConnected],
-            'waiting':      ['Ожидание подключения...', this.renderContentWaiting],
-            'disconnected': ['Доска отключена',         this.renderContentDisconnected],
-            'no-server':    ['Невозможно подключиться', this.renderContentNoServer]
+            [BoardStatus.Default]:      ['default',   'Проверка подключения...', (): null => null],
+            [BoardStatus.Connected]:    ['success',   'Доска подключена',        this.renderContentConnected],
+            [BoardStatus.Waiting]:      ['waiting',   'Ожидание подключения...', this.renderContentWaiting],
+            [BoardStatus.Disconnected]: ['danger',    'Доска отключена',         this.renderContentDisconnected],
+            [BoardStatus.NoServer]:     ['default',   'Невозможно подключиться', this.renderContentNoServer]
         }
     }
 
@@ -48,19 +65,36 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         this.setState({top, left});
     }
 
-    componentDidUpdate(prevProps: Readonly<null>, prevState: Readonly<null>, snapshot?: any) {
+    componentDidMount() {
+        if (this.state.is_popup_visible) {
+            this.show_timeout = setTimeout(this.disablePopupVisibility, TIME_SHOW);
+        }
+    }
 
+    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
+        if (prevProps.status !== this.props.status) {
+            clearTimeout(this.show_timeout);
+
+            this.setState({is_popup_visible: true});
+
+            this.show_timeout = setTimeout(this.disablePopupVisibility, TIME_SHOW);
+        }
+    }
+
+    disablePopupVisibility() {
+        this.setState({is_popup_visible: false});
+    }
+
+    showPopup() {
+        clearTimeout(this.show_timeout);
+
+        this.setState({is_popup_visible: true});
+
+        this.show_timeout = setTimeout(this.disablePopupVisibility, TIME_SHOW);
     }
 
     render() {
-        const color = {
-            'connected':    'success',
-            'waiting':      'warning',
-            'disconnected': 'danger',
-            'no-server':    'default'
-        }[this.props.status];
-
-        const [title, renderer] = this.details[this.props.status];
+        const [color, title, renderer] = this.details[this.props.status];
 
         let popup_left = 0, popup_top = 0;
         let tail_side = 'left';
@@ -90,16 +124,26 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
 
         const icon_klasses = classNames({
             'fas': true,
-            'fa-check-circle text-success': this.props.status === 'connected',
-            'fa-exclamation-circle text-warning': this.props.status === 'waiting',
-            'fa-times-circle text-danger': this.props.status === 'disconnected',
-            'fa-circle-notch text-default': this.props.status === 'no-server',
+            'fa-check-circle text-success':         this.props.status === BoardStatus.Connected,
+            'fa-exclamation-circle text-warning':   this.props.status === BoardStatus.Waiting,
+            'fa-times-circle text-danger':          this.props.status === BoardStatus.Disconnected,
+            'fa-circle-notch text-default':         this.props.status === BoardStatus.NoServer,
+        });
+
+        const popup_klasses = classNames({
+            'popup': true,
+            'popup_left': tail_side === 'left',
+            'popup_right': tail_side === 'right',
+            'popup_visible': this.state.is_popup_visible
         });
 
         return (
-            <div className={`indicator indicator_${color}`} ref={this.setRootRef}>
+            <div className={`indicator indicator_${color}`} ref={this.setRootRef} onClick={this.showPopup}>
                 <Portal>
-                    <div className={`popup popup_${tail_side}`} style={{left: popup_left, top: popup_top}} ref={this.ref_popup}>
+                    <div className={popup_klasses}
+                         style={{left: popup_left, top: popup_top}}
+                         ref={this.ref_popup}
+                    >
                         <div className="popup__head">
                             <span className="popup__dropcap">
                                 <i className={icon_klasses} />

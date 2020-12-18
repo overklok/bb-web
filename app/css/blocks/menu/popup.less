@@ -17,9 +17,7 @@
 
   transition: opacity linear .3s;
 
-  &:hover {
-    opacity: 0;
-  }
+  opacity: 0;
 
   &::before {
     position: absolute;
@@ -31,6 +29,12 @@
     border-left: transparent 10px solid;
     border-right: transparent 10px solid;
     border-bottom: @light 10px solid;
+  }
+
+  &_visible {
+    opacity: 1;
+
+    &:hover {opacity: .3;}
   }
 
   &_right {
