@@ -23,7 +23,13 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         this.model_progress.loadLesson(lesson);
 
         if (evt instanceof MissionRouteEvent) {
-            this.model_progress.switchMission(evt.mission_id);
+            try {
+                this.model_progress.switchMission(evt.mission_id);
+            } catch (e) {
+                console.error(e);
+                console.debug('Fallback to default mission');
+                this.model_progress.switchMission();
+            }
         } else {
             this.model_progress.switchMission();
         }

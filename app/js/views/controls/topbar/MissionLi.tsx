@@ -197,16 +197,20 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
             'cask__content_undisposable': is_current
         });
 
+        const is_simple_force = progress.exercise_idx_last == 0;
+
         return (
             <li className={klasses_pager__item}>
                 <div className={klasses_cask}>
-                    {detached ? <CaskProgress percent={perc_avail} is_simple={!is_current}
+                    {detached ? <CaskProgress is_simple_force={is_simple_force}
+                                              percent={perc_avail} is_simple={!is_current}
                                               style_fg={is_current ? 'primary-weak' : 'primary-weak'}
                                               style_bg={is_current ? 'warning-weak' : null}
                                 />
                               : null
                     }
-                    <CaskProgress percent={perc_pass} is_simple={detached || !is_current}
+                    <CaskProgress is_simple_force={is_simple_force}
+                                  percent={perc_pass} is_simple={detached || !is_current}
                                   style_fg={is_current ? 'success' : 'success-weak'}
                                   style_bg={is_current ? 'warning-weak' : null}
                     />

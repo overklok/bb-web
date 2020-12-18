@@ -248,7 +248,7 @@ namespace TopbarView {
                         </div>
                     </div>
                     <div className="navbar__section">
-                        <StatusIndicator status={"connected"} />
+                        <StatusIndicator status={"no-server"} />
                     </div>
                 </div>
             )

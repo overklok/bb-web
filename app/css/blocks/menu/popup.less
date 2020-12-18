@@ -1,29 +1,60 @@
 @import "../../colors";
+@import "../../animations";
 
 .popup {
   position: absolute;
 
   background-color: white;
-  border-radius: .25em;
-  width: 200px;
+  border-radius: 1/4em;
+  min-width: 200px;
 
-  padding: .25em;
-  margin: .75em 0;
+  padding: 1/4em;
+  margin: 1em 0;
 
   box-shadow: @shadow;
+
+  cursor: default;
+
+  transition: opacity linear .3s;
+
+  &:hover {
+    opacity: 0;
+  }
 
   &::before {
     position: absolute;
     content: '';
 
-    bottom: calc(~'100% - 8px');
-    right: 8px;
+    bottom: 100%;
+    left: 6px;
 
-    width: 10px;
-    height: 14px;
+    border-left: transparent 10px solid;
+    border-right: transparent 10px solid;
+    border-bottom: @light 10px solid;
+  }
 
-    transform: rotate(45deg);
-    background-color: white;
-    border-radius: 2px;
+  &_right {
+    &::before {
+      left: unset;
+      right: 6px;
+    }
+  }
+
+  &__head {
+    display: flex;
+    white-space: nowrap;
+    padding: 1/8em;
+  }
+
+  &__title {
+    font-weight: 700;
+    margin: 0 1/4em;
+  }
+
+  &__body {
+    font-size: 7/8em;
+    line-height: 1em;
+
+    p {margin: .25em 0;}
   }
 }
