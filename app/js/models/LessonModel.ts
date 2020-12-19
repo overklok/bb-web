@@ -1,102 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
-import RestModel, {CRUDAction, PathParams, RestSchema} from "../core/base/model/RestModel";
+import RestModel, {CRUDAction, RestSchema} from "../core/base/model/RestModel";
 import {Query} from "../core/models/datasources/HttpDatasource";
 import {ModelEvent} from "../core/base/Event";
-
-export const enum LaunchMode {
-    DoNothing = 0,
-    CheckOnly = 1,
-    ExecuteOnly = 2,
-    CheckAndExecute = 3
-}
-
-export const enum CodeCheckType {
-    Commands = 0,
-    States = 1
-}
-
-export const enum BoardCheckType {
-    Hard = 0,
-    Soft = 1
-}
-
-export const enum ExerciseType {
-    CircuitAssembly     = 0,
-    ProgramAssembly     = 1,
-    ButtonPressSeq      = 2,
-    Combined            = 3, // todo: the mode is obsolete, needs to be deprecated
-    ElectronicAssembly  = 4, // todo: the mode is obsolete, needs to be deprecated
-    Arduino             = 6,
-}
-
-export const enum BoardMode {
-    Default = 'default',
-    Programming = 'programming',
-    Electronics = 'electronics',
-    Arduino = 'arduino'
-}
-
-export type ExerciseSolution = {
-    code?: object;
-    board?: object;
-}
-
-type CodeModuleSettings = {
-    block_types: {[block_name: string]: number};
-    check_type: CodeCheckType;
-    editable: boolean;
-    max_blocks: number;
-}
-
-type BoardModuleSettings = {
-    check_type: BoardCheckType,
-    editable: boolean;
-    mode: BoardMode;
-}
-
-type ButtonModuleSettings = {
-    model: string[]|null;
-}
-
-type Popover = {
-    id: number;
-    title: string;
-    content: string;
-}
-
-type Exercise = {
-    id: number;
-    name: string;
-    is_sandbox: boolean;
-    message_success: string;
-    task_description: string;
-    layout_mode: string;
-    launch_mode: LaunchMode;
-    popovers: Popover[];
-    module_settings: {
-        board?:     BoardModuleSettings,
-        code?:      CodeModuleSettings,
-        button?:    ButtonModuleSettings
-    }
-}
-
-type Mission = {
-    id: number;
-    name: string;
-    description: string;
-    exercises: Exercise[];
-}
-
-export type Lesson = {
-    id: number;
-    name: string;
-    description: string;
-    missions: Mission[];
-}
-
-export class PopoverContentUpdateEvent extends ModelEvent<PopoverContentUpdateEvent> {
-    content: string;
-}
 
 export default class LessonModel extends RestModel<Lesson> {
     protected defaultState: Lesson = undefined;
@@ -292,4 +197,99 @@ export default class LessonModel extends RestModel<Lesson> {
             module_settings: module_settings
         };
     };
+}
+
+type CodeModuleSettings = {
+    block_types: {[block_name: string]: number};
+    check_type: CodeCheckType;
+    editable: boolean;
+    max_blocks: number;
+}
+
+type BoardModuleSettings = {
+    check_type: BoardCheckType,
+    editable: boolean;
+    mode: BoardMode;
+}
+
+type ButtonModuleSettings = {
+    model: number[]|null;
+}
+
+type Popover = {
+    id: number;
+    title: string;
+    content: string;
+}
+
+type Exercise = {
+    id: number;
+    name: string;
+    is_sandbox: boolean;
+    message_success: string;
+    task_description: string;
+    layout_mode: string;
+    launch_mode: LaunchMode;
+    popovers: Popover[];
+    module_settings: {
+        board?:     BoardModuleSettings,
+        code?:      CodeModuleSettings,
+        button?:    ButtonModuleSettings
+    }
+}
+
+type Mission = {
+    id: number;
+    name: string;
+    description: string;
+    exercises: Exercise[];
+}
+
+export const enum LaunchMode {
+    DoNothing = 0,
+    CheckOnly = 1,
+    ExecuteOnly = 2,
+    CheckAndExecute = 3
+}
+
+export const enum CodeCheckType {
+    Commands = 0,
+    States = 1
+}
+
+export const enum BoardCheckType {
+    Hard = 0,
+    Soft = 1
+}
+
+export const enum ExerciseType {
+    CircuitAssembly     = 0,
+    ProgramAssembly     = 1,
+    ButtonPressSeq      = 2,
+    Combined            = 3, // todo: the mode is obsolete, needs to be deprecated
+    ElectronicAssembly  = 4, // todo: the mode is obsolete, needs to be deprecated
+    Arduino             = 6,
+}
+
+export const enum BoardMode {
+    Default = 'default',
+    Programming = 'programming',
+    Electronics = 'electronics',
+    Arduino = 'arduino'
+}
+
+export type ExerciseSolution = {
+    code?: object;
+    board?: object;
+}
+
+export type Lesson = {
+    id: number;
+    name: string;
+    description: string;
+    missions: Mission[];
+}
+
+export class PopoverContentUpdateEvent extends ModelEvent<PopoverContentUpdateEvent> {
+    content: string;
 }

@@ -86,8 +86,6 @@ export default class ProgressModel extends HttpModel<Progress> {
         lock_missions: false,
     };
 
-    private button_seq_model: string[];
-    private button_seq_idx: number;
     private exercise_preferred: number;
     private in_progress: boolean = false;
 
@@ -349,42 +347,6 @@ export default class ProgressModel extends HttpModel<Progress> {
             }));
             // this.emit(new LessonPassEvent()); TODO: maybe needed, maybe not
         }
-    }
-
-    /**
-     * Установить эталонную последовательность нажатий клавиш
-     *
-     * @param button_seq_model эталонная последовательность нажатий клавиш
-     */
-    public setButtonSeqModel(button_seq_model: string[]) {
-        this.button_seq_model = button_seq_model;
-        this.button_seq_idx = 0;
-    }
-
-    /**
-     * Проверить правильность нажатия клавиши
-     *
-     * @param button_code
-     *
-     * @returns sequence matches to model
-     */
-    public validateButtonPress(button_code: string): boolean {
-        if (this.button_seq_model.length === 0) return;
-
-        if (button_code === this.button_seq_model[this.button_seq_idx]) {
-            if (this.button_seq_idx + 1 === this.button_seq_model.length) {
-                this.button_seq_idx = 0;
-
-                // TODO: this.emit('pass')
-                return true;
-            } else {
-                this.button_seq_idx += 1;
-            }
-        }
-
-        this.button_seq_idx = 0;
-
-        return false;
     }
 
     public validateExerciseSolution(exercise_id: number, solution: ExerciseSolution) {

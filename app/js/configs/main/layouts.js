@@ -34,7 +34,7 @@ export default {
                         name: 'right',
                         size: '20%', panes: [
                             {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
-                            {name: 'rcenter', widgets: []},
+                            {name: 'rbottom', widgets: []},
                             {name: 'rbottom', widgets: []},
                         ]
                     }
@@ -63,8 +63,36 @@ export default {
                         size_max: '600px',
                         panes: [
                             {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
-                            {name: 'rcenter', widgets: []
-                        },
+                            {name: 'rbottom', widgets: []},
+                        ]
+                    }
+                ]},
+            ]
+        },
+        code_with_buttons: {
+            policy: 'horizontal',
+            panes: [
+                {name: 'menubar', fixed: 55, widgets: [{alias: 'navbar', label: ''}]},
+                {name: 'content', panes: [
+                    {
+                        name: 'left',
+                        size: '70%',
+                        widgets: [
+                            {alias: 'blockly', label: 'Blockly'},
+                            {alias: 'launcher', label: 'Launcher'}
+                        ],
+                        composer: 'overlay',
+                        title: 'Blockly'
+                    },
+                    {
+                        name: 'right',
+                        size_min: '10%',
+                        size: '30%',
+                        size_max: '600px',
+                        panes: [
+                            {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
+                            {name: 'rcenter', fixed: 50, widgets: [{alias: 'keyboard', label: 'Keyboard'}]},
+                            {name: 'rbottom', widgets: []},
                     ]}
                 ]},
             ]

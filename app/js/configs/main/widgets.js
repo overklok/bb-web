@@ -5,8 +5,9 @@ import ModalView        from "../../core/views/modal/ModalView";
 import LayoutView       from "../../core/views/layout/LayoutView";
 
 /* Application-specific Views */
-import BlocklyView      from "../../views/common/BlocklyView";
 import BoardView        from "../../views/common/BoardView";
+import BlocklyView      from "../../views/common/BlocklyView";
+import KeyboardView      from "../../views/common/KeyboardView";
 import TopbarView       from "../../views/controls/TopbarView";
 import LaunchView       from "../../views/controls/LaunchView";
 import RichTextView     from "../../views/common/RichTextView";
@@ -27,6 +28,7 @@ import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPrese
 import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
 import ModalLessonPresenter     from "../../presenters/lesson/ModalLessonPresenter";
 import PopoverLessonPresenter from "../../presenters/lesson/PopoverLessonPresenter";
+import LessonKeyboardPresenter from "../../presenters/lesson/LessonKeyboardPresenter";
 
 export default {
     composer: OverlayViewComposer,
@@ -60,6 +62,11 @@ export default {
         blockly: {
             view_type: BlocklyView,
             presenter_types: [BlocklyCodePresenter, BlocklyLessonPresenter],
+        },
+        keyboard: {
+            view_type: KeyboardView.KeyboardView,
+            presenter_types: [LessonKeyboardPresenter],
+            nest_style: {overflow: 'hidden'}
         },
         popover_content: {
             view_type: RichTextView.RichTextView,

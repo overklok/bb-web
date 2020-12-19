@@ -17,10 +17,12 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         return super.getInitialProps();
     }
 
-    @restore() @on(LessonRouteEvent, MissionRouteEvent)
+    @restore() @on(LessonRouteEvent, MissionRouteEvent, ExerciseRunEvent)
     protected async runMission(evt: LessonRouteEvent|MissionRouteEvent) {
-        const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
-        this.model_progress.loadLesson(lesson);
+        if (evt instanceof LessonRouteEvent || evt instanceof MissionRouteEvent) {
+            const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
+            this.model_progress.loadLesson(lesson);
+        }
 
         if (evt instanceof MissionRouteEvent) {
             try {
@@ -37,6 +39,8 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         const [mission_idx, exercise_idx] = this.model_progress.getExerciseCurrent();
         const exercise = this.model_lesson.getExercise(mission_idx, exercise_idx);
         await this.model_layout.setMode(exercise.layout_mode);
+
+        console.log(exercise);
 
         const progress = this.model_progress.getState();
 

@@ -1,0 +1,51 @@
+@import "../../colors";
+
+.kbdlist {
+  list-style-type: none;
+
+  margin: .5em;
+  padding: 0;
+
+  display: flex;
+  flex-direction: row;
+
+  float: right;
+
+  &__item {
+    width: 2em;
+    height: 2em;
+
+    line-height: 2em;
+
+    border-radius: .375em;
+
+    margin: 0 .25em;
+    flex-direction: row-reverse;
+
+    background-color: @light;
+    color: @text_dark;
+
+    box-shadow: @shadow;
+
+    font-weight: 700;
+
+    user-select: none;
+
+    text-align: center;
+
+    overflow: hidden;
+
+    animation: .3s kbdItemShow;
+
+    &_primary        {background-color: @primary_weak;}
+    &_secondary      {background-color: @secondary_weak;}
+    &_success        {background-color: @success_weak;}
+    &_warning        {background-color: @warning_weak;}
+    &_danger         {background-color: @danger_weak;}
+  }
+}
+
+@keyframes kbdItemShow {
+  from {margin-right: -2.25em;}
+  to {margin-right: .25em;}
+}
