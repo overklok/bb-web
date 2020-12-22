@@ -325,6 +325,7 @@ export default class Pane extends React.Component<IProps, IState> {
             'pane_animated': this.state.animated,
             'pane-sizemin': this.props.size_min,
             'pane-sizemax': this.props.size_max,
+            'pane_youngest': this.props.panes.length === 0,
         });
 
         // Компоненты, лежащие внутри Pane

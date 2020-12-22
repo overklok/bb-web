@@ -1,4 +1,5 @@
 @import "../animations";
+@import "../colors";
 
 /*
   | View composers
@@ -211,7 +212,14 @@ ul.ddmenu {
 
 // Layout Theme (can be replaced with extra customs)
 .pane {
-  border: 1px solid black;
+  //border: 1px solid black;
+
+  &.pane_youngest {
+    border: 1px solid @default_weak;
+    box-shadow: @shadow;
+    border-radius: 6px;
+    margin: 4px;
+  }
 
   //&.pane-enter, &.pane-exit {
   //  height: 0;
@@ -273,15 +281,19 @@ ul.ddmenu {
 .handler {
   z-index: 1;
 
+  &::before {
+    border-radius: 4px;
+  }
+
   transition: transform ease-out 200ms;
 
   &:hover {
     &.handler-v {
-      transform: scaleY(3.5);
+      transform: scaleY(1.5);
     }
 
     &.handler-h {
-      transform: scaleX(3.5);
+      transform: scaleX(1.5);
     }
   }
 }
