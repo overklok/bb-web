@@ -13,8 +13,11 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         this.model_lesson = this.getModel(LessonModel);
         this.model_progress = this.getModel(ProgressModel);
 
+        const lesson = this.model_lesson.getState();
+
         return {
-            missions: this.model_lesson.getState().missions,
+            lesson_title: lesson.name,
+            missions: lesson.missions,
             progress: this.model_progress.getState(),
             board_status: BoardStatus.Default,
         }
@@ -32,8 +35,11 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
 
     @restore() @on(LessonRunEvent)
     private updateLessonData() {
+        const lesson = this.model_lesson.getState();
+
         this.setViewProps({
-            missions: this.model_lesson.getState().missions,
+            lesson_title: lesson.name,
+            missions: lesson.missions,
             progress: this.model_progress.getState()
         });
     }

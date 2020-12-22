@@ -76,9 +76,17 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
     @on(MissionPassEvent)
     protected async onMissionPass(evt: MissionPassEvent) {
-        const lesson_id = this.progress.getState().lesson_id;
-        this.forward('mission', [lesson_id, evt.mission_idx]);
-        this.progress.stepForwardMission();
+        const go_forward = await this.modal.showQuestionModal({
+            dialog: {heading: 'Задание пройдено', label_accept: 'Продолжить', label_dismiss: 'Остаться'},
+            content: 'Молорик',
+            is_closable: false,
+        });
+
+        if (go_forward) {
+            const lesson_id = this.progress.getState().lesson_id;
+            this.forward('mission', [lesson_id, evt.mission_idx]);
+            this.progress.stepForwardMission();
+        }
     }
 
     protected getLaunchMode() {

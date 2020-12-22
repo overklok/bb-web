@@ -3,7 +3,7 @@ import ModalView from "../../core/views/modal/ModalView";
 import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 import LessonModel from "../../models/LessonModel";
 
-export default class ModalLessonPresenter extends Presenter<ModalView> {
+export default class PopoverPresenter extends Presenter<ModalView> {
     private lesson: LessonModel;
     private progress: ProgressModel;
 
@@ -14,8 +14,6 @@ export default class ModalLessonPresenter extends Presenter<ModalView> {
 
     @restore() @on(ExerciseRunEvent)
     private async showIntroModal(evt: ExerciseRunEvent) {
-        console.log(evt);
-
         const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
@@ -43,7 +41,7 @@ export default class ModalLessonPresenter extends Presenter<ModalView> {
                         resolve(true);
                     },
                 },
-            });
+            }, 'popover');
         });
     }
 }

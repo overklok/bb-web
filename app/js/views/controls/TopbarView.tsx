@@ -45,6 +45,7 @@ namespace TopbarView {
     export interface Props extends IViewProps {
         missions: Mission[];
         progress: Progress;
+        lesson_title: string;
         board_status: BoardStatus;
     }
 
@@ -71,9 +72,6 @@ namespace TopbarView {
 
     export class MenuItemEvent extends ViewEvent<MenuItemEvent> {
         item: MenuItem;
-    }
-
-    export class StatusClickEvent extends ViewEvent<StatusClickEvent> {
     }
 
     export class TopbarView extends View<Props, State> {
@@ -219,7 +217,7 @@ namespace TopbarView {
                         <div className="logo logo_light logo__icon logo__icon_small" />
                     </div>
                     <div className="navbar__section">
-                        <h2 className='navbar__title'>Lesson Title</h2>
+                        <h2 className='navbar__title'>{this.props.lesson_title}</h2>
                     </div>
                     <div className="navbar__spacer"/>
                     <div className="navbar__section navbar__section_pagerwrap">

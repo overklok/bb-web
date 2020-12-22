@@ -17,7 +17,7 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         return super.getInitialProps();
     }
 
-    @restore() @on(LessonRouteEvent, MissionRouteEvent, ExerciseRunEvent)
+    @restore() @on(LessonRouteEvent, MissionRouteEvent)
     protected async runMission(evt: LessonRouteEvent|MissionRouteEvent) {
         if (evt instanceof LessonRouteEvent || evt instanceof MissionRouteEvent) {
             const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
@@ -40,8 +40,6 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         const exercise = this.model_lesson.getExercise(mission_idx, exercise_idx);
         await this.model_layout.setMode(exercise.layout_mode);
 
-        console.log(exercise);
-
         const progress = this.model_progress.getState();
 
         if (evt instanceof MissionRouteEvent) {
@@ -59,10 +57,13 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
     }
 
     @restore() @on(ExerciseRunEvent)
-    protected updateWindowTitle() {
+    protected async updateWindowTitle() {
         const progress = this.model_progress.getState();
         const [mission_idx, exercise_idx] = this.model_progress.getExerciseCurrent();
 
         document.title = `Tapanda | Lesson ${progress.lesson_id}, Mission ${mission_idx}`;
+
+        const exercise = this.model_lesson.getExercise(mission_idx, exercise_idx);
+        await this.model_layout.setMode(exercise.layout_mode);
     }
 }

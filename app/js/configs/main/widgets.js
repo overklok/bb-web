@@ -26,7 +26,7 @@ import LessonMenuPresenter      from "../../presenters/lesson/LessonMenuPresente
 /* Domain-specific Presenters */
 import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPresenter";
 import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
-import ModalLessonPresenter     from "../../presenters/lesson/ModalLessonPresenter";
+import ModalLessonPresenter     from "../../presenters/lesson/PopoverPresenter";
 import PopoverLessonPresenter from "../../presenters/lesson/PopoverLessonPresenter";
 import LessonKeyboardPresenter from "../../presenters/lesson/LessonKeyboardPresenter";
 
