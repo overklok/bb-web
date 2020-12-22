@@ -80,6 +80,7 @@ export default class LessonModel extends RestModel<Lesson> {
             editable: true,
             block_types: {},
             check_type: CodeCheckType.Commands,
+            variables: [],
             max_blocks: 0
         }
 
@@ -105,6 +106,7 @@ export default class LessonModel extends RestModel<Lesson> {
 
         // Button module settings
         button.model = _exercise.buttons_model ? JSON.parse(_exercise.buttons_model) : [];
+        code.variables = _exercise.variables;
 
         switch (_exercise.type) {
             case ExerciseType.CircuitAssembly: {
@@ -199,11 +201,18 @@ export default class LessonModel extends RestModel<Lesson> {
     };
 }
 
+type Variable = {
+    name: string;
+    type: string;
+    initial_value: string|number;
+}
+
 type CodeModuleSettings = {
     block_types: {[block_name: string]: number};
     check_type: CodeCheckType;
     editable: boolean;
     max_blocks: number;
+    variables: Variable[];
 }
 
 type BoardModuleSettings = {

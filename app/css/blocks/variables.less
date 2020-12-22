@@ -1,0 +1,29 @@
+@import "../colors";
+
+.variables {
+  display: grid;
+}
+
+.variable {
+  padding: .5em;
+  display: flex;
+  justify-content: space-between;
+
+  &__name {
+    padding: .5em;
+  }
+
+  &__value {
+    background-color: white;
+    padding: .5em;
+    border-radius: .25em;
+  }
+
+  //&_primary   {background-color: @primary_weak;}
+  &_string    {background-color: @secondary_weak;}
+  &_colour    {background-color: @success_weak;}
+  &_number    {background-color: @warning_weak;}
+  //&_danger    {background-color: @danger_weak;}
+  //&_dark      {background-color: @dark_weak;}
+  //&_light     {background-color: @light;}
+}

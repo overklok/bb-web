@@ -33,9 +33,8 @@ export default {
                     {
                         name: 'right',
                         size: '20%', panes: [
-                            {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
-                            {name: 'rbottom', widgets: []},
-                            {name: 'rbottom', widgets: []},
+                            {name: 'rtop', size: '70%', widgets: [{alias: 'task', label: 'Task'}]},
+                            {name: 'rbottom', size: '30%', widgets: [{alias: 'variables', label: 'Variables'}]},
                         ]
                     }
                 ]},
@@ -58,12 +57,10 @@ export default {
                     },
                     {
                         name: 'right',
-                        size_min: '10%',
-                        size: '30%',
-                        size_max: '600px',
+                        size: '30%', size_min: '10%', size_max: '600px',
                         panes: [
-                            {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
-                            {name: 'rbottom', widgets: []},
+                            {name: 'rtop', size: '70%', widgets: [{alias: 'task', label: 'Task'}]},
+                            {name: 'rbottom', size: '30%', widgets: [{alias: 'variables', label: 'Variables'}]},
                         ]
                     }
                 ]},
@@ -86,13 +83,11 @@ export default {
                     },
                     {
                         name: 'right',
-                        size_min: '10%',
-                        size: '30%',
-                        size_max: '600px',
+                        size: '30%', size_min: '10%', size_max: '600px',
                         panes: [
-                            {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]},
+                            {name: 'rtop', size: '70%', widgets: [{alias: 'task', label: 'Task'}]},
                             {name: 'rcenter', fixed: 50, widgets: [{alias: 'keyboard', label: 'Keyboard'}]},
-                            {name: 'rbottom', widgets: []},
+                            {name: 'rbottom', size: '30%', widgets: [{alias: 'variables', label: 'Variables'}]},
                     ]}
                 ]},
             ]
@@ -118,8 +113,7 @@ export default {
                     },
                     {
                         name: 'right',
-                        size_min: '10%',
-                        size: '20%',
+                        size: '20%', size_min: '10%',
                         panes: [
                             {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]
                         },

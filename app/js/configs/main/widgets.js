@@ -7,11 +7,12 @@ import LayoutView       from "../../core/views/layout/LayoutView";
 /* Application-specific Views */
 import BoardView        from "../../views/common/BoardView";
 import BlocklyView      from "../../views/common/BlocklyView";
-import KeyboardView      from "../../views/common/KeyboardView";
+import KeyboardView     from "../../views/common/KeyboardView";
 import TopbarView       from "../../views/controls/TopbarView";
 import LaunchView       from "../../views/controls/LaunchView";
 import RichTextView     from "../../views/common/RichTextView";
 import LessonMenuView   from "../../views/common/LessonMenuView";
+import VariableView     from "../../views/common/VariableView";
 
 /* Basic Presenters */
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
@@ -27,8 +28,9 @@ import LessonMenuPresenter      from "../../presenters/lesson/LessonMenuPresente
 import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPresenter";
 import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
 import ModalLessonPresenter     from "../../presenters/lesson/PopoverPresenter";
-import PopoverLessonPresenter from "../../presenters/lesson/PopoverLessonPresenter";
-import LessonKeyboardPresenter from "../../presenters/lesson/LessonKeyboardPresenter";
+import PopoverLessonPresenter   from "../../presenters/lesson/PopoverLessonPresenter";
+import LessonKeyboardPresenter  from "../../presenters/lesson/LessonKeyboardPresenter";
+import VariableLessonPresenter from "../../presenters/lesson/VariableLessonPresenter";
 
 export default {
     composer: OverlayViewComposer,
@@ -63,6 +65,10 @@ export default {
             view_type: BlocklyView,
             presenter_types: [BlocklyCodePresenter, BlocklyLessonPresenter],
         },
+        variables: {
+            view_type: VariableView.VariableView,
+            presenter_types: [VariableLessonPresenter],
+        },
         keyboard: {
             view_type: KeyboardView.KeyboardView,
             presenter_types: [LessonKeyboardPresenter],
@@ -70,7 +76,7 @@ export default {
         },
         popover_content: {
             view_type: RichTextView.RichTextView,
-            presenter_types: [PopoverLessonPresenter]
+            presenter_types: [PopoverLessonPresenter],
         }
     }
 }

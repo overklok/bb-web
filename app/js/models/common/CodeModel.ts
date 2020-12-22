@@ -16,11 +16,11 @@ const BUTTON_CODES_TO_KEYS: {[key: number]: string} = {
     57: "9",
 };
 
-
 // Event channels
 const enum ChannelsTo {
     CodeCommandExecuted = 'xcommand',
-    CodeTerminated = 'terminate'
+    CodeTerminated = 'terminate',
+    VariableChanged = 'var_change',
 }
 
 const enum ChannelsFrom {
@@ -36,6 +36,7 @@ interface CommandChain {
 
 interface BlocklyModelState extends ModelState {
     chainset: {[key: string]: CommandChain, main: CommandChain};
+    variables: {[name: string]: number|string};
 }
 
 export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
@@ -43,6 +44,7 @@ export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
 
     protected defaultState: BlocklyModelState = {
         chainset: undefined,
+        variables: {}
     }
 
     public isMainChainEmpty() {
@@ -133,6 +135,13 @@ export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
         this.emit(new CodeTerminatedEvent());
         this.launching = undefined;
     }
+
+    @listen(ChannelsTo.VariableChanged)
+    protected onVariableChange(data: VariableStateDataPackage) {
+        this.state.variables[data.name] = data.value;
+
+        this.emit(new CodeVariableUpdateEvent({name: data.name, value: data.value}));
+    }
 }
 
 export class CodeLaunchedEvent extends ModelEvent<CodeLaunchedEvent> {}
@@ -140,8 +149,17 @@ export class CodeTerminatedEvent extends ModelEvent<CodeTerminatedEvent> {}
 export class CodeCommandExecutedEvent extends ModelEvent<CodeCommandExecutedEvent> {
     block_id: string;
 }
+export class CodeVariableUpdateEvent extends ModelEvent<CodeVariableUpdateEvent> {
+    name: string;
+    value: string|number;
+}
 
 // Event data types
 interface CodeCommandDataPackage {
     block_id: string;
+}
+
+interface VariableStateDataPackage {
+    name: string;
+    value: string|number;
 }

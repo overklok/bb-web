@@ -144,8 +144,6 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
         const index = (e.target as any).getAttribute('data-index');
 
-        console.log(e.target, this.props.index, Number(index));
-
         if (Number(index) !== this.props.index) {
             this.setState({ctxmenu_active: false});
             document.removeEventListener("click", this.handleClick);
