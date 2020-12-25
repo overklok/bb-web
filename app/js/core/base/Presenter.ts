@@ -112,7 +112,6 @@ export default class Presenter<V extends View> implements Subscriptable {
     /**
      * Create a Presenter.
      *
-     * @param view        an instance of some kind of View
      * @param svc_model   an instance of model service
      * @param svc_routing      an instance of Router, if used
      */

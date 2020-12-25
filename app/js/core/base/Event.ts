@@ -18,6 +18,10 @@ export abstract class ViewEvent<T> extends AbstractEvent<T> {
 export abstract class ModelEvent<T> extends AbstractEvent<T> {
 }
 
+export class PresenterErrorEvent extends ModelEvent<PresenterErrorEvent> {
+    error: Error;
+}
+
 /**
  * A subset of ModelEvent which is used to work with routing.
  */

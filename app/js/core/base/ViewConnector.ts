@@ -1,7 +1,7 @@
 import IEventService from "../services/interfaces/IEventService";
 import IModelService from "../services/interfaces/IModelService";
 import Presenter from "./Presenter";
-import {AbstractEvent, Action, ViewEvent} from "./Event";
+import {AbstractEvent, Action, PresenterErrorEvent, ViewEvent} from "./Event";
 import {IViewProps, View} from "./view/View";
 import {PresenterType} from "../helpers/types";
 import IRoutingService from "../services/interfaces/IRoutingService";
@@ -196,13 +196,20 @@ export default class ViewConnector {
             for (const {event_type, restorable} of preset) {
                 const anchor = this.getEventAnchorByType(event_type);
 
-                const hdlr = function () {
-                    return (presenter as any)[method_name](...arguments);
+                const svc_event = this.svc_event;
+
+                const presenter_method_handler = function () {
+                    try {
+                        return (presenter as any)[method_name](...arguments);
+                    } catch (e) {
+                        console.error(e);
+                        svc_event.emit(new PresenterErrorEvent({error: e}));
+                    }
                 };
 
-                this.svc_event.subscribe(event_type, hdlr, anchor, restorable);
+                this.svc_event.subscribe(event_type, presenter_method_handler, anchor, restorable);
 
-                this.handlers.push([event_type, hdlr]);
+                this.handlers.push([event_type, presenter_method_handler]);
             }
         }
     }

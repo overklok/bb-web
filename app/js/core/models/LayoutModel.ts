@@ -46,6 +46,7 @@ export class SetModeEvent extends ModelEvent<SetModeEvent> {
     mode: string;
 }
 
+// TODO: Remove
 export class FinishModeEvent extends ModelEvent<FinishModeEvent> {
     mode: string;
 }

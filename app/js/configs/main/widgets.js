@@ -5,6 +5,7 @@ import ModalView        from "../../core/views/modal/ModalView";
 import LayoutView       from "../../core/views/layout/LayoutView";
 
 /* Application-specific Views */
+import AlertView        from "../../core/views/modal/AlertView";
 import BoardView        from "../../views/common/BoardView";
 import BlocklyView      from "../../views/common/BlocklyView";
 import KeyboardView     from "../../views/common/KeyboardView";
@@ -16,15 +17,16 @@ import VariableView     from "../../views/common/VariableView";
 
 /* Basic Presenters */
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
+import AlertPresenter           from "../../core/presenters/AlertPresenter";
 import BoardPresenter           from "../../presenters/common/BoardPresenter";
 import BlocklyCodePresenter     from "../../presenters/common/BlocklyCodePresenter";
 import TopbarPresenter          from "../../presenters/controls/TopbarPresenter";
 import LaunchPresenter          from "../../presenters/controls/LaunchPresenter";
-import LayoutLessonPresenter    from "../../presenters/lesson/LayoutLessonPresenter";
 import LessonTaskPresenter      from "../../presenters/lesson/LessonTaskPresenter";
 import LessonMenuPresenter      from "../../presenters/lesson/LessonMenuPresenter";
 
 /* Domain-specific Presenters */
+import LayoutLessonPresenter    from "../../presenters/lesson/LayoutLessonPresenter";
 import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPresenter";
 import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
 import ModalLessonPresenter     from "../../presenters/lesson/PopoverPresenter";
@@ -35,8 +37,9 @@ import VariableLessonPresenter from "../../presenters/lesson/VariableLessonPrese
 export default {
     composer: OverlayViewComposer,
     root: [
-        {view_type: LayoutView, presenter_types: [LayoutLessonPresenter], view_options: {}},
-        {view_type: ModalView, presenter_types: [ModalPresenter, ModalLessonPresenter]}
+        {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
+        {view_type: ModalView, presenter_types: [ModalPresenter, ModalLessonPresenter]},
+        {view_type: AlertView, presenter_types: [AlertPresenter]}
     ],
     widgets: {
         courses: {
