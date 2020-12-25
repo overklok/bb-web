@@ -1,23 +1,46 @@
 import Presenter, {on} from "../base/Presenter";
-import {PresenterErrorEvent} from "../base/Event";
-import AlertView from "../views/modal/AlertView";
+import {GenericErrorEvent} from "../base/Event";
+import AlertView, {IToast} from "../views/modal/AlertView";
+import {ColorAccent} from "../helpers/styles";
 
 export default class AlertPresenter extends Presenter<AlertView> {
-    protected alerts: { content: string }[] = [];
+    protected alerts: IToast[] = [];
+    protected alert_idx: number;
 
     getInitialProps(): any {
-        console.log('gip', 'ap');
-        console.log(this.presets);
+        this.closeToast = this.closeToast.bind(this);
+
+        return {
+            on_close: this.closeToast,
+        }
     }
 
-    @on(PresenterErrorEvent)
-    private async onAlert(evt: PresenterErrorEvent) {
-        const {error} = evt;
+    @on(GenericErrorEvent)
+    private async onAlert(evt: GenericErrorEvent) {
+        try {
+            const {error} = evt;
 
-        this.alerts.push({content: error.message});
+            this.alerts.push({
+                title: `Ошибка [${error.name}]`,
+                content: error.message,
+                timeout: 5000,
+                status: ColorAccent.Danger
+            });
+
+            this.setViewProps({
+                toasts: [...this.alerts]
+            });
+        } catch (e) {
+            // avoid potential recursive call
+            throw e;
+        }
+    }
+
+    private closeToast(idx: number) {
+        delete this.alerts[idx];
 
         this.setViewProps({
-            alerts: [...this.alerts]
+            toasts: [...this.alerts]
         });
     }
 }

@@ -1,7 +1,7 @@
 import IEventService from "../services/interfaces/IEventService";
 import IModelService from "../services/interfaces/IModelService";
 import Presenter from "./Presenter";
-import {AbstractEvent, Action, PresenterErrorEvent, ViewEvent} from "./Event";
+import {AbstractEvent, Action, GenericErrorEvent, ViewEvent} from "./Event";
 import {IViewProps, View} from "./view/View";
 import {PresenterType} from "../helpers/types";
 import IRoutingService from "../services/interfaces/IRoutingService";
@@ -203,7 +203,7 @@ export default class ViewConnector {
                         return (presenter as any)[method_name](...arguments);
                     } catch (e) {
                         console.error(e);
-                        svc_event.emit(new PresenterErrorEvent({error: e}));
+                        svc_event.emit(new GenericErrorEvent({error: e}));
                     }
                 };
 

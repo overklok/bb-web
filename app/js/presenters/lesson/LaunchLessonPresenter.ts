@@ -31,8 +31,6 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     @restore() @on(ExerciseRunEvent)
     private onExerciseLoaded() {
         this.setViewProps({mode: this.getLaunchMode()});
-
-        throw new Error('test');
     }
 
     @on(LaunchView.CheckClickEvent)

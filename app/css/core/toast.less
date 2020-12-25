@@ -1,0 +1,64 @@
+@import "../colors";
+@import "../animations";
+
+@toast_margin: 1em;
+
+.toast {
+  background-color: fade(@default, 75%);
+
+  margin: @toast_margin;
+  width: 300px;
+
+  border-radius: .25em;
+  overflow: hidden;
+
+  cursor: pointer;
+
+  transition: opacity 200ms @fade,
+              height  200ms @fade,
+              margin  200ms @fade;
+
+  &__section {
+    padding: 1/2em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__timer {
+    height: 5px;
+  }
+
+  &__title {
+    font-weight: 700;
+  }
+
+  &__close {
+    cursor: pointer;
+  }
+
+  &_hidden {
+    opacity: 0;
+  }
+
+  &_collapsed {
+    height: 0;
+    margin-top: -@toast_margin/2;
+    margin-bottom: -@toast_margin/2;
+  }
+
+  &_primary   {background-color: fade(@primary,   65%);}
+  &_secondary {background-color: fade(@secondary, 65%);}
+  &_success   {background-color: fade(@success,   65%);}
+  &_warning   {background-color: fade(@warning,   65%);}
+  &_danger    {background-color: fade(@danger,    65%);}
+  &_light     {background-color: fade(@light,     65%);}
+  &_dark      {background-color: fade(@dark,      65%);}
+
+  &_primary   &__section {&_darker {background-color: fade(@primary,    60%);}}
+  &_secondary &__section {&_darker {background-color: fade(@secondary,  60%);}}
+  &_success   &__section {&_darker {background-color: fade(@success,    60%);}}
+  &_warning   &__section {&_darker {background-color: fade(@warning,    60%);}}
+  &_danger    &__section {&_darker {background-color: fade(@danger,     60%);}}
+  &_light     &__section {&_darker {background-color: fade(@dark_weak,  60%);}}
+  &_dark      &__section {&_darker {background-color: fade(@dark,       60%);}}
+}

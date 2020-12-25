@@ -18,7 +18,7 @@ export abstract class ViewEvent<T> extends AbstractEvent<T> {
 export abstract class ModelEvent<T> extends AbstractEvent<T> {
 }
 
-export class PresenterErrorEvent extends ModelEvent<PresenterErrorEvent> {
+export class GenericErrorEvent extends ModelEvent<GenericErrorEvent> {
     error: Error;
 }
 

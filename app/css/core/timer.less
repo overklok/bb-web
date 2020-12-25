@@ -1,0 +1,20 @@
+@import '../colors';
+@import '../animations';
+
+.timer {
+  background-color: @default_deep;
+
+  width: 0;
+
+  &_animated {
+    animation: timer-fill linear;
+  }
+
+  &_primary   {background-color: @primary_deep;}
+  &_secondary {background-color: @secondary_deep;}
+  &_success   {background-color: @success_deep;}
+  &_warning   {background-color: @warning_deep;}
+  &_danger    {background-color: @danger_deep;}
+  &_light     {background-color: @dark_weak;}
+  &_dark      {background-color: @dark_deep;}
+}
