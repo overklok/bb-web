@@ -8,9 +8,9 @@ export default class SingleViewComposer extends ViewComposer<IVCProps, IVCState>
 
     render() {
         return (
-            <div ref={this.props.refCallback}>
-                {this.props.children ? this.props.children[0] : null}
-            </div>
+            // <div ref={this.props.refCallback}>
+                this.props.children ? this.props.children[0] : null
+            // </div>
         )
     }
 };

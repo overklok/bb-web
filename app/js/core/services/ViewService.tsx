@@ -132,12 +132,13 @@ export default class ViewService extends IViewService {
 
     protected async render(component: typeof React.Component, children: any, target_node: HTMLElement, callback: any) {
         return new Promise(resolve => {
-            const refCallback = (ref: any) => {
-                target_node.appendChild(ref);
-                resolve(ref);
-            }
+            // const refCallback = (ref: any) => {
+            //     target_node.appendChild(ref);
+            //     resolve(ref);
+            // }
 
-            const react_element = React.createElement(component, {refCallback} as any, children);
+            // const react_element = React.createElement(component, {refCallback} as any, children);
+            const react_element = React.createElement(component, {}, children);
             ReactDOM.render(react_element, target_node, callback);
         });
     }
