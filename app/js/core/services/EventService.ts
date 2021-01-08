@@ -15,9 +15,14 @@ export default class EventService extends IEventService {
     /**
      * @inheritDoc
      */
-    subscribe(event_type: typeof AbstractEvent, handler: Function, anchor: any = null, emit_last = false): number {
+    async subscribe(
+        event_type: typeof AbstractEvent,
+        handler: Function,
+        anchor: any = null,
+        emit_last = false
+    ): Promise<number> {
         if (anchor != null) {
-            this.subscribe(event_type, handler, null, false);
+            await this.subscribe(event_type, handler, null, false);
         }
 
         let subpool = this.handler_pool.get(anchor);
@@ -41,7 +46,7 @@ export default class EventService extends IEventService {
             const last_event = this.last_events.get(event_type);
 
             if (last_event) {
-                this.emit(last_event, anchor);
+                await this.emit(last_event, anchor);
             }
         }
 

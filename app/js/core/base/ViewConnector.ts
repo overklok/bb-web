@@ -191,7 +191,7 @@ export default class ViewConnector {
         }
     }
 
-    private subscribePresenterHandlers(presenter: Presenter<any>) {
+    private async subscribePresenterHandlers(presenter: Presenter<any>) {
         for (const [method_name, preset] of presenter.presets.entries()) {
             for (const {event_type, restorable} of preset) {
                 const anchor = this.getEventAnchorByType(event_type);
@@ -207,7 +207,12 @@ export default class ViewConnector {
                     }
                 };
 
-                this.svc_event.subscribe(event_type, presenter_method_handler, anchor, restorable);
+                try {
+                    await this.svc_event.subscribe(event_type, presenter_method_handler, anchor, restorable);
+                } catch (e) {
+                    console.error(e);
+                    await svc_event.emit(new GenericErrorEvent({error: e}));
+                }
 
                 this.handlers.push([event_type, presenter_method_handler]);
             }

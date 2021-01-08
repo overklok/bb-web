@@ -2,6 +2,7 @@ import IRoutingService from "./interfaces/IRoutingService";
 import Router, {IRouter, Route} from "../base/Router";
 import IModelService from "./interfaces/IModelService";
 import IEventService from "./interfaces/IEventService";
+import {GenericErrorEvent} from "../base/Event";
 
 export default class RoutingService extends IRoutingService {
     private router: Router<any>;
@@ -30,7 +31,7 @@ export default class RoutingService extends IRoutingService {
         await this.router.redirect(window.location.pathname);
 
         window.addEventListener('popstate', (e: PopStateEvent) => {
-            this.router.redirect(document.location.pathname);
+            this.redirect(document.location.pathname);
         });
     }
 
@@ -45,6 +46,15 @@ export default class RoutingService extends IRoutingService {
             }
         }
 
-        await this.router.redirect(path);
+        await this.redirect(path);
+    }
+
+    private async redirect(path: string) {
+        try {
+            return await this.router.redirect(path);
+        } catch (e) {
+            console.error(e);
+            await this.svc_event.emit(new GenericErrorEvent({error: e}));
+        }
     }
 }

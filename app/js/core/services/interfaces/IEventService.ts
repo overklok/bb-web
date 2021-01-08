@@ -34,11 +34,11 @@ export default class IEventService {
      *
      * @return number of presenters of event provided and attached to anchor provided
      */
-    subscribe(event_type: typeof AbstractEvent,
+    async subscribe(event_type: typeof AbstractEvent,
               handler: Function,
               anchor?: any,
               emit_last?: boolean
-    ): number {throw new Error('abstract')}
+    ): Promise<number> {throw new Error('abstract')}
 
     /**
      * Remove all handlers to specific type of Event
