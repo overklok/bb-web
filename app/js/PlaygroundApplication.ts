@@ -88,7 +88,7 @@ class PlaygroundApplication extends Application {
 
 declare global {
   interface Window {
-    Application: typeof Application;
+    Application: any;
   }
 }
 

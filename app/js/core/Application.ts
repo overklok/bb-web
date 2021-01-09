@@ -8,7 +8,7 @@ declare const __VERSION__: string;
 export interface AppConf {}
 
 export default abstract class Application<AC extends AppConf = AppConf> {
-    protected config: AppConf;
+    protected config: AC;
 
     private bindings:   Map<any, Function> = new Map();
     private instances:  Map<any, any>      = new Map();
@@ -17,7 +17,8 @@ export default abstract class Application<AC extends AppConf = AppConf> {
 
     public readonly version: string;
 
-    constructor(config?: AppConf) {
+    constructor(config?: AC) {
+        this.configure(this.defaultConfig());
         this.configure(config);
 
         this.initProviders();
@@ -29,6 +30,10 @@ export default abstract class Application<AC extends AppConf = AppConf> {
         console.log(`Loaded ${this.version}`);
     }
 
+    protected defaultConfig(): AC {
+        return {} as AC;
+    }
+
     /**
      * Поставщики Служб
      */
@@ -36,8 +41,8 @@ export default abstract class Application<AC extends AppConf = AppConf> {
         return [];
     }
 
-    protected configure(config: AppConf = {}): void {
-        this.config = coverOptions(this.config, config);
+    protected configure(config: AC): void {
+        this.config = coverOptions(this.config, config) as AC;
     };
 
     /**

@@ -88,7 +88,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
 
 declare global {
   interface Window {
-    Application: typeof Application;
+    Application: any;
   }
 }
 

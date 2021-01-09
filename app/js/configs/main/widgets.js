@@ -62,7 +62,7 @@ export default {
         board: {
             view_type: BoardView.BoardView,
             presenter_types: [BoardPresenter],
-            view_props: {readonly: false}
+            view_props: {readonly: true}
         },
         blockly: {
             view_type: BlocklyView,

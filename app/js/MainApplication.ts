@@ -36,7 +36,25 @@ import ProgressModel from "./models/ProgressModel";
 import KeyboardModel from "./core/models/KeyboardModel";
 import CSRFMiddleware from "./core/models/middlewares/CSRFMiddleware";
 
-class MainApplication extends Application {
+interface MainAppConf {
+    is_demo: boolean;
+    server_addr: string;
+    server_port: number;
+    sock_addr: string;
+    sock_port: number;
+}
+
+class MainApplication extends Application<MainAppConf> {
+    protected defaultConfig() {
+        return {
+            is_demo: false,
+            server_addr: '127.0.0.1',
+            server_port: 8000,
+            sock_addr: '127.0.0.1',
+            sock_port: 8085
+        }
+    }
+
     protected providerClasses(): Array<IServiceProvider> {
         return [
             ViewServiceProvider,
@@ -54,10 +72,10 @@ class MainApplication extends Application {
 
         const ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
-            new SocketDatasource('127.0.0.1', 8085),
+            new SocketDatasource(this.config.sock_addr, this.config.sock_port),
         ]);
 
-        const hds = new HttpDatasource('127.0.0.1', 8000);
+        const hds = new HttpDatasource(this.config.server_addr, this.config.server_port);
 
         svc_model.launch(ads);
         svc_model.register(ModalModel,  dds);
@@ -85,9 +103,15 @@ class MainApplication extends Application {
     async run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
+        const {root: wgt_root, widgets, composer} = widgets_config;
+
+        if (this.config.is_demo) {
+            widgets.board.view_props.readonly = false;
+        }
+
         const svc_view = this.instance(IViewService);
-        svc_view.setRootWidgets(widgets_config.composer, widgets_config.root);
-        svc_view.registerWidgetTypes(widgets_config.widgets);
+        svc_view.setRootWidgets(composer, wgt_root);
+        svc_view.registerWidgetTypes(widgets);
 
         this.instance(IViewService).compose(element);
     }
@@ -103,7 +127,7 @@ class MainApplication extends Application {
 
 declare global {
   interface Window {
-    Application: typeof Application;
+    Application: any;
   }
 }
 

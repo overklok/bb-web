@@ -49,8 +49,6 @@ class MonkeyApplication extends Application {
     }
 
     protected setup() {
-        const svc_event = this.instance(IEventService);
-
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             // new SocketDatasource('127.0.0.1', 8005),
@@ -94,7 +92,7 @@ class MonkeyApplication extends Application {
 
 declare global {
   interface Window {
-    Application: typeof Application;
+    Application: any;
   }
 }
 
