@@ -1,10 +1,7 @@
-import {TransitionGroup, Transition, CSSTransition} from 'react-transition-group';
-
 import * as React from "react";
 import classNames from "classnames";
 
 import '../../../../css/core/modal.less'
-import {useState} from "react";
 
 export type ModalSize = 'sm'|'md'|'lg';
 
@@ -21,7 +18,7 @@ export interface IModalProps {
 
 const Overlay = (props: IOverlayProps) => {
     const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
-        props.onClose && props.onClose(e);
+        props.onClose && props.onClose();
     };
 
     // Список классов, которые должны использоваться в зависимости от свойств

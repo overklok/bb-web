@@ -6,20 +6,24 @@ import {MountEvent, UnmountEvent} from "../../core/base/view/View";
 export default class TestkitPresenter extends Presenter<TestkitView> {
     private testkit: TestkitModel;
 
-    protected ready() {
+    public getInitialProps() {
         this.testkit = this.getModel(TestkitModel);
 
         const {qtys, size, size_deviation} = this.testkit.getState();
 
-        this.view.setOptions({
+        return {
             qtys_initial: qtys,
             size_initial: size,
             size_deviation_initial: size_deviation
-        });
+        };
     }
 
     @on(UnmountEvent)
     private saveValues() {
-        this.testkit.setQuantities(this.view.getItemQuantities(), this.view.getSize(), this.view.getSizeDeviation());
+        this.testkit.setQuantities(
+            this.view.getItemQuantities(),
+            this.view.getSize(),
+            this.view.getSizeDeviation()
+        );
     }
 }

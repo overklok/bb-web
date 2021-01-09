@@ -1,4 +1,4 @@
-import {cloneDeep} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import Datasource from "./Datasource";
 import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";
@@ -60,6 +60,6 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
             return;
         }
 
-        this.svc_event.emit(evt);
+        return this.svc_event.emit(evt);
     }
 }

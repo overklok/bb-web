@@ -1,61 +1,152 @@
 import IEventService from "./interfaces/IEventService";
 import {AbstractEvent} from "../base/Event";
 
+type HandlerPool = Map<any, Map<typeof AbstractEvent, Set<Function>>>;
+
+/**
+ * An implementation of IEventService based on Map and Set.
+ *
+ * @inheritDoc
+ */
 export default class EventService extends IEventService {
-    private handlers: Map<any, Map<typeof AbstractEvent, Function[]>> = new Map();
+    private handler_pool: HandlerPool = new Map();
+    private last_events: Map<typeof AbstractEvent, AbstractEvent<any>> = new Map();
 
-    subscribe(event_type: typeof AbstractEvent, handler: Function, anchor: any = null): number {
-        let map = this.handlers.get(anchor);
-
-        if (map == null) {
-            map = new Map();
-            this.handlers.set(anchor, map);
+    /**
+     * @inheritDoc
+     */
+    async subscribe(
+        event_type: typeof AbstractEvent,
+        handler: Function,
+        anchor: any = null,
+        emit_last = false
+    ): Promise<number> {
+        if (anchor != null) {
+            await this.subscribe(event_type, handler, null, false);
         }
 
-        let handlers = map.get(event_type);
+        let subpool = this.handler_pool.get(anchor);
+
+        if (subpool == null) {
+            subpool = new Map();
+            this.handler_pool.set(anchor, subpool);
+        }
+
+        let handlers = subpool.get(event_type);
 
         if (handlers == null) {
-            handlers = [];
+            handlers = new Set();
 
-            map.set(event_type, handlers);
+            subpool.set(event_type, handlers);
         }
 
-        return handlers.push(handler) - 1;
+        handlers.add(handler);
+
+        if (emit_last && anchor) {
+            const last_event = this.last_events.get(event_type);
+
+            if (last_event) {
+                await this.emit(last_event, anchor);
+            }
+        }
+
+        return handlers.size;
     }
 
+    /**
+     * @inheritDoc
+     */
     reset(event_type: typeof AbstractEvent, anchor: any = null) {
-        let map = this.handlers.get(anchor);
-        map.set(event_type, null);
-    }
+        let map = this.handler_pool.get(anchor);
+        if (!map) return;
 
-    resetObject(obj: any = null) {
-        this.handlers.set(obj, null);
-    }
+        if (anchor != null) {
+            const handlers = map.get(event_type);
 
-    unsubscribe(event_type: typeof AbstractEvent, key: number, anchor: any = null) {
-        let map = this.handlers.get(anchor);
-
-        if (map == null) return;
-
-        let handlers = map.get(event_type);
-
-        if (key > handlers.length) {
-            throw new Error("Invalid handler key has been passed to unsubscribe");
+            for (const handler of handlers.values()) {
+                this.unsubscribe(event_type, handler, null);
+            }
         }
 
-        delete handlers[key];
+        map.set(event_type, null);
+
     }
 
-    emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
-        let map = this.handlers.get(anchor);
+    /**
+     * @inheritDoc
+     */
+    resetObject(obj: any = null) {
+        let map = this.handler_pool.get(obj);
+        if (!map) return;
+
+        if (obj != null) {
+            for (const [event_type, handlers] of map.entries()) {
+                if (!handlers) continue;
+
+                for (const handler of handlers.values()) {
+                    this.unsubscribe(event_type, handler, null);
+                }
+            }
+        }
+
+        this.handler_pool.set(obj, null);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    unsubscribe(event_type: typeof AbstractEvent, handler: Function, anchor: any = null) {
+        if (anchor != null) {
+            this.unsubscribe(event_type, handler, null);
+        }
+
+        let subpool = this.handler_pool.get(anchor);
+        if (subpool == null) return;
+
+        let handlers = subpool.get(event_type);
+
+        handlers.delete(handler);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
+        const event_type: typeof AbstractEvent = (event as any).__proto__.constructor;
+
+        this.last_events.set(event_type, event);
+
+        let map = this.handler_pool.get(anchor);
 
         if (map == null) return;
 
-        const handlers = map.get(Object.getPrototypeOf(event).constructor) || [];
+        let handlers = [];
+
+        // get prototype for class of this event, constructor of this prototype is event's class
+        let proto = (event as any).__proto__;
+
+        do {
+            // get class of the prototype
+            const evt_class = proto.constructor;
+
+            const handlers_for_class = map.get(evt_class);
+
+            if (handlers_for_class) {
+                handlers.push(...handlers_for_class);
+            }
+
+            // prototype is now a prototype of parent class
+            proto = proto.__proto__;
+        } while (proto.constructor !== AbstractEvent)
+
+        let promises = [];
 
         for (const handler of handlers) {
             if (!handler) continue;
-            handler(event);
+            promises.push(handler(event));
         }
+
+        // run all handlers in parallel
+        await Promise.all(promises);
     }
 }

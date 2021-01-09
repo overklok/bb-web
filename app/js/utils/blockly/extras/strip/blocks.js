@@ -11,7 +11,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "номер лампочки",
+                message0:       "№ лампочки",
                 inputsInline:   false,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.INDEX.colour,
@@ -87,7 +87,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "перейти к лампочке номер %1",
+                message0:           "выбрать лампочку № %1",
                 args0: [
                     {
                         type:       "input_value",
@@ -109,7 +109,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "перейти к следующей лампочке",
+                message0:           "выбрать следующую лампочку",
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       true,
@@ -123,7 +123,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "перейти к предыдущей лампочке",
+                message0:           "выбрать предыдущую лампочку",
                 previousStatement:  null,
                 nextStatement:      null,
                 inputsInline:       true,
@@ -137,7 +137,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type: "block_type",
-                message0: "задать случайный номер лампочки: от %1 до %2",
+                message0: "выбрать случайную лампочку: от %1 до %2",
                 args0: [
                     {
                         type: "input_value",
@@ -296,7 +296,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "увеличить яркость %1 у лампочки на %2",
+                message0:           "+ яркость %1 у лампочки на %2",
                 args0: [
                     {
                         type:     "field_dropdown",
@@ -324,7 +324,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "уменьшить яркость %1 у лампочки на %2",
+                message0:           "- яркость %1 у лампочки на %2",
                 args0: [
                     {
                         type:     "field_dropdown",

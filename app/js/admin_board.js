@@ -134,9 +134,7 @@ class AdminBoardApplication {
      * @private
      */
     _defineChains() {
-        $(document).ready(() => {
-            this.bb.inject(document.getElementById(this._container_id));
-        });
+        $(document).ready();
 
         this._dispatcher.on('ls:connect', data => {
             const layout_name = this.bb.getLayoutName();

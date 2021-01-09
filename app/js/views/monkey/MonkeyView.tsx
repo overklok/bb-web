@@ -1,8 +1,8 @@
 import * as React from "react";
-import {IViewOptions, IViewProps, IViewState, View} from "../../core/base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
-require('../../../css/blocks/btn.less')
+require('../../../css/blocks/generic/btn.less')
 require('../../../css/blocks/monkey.less')
 
 export class ConfigureClick extends ViewEvent<ConfigureClick> {}
@@ -10,8 +10,8 @@ export class ApproveClick extends ViewEvent<ApproveClick> {}
 export class NocompClick extends ViewEvent<NocompClick> {}
 export class DiagClick extends ViewEvent<DiagClick> {}
 
-export default class MonkeyView extends View<IViewOptions, IViewState>{
-    constructor(p: IViewProps<IViewOptions>) {
+export default class MonkeyView extends View {
+    constructor(p: AllProps<IViewProps>) {
         super(p);
 
         this.state = {

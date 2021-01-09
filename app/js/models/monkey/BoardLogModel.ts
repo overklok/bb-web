@@ -1,4 +1,4 @@
-import {cloneDeep} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import Model from "../../core/base/model/Model";
 import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";

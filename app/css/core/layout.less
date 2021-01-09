@@ -1,4 +1,5 @@
 @import "../animations";
+@import "../colors";
 
 /*
   | View composers
@@ -140,7 +141,7 @@
 // Принимает nest'ы
 .frame {
   box-sizing: border-box;
-  position: absolute;
+  //position: absolute;
 
   width: 100%;
   height: 100%;
@@ -211,7 +212,14 @@ ul.ddmenu {
 
 // Layout Theme (can be replaced with extra customs)
 .pane {
-  border: 1px solid black;
+  //border: 1px solid black;
+
+  &.pane_youngest {
+    border: 1px solid @default_weak;
+    box-shadow: @shadow;
+    border-radius: 6px;
+    margin: 4px;
+  }
 
   //&.pane-enter, &.pane-exit {
   //  height: 0;
@@ -219,19 +227,20 @@ ul.ddmenu {
 
   &.pane_animated {
     &.pane-h {
-      transition: opacity   0.6s @ease,
-                  width     0.6s @ease,
-                  min-width 0.6s @ease,
-                  max-width 0.6s @ease;
+      transition: opacity   0.6s @fade,
+                  width     0.6s @fade,
+                  min-width 0.6s @fade,
+                  max-width 0.6s @fade,
+                  flex-basis 0.6s @fade;
 
-      &.pane-enter {opacity: 0;}
-      &.pane-enter-active {opacity: 1;}
-      &.pane-exit {opacity: 1;}
-      &.pane-exit-active {opacity: 0;}
+      &.panefade-enter {opacity: 0;}
+      &.panefade-enter-active {opacity: 1;}
+      &.panefade-exit {opacity: 1;}
+      &.panefade-exit-active {opacity: 0;}
 
       &.pane-enter:not(.pane-enter-active), &.pane-exit {
         &:not(.pane-sizemin):not(.pane-sizemax) {
-          width: 0 !important;
+          flex-basis: 0 !important;
         }
 
         &.pane-sizemin {
@@ -245,10 +254,10 @@ ul.ddmenu {
     }
 
     &.pane-v {
-      transition: opacity   0.6s   @ease,
-                  height      0.6s @ease,
-                  min-height  0.6s @ease,
-                  max-height  0.6s @ease;
+      transition: opacity   0.6s @fade,
+                  height      0.6s @fade,
+                  min-height  0.6s @fade,
+                  max-height  0.6s @fade;
 
       &.pane-enter:not(.pane-enter-active), &.pane-exit {
         opacity: 0;
@@ -272,15 +281,19 @@ ul.ddmenu {
 .handler {
   z-index: 1;
 
+  &::before {
+    border-radius: 4px;
+  }
+
   transition: transform ease-out 200ms;
 
   &:hover {
     &.handler-v {
-      transform: scaleY(3.5);
+      transform: scaleY(1.5);
     }
 
     &.handler-h {
-      transform: scaleX(3.5);
+      transform: scaleX(1.5);
     }
   }
 }

@@ -1,32 +1,73 @@
+import isUndefined from "lodash/isUndefined";
+import partialRight from "lodash/partialRight";
+import assignWith from "lodash/assignWith";
+
 async function sleep(ms: number): Promise<void> {await new Promise(r => setTimeout(r, ms))}
 
-function coverOptions(options: {[key: string]: any}, defaults: {[key: string]: any}): {[key: string]: any} {
-    const result: {[key: string]: any} = {};
+type KeyValuePair = {[key: string]: any};
 
-    if (!defaults) defaults = {};
+const coverOptions: (options: KeyValuePair, defaults: KeyValuePair) => KeyValuePair
+    = partialRight(assignWith, (obj: KeyValuePair, src: KeyValuePair) => isUndefined(obj) ? src : obj);
 
-    /// Если не заданы опции - выдать опции по умолчанию
-    if (typeof options === "undefined") return defaults;
+function getClassNameAlias(class_name: string, postfix?: string) {
+    if (postfix) {
+        const postfix_idx = class_name.lastIndexOf(postfix);
 
-    /// Если options - массив, то возвратить копию значения
-    if (Array.isArray(options)) return [...options];
-
-    /// Если options - не объект, то возвратить копию значения
-    if (typeof options !== 'object') return options;
-
-    /// Для каждой заданной опции выполнить рекурсивно поиск опции
-    for (const option_key of Object.keys(defaults)) {
-        result[option_key] = coverOptions(options[option_key], defaults[option_key]);
+        if (postfix_idx >= 0) {
+            class_name = class_name.slice(0, postfix_idx);
+        }
     }
 
-    for (const option_key of Object.keys(options)) {
-        // if (option_key in Object.keys(defaults)) continue;
-        if (Object.keys(defaults).indexOf(option_key) > -1) continue;
-        if (typeof options[option_key] === "undefined") continue;
-        result[option_key] = coverOptions(options[option_key], {});
-    }
-
-    return result;
+    return camelCaseToUnderscores(class_name);
 }
 
-export {sleep, coverOptions};
+function camelCaseToUnderscores(str: string) {
+    return str.replace(/\.?([A-Z]+)/g, function (x,y){return "_" + y.toLowerCase()})
+        .replace(/^_/, "")
+}
+
+function cumulativeOffset(element: any): {top: number, left: number} {
+    let top = 0, left = 0;
+
+    do {
+        top += element.offsetTop || 0;
+        left += element.offsetLeft || 0;
+        top -= element.scrollTop || 0;
+        left -= element.scrollLeft || 0;
+        element = element.offsetParent;
+    } while(element);
+
+    return {
+        top: top,
+        left: left
+    };
+}
+
+/**
+ * Native scrollTo with callback
+ * @param offset - offset to scroll to
+ * @param callback - callback function
+ */
+function scrollTo(element: HTMLElement, offset: number, callback?: Function) {
+    const fixedOffset = offset.toFixed(),
+        onScroll = function () {
+            if (element.scrollLeft.toFixed() === fixedOffset) {
+                element.removeEventListener('scroll', onScroll);
+                callback && callback();
+            }
+        }
+
+    element.addEventListener('scroll', onScroll);
+    onScroll();
+
+    element.scrollTo({
+        left: offset,
+        behavior: 'smooth'
+    });
+}
+
+function clamp(min: number, max: number, val: number) {
+    return Math.min(Math.max(val, min), max);
+}
+
+export {sleep, clamp, coverOptions, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};

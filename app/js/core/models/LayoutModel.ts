@@ -38,10 +38,16 @@ type LayoutOptions = {
 
 interface LayoutModelState {
     modes: {[key: string]: LayoutMode};
-    options?: LayoutOptions
+    current_mode: string;
+    options?: LayoutOptions;
 }
 
 export class SetModeEvent extends ModelEvent<SetModeEvent> {
+    mode: string;
+}
+
+// TODO: Remove
+export class FinishModeEvent extends ModelEvent<FinishModeEvent> {
     mode: string;
 }
 
@@ -53,6 +59,7 @@ export class SetModeEvent extends ModelEvent<SetModeEvent> {
 export default class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
     protected defaultState: LayoutModelState = {
         options: {show_headers: true},
+        current_mode: 'default',
         modes: {}
     };
 
@@ -62,10 +69,17 @@ export default class LayoutModel extends Model<LayoutModelState, DummyDatasource
 
     setMode(mode: string) {
         if (mode in this.state.modes) {
+            this.setState({current_mode: mode});
             this.emit(new SetModeEvent({mode}));
         } else {
             console.error(`Mode '${mode}' does not exist`);
         }
+    }
+
+    reportModeFinished(mode: string) {
+        if (!(mode in this.state.modes)) throw new Error(`Mode ${mode} does not exist`);
+
+        this.emit(new FinishModeEvent({mode}));
     }
 
     /**

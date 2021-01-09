@@ -3,7 +3,7 @@ import Application from "./core/Application";
 import IViewService from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
 
-import ServiceProvider from "./core/providers/ServiceProvider";
+import IServiceProvider from "./core/providers/ServiceProvider";
 import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
@@ -26,6 +26,12 @@ import widgets_config from "./configs/monkey/widgets";
 import ModalModel from "./core/models/ModalModel";
 import TestkitModel from "./models/monkey/TestkitModel";
 import BoardLogModel from "./models/monkey/BoardLogModel";
+import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
+import LayoutView from "./core/views/layout/LayoutView";
+import LayoutPresenter from "./core/presenters/LayoutPresenter";
+import ModalView from "./core/views/modal/ModalView";
+import ModalPresenter from "./core/presenters/ModalPresenter";
+import IEventService from "./core/services/interfaces/IEventService";
 
 class MonkeyApplication extends Application {
     public bb: BoardModel;
@@ -34,7 +40,7 @@ class MonkeyApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
     private dds: DummyDatasource;
 
-    protected providerClasses(): Array<typeof ServiceProvider> {
+    protected providerClasses(): Array<IServiceProvider> {
         return [
             ViewServiceProvider,
             ModelServiceProvider,
@@ -43,6 +49,8 @@ class MonkeyApplication extends Application {
     }
 
     protected setup() {
+        const svc_event = this.instance(IEventService);
+
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             // new SocketDatasource('127.0.0.1', 8005),
@@ -57,7 +65,8 @@ class MonkeyApplication extends Application {
         const svc_view = this.instance(IViewService),
               svc_model = this.instance(IModelService);
 
-        svc_view.registerWidgetTypes(widgets_config);
+        svc_view.setRootWidgets(widgets_config.composer, widgets_config.root);
+        svc_view.registerWidgetTypes(widgets_config.widgets);
 
         svc_model.register(ModalModel, this.dds);
         svc_model.register(LayoutModel, this.dds, layouts_config);
@@ -72,6 +81,14 @@ class MonkeyApplication extends Application {
         this.log = svc_model.retrieve(BoardLogModel);
 
         this.instance(IViewService).compose(element);
+    }
+
+    get views() {
+        return this.instance(IViewService).getViews();
+    }
+
+    get models() {
+        return this.instance(IModelService).getModels();
     }
 }
 

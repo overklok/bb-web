@@ -1,5 +1,5 @@
 import * as React from "react";
-import {IViewOptions, IViewProps, IViewState, View} from "../../core/base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {LogGroup} from "./log/LogGroup";
 
 import "../../../css/blocks/log.less"
@@ -15,8 +15,8 @@ export class LogEntryClickEvent extends ViewEvent<LogEntryClickEvent> {
     ent_idx: number;
 }
 
-export default class LogView extends View<IViewOptions, IBoardLogState> {
-    constructor(props: IViewProps<IViewOptions>) {
+export default class LogView extends View<IViewProps, IBoardLogState> {
+    constructor(props: AllProps<IViewProps>) {
         super(props);
 
         this.state = {

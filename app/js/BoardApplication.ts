@@ -3,7 +3,7 @@ import Application, {AppConf} from "./core/Application";
 import IViewService from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
 
-import ServiceProvider from "./core/providers/ServiceProvider";
+import IServiceProvider from "./core/providers/ServiceProvider";
 import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
@@ -18,11 +18,12 @@ import BoardPresenter from "./presenters/common/BoardPresenter";
 import BoardModel from "./models/common/BoardModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
-import {BoardView} from "./views/board/BoardView";
+import BoardView from "./views/common/BoardView";
 
 import "../css/global.less";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";
+import IEventService from "./core/services/interfaces/IEventService";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;
@@ -35,7 +36,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
     private ads: AdaptiveAsyncDatasource;
     private bb: BoardModel;
 
-    protected providerClasses(): Array<typeof ServiceProvider> {
+    protected providerClasses(): Array<IServiceProvider> {
         return [
             ViewServiceProvider,
             ModelServiceProvider,
@@ -44,6 +45,8 @@ class BoardApplication extends Application<BoardApplicationConfig> {
     }
 
     protected setup() {
+        const svc_event = this.instance(IEventService);
+
         let data_sources: AsynchronousDatasource[] = [];
 
         if (!this.config.silent) {
@@ -54,12 +57,8 @@ class BoardApplication extends Application<BoardApplicationConfig> {
         }
 
         this.ads = new AdaptiveDatasource(data_sources);
-    }
 
-    protected boot() {
-        super.boot();
-
-        this.instance(IViewService).setup(SingleViewComposer, 'main');
+        this.instance(IViewService).setRootWidgets(SingleViewComposer, 'main');
     }
 
     async run(element: HTMLElement) {
@@ -69,7 +68,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
               svc_model = this.instance(IModelService);
 
         svc_view.registerWidgetTypes({
-            main: {view_type: BoardView.BoardView, presenter_types: [BoardPresenter], view_options: {
+            main: {view_type: BoardView.BoardView, presenter_types: [BoardPresenter], view_props: {
                 schematic: true,
                 readonly: this.config.readonly,
             }},

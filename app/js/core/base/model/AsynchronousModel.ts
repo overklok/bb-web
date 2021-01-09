@@ -15,6 +15,14 @@ export function listen(channel: string) {
     }
 }
 
+export function waiting() {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        target.handler_waiting = target[propertyKey];
+
+        return target;
+    }
+}
+
 export function connect() {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         target.handler_connect = target[propertyKey];
@@ -41,6 +49,7 @@ export function timeout() {
 
 export default abstract class AsynchronousModel<MS> extends Model<MS, AsynchronousDatasource> {
     public readonly handlers: {[key: string]: Function};
+    public readonly handler_waiting:       Function;
     public readonly handler_timeout:       Function;
     public readonly handler_connect:       Function;
     public readonly handler_disconnect:    Function;
@@ -65,6 +74,7 @@ export default abstract class AsynchronousModel<MS> extends Model<MS, Asynchrono
         if (this.handler_disconnect)    this.data_source.on_disconnect(this.handler_disconnect.bind(this));
 
         switch (this.data_source.status) {
+            case AsyncDatasourceStatus.Initial:         if (this.handler_waiting)    this.handler_waiting(); break;
             case AsyncDatasourceStatus.Timeouted:       if (this.handler_timeout)    this.handler_timeout(); break;
             case AsyncDatasourceStatus.Connected:       if (this.handler_connect)    this.handler_connect(); break;
             case AsyncDatasourceStatus.Disconnected:    if (this.handler_disconnect) this.handler_disconnect(); break;

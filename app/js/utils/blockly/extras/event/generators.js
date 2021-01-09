@@ -1,4 +1,4 @@
-import Blockly from 'node-blockly/browser';
+import Blockly from 'blockly';
 
 import {getPredef, getArgument, getArguments} from '../_common';
 
@@ -19,6 +19,8 @@ let BlocklyJSONGenerators = {
         /// извлечь значения аргументов
         let btn     = getArgument(block, "BTN", 81, DATATYPES.NUMBER, false);
         Blockly.JSON.statementToCode(block, "DO", true, btn.value);
+
+        return '';
     },
 
     /**
@@ -31,6 +33,8 @@ let BlocklyJSONGenerators = {
         /// извлечь значения аргументов
         let btn     = getArgument(block, "BTN", 48, DATATYPES.NUMBER, false);
         Blockly.JSON.statementToCode(block, "DO", true, btn.value);
+
+        return '';
     },
 
     /**
@@ -42,6 +46,8 @@ let BlocklyJSONGenerators = {
     event_key_onpush_any: block => {
         /// извлечь значения аргументов
         Blockly.JSON.statementToCode(block, "DO", true);
+
+        return '';
     },
 
     /**
@@ -53,6 +59,8 @@ let BlocklyJSONGenerators = {
     event_key_onpush_any_number: block => {
         /// извлечь значения аргументов
         Blockly.JSON.statementToCode(block, "DO", true);
+
+        return '';
     },
 };
 

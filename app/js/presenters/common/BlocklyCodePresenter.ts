@@ -1,5 +1,5 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import BlocklyView, {BlocklyCodeChangeEvent} from "../../views/code/BlocklyView";
+import BlocklyView, {BlocklyCodeChangeEvent} from "../../views/common/BlocklyView";
 import CodeModel, {
     CodeCommandExecutedEvent,
     CodeLaunchedEvent,
@@ -10,7 +10,7 @@ import {KeyUpEvent} from "../../core/models/KeyboardModel";
 export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
     private model: CodeModel;
 
-    protected ready() {
+    public getInitialProps() {
         this.model = this.getModel(CodeModel);
     }
 

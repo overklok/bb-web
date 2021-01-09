@@ -1,5 +1,5 @@
 // Переопределение сторонних генераторов
-    import Blockly from "node-blockly/browser";
+    import Blockly from "blockly";
 import {getArgument} from "../_common";
 import {DATATYPES, POSTFIXES} from "../constants";
 

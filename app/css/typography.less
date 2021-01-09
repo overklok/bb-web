@@ -1,5 +1,18 @@
-@import (css) url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap');
+@import (css) url('/fonts/IBMPlexSans/stylesheet.css');
+@import (css) url('/fonts/FontAwesome/fa-solid.min.css');
+@import (css) url('/fonts/FontAwesome/fontawesome.min.css');
+//@import (css) url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap');
+//@import (css) url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap');
+
+@import 'colors';
 
 body {
   font-family: 'IBM Plex Sans', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
+
+.text-default   {color: @default}
+.text-primary   {color: @primary}
+.text-secondary {color: @secondary}
+.text-success   {color: @success}
+.text-warning   {color: @warning}
+.text-danger    {color: @danger}

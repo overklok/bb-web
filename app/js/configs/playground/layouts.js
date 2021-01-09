@@ -7,7 +7,7 @@ export default {
             policy: 'vertical',
             panes: [
                 {
-                    name: 'blockly',
+                    name: 'blockly', size: '70%',
                     composer: 'overlay',
                     widgets: [{alias: 'blockly', label: 'Программа'}, {alias: 'launcher', label: 'Панель запуска'}]
                 },

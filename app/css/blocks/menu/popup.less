@@ -1,0 +1,64 @@
+@import "../../colors";
+@import "../../animations";
+
+.popup {
+  position: absolute;
+
+  background-color: white;
+  border-radius: 1/4em;
+  min-width: 200px;
+
+  padding: 1/4em;
+  margin: 1em 0;
+
+  box-shadow: @shadow;
+
+  cursor: default;
+
+  transition: opacity linear .3s;
+
+  opacity: 0;
+
+  &::before {
+    position: absolute;
+    content: '';
+
+    bottom: 100%;
+    left: 6px;
+
+    border-left: transparent 10px solid;
+    border-right: transparent 10px solid;
+    border-bottom: @light 10px solid;
+  }
+
+  &_visible {
+    opacity: 1;
+
+    &:hover {opacity: .3;}
+  }
+
+  &_right {
+    &::before {
+      left: unset;
+      right: 6px;
+    }
+  }
+
+  &__head {
+    display: flex;
+    white-space: nowrap;
+    padding: 1/8em;
+  }
+
+  &__title {
+    font-weight: 700;
+    margin: 0 1/4em;
+  }
+
+  &__body {
+    font-size: 7/8em;
+    line-height: 1em;
+
+    p {margin: .25em 0;}
+  }
+}

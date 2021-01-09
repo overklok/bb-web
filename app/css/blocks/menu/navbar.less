@@ -1,0 +1,131 @@
+@import '../../colors';
+@import '../../animations';
+
+.nav, .navbar {
+  background-color: @primary;
+  color: @text_light;
+
+  width: 100%;
+  height: 55px;
+
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.nav {
+  &__prefix {
+    box-sizing: border-box;
+    padding: 10px;
+  }
+
+  &__content {
+    box-sizing: border-box;
+    flex-grow: 1;
+  }
+}
+
+.navbar {
+  padding: 0 5px;
+
+  &_root {
+    padding: 0;
+  }
+
+  &_collapsed {
+    height: 50px;
+  }
+
+  &_inv {
+    background-color: @text_light;
+    color: @primary;
+  }
+
+  &__section {
+    box-sizing: border-box;
+    padding: 5px;
+
+    &_pagerwrap {
+      max-width: 50vw;
+    }
+  }
+
+  &__button {
+    padding: 5px 10px;
+
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: transform @scale .3s, background-color @fade .3s;
+
+    &:hover {transform: scale(1.05); background-color: @light;}
+    &:active {transform: scale(.95); background-color: @light;}
+  }
+
+  &__delimiter {
+    color: @light;
+    font-size: 1.25em;
+    font-weight: 700;
+
+    &:before {
+      content: '|';
+    }
+  }
+
+  &__spacer {
+    flex-grow: 1;
+  }
+
+  &__title, &__button, &__description {
+    white-space: nowrap;
+
+    font-size: 1em;
+    font-weight: 700;
+
+    margin: 0;
+  }
+
+  &__title {
+    font-size: 1.25em;
+  }
+
+  &__description {
+    color: @default;
+
+    font-size: 1em;
+
+    text-align: end;
+
+    &_small {
+
+      font-size: .75em;
+    }
+  }
+
+
+}
+
+.navslider {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &__slide {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__slide {
+    transition: transform @move .3s;
+
+    &_raised {
+      transform: translateY(-100%);
+    }
+  }
+}

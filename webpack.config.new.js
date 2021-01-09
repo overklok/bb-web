@@ -13,11 +13,13 @@ const { generate } = require('build-number-generator');
 
 const lib_dir = __dirname + '/vendor/js';
 
-const TerserPlugin          = require('terser-webpack-plugin');
-const HtmlWebpackPlugin     = require('html-webpack-plugin');
-const CopyWebpackPlugin     = require('copy-webpack-plugin');
-const BuildNotifierPlugin   = require('webpack-build-notifier');
-const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin                      = require('terser-webpack-plugin');
+const HtmlWebpackPlugin                 = require('html-webpack-plugin');
+const CopyWebpackPlugin                 = require('copy-webpack-plugin');
+const BuildNotifierPlugin               = require('webpack-build-notifier');
+const BundleAnalyzerPlugin              = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin              = require('mini-css-extract-plugin');
+const LodashModuleReplacementPlugin     = require('lodash-webpack-plugin');
 
 
 module.exports = (env, argv) => {
@@ -36,10 +38,13 @@ module.exports = (env, argv) => {
         optimization: {
             minimizer: getMinimizer(is_dev)
         },
+        output: {
+            publicPath: "/"
+        },
         devServer: {
             contentBase: path.join(__dirname, 'dist'),
             historyApiFallback: {
-                index: getHtmlIndexFile(env),
+                index: '/',
             },
             index: getHtmlIndexFile(env),
             compress: true,
@@ -48,30 +53,16 @@ module.exports = (env, argv) => {
         module: {
             rules: [
                 {
-                    loader: 'babel-loader',
-                    test: /\.js$/,
-                    exclude: /node_modules/
+                    loader: 'ts-loader',
+                    test: /\.(tsx?|jsx?)$/,
+                    exclude: /node_modules/,
                 },
                 {
-                    use: 'ts-loader',
-                    test: /\.tsx?$/,
-                    exclude: /node_modules/
-                },
-                {
-                    loaders: ['style-loader', 'css-loader', 'less-loader'],
-                    test: /\.less/,
+                    use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
+                    test: /\.(less|css)/,
                     include: [
-                        path.resolve(__dirname, "node_modules/intro.js/"),
                         path.resolve(__dirname, "app"),
-                    ]
-                },
-                {
-                    loaders: ['style-loader', 'css-loader', 'less-loader'],
-                    test: /\.css/,
-                    include: [
-                        path.resolve(__dirname, "node_modules/intro.js/"),
-                        path.resolve(__dirname, "app"),
-                    ]
+                    ],
                 },
             ]
         },
@@ -80,6 +71,8 @@ module.exports = (env, argv) => {
             modules: [path.resolve(__dirname, './app'), 'node_modules']
         },
         plugins: [
+            new MiniCssExtractPlugin(),
+            new LodashModuleReplacementPlugin(),
             ...getHtmlCopyPluginInstances(env),
             new BuildNotifierPlugin({
                 title: "Tapanda [New]",
@@ -89,6 +82,7 @@ module.exports = (env, argv) => {
             new webpack.DefinePlugin({
                 '__VERSION__': `'${VERSION}'`,
             }),
+            // new BundleAnalyzerPlugin()
         ]
     }
 };

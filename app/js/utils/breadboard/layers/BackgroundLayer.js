@@ -3,7 +3,6 @@ import Layer from "../core/Layer";
 import Plate from "../core/Plate";
 import Grid from "../core/Grid";
 import Cell from "../core/Cell";
-import PlateContextMenu from "../menus/PlateContextMenu";
 
 import {GRADIENTS} from "../styles/gradients";
 
@@ -98,7 +97,7 @@ export default class BackgroundLayer extends Layer {
         this._gcells_hovered = [];
         this._cell_last_hovered = undefined;
 
-        document.addEventListener('mousemove', evt => {
+        this._boardgroup.on('mousemove', evt => {
             this._hover_pos = {x: evt.clientX, y: evt.clientY};
 
             if (this._scheduled_animation_frame) return;
@@ -141,7 +140,7 @@ export default class BackgroundLayer extends Layer {
 
             if (x === cell.idx.x && y === cell.idx.y) continue;
 
-            gcell.animate().stroke({color: null, width: 0});
+            gcell.stroke({color: null, width: 0});
             this._gcells_hovered.splice(0, idx)
         }
     }
@@ -166,7 +165,7 @@ export default class BackgroundLayer extends Layer {
         if (!this._domain_config) return;
 
         for (const domain of this._domain_config) {
-            let     d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
+            const   d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
                     d_to    = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
 
             if (domain.style === BackgroundLayer.DomainSchematicStyles.None) continue;

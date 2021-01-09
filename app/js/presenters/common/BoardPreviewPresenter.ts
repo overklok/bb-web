@@ -1,4 +1,4 @@
-import {BoardView} from "../../views/board/BoardView";
+import BoardView from "../../views/common/BoardView";
 import Presenter, {on} from "../../core/base/Presenter";
 import BoardModel, {Plate} from "../../models/common/BoardModel";
 import {MountEvent} from "../../core/base/view/View";
@@ -11,11 +11,14 @@ interface PreviewBoard {
 export default class BoardPreviewPresenter extends Presenter<BoardView.BoardView> {
     public static previewBoard: PreviewBoard = {
         plates: [],
-        layout: 'default'
+        layout: 'v5x'
     }
 
-    protected ready() {
-        this.view.registerLayouts(BoardModel.Layouts);
+    public getInitialProps() {
+        return {
+            layouts: BoardModel.Layouts,
+            layout_name: BoardPreviewPresenter.previewBoard.layout
+        }
     }
 
     @on(MountEvent)

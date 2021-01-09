@@ -1,20 +1,30 @@
 import * as React from "react";
-import ViewConnector from "./ViewConnector";
+import ViewConnector from "../ViewConnector";
 import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";
 import {coverOptions} from "../../helpers/functions";
 
-export interface IViewOptions {
+// export interface IViewOptions {
+//     overflow?: string;
+// }
 
-}
-
-export interface IViewProps<O extends IViewOptions> {
+export interface IViewBasicProps {
     nest_mounted: boolean;
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     widgets?: {[key: string]: Widget<any>};
-    options?: O;
+}
+
+export type AllProps<P> = P & IViewBasicProps;
+
+/**
+ * Helper type that infers nested IViewProps based on View that uses it
+ */
+export type ViewPropsOf<V extends View<any, any>> = V extends View<infer P, any> ? P: never;
+
+export interface IViewProps {
+
 }
 
 export interface IViewState {
@@ -26,33 +36,57 @@ export class MountEvent extends ViewEvent<MountEvent>       {}
 export class UnmountEvent extends ViewEvent<UnmountEvent>   {}
 export class ResizeEvent extends ViewEvent<ResizeEvent>     {}
 
-export abstract class View<O extends IViewOptions, S extends IViewState> extends React.Component<IViewProps<O>, S> {
-    public static defaultOptions: IViewOptions;
+export function deferUntilMounted(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    // save a reference to the original method this way we keep the values currently in the
+    // descriptor and don't overwrite what another decorator might have done to the descriptor.
+    if (descriptor === undefined) {
+        descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+    }
+
+    let original_method = descriptor.value;
+
+    //editing the descriptor/value parameter
+    const deferree = function () {
+        const args = arguments;
+
+        if (this.mounted) {
+            return original_method.bind(this)(...arguments);
+        }
+
+        if (this.deferrees_mount == null) {
+            this.deferrees_mount = [];
+        }
+
+        this.deferrees_mount.push(function(): void {
+            original_method.bind(this)(...args);
+        });
+    }
+
+    descriptor.value = deferree;
+}
+
+export abstract class View<P extends IViewProps = IViewProps, S extends IViewState = IViewState> extends React.Component<AllProps<P>, S> {
     public static notifyNestMount: boolean = false;
 
-    protected options: Readonly<O>;
     protected mounted: boolean;
 
-    constructor(props: IViewProps<O>) {
+    private deferrees_mount: Function[];
+
+    constructor(props: AllProps<P>) {
         super(props);
 
         this.mounted = false;
-
-        const defaults = Object.getPrototypeOf(this).constructor.defaultOptions;
-        this.options = coverOptions(this.props.options, defaults) as O;
-
-        this.props.connector.attach(this);
-    }
-
-    public setOptions<K extends keyof O>(
-        options: ((prevState: Readonly<O>) => (Pick<O, K> | O | null)) | (Pick<O, K> | O | null)
-    ) {
-        this.options = coverOptions(options, this.props.options) as O;
     }
 
     public attachConnector(connector: ViewConnector) {
         if (connector !== this.props.connector) {
             connector.attach(this);
+        }
+    }
+
+    public detachConnector() {
+        if (this.props.connector) {
+            this.props.connector.detach();
         }
     }
 
@@ -76,10 +110,28 @@ export abstract class View<O extends IViewOptions, S extends IViewState> extends
 
     public resize() {}
 
-    protected viewDidMount() {}
-    protected viewWillUnmount() {}
+    protected viewDidMount() {
+        console.log(this.constructor.name, 'mount');
+        this.props.connector.attach(this);
+        this.callDeferredUntilMount();
+    }
+
+    protected viewWillUnmount() {
+        this.detachConnector();
+        console.log(this.constructor.name, 'unmount');
+    }
 
     protected emit<E>(event: ViewEvent<E>) {
-        this.props.connector.emit(event);
+        return this.props.connector.emit(event);
+    }
+
+    private callDeferredUntilMount() {
+        if (!this.deferrees_mount) return;
+
+        let call = undefined;
+
+        while (call = this.deferrees_mount.pop()) {
+            call.bind(this)();
+        }
     }
 }

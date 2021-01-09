@@ -1,0 +1,78 @@
+@import '../../colors';
+@import '../../animations';
+
+.mission {
+  position: absolute;
+  display: inline-block;
+
+  pointer-events: none;
+
+  border-radius: .375em;
+
+  padding: 0;
+
+  background-color: @default_weak;
+  box-shadow: @shadow;
+
+  opacity: 0;
+  transition: padding @scale .5s;
+
+  &.enter-active, &.enter-done {
+    opacity: 1;
+    pointer-events: auto;
+    padding: .25em;
+    z-index: 1;
+  }
+
+  &.exit {
+    transition: padding @scale .2s, opacity @scale .2s;
+  }
+
+  &.exit-active {
+    opacity: 0;
+    pointer-events: auto;
+    padding: 0;
+    z-index: 0;
+  }
+
+  &.exit-done {
+    opacity: 0;
+  }
+
+  &__head {
+    display: flex;
+
+    &_reversed {
+      flex-direction: row-reverse;
+    }
+  }
+
+  &__body {
+    padding: .125em 0;
+    margin-top: .375em;
+    border-top: @default_deep solid 1px;
+  }
+
+  &__brief {
+    padding: 0 .25em;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__subtitle {
+    font-size: 12px;
+    white-space: nowrap;
+
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}

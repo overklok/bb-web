@@ -2,7 +2,7 @@ import * as React from "react";
 import SingleTab from "./SingleTab";
 import Tab from "./Tab";
 import TabMenu from "./TabMenu";
-import ViewConnector from "../../ViewConnector";
+import ViewConnector from "../../../ViewConnector";
 import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
 interface IProps extends IVCProps {
@@ -114,6 +114,7 @@ export default class TabViewComposer extends ViewComposer<IProps, IState> {
 
         return (
             <div className='tab-display'>
+            {/*<div className='tab-display' ref={this.props.refCallback}>*/}
                 {!show_headers
                     ? null
                     :

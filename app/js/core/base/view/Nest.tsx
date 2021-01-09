@@ -1,46 +1,85 @@
 import * as React from "react";
-import {IViewOptions, View} from "./View";
+import {AllProps, IViewProps, MountEvent, UnmountEvent, View} from "./View";
 import classNames from "classnames";
-import ViewConnector from "./ViewConnector";
+import ViewConnector from "../ViewConnector";
 import {ViewType} from "../../helpers/types";
 import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
+import {CSSProperties} from "react";
 
 
-interface IProps<O extends IViewOptions> {
+interface INestProps<P=IViewProps> {
     connector: ViewConnector;
 
     widgets?: {[key: string]: Widget<any>};
-    view_type: ViewType<O, any>;
-    view_options?: O;
+    view_type: ViewType<P, any>;
+    view_props: P;
+    nest_style?: CSSProperties;
     label: string;
     index: number;
 }
 
-interface IState {
+interface INestState {
     mounted: boolean;
+    view_props: AllProps<any>;
 }
 
-export default class Nest extends React.Component<IProps<any>, IState> {
-    private readonly ref = React.createRef<HTMLDivElement>()
-    private readonly ref_view = React.createRef<View<any, any>>()
+export default class Nest extends React.PureComponent<INestProps<any>, INestState> {
+    private readonly ref = React.createRef<HTMLDivElement>();
+    private view: View;
 
-    constructor(props: IProps<any>) {
+    constructor(props: INestProps<any>) {
         super(props);
+
+        this.onRefUpdated = this.onRefUpdated.bind(this);
 
         this.state = {
             mounted: false,
+            view_props: this.props.connector.collectProps()
         };
     }
 
     componentDidMount() {
-        if (Object.getPrototypeOf(this.ref_view.current).constructor.notifyNestMount) {
+        if (Object.getPrototypeOf(this.view).constructor.notifyNestMount) {
             this.setState({mounted: true});
         }
+
+        this.props.connector.onPropsUpdate((props: IViewProps) => {
+            this.setState({
+                view_props: {...this.state.view_props, ...props}
+            })
+        });
     }
-    
+
+    componentWillUnmount() {
+        this.props.connector.onPropsUpdate(null);
+    }
+
+    componentDidUpdate(prevProps: Readonly<INestProps>, prevState: Readonly<INestState>, snapshot?: any) {
+        if (this.view) {
+            this.view.attachConnector(this.props.connector);
+        }
+    }
+
     notifyResizeView() {
         this.props.connector.resizeView();
+    }
+
+    onRefUpdated(view: View) {
+        // view created
+        if (view && !this.view) {
+            this.view = view;
+        }
+
+        // view updated
+        if (view && this.view && view !== this.view) {
+            this.view = view;
+        }
+
+        // view destroyed
+        if (!view && this.view) {
+            this.view = view;
+        }
     }
 
     render() {
@@ -51,19 +90,17 @@ export default class Nest extends React.Component<IProps<any>, IState> {
             'nest': true,
         });
 
-        if (this.ref_view.current) {
-            this.ref_view.current.attachConnector(this.props.connector);
-        }
+        const props = {...this.state.view_props, ...this.props.view_props};
 
         return (
-            <div className={klasses} ref={this.ref}>
+            <div className={klasses} ref={this.ref} style={this.props.nest_style}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
-                        ref={this.ref_view}
+                        {...props}
+                        ref={this.onRefUpdated}
                         widgets={this.props.widgets}
                         connector={this.props.connector}
                         ref_parent={this.ref}
-                        options={this.props.view_options}
                         nest_mounted={this.state.mounted}
                     />
                 </ErrorBoundary>

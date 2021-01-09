@@ -1,0 +1,78 @@
+/**
+  A block that represents a button which can be filled with the progress bar.
+
+  Progress bar is represented by __progress element and can be extended with the 'wavefront' block
+  to simulate the liquid effect in the top of the bar filler.
+ */
+
+@import '../../colors';
+@import '../../animations';
+
+.cask {
+  position: relative;
+  overflow: hidden;
+
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  border-radius: .375em;
+  background-color: @light;
+  color: @text_dark;
+
+  box-shadow: @shadow;
+
+  font-weight: 700;
+
+  user-select: none;
+
+  text-align: center;
+
+  &__content {
+    position: absolute;
+    width: 100%;
+
+    // Content of the cask that disappears on hover
+    &_disposable {opacity: 1};
+    // Content of the cask that appears on hover
+    &_undisposable {opacity: 0; pointer-events: none};
+  }
+
+  &:hover &__content {
+    &_disposable {
+      opacity: 0;
+    }
+
+    &_undisposable {
+      opacity: 1;
+      animation: 1s scale-easeInElastic 0s reverse;
+    }
+  }
+
+  // Progress bar inside of the cask.
+  // There can be multiple of them in a single cask.
+  &__progress {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    bottom: -100%;
+
+    background-color: @default;
+
+    transition: bottom .5s;
+
+    &_bg_primary        {background-color: @primary;}
+    &_bg_primary-weak   {background-color: @primary_weak;}
+    &_bg_secondary      {background-color: @secondary;}
+    &_bg_secondary-weak {background-color: @secondary_weak;}
+    &_bg_success        {background-color: @success;}
+    &_bg_success-weak   {background-color: @success_weak;}
+    &_bg_warning        {background-color: @warning;}
+    &_bg_warning-weak   {background-color: @warning_weak;}
+    &_bg_danger         {background-color: @danger;}
+    &_bg_danger-weak    {background-color: @danger_weak;}
+  }
+
+  &_bg_warning-weak {background-color: @warning_weak;}
+}
+
+

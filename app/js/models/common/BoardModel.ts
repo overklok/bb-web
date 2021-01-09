@@ -2,9 +2,16 @@ import {layoutToBoardInfo} from "../../utils/breadboard/core/extras/board_info";
 import {LAYOUTS as CORE_LAYOUTS} from "../../utils/breadboard/core/extras/layouts";
 import {LAYOUTS} from "../../utils/breadboard/extras/layouts";
 
-import AsynchronousModel, {listen, connect} from "../../core/base/model/AsynchronousModel";
 import {ModelState} from "../../core/base/model/Model";
 import {ModelEvent} from "../../core/base/Event";
+
+import AsynchronousModel, {
+    listen,
+    connect,
+    disconnect,
+    timeout,
+    waiting
+} from "../../core/base/model/AsynchronousModel";
 
 // Event channels
 const enum ChannelsTo {
@@ -100,6 +107,23 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.setState({layout_confirmed: false});
         const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
+
+        this.emit(new BoardStatusEvent({status: 'connected'}));
+    }
+
+    @disconnect()
+    private reportDisconnection() {
+        this.emit(new BoardStatusEvent({status: 'disconnected'}));
+    }
+
+    @timeout()
+    private reportConnectionTimeout() {
+        this.emit(new BoardStatusEvent({status: 'timeout'}));
+    }
+
+    @waiting()
+    private reportWaiting() {
+        this.emit(new BoardStatusEvent({status: 'waiting'}));
     }
 
     /**
@@ -187,6 +211,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 enum PinDirection {Input = 'input', Output = 'output'}
 type ArduinoPin = [PinDirection, number];
 
+
 export type Plate = {
     id: number;
     type: string;
@@ -244,4 +269,8 @@ export class BoardOptionsEvent extends ModelEvent<BoardOptionsEvent> {
 
 export class BoardLayoutEvent extends ModelEvent<BoardLayoutEvent> {
     layout_name: string;
+}
+
+export class BoardStatusEvent extends ModelEvent<BoardStatusEvent> {
+    status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
 }

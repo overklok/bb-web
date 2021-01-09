@@ -1,11 +1,11 @@
-import {CSSTransition, Transition, TransitionGroup} from 'react-transition-group';
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
 import * as React from "react";
 import {RefObject} from "react";
 import classNames from "classnames";
 
 import Handle from "./Handle";
-import {IViewOptions, View} from "../../base/view/View";
+import {View} from "../../base/view/View";
 import Nest from "../../base/view/Nest";
 import Frame from "./Frame";
 import TabViewComposer from "../../base/view/viewcomposers/tab/TabViewComposer";
@@ -166,6 +166,7 @@ export default class Pane extends React.Component<IProps, IState> {
         }
 
         this.parseSizes();
+        this.setInitialCssChild();
     }
 
     /**
@@ -178,7 +179,7 @@ export default class Pane extends React.Component<IProps, IState> {
         // Класс начала анимации входа задаёт панели нулевой размер, и к завершению входа этот класс будет убран.
         // Поскольку у свободных элементов размер вычисляется через flex, они не будут развёрнуты, если не вызывать
         // эту функцию.
-        this.setInitialCssChild();
+        // this.setInitialCssChild();
     }
 
     /**
@@ -199,7 +200,7 @@ export default class Pane extends React.Component<IProps, IState> {
     childWillLeave() {
         // Для применения эффекта выхода необходимо заново рассчитать размеры дочерних панелей на
         // основе новых (нулевых) значений CSS-атрибутов панелей, которые будут удалены.
-        this.recalcChild();
+        // this.recalcChild();
     }
 
     childDidLeave() {
@@ -225,8 +226,7 @@ export default class Pane extends React.Component<IProps, IState> {
         this.div_element.style.minWidth     = null;
         this.div_element.style.maxHeight    = null;
         this.div_element.style.maxWidth     = null;
-        this.div_element.style.height       = null;
-        this.div_element.style.width        = null;
+        this.div_element.style.flexBasis    = null;
 
         if (this.is_vertical) {
             this.div_element.style.minHeight    = this.size_min ? this.size_min + this.size_min_unit : null;
@@ -241,18 +241,14 @@ export default class Pane extends React.Component<IProps, IState> {
         }
 
         if (this.size == 0) {
-            this.div_element.style.width = null;
+            this.div_element.style.flexBasis = "0";
             this.div_element.style.flexGrow = null;
             return;
         }
 
-        if (this.is_vertical) {
-            this.div_element.style.height   = this.size ? this.size + this.size_unit : null;
-        } else {
-            this.div_element.style.width    = this.size ? this.size + this.size_unit : null;
-        }
+        this.div_element.style.flexBasis = this.size ? this.size + this.size_unit : null;
 
-        this.div_element.style.flexGrow = "0";
+        this.div_element.style.flexGrow = "1";
     }
 
     setInitialCssChild() {
@@ -287,21 +283,17 @@ export default class Pane extends React.Component<IProps, IState> {
         for (const [i, ref] of this.panes.entries()) {
             const pane = ref.current;
 
-            if (this.is_vertical) {
-                pane.div_element.style.width = sizes[i] * 100 + '%';
-            } else {
-                pane.div_element.style.height = sizes[i] * 100 + '%';
-            }
+            pane.div_element.style.flexBasis = sizes[i] * 100 + '%';
         }
     }
-    
+
     notifyResizePanes() {
         for (const pane of this.panes) {
             if (pane.current) {
                 pane.current.notifyResizePanes();
             }
         }
-        
+
         for (const nest of this.nests) {
             if (nest.current) {
                 nest.current.notifyResizeView();
@@ -333,6 +325,7 @@ export default class Pane extends React.Component<IProps, IState> {
             'pane_animated': this.state.animated,
             'pane-sizemin': this.props.size_min,
             'pane-sizemax': this.props.size_max,
+            'pane_youngest': this.props.panes.length === 0,
         });
 
         // Компоненты, лежащие внутри Pane
@@ -350,9 +343,9 @@ export default class Pane extends React.Component<IProps, IState> {
         return (
             <div className={klasses} ref={div_element => {this.div_element = div_element}}>
                 {/*Показывать обложку для панели, если в ней нет вложенных панелей*/}
-                <Cover enabled={!this.panes.length && this.state.covered}
-                       title={this.props.title}
-                />
+                {/*<Cover enabled={!this.panes.length && this.state.covered}*/}
+                {/*       title={this.props.title}*/}
+                {/*/>*/}
                 {components}
             </div>
         );
@@ -472,7 +465,8 @@ export default class Pane extends React.Component<IProps, IState> {
                 key={index}
                 index={index}
                 view_type={widget.view_type}
-                view_options={widget.view_options}
+                view_props={widget.view_props}
+                nest_style={widget.nest_style}
                 connector={widget.connector}
                 label={widget.label}
                 ref={ref}
@@ -521,8 +515,8 @@ export default class Pane extends React.Component<IProps, IState> {
         const div_next = pane_next.div_element;
 
         // Старые размеры панелей в процентах
-        const size_prev_old_perc = Number((this.is_vertical ? div_prev.style.width : div_prev.style.height).slice(0, -1)),
-              size_next_old_perc = Number((this.is_vertical ? div_next.style.width : div_next.style.height).slice(0, -1));
+        const size_prev_old_perc = Number((div_prev.style.flexBasis).slice(0, -1)),
+              size_next_old_perc = Number((div_next.style.flexBasis).slice(0, -1));
 
         // Старые размеры панелей в пикселях
         const size_prev_old_px = this.is_vertical ? div_prev.clientWidth : div_prev.clientHeight,
@@ -579,13 +573,8 @@ export default class Pane extends React.Component<IProps, IState> {
         let size_prev_new = size_prev_old_perc + movement_perc,
             size_next_new = size_next_old_perc - movement_perc;
 
-        if (this.is_vertical) {
-            div_prev.style.width = size_prev_new + '%';
-            div_next.style.width = size_next_new + '%';
-        } else {
-            div_prev.style.height = size_prev_new + '%';
-            div_next.style.height = size_next_new + '%';
-        }
+        div_prev.style.flexBasis = size_prev_new + '%';
+        div_next.style.flexBasis = size_next_new + '%';
 
         /*
          * Методу, вызывающему этот обработчик, необходимо сообщить о возможном овердраге,

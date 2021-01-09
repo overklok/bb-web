@@ -3,7 +3,7 @@ import Application from "./core/Application";
 import IViewService from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
 
-import ServiceProvider from "./core/providers/ServiceProvider";
+import IServiceProvider from "./core/providers/ServiceProvider";
 import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
@@ -25,6 +25,7 @@ import widgets_config from "./configs/playground/widgets";
 import ModalModel from "./core/models/ModalModel";
 import CodeModel from "./models/common/CodeModel";
 import KeyboardModel from "./core/models/KeyboardModel";
+import IEventService from "./core/services/interfaces/IEventService";
 
 class PlaygroundApplication extends Application {
     public bb: BoardModel;
@@ -33,7 +34,7 @@ class PlaygroundApplication extends Application {
     private ads: AdaptiveAsyncDatasource;
     private dds: DummyDatasource;
 
-    protected providerClasses(): Array<typeof ServiceProvider> {
+    protected providerClasses(): Array<IServiceProvider> {
         return [
             ViewServiceProvider,
             ModelServiceProvider,
@@ -42,12 +43,23 @@ class PlaygroundApplication extends Application {
     }
 
     protected setup() {
+        const svc_event = this.instance(IEventService);
+
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             new SocketDatasource('127.0.0.1', 8005),
         ]);
 
         this.dds = new DummyDatasource();
+
+        const svc_model = this.instance(IModelService);
+
+        svc_model.launch(this.ads);
+        svc_model.register(KeyboardModel, this.dds);
+        svc_model.register(ModalModel, this.dds);
+        svc_model.register(LayoutModel, this.dds, layouts_config);
+        svc_model.register(CodeModel, this.ads);
+        svc_model.register(BoardModel, this.ads);
     }
 
     async run(element: HTMLElement) {
@@ -56,20 +68,21 @@ class PlaygroundApplication extends Application {
         const svc_view = this.instance(IViewService),
               svc_model = this.instance(IModelService);
 
-        svc_view.registerWidgetTypes(widgets_config);
-
-        svc_model.register(KeyboardModel, this.dds);
-        svc_model.register(ModalModel, this.dds);
-        svc_model.register(LayoutModel, this.dds, layouts_config);
-        svc_model.register(CodeModel, this.ads);
-
-        svc_model.launch(this.ads);
-        svc_model.register(BoardModel, this.ads);
+        svc_view.setRootWidgets(widgets_config.composer, widgets_config.root);
+        svc_view.registerWidgetTypes(widgets_config.widgets);
 
         this.bb = svc_model.retrieve(BoardModel);
         this.cm = svc_model.retrieve(CodeModel);
 
         this.instance(IViewService).compose(element);
+    }
+
+    get views() {
+        return this.instance(IViewService).getViews();
+    }
+
+    get models() {
+        return this.instance(IModelService).getModels();
     }
 }
 

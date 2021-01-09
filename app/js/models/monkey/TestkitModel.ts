@@ -3,6 +3,11 @@ import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
 import {TestKit, TestKitItemQuanitites} from "./types";
 import {ModelEvent} from "../../core/base/Event";
 import {Plate} from "../common/BoardModel";
+import PlateLayer from "../../utils/breadboard/layers/PlateLayer";
+import BridgePlate from "../../utils/breadboard/plates/BridgePlate";
+import ResistorPlate from "../../utils/breadboard/plates/ResistorPlate";
+import CapacitorPlate from "../../utils/breadboard/plates/CapacitorPlate";
+import LEDPlate from "../../utils/breadboard/plates/LEDPlate";
 
 export class TestkitChangeEvent extends ModelEvent<TestkitChangeEvent> {
     qtys: TestKitItemQuanitites;
@@ -23,21 +28,21 @@ interface TestkitModelState {
 
 export default class TestkitModel extends Model<TestkitModelState, DummyDatasource> {
     static FullTestKit: TestKit = [
-        {title: 'Перемычка-2',          type: 'bridge',         quantity: 1, properties: {length: 2}},
-        {title: 'Перемычка-3',          type: 'bridge',         quantity: 1, properties: {length: 3}},
-        {title: 'Перемычка-4',          type: 'bridge',         quantity: 1, properties: {length: 4}},
-        {title: 'Перемычка-5',          type: 'bridge',         quantity: 1, properties: {length: 5}},
+        {title: 'Перемычка-2',          type: 'bridge',         quantity: 1, properties: {[BridgePlate.PROP_LENGTH]: 2}},
+        {title: 'Перемычка-3',          type: 'bridge',         quantity: 1, properties: {[BridgePlate.PROP_LENGTH]: 3}},
+        {title: 'Перемычка-4',          type: 'bridge',         quantity: 1, properties: {[BridgePlate.PROP_LENGTH]: 4}},
+        {title: 'Перемычка-5',          type: 'bridge',         quantity: 1, properties: {[BridgePlate.PROP_LENGTH]: 5}},
 
-        {title: 'Резистор 100 Ом',      type: 'resistor',       quantity: 1, properties: {res: 100}},
-        {title: 'Резистор 1 кОм',       type: 'resistor',       quantity: 0, properties: {res: 1000}},
-        {title: 'Резистор 3 кОм',       type: 'resistor',       quantity: 0, properties: {res: 3000}},
-        {title: 'Резистор 10 кОм',      type: 'resistor',       quantity: 0, properties: {res: 10000}},
+        {title: 'Резистор 100 Ом',      type: 'resistor',       quantity: 1, properties: {[ResistorPlate.PROP_RESISTANCE]: 100}},
+        {title: 'Резистор 1 кОм',       type: 'resistor',       quantity: 0, properties: {[ResistorPlate.PROP_RESISTANCE]: 1000}},
+        {title: 'Резистор 3 кОм',       type: 'resistor',       quantity: 0, properties: {[ResistorPlate.PROP_RESISTANCE]: 3000}},
+        {title: 'Резистор 10 кОм',      type: 'resistor',       quantity: 0, properties: {[ResistorPlate.PROP_RESISTANCE]: 10000}},
 
-        {title: 'Конденсатор 100 мкФ',  type: 'capacitor',      quantity: 1, properties: {cap: 1e-4}},
-        {title: 'Конденсатор 1000 мкФ', type: 'capacitor',      quantity: 1, properties: {cap: 1e-3}},
+        {title: 'Конденсатор 100 мкФ',  type: 'capacitor',      quantity: 1, properties: {[CapacitorPlate.PROP_CAPACITANCE]: 1e-4}},
+        {title: 'Конденсатор 1000 мкФ', type: 'capacitor',      quantity: 1, properties: {[CapacitorPlate.PROP_CAPACITANCE]: 1e-3}},
 
-        {title: 'Светодиод (красный)',  type: 'LED',            quantity: 1, properties: {clr: 'R'}},
-        {title: 'Светодиод (зелёный)',  type: 'LED',            quantity: 1, properties: {clr: 'G'}},
+        {title: 'Светодиод (красный)',  type: 'LED',            quantity: 1, properties: {[LEDPlate.PROP_COLOUR]: 'R'}},
+        {title: 'Светодиод (зелёный)',  type: 'LED',            quantity: 1, properties: {[LEDPlate.PROP_COLOUR]: 'G'}},
 
         {title: 'Кнопка',               type: 'button',         quantity: 1},
         {title: 'Ключ',                 type: 'switch',         quantity: 1},
@@ -61,6 +66,8 @@ export default class TestkitModel extends Model<TestkitModelState, DummyDatasour
 
     setQuantities(qtys: TestKitItemQuanitites, size: number, size_deviation: number) {
         this.setState({qtys, size, size_deviation});
+
+
 
         this.emit(new TestkitChangeEvent({qtys, size, size_deviation}));
     }

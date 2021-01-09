@@ -1,0 +1,93 @@
+@import '../../colors';
+@import '../../animations';
+
+.btn {
+  display: inline-block;
+  padding: .375rem .75rem;
+  font-size: 1em;
+
+  border-radius: .125em;
+
+  cursor: pointer;
+  user-select: none;
+
+  text-align: center;
+
+  transition: color .5s,
+              background-color .5s,
+              transform ease-in-out .5s;
+
+  &:active, &.btn-active {
+    transform: scale(0.95);
+  }
+
+  &.btn_sm {
+    font-size: 0.725rem;
+  }
+
+  &.btn_default {
+    background-color: @default;
+    color: @text_light;
+
+    &:hover {background-color: @default_deep;}
+  }
+
+  &.btn_primary {
+    background-color: @primary;
+    color: @text_light;
+
+    &:hover {background-color: @primary_deep;}
+  }
+
+  &.btn_inv.btn_primary {
+    background-color: @text_light;
+    color: @primary;
+  }
+
+  &.btn_success {
+    background-color: @success;
+    color: @text_light;
+
+    &:hover {background-color: @success_deep;}
+  }
+
+  &.btn_warning {
+    background-color: @warning;
+    color: @text_dark;
+
+    &:hover {background-color: @warning_deep;}
+  }
+
+  &.btn_danger {
+    background-color: @danger;
+    color: @text_light;
+
+    &:hover {background-color: @danger_deep;}
+  }
+
+  &.btn_disabled {
+    background-color: #cecece;
+    color: #a7a7a7;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &.btn_contoured {
+    border-color: @light;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 1/4em;
+  }
+}
+
+.btn-bar {
+  display: inline-block;
+
+  &.btn-bar_right {
+    float: right;
+  }
+
+  > .btn {
+    margin: 5px;
+  }
+}

@@ -1,17 +1,17 @@
-import ServiceProvider from "./providers/ServiceProvider";
-import IBindable from "./helpers/IBindable";
+import IServiceProvider, {ServiceProvider} from "./providers/ServiceProvider";
+import IConstructable from "./helpers/IConstructable";
 import {coverOptions} from "./helpers/functions";
 
 // passed by DefinePlugin in Webpack config
-declare var __VERSION__: string;
+declare const __VERSION__: string;
 
 export interface AppConf {}
 
 export default abstract class Application<AC extends AppConf = AppConf> {
     protected config: AppConf;
 
-    private bindings:   Map<string|IBindable, Function> = new Map();
-    private instances:  Map<string|IBindable, any>      = new Map();
+    private bindings:   Map<any, Function> = new Map();
+    private instances:  Map<any, any>      = new Map();
 
     private providers:  Array<ServiceProvider> = [];
 
@@ -20,9 +20,10 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     constructor(config?: AppConf) {
         this.configure(config);
 
-        this.init();
+        this.initProviders();
+        this.setupProviders();
         this.setup();
-        this.boot();
+        this.bootProviders();
 
         this.version = __VERSION__;
         console.log(`Loaded ${this.version}`);
@@ -31,7 +32,7 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     /**
      * Поставщики Служб
      */
-    protected providerClasses(): Array<typeof ServiceProvider> {
+    protected providerClasses(): Array<IServiceProvider> {
         return [];
     }
 
@@ -42,7 +43,7 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     /**
      * Инициализировать Приложение
      */
-    protected init() {
+    private initProviders() {
         // регистрация Служб
         for (const provider_class of this.providerClasses()) {
             const provider = new provider_class(this);
@@ -56,9 +57,19 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     protected setup(): void {};
 
     /**
-     * Запустить Приложение
+     * Настроить службы
      */
-    protected boot() {
+    private setupProviders() {
+        // настройка Служб
+        for (const provider of this.providers) {
+            provider.setup();
+        }
+    }
+    
+    /**
+     * Запустить службы
+     */
+    private bootProviders() {
         // запуск Служб
         for (const provider of this.providers) {
             provider.boot();
@@ -72,23 +83,25 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     /**
      * Зарегистрировать обвязку
      */
-    public bind<V extends IBindable>(abstrakt: V|string, concrete: Function) {
+    public bind<V extends IConstructable>(abstrakt: V|string, concrete: Function) {
         this.bindings.set(abstrakt, concrete);
     }
 
-    public instance<V extends IBindable>(abstrakt: V|string): InstanceType<V> {
+    public instance<V extends IConstructable>(abstrakt: V|string, throw_error: boolean = true): InstanceType<V> {
         const inst = this.instances.get(abstrakt);
 
         if (inst == null) {
             const itypename = typeof abstrakt === 'string' ? abstrakt : abstrakt.name;
 
-            throw new Error(`InstanceType "${itypename}" has not been binded to this application`);
+            if (throw_error) {
+                throw new Error(`InstanceType "${itypename}" has not been bound to this application`);
+            }
         }
 
         return inst;
     }
 
-    public exists<V extends IBindable>(abstrakt: V|string): boolean {
+    public exists<V extends IConstructable>(abstrakt: V|string): boolean {
         return this.instances.has(abstrakt);
     }
 

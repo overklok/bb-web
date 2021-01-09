@@ -1,0 +1,139 @@
+/**
+  A block that can be placed inside another to display animated waves on the top of it.
+
+  Usual use case is `cask` block.
+
+  Can be used twice in the block to make multi-layered waves. To make their animations differ, an
+  alternative set of parameters supplied here.
+ */
+@import '../../colors';
+
+// Default parameters
+@wave_width:  70%;
+@wave_height: 60%;
+
+@wave_right_right: -25%;
+@wave_left_left:   -25%;
+@wave_inv_left:     15%;
+
+@wave_bottom:     44%;
+@wave_inv_bottom: 95%;
+
+@wave_bottom_down:     @wave_bottom     - 50%;
+@wave_inv_bottom_down: @wave_inv_bottom - 50%;
+
+@wave_anim_dur: 3s;
+
+
+// Alternative parameters
+@wave_alt_right_right:  @wave_right_right - 25%;
+@wave_alt_left_left:    @wave_left_left   + 25%;
+@wave_alt_inv_left:     @wave_inv_left + 25%;
+
+@wave_alt_bottom:         @wave_bottom + 4;
+@wave_alt_inv_bottom:     @wave_inv_bottom + 4;
+
+@wave_alt_bottom_down:     @wave_alt_bottom - 50%;
+@wave_alt_inv_bottom_down: @wave_inv_bottom - 50%;
+
+@wave_alt_anim_del: 1s;
+
+@wave_transition: bottom .5s ease-in-out, opacity .5s ease-out;
+
+.wavefront {
+  &::before {
+    content: '';
+    position: absolute;
+    width: @wave_width;
+    height: @wave_height;
+
+    bottom: @wave_inv_bottom;
+    left: @wave_inv_left;
+
+    background-color: @light;
+    border-radius: 50%;
+
+    transition: @wave_transition;
+    animation: wave @wave_anim_dur infinite linear;
+    animation-direction: reverse;
+  }
+
+  &_disabled&::before {
+    opacity: 0;
+  }
+
+  &__wave {
+    position: absolute;
+    width: @wave_width;
+    height: @wave_height;
+
+    background-color: @default;
+    border-radius: 50%;
+
+    transition: @wave_transition;
+    animation: wave @wave_anim_dur infinite linear;
+
+    &_right {
+      right: @wave_right_right;
+      bottom: @wave_bottom;
+    }
+
+    &_left {
+      left: @wave_left_left;
+      bottom: @wave_bottom;
+    }
+  }
+
+  &_disabled &__wave {
+    bottom: @wave_bottom_down;
+  }
+
+  &_alt {
+    opacity: .3;
+
+    &::before {
+      left: @wave_alt_inv_left;
+      bottom: @wave_alt_inv_bottom;
+      animation-delay: @wave_alt_anim_del;
+      animation-direction: normal;
+    }
+  }
+
+  &_alt&_disabled&::before {
+    opacity: 0;
+  }
+
+  &_alt &__wave {
+    &_right {
+      right: @wave_alt_right_right;
+      bottom: @wave_alt_bottom;
+      animation-delay: @wave_alt_anim_del;
+      animation-direction: reverse;
+    }
+
+    &_left  {
+      left: @wave_alt_left_left;
+      bottom: @wave_alt_bottom;
+      animation-delay: @wave_alt_anim_del;
+      animation-direction: reverse;
+    }
+  }
+
+  &_alt&_disabled &__wave {
+    bottom: @wave_alt_bottom_down;
+  }
+
+  &_fg_success        &__wave   {background-color: @success;}
+  &_fg_success-weak   &__wave   {background-color: @success_weak;}
+  &_fg_primary        &__wave   {background-color: @primary;}
+  &_fg_primary-weak   &__wave   {background-color: @primary_weak;}
+
+  &_bg_warning::before          {background-color: @warning;}
+  &_bg_warning-weak::before     {background-color: @warning_weak;}
+}
+
+
+@keyframes wave {
+  from { transform: rotate(0deg);}
+  from { transform: rotate(360deg);}
+}

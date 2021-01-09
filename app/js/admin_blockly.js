@@ -187,9 +187,7 @@ class AdminBlocklyApplication {
      * @private
      */
     _defineChains() {
-        $(document).ready(() => {
-            this.ws.inject(document.getElementById(this._container_id));
-        });
+        $(document).ready();
 
         this._dispatcher.on("ws:change", () => {
             if (typeof this._on_change_callback === 'function') {

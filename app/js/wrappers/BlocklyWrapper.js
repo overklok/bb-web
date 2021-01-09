@@ -5,8 +5,8 @@
 
 import Wrapper from '../core/Wrapper'
 
-import Blockly  from 'node-blockly/browser'
-import Ru       from 'node-blockly/lib/i18n/ru';
+import Blockly from 'blockly';
+import * as Ru from 'blockly/msg/ru';
 
 import '../../css/blockly-overrides.css';
 import '../../css/blockly-dimmer.css';
@@ -267,17 +267,15 @@ export default class BlocklyWrapper extends Wrapper {
      * Изменить размер графики Blockly
      *
      * @see https://developers.google.com/blockly/guides/configure/web/resizable
-     *
-     * @private
      */
     resize(shrink=false) {
-        this.container.style.width   = (this.area.offsetWidth - 24) + 'px';
-        this.container.style.height  = (this.area.offsetHeight - 24) + 'px';
+        this.container.style.width   = (this.area.offsetWidth) + 'px';
+        this.container.style.height  = (this.area.offsetHeight) + 'px';
         Blockly.svgResize(this.workspace);
         // this._alignHistoryBlockSequence();
 
         if (shrink && this._container_width_old) {
-            let container_width_new = this._getContainerWidth() + 48;
+            let container_width_new = this._getContainerWidth();
 
             let frac = container_width_new / this._container_width_old;
 
@@ -352,7 +350,7 @@ export default class BlocklyWrapper extends Wrapper {
      *
      * Обновляется список допустимых типов блоков в редакторе
      *
-     * @param {Array<Object>} block_types массив объектов типа {тип_блока: макс. кол-во}
+     * @param {Array<Object>|} block_types массив объектов типа {тип_блока: макс. кол-во}
      */
     updateBlockTypes(block_types) {
         if (this._read_only) return;
@@ -512,7 +510,7 @@ export default class BlocklyWrapper extends Wrapper {
      * Установить значения полей, определяющих максимально допустимое количество блоков,
      * по всем типам блоков
      *
-     * @param block_counts {Array<Object>} массив объектов типа {тип_блока: макс. кол-во}
+     * @param block_counts {Object} объект типа {тип_блока: макс. кол-во}
      */
     setBlockLimitInputsByType(block_counts) {
         if (!this.workspace) {return false}
@@ -1220,16 +1218,16 @@ export default class BlocklyWrapper extends Wrapper {
         }
 
         if (event.type === Blockly.Events.MOVE) {
-            let block = this.workspace.getBlockById(event.blockId);
-
-            if (block) {
-                let pos_x = block.getRelativeToSurfaceXY().x,
-                    flyout_width = this._getFlyoutWidth();
-
-                if (pos_x < flyout_width) {
-                    block.moveBy(flyout_width - pos_x, 0);
-                }
-            }
+            // let block = this.workspace.getBlockById(event.blockId);
+            //
+            // if (block) {
+            //     let pos_x = block.getRelativeToSurfaceXY().x,
+            //         flyout_width = this._getFlyoutWidth();
+            //
+            //     if (pos_x < flyout_width) {
+            //         block.moveBy(flyout_width - pos_x, 0);
+            //     }
+            // }
         }
 
         // if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {

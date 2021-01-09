@@ -5,15 +5,14 @@ import IEventService from "./IEventService";
 
 export default class IModelService {
     protected svc_event: IEventService;
+    protected models: Model<any, any>[];
 
     public setup(svc_event: IEventService): void {
-        this.svc_event = svc_event
+        throw new Error('abstract');
     }
 
     public launch(args: AsynchronousDatasource): void {
-        Array.from(arguments).map(
-            data_source => IModelService.launchDataSource(data_source)
-        )
+        throw new Error('abstract');
     }
     
     public register<MS extends ModelState, DS extends Datasource, MC extends ModelConstructor<MS, DS>> (
@@ -27,12 +26,7 @@ export default class IModelService {
         throw new Error('abstract');
     }
 
-    private static async launchDataSource(data_source: AsynchronousDatasource) {
-        try {
-            await data_source.init();
-            data_source.connect();
-        } catch (e) {
-            console.error(`${data_source.constructor.name} is failed to launch.`);
-        }
+    public getModels(): {[name: string]: Model<any, any>} {
+        throw new Error('abstract');
     }
 }

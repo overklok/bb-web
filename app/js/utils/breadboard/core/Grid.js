@@ -389,6 +389,8 @@ export default class Grid {
     }
 
     _initVirtualPoints(domains) {
+        if (!domains) return;
+
         for (const domain of domains) {
             if (domain.virtual) {
                 const coord_list = pointsToCoordList(domain.virtual.from, domain.virtual.to);

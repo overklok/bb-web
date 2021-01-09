@@ -1,8 +1,8 @@
 import * as React from "react";
 import Modal, {IModalProps, ModalSize, Overlay} from "./Modal";
-import {cloneDeep} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
-import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
 import Nest from "../../base/view/Nest";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import Dialog, {IDialogProps} from "./Dialog";
@@ -32,19 +32,19 @@ export interface IModal {
 }
 
 interface ModalViewState extends IViewState {
-    modals: IModal[];
+    modals: {[type: string]: IModal[]};
 }
 
-export default class ModalView extends View<IViewOptions, ModalViewState> {
-    constructor(props: IViewProps<IViewOptions>) {
+export default class ModalView extends View<IViewProps, ModalViewState> {
+    constructor(props: AllProps<IViewProps>) {
         super(props);
 
         this.state = {
-            modals: []
+            modals: {}
         };
     }
 
-    showModal(modal_data: IModal): void {
+    showModal(modal_data: IModal, type='default'): void {
         let modals_new = cloneDeep(this.state.modals);
 
         // set defaults
@@ -52,7 +52,13 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
             modal_data.is_closable = true;
         }
 
-        modals_new.push(modal_data);
+        if (!modals_new[type] || type != 'default') {
+            // for non-default channels, only one modal at a time is allowed
+            modals_new[type] = [];
+            modals_new[type].push(modal_data);
+        } else {
+            modals_new[type].push(modal_data);
+        }
 
         this.setState({
             modals: modals_new
@@ -62,38 +68,46 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
     render(): React.ReactNode {
         return (
             <TransitionGroup component={null}>
-                {this.state.modals.map((modal_data, i) => {
-                    let content: string | JSX.Element = modal_data.content;
+                {Object.keys(this.state.modals).map((modal_type, i) =>
+                    this.state.modals[modal_type].map((modal_data, i) => {
+                        let content: string | JSX.Element = modal_data.content;
 
-                    if (modal_data.widget_alias) {
-                        content = this.renderNest(modal_data.widget_alias);
-                    }
+                        if (modal_data.widget_alias) {
+                            content = this.renderNest(modal_data.widget_alias);
+                        }
 
-                    if (modal_data.dialog) {
-                        return [this.renderOverlay(i), this.renderDialogModal(i, modal_data, content)];
-                    } else {
-                        return [this.renderOverlay(i), this.renderModal(i, modal_data, content)];
-                    }
-                })}
+                        if (modal_data.dialog) {
+                            return [
+                                this.renderOverlay(modal_type, i),
+                                this.renderDialogModal(modal_type, i, modal_data, content)
+                            ];
+                        } else {
+                            return [
+                                this.renderOverlay(modal_type, i),
+                                this.renderModal(i, modal_data, content)
+                            ];
+                        }
+                    })
+                )}
             </TransitionGroup>
         )
     }
 
-    private renderOverlay(key: number): JSX.Element {
+    private renderOverlay(modal_type: string, key: number): JSX.Element {
         return (
             <CSSTransition key={'o' + key} classNames='mdl' timeout={0} unmountOnExit>
-                <Overlay onClose={() => this.onOverlayClick(key)}/>
+                <Overlay onClose={() => this.onCloseRequest(modal_type, key)}/>
             </CSSTransition>
         );
     }
 
-    private renderDialogModal(key: number, modal_data: IModal, content: string | JSX.Element) {
+    private renderDialogModal(modal_type: string, key: number, modal_data: IModal, content: string | JSX.Element) {
         const dialog_props: IDialogProps = {...modal_data, ...modal_data.dialog};
 
         return (
             <CSSTransition in out key={key} timeout={200} classNames="mdl" unmountOnExit>
                 <Modal size={modal_data.size} width={modal_data.width} height={modal_data.height}>
-                    <Dialog {...dialog_props} on_close={() => this.closeModal(key)}>
+                    <Dialog {...dialog_props} on_close={() => this.closeModal(modal_type, key)}>
                         {content}
                     </Dialog>
                 </Modal>
@@ -123,23 +137,23 @@ export default class ModalView extends View<IViewOptions, ModalViewState> {
                   index={0}
                   label={widget.label}
                   view_type={widget.view_type}
-                  view_options={widget.view_options}
+                  view_props={widget.view_props}
             />
         )
     }
 
-    private onOverlayClick(index: number) {
-        if (this.state.modals[index].is_closable) {
-            this.closeModal(index);
+    private onCloseRequest(modal_type: string, index: number) {
+        if (this.state.modals[modal_type][index].is_closable) {
+            this.closeModal(modal_type, index);
         };
     }
 
-    private closeModal(index: number) {
-        const on_close = this.state.modals[index].on_close;
+    private closeModal(modal_type: string, index: number) {
+        const on_close = this.state.modals[modal_type][index].on_close;
 
         let modals_new = cloneDeep(this.state.modals);
 
-        modals_new.splice(index);
+        modals_new[modal_type].splice(index);
 
         this.setState({
             modals: modals_new

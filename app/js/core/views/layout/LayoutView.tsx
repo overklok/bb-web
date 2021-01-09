@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import Pane, {PaneOrientation} from "./Pane";
 
 import {RefObject} from "react";
-import {IViewOptions, IViewProps, IViewState, View} from "../../base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
 import {Widget} from "../../services/interfaces/IViewService";
 import {WidgetInfo} from "../../helpers/types";
 import {ViewEvent} from "../../base/Event";
@@ -13,6 +13,9 @@ import {ViewEvent} from "../../base/Event";
 require('../../../../css/core/layout.less');
 
 export class LayoutMountEvent extends ViewEvent<LayoutMountEvent> {}
+export class LayoutFinishedEvent extends ViewEvent<LayoutFinishedEvent> {
+    mode_name: string;
+}
 
 export enum DraggableItemTypes {
     Tab = 'tab'
@@ -55,11 +58,13 @@ export interface ILayoutMode {
  */
 interface ILayoutState extends IViewState {
     // название текущего режима разметки
-    mode_name: string
+    mode_name: string;
 }
 
-interface ILayoutOptions extends IViewOptions {
-    show_headers: boolean;
+interface ILayoutProps extends IViewProps {
+    show_headers?: boolean;
+    mode_name: string;
+    modes: {[key: string]: ILayoutMode};
 }
 
 /**
@@ -69,29 +74,29 @@ interface ILayoutOptions extends IViewOptions {
  * компонуя панели в соответствии с выбранным режимом разметки.
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
  */
-export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
+export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     private pane_ref: RefObject<Pane> = React.createRef();
-    private modes: {[key: string]: ILayoutMode};
 
     private root_ref: RefObject<HTMLDivElement> = React.createRef();
-    private overlay_node: HTMLDivElement;
+    private readonly overlay_node: HTMLDivElement;
 
-    static defaultOptions: ILayoutOptions = {
-        show_headers: true
-    }
-
-    constructor(props: IViewProps<ILayoutOptions>) {
-        super(props);
-
-        this.modes = {
+    static defaultProps: ILayoutProps = {
+        show_headers: true,
+        mode_name: 'default',
+        modes: {
             default: {
                 policy: PaneOrientation.Horizontal,
                 panes: [] as ILayoutPane[],
             }
-        };
+        }
+    }
+
+
+    constructor(props: AllProps<ILayoutProps>) {
+        super(props);
 
         this.state = {
-            mode_name: 'default'
+            mode_name: props.mode_name || 'default'
         }
 
         this.overlay_node = document.createElement('div');
@@ -100,57 +105,75 @@ export default class LayoutView extends View<ILayoutOptions, ILayoutState> {
         window.addEventListener('resize', this.onResize());
     }
 
-    public setModes(modes: {[key: string]: ILayoutMode}) {
-        if (!modes) return;
-        this.modes = this.resolveWidgets(modes);
-
-        if (this.mounted) {
-            this.setState({});
-        }
-    }
-
     /**
      * Установить режим разметки
      *
      * @param mode название режима разметки из конфигурации
      */
     public setMode(mode: string) {
-        this.setState({
-            mode_name: mode
-        });
+        if (this.mounted) {
+            this.setState({
+                mode_name: mode
+            });
+        } else {
+            this.state = {
+                mode_name: mode
+            };
+        }
     }
 
     public render() {
         super.render();
 
-        const orientation = this.modes[this.state.mode_name].policy;
-
-        const panes = this.modes[this.state.mode_name].panes;
-
         return (
             <div ref={this.root_ref} className='layout'>
-                <DndProvider backend={HTML5Backend}>
-                    <Pane is_root={true}
-                          panes={panes}
-                          name='root'
-                          title='root'
-                          orientation={orientation}
-                          ref={this.pane_ref}
-                          overlay_node={this.overlay_node}
-                          show_headers={this.options.show_headers}
-                    />
-                </DndProvider>
+                {this.renderInside()}
             </div>
         );
     }
 
+    public componentDidUpdate(
+        prevProps: Readonly<AllProps<ILayoutProps>>,
+        prevState: Readonly<ILayoutState>,
+        snapshot?: any
+    ) {
+        this.emit(new LayoutFinishedEvent({mode_name: this.state.mode_name}));
+    }
+
+    protected renderInside() {
+        const modes = this.resolveWidgets(this.props.modes);
+
+        if (!modes[this.state.mode_name]) return null;
+
+        const orientation = modes[this.state.mode_name].policy;
+        const panes = modes[this.state.mode_name].panes;
+
+        return (
+            <DndProvider backend={HTML5Backend}>
+                <Pane is_root={true}
+                      panes={panes}
+                      name='root'
+                      title='root'
+                      orientation={orientation}
+                      ref={this.pane_ref}
+                      overlay_node={this.overlay_node}
+                      show_headers={this.props.show_headers}
+                />
+            </DndProvider>
+        );
+    }
+
     protected viewDidMount() {
+        super.viewDidMount();
+
         this.root_ref.current.appendChild(this.overlay_node);
 
         this.emit(new LayoutMountEvent({}));
     }
 
     protected viewWillUnmount() {
+        super.viewWillUnmount();
+
         this.root_ref.current.removeChild(this.overlay_node);
     }
 

@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 
-import {IViewProps, IViewState, View} from "../../core/base/view/View";
+import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 import "../../../css/blocks/testkit.less";
 import Breadboard from "../../utils/breadboard/Breadboard";
 
@@ -58,28 +58,28 @@ interface TestkitViewState extends IViewState {
     size_deviation: number;
 }
 
-interface TestkitViewOptions {
-    items: TestkitItem[];
+interface TestkitViewProps extends IViewProps {
+    items?: TestkitItem[];
     qtys_initial?: number[];
     size_initial?: number;
     size_deviation_initial?: number;
 }
 
-export default class TestkitView extends View<TestkitViewOptions, TestkitViewState> {
-    static defaultOptions: TestkitViewOptions = {
+export default class TestkitView extends View<TestkitViewProps, TestkitViewState> {
+    static defaultProps: TestkitViewProps = {
         items: [],
         qtys_initial: []
     }
 
-    constructor(props: IViewProps<TestkitViewOptions>) {
+    constructor(props: AllProps<TestkitViewProps>) {
         super(props);
 
         this.state = {
-            quantities: this.options.items.map((v, i) =>
-                this.options.qtys_initial[i] != null ? this.options.qtys_initial[i] : v.quantity
+            quantities: this.props.items.map((v, i) =>
+                this.props.qtys_initial[i] != null ? this.props.qtys_initial[i] : v.quantity
             ),
-            size: this.options.size_initial || 0,
-            size_deviation: this.options.size_deviation_initial || 0,
+            size: this.props.size_initial || 0,
+            size_deviation: this.props.size_deviation_initial || 0,
         }
     }
 
@@ -128,7 +128,7 @@ export default class TestkitView extends View<TestkitViewOptions, TestkitViewSta
     }
 
     public render(): React.ReactNode {
-        const {items} = this.options;
+        const {items} = this.props;
 
         return (
             <div className='testkit'>
