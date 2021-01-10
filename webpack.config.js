@@ -28,13 +28,13 @@ module.exports = (env, argv) => {
     const no_copy = !!argv.liveReload;
     const is_dev = argv.mode === "development";
     const [ver, tgt, mode] = [getVersionNumber(), getVersionTarget(env), getVersionMode(argv.mode)]
-    const VERSION = mode ? `${tgt}/${ver}-${mode} [new]` : `${tgt}/${ver} [new]`;
+    const VERSION = mode ? `${tgt}/${ver}-${mode}` : `${tgt}/${ver}`;
 
     console.info("Building", VERSION);
 
     return {
         entry: getEntries(env),
-        devtool: is_dev ? 'eval-source-map' : 'eval-cheap-source-map',
+        devtool: is_dev ? 'eval' : 'source-map',
         optimization: {
             minimizer: getMinimizer(is_dev)
         },
@@ -196,6 +196,13 @@ function getCopypaths(env, is_dev, no_copy) {
 
     const settings = [
         {
+            enable: env.main === true,
+            paths: [
+                dotenv.parsed.PATH_DIST_MAIN,
+            ],
+            entry: 'main'
+        },
+        {
             enable: env.board === true,
             paths: [
                 dotenv.parsed.PATH_DIST_BOARD,
@@ -214,7 +221,6 @@ function getCopypaths(env, is_dev, no_copy) {
             paths: [dotenv.parsed.PATH_DIST_PLAYGROUND],
             entry: 'playground'
         }
-
     ]
 
     console.log("Copy settings", settings);
@@ -230,9 +236,20 @@ function getCopypaths(env, is_dev, no_copy) {
                         from: `./dist/${setting.entry}.js`,
                         to: path + `/${setting.entry}.js`
                     },
+                    {
+                        from: `./dist/${setting.entry}.css`,
+                        to: path + `/${setting.entry}.css`
+                    },
                 ];
 
-                if (is_dev) {
+                if (setting.entry === 'main') {
+                    copypaths = [...copypaths,
+                        {from: './dist/fonts/*', to: path + '/fonts'},
+                        // {from: './dist/images', to: path + '/images'}
+                    ]
+                }
+
+                if (!is_dev) {
                     copypaths = [...copypaths,
                         {
                             from: `./dist/${setting.entry}.js.map`,
@@ -242,6 +259,13 @@ function getCopypaths(env, is_dev, no_copy) {
                 }
             }
         }
+    }
+
+    if (env.main === true && dotenv.parsed.PATH_DIST_MAIN) {
+        copypaths = [...copypaths,
+            {from: './app/fonts/',          to: './fonts'},
+            {from: './app/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts'},
+        ];
     }
 
     return copypaths;
