@@ -23,7 +23,10 @@ const enum ChannelsFrom {
     Error = 'error',
     Plates = 'draw_plates',
     Currents = 'draw_currents',
-    BoardLayoutName = 'board-layout-name'
+    BoardConnected = 'board-connect',
+    BoardSearching = 'board-search',
+    BoardDisconnected = 'board-disconnect',
+    BoardLayoutName = 'board-layout-name',
 }
 
 interface BreadboardModelState extends ModelState {
@@ -46,6 +49,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         arduino_pins: [],
         layout_name: 'v8x',
         layout_confirmed: false,
+        allow_disconnected: false,
     }
 
     /**
@@ -108,22 +112,22 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
 
+        // this.emit(new BoardStatusEvent({status: 'connected'}));
+    }
+
+    @listen(ChannelsFrom.BoardConnected)
+    private reportConnection() {
         this.emit(new BoardStatusEvent({status: 'connected'}));
     }
 
-    @disconnect()
+    @listen(ChannelsFrom.BoardDisconnected)
     private reportDisconnection() {
         this.emit(new BoardStatusEvent({status: 'disconnected'}));
     }
 
-    @timeout()
-    private reportConnectionTimeout() {
-        this.emit(new BoardStatusEvent({status: 'timeout'}));
-    }
-
-    @waiting()
-    private reportWaiting() {
-        this.emit(new BoardStatusEvent({status: 'waiting'}));
+    @listen(ChannelsFrom.BoardSearching)
+    private reportSearching() {
+        this.emit(new BoardStatusEvent({status: 'searching'}));
     }
 
     /**
@@ -272,5 +276,5 @@ export class BoardLayoutEvent extends ModelEvent<BoardLayoutEvent> {
 }
 
 export class BoardStatusEvent extends ModelEvent<BoardStatusEvent> {
-    status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
+    status: 'connected' | 'disconnected' | 'searching';
 }

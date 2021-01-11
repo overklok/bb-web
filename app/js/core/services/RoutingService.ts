@@ -54,7 +54,7 @@ export default class RoutingService extends IRoutingService {
             return await this.router.redirect(path);
         } catch (e) {
             console.error(e);
-            await this.svc_event.emit(new GenericErrorEvent({error: e}));
+            await this.svc_event.emitAsync(new GenericErrorEvent({error: e}));
         }
     }
 }

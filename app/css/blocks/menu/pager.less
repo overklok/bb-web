@@ -62,6 +62,14 @@ ul.pager__list {
   /* Hide scrollbar for IE, Edge and Firefox */
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
+
+  &::before, &::after {
+    content: ' ';
+    width: 5px;
+    height: 5px;
+    position: relative;
+    display: inline-table; /* to give it a height */
+  }
 }
 
 li.pager__item {

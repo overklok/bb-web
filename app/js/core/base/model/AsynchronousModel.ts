@@ -3,13 +3,15 @@ import AsynchronousDatasource, {AsyncDatasourceStatus} from "./datasources/Async
 import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
 
-export function listen(channel: string) {
+export function listen(...channels: string[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (target.handlers == null) {
             target.handlers = {};
         }
 
-        target.handlers[channel] = target[propertyKey];
+        for (const channel of channels) {
+            target.handlers[channel] = target[propertyKey];
+        }
 
         return target;
     }

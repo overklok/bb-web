@@ -54,12 +54,16 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
         return cloneDeep(this.state);
     }
 
-    protected emit<E>(evt: ModelEvent<E>) {
+    protected emitAsync<E>(evt: ModelEvent<E>) {
         if (!this.svc_event) {
             console.warn("Rejected to pass event because there is no active instances of event service", evt);
             return;
         }
 
+        return this.svc_event.emitAsync(evt);
+    }
+
+    protected emit<E>(evt: ModelEvent<E>) {
         return this.svc_event.emit(evt);
     }
 }

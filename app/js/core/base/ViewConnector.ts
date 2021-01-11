@@ -140,7 +140,7 @@ export default class ViewConnector {
     emit<E>(event: ViewEvent<E>) {
         const anchor = this.getEventAnchorByInstance(event);
 
-        return this.svc_event.emit(event, anchor);
+        return this.svc_event.emitAsync(event, anchor);
     }
 
     /**
@@ -203,7 +203,7 @@ export default class ViewConnector {
                         return (presenter as any)[method_name](...arguments);
                     } catch (e) {
                         console.error(e);
-                        svc_event.emit(new GenericErrorEvent({error: e}));
+                        svc_event.emitAsync(new GenericErrorEvent({error: e}));
                     }
                 };
 
@@ -211,7 +211,7 @@ export default class ViewConnector {
                     await this.svc_event.subscribe(event_type, presenter_method_handler, anchor, restorable);
                 } catch (e) {
                     console.error(e);
-                    await svc_event.emit(new GenericErrorEvent({error: e}));
+                    await svc_event.emitAsync(new GenericErrorEvent({error: e}));
                 }
 
                 this.handlers.push([event_type, presenter_method_handler]);

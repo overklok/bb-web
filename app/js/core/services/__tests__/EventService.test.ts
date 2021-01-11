@@ -26,7 +26,7 @@ test('runs global-anchored handlers for globally-emitted events', () => {
     event_svc.subscribe(FooEvent, handler);
 
     // emit globally
-    event_svc.emit(new FooEvent());
+    event_svc.emitAsync(new FooEvent());
 
     expect(handler).toHaveBeenCalled();
 });
@@ -36,7 +36,7 @@ test('runs local-anchored handlers for locally-emitted events', () => {
     event_svc.subscribe(FooEvent, handler, anchor_local);
 
     // emit locally
-    event_svc.emit(new FooEvent(), anchor_local);
+    event_svc.emitAsync(new FooEvent(), anchor_local);
 
     expect(handler).toHaveBeenCalled();
 });
@@ -46,7 +46,7 @@ test('does not run local-anchored handlers for globally-emitted events', () => {
     event_svc.subscribe(FooEvent, handler, anchor_local);
 
     // emit globally
-    event_svc.emit(new FooEvent());
+    event_svc.emitAsync(new FooEvent());
 
     expect(handler).toBeCalledTimes(0);
 });
@@ -56,7 +56,7 @@ test('does not run global-anchored handlers for locally-emitted events', () => {
     event_svc.subscribe(FooEvent, handler);
 
     // emit locally
-    event_svc.emit(new FooEvent(), anchor_local);
+    event_svc.emitAsync(new FooEvent(), anchor_local);
 
     expect(handler).toBeCalledTimes(0);
 });
@@ -71,7 +71,7 @@ test('runs multiple handlers for the same event type', () => {
     event_svc.subscribe(FooEvent, handler1);
     event_svc.subscribe(FooEvent, handler2);
 
-    event_svc.emit(new FooEvent());
+    event_svc.emitAsync(new FooEvent());
 
     expect(handler1).toBeCalledTimes(1);
     expect(handler2).toBeCalledTimes(1);
@@ -82,7 +82,7 @@ test('runs handler once for a specific event even if subscribed multiple times',
     event_svc.subscribe(FooEvent, handler);
     event_svc.subscribe(FooEvent, handler);
 
-    event_svc.emit(new FooEvent());
+    event_svc.emitAsync(new FooEvent());
 
     expect(handler).toBeCalledTimes(1);
 });
@@ -93,11 +93,11 @@ test('runs handler same times as a number of events emitted', () => {
     event_svc.subscribe(BarEvent, handler);
 
     // it should react twice for the same event
-    event_svc.emit(new FooEvent());
-    event_svc.emit(new FooEvent());
+    event_svc.emitAsync(new FooEvent());
+    event_svc.emitAsync(new FooEvent());
 
     // and another time for another type of event
-    event_svc.emit(new BarEvent());
+    event_svc.emitAsync(new BarEvent());
 
     expect(handler).toBeCalledTimes(3);
 });
@@ -108,7 +108,7 @@ test('runs handler same times as a number of events emitted', () => {
 
 test('re-emits last previously emitted event after subscription when required', () => {
     // emit first
-    event_svc.emit(new FooEvent(), anchor_local);
+    event_svc.emitAsync(new FooEvent(), anchor_local);
 
     // handle with automatic re-emitting last previously emitted event of this type
     event_svc.subscribe(FooEvent, handler, anchor_local, true);
@@ -118,7 +118,7 @@ test('re-emits last previously emitted event after subscription when required', 
 
 test('does not re-emit last previously emitted event after subscription when required for global anchors', () => {
     // emit first
-    event_svc.emit(new FooEvent());
+    event_svc.emitAsync(new FooEvent());
 
     // handle with automatic re-emitting last previously emitted event of this type
     event_svc.subscribe(FooEvent, handler, null, true);
@@ -134,12 +134,12 @@ test('runs handlers of parent event type subscriptions', () => {
     event_svc.subscribe(BarEvent, handler);
 
     // emit event of SubBarEvent, BarEvent's child
-    event_svc.emit(new SubBarEvent());
+    event_svc.emitAsync(new SubBarEvent());
 
     expect(handler).toBeCalledTimes(1);
 
     // it even should work recursively
-    event_svc.emit(new SubSubBarEvent());
+    event_svc.emitAsync(new SubSubBarEvent());
 
     expect(handler).toBeCalledTimes(2);
 });

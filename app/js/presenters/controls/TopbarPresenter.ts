@@ -2,7 +2,8 @@ import Presenter, {on, restore} from "../../core/base/Presenter";
 import TopbarView from "../../views/controls/TopbarView";
 import LessonModel from "../../models/LessonModel";
 import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
-import {BoardStatus} from "../../views/controls/topbar/StatusIndicator";
+import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";
+import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
 import {BoardStatusEvent} from "../../models/common/BoardModel";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
@@ -19,17 +20,25 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
             lesson_title: lesson.name,
             missions: lesson.missions,
             progress: this.model_progress.getState(),
-            board_status: BoardStatus.Default,
+            status: ConnectionStatus.Unknown,
+        }
+    }
+
+    @on(ConnectionStatusEvent)
+    private showCoreConnection(evt: ConnectionStatusEvent) {
+        switch (evt.status) {
+            case "disconnected":    this.setViewProps({status: ConnectionStatus.Disconnected}); break;
+            case "timeout":         this.setViewProps({status: ConnectionStatus.Disconnected}); break;
+            case "waiting":         this.setViewProps({status: ConnectionStatus.Waiting}); break;
         }
     }
 
     @on(BoardStatusEvent)
-    private showBoardConnected(evt: BoardStatusEvent) {
+    private showBoardConnection(evt: BoardStatusEvent) {
         switch (evt.status) {
-            case "waiting":         this.setViewProps({board_status: BoardStatus.Waiting}); break;
-            case "timeout":         this.setViewProps({board_status: BoardStatus.Disconnected}); break;
-            case "connected":       this.setViewProps({board_status: BoardStatus.Connected}); break;
-            case "disconnected":    this.setViewProps({board_status: BoardStatus.Disconnected}); break;
+            case "disconnected":    this.setViewProps({status: ConnectionStatus.BoardDisconnected}); break;
+            case "connected":       this.setViewProps({status: ConnectionStatus.BoardConnected}); break;
+            case "searching":       this.setViewProps({status: ConnectionStatus.BoardSearching}); break;
         }
     }
 

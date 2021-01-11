@@ -35,6 +35,7 @@ import CodeModel from "./models/common/CodeModel";
 import ProgressModel from "./models/ProgressModel";
 import KeyboardModel from "./core/models/KeyboardModel";
 import CSRFMiddleware from "./core/models/middlewares/CSRFMiddleware";
+import ConnectionModel from "./models/common/ConnectionModel";
 
 interface MainAppConf {
     is_demo: boolean;
@@ -83,6 +84,7 @@ class MainApplication extends Application<MainAppConf> {
         svc_model.register(CourseModel, hds);
         svc_model.register(LessonModel, hds);
 
+        svc_model.register(ConnectionModel, ads);
         svc_model.register(CodeModel,       ads);
         svc_model.register(BoardModel,      ads);
 

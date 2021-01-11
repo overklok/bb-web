@@ -8,7 +8,7 @@ require('../../../../css/blocks/menu/indicator.less');
 require('../../../../css/blocks/menu/popup.less');
 
 interface IProps {
-    status: BoardStatus;
+    status: ConnectionStatus;
 }
 
 interface IState {
@@ -17,12 +17,13 @@ interface IState {
     is_popup_visible: boolean;
 }
 
-export const enum BoardStatus {
-    Default,
-    Connected,
-    Waiting,
+export const enum ConnectionStatus {
+    Unknown,
     Disconnected,
-    NoServer
+    Waiting,
+    BoardConnected,
+    BoardSearching,
+    BoardDisconnected
 }
 
 
@@ -36,7 +37,7 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         super(props);
 
         this.state = {
-            is_popup_visible: this.props.status !== BoardStatus.Connected,
+            is_popup_visible: this.props.status !== ConnectionStatus.BoardConnected,
             left: 0,
             top: 0
         };
@@ -48,11 +49,11 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         this.ref_popup = React.createRef();
 
         this.details = {
-            [BoardStatus.Default]:      ['default',   'Проверка подключения...', (): null => null],
-            [BoardStatus.Connected]:    ['success',   'Доска подключена',        this.renderContentConnected],
-            [BoardStatus.Waiting]:      ['waiting',   'Ожидание подключения...', this.renderContentWaiting],
-            [BoardStatus.Disconnected]: ['danger',    'Доска отключена',         this.renderContentDisconnected],
-            [BoardStatus.NoServer]:     ['default',   'Невозможно подключиться', this.renderContentNoServer]
+            [ConnectionStatus.Unknown]:           ['default', 'Проверка подключения...', (): null => null],
+            [ConnectionStatus.Waiting]:           ['warning', 'Ожидание подключения...', this.renderWaiting],
+            [ConnectionStatus.Disconnected]:      ['default', 'Подключение недоступно',  this.renderNoCore],
+            [ConnectionStatus.BoardConnected]:    ['success', 'Доска подключена',        this.renderConnected],
+            [ConnectionStatus.BoardDisconnected]: ['danger',  'Доска отключена',         this.renderDisconnected]
         }
     }
 
@@ -124,10 +125,10 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
 
         const icon_klasses = classNames({
             'fas': true,
-            'fa-check-circle text-success':         this.props.status === BoardStatus.Connected,
-            'fa-exclamation-circle text-warning':   this.props.status === BoardStatus.Waiting,
-            'fa-times-circle text-danger':          this.props.status === BoardStatus.Disconnected,
-            'fa-circle-notch text-default':         this.props.status === BoardStatus.NoServer,
+            'fa-check-circle text-success':         this.props.status === ConnectionStatus.BoardConnected,
+            'fa-exclamation-circle text-warning':   this.props.status === ConnectionStatus.Waiting,
+            'fa-times-circle text-danger':          this.props.status === ConnectionStatus.BoardDisconnected,
+            'fa-circle-notch text-default':         this.props.status === ConnectionStatus.Disconnected,
         });
 
         const popup_klasses = classNames({
@@ -159,8 +160,8 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         )
     }
 
-    renderContentConnected()        {return <p>Теперь можно выполнять упражнения по электронике.</p>}
-    renderContentWaiting(): void    {return null}
-    renderContentDisconnected()     {return <p>Подключите доску, используя кабель USB.</p>}
-    renderContentNoServer()         {return <p>Произошла внутренняя ошибка.</p>}
+    renderConnected()        {return <p>Теперь можно выполнять упражнения по электронике.</p>}
+    renderDisconnected()     {return <p>Подключите доску, используя кабель USB.</p>}
+    renderWaiting(): void    {return null}
+    renderNoCore()           {return <p>Не удалось подключиться к ядру.</p>}
 }

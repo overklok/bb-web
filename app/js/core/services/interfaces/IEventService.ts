@@ -79,8 +79,13 @@ export default class IEventService {
      * @param event         an instance of Event for which handlers will be fired
      * @param anchor        an object that will be used to filter handlers to fire
      */
-    public async emit<E extends AbstractEvent<E>>(
+    public async emitAsync<E extends AbstractEvent<E>>(
         event: E,
         anchor?: any
     ): Promise<void> {throw new Error('abstract')}
+
+    public emit<E extends AbstractEvent<E>>(
+        event: E,
+        anchor?: any
+    ): void {throw new Error('abstract')}
 }
