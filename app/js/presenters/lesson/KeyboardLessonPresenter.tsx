@@ -1,4 +1,4 @@
-import LessonModel from "../../models/LessonModel";
+import LessonModel from "../../models/lesson/LessonModel";
 import KeyboardView from "../../views/common/KeyboardView";
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import KeyboardModel, {KeySeqMatchEvent, KeyUpEvent} from "../../core/models/KeyboardModel";

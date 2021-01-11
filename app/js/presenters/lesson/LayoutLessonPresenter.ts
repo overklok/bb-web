@@ -1,5 +1,5 @@
 import LayoutPresenterCore from "../../core/presenters/LayoutPresenter";
-import LessonModel from "../../models/LessonModel";
+import LessonModel from "../../models/lesson/LessonModel";
 import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
 import {LessonRouteEvent, MissionRouteEvent} from "../../routers/MainRouter";
 import {on, restore} from "../../core/base/Presenter";

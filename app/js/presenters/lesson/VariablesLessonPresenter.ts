@@ -1,5 +1,5 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
-import LessonModel from "../../models/LessonModel";
+import LessonModel from "../../models/lesson/LessonModel";
 import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
 import ModalView from "../../core/views/modal/ModalView";
 import CodeModel from "../../models/common/CodeModel";

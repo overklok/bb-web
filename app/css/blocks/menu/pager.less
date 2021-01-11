@@ -37,9 +37,18 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, @primary 0%, ~"rgb(0 0 0 / 0%) 2.5%", ~"rgb(0 0 0 / 0%) 97.5%", @primary 100%);
+
+    transition: background-color @fade @fade_dt;
   }
 
   overflow: hidden;
+
+  &_secondary {
+    &:after {
+      background:
+              linear-gradient(90deg, @secondary 0%, ~"rgb(0 0 0 / 0%) 2.5%", ~"rgb(0 0 0 / 0%) 97.5%", @secondary 100%);
+    }
+  }
 }
 
 ul.pager__list {

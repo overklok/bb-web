@@ -1,7 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
-import RestModel, {CRUDAction, RestSchema} from "../core/base/model/RestModel";
-import {Query} from "../core/models/datasources/HttpDatasource";
-import {ModelEvent} from "../core/base/Event";
+import RestModel, {CRUDAction, RestSchema} from "../../core/base/model/RestModel";
+import {Query} from "../../core/models/datasources/HttpDatasource";
+import {ModelEvent} from "../../core/base/Event";
 
 export default class LessonModel extends RestModel<Lesson> {
     protected defaultState: Lesson = undefined;

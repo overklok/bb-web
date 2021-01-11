@@ -1,4 +1,4 @@
-import {ExerciseSolution, Lesson} from "./LessonModel";
+import {ExerciseSolution, Lesson} from "./lesson/LessonModel";
 import {ModelEvent} from "../core/base/Event";
 import {RequestMethod} from "../core/models/datasources/HttpDatasource";
 import HttpModel from "../core/base/model/HttpModel";

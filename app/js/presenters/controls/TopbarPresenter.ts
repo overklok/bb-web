@@ -1,18 +1,21 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import TopbarView from "../../views/controls/TopbarView";
-import LessonModel from "../../models/LessonModel";
+import LessonModel from "../../models/lesson/LessonModel";
 import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";
 import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
 import {BoardStatusEvent} from "../../models/common/BoardModel";
+import SettingsModel, {SettingsChangedEvent} from "../../models/lesson/SettingsModel";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private model_lesson: LessonModel;
     private model_progress: ProgressModel;
+    private model_settings: SettingsModel;
 
     public getInitialProps(): TopbarView.Props {
         this.model_lesson = this.getModel(LessonModel);
         this.model_progress = this.getModel(ProgressModel);
+        this.model_settings = this.getModel(SettingsModel);
 
         const lesson = this.model_lesson.getState();
 
@@ -21,6 +24,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
             missions: lesson.missions,
             progress: this.model_progress.getState(),
             status: ConnectionStatus.Unknown,
+            is_demo: this.model_settings.getState().is_demo
         }
     }
 
@@ -95,5 +99,12 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         switch (evt.item) {
             case "lessons": this.forward('index', []); break;
         }
+    }
+
+    @on(SettingsChangedEvent)
+    private updateSettingsChange() {
+        this.setViewProps({
+            is_demo: this.model_settings.getState().is_demo
+        });
     }
 }

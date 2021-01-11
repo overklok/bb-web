@@ -13,12 +13,18 @@
   box-sizing: border-box;
   align-items: center;
   justify-content: flex-start;
+
+  transition: background-color @fade @fade_dt;
 }
 
 .nav {
   &__prefix {
     box-sizing: border-box;
     padding: 10px;
+
+    &_secondary {
+      background-color: @secondary;
+    }
   }
 
   &__content {
@@ -41,6 +47,11 @@
   &_inv {
     background-color: @text_light;
     color: @primary;
+  }
+
+  &_secondary {
+    background-color: @secondary;
+    color: @text_light;
   }
 
   &__section {
@@ -82,7 +93,7 @@
     flex-grow: 1;
   }
 
-  &__title, &__button, &__description {
+  &__title, &__subtitle, &__button, &__description {
     white-space: nowrap;
 
     font-size: 1em;
@@ -92,7 +103,17 @@
   }
 
   &__title {
+    transition: font-size 1s @scale;
+
     font-size: 1.25em;
+
+    &_collapsed {
+      font-size: 1em;
+    }
+  }
+
+  &__subtitle {
+    font-size: .75em;
   }
 
   &__description {
@@ -103,7 +124,6 @@
     text-align: end;
 
     &_small {
-
       font-size: .75em;
     }
   }

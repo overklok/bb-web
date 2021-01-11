@@ -50,6 +50,11 @@ const Dialog = (props: IDialogProps) => {
         'mdl-dlg_centered': props.is_centered
     });
 
+    const klasses_btn_bar = classNames({
+        'btn-bar': true,
+        'btn-bar_right': !props.is_centered
+    })
+
     let footer = null,
         hint = null,
         header = null;
@@ -57,14 +62,14 @@ const Dialog = (props: IDialogProps) => {
     if (props.on_accept || props.on_dismiss) {
         footer = (
             <div className='mdl-dlg__footer'>
-                <div className='btn-bar btn-bar_right'>
+                <div className={klasses_btn_bar}>
                     {props.on_dismiss
                         ? <div className='btn btn_danger'
                                onClick={e => onDismiss()}>{props.label_dismiss || 'Отклонить'}</div>
                         : null
                     }
                     {props.on_accept
-                        ? <div className='btn btn_success'
+                        ? <div className='btn btn_primary'
                                onClick={e => onAccept()}>{props.label_accept || 'Принять'}</div>
                         : null
                     }

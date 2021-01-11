@@ -1,7 +1,7 @@
 import {ImperativeView} from "../../core/base/view/ImperativeView";
 import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
-import {AllProps, IViewProps} from "../../core/base/view/View";
+import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/base/view/View";
 
 namespace BoardView {
     export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}
@@ -54,6 +54,7 @@ namespace BoardView {
             this.bb.dispose();
         }
 
+        @deferUntilMounted
         setReadOnly(readonly: boolean = true) {
             this.bb.setReadOnly(readonly);
         }
@@ -117,6 +118,10 @@ namespace BoardView {
 
         clearRegions() {
             this.bb.clearRegions();
+        }
+
+        render(): React.ReactNode {
+            return super.render();
         }
 
         private setup() {

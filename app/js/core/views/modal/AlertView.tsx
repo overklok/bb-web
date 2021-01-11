@@ -8,59 +8,94 @@ import Modal, {ModalSize, Overlay} from "./Modal";
 import Dialog from "./Dialog";
 import DialogModal from "./DialogModal";
 
-interface AlertViewProps extends IViewState {
-    title?: string;
-    content?: string;
-    dismissible?: boolean;
+export const enum AlertType {
+    BoardDisconnected,
+    BoardDisconnectedDemo
+}
+
+interface IAlert {
+    title: string;
+    content: string;
     size: ModalSize;
-    on_close?: (idx: number) => void;
+    label_accept?: string;
+    is_closable: boolean,
+    is_acceptable: boolean
+}
+
+const ALERT_DATA: {[key: number]: IAlert} = {
+    [AlertType.BoardDisconnected]: {
+        title: 'Доска отключена',
+        content: 'Использовать программу без подключённой доски невозможно.',
+        size: 'md',
+        is_closable: false,
+        is_acceptable: false
+    },
+    [AlertType.BoardDisconnectedDemo]: {
+        title: 'Доска отключена',
+        content: 'Использовать программу без подключённой доски невозможно.',
+        label_accept: 'Продолжить в режиме презентации',
+        size: 'md',
+        is_closable: false,
+        is_acceptable: true
+    }
+}
+
+interface AlertViewProps extends IViewState {
+    type?: AlertType
+    on_accept?: (type: AlertType) => void;
+    on_close?: (type: AlertType) => void;
 }
 
 export default class AlertView extends View<AlertViewProps, null> {
     static defaultProps: AlertViewProps = {
-        size: 'md',
-        title: null,
-        content: null,
-        dismissible: true
+        type: undefined,
     }
 
     constructor(props: AllProps<AlertViewProps>) {
         super(props);
-
-        this.handleAlertClose = this.handleAlertClose.bind(this);
     }
 
-    handleAlertClose(idx: number) {
-        this.props.on_close && this.props.on_close(idx);
+    handleAlertClose(type: AlertType) {
+        this.props.on_close && this.props.on_close(type);
+    }
+
+    handleAlertAccept(type: AlertType) {
+        this.props.on_accept && this.props.on_accept(type);
     }
 
     render(): React.ReactNode {
         return (
             <TransitionGroup component={null}>
-                {this.renderOverlay()}
-                {this.renderAlert()}
+                {this.props.type != null ? this.renderOverlay() : null}
+                {this.props.type != null ? this.renderAlert() : null}
             </TransitionGroup>
         )
     }
 
     renderOverlay() {
-        if (!this.props.title && !this.props.content) return null;
+        const alert = ALERT_DATA[this.props.type];
 
         return (
             <CSSTransition key={0} classNames='mdl' timeout={0} unmountOnExit>
-                <Overlay onClose={this.handleAlertClose}/>
+                <Overlay
+                    onClose={alert.is_closable ? () => this.handleAlertClose(this.props.type) : null}
+                />
             </CSSTransition>
         )
     }
 
     renderAlert() {
-        if (!this.props.title && !this.props.content) return null;
+        const alert = ALERT_DATA[this.props.type];
 
         return (
             <CSSTransition key={1} in out timeout={200} classNames="mdl" unmountOnExit>
-                <DialogModal size={this.props.size} is_centered={true}>
-                    <h2>{this.props.title}</h2>
-                    <p>{this.props.content}</p>
+                <DialogModal size={alert.size}
+                             is_centered={true}
+                             label_accept={alert.label_accept}
+                             on_accept={alert.is_acceptable ? () => this.handleAlertAccept(this.props.type) : null}
+                >
+                    <h2>{alert.title}</h2>
+                    <p>{alert.content}</p>
                 </DialogModal>
             </CSSTransition>
         )

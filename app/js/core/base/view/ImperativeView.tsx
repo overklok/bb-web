@@ -22,7 +22,6 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
             this.mounted = true;
             this.viewDidMount();
             this.emit(new MountEvent());
-
         }
     }
 
@@ -34,7 +33,6 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
             this.mounted = true;
             this.viewDidMount();
             this.emit(new MountEvent());
-
         }
     }
 

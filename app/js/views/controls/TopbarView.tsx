@@ -47,6 +47,7 @@ namespace TopbarView {
         progress: Progress;
         lesson_title: string;
         status: ConnectionStatus;
+        is_demo: boolean;
     }
 
     export interface State extends IViewState {
@@ -181,15 +182,21 @@ namespace TopbarView {
         public render(): React.ReactNode {
             const menu_btn_klasses = classNames({
                 'btn': true,
-                'btn_primary': true,
+                'btn_primary': !this.props.is_demo,
+                'btn_secondary': this.props.is_demo,
                 'btn_contoured': true,
                 'btn_inv': this.state.menu_active
             });
 
+            const nav_prefix_klasses = classNames({
+                'nav__prefix': true,
+                'nav__prefix_secondary': this.props.is_demo,
+            })
+
             return (
                 <React.Fragment>
                     <div className="nav">
-                        <div className="nav__prefix">
+                        <div className={nav_prefix_klasses}>
                             <div className={menu_btn_klasses} onClick={this.toggleMenu}>Меню</div>
                         </div>
                         <div className="nav__content navslider">
@@ -207,9 +214,20 @@ namespace TopbarView {
         private renderMain() {
             const navbar_slide_main_klasses = classNames({
                 'navbar': true,
+                'navbar_secondary': this.props.is_demo,
                 'navslider__slide': true,
                 'navslider__slide_raised': this.state.menu_active
             });
+
+            const navbar_title_klasses = classNames({
+                'navbar__title': true,
+                'navbar__title_collapsed': this.props.is_demo
+            })
+
+            const pager__listwrap_klasses = classNames({
+                'pager__listwrap': true,
+                'pager__listwrap_secondary': this.props.is_demo
+            })
 
             return (
                 <div className={navbar_slide_main_klasses}>
@@ -217,7 +235,8 @@ namespace TopbarView {
                         <div className="logo logo_light logo__icon logo__icon_small" />
                     </div>
                     <div className="navbar__section">
-                        <h2 className='navbar__title'>{this.props.lesson_title}</h2>
+                        <h2 className={navbar_title_klasses}>{this.props.lesson_title}</h2>
+                        {this.props.is_demo ? <h2 className='navbar__subtitle'>Режим презентации</h2> : null}
                     </div>
                     <div className="navbar__spacer"/>
                     <div className="navbar__section navbar__section_pagerwrap">
@@ -225,7 +244,7 @@ namespace TopbarView {
                             <div className="pager__arrow pager__arrow_left"
                                  onClick={() => this.scrollToBegin()}
                             />
-                            <div className="pager__listwrap">
+                            <div className={pager__listwrap_klasses}>
                                 <ul className="pager__list" ref={this.onScrollableUpdate}>
                                     {this.props.missions.map((mission, idx) =>
                                         <MissionLi key={idx}

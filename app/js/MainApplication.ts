@@ -28,7 +28,7 @@ import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
 import IRoutingService from "./core/services/interfaces/IRoutingService";
 import MainRouter from "./routers/MainRouter";
 
-import LessonModel from "./models/LessonModel";
+import LessonModel from "./models/lesson/LessonModel";
 import CourseModel from "./models/CourseModel";
 import ModalModel from "./core/models/ModalModel";
 import CodeModel from "./models/common/CodeModel";
@@ -36,9 +36,10 @@ import ProgressModel from "./models/ProgressModel";
 import KeyboardModel from "./core/models/KeyboardModel";
 import CSRFMiddleware from "./core/models/middlewares/CSRFMiddleware";
 import ConnectionModel from "./models/common/ConnectionModel";
+import SettingsModel from "./models/lesson/SettingsModel";
 
 interface MainAppConf {
-    is_demo: boolean;
+    allow_demo: boolean;
     server_addr: string;
     server_port: number;
     sock_addr: string;
@@ -48,7 +49,7 @@ interface MainAppConf {
 class MainApplication extends Application<MainAppConf> {
     protected defaultConfig() {
         return {
-            is_demo: false,
+            allow_demo: true,
             server_addr: '127.0.0.1',
             server_port: 8000,
             sock_addr: '127.0.0.1',
@@ -84,6 +85,7 @@ class MainApplication extends Application<MainAppConf> {
         svc_model.register(CourseModel, hds);
         svc_model.register(LessonModel, hds);
 
+        svc_model.register(SettingsModel,   dds, {allow_demo: this.config.allow_demo});
         svc_model.register(ConnectionModel, ads);
         svc_model.register(CodeModel,       ads);
         svc_model.register(BoardModel,      ads);
@@ -106,10 +108,6 @@ class MainApplication extends Application<MainAppConf> {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         const {root: wgt_root, widgets, composer} = widgets_config;
-
-        if (this.config.is_demo) {
-            widgets.board.view_props.readonly = false;
-        }
 
         const svc_view = this.instance(IViewService);
         svc_view.setRootWidgets(composer, wgt_root);

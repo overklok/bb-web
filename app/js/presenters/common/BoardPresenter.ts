@@ -3,25 +3,25 @@ import BoardView from "../../views/common/BoardView";
 import BoardModel, {ElectronicEvent, BoardOptionsEvent, PlateEvent} from "../../models/common/BoardModel";
 
 export default class BoardPresenter extends Presenter<BoardView.BoardView> {
-    private model: BoardModel;
+    private board: BoardModel;
 
     public getInitialProps() {
-        this.model = this.getModel(BoardModel);
+        this.board = this.getModel(BoardModel);
 
         return {
             layouts: BoardModel.Layouts,
-            layout_name: this.model.getState().layout_name
+            layout_name: this.board.getState().layout_name
         }
     }
 
     @on(BoardView.LayoutChangeEvent)
     private onLayoutChange() {
-        this.model.setBoardLayout(this.view.getLayoutName());
+        this.board.setBoardLayout(this.view.getLayoutName());
     }
     
     @on(BoardView.BoardChangeEvent)
     private onUserChange() {
-        this.model.setPlates(this.view.getPlates());
+        this.board.setPlates(this.view.getPlates());
     }
 
     @on(BoardOptionsEvent)

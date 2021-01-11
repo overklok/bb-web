@@ -12,7 +12,7 @@ export default class ModelService extends IModelService {
     private bindings: Map<ModelConstructor<any, any>, Model<any, any>> = new Map();
 
     public setup(svc_event: IEventService): void {
-        this.svc_event = svc_event
+        this.svc_event = svc_event;
     }
 
     public register<MS extends ModelState, DS extends Datasource>(

@@ -27,20 +27,21 @@ import LessonTaskPresenter      from "../../presenters/lesson/TaskLessonPresente
 import LessonMenuPresenter      from "../../presenters/lesson/MenuLessonPresenter";
 
 /* Domain-specific Presenters */
-import LayoutLessonPresenter    from "../../presenters/lesson/LayoutLessonPresenter";
-import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPresenter";
-import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
-import PopoverPresenter         from "../../presenters/lesson/PopoverPresenter";
-import PopoverLessonPresenter   from "../../presenters/lesson/PopoverLessonPresenter";
-import LessonKeyboardPresenter  from "../../presenters/lesson/KeyboardLessonPresenter";
-import VariableLessonPresenter  from "../../presenters/lesson/VariablesLessonPresenter";
-import AlertBoardPresenter      from "../../presenters/board/AlertBoardPresenter";
+import LayoutLessonPresenter            from "../../presenters/lesson/LayoutLessonPresenter";
+import BlocklyLessonPresenter           from "../../presenters/lesson/BlocklyLessonPresenter";
+import LaunchLessonPresenter            from "../../presenters/lesson/LaunchLessonPresenter";
+import BoardLessonPresenter             from "../../presenters/lesson/BoardLessonPresenter";
+import PopoverContentLessonPresenter    from "../../presenters/lesson/PopoverContentLessonPresenter";
+import LessonKeyboardPresenter          from "../../presenters/lesson/KeyboardLessonPresenter";
+import VariableLessonPresenter          from "../../presenters/lesson/VariablesLessonPresenter";
+import PopoverLessonPresenter           from "../../presenters/lesson/PopoverLessonPresenter";
+import AlertBoardPresenter              from "../../presenters/lesson/AlertLessonPresenter";
 
 export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
-        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverPresenter]},
+        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
         {view_type: ToastView, presenter_types: [ToastPresenter]},
         {view_type: AlertView, presenter_types: [AlertBoardPresenter]},
     ],
@@ -64,7 +65,7 @@ export default {
         },
         board: {
             view_type: BoardView.BoardView,
-            presenter_types: [BoardPresenter],
+            presenter_types: [BoardPresenter, BoardLessonPresenter],
             view_props: {readonly: true}
         },
         blockly: {
@@ -82,7 +83,7 @@ export default {
         },
         popover_content: {
             view_type: RichTextView.RichTextView,
-            presenter_types: [PopoverLessonPresenter],
+            presenter_types: [PopoverContentLessonPresenter],
         }
     }
 }

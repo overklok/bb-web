@@ -35,7 +35,6 @@ interface BreadboardModelState extends ModelState {
     arduino_pins: ArduinoPin[];
     layout_name: string;
     layout_confirmed: boolean;
-    allow_disconnected: boolean;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
@@ -50,7 +49,6 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         arduino_pins: [],
         layout_name: 'v8x',
         layout_confirmed: false,
-        allow_disconnected: false,
     }
 
     /**

@@ -3,7 +3,7 @@ import LaunchView from "../../views/controls/LaunchView";
 import CodeModel from "../../models/common/CodeModel";
 import ModalModel from "../../core/models/ModalModel";
 import BoardModel from "../../models/common/BoardModel";
-import LessonModel, {LaunchMode} from "../../models/LessonModel";
+import LessonModel, {LaunchMode} from "../../models/lesson/LessonModel";
 import ProgressModel, {
     ExercisePassEvent,
     ExerciseRunEvent,
