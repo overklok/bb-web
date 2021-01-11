@@ -6,6 +6,7 @@ export interface IDialogProps {
     hint?: string;
     children?: string | JSX.Element | JSX.Element[];
     is_closable?: boolean;
+    is_centered?: boolean;
 
     on_close?: Function;
     on_accept?: Function;
@@ -46,6 +47,7 @@ const Dialog = (props: IDialogProps) => {
     // Список классов, которые должны использоваться в зависимости от свойств
     const klasses_dialog = classNames({
         'mdl-dlg': true,
+        'mdl-dlg_centered': props.is_centered
     });
 
     let footer = null,

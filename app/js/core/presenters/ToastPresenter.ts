@@ -1,11 +1,10 @@
 import Presenter, {on} from "../base/Presenter";
 import {GenericErrorEvent} from "../base/Event";
-import AlertView, {IToast} from "../views/modal/AlertView";
+import ToastView, {IToast} from "../views/modal/ToastView";
 import {ColorAccent} from "../helpers/styles";
 
-export default class AlertPresenter extends Presenter<AlertView> {
-    protected alerts: IToast[] = [];
-    protected alert_idx: number;
+export default class ToastPresenter extends Presenter<ToastView> {
+    protected toasts: IToast[] = [];
 
     getInitialProps(): any {
         this.closeToast = this.closeToast.bind(this);
@@ -16,11 +15,11 @@ export default class AlertPresenter extends Presenter<AlertView> {
     }
 
     @on(GenericErrorEvent)
-    private async onAlert(evt: GenericErrorEvent) {
+    private showToast(evt: GenericErrorEvent) {
         try {
             const {error} = evt;
 
-            this.alerts.push({
+            this.toasts.push({
                 title: `Ошибка [${error.name}]`,
                 content: error.message,
                 timeout: 5000,
@@ -28,7 +27,7 @@ export default class AlertPresenter extends Presenter<AlertView> {
             });
 
             this.setViewProps({
-                toasts: [...this.alerts]
+                toasts: [...this.toasts]
             });
         } catch (e) {
             // avoid potential recursive call
@@ -37,10 +36,10 @@ export default class AlertPresenter extends Presenter<AlertView> {
     }
 
     private closeToast(idx: number) {
-        delete this.alerts[idx];
+        delete this.toasts[idx];
 
         this.setViewProps({
-            toasts: [...this.alerts]
+            toasts: [...this.toasts]
         });
     }
 }

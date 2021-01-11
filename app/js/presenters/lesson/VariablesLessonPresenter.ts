@@ -4,7 +4,7 @@ import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
 import ModalView from "../../core/views/modal/ModalView";
 import CodeModel from "../../models/common/CodeModel";
 
-export default class VariableLessonPresenter extends Presenter<ModalView> {
+export default class VariablesLessonPresenter extends Presenter<ModalView> {
     private code: CodeModel;
     private lesson: LessonModel;
     private progress: ProgressModel;
@@ -22,7 +22,7 @@ export default class VariableLessonPresenter extends Presenter<ModalView> {
     }
 
     @restore() @on(ExerciseRunEvent)
-    private async showIntroModal(evt: ExerciseRunEvent) {
+    private async showVariableValues(evt: ExerciseRunEvent) {
         this.setViewProps({
             variables: this.getVariableValues(evt.mission_idx, evt.exercise_idx)
         });

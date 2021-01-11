@@ -3,7 +3,7 @@ import RichTextView from "../../views/common/RichTextView";
 import LessonModel from "../../models/LessonModel";
 import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 
-export default class LessonTaskPresenter extends Presenter<RichTextView.RichTextView> {
+export default class TaskLessonPresenter extends Presenter<RichTextView.RichTextView> {
     private lesson: LessonModel;
     private progress: ProgressModel;
 

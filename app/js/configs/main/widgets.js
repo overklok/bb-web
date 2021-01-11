@@ -1,11 +1,12 @@
 import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
 
 /* Generic Views */
+import AlertView        from "../../core/views/modal/AlertView";
 import ModalView        from "../../core/views/modal/ModalView";
+import ToastView        from "../../core/views/modal/ToastView";
 import LayoutView       from "../../core/views/layout/LayoutView";
 
 /* Application-specific Views */
-import AlertView        from "../../core/views/modal/AlertView";
 import BoardView        from "../../views/common/BoardView";
 import BlocklyView      from "../../views/common/BlocklyView";
 import KeyboardView     from "../../views/common/KeyboardView";
@@ -17,29 +18,31 @@ import VariableView     from "../../views/common/VariableView";
 
 /* Basic Presenters */
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
-import AlertPresenter           from "../../core/presenters/AlertPresenter";
+import ToastPresenter           from "../../core/presenters/ToastPresenter";
 import BoardPresenter           from "../../presenters/common/BoardPresenter";
 import BlocklyCodePresenter     from "../../presenters/common/BlocklyCodePresenter";
 import TopbarPresenter          from "../../presenters/controls/TopbarPresenter";
 import LaunchPresenter          from "../../presenters/controls/LaunchPresenter";
-import LessonTaskPresenter      from "../../presenters/lesson/LessonTaskPresenter";
-import LessonMenuPresenter      from "../../presenters/lesson/LessonMenuPresenter";
+import LessonTaskPresenter      from "../../presenters/lesson/TaskLessonPresenter";
+import LessonMenuPresenter      from "../../presenters/lesson/MenuLessonPresenter";
 
 /* Domain-specific Presenters */
 import LayoutLessonPresenter    from "../../presenters/lesson/LayoutLessonPresenter";
 import BlocklyLessonPresenter   from "../../presenters/lesson/BlocklyLessonPresenter";
 import LaunchLessonPresenter    from "../../presenters/lesson/LaunchLessonPresenter";
-import ModalLessonPresenter     from "../../presenters/lesson/PopoverPresenter";
+import PopoverPresenter         from "../../presenters/lesson/PopoverPresenter";
 import PopoverLessonPresenter   from "../../presenters/lesson/PopoverLessonPresenter";
-import LessonKeyboardPresenter  from "../../presenters/lesson/LessonKeyboardPresenter";
-import VariableLessonPresenter from "../../presenters/lesson/VariableLessonPresenter";
+import LessonKeyboardPresenter  from "../../presenters/lesson/KeyboardLessonPresenter";
+import VariableLessonPresenter  from "../../presenters/lesson/VariablesLessonPresenter";
+import AlertBoardPresenter      from "../../presenters/board/AlertBoardPresenter";
 
 export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
-        {view_type: ModalView, presenter_types: [ModalPresenter, ModalLessonPresenter]},
-        {view_type: AlertView, presenter_types: [AlertPresenter]}
+        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverPresenter]},
+        {view_type: ToastView, presenter_types: [ToastPresenter]},
+        {view_type: AlertView, presenter_types: [AlertBoardPresenter]},
     ],
     widgets: {
         courses: {

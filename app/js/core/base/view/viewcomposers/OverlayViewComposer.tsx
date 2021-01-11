@@ -15,7 +15,7 @@ export default class OverlayViewComposer extends ViewComposer<IVCProps, IVCState
             });
 
             return (
-                <div key={i} className={klasses} ref={this.props.refCallback}>
+                <div key={i} className={klasses} ref={this.props.refCallback} style={{zIndex: i}}>
                     {child}
                 </div>
             )

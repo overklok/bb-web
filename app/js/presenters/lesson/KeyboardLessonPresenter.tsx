@@ -5,7 +5,7 @@ import KeyboardModel, {KeySeqMatchEvent, KeyUpEvent} from "../../core/models/Key
 import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 
 
-export default class LessonKeyboardPresenter extends Presenter<KeyboardView.KeyboardView> {
+export default class KeyboardLessonPresenter extends Presenter<KeyboardView.KeyboardView> {
     private lesson: LessonModel;
     private keyboard: KeyboardModel;
     private progress: ProgressModel;

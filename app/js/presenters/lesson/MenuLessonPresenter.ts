@@ -4,7 +4,7 @@ import CourseModel from "../../models/CourseModel";
 import ProgressModel from "../../models/ProgressModel";
 import {RequestErrorEvent} from "../../core/base/model/HttpModel";
 
-export default class LessonMenuPresenter extends Presenter<LessonMenuView.LessonMenuView> {
+export default class MenuLessonPresenter extends Presenter<LessonMenuView.LessonMenuView> {
     private course: CourseModel;
     private progress: ProgressModel;
 

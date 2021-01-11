@@ -17,6 +17,7 @@ const DialogModal = (props: IDialogModalProps) => {
                     label_accept={props.label_accept}
                     label_dismiss={props.label_dismiss}
                     is_closable={props.is_closable}
+                    is_centered={props.is_centered}
             >
                 {props.children}
             </Dialog>
