@@ -28,7 +28,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         }
     }
 
-    @on(ConnectionStatusEvent)
+    @restore() @on(ConnectionStatusEvent)
     private showCoreConnection(evt: ConnectionStatusEvent) {
         switch (evt.status) {
             case "disconnected":    this.setViewProps({status: ConnectionStatus.Disconnected}); break;
@@ -37,7 +37,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         }
     }
 
-    @on(BoardStatusEvent)
+    @restore() @on(BoardStatusEvent)
     private showBoardConnection(evt: BoardStatusEvent) {
         switch (evt.status) {
             case "disconnected":    this.setViewProps({status: ConnectionStatus.BoardDisconnected}); break;

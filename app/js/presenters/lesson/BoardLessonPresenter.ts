@@ -1,4 +1,4 @@
-import Presenter, {on} from "../../core/base/Presenter";
+import Presenter, {on, restore} from "../../core/base/Presenter";
 import BoardView from "../../views/common/BoardView";
 import BoardModel from "../../models/common/BoardModel";
 import SettingsModel, {SettingsChangedEvent} from "../../models/lesson/SettingsModel";
@@ -22,7 +22,7 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         };
     }
 
-    @on(SettingsChangedEvent)
+    @restore() @on(SettingsChangedEvent)
     private updateSettingsChange() {
         this.view.setReadOnly(!this.settings.getState().is_demo);
     }
