@@ -7,6 +7,8 @@ namespace BoardView {
     export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}
     export class LayoutChangeEvent extends ViewEvent<LayoutChangeEvent> {}
     export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
+    export class ShortCircuitStartEvent extends ViewEvent<ShortCircuitStartEvent> {}
+    export class ShortCircuitEndEvent extends ViewEvent<ShortCircuitEndEvent> {}
 
     export interface BoardViewProps extends IViewProps {
         schematic?: boolean;
@@ -125,9 +127,11 @@ namespace BoardView {
         }
 
         private setup() {
-            this.bb.onChange(() => this.emit(new BoardChangeEvent({})))
-            this.bb.onDragStart(() => this.emit(new PlateDragStartEvent({})))
-            this.bb.onLayoutChange(() => this.emit(new LayoutChangeEvent({})))
+            this.bb.onChange(() => this.emit(new BoardChangeEvent({})));
+            this.bb.onDragStart(() => this.emit(new PlateDragStartEvent({})));
+            this.bb.onLayoutChange(() => this.emit(new LayoutChangeEvent({})));
+            this.bb.onShortCircuitStart(() => this.emit(new ShortCircuitStartEvent({})));
+            this.bb.onShortCircuitEnd(() => this.emit(new ShortCircuitEndEvent({})));
         }
     }
 }

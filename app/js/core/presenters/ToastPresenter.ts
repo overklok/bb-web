@@ -1,12 +1,15 @@
 import Presenter, {on} from "../base/Presenter";
 import {GenericErrorEvent} from "../base/Event";
-import ToastView, {IToast} from "../views/modal/ToastView";
+import ToastView from "../views/modal/ToastView";
 import {ColorAccent} from "../helpers/styles";
+import ModalModel, {UpdateToastsEvent} from "../models/ModalModel";
 
 export default class ToastPresenter extends Presenter<ToastView> {
-    protected toasts: IToast[] = [];
+    private modal: ModalModel;
 
     getInitialProps(): any {
+        this.modal = this.getModel(ModalModel);
+
         this.closeToast = this.closeToast.bind(this);
 
         return {
@@ -15,19 +18,15 @@ export default class ToastPresenter extends Presenter<ToastView> {
     }
 
     @on(GenericErrorEvent)
-    private showToast(evt: GenericErrorEvent) {
+    private pushToast(evt: GenericErrorEvent) {
         try {
             const {error} = evt;
 
-            this.toasts.push({
+            this.modal.showToast({
                 title: `Ошибка [${error.name}]`,
                 content: error.message,
                 timeout: 5000,
                 status: ColorAccent.Danger
-            });
-
-            this.setViewProps({
-                toasts: [...this.toasts]
             });
         } catch (e) {
             // avoid potential recursive call
@@ -35,11 +34,14 @@ export default class ToastPresenter extends Presenter<ToastView> {
         }
     }
 
-    private closeToast(idx: number) {
-        delete this.toasts[idx];
-
+    @on(UpdateToastsEvent)
+    private updateToasts() {
         this.setViewProps({
-            toasts: [...this.toasts]
+            toasts: [...this.modal.getState().toasts]
         });
+    }
+
+    private closeToast(idx: number) {
+        this.modal.hideToast(idx);
     }
 }
