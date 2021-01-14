@@ -146,7 +146,6 @@ export default class EventService extends IEventService {
             promises.push(handler(event));
         }
 
-        // run all handlers in parallel
         await Promise.all(promises);
     }
 
