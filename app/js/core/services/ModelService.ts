@@ -43,7 +43,7 @@ export default class ModelService extends IModelService {
         const models: {[name: string]: Model<any, any>} = {};
 
         for (const model of this.models) {
-            let model_alias = (model as any).__proto__.constructor.alias;
+            let model_alias = (model as any).constructor.alias || (model as any).__proto__.constructor.alias;
 
             if (!model_alias) {
                 const model_name = model.constructor.name;
