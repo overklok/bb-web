@@ -40,6 +40,8 @@ interface BlocklyModelState extends ModelState {
 }
 
 export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
+    static alias = 'code';
+
     protected launching: boolean = undefined;
 
     protected defaultState: BlocklyModelState = {

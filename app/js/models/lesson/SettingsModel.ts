@@ -8,6 +8,8 @@ interface Settings {
 }
 
 export default class SettingsModel extends Model<Settings, DummyDatasource> {
+    static alias = 'settings';
+
     protected defaultState: Settings = {
         is_demo: false,
         allow_demo: true,

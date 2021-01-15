@@ -15,6 +15,8 @@ export type Course = {
 }
 
 export default class CourseModel extends RestModel<Course> {
+    static alias = 'course';
+
     protected schema(): RestSchema {
         return {
             [CRUDAction.List]: () => `coursesvc`,

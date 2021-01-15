@@ -20,6 +20,8 @@ interface KeyboardModelState {
 }
 
 export default class KeyboardModel extends Model<KeyboardModelState, DummyDatasource> {
+    static alias = 'keyboard';
+
     private button_seq_idx: number;
     private button_seq_model: number[];
 

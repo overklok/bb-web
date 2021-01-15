@@ -27,6 +27,8 @@ interface TestkitModelState {
 }
 
 export default class TestkitModel extends Model<TestkitModelState, DummyDatasource> {
+    static alias = 'testkit';
+
     static FullTestKit: TestKit = [
         {title: 'Перемычка-2',          type: 'bridge',         quantity: 1, properties: {[BridgePlate.PROP_LENGTH]: 2}},
         {title: 'Перемычка-3',          type: 'bridge',         quantity: 1, properties: {[BridgePlate.PROP_LENGTH]: 3}},

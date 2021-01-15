@@ -57,6 +57,8 @@ export class FinishModeEvent extends ModelEvent<FinishModeEvent> {
  * @property modes {} режимы разметки
  */
 export default class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
+    static alias = 'layout';
+
     protected defaultState: LayoutModelState = {
         options: {show_headers: true},
         current_mode: 'default',

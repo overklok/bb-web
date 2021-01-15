@@ -12,6 +12,8 @@ type Connection = {
 }
 
 export default class ConnectionModel extends AsynchronousModel<Connection> {
+    static alias = 'connection';
+
     protected defaultState: Connection = {is_active: false}
 
     @connect()

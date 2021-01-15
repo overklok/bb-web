@@ -4,6 +4,8 @@ import {Query} from "../../core/models/datasources/HttpDatasource";
 import {ModelEvent} from "../../core/base/Event";
 
 export default class LessonModel extends RestModel<Lesson> {
+    static alias = 'lesson';
+
     protected defaultState: Lesson = undefined;
 
     protected schema(): RestSchema {

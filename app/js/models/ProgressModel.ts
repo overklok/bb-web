@@ -76,6 +76,8 @@ export class ExerciseSolutionValidatedEvent extends ModelEvent<ExerciseSolutionV
 }
 
 export default class ProgressModel extends HttpModel<Progress> {
+    static alias = 'progress';
+
     protected defaultState: Progress = {
         lesson_id: undefined,
         missions: [],

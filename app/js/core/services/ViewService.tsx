@@ -88,8 +88,12 @@ export default class ViewService extends IViewService {
 
         for (const connector of this.view_connectors_internal) {
             if (connector.view) {
-                const view_name = connector.view.constructor.name;
-                const view_alias = getClassNameAlias(view_name, 'View');
+                let view_alias = (connector.view as any).__proto__.constructor.alias;
+
+                if (!view_alias) {
+                    const view_name = connector.view.constructor.name;
+                    view_alias = getClassNameAlias(view_name, 'Model');
+                }
 
                 views[view_alias] = connector.view;
             }

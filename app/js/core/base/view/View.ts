@@ -66,6 +66,7 @@ export function deferUntilMounted(target: any, propertyKey: string, descriptor: 
 }
 
 export abstract class View<P extends IViewProps = IViewProps, S extends IViewState = IViewState> extends React.Component<AllProps<P>, S> {
+    public static alias: string;
     public static notifyNestMount: boolean = false;
 
     protected mounted: boolean;
@@ -111,14 +112,14 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
     public resize() {}
 
     protected viewDidMount() {
-        console.log(this.constructor.name, 'mount');
+        // console.log(this.constructor.name, 'mount');
         this.props.connector.attach(this);
         this.callDeferredUntilMount();
     }
 
     protected viewWillUnmount() {
         this.detachConnector();
-        console.log(this.constructor.name, 'unmount');
+        // console.log(this.constructor.name, 'unmount');
     }
 
     protected emit<E>(event: ViewEvent<E>) {

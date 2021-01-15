@@ -26,6 +26,8 @@ export type ModelState = {[key: string]: any}
  * These objects extends from ModelState. Each Model required to define its ModelState.
  */
 export default abstract class Model<MS extends ModelState, DS extends Datasource> {
+    static alias: string;
+
     protected state: MS;
     protected data_source: DS;
 

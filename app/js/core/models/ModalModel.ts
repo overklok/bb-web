@@ -61,7 +61,9 @@ interface ModalStorage {
     toasts: IToastData[];
 }
 
-export default class ModalModel extends Model<ModalStorage, DummyDatasource>{
+export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
+    static alias = 'modal';
+
     protected defaultState: ModalStorage = {
         alerts: {},
         toasts: []
