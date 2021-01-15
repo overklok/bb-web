@@ -12,11 +12,12 @@ import ControlsLayer from "./layers/ControlsLayer";
 
 import BoardContextMenu from "./menus/BoardContextMenu";
 
-import thm from "./styles/main.css";
 import {initGradients} from "./styles/gradients";
 import SelectorLayer from "./layers/SelectorLayer";
 import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 import {layoutToBoardInfo} from "./core/extras/board_info";
+
+require("./styles/main.css");
 
 /**
  * Основной класс платы.

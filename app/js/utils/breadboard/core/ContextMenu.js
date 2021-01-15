@@ -188,6 +188,10 @@ export default class ContextMenu {
     }
 
     _attachItemEvents(rect, item_data, input, input_node) {
+        rect.mousedown(() => {
+            rect.addClass('bb-cm-item-flash');
+        });
+
         const apply = () => {
             setTimeout(() => {
                 if (input && input.type === 'file') {
@@ -207,7 +211,7 @@ export default class ContextMenu {
                     this._itemClick(item_data, value);
                 }
             }, 100);
-        };
+        }
 
         rect.mousedown(() => apply());
 
