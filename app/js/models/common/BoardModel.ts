@@ -177,12 +177,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     private receiveElectronics({threads, elements, arduino_pins}: ElectronicDataPackage) {
         if (!this.state.layout_confirmed) return;
 
-        this.setState({
-            threads: threads,
-            arduino_pins: arduino_pins,
-        });
-
-        this.emit(new ElectronicEvent({threads, elements, arduino_pins}));
+        this.acceptElectronics({threads, elements, arduino_pins});
     }
 
     /**
@@ -205,10 +200,19 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      *
      * @param plates
      */
-    private acceptPlates(plates: Plate[]): void {
+    public acceptPlates(plates: Plate[]): void {
         this.setState({plates});
 
         this.emit(new PlateEvent({plates}));
+    }
+
+    public acceptElectronics({threads, elements, arduino_pins}: ElectronicDataPackage) {
+        this.setState({
+            threads: threads,
+            arduino_pins: arduino_pins,
+        });
+
+        this.emit(new ElectronicEvent({threads, elements, arduino_pins}));
     }
 }
 

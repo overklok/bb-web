@@ -1,4 +1,4 @@
-import Presenter, {on} from "../../core/base/Presenter";
+import Presenter, {on, restore} from "../../core/base/Presenter";
 import BoardView from "../../views/common/BoardView";
 import BoardModel, {ElectronicEvent, BoardOptionsEvent, PlateEvent} from "../../models/common/BoardModel";
 
@@ -29,12 +29,12 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
         this.view.setReadOnly(evt.readonly);
     }
 
-    @on(PlateEvent)
+    @restore() @on(PlateEvent)
     private onplates(evt: PlateEvent) {
         this.view.setPlates(evt.plates);
     }
 
-    @on(ElectronicEvent)
+    @restore() @on(ElectronicEvent)
     private onelec(evt: ElectronicEvent) {
         this.view.setCurrents(evt.threads);
     }
