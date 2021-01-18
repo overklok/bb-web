@@ -234,17 +234,19 @@ function getCopypaths(env, is_dev, no_copy) {
                 copypaths = [...copypaths,
                     {
                         from: `./dist/${setting.entry}.js`,
-                        to: path + `/${setting.entry}.js`
+                        to: path + `/${setting.entry}.js`,
+                        force: true,
                     },
                     {
                         from: `./dist/${setting.entry}.css`,
-                        to: path + `/${setting.entry}.css`
+                        to: path + `/${setting.entry}.css`,
+                        force: true,
                     },
                 ];
 
                 if (setting.entry === 'main') {
                     copypaths = [...copypaths,
-                        {from: './dist/fonts/*', to: path + '/fonts'},
+                        {from: './dist/fonts/*', to: path + '/fonts', force: true},
                         // {from: './dist/images', to: path + '/images'}
                     ]
                 }
@@ -253,7 +255,8 @@ function getCopypaths(env, is_dev, no_copy) {
                     copypaths = [...copypaths,
                         {
                             from: `./dist/${setting.entry}.js.map`,
-                            to: path + `/${setting.entry}.js.map`
+                            to: path + `/${setting.entry}.js.map`,
+                            force: true
                         },
                     ];
                 }
@@ -263,8 +266,8 @@ function getCopypaths(env, is_dev, no_copy) {
 
     if (env.main === true && dotenv.parsed.PATH_DIST_MAIN) {
         copypaths = [...copypaths,
-            {from: './app/fonts/',          to: './fonts'},
-            {from: './app/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts'},
+            {from: './app/fonts/',          to: './fonts', force: true},
+            {from: './app/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts', force: true},
         ];
     }
 
