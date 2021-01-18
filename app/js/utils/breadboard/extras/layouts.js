@@ -124,5 +124,10 @@ export const LAYOUTS = {
         ],
 
         controls: {horz: false},
+
+        // TODO: сделать универсальный формат
+        // Y-координата верхней линии, где рисовать прямые токи
+        curr_straight_top_y: 0,
+        curr_straight_bottom_y: -1,
     }
 }

@@ -62,6 +62,11 @@ export const LAYOUTS = {
             Grid.AuxPointCats.SourceV5,
         ],
 
-        controls: {horz: true}
+        controls: {horz: true},
+
+        // TODO: сделать универсальный формат
+        // Y-координата верхней линии, где рисовать прямые токи
+        curr_straight_top_y: 1,
+        curr_straight_bottom_y: -1,
     }
 };

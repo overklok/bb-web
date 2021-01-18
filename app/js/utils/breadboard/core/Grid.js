@@ -47,6 +47,8 @@ export default class Grid {
         wrap_x=0, wrap_y = 0,
         aux_points_categories=null,
         domains=null,
+        curr_straight_top_y=null,
+        curr_straight_bottom_y=null
     ) {
         if (rows == null || cols == null || width == null || height == null) {
             throw new TypeError("All required arguments should be defined");
@@ -81,6 +83,9 @@ export default class Grid {
                 y: wrap_y
             }
         };
+
+        this.curr_straight_top_y = curr_straight_top_y;
+        this.curr_straight_bottom_y = curr_straight_bottom_y;
 
         this._aux_points_cats = aux_points_categories || [];
 

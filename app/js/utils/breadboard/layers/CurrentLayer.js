@@ -460,7 +460,7 @@ export default class CurrentLayer extends Layer {
         let bias_x = (needs_bias && !Cell.IsLineHorizontal(c_from, c_to)) ? BackgroundLayer.DomainSchematicBias : 0;
         let bias_y = (needs_bias &&  Cell.IsLineHorizontal(c_from, c_to)) ? BackgroundLayer.DomainSchematicBias : 0;
 
-        if (Cell.IsLineAt(c_from, c_to, null, 1)) {
+        if (Cell.IsLineAt(c_from, c_to, null, this.__grid.curr_straight_top_y)) {
             // cells at the "+" line
 
             // FIXME: Temporary solution! Do not use in final production!
@@ -471,7 +471,7 @@ export default class CurrentLayer extends Layer {
             ]
         }
 
-        if (Cell.IsLineAt(c_from, c_to, null, -1)) {
+        if (Cell.IsLineAt(c_from, c_to, null, this.__grid.curr_straight_bottom_y)) {
             // cells at the "-" line
 
             // FIXME: Temporary solution! Do not use in final production!
