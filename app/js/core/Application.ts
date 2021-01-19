@@ -42,7 +42,7 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     }
 
     protected configure(config: AC): void {
-        this.config = coverOptions(this.config, config) as AC;
+        this.config = coverOptions(config, this.config) as AC;
     };
 
     /**
