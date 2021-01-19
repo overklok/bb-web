@@ -79,6 +79,8 @@ class MainApplication extends Application<MainAppConf> {
 
         const hds = new HttpDatasource(this.config.server_addr, this.config.server_port);
 
+        console.log(this.config);
+
         svc_model.launch(ads);
         svc_model.register(ModalModel,  dds);
         svc_model.register(UserModel,   hds);
