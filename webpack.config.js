@@ -34,7 +34,7 @@ module.exports = (env, argv) => {
 
     return {
         entry: getEntries(env),
-        devtool: is_dev ? 'eval' : 'source-map',
+        devtool: is_dev ? 'eval-source-map' : 'source-map',
         optimization: {
             minimizer: getMinimizer(is_dev)
         },
@@ -112,6 +112,7 @@ function getEntries(env) {
     let entries = {};
     if (env.main === true)          entries['main']         = './app/js/MainApplication.ts';
     if (env.board === true)         entries['board']        = './app/js/BoardApplication.ts';
+    if (env.blockly === true)       entries['blockly']      = './app/js/BlocklyApplication.ts';
     if (env.monkey === true)        entries['monkey']       = './app/js/MonkeyApplication.ts';
     if (env.playground === true)    entries['playground']   = './app/js/PlaygroundApplication.ts';
 
@@ -134,6 +135,7 @@ function getVersionTarget(env, mode=null) {
 
     if (env.main === true)          return `main`;
     if (env.board === true)         return `board`;
+    if (env.blockly === true)       return `blockly`;
     if (env.monkey === true)        return `monkey`;
     if (env.playground === true)    return `playground`;
 }
@@ -156,6 +158,15 @@ function getHtmlCopyPluginInstances(env) {
                 template: './app/html/board.html',
                 inject: 'body',
                 filename: 'board.html'
+            }),
+        ];
+    }
+    if (env.blockly === true) {
+        htmls = [...htmls,
+            new HtmlWebpackPlugin({
+                template: './app/html/blockly.html',
+                inject: 'body',
+                filename: 'blockly.html'
             }),
         ];
     }
@@ -184,6 +195,7 @@ function getHtmlCopyPluginInstances(env) {
 function getHtmlIndexFile(env) {
     if (env.main === true) return 'main.html';
     if (env.board === true) return 'board.html';
+    if (env.blockly === true) return 'blockly.html';
     if (env.monkey === true) return 'monkey.html';
     if (env.playground === true) return 'playground.html';
 }
@@ -210,6 +222,13 @@ function getCopypaths(env, is_dev, no_copy) {
                 dotenv.parsed.PATH_DIST_BOARD_ADMIN
             ],
             entry: 'board'
+        },
+        {
+            enable: env.blockly === true,
+            paths: [
+                dotenv.parsed.PATH_DIST_BLOCKLY_ADMIN
+            ],
+            entry: 'blockly'
         },
         {
             enable: env.monkey === true,

@@ -52,6 +52,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         layout_name: 'v8x',
         layout_confirmed: false,
     }
+    
+    private __legacy_onuserchange: Function;
 
     /**
      * Set board layout (structure and visual options) by layout name
@@ -80,10 +82,12 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      *
      * @param plates
      */
-    public setPlates(plates: Plate[]): void {
+    public setUserPlates(plates: Plate[]): void {
         this.setState({plates});
         this.send(ChannelsTo.Plates, plates);
         this.emit(new UserPlateEvent({plates}));
+        this.__legacy_onuserchange && this.__legacy_onuserchange();
+
     }
 
     /**
@@ -99,6 +103,10 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.emit(new BoardOptionsEvent({readonly: !is_admin}))
     }
 
+    public onUserChange(cb: Function) {
+        this.__legacy_onuserchange = cb;
+    }
+    
     /**
      * Send meta information about the board (incl. layout name and structure)
      */
@@ -153,7 +161,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      * Receive plate data update from the backend
      *
      * This method verifies the layout currently applied.
-     * If you need to force the data you may need to call {@link acceptPlates} from developer console.
+     * If you need to force the data you may need to call {@link setBackendPlates} from developer console.
      *
      * @param plates an array of plate data objects
      */
@@ -161,7 +169,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     private receivePlates(plates: Plate[]) {
         if (!this.state.layout_confirmed) return;
 
-        this.acceptPlates(plates);
+        this.setPlates(plates);
     }
 
     /**
@@ -200,7 +208,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      *
      * @param plates
      */
-    public acceptPlates(plates: Plate[]): void {
+    public setPlates(plates: Plate[]): void {
         this.setState({plates});
 
         this.emit(new PlateEvent({plates}));

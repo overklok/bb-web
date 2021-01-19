@@ -9,10 +9,18 @@ import {ViewEvent} from "../../core/base/Event";
 export class BlocklyCodeChangeEvent extends ViewEvent<BlocklyCodeChangeEvent> {}
 
 export interface BlocklyViewProps extends IViewProps {
+    edit_limits: boolean;
     force_all_blocks: boolean;
+    zoom: number;
 }
 
 export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
+    static defaultProps = {
+        edit_limits: false,
+        force_all_blocks: false,
+        zoom: 1,
+    }
+
     private readonly blockly: BlocklyWrapper;
 
     private block_types: { [p: string]: number };
@@ -25,6 +33,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
 
         this.blockly = new BlocklyWrapper();
 
+        this.blockly.extra_fields = this.props.edit_limits;
         this.blockly.registerBlockTypes(JSONBlocks);
         this.blockly.registerGenerators(JSONGenerators);
 
@@ -34,7 +43,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     }
 
     public async inject(container: HTMLDivElement) {
-        this.blockly.inject(container);
+        this.blockly.inject(container, false, false, this.props.zoom);
 
         if (this.props.force_all_blocks) {
             this.setBlockTypes(this.block_types);
@@ -158,10 +167,8 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
      * Формат возвращаемого объекта:
      *      - ключ:     {string} тип блока
      *      - значение: {number} предел количества блоков по типу
-     *
-     * @returns {Object},
      */
-    public getBlockLimitInputsByType() {
+    public getBlockLimitInputsByType(): {[block_type: string]: number} {
         return this.blockly.getBlockLimitInputsByType();
     }
 
@@ -184,6 +191,10 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
      */
     public getCodeTree(): string {
         return this.blockly.getXMLText();
+    }
+
+    public getBlockLimit(): number {
+        return this.blockly.getBlockLimit();
     }
 
     /**

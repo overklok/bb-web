@@ -20,7 +20,7 @@ import VariableView     from "../../views/common/VariableView";
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
 import ToastPresenter           from "../../core/presenters/ToastPresenter";
 import BoardPresenter           from "../../presenters/common/BoardPresenter";
-import BlocklyCodePresenter     from "../../presenters/common/BlocklyCodePresenter";
+import BlocklyCodePresenter     from "../../presenters/common/BlocklyPresenter";
 import TopbarPresenter          from "../../presenters/controls/TopbarPresenter";
 import LaunchPresenter          from "../../presenters/controls/LaunchPresenter";
 import LessonTaskPresenter      from "../../presenters/lesson/TaskLessonPresenter";

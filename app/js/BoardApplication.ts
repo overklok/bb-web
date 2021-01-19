@@ -88,8 +88,8 @@ class BoardApplication extends Application<BoardApplicationConfig> {
 
 declare global {
   interface Window {
-    Application: any;
+    BoardApplication: any;
   }
 }
 
-window.Application = BoardApplication;
+window.BoardApplication = BoardApplication;

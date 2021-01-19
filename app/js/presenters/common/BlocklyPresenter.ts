@@ -7,7 +7,7 @@ import CodeModel, {
 } from "../../models/common/CodeModel";
 import {KeyUpEvent} from "../../core/models/KeyboardModel";
 
-export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
+export default class BlocklyPresenter extends Presenter<BlocklyView> {
     private model: CodeModel;
 
     public getInitialProps() {
@@ -17,6 +17,7 @@ export default class BlocklyCodePresenter extends Presenter<BlocklyView> {
     @on(BlocklyCodeChangeEvent)
     private onCodeChange() {
         const chains = this.view.getChainset();
+
         this.model.setChainset(chains);
     }
 

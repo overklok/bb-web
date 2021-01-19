@@ -36,6 +36,43 @@ Blockly.FieldDropdown.prototype.createMenu_ = function() {
     return menu;
 };
 
+Blockly.InsertionMarkerManager.prototype.createMarkerBlock_ = function (sourceBlock) {
+    let imType = sourceBlock.type;
+
+    console.log(imType);
+
+    Blockly.Events.disable();
+    try {
+        let result = this.workspace_.newBlock(imType);
+        result.setInsertionMarker(true, sourceBlock.width);
+        if (sourceBlock.mutationToDom) {
+            let oldMutationDom = sourceBlock.mutationToDom();
+            if (oldMutationDom) {
+                result.domToMutation(oldMutationDom);
+            }
+        }
+        // Copy field values from the other block.  These values may impact the
+        // rendered size of the insertion marker.  Note that we do not care about
+        // child blocks here.
+        for (let i = 0; i < sourceBlock.inputList.length; i++) {
+            let input = sourceBlock.inputList[i];
+            for (let j = 0; j < input.fieldRow.length; j++) {
+                let field = input.fieldRow[j];
+                if (field.name != null) { // <-- WORKAROUND: dragging collapsed bug
+                    // result.setFieldValue(field.getValue(), field.name);
+                }
+            }
+        }
+
+        result.initSvg();
+        result.getSvgRoot().setAttribute('visibility', 'hidden');
+    } finally {
+        Blockly.Events.enable();
+    }
+
+    return result;
+};
+
 // Blockly.BlockSvg.prototype.rndr = Blockly.BlockSvg.prototype.render;
 //
 // Blockly.BlockSvg.prototype.render = function(a) {
@@ -486,7 +523,7 @@ export default class BlocklyWrapper extends Wrapper {
      * Возвратить значения полей, определяющих максимально допустимое количество блоков,
      * по всем типам блоков
      *
-     * @returns {Array<Object>} массив объектов типа {тип_блока: макс. кол-во}
+     * @returns {} тип_блока: макс. кол-во
      */
     getBlockLimitInputsByType() {
         if (!this.workspace) {return false}
@@ -497,7 +534,7 @@ export default class BlocklyWrapper extends Wrapper {
             for (let input of block.inputList) {
                 for (let field of input.fieldRow) {
                     if (field.name === "MAX_COUNT") {
-                        block_counts[block.type] = parseInt(field.text_);
+                        block_counts[block.type] = parseInt(field.getValue());
                     }
                 }
             }
@@ -521,7 +558,6 @@ export default class BlocklyWrapper extends Wrapper {
             for (let input of block.inputList) {
                 for (let field of input.fieldRow) {
                     if (field.name === "MAX_COUNT") {
-                        console.log(field);
                         let value = block_counts[block.type] || 0;
 
                         field.setValue(value);

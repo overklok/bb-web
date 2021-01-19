@@ -34,8 +34,10 @@ interface CommandChain {
     pause: number
 }
 
+export type CodeChainset = {[key: string]: CommandChain, main: CommandChain};
+
 interface BlocklyModelState extends ModelState {
-    chainset: {[key: string]: CommandChain, main: CommandChain};
+    chainset: CodeChainset;
     variables: {[name: string]: number|string};
 }
 
@@ -55,7 +57,7 @@ export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
         return !chainset || !chainset.main || chainset.main.commands.length === 0;
     }
 
-    public setChainset(chainset: any) {
+    public setChainset(chainset: CodeChainset) {
         this.setState({chainset});
     }
 

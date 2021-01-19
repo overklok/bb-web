@@ -21,7 +21,7 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     
     @on(BoardView.BoardChangeEvent)
     private onUserChange() {
-        this.board.setPlates(this.view.getPlates());
+        this.board.setUserPlates(this.view.getPlates());
     }
 
     @on(BoardOptionsEvent)
