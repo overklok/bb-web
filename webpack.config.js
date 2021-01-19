@@ -99,9 +99,9 @@ function getMinimizer(is_dev) {
 
 function resolveEnvEntries(env) {
     if (env.all) {
-        console.warn("WARNING: 'main' entry has been temporarily excluded for mixed build");
-        // env.main = true;
+        env.main = true;
         env.board = true;
+        env.blockly = true;
         env.monkey = true;
         env.playground = true;
     }
