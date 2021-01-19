@@ -292,3 +292,4 @@ function getCopypaths(env, is_dev, no_copy) {
 
     return copypaths;
 }
+
