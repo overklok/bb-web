@@ -18,7 +18,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     static defaultProps = {
         edit_limits: false,
         force_all_blocks: false,
-        zoom: 1,
+        zoom: 0.7,
     }
 
     private readonly blockly: BlocklyWrapper;

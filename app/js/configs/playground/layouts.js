@@ -1,6 +1,6 @@
 export default {
     options: {
-        show_headers: true,
+        show_headers: false,
     },
     modes: {
         default: {
