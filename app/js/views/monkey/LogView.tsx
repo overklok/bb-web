@@ -2,7 +2,7 @@ import * as React from "react";
 import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {LogGroup} from "./log/LogGroup";
 
-import "../../../css/blocks/log.less"
+import "../../../css/blocks/log/log.less"
 import {IBoardLog, IBoardLogEntry, IBoardLogGroup} from "../../models/monkey/BoardLogModel";
 import {ViewEvent} from "../../core/base/Event";
 

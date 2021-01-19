@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import "../../../../css/blocks/log-group.less";
-import "../../../../css/blocks/magazine.less";
+import "../../../../css/blocks/log/log-group.less";
+import "../../../../css/blocks/log/magazine.less";
 import classNames from "classnames";
 import {IBoardLogEntry} from "../../../models/monkey/BoardLogModel";
 
