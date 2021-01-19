@@ -12,14 +12,26 @@ npm run build
 # For PythonAnywhere servers
 
 # srv-dev
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-dev/frontend/static/frontend/app/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-blockly/admin_blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-dev/coursesvc/static/admin/vendor/admin-board/admin_board.js
+cd /home/overklok/tapanda/ch-board/srv-dev || exit
+
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./frontend/static/frontend/app
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./frontend/static/frontend/app
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./frontend/static/frontend/app
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./coursesvc/static/admin/vendor/admin-blockly/blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./coursesvc/static/admin/vendor/admin-blockly/blockly.css
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./coursesvc/static/admin/vendor/admin-board/board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./coursesvc/static/admin/vendor/admin-board/board.css
 
 # srv-main
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-main/frontend/static/frontend/app/js/
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-blockly/js/admin_blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-main/coursesvc/static/admin/vendor/admin-board/js/admin_board.js
+cd /home/overklok/tapanda/ch-board/srv-main || exit
+
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./frontend/static/frontend/app
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./frontend/static/frontend/app
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./frontend/static/frontend/app
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./coursesvc/static/admin/vendor/admin-blockly/blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./coursesvc/static/admin/vendor/admin-blockly/blockly.css
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./coursesvc/static/admin/vendor/admin-blockly/board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./coursesvc/static/admin/vendor/admin-blockly/board.css
 
 # srv-alpha1
 #cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha1/frontend/static/frontend/app/js/
