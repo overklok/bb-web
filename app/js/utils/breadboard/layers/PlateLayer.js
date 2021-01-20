@@ -610,6 +610,7 @@ export default class PlateLayer extends Layer {
 
             document.removeEventListener('click', this._onClick(), false);
             document.removeEventListener('keydown', this._onKey(), false);
+            document.removeEventListener('keyup',   this._onKey(), false);
             document.removeEventListener('contextmenu', this._onContextMenu(), false);
 
             for (let plate_id in this._plates) {
@@ -633,6 +634,7 @@ export default class PlateLayer extends Layer {
 
         document.addEventListener('click', this._onClick(), false);
         document.addEventListener('keydown', this._onKey(), false);
+        document.addEventListener('keyup',   this._onKey(), false);
         document.addEventListener('contextmenu', this._onContextMenu(), false);
 
         return true;
@@ -867,45 +869,51 @@ export default class PlateLayer extends Layer {
 
         /// Когда нажата кнопка клавиатуры
         this._onkey = (evt) => {
+            const keydown = evt.type === 'keydown';
+
             if (this._plate_selected) {
                 /// Если есть выделенная плашка
-                switch (evt.code) {
-                    case "BracketLeft":
-                        this._plate_selected.rotateClockwise();
-                        evt.preventDefault();
-                        break;
-                    case "BracketRight":
-                        this._plate_selected.rotateCounterClockwise();
-                        evt.preventDefault();
-                        break;
-                    case "ArrowLeft":
-                        this._plate_selected.shift(-1, 0);
-                        evt.preventDefault();
-                        break;
-                    case "ArrowRight":
-                        this._plate_selected.shift(1, 0);
-                        evt.preventDefault();
-                        break;
-                    case "ArrowUp":
-                        this._plate_selected.shift(0, -1);
-                        evt.preventDefault();
-                        break;
-                    case "ArrowDown":
-                        this._plate_selected.shift(0, 1);
-                        evt.preventDefault();
-                        break;
-                    case "KeyD":
-                        this._duplicatePlate(this._plate_selected);
-                        evt.preventDefault();
-                        break;
-                    case "Delete":
-                        /// Удалить её
-                        this.removePlate(this._plate_selected.id);
-                        this._plate_selected = null;
-                        evt.preventDefault();
-                        break;
+                if (keydown) {
+                    switch (evt.code) {
+                        case "BracketLeft":
+                            this._plate_selected.rotateClockwise();
+                            evt.preventDefault();
+                            break;
+                        case "BracketRight":
+                            this._plate_selected.rotateCounterClockwise();
+                            evt.preventDefault();
+                            break;
+                        case "ArrowLeft":
+                            this._plate_selected.shift(-1, 0);
+                            evt.preventDefault();
+                            break;
+                        case "ArrowRight":
+                            this._plate_selected.shift(1, 0);
+                            evt.preventDefault();
+                            break;
+                        case "ArrowUp":
+                            this._plate_selected.shift(0, -1);
+                            evt.preventDefault();
+                            break;
+                        case "ArrowDown":
+                            this._plate_selected.shift(0, 1);
+                            evt.preventDefault();
+                            break;
+                        case "KeyD":
+                            this._duplicatePlate(this._plate_selected);
+                            evt.preventDefault();
+                            break;
+                        case "Delete":
+                            /// Удалить её
+                            this.removePlate(this._plate_selected.id);
+                            this._plate_selected = null;
+                            evt.preventDefault();
+                            break;
+                    }
                 }
             }
+
+            this._plate_selected && this._plate_selected.handleKeyPress(evt.code, keydown);
         };
 
         return this._onkey;

@@ -37,6 +37,14 @@ export default class SwitchPlate extends ButtonPlate {
         // this._group.text(`Switch`).font({size: 20});
     };
 
+    _rotateJumper() {
+        if (this.state.input) {
+            this.line_jumper.hide();
+        } else {
+            this.line_jumper.show();
+        }
+    }
+
     /**
      *
      * @param {number} qs размер квадратов
@@ -77,8 +85,17 @@ export default class SwitchPlate extends ButtonPlate {
             ['V', contact_point.y]
         ]);
 
+        this.line_jumper = this._group.path([
+            ['M', contact_point.x, contact_point.y],
+            ['L', cell1.center_rel.x + cell1.size.x, cell1.center_rel.y],
+            ['L', cell1.center_rel.x, cell1.center_rel.y]
+        ]);
+
         line_right.stroke({width: 3}).fill('none');
         line_left.stroke({width: 3}).fill('none');
         line_middle.stroke({width: 3}).fill('none');
+        this.line_jumper.stroke({width: 3}).fill('none');
+
+        this._rotateJumper();
     }
 }

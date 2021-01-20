@@ -15,7 +15,7 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
         this._items_data.push({
             alias: SwitchPlateContextMenu.CMI_SWITCH,
             label: () => {return this._getLabel()},
-            // shortcut: 'Q',
+            shortcut: 'Q',
             active: true,
             as: {
                 alias: PlateContextMenu.CMI_INPUT,

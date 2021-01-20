@@ -572,6 +572,10 @@ export default class Plate {
         this._afterReposition();
     }
 
+    handleKeyPress(key_code, keydown) {
+
+    }
+
     getOppositeCell(cell) {
         return this.__getOppositeCell__(cell);
     }
