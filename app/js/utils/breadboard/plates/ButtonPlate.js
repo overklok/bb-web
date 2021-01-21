@@ -86,7 +86,7 @@ export default class ButtonPlate extends LinearPlate {
                 .style({fill: '#0F0', size: 18});
         }
 
-        this._svginp.text(input_value ? '1' : '0');
+        this._svginp.text(input_value);
     }
 
     /**
