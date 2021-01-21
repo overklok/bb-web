@@ -27,6 +27,7 @@ import IEventService from "./core/services/interfaces/IEventService";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;
+    verbose?: boolean;
     readonly?: boolean;
     layout_name?: string;
 }
@@ -71,6 +72,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
             main: {view_type: BoardView.BoardView, presenter_types: [BoardPresenter], view_props: {
                 schematic: true,
                 readonly: this.config.readonly,
+                verbose: this.config.verbose,
             }},
         });
 

@@ -15,6 +15,7 @@ export default class RheostatPlate extends Plate {
         ];
 
         this._params.origin = {x: 0, y: 0};
+
     }
 
     /**
@@ -26,8 +27,28 @@ export default class RheostatPlate extends Plate {
     __draw__(position, orientation) {
         this._drawPicture();
 
+        if (this._params.verbose) {
+            this._redrawInput(this._state.input);
+        }
+
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
+
+    /**
+     * Установить состояние резистора
+     *
+     * @param {object} state    новое состояние резистора
+     * @param suppress_events   глушить вызов событий
+     */
+    setState(state, suppress_events) {
+        super.setState(state, suppress_events);
+
+        if (state.input === undefined) return;
+
+        if (this._params.verbose) {
+            this._redrawInput(input);
+        }
+    }
 
     get input() {
         return Number(this._state.input);
@@ -50,6 +71,17 @@ export default class RheostatPlate extends Plate {
      */
     rotate(orientation) {
         super.rotate(orientation);
+    }
+
+    _redrawInput(input_value) {
+        if (!this._svginp) {
+            let cell = this.__grid.cell(0, 0);
+            this._svginp = this._group.text('0')
+                .center(cell.center_rel.x, cell.center_rel.y)
+                .style({fill: '#0F0', size: 18});
+        }
+
+        this._svginp.text(input_value ? '1' : '0');
     }
 
     /**

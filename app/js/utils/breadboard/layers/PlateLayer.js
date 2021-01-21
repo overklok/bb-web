@@ -94,7 +94,7 @@ export default class PlateLayer extends Layer {
     }
 
     constructor(container, grid, schematic=false, verbose=false) {
-        super(container, grid, schematic, verbose);
+        super(container, grid, schematic, false, verbose);
 
         this._container.addClass(PlateLayer.Class);
 

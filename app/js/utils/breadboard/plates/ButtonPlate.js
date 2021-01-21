@@ -83,7 +83,7 @@ export default class ButtonPlate extends LinearPlate {
             let cell = this.__grid.cell(0, 0);
             this._svginp = this._group.text('0')
                 .center(cell.center_rel.x, cell.center_rel.y)
-                .style({fill: '#FFF', size: 18});
+                .style({fill: '#0F0', size: 18});
         }
 
         this._svginp.text(input_value ? '1' : '0');

@@ -1,4 +1,4 @@
-import Application from "./core/Application";
+import Application, {AppConf} from "./core/Application";
 
 import IViewService from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
@@ -27,12 +27,21 @@ import CodeModel from "./models/common/CodeModel";
 import KeyboardModel from "./core/models/KeyboardModel";
 import IEventService from "./core/services/interfaces/IEventService";
 
-class PlaygroundApplication extends Application {
+interface PlaygroundApplicationConfig extends AppConf {
+    silent?: boolean;
+    verbose?: boolean;
+    readonly?: boolean;
+    layout_name?: string;
+}
+
+class PlaygroundApplication extends Application<PlaygroundApplicationConfig> {
     public bb: BoardModel;
     public cm: CodeModel;
 
     private ads: AdaptiveAsyncDatasource;
     private dds: DummyDatasource;
+
+    protected config: PlaygroundApplicationConfig;
 
     protected providerClasses(): Array<IServiceProvider> {
         return [
@@ -59,7 +68,9 @@ class PlaygroundApplication extends Application {
         svc_model.register(ModalModel, this.dds);
         svc_model.register(LayoutModel, this.dds, layouts_config);
         svc_model.register(CodeModel, this.ads);
-        svc_model.register(BoardModel, this.ads);
+        svc_model.register(BoardModel, this.ads, {
+            layout_name: this.config.layout_name,
+        });
     }
 
     async run(element: HTMLElement) {
@@ -67,6 +78,9 @@ class PlaygroundApplication extends Application {
 
         const svc_view = this.instance(IViewService),
               svc_model = this.instance(IModelService);
+
+        widgets_config.widgets.board.view_props.readonly = this.config.readonly;
+        widgets_config.widgets.board.view_props.verbose = this.config.verbose;
 
         svc_view.setRootWidgets(widgets_config.composer, widgets_config.root);
         svc_view.registerWidgetTypes(widgets_config.widgets);
