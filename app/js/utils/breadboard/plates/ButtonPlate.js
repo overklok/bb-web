@@ -56,7 +56,7 @@ export default class ButtonPlate extends LinearPlate {
 
         if (state.input === undefined) return;
 
-        let input = !!state.input;
+        let input = state.input;
 
         this._ctxmenu.setValue(input);
 

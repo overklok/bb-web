@@ -46,7 +46,7 @@ export default class RheostatPlate extends Plate {
         if (state.input === undefined) return;
 
         if (this._params.verbose) {
-            this._redrawInput(input);
+            this._redrawInput(state.input);
         }
     }
 
