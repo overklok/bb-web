@@ -76,9 +76,10 @@ export default class RheostatPlate extends Plate {
     _redrawInput(input_value) {
         if (!this._svginp) {
             let cell = this.__grid.cell(0, 0);
-            this._svginp = this._group.text('0')
+            this._svginp = this._container.text('0')
                 .center(cell.center_rel.x, cell.center_rel.y)
-                .style({fill: '#0F0', size: 18});
+                .style({fill: '#0F0'})
+                .font({size: 22});
         }
 
         this._svginp.text(String(input_value));
