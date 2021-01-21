@@ -78,7 +78,7 @@ export default class RheostatPlate extends Plate {
             this._svginpbg = this._container.rect(0, 0).style({fill: '#000'});
 
             this._svginp = this._container.text('-')
-                .center(this._container.width() / 2, 0)
+                .center(0, 0)
                 .style({fill: '#0F0'})
                 .font({size: 22});
         }
