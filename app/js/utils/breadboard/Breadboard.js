@@ -183,8 +183,6 @@ export default class Breadboard {
         this._composeLayers();
 
         this.setReadOnly(this._options.readOnly);
-
-        console.log(this.getBoardInfo());
     };
 
     setRandomPlates(protos, size_mid, size_deviation, attempts_max) {
@@ -268,7 +266,7 @@ export default class Breadboard {
     /**
      * Установить состояние плашки
      *
-     * @param {int}     plate_id    идентифиактор плашки
+     * @param {int}     plate_id    идентификатор плашки
      * @param {object}  state       состояние плашки
      */
     setPlateState(plate_id, state) {

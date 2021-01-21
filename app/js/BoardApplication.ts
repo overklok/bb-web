@@ -86,6 +86,14 @@ class BoardApplication extends Application<BoardApplicationConfig> {
 
         this.instance(IViewService).compose(element);
     }
+
+    get views() {
+        return this.instance(IViewService).getViews();
+    }
+
+    get models() {
+        return this.instance(IModelService).getModels();
+    }
 }
 
 declare global {

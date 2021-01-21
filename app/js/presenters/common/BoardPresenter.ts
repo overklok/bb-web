@@ -37,5 +37,12 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     @restore() @on(ElectronicEvent)
     private onelec(evt: ElectronicEvent) {
         this.view.setCurrents(evt.threads);
+
+        for (const element of evt.elements) {
+            this.view.setPlateState(element.id, {
+                ...element.dynamic,
+                highlighted: element.highlight
+            });
+        }
     }
 }

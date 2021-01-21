@@ -31,6 +31,7 @@ const enum ChannelsFrom {
 
 interface BreadboardModelState extends ModelState {
     plates: Plate[];
+    elements: PlateDiff[];
     threads: Thread[];
     arduino_pins: ArduinoPin[];
     layout_name: string;
@@ -47,6 +48,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
     protected defaultState: BreadboardModelState = {
         plates: [],
+        elements: [],
         threads: [],
         arduino_pins: [],
         layout_name: 'v8x',
@@ -217,6 +219,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     public acceptElectronics({threads, elements, arduino_pins}: ElectronicDataPackage) {
         this.setState({
             threads: threads,
+            elements: elements,
             arduino_pins: arduino_pins,
         });
 
@@ -240,7 +243,8 @@ export type Plate = {
 
 export type PlateDiff = {
     id: number;
-    highlighted: boolean;
+    highlight: boolean;
+    dynamic: {[key: string]: any};
 }
 
 export type Thread = {
@@ -272,6 +276,7 @@ export class PlateEvent extends ModelEvent<PlateEvent> {
 
 export class ElectronicEvent extends ModelEvent<ElectronicEvent> {
     threads: Thread[];
+    elements: PlateDiff[];
     arduino_pins: ArduinoPin[];
 }
 
