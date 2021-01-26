@@ -1,7 +1,5 @@
 import Plate from "../core/Plate";
-import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
-import Breadboard from "../Breadboard";
 import BackgroundLayer from "../layers/BackgroundLayer";
 
 export default class UnkPlate extends LinearPlate {

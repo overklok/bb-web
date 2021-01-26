@@ -1,3 +1,7 @@
+import Grid from "../Grid";
+import SVG from "svg.js";
+import PlateLayer from "../../layers/PlateLayer";
+
 export function coverObjects(options, defaults) {
   const result = {};
 
@@ -96,4 +100,25 @@ export function getCursorPoint(svg_main, clientX, clientY) {
     svg_point.y = clientY;
 
     return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
+}
+
+export function buildGrid(layout) {
+    return new Grid(
+        layout.grid_rows,  layout.grid_cols,
+        layout.grid_width, layout.grid_height,
+        layout.grid_pos_x, layout.grid_pos_y,
+        layout.grid_gap_x, layout.grid_gap_y,
+        layout.wrap_width, layout.wrap_height,
+        layout.points,
+        layout.domains,
+        layout.curr_straight_top_y,
+        layout.curr_straight_bottom_y,
+    );
+}
+
+export function comparePlates(layout, plate1, plate2) {
+    const grid = buildGrid(layout);
+    const svg = SVG(document.createElement("div"));
+
+    return PlateLayer.comparePlates(svg, grid, plate1, plate2);
 }

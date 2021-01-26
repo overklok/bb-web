@@ -4,7 +4,6 @@
   "description": "A Tapanda project's web GUI module",
   "main": "index.js",
   "dependencies": {
-    "@svgdotjs/svg.js": "^3.0.16",
     "@types/js-cookie": "^2.2.6",
     "@types/lodash": "^4.14.165",
     "@types/lodash-es": "^4.17.4",
@@ -28,6 +27,7 @@
     "react-dom": "^16.14.0",
     "react-transition-group": "^4.4.1",
     "socket.io-client": "^2.3.1",
+    "svg.js": "^2.7.1",
     "sweetalert2": "^9.17.2",
     "ts-loader": "^6.2.2",
     "typescript": "^4.1.3",

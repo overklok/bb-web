@@ -1,8 +1,4 @@
-import Breadboard from "../Breadboard";
 import Plate from "../core/Plate";
-import Cell from "../core/Cell";
-import {GRADIENTS} from "../styles/gradients";
-import SwitchPlateContextMenu from "../menus/plate/SwitchPlateContextMenu";
 import ButtonPlate from "./ButtonPlate";
 
 export default class SwitchPlate extends ButtonPlate {

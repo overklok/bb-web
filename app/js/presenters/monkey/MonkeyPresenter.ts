@@ -5,6 +5,7 @@ import BoardModel, {BoardErrorEvent, Plate, PlateEvent, UserPlateEvent} from "..
 import Breadboard from "../../utils/breadboard/Breadboard";
 import TestkitModel, {ReferenceEvent} from "../../models/monkey/TestkitModel";
 import BoardLogModel from "../../models/monkey/BoardLogModel";
+import {comparePlates} from "../../utils/breadboard/core/extras/helpers";
 
 export default class MonkeyPresenter extends Presenter<MonkeyView> {
     private modal: ModalModel;
@@ -107,6 +108,6 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
     private isPlatesEqual(plate_a: Plate, plate_b: Plate): boolean {
         const layout = BoardModel.Layouts[this.assembly_board.getBoardLayout()];
 
-        return Breadboard.comparePlates(layout, plate_a, plate_b);
+        return comparePlates(layout, plate_a, plate_b);
     }
 }

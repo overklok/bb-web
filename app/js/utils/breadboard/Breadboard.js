@@ -1,6 +1,6 @@
+import SVG from 'svg.js'
 import canvg from 'canvg';
 import { saveAs } from 'file-saver';
-import { SVG } from '@svgdotjs/svg.js'
 
 import Grid from "./core/Grid";
 import LabelLayer from "./layers/LabelLayer";
@@ -15,6 +15,7 @@ import {initGradients} from "./styles/gradients";
 import SelectorLayer from "./layers/SelectorLayer";
 import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 import {layoutToBoardInfo} from "./core/extras/board_info";
+import {buildGrid} from "./core/extras/helpers";
 
 require("./styles/main.css");
 
@@ -23,28 +24,11 @@ require("./styles/main.css");
  * Предоставляет API управления визуализацией платы внешним модулям приложений
  */
 export default class Breadboard {
-    static comparePlates(layout, plate1, plate2) {
-        const grid = Breadboard.buildGrid(layout);
-        const svg = SVG(document.createElement("div"));
-
-        return PlateLayer.comparePlates(svg, grid, plate1, plate2);
-    }
-
-    static buildGrid(layout) {
-        return new Grid(
-            layout.grid_rows,  layout.grid_cols,
-            layout.grid_width, layout.grid_height,
-            layout.grid_pos_x, layout.grid_pos_y,
-            layout.grid_gap_x, layout.grid_gap_y,
-            layout.wrap_width, layout.wrap_height,
-            layout.points,
-            layout.domains,
-            layout.curr_straight_top_y,
-            layout.curr_straight_bottom_y,
-        );
-    }
-
     constructor(options) {
+        if (!SVG.supported) {
+            alert("SVG is not supported. Please use any modern browser.");
+        }
+
         this._brush = undefined;
         this.__grid  = undefined;
 
@@ -165,7 +149,7 @@ export default class Breadboard {
 
         this._brush.style({"user-select": "none"});
 
-        this.__grid = Breadboard.buildGrid(this._layout);
+        this.__grid = buildGrid(this._layout);
 
         /// создать фильтры
         this._defineFilters();

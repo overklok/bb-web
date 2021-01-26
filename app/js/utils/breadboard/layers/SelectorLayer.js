@@ -1,5 +1,4 @@
-import { SVG } from '@svgdotjs/svg.js'
-
+import SVG from 'svg.js';
 import Layer from "../core/Layer";
 
 import "../styles/selector.css";

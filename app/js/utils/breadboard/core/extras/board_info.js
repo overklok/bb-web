@@ -1,12 +1,12 @@
 import Grid from "../Grid";
 import Breadboard from "../../Breadboard";
 import LabelLayer from "../../layers/LabelLayer";
-import {boundsToCoordList, pointsToCoordList} from "./helpers";
+import {boundsToCoordList, buildGrid, pointsToCoordList} from "./helpers";
 
 let ard_plate_ser_num = 0;
 
 function layoutToBoardInfo(layout) {
-    const grid = Breadboard.buildGrid(layout);
+    const grid = buildGrid(layout);
 
     let cell_structure = {};
     let embedded_plates = [];
