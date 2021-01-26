@@ -2,6 +2,7 @@ import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
 import Breadboard from "../Breadboard";
+import BackgroundLayer from "../layers/BackgroundLayer";
 
 export default class UnkPlate extends LinearPlate {
     static get Alias() {return "undef"}
@@ -53,7 +54,7 @@ export default class UnkPlate extends LinearPlate {
     __draw__(position, orientation) {
         let cell = this.__grid.cell(0, 0);
 
-        this._bezel = this._group.rect("100%", "100%").radius(Breadboard.CellRadius).style({fill: '#ffbebe'});
+        this._bezel = this._group.rect("100%", "100%").radius(BackgroundLayer.CellRadius).style({fill: '#ffbebe'});
 
         this._group.text(`${this._props[UnkPlate.PROP_TYPE]}`)
             .font({

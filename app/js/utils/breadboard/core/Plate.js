@@ -1,8 +1,8 @@
-import Breadboard from "../Breadboard";
 import Cell from "./Cell";
 import Grid from "../core/Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
-import {coverObjects} from "./extras/helpers";
+import {coverObjects, getCursorPoint} from "./extras/helpers";
+import BackgroundLayer from "../layers/BackgroundLayer";
 
 function mod(n, m) {
   return ((n % m) + m) % m;
@@ -296,7 +296,7 @@ export default class Plate {
         this._container.size(width, height);
         this._shadow.size(width, height);
 
-        let surf_path = this._generateSurfacePath(Breadboard.CellRadius);
+        let surf_path = this._generateSurfacePath(BackgroundLayer.CellRadius);
 
         // TODO: Move surface generation to ComplexPlate and LinearPlate
 
@@ -304,8 +304,8 @@ export default class Plate {
             this._bezel = this._group.path(surf_path);
             this._error_highlighter = this._group.path(surf_path);
         } else {
-            this._bezel = this._group.rect("100%", "100%").radius(Breadboard.CellRadius);
-            this._error_highlighter = this._group.rect("100%", "100%").radius(Breadboard.CellRadius);
+            this._bezel = this._group.rect("100%", "100%").radius(BackgroundLayer.CellRadius);
+            this._error_highlighter = this._group.rect("100%", "100%").radius(BackgroundLayer.CellRadius);
         }
 
         if (this._params.schematic) {
@@ -658,7 +658,7 @@ export default class Plate {
     showContextMenu(evt, svg_main) {
         if (this._dragging) return;
 
-        let cursor_point = Breadboard.getCursorPoint(svg_main, evt.clientX, evt.clientY);
+        let cursor_point = getCursorPoint(svg_main, evt.clientX, evt.clientY);
 
         this._ctxmenu.draw(cursor_point, true, [this._state.input]);
     }

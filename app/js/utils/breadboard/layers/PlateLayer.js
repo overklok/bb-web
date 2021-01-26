@@ -19,9 +19,9 @@ import MotorPlate           from "../plates/MotorPlate";
 import RGBPlate             from "../plates/RGBPlate";
 import DummyPlate           from "../plates/DummyPlate";
 import BuzzerPlate          from "../plates/BuzzerPlate";
-import Breadboard           from "../Breadboard";
 import isEqual from "lodash/isEqual";
 import UnkPlate from "../plates/UnkPlate";
+import {getCursorPoint} from "../core/extras/helpers";
 
 /**
  * Слой плашек
@@ -339,7 +339,7 @@ export default class PlateLayer extends Layer {
         );
 
         const plate = this._plates[id];
-        let plate_point = Breadboard.getCursorPoint(this._container.node, plate_x, plate_y);
+        let plate_point = getCursorPoint(this._container.node, plate_x, plate_y);
 
         plate.center_to_point(plate_point.x, plate_point.y);
         this._onPlateMouseDown({which: 1}, plate);
@@ -765,7 +765,7 @@ export default class PlateLayer extends Layer {
             document.body.addEventListener('mousemove', this._onMouseMove(), false);
             document.body.addEventListener('mouseup', this._onMouseUp(), false);
 
-            this._cursor_point_mousedown = Breadboard.getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+            this._cursor_point_mousedown = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
 
             this._plate_dragging = plate;
             this._cell_supposed = plate._calcSupposedCell();
@@ -778,7 +778,7 @@ export default class PlateLayer extends Layer {
         }
 
         this._onmousemove = (evt) => {
-            let cursor_point = Breadboard.getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+            let cursor_point = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
 
             let dx = cursor_point.x - this._cursor_point_mousedown.x;
             let dy = cursor_point.y - this._cursor_point_mousedown.y;

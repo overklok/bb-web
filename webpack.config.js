@@ -11,8 +11,6 @@ const webpack = require('webpack');
 const dotenv = require('dotenv').config();
 const { generate } = require('build-number-generator');
 
-const lib_dir = __dirname + '/vendor/js';
-
 const TerserPlugin                      = require('terser-webpack-plugin');
 const HtmlWebpackPlugin                 = require('html-webpack-plugin');
 const CopyWebpackPlugin                 = require('copy-webpack-plugin');

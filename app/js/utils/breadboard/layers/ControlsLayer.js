@@ -4,6 +4,7 @@ import Breadboard from "../Breadboard";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import LabelLayer from "../layers/LabelLayer";
 import ContextMenu from "../core/ContextMenu";
+import {getCursorPoint} from "../core/extras/helpers";
 
 const LOGO_COLOR_ACTIVE     = "#6B8FFF";
 const LOGO_COLOR_DEFAULT    = "#000000";
@@ -191,7 +192,7 @@ export default class ControlsLayer extends Layer {
                 evt.preventDefault();
 
                 let svg_main = this._container.node;
-                let cursor_point = Breadboard.getCursorPoint(svg_main, evt.clientX, evt.clientY);
+                let cursor_point = getCursorPoint(svg_main, evt.clientX, evt.clientY);
 
                 this._ctxmenu.draw(cursor_point, false);
             } else {

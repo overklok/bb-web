@@ -78,3 +78,22 @@ export function boundsToCoordList(from, to, x_val, y_val) {
 
     return list;
 }
+
+/**
+ * Получить положение курсора в системе координат SVG
+ *
+ * @param {SVGSVGElement}   svg_main    SVG-узел, в системе координат которого нужна точка
+ * @param {number}          clientX     Положение курсора по оси X
+ * @param {number}          clientY     Положение курсора по оси Y
+ *
+ * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
+ *                      в системе координат заданного SVG-узла
+ */
+export function getCursorPoint(svg_main, clientX, clientY) {
+    let svg_point = svg_main.createSVGPoint();
+
+    svg_point.x = clientX;
+    svg_point.y = clientY;
+
+    return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
+}

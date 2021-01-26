@@ -1,15 +1,14 @@
-import SVG from 'svgjs'
 import canvg from 'canvg';
 import { saveAs } from 'file-saver';
+import { SVG } from '@svgdotjs/svg.js'
 
 import Grid from "./core/Grid";
-import BackgroundLayer from "./layers/BackgroundLayer";
 import LabelLayer from "./layers/LabelLayer";
-import CurrentLayer from "./layers/CurrentLayer";
 import PlateLayer from "./layers/PlateLayer";
 import RegionLayer from "./layers/RegionLayer";
+import CurrentLayer from "./layers/CurrentLayer";
 import ControlsLayer from "./layers/ControlsLayer";
-
+import BackgroundLayer from "./layers/BackgroundLayer";
 import BoardContextMenu from "./menus/BoardContextMenu";
 
 import {initGradients} from "./styles/gradients";
@@ -24,8 +23,6 @@ require("./styles/main.css");
  * Предоставляет API управления визуализацией платы внешним модулям приложений
  */
 export default class Breadboard {
-    static get CellRadius() {return 5}
-
     static comparePlates(layout, plate1, plate2) {
         const grid = Breadboard.buildGrid(layout);
         const svg = SVG(document.createElement("div"));
@@ -48,10 +45,6 @@ export default class Breadboard {
     }
 
     constructor(options) {
-        if (!SVG.supported) {
-            alert("SVG is not supported. Please use any modern browser.");
-        }
-
         this._brush = undefined;
         this.__grid  = undefined;
 
@@ -91,7 +84,6 @@ export default class Breadboard {
     static drawPlate(parent, type, properties) {
         const grid = new Grid(10, 10, 1000, 700);
         const div_wrap = SVG(parent);
-
 
         const plate_type = PlateLayer.typeToPlateClass(type);
 
@@ -882,24 +874,5 @@ export default class Breadboard {
                 document.webkitCancelFullScreen();
             }
         }
-    }
-
-    /**
-     * Получить положение курсора в системе координат SVG
-     *
-     * @param {SVGSVGElement}   svg_main    SVG-узел, в системе координат которого нужна точка
-     * @param {number}          clientX     Положение курсора по оси X
-     * @param {number}          clientY     Положение курсора по оси Y
-     *
-     * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
-     *                      в системе координат заданного SVG-узла
-     */
-    static getCursorPoint(svg_main, clientX, clientY) {
-        let svg_point = svg_main.createSVGPoint();
-
-        svg_point.x = clientX;
-        svg_point.y = clientY;
-
-        return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
     }
 }

@@ -1,6 +1,5 @@
-import Current from './Current';
 import Cell from "./Cell";
-import {boundsToCoordList, pointsToCoordList} from "./extras/helpers";
+import {pointsToCoordList} from "./extras/helpers";
 
 const BORDER_TYPES = {
     None: 'none',
@@ -225,7 +224,7 @@ export default class Grid {
                 this._cells[i][j] = new Cell(i, j, this, this._getTrackOfCell(i, j));
             }
         }
-    };
+    }
 
     /**
      * Определить дорожку, на которой установлена ячейка

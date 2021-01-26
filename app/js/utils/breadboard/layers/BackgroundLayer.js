@@ -1,12 +1,12 @@
-import Breadboard from "../Breadboard";
 import Layer from "../core/Layer";
 import Plate from "../core/Plate";
 import Grid from "../core/Grid";
 import Cell from "../core/Cell";
 
 import {GRADIENTS} from "../styles/gradients";
+import {getCursorPoint} from "../core/extras/helpers";
 
-const DOMAIN_SCHEMATIC_STYLES = {
+export const DOMAIN_SCHEMATIC_STYLES = {
     Default: 'default',
     Dotted: 'dotted',
     None: 'none'
@@ -14,6 +14,8 @@ const DOMAIN_SCHEMATIC_STYLES = {
 
 export default class BackgroundLayer extends Layer {
     static get Class() {return "bb-layer-background"}
+
+    static get CellRadius() {return 5}
 
     /** отклонение линий доменов в схематическом режиме */
     static get DomainSchematicBias() {return 20}
@@ -112,7 +114,7 @@ export default class BackgroundLayer extends Layer {
         this._scheduled_animation_frame = false;
 
         const svg_main = this._container.node;
-        const cursor_point = Breadboard.getCursorPoint(svg_main, this._hover_pos.x, this._hover_pos.y);
+        const cursor_point = getCursorPoint(svg_main, this._hover_pos.x, this._hover_pos.y);
 
         const cell = this.__grid.getCellByPos(cursor_point.x, cursor_point.y);
 
@@ -293,7 +295,7 @@ export default class BackgroundLayer extends Layer {
             .rect(cell.size.x, cell.size.y)
             .move(cell.pos.x, cell.pos.y)
             .fill({color: "#D4AF37", opacity: 1})
-            .radius(Breadboard.CellRadius);
+            .radius(BackgroundLayer.CellRadius);
 
         // [quad] lines
         container.path([

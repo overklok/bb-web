@@ -1,5 +1,4 @@
 import Plate from "../core/Plate";
-import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
 
 export default class ResistorPlate extends LinearPlate {

@@ -3,6 +3,7 @@ import Cell from "../core/Cell";
 import Layer from "../core/Layer";
 import Current from "../core/Current";
 import BackgroundLayer from "../layers/BackgroundLayer";
+
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
 
