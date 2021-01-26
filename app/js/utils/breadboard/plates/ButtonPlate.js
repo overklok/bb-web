@@ -1,5 +1,4 @@
 import Plate from "../core/Plate";
-import Cell from "../core/Cell";
 import SwitchPlateContextMenu from "../menus/plate/SwitchPlateContextMenu";
 import LinearPlate from "../core/plate/LinearPlate";
 
@@ -43,7 +42,6 @@ export default class ButtonPlate extends LinearPlate {
             this.setState({input: true});
         }
     }
-
 
     /**
      * Установить состояние перемычки
