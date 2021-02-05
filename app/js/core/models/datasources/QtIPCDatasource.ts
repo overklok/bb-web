@@ -19,8 +19,8 @@ enum QtWebStatus {
 
 export default class QtIPCDatasource extends AsynchronousDatasource {
     // Connection retrieval options
-    private static readonly AttemptLimit = 15;
-    private static readonly AttemptPeriodInit = 50; // ms
+    private static readonly AttemptLimit = 30;
+    private static readonly AttemptPeriodInit = 100; // ms
     private static readonly AttemptPeriodConnect = 500; // ms
 
     // An interactive object passed by Qt side
@@ -69,13 +69,15 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
 
             QtIPCDatasource.Status = QtWebStatus.Disconnected;
 
-            this.once('connect', (cli_descriptor: string) => {
+            this.once('connect', (greeting: any) => {
                 QtIPCDatasource.Status = QtWebStatus.Connected;
 
-                console.log(`connection established. Client: ${cli_descriptor}`);
+                const cli_version: string = greeting['version'];
+
+                console.log(`connection established. Client: ${cli_version}`);
 
                 clearInterval(rep);
-                this.emit_connect();
+                this.emit_connect(greeting);
                 resolve(true);
             });
 

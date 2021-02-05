@@ -67,12 +67,12 @@ export default abstract class AsynchronousDatasource extends Datasource {
         this.on('__timeout__', handler);
     }
 
-    emit_connect() {
-        this.handle('__connect__');
+    emit_connect(data?: any) {
+        this.handle('__connect__', data);
     }
 
-    emit_disconnect() {
-        this.handle('__disconnect__');
+    emit_disconnect(data?: any) {
+        this.handle('__disconnect__', data);
     }
 
     emit_timeout() {

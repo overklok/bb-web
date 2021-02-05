@@ -24,10 +24,10 @@ export default class SocketDatasource extends AsynchronousDatasource {
 
         this.socket = io(`http://${this.addr}:${this.port}`);
 
-        this.socket.on('disconnect', () => {
+        this.socket.on('disconnect', (data: any) => {
             this._status = AsyncDatasourceStatus.Disconnected;
             console.debug('[SocketIPC] disconnected.');
-            this.emit_disconnect();
+            this.emit_disconnect(data);
         });
 
         return true;
@@ -42,19 +42,21 @@ export default class SocketDatasource extends AsynchronousDatasource {
             console.debug('[SocketIPC] connecting...');
 
             // if (!this.socket.hasListeners('connect')) {
-                this.socket.on('xconnect', (cli_descriptor: string) => {
+                this.socket.on('xconnect', (greeting: any) => {
                     // of course you can use 'connect' instead of 'xconnect' here
 
+                    const cli_version: string = greeting['version'];
+
                     this._status = AsyncDatasourceStatus.Connected;
-                    console.debug(`[SocketIPC] connection established. Client: ${cli_descriptor || 'unknown'}.`);
-                    this.emit_connect();
+                    console.debug(`[SocketIPC] connection established. Client: ${cli_version || 'unknown'}.`);
+                    this.emit_connect(greeting);
                     resolve(true);
                 });
 
                 setTimeout(() => {
                     if (this._status === AsyncDatasourceStatus.Connected) return;
 
-                    // we can time-out because connection can be established later
+                    // say time-out because connection might be established later
                     this._status = AsyncDatasourceStatus.Timeouted;
                     console.debug('[SocketIPC] connection timeout.');
                     this.emit_timeout();

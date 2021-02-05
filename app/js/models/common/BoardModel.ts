@@ -8,9 +8,6 @@ import {ModelEvent} from "../../core/base/Event";
 import AsynchronousModel, {
     listen,
     connect,
-    disconnect,
-    timeout,
-    waiting
 } from "../../core/base/model/AsynchronousModel";
 
 // Event channels
@@ -23,6 +20,8 @@ const enum ChannelsFrom {
     Error = 'error',
     Plates = 'draw_plates',
     Currents = 'draw_currents',
+    EditableChanged = 'is_editable',
+
     BoardConnected = 'board-connect',
     BoardSearching = 'board-search',
     BoardDisconnected = 'board-disconnect',
@@ -99,10 +98,15 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      *       and it should be removed after finishing migration to TypeScript edition
      *       and replaced with more native approach.
      *
+     * NOTE: This method is deprecated and will be removed in the future.
+     * Use {@see BoardModel.setEditable} instead.
+     *
+     * @deprecated
+     *
      * @param is_admin
      */
     public setAdminMode(is_admin: boolean) {
-        this.emit(new BoardOptionsEvent({readonly: !is_admin}))
+        this.emit(new BoardOptionsEvent({readonly: !is_admin}));
     }
 
     public onUserChange(cb: Function) {
@@ -113,8 +117,14 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      * Send meta information about the board (incl. layout name and structure)
      */
     @connect()
+    private onConnect(data: ServerGreeting) {
+        this.setEditable(data.is_editable);
+
+        this.sendCurrentBoardInfo();
+    }
+
     private sendCurrentBoardInfo() {
-        const layout_name = this.getState().layout_name;
+        const layout_name = this.state.layout_name;
 
         if (!layout_name) return;
 
@@ -122,8 +132,6 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.setState({layout_confirmed: false});
         const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
-
-        // this.emit(new BoardStatusEvent({status: 'connected'}));
     }
 
     @listen(ChannelsFrom.BoardConnected)
@@ -139,6 +147,11 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     @listen(ChannelsFrom.BoardSearching)
     private reportSearching() {
         this.emit(new BoardStatusEvent({status: 'searching'}));
+    }
+
+    @listen(ChannelsFrom.EditableChanged)
+    private setEditable(is_editable: boolean) {
+        this.emit(new BoardOptionsEvent({readonly: !is_editable}));
     }
 
     /**
@@ -163,7 +176,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      * Receive plate data update from the backend
      *
      * This method verifies the layout currently applied.
-     * If you need to force the data you may need to call {@link setBackendPlates} from developer console.
+     * If you need to force the data you may need to call {@link setPlates} from developer console.
      *
      * @param plates an array of plate data objects
      */
@@ -184,10 +197,10 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      * @param arduino_pins  data objects describing state of Arduino pins
      */
     @listen(ChannelsFrom.Currents)
-    private receiveElectronics({threads, elements, arduino_pins}: ElectronicDataPackage) {
+    private receiveElectronics({threads, elements, arduino_pins}: ElectronicData) {
         if (!this.state.layout_confirmed) return;
 
-        this.acceptElectronics({threads, elements, arduino_pins});
+        this.setElectronics({threads, elements, arduino_pins});
     }
 
     /**
@@ -197,7 +210,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      * @param code
      */
     @listen(ChannelsFrom.Error)
-    private receiveError({message, code}: ErrorDataPackage) {
+    private receiveError({message, code}: ErrorData) {
         this.emit(new BoardErrorEvent({message, code}));
     }
 
@@ -216,7 +229,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.emit(new PlateEvent({plates}));
     }
 
-    public acceptElectronics({threads, elements, arduino_pins}: ElectronicDataPackage) {
+    public setElectronics({threads, elements, arduino_pins}: ElectronicData) {
         this.setState({
             threads: threads,
             elements: elements,
@@ -258,12 +271,19 @@ export type BoardLayout = {
 }
 
 // Event data types
-interface ElectronicDataPackage {
-    threads: Thread[], elements: PlateDiff[], arduino_pins: ArduinoPin[]
+interface ElectronicData {
+    threads: Thread[];
+    elements: PlateDiff[];
+    arduino_pins: ArduinoPin[];
 }
 
-interface ErrorDataPackage {
+interface ErrorData {
     code: number, message: string
+}
+
+export class ServerGreeting {
+    version: string;
+    is_editable: boolean;
 }
 
 export class UserPlateEvent extends ModelEvent<PlateEvent> {

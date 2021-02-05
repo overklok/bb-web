@@ -71,15 +71,15 @@ export default abstract class AsynchronousModel<MS> extends Model<MS, Asynchrono
             this.handlers = {};
         }
 
-        if (this.handler_timeout)       this.data_source.on_timeout(this.handler_timeout.bind(this));
-        if (this.handler_connect)       this.data_source.on_connect(this.handler_connect.bind(this));
-        if (this.handler_disconnect)    this.data_source.on_disconnect(this.handler_disconnect.bind(this));
+        this.handler_timeout    && this.data_source.on_timeout(this.handler_timeout.bind(this));
+        this.handler_connect    && this.data_source.on_connect(this.handler_connect.bind(this));
+        this.handler_disconnect && this.data_source.on_disconnect(this.handler_disconnect.bind(this));
 
         switch (this.data_source.status) {
-            case AsyncDatasourceStatus.Initial:         if (this.handler_waiting)    this.handler_waiting(); break;
-            case AsyncDatasourceStatus.Timeouted:       if (this.handler_timeout)    this.handler_timeout(); break;
-            case AsyncDatasourceStatus.Connected:       if (this.handler_connect)    this.handler_connect(); break;
-            case AsyncDatasourceStatus.Disconnected:    if (this.handler_disconnect) this.handler_disconnect(); break;
+            case AsyncDatasourceStatus.Initial:         this.handler_waiting    && this.handler_waiting(); break;
+            case AsyncDatasourceStatus.Timeouted:       this.handler_timeout    && this.handler_timeout(); break;
+            case AsyncDatasourceStatus.Connected:       this.handler_connect    && this.handler_connect(); break;
+            case AsyncDatasourceStatus.Disconnected:    this.handler_disconnect && this.handler_disconnect(); break;
         }
     }
 
