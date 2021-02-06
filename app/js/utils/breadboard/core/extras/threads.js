@@ -2,15 +2,24 @@ export function overlayThreads(threads) {
     const groups = [];
     const threads_divided = [];
 
+    const members = [];
+
+    for (const thread of threads) {
+        const member = threadToMember(thread);
+        members.push(member);
+    }
+
+    members.sort((a, b) => a.points[0] - b.points[0]);
+
     // Divide threads to groups
     // Each group consists of adjacent threads of same orientation
-    for (const thread of threads) {
+    for (const member of members) {
         let added = false;
 
         for (const group of groups) {
             // Each thread must be added only for one specific group
-            if (belongsToGroup(group, thread)) {
-                addToGroup(group, thread);
+            if (belongsToGroup(group, member)) {
+                addToGroup(group, member);
                 added = true;
                 break;
             }
@@ -19,7 +28,7 @@ export function overlayThreads(threads) {
         // If there are no groups found for the thread,
         // init a new one and add the thread at one time
         if (!added) {
-            groups.push(createGroup(thread));
+            groups.push(createGroup(member));
         }
     }
 
@@ -100,11 +109,11 @@ export function doesIntersectionExist(thread_1, thread_2) {
     return !((p0 <= c0 && p1 <= c0) || (p0 >= c1 && p1 >= c1));
 }
 
-function belongsToGroup(group, thread) {
+function belongsToGroup(group, member) {
     const g_pairs = group.pairs;
     const g_is_horz = group.is_horz;
 
-    const is_horz = thread.from.y === thread.to.y;
+    const is_horz = member.is_horz;
 
     if (g_is_horz !== is_horz) return false;
 
@@ -116,6 +125,11 @@ function belongsToGroup(group, thread) {
             to: {[axis_main]: group.main_axis_point, [axis_side]: p_to},
         }
 
+        const thread = {
+            from: {[axis_main]: member.main_axis_point, [axis_side]: member.points[0]},
+            to: {[axis_main]: member.main_axis_point, [axis_side]: member.points[1]},
+        }
+
         if (doesIntersectionExist(thread, g_thread)) {
             return true;
         }
@@ -124,27 +138,32 @@ function belongsToGroup(group, thread) {
     return false;
 }
 
-function createGroup(thread) {
-    const is_horz = thread.from.y === thread.to.y,
-          points = is_horz ? [thread.from.x, thread.to.x] : [thread.from.y, thread.to.y],
-          dir = points[1] - points[0];
-
+function createGroup(member) {
     return {
-        pairs: [{
-            points: dir > 0 ? [points[0], points[1]] : [points[1], points[0]],
-            weight: dir > 0 ? thread.weight : -thread.weight
-        }],
-        main_axis_point: is_horz ? thread.from.y : thread.from.x,
-        is_horz
+        pairs: [{points: member.points, weight: member.weight}],
+        main_axis_point: member.main_axis_point,
+        is_horz: member.is_horz
     }
 }
 
-function addToGroup(group, thread) {
-    const points = group.is_horz ? [thread.from.x, thread.to.x] : [thread.from.y, thread.to.y];
-    const dir = points[1] - points[0];
-
+function addToGroup(group, member) {
     group.pairs.push({
+        points: member.points,
+        weight: member.weight
+    });
+}
+
+function threadToMember(thread) {
+    const is_horz = thread.from.y === thread.to.y;
+    const [axis_main, axis_side] = is_horz ? ['y', 'x'] : ['x', 'y'];
+
+    const points = [thread.from[axis_side], thread.to[axis_side]],
+          dir = points[1] - points[0];
+
+    return {
+        is_horz,
+        main_axis_point: thread.from[axis_main],
         points: dir > 0 ? [points[0], points[1]] : [points[1], points[0]],
         weight: dir > 0 ? thread.weight : -thread.weight
-    });
+    }
 }

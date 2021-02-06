@@ -5,6 +5,8 @@ import Current from "../core/Current";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import * as Threads from "../core/extras/threads";
 
+import cloneDeep from "lodash/cloneDeep";
+
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
 
@@ -158,6 +160,8 @@ export default class CurrentLayer extends Layer {
             /// здесь будет храниться обнаруженный идентичный контур
             let same = false;
 
+            // const sames = [];
+
             /// цикл по новым контурам
             for (let [i, thread] of threads.entries()) {
                 /// если у данного локального тока контур совпадает
@@ -169,6 +173,10 @@ export default class CurrentLayer extends Layer {
                     current.___touched = true;
 
                     break;
+                    // sames.push(same);
+                    // if (sames.length > 1) {
+                    //     console.log(current.thread, thread);
+                    // }
                 }
             }
 

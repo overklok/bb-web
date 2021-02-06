@@ -20,12 +20,15 @@
             window.app.run(document.getElementById('board'));
             document.getElementById("version").innerText = window.app.version;
 
-            // window.app.bb.acceptElectronics({
-            //     threads: [
-            //         {from: {x: -1, y: 0}, to: {x: 1, y: 0}, weight: 0.1},
-            //         {from: {x: -1, y: 0}, to: {x: 2, y: 0}, weight: 0.1},
-            //     ]
-            // });
+            // setInterval(() => {
+            //     window.app.bb.setElectronics({
+            //         threads: [
+            //             {from: {x: 2, y: 15}, to: {x: -1, y: 15}, weight: 0.9},
+            //         ],
+            //         elements: [],
+            //         arduino_pins: [],
+            //     });
+            // }, 1000);
 
             // window.app.bb.forcePlates([
             //     {position: {cell: {x: 0, y: 0}, orientation: 'north'}, type: 'bridge'},
