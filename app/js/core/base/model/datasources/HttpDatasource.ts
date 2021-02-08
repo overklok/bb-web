@@ -1,5 +1,5 @@
-import SynchronousDatasource from "../../base/model/datasources/SynchronousDatasource";
-import HttpMiddleware from "../../base/model/middlewares/HttpMiddleware";
+import SynchronousDatasource from "./SynchronousDatasource";
+import HttpMiddleware from "../middlewares/HttpMiddleware";
 
 export enum RequestCredentials {
     Include = 'include',

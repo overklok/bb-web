@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import HttpMiddleware from "../../base/model/middlewares/HttpMiddleware";
-import {RequestParams} from "../datasources/HttpDatasource";
+import {RequestParams} from "../../base/model/datasources/HttpDatasource";
 
 export default class CSRFMiddleware extends HttpMiddleware {
     public token: string;

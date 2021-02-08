@@ -18,7 +18,9 @@ export default class PhotoresistorPlate extends LinearPlate {
     __draw__(position, orientation) {
         this._drawPicture();
 
-        // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
+        if (this._params.verbose) {
+            this._redrawInput(this._state.input);
+        }
     };
 
     get input() {
@@ -42,6 +44,36 @@ export default class PhotoresistorPlate extends LinearPlate {
      */
     rotate(orientation) {
         super.rotate(orientation);
+    }
+
+    setState(state, suppress_events = false) {
+        super.setState(state, suppress_events);
+
+        if (state.input === undefined) return;
+
+        let input = state.input;
+
+        if (this._params.verbose) {
+            this._redrawInput(input);
+        }
+    }
+
+    _redrawInput(input_value) {
+        if (!this._svginp) {
+            this._svginpbg = this._container.rect(0, 0).style({fill: '#000'});
+
+            this._svginp = this._container.text('-')
+                .center(0, 0)
+                .style({fill: '#0F0'})
+                .font({size: 22});
+        }
+
+        this._svginp.style({fill: input_value === undefined ? '#F00' : '#0F0'});
+        this._svginp.text(input_value === undefined ? 'n/a' : String(input_value));
+
+        const {x, y, width, height} = this._svginp.node.getBBox();
+
+        this._svginpbg.size(width, height).move(x, y);
     }
 
     /**

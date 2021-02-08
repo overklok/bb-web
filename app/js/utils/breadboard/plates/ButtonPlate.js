@@ -86,7 +86,8 @@ export default class ButtonPlate extends LinearPlate {
                 .font({size: 22});
         }
 
-        this._svginp.text(String(input_value));
+        this._svginp.style({fill: input_value === undefined ? '#F00' : '#0F0'});
+        this._svginp.text(input_value === undefined ? 'n/a' : String(input_value));
 
         const {x, y, width, height} = this._svginp.node.getBBox();
 

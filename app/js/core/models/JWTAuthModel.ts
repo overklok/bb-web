@@ -1,4 +1,4 @@
-import HttpDatasource, {RequestMethod} from "./datasources/HttpDatasource";
+import HttpDatasource, {RequestMethod} from "../base/model/datasources/HttpDatasource";
 import HttpModel from "../base/model/HttpModel";
 
 export type JWTAuthData = {

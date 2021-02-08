@@ -1,5 +1,5 @@
 import Model from "./Model";
-import HttpDatasource, {Query, RequestMethod} from "../../models/datasources/HttpDatasource";
+import HttpDatasource, {Query, RequestMethod} from "./datasources/HttpDatasource";
 import HttpModel from "./HttpModel";
 
 type PathGenerator = (t: {[key: string]: any}) => string;

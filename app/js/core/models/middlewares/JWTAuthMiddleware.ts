@@ -1,5 +1,5 @@
 import HttpMiddleware from "../../base/model/middlewares/HttpMiddleware";
-import {RequestParams} from "../datasources/HttpDatasource";
+import {RequestParams} from "../../base/model/datasources/HttpDatasource";
 import JWTAuthModel from "../JWTAuthModel";
 
 // TODO: Call JWTAuthModel actions to authenticate

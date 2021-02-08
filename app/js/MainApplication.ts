@@ -7,7 +7,7 @@ import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 
-import HttpDatasource from "./core/models/datasources/HttpDatasource";
+import HttpDatasource from "./core/base/model/datasources/HttpDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import DummyDatasource from "./core/base/model/datasources/DummyDatasource";

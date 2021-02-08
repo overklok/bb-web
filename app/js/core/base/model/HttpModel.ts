@@ -1,5 +1,5 @@
 import Model from "./Model";
-import HttpDatasource, {RequestParams} from "../../models/datasources/HttpDatasource";
+import HttpDatasource, {RequestParams} from "./datasources/HttpDatasource";
 import {ModelEvent} from "../Event";
 
 export class RequestErrorEvent extends ModelEvent<RequestErrorEvent> {}

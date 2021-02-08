@@ -1,4 +1,4 @@
-import {RequestParams} from "../../../models/datasources/HttpDatasource";
+import {RequestParams} from "../datasources/HttpDatasource";
 import {Middleware} from "../Datasource";
 
 export default abstract class HttpMiddleware extends Middleware {
