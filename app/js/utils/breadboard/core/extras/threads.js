@@ -33,7 +33,7 @@ export function overlayThreads(threads) {
     }
 
     // Split threads in each group, considering that each intersection
-    // creates new thread, which weight is sum of adjacent threads' weights
+    // creates new thread, which weight is equal to sum of adjacent threads' weights
     for (const group of groups) {
         // List of all threads' points, projected onto a common axis
         let axis = new Set();

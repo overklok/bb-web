@@ -4,8 +4,7 @@ import Layer from "../core/Layer";
 import Current from "../core/Current";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import * as Threads from "../core/extras/threads";
-
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from "lodash-es";
 
 export default class CurrentLayer extends Layer {
     static get Class() {return "bb-layer-current"}
@@ -141,7 +140,16 @@ export default class CurrentLayer extends Layer {
      * @param {boolean}         show_source показывать путь тока от источника напряжения
      */
     setCurrents(threads, spare, show_source=true) {
-        threads = Threads.overlayThreads(threads);
+        const threads_filtered = [];
+
+        for (const thread of threads) {
+            if (this.__grid.virtualPoint(thread.from.x, thread.from.y)) continue;
+            if (this.__grid.virtualPoint(thread.to.x, thread.to.y)) continue;
+
+            threads_filtered.push(thread);
+        }
+
+        threads = Threads.overlayThreads(threads_filtered);
 
         this._threads = threads;
         this._spare = spare;
@@ -160,8 +168,6 @@ export default class CurrentLayer extends Layer {
             /// здесь будет храниться обнаруженный идентичный контур
             let same = false;
 
-            // const sames = [];
-
             /// цикл по новым контурам
             for (let [i, thread] of threads.entries()) {
                 /// если у данного локального тока контур совпадает
@@ -173,10 +179,6 @@ export default class CurrentLayer extends Layer {
                     current.___touched = true;
 
                     break;
-                    // sames.push(same);
-                    // if (sames.length > 1) {
-                    //     console.log(current.thread, thread);
-                    // }
                 }
             }
 

@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Tapanda Monitor Web</title>
-    </head>
-    <body style="width: 100vw; height: 100vh; margin: 0;">
-        <div id="version" style="font-size: 10px; font-family: 'IBM Plex Sans', monospace; position:absolute; bottom: 0; z-index: 1; background-color: aquamarine;"></div>
-        <div id="board" style="width: 100%; height: 100%;"></div>
+<head>
+    <meta charset="UTF-8">
+    <title>Tapanda Monitor Web</title>
+</head>
+<body style="width: 100vw; height: 100vh; margin: 0;">
+<div id="version"
+     style="font-size: 10px; font-family: 'IBM Plex Sans', monospace; position:absolute; bottom: 0; z-index: 1; background-color: aquamarine;"></div>
+<div id="board" style="width: 100%; height: 100%;"></div>
 
-        <script type="text/javascript" src="board.js"></script>
+<script type="text/javascript" src="board.js"></script>
 
-        <script>
-            window.app = new BoardApplication({
-                readonly: false,
-                layout_name: 'v8x',
-                silent: false,
-                verbose: true,
-            });
-            window.app.run(document.getElementById('board'));
-            document.getElementById("version").innerText = window.app.version;
+<script>
+    window.app = new BoardApplication({
+        readonly: false,
+        layout_name: 'v8x',
+        silent: true,
+        verbose: true,
+    });
+    window.app.run(document.getElementById('board'));
+    document.getElementById("version").innerText = window.app.version;
 
-            // setInterval(() => {
-            //     window.app.bb.setElectronics({
-            //         threads: [
-            //             {from: {x: 2, y: 15}, to: {x: -1, y: 15}, weight: 0.9},
-            //         ],
-            //         elements: [],
-            //         arduino_pins: [],
-            //     });
-            // }, 1000);
+    // setInterval(() => {
+    //     window.app.bb.setElectronics({
+    //         threads: [
+    //             {from: {x: 2, y: 15}, to: {x: -1, y: 15}, weight: 0.9},
+    //         ],
+    //         elements: [],
+    //         arduino_pins: [],
+    //     });
+    // }, 1000);
 
-            // window.app.bb.forcePlates([
-            //     {position: {cell: {x: 0, y: 0}, orientation: 'north'}, type: 'bridge'},
-            //     {position: {cell: {x: 0, y: 5}, orientation: 'north'}, type: 'bridge'},
-            //     {position: {cell: {x: 0, y: 9}, orientation: 'north'}, type: 'bridge'},
-            //     {position: {cell: {x: 0, y: 14}, orientation: 'north'}, type: 'bridge'}
-            // ]);
-        </script>
-    </body>
+    // window.app.bb.forcePlates([
+    //     {position: {cell: {x: 0, y: 0}, orientation: 'north'}, type: 'bridge'},
+    //     {position: {cell: {x: 0, y: 5}, orientation: 'north'}, type: 'bridge'},
+    //     {position: {cell: {x: 0, y: 9}, orientation: 'north'}, type: 'bridge'},
+    //     {position: {cell: {x: 0, y: 14}, orientation: 'north'}, type: 'bridge'}
+    // ]);
+</script>
+</body>
 </html>
