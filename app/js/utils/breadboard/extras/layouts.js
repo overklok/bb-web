@@ -47,7 +47,8 @@ export const LAYOUTS = {
                 pins_from: 0, bias_inv: true,
                 line_before: 1,
                 label_pos: "top",
-                value_orientation: 'north'
+                value_orientation: 'north',
+                pin_state_initial: ["input", 0]
             },
 
             // Одиночные контакты - аналоговые пины
@@ -56,28 +57,32 @@ export const LAYOUTS = {
                 from: {x: -1, y: 4}, to: {x: -1, y: 4},
                 minus: {x: 4, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 4,
-                value_orientation: 'east'
+                value_orientation: 'east',
+                pin_state_initial: ["input", 0]
             },
             {
                 horz: false,
                 from: {x: -1, y: 5}, to: {x: -1, y: 5},
                 minus: {x: 5, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 5,
-                value_orientation: 'east'
+                value_orientation: 'east',
+                pin_state_initial: ["input", 0]
             },
             {
                 horz: false,
                 from: {x: -1, y: 10}, to: {x: -1, y: 10},
                 minus: {x: 6, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 6,
-                value_orientation: 'east'
+                value_orientation: 'east',
+                pin_state_initial: ["input", 0]
             },
             {
                 horz: false,
                 from: {x: -1, y: 11}, to: {x: -1, y: 11},
                 minus: {x: 7, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 7,
-                value_orientation: 'east'
+                value_orientation: 'east',
+                pin_state_initial: ["input", 0]
             },
 
             // Нижняя линия
@@ -100,7 +105,8 @@ export const LAYOUTS = {
                 pins_to: 11,
                 line_before: 1,
                 label_pos: "bottom",
-                value_orientation: 'south'
+                value_orientation: 'south',
+                pin_state_initial: ["input", 0]
             },
 
             // Три группы вертикальных линий

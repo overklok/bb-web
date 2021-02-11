@@ -111,7 +111,7 @@ export default class LabelLayer extends Layer {
 
             if (value === 0) {
                 arrow = "";
-                color = "black";
+                color = "#878787";
             }
 
             if (mode !== null) {
@@ -173,10 +173,10 @@ export default class LabelLayer extends Layer {
                             cy = pos_y;
 
                         switch (domain.value_orientation) {
-                            case 'north':   {cy -= cell.size.y * .6; break;}
-                            case 'south':   {cy += cell.size.y * .6; break;}
-                            case 'west':    {cx -= cell.size.x * 1.2; break;}
-                            case "east":    {cx += cell.size.x * 1.2; break;}
+                            case 'north':   {cy -= cell.size.y; break;}
+                            case 'south':   {cy += cell.size.y * .10; break;}
+                            case 'west':    {cy -= cell.size.y * .45; cx -= cell.size.x * 1.2; break;}
+                            case "east":    {cy -= cell.size.y * .45; cx += cell.size.x * 1.2; break;}
                         }
 
                         this._pinval_labels[pin_num] =

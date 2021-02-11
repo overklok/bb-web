@@ -109,6 +109,10 @@ namespace BoardView {
             this.bb.setCurrents(threads);
         }
 
+        setPinsValues(values: Array<object>) {
+            this.bb.setPinsValues(values)
+        }
+
         highlightRegion(region: object, clear: boolean) {
             if (!region) {
                 return false;

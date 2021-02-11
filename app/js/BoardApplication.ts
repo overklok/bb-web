@@ -52,7 +52,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
 
         if (!this.config.silent) {
             data_sources = [
-                new QtIPCDatasource(),
+                // new QtIPCDatasource(),
                 new SocketDatasource('127.0.0.1', 8085),
             ]
         }

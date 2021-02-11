@@ -114,7 +114,7 @@ function layoutToBoardInfo(layout) {
                               minus_coord = anal_minus_coords[i];
 
                         cell_structure[cell_str_idx++] = [coord];
-                        embedded_plates.push(getArduinoPinPlate(coord, minus_coord));
+                        embedded_plates.push(getArduinoPinPlate(coord, minus_coord, domain.pin_state_initial));
                     }
 
                     break;
@@ -163,7 +163,7 @@ function getVoltageSourcePlate(coords_minus, coords_vcc) {
     }
 }
 
-function getArduinoPinPlate(arduino_node, minus_node) {
+function getArduinoPinPlate(arduino_node, minus_node, pin_state_initial) {
     return {
         type: 'ard_pin',
         id: -101 - ard_plate_ser_num++,
@@ -176,7 +176,8 @@ function getArduinoPinPlate(arduino_node, minus_node) {
         properties: {
             volt: 5,
             analogue_max_value: 100
-        }
+        },
+        pin_state_initial
     };
 }
 
