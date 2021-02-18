@@ -5,3 +5,10 @@ export enum ColorAccent {
     Primary = 'primary',
     Secondary = 'secondary'
 }
+
+export enum ToastPosition {
+    BottomLeft = 'bottom-left',
+    BottomRight = 'bottom-right',
+    TopLeft = 'top-left',
+    TopRight = 'top-right',
+}

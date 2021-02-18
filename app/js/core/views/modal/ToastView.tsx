@@ -2,17 +2,18 @@ import * as React from "react";
 
 import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
-import {ColorAccent} from "../../helpers/styles";
+import {ColorAccent, ToastPosition} from "../../helpers/styles";
 import {Toast} from "./Toast";
 
-require("../../../../css/core/toaster.less");
-
+require("css/core/toaster.less");
 
 export interface IToast {
+    idx: number;
     title?: string;
     content?: string;
     status: ColorAccent;
     timeout?: number;
+    position?: ToastPosition;
 }
 
 interface ToastViewProps extends IViewState {
@@ -20,9 +21,23 @@ interface ToastViewProps extends IViewState {
     on_close?: (idx: number) => void;
 }
 
+/**
+ * Determine whether can be displayed at specified position
+ *
+ * @param toast     the toast going to be filtered
+ * @param position  the position specified to display the toast
+ */
+const filterToast = (toast: IToast, position: ToastPosition) => {
+    if (!toast) return false;
+
+    // show toast if its position corresponds with specified
+    // if no position is specified in the toast, show it at the default position (`BottomRight`)
+    return toast.position == position || !toast.position && position == ToastPosition.BottomRight;
+}
+
 export default class ToastView extends View<ToastViewProps, null> {
     static defaultProps: ToastViewProps = {
-        toasts: []
+        toasts: [],
     }
 
     constructor(props: AllProps<ToastViewProps>) {
@@ -36,20 +51,20 @@ export default class ToastView extends View<ToastViewProps, null> {
     render(): React.ReactNode {
         const klass_names = {enter: 'toast_hidden', exit: 'toast_hidden toast_collapsed'};
 
-        return (
-            <TransitionGroup className='toaster'>
-                {this.props.toasts.map((toast, i) => !toast ? null : (
-                    <CSSTransition key={i} timeout={200} classNames={klass_names}>
-                        <Toast index={i}
+        return Object.values(ToastPosition).map((pos: ToastPosition) => (
+            <TransitionGroup className={`toaster toaster_${pos}`} key={pos}>
+                {this.props.toasts.filter(t => filterToast(t, pos)).map((toast, i) => (
+                    <CSSTransition key={toast.idx} timeout={200} classNames={klass_names}>
+                        <Toast index={toast.idx}
                                status={toast.status}
                                title={toast.title}
                                timeout={toast.timeout}
-                               on_close={() => this.handleToastClose(i)}>
+                               on_close={() => this.handleToastClose(toast.idx)}>
                             {toast.content}
                         </Toast>
                     </CSSTransition>
                 ))}
             </TransitionGroup>
-        )
+        ))
     }
 }

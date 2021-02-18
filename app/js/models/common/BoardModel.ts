@@ -52,9 +52,29 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         arduino_pins: [],
         layout_name: 'v8x',
         layout_confirmed: false,
+        snapshot_ttl: 30000 // 30 s
     }
-    
+
+    private last_snapshot_time: number = 0;
+    private first_snapshot_time: number = 0;
+
+    private snapshots: BoardModelSnapshot[] = [];
     private __legacy_onuserchange: Function;
+
+    private saveSnapshot() {
+        this.last_snapshot_time = Date.now();
+        this.snapshots.push({time: this.last_snapshot_time, data: this.state});
+
+        this.first_snapshot_time = this.snapshots[0].time;
+
+        if (this.last_snapshot_time - this.first_snapshot_time > this.state.snapshot_ttl) {
+            this.snapshots.shift();
+        }
+    }
+
+    public getSnapshots(): BoardModelSnapshot[] {
+        return this.snapshots;
+    }
 
     /**
      * Set board layout (structure and visual options) by layout name
@@ -88,27 +108,18 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.send(ChannelsTo.Plates, plates);
         this.emit(new UserPlateEvent({plates}));
         this.__legacy_onuserchange && this.__legacy_onuserchange();
-
     }
 
     /**
-     * Switch admin mode (used for external apps)
+     * Attach listener for user changes
      *
-     * TODO: This function is here just for compatibility with older edition of JS code,
-     *       and it should be removed after finishing migration to TypeScript edition
-     *       and replaced with more native approach.
-     *
-     * NOTE: This method is deprecated and will be removed in the future.
-     * Use {@see BoardModel.setEditable} instead.
+     * This method is left here to maintain compatibility with legacy apps
+     * such as server admin widgets
      *
      * @deprecated
      *
-     * @param is_admin
+     * @param cb
      */
-    public setAdminMode(is_admin: boolean) {
-        this.emit(new BoardOptionsEvent({readonly: !is_admin}));
-    }
-
     public onUserChange(cb: Function) {
         this.__legacy_onuserchange = cb;
     }
@@ -226,6 +237,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     public setPlates(plates: Plate[]): void {
         this.setState({plates});
 
+        this.saveSnapshot();
+
         this.emit(new PlateEvent({plates}));
     }
 
@@ -236,6 +249,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
             arduino_pins: arduino_pins,
         });
 
+        this.saveSnapshot();
+
         this.emit(new ElectronicEvent({threads, elements, arduino_pins}));
     }
 }
@@ -243,6 +258,11 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 // Types
 enum PinDirection {Input = 'input', Output = 'output'}
 type ArduinoPin = [PinDirection, number];
+
+type BoardModelSnapshot = {
+    time: number;
+    data: BreadboardModelState;
+}
 
 
 export type Plate = {

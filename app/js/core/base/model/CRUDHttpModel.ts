@@ -18,7 +18,7 @@ export type RestSchema = {
 
 export type PathParams = {[key: string]: number|string};
 
-export default abstract class RestModel<MS> extends HttpModel<MS, HttpDatasource> {
+export default abstract class CRUDHttpModel<MS> extends HttpModel<MS, HttpDatasource> {
     protected abstract schema(): RestSchema;
 
     async list(params: PathParams = {}, query?: Query) {

@@ -21,7 +21,7 @@ export type AllProps<P> = P & IViewBasicProps;
 /**
  * Helper type that infers nested IViewProps based on View that uses it
  */
-export type ViewPropsOf<V extends View<any, any>> = V extends View<infer P, any> ? P: never;
+export type ViewPropsOf<V extends View<any, any>> = V extends View<infer P, any> ? P : never;
 
 export interface IViewProps {
 

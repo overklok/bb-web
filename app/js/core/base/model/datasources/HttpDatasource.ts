@@ -90,11 +90,6 @@ export default class HttpDatasource extends SynchronousDatasource {
             mw.apply(params);
         }
 
-        const q = HttpDatasource.serializeQuery(params.query);
-
-        path = path.replace(/^\/+|\/+$/gm, '');
-        path += '/';
-
         let fetch_init: any = {
             method:         params.method,
             redirect:       params.redirect,
@@ -113,9 +108,18 @@ export default class HttpDatasource extends SynchronousDatasource {
             fetch_init.body = JSON.stringify(params.data);
         }
 
-        const response = await fetch(`${this.hostname}/${path}?${q}`, fetch_init);
+        const response = await fetch(this.buildURL(path, params.query), fetch_init);
 
         return await response.json();
+    }
+
+    public buildURL(path: string, query?: Query) {
+        path = path.replace(/^\/+|\/+$/gm, '');
+        path += '/';
+
+        const q = HttpDatasource.serializeQuery(query);
+
+        return `${this.hostname}/${path}?${q}`;
     }
 
     private static serializeQuery(query: Query = {}): string {

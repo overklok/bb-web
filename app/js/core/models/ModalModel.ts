@@ -1,7 +1,7 @@
 import Model from "../base/model/Model";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {ModelEvent} from "../base/Event";
-import {ColorAccent} from "../helpers/styles";
+import {ColorAccent, ToastPosition} from "../helpers/styles";
 import {AlertType} from "../views/modal/AlertView";
 
 interface IDialogData {
@@ -34,6 +34,11 @@ interface IToastData {
     content?: string;
     status: ColorAccent;
     timeout?: number;
+    position?: ToastPosition;
+}
+
+interface IToastDataWithIndex extends IToastData {
+    idx: number;
 }
 
 interface IAlertData {
@@ -58,7 +63,7 @@ export class UpdateToastsEvent extends ModelEvent<ShowModalEvent> {
 
 interface ModalStorage {
     alerts: {[type: number]: IAlertData};
-    toasts: IToastData[];
+    toasts: IToastDataWithIndex[];
 }
 
 export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
@@ -86,7 +91,7 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
     }
 
     public showToast(toast: IToastData): number {
-        const toast_num = this.state.toasts.push(toast);
+        const toast_num = this.state.toasts.push({...toast, idx: this.state.toasts.length});
 
         this.emit(new UpdateToastsEvent({}));
 

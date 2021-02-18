@@ -66,7 +66,11 @@ module.exports = (env, argv) => {
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
-            modules: [path.resolve(__dirname, './app'), 'node_modules']
+            modules: [path.resolve(__dirname, './app'), 'node_modules'],
+            alias: {
+                root: path.join(__dirname, 'app'),
+                '~': path.resolve(__dirname, "app"),
+            }
         },
         plugins: [
             new MiniCssExtractPlugin(),

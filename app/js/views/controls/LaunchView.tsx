@@ -1,6 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
-import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
+import {AllProps, IViewProps, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
 require('../../../css/blocks/generic/btn.less')
@@ -22,7 +22,7 @@ namespace LaunchView {
         Running
     }
 
-    export interface Props extends IViewState {
+    export interface Props extends IViewProps {
         mode: Mode;
         is_checking: ButtonState;
         is_executing: ButtonState;

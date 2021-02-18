@@ -2,6 +2,8 @@ import * as React from "react";
 import ViewComposer, {IVCProps, IVCState} from "../ViewComposer";
 import classNames from "classnames";
 
+import "css/core/layer.less";
+
 export default class OverlayViewComposer extends ViewComposer<IVCProps, IVCState> {
     constructor(props: IVCProps) {
         super(props);

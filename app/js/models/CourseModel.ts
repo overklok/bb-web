@@ -1,4 +1,4 @@
-import RestModel, {CRUDAction, PathParams, RestSchema} from "../core/base/model/RestModel";
+import CRUDHttpModel, {CRUDAction, PathParams, RestSchema} from "../core/base/model/CRUDHttpModel";
 import {Query} from "../core/base/model/datasources/HttpDatasource";
 
 type CourseLesson = {
@@ -14,7 +14,7 @@ export type Course = {
     lessons: CourseLesson[];
 }
 
-export default class CourseModel extends RestModel<Course> {
+export default class CourseModel extends CRUDHttpModel<Course> {
     static alias = 'course';
 
     protected schema(): RestSchema {
