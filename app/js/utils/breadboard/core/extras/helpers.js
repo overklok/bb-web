@@ -4,38 +4,26 @@ import PlateLayer from "../../layers/PlateLayer";
 
 export function copyTextToClipboard(text) {
     if (!navigator.clipboard) {
-        fallbackCopyTextToClipboard(text);
-        return;
+        return classicCopyTextToClipboard(text);
     }
     navigator.clipboard.writeText(text).then(function () {
-        console.log('Async: Copying to clipboard was successful!');
+        return true;
     }, function (err) {
-        console.error('Async: Could not copy text: ', err);
+        return classicCopyTextToClipboard(text);
     });
 }
 
-function fallbackCopyTextToClipboard(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
+export function classicCopyTextToClipboard(text) {
+    const input = document.createElement('input');
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    const success = document.execCommand('Copy');
+    document.body.removeChild(input);
 
-    // Avoid scrolling to bottom
-    textArea.style.top = "0";
-    textArea.style.left = "0";
-    textArea.style.position = "fixed";
-
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-        const successful = document.execCommand('copy');
-        const msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Fallback: Copying text command was ' + msg);
-    } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err);
-    }
-
-    document.body.removeChild(textArea);
+    return success;
 }
 
 export function coverObjects(options, defaults) {

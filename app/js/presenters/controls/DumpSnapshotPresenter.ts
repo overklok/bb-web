@@ -4,7 +4,7 @@ import BoardModel from "../../models/common/BoardModel";
 import LogModel from "../../models/common/LogModel";
 import {ColorAccent, ToastPosition} from "../../core/helpers/styles";
 import ModalModel from "../../core/models/ModalModel";
-import {copyTextToClipboard} from "../../utils/breadboard/core/extras/helpers";
+import {classicCopyTextToClipboard} from "../../utils/breadboard/core/extras/helpers";
 
 export default class DumpSnapshotPresenter extends Presenter<DumpSnapshotView.DumpSnapshotView> {
     private board: BoardModel;
@@ -23,14 +23,20 @@ export default class DumpSnapshotPresenter extends Presenter<DumpSnapshotView.Du
         const snapshots = this.board.getSnapshots();
         const url = await this.log.registerSnapshots(snapshots);
 
-        copyTextToClipboard(url);
+        const copied: any = classicCopyTextToClipboard(url);
 
         this.modal.showToast({
             title: `Дамп доски записан на сервере`,
-            content: `URL был сохранён в буфер обмена`,
-            timeout: 2000,
+            content: copied ? `URL был сохранён в буфер обмена` : `URL дампа: ${url}`,
+            timeout: copied ? 2000: 10000,
             status: ColorAccent.Success,
-            position: this.counter % 2 ? ToastPosition.TopLeft : ToastPosition.TopRight
+            position: this.counter % 2 ? ToastPosition.TopLeft : ToastPosition.TopRight,
+            action: !copied && {
+                title: 'Скопировать',
+                callback: () => {
+                    classicCopyTextToClipboard(url);
+                }
+            }
         });
     }
 }

@@ -14,6 +14,7 @@ export interface IToast {
     status: ColorAccent;
     timeout?: number;
     position?: ToastPosition;
+    action?: {title: string, callback: Function};
 }
 
 interface ToastViewProps extends IViewState {
@@ -59,6 +60,7 @@ export default class ToastView extends View<ToastViewProps, null> {
                                status={toast.status}
                                title={toast.title}
                                timeout={toast.timeout}
+                               action={toast.action}
                                on_close={() => this.handleToastClose(toast.idx)}>
                             {toast.content}
                         </Toast>

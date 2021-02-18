@@ -1,6 +1,6 @@
 import Application, {AppConf} from "./core/Application";
 
-import IViewService from "./core/services/interfaces/IViewService";
+import IViewService, {WidgetType} from "./core/services/interfaces/IViewService";
 import IModelService from "./core/services/interfaces/IModelService";
 
 import IServiceProvider from "./core/providers/ServiceProvider";
@@ -8,10 +8,8 @@ import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 
-import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
-import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
 import BoardPresenter from "./presenters/common/BoardPresenter";
 
@@ -21,9 +19,8 @@ import ConnectionModel from "./models/common/ConnectionModel";
 import BoardView from "./views/common/BoardView";
 
 import "../css/global.less";
-import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";
-import IEventService from "./core/services/interfaces/IEventService";
+import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
 import DumpSnapshotView from "./views/controls/DumpSnapshotView";
 import DumpSnapshotPresenter from "./presenters/controls/DumpSnapshotPresenter";
@@ -31,9 +28,6 @@ import HttpDatasource from "./core/base/model/datasources/HttpDatasource";
 import LogModel from "./models/common/LogModel";
 import ModalModel from "./core/models/ModalModel";
 import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
-import ModalView from "./core/views/modal/ModalView";
-import ModalPresenter from "./core/presenters/ModalPresenter";
-import PopoverLessonPresenter from "./presenters/lesson/PopoverLessonPresenter";
 import ToastPresenter from "./core/presenters/ToastPresenter";
 import ToastView from "./core/views/modal/ToastView";
 
@@ -42,6 +36,7 @@ interface BoardApplicationConfig extends AppConf {
     verbose?: boolean;
     readonly?: boolean;
     layout_name?: string;
+    allow_dumps?: boolean;
     server_addr: string;
     server_port: number;
 }
@@ -69,7 +64,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
 
         if (!this.config.silent) {
             data_sources = [
-                // new QtIPCDatasource(),
+                new QtIPCDatasource(),
                 new SocketDatasource('127.0.0.1', 8085),
             ]
         }
@@ -94,7 +89,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
     async run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
-        this.instance(IViewService).setRootWidgets(OverlayViewComposer, [
+        const wgt_types: WidgetType<any>[] = [
             {
                 view_type: BoardView.BoardView,
                 presenter_types: [BoardPresenter],
@@ -104,12 +99,19 @@ class BoardApplication extends Application<BoardApplicationConfig> {
                     verbose: this.config.verbose,
                 }
             },
-            {
-                view_type: DumpSnapshotView.DumpSnapshotView,
-                presenter_types: [DumpSnapshotPresenter],
-            },
-            {view_type: ToastView, presenter_types: [ToastPresenter]},
-        ]);
+        ];
+
+        if (this.config.allow_dumps) {
+            wgt_types.push(
+                {
+                    view_type: DumpSnapshotView.DumpSnapshotView,
+                    presenter_types: [DumpSnapshotPresenter],
+                },
+                {view_type: ToastView, presenter_types: [ToastPresenter]}
+            );
+        }
+
+        this.instance(IViewService).setRootWidgets(OverlayViewComposer, wgt_types);
 
         this.instance(IViewService).compose(element);
     }

@@ -35,6 +35,7 @@ interface IToastData {
     status: ColorAccent;
     timeout?: number;
     position?: ToastPosition;
+    action?: {title: string, callback: Function};
 }
 
 interface IToastDataWithIndex extends IToastData {

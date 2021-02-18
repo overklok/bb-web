@@ -13,6 +13,7 @@ interface Props {
     on_close: () => void;
     title?: string;
     timeout?: number;
+    action?: {title: string, callback: Function};
 }
 
 export function Toast(props: Props) {
@@ -46,13 +47,17 @@ export function Toast(props: Props) {
                 <span className='toast__title'>
                     {props.title}
                 </span>
-                {/*<span className='toast__close' onClick={handleClose}>*/}
-                {/*    <i className='fas fa-times' />*/}
-                {/*</span>*/}
             </div>
             <div className="toast__section">
                 {props.children}
             </div>
+            {props.action && (
+                <div className="toast__section">
+                    <div className={`btn btn_sm btn_${props.status}`} onClick={() => props.action.callback()}>
+                        {props.action.title}
+                    </div>
+                </div>
+            )}
             <ToastTimer className="toast__timer"
                         on_finish={handleClose}
                         timeout={props.timeout}
