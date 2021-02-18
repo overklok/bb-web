@@ -26,8 +26,8 @@ export default class DumpSnapshotPresenter extends Presenter<DumpSnapshotView.Du
         const copied: any = classicCopyTextToClipboard(url);
 
         this.modal.showToast({
-            title: `Дамп доски записан на сервере`,
-            content: copied ? `URL был сохранён в буфер обмена` : `URL дампа: ${url}`,
+            title: `Снимок доски записан на сервере`,
+            content: copied ? `URL был сохранён в буфер обмена` : `Скопируйте URL снимка в буфер обмена`,
             timeout: copied ? 2000: 10000,
             status: ColorAccent.Success,
             position: this.counter % 2 ? ToastPosition.TopLeft : ToastPosition.TopRight,
