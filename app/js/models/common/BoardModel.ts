@@ -35,6 +35,8 @@ interface BreadboardModelState extends ModelState {
     arduino_pins: ArduinoPin[];
     layout_name: string;
     layout_confirmed: boolean;
+    snapshot_limit: number;
+    snapshot_ttl: number;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
@@ -52,11 +54,11 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         arduino_pins: [],
         layout_name: 'v8x',
         layout_confirmed: false,
-        snapshot_ttl: 30000 // 30 s
+        snapshot_limit: 1000,
+        snapshot_ttl: 30000, // ms
     }
 
     private last_snapshot_time: number = 0;
-    private first_snapshot_time: number = 0;
 
     private snapshots: BoardModelSnapshot[] = [];
     private __legacy_onuserchange: Function;
@@ -65,15 +67,25 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.last_snapshot_time = Date.now();
         this.snapshots.push({time: this.last_snapshot_time, data: this.state});
 
-        this.first_snapshot_time = this.snapshots[0].time;
-
-        if (this.last_snapshot_time - this.first_snapshot_time > this.state.snapshot_ttl) {
+        if (this.snapshots.length > this.state.snapshot_limit) {
             this.snapshots.shift();
         }
     }
 
     public getSnapshots(): BoardModelSnapshot[] {
-        return this.snapshots;
+        const snapshots = [];
+
+        const last_snapshot_time = this.snapshots[this.snapshots.length - 1].time;
+
+        for (let i = this.snapshots.length - 1; i >= 0; i--) {
+            const snapshot = this.snapshots[i];
+
+            if (last_snapshot_time - snapshot.time > this.state.snapshot_ttl) break;
+
+            snapshots.unshift(snapshot);
+        }
+
+        return snapshots;
     }
 
     /**
