@@ -10,7 +10,6 @@ export default class DumpSnapshotPresenter extends Presenter<DumpSnapshotView.Du
     private board: BoardModel;
     private modal: ModalModel;
     private log: LogModel;
-    private counter: number;
 
     getInitialProps() {
         this.board = this.getModel(BoardModel);
@@ -21,16 +20,26 @@ export default class DumpSnapshotPresenter extends Presenter<DumpSnapshotView.Du
     @on(DumpSnapshotView.DumpClickEvent)
     protected async onLaunchClick() {
         const snapshots = this.board.getSnapshots();
+
+        const toast = this.modal.showToast({
+            title: `Пожалуйста, подождите`,
+            content: `Запрос обрабатывается...`,
+            status: ColorAccent.Warning,
+            position: ToastPosition.TopRight,
+        });
+
         const url = await this.log.registerSnapshots(snapshots);
 
         const copied: any = classicCopyTextToClipboard(url);
+
+        this.modal.hideToast(toast);
 
         this.modal.showToast({
             title: `Снимок доски записан на сервере`,
             content: copied ? `URL был сохранён в буфер обмена` : `Скопируйте URL снимка в буфер обмена`,
             timeout: copied ? 2000: 10000,
             status: ColorAccent.Success,
-            position: this.counter % 2 ? ToastPosition.TopLeft : ToastPosition.TopRight,
+            position: ToastPosition.TopRight,
             action: !copied && {
                 title: 'Скопировать',
                 callback: () => {
