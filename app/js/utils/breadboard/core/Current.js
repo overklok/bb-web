@@ -395,8 +395,8 @@ export default class Current {
         // Префикс правил для класса анимации
         let animname = `cur-${this._id}-${index}-anim`;
 
-        // Процент окончания анимации
-        let perc = Math.floor(progress_diff_actual / progress_diff_normal * 100);
+        // Процент окончания анимации (use ceil if floating point value will cause troubles)
+        let perc = (progress_diff_actual / progress_diff_normal * 100);
 
         let rule_animation              = undefined,    // CSS-класс анимации
             rule_keyframes_move         = undefined,    // контрольные точки перемещения
