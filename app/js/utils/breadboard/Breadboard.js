@@ -63,6 +63,8 @@ export default class Breadboard {
         this._filters_defined = false;
 
         this._setOptions(options)
+
+        this._injected = false;
     }
 
     static drawPlate(parent, type, properties) {
@@ -132,6 +134,8 @@ export default class Breadboard {
         div_wrap.style.height = '100%';
         div_wrap.style.position = 'relative';
         div_wrap.style.overflow = 'hidden';
+
+        this._injected = true;
 
         this._dom_node_parent = dom_node;
 
@@ -207,6 +211,10 @@ export default class Breadboard {
      * Удалить графическую составляющую платы
      */
     dispose() {
+        if (!this._injected) return;
+
+        this._injected = false;
+
         this._div_wrap.remove();
         this._brush.node.remove();
         this._layers = {};

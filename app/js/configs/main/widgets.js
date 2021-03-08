@@ -7,14 +7,14 @@ import ToastView        from "../../core/views/modal/ToastView";
 import LayoutView       from "../../core/views/layout/LayoutView";
 
 /* Application-specific Views */
-import BoardView        from "../../views/common/BoardView";
-import BlocklyView      from "../../views/common/BlocklyView";
-import KeyboardView     from "../../views/common/KeyboardView";
-import TopbarView       from "../../views/controls/TopbarView";
-import LaunchView       from "../../views/controls/LaunchView";
-import RichTextView     from "../../views/common/RichTextView";
-import LessonMenuView   from "../../views/common/LessonMenuView";
-import VariableView     from "../../views/common/VariableView";
+import BoardView        from "js/views/common/BoardView";
+import BlocklyView      from "js/views/common/BlocklyView";
+import KeyboardView     from "js/views/common/KeyboardView";
+import TopbarView       from "js/views/controls/TopbarView";
+import LaunchView       from "js/views/controls/LaunchView";
+import RichTextView     from "js/views/common/RichTextView";
+import HomeView         from "js/views/common/HomeView";
+import VariableView     from "js/views/common/VariableView";
 
 /* Basic Presenters */
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
@@ -47,7 +47,7 @@ export default {
     ],
     widgets: {
         courses: {
-            view_type: LessonMenuView.LessonMenuView,
+            view_type: HomeView.HomeView,
             presenter_types: [LessonMenuPresenter],
         },
         task: {

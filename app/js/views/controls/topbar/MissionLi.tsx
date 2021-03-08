@@ -124,6 +124,8 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
         const {top, left} = this.ref_root.current.getBoundingClientRect();
 
+        console.log(this.ref_root.current, top, left);
+
         this.setState({
             pos_x: left,
             pos_y: top,

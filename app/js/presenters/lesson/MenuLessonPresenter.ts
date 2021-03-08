@@ -1,10 +1,10 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import LessonMenuView from "../../views/common/LessonMenuView";
+import HomeView from "../../views/common/HomeView";
 import CourseModel from "../../models/CourseModel";
 import ProgressModel from "../../models/ProgressModel";
 import {RequestErrorEvent} from "../../core/base/model/HttpModel";
 
-export default class MenuLessonPresenter extends Presenter<LessonMenuView.LessonMenuView> {
+export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     private course: CourseModel;
     private progress: ProgressModel;
 
@@ -19,15 +19,15 @@ export default class MenuLessonPresenter extends Presenter<LessonMenuView.Lesson
         document.title = `Tapanda | Main menu`;
     }
 
-    @on(LessonMenuView.LessonSelectEvent)
-    private forwardLesson(evt: LessonMenuView.LessonSelectEvent) {
+    @on(HomeView.LessonSelectEvent)
+    private forwardLesson(evt: HomeView.LessonSelectEvent) {
         this.forward('lesson', [evt.lesson_id]);
     }
 
     @on(RequestErrorEvent)
     private showError(evt: RequestErrorEvent) {
         this.setViewProps({
-            error: 'Ошибка'
+            error: 'Нет доступа к серверу.'
         })
     }
 }

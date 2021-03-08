@@ -82,6 +82,10 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         }
     }
 
+    componentWillUnmount() {
+        clearTimeout(this.show_timeout);
+    }
+
     disablePopupVisibility() {
         this.setState({is_popup_visible: false});
     }
