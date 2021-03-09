@@ -288,15 +288,15 @@ namespace TopbarView {
                     <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Lessons)}>
                         Уроки
                     </div>
-                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Settings)}>
-                        Настройки
-                    </div>
-                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Developer)}>
-                        Разработчик
-                    </div>
-                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Execute)}>
-                        Выполнить
-                    </div>
+                    {/*<div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Settings)}>*/}
+                    {/*    Настройки*/}
+                    {/*</div>*/}
+                    {/*<div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Developer)}>*/}
+                    {/*    Разработчик*/}
+                    {/*</div>*/}
+                    {/*<div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Execute)}>*/}
+                    {/*    Выполнить*/}
+                    {/*</div>*/}
                     <div className="navbar__spacer"/>
                     <div className="navbar__section">
                         <div className='navbar__description'>{document.location.host}</div>
