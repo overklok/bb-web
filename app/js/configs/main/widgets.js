@@ -41,8 +41,8 @@ export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
-        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
         {view_type: ToastView, presenter_types: [ToastPresenter]},
+        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
         {view_type: AlertView, presenter_types: [AlertBoardPresenter]},
     ],
     widgets: {
