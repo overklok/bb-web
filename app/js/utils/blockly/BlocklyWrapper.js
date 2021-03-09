@@ -8,8 +8,8 @@ import Wrapper from '../core/Wrapper'
 import Blockly from 'blockly';
 import * as Ru from 'blockly/msg/ru';
 
-import '../../css/blockly-overrides.css';
-import '../../css/blockly-dimmer.css';
+import 'css/blockly-overrides.css';
+import 'css/blockly-dimmer.css';
 
 Blockly.setLocale(Ru);
 
@@ -120,14 +120,12 @@ window.BLOCKLY_BTS_REG = false;
 /**
  * Обёртка библиотеки Blockly для отображения среды программирования
  */
-export default class BlocklyWrapper extends Wrapper {
+export default class BlocklyWrapper {
     static get BLOCKLY_BLOCK_TYPES_REGISTERED() {return BLOCKLY_BTS_REG}
 
     static get HistoryBlockIdPrefix() {return "BuFF"}
 
     constructor() {
-        super();
-
         this.area               = undefined;    // узел вставки контейнера
         this.container          = undefined;    // контейнер Blockly
         this.toolbox            = undefined;    // узел с описанием типов блоков

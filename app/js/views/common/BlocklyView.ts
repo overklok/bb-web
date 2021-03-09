@@ -1,5 +1,5 @@
 import {ImperativeView} from "../../core/base/view/ImperativeView";
-import BlocklyWrapper from '../../wrappers/BlocklyWrapper'
+import BlocklyWrapper from '../../utils/blockly/BlocklyWrapper'
 
 import JSONBlocks       from '../../utils/blockly/extras/blocks';
 import JSONGenerators   from '../../utils/blockly/extras/generators';
