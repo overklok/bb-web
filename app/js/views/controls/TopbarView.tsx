@@ -48,6 +48,7 @@ namespace TopbarView {
         lesson_title: string;
         status: ConnectionStatus;
         is_demo: boolean;
+        admin_url_prefix: string;
     }
 
     export interface State extends IViewState {
@@ -248,6 +249,7 @@ namespace TopbarView {
                                 <ul className="pager__list" ref={this.onScrollableUpdate}>
                                     {this.props.missions.map((mission, idx) =>
                                         <MissionLi key={idx}
+                                                   id={mission.id}
                                                    index={idx}
                                                    is_current={this.props.progress.mission_idx === idx}
                                                    exercises={mission.exercises}
@@ -258,6 +260,7 @@ namespace TopbarView {
                                                    on_restart={() => this.restartMission(idx)}
                                                    on_forward={() => this.forwardMission(idx)}
                                                    on_exercise_select={e_idx => this.chooseExercise(idx, e_idx)}
+                                                   admin_url_prefix={this.props.admin_url_prefix}
                                         />
                                     )}
                                 </ul>

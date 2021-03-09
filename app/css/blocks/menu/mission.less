@@ -44,6 +44,7 @@
 
     &_reversed {
       flex-direction: row-reverse;
+      text-align: end;
     }
   }
 
@@ -62,7 +63,7 @@
     font-weight: 600;
     white-space: nowrap;
 
-    max-width: 200px;
+    max-width: 300px;
     text-overflow: ellipsis;
     overflow: hidden;
   }
@@ -74,5 +75,19 @@
     max-width: 200px;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+
+  &__context {
+    font-size: .75em;
+
+    transition: color .3s @scale;
+
+    cursor: pointer;
+
+    color: black;
+
+    &:hover {
+      color: white;
+    }
   }
 }

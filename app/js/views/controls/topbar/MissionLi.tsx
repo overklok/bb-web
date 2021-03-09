@@ -20,9 +20,11 @@ interface MissionLiProps {
     index: number;
     exercises: Exercise[];
 
+    id: number;
     title: string;
     description: string;
     progress: MissionProgress;
+    admin_url_prefix: string;
 
     is_current: boolean;
 
@@ -123,8 +125,6 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
         document.addEventListener("click", this.handleClick);
 
         const {top, left} = this.ref_root.current.getBoundingClientRect();
-
-        console.log(this.ref_root.current, top, left);
 
         this.setState({
             pos_x: left,
@@ -235,6 +235,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
                     <Portal>
                         <MissionContextMenu index={this.props.index}
+                                            id={this.props.id}
                                             visible={this.state.ctxmenu_active}
                                             btn_pos_x={this.state.pos_x}
                                             btn_pos_y={this.state.pos_y}
@@ -245,6 +246,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
                                             title={this.props.title}
                                             description={this.props.description}
                                             current_exercise_idx={this.props.progress.exercise_idx}
+                                            admin_url_prefix={this.props.admin_url_prefix}
                                             on_exercise_select={this.props.on_exercise_select}
                         />
                     </Portal>

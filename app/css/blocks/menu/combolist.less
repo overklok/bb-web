@@ -17,7 +17,7 @@ ul.combolist {
 
   cursor: pointer;
 
-  padding: 0 .125em;
+  padding: .125em;
 
   border-radius: .25em;
 
@@ -32,25 +32,41 @@ ul.combolist {
     background-color: @primary;
   }
 
-  .cl-item__prefix {
+  &__prefix {
     font-weight: 600;
     margin: 0 .25em;
   }
 
-  .cl-item__caption {
+  &__caption {
     max-width: 200px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }
 
-  .cl-item__context {
-
+  &__context {
+    margin-left: 10px;
   }
 }
 
 .cl-context {
-  .cl-context__action {
+  white-space: nowrap;
+  line-height: 1em;
 
+  &__action {
+    color: black;
+
+    font-size: .75em;
+
+    margin: 0 2px;
+    transform: scale(.75);
+
+    transition: color .3s @scale,
+                transform .3s @scale;
+
+    &:hover {
+      color: white;
+      transform: scale(1);
+    }
   }
 }

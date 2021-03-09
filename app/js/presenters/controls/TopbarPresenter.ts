@@ -24,7 +24,8 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
             missions: lesson.missions,
             progress: this.model_progress.getState(),
             status: ConnectionStatus.Unknown,
-            is_demo: this.model_settings.getState().is_demo
+            is_demo: this.model_settings.getState().is_demo,
+            admin_url_prefix: this.model_lesson.host_name
         }
     }
 

@@ -9,8 +9,10 @@ export interface Exercise {
 }
 
 interface MCMProps {
+    id: number;
     index: number;
     visible: boolean;
+    editable: boolean;
     btn_pos_x: number;
     btn_pos_y: number;
     percent: number;
@@ -19,6 +21,7 @@ interface MCMProps {
     exercises: Exercise[];
     current_exercise_idx: number;
     on_exercise_select?: (idx: number) => void;
+    admin_url_prefix: string;
 }
 
 interface MCMState {
@@ -29,6 +32,7 @@ interface MCMState {
 export default class MissionContextMenu extends React.Component<MCMProps, MCMState> {
     static defaultProps = {
         visible: false,
+        editable: true,
     }
 
     private readonly ref_cont: React.RefObject<HTMLDivElement>;
@@ -93,11 +97,20 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
                         </div>
                         <div className="mission__brief">
                             <div className="mission__title">
-                                {this.props.title}
+                                {this.props.title} [id: {this.props.id}]
                             </div>
                             <div className="mission__subtitle">
                                 {this.props.description}
                             </div>
+                            <a className="mission__context"
+                               target="_blank"
+                               href={
+                                   this.props.admin_url_prefix + '/admin/coursesvc/mission/' +
+                                   this.props.id + '/change/'
+                               }
+                            >
+                                <i className="fa fa-pencil-alt" />
+                            </a>
                         </div>
                     </div>
                     <div className="mission__body">
@@ -119,14 +132,26 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
                                         </div>
 
                                         <div className="cl-item__caption">
-                                            {exercise.name}
+                                            {exercise.name} [id: {exercise.id}]
                                         </div>
 
-                                        {/*TODO: Add actions later*/}
-                                        {/*<div className="cl-item__context cl-context">*/}
-                                        {/*    <div className="cl-context__action">*/}
-                                        {/*    </div>*/}
-                                        {/*</div>*/}
+                                        <div className="cl-item__context cl-context">
+                                            <a className="cl-context__action"
+                                               target="_blank"
+                                               href={
+                                                   this.props.admin_url_prefix + '/admin/coursesvc/exercise/' +
+                                                   exercise.id + '/change/'
+                                               }
+                                            >
+                                                <i className="fa fa-pencil-alt" />
+                                            </a>
+                                            {/*<span className="cl-context__action">*/}
+                                            {/*    <i className="fa fa-arrows-alt" />*/}
+                                            {/*</span>*/}
+                                            {/*<span className="cl-context__action">*/}
+                                            {/*    <i className="fa fa-trash" />*/}
+                                            {/*</span>*/}
+                                        </div>
                                     </li>
                                     )
                                 }

@@ -68,7 +68,7 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
         }
 
         return {
-            id: _mission.id,
+            id: _mission.pk,
             name: _mission.name,
             description: _mission.description,
             exercises: exercises

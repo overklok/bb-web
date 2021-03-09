@@ -72,6 +72,10 @@ export default class HttpDatasource extends SynchronousDatasource {
         this.options = options;
     }
 
+    public get host_name() {
+        return this.hostname;
+    }
+
     public registerMiddleware(middleware: HttpMiddleware[] = []) {
         this.middleware = middleware;
     }
