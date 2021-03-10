@@ -1,0 +1,26 @@
+@import '../colors';
+@import '../animations';
+
+.sidebar {
+  width: 20%;
+  min-width: 200px;
+  //padding: 0 .375em;
+
+  &__item {
+    margin: .1em;
+    padding: .375em;
+    border-radius: .25em;
+
+    cursor: pointer;
+
+    transition: background-color .1s @fade;
+
+    &_active {
+      background-color: @primary;
+    }
+
+    &:hover {
+      background-color: @primary_weak;
+    }
+  }
+}

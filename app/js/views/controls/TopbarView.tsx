@@ -9,14 +9,14 @@ import {Exercise} from "./topbar/MissionContextMenu";
 import classNames from "classnames";
 import StatusIndicator, {ConnectionStatus} from "./topbar/StatusIndicator";
 
-require('../../../css/logo.less');
-require('../../../css/blocks/menu/navbar.less');
-require('../../../css/blocks/menu/pager.less');
-require('../../../css/blocks/menu/indicator.less');
-require('../../../css/blocks/menu/progressbar.less');
-require('../../../css/blocks/generic/btn.less');
-require('../../../css/blocks/generic/cask.less');
-require('../../../css/blocks/generic/wavefront.less');
+require('css/logo.less');
+require('css/blocks/menu/navbar.less');
+require('css/blocks/menu/pager.less');
+require('css/blocks/menu/indicator.less');
+require('css/blocks/menu/progressbar.less');
+require('css/blocks/generic/btn.less');
+require('css/blocks/generic/cask.less');
+require('css/blocks/generic/wavefront.less');
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;
@@ -34,7 +34,7 @@ interface Progress {
     missions: MissionProgress[];
 }
 
-const enum MenuItem {
+export const enum MenuItem {
     Lessons = 'lessons',
     Settings = 'settings',
     Developer = 'developer',
@@ -288,9 +288,9 @@ namespace TopbarView {
                     <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Lessons)}>
                         Уроки
                     </div>
-                    {/*<div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Settings)}>*/}
-                    {/*    Настройки*/}
-                    {/*</div>*/}
+                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Settings)}>
+                        Настройки
+                    </div>
                     {/*<div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Developer)}>*/}
                     {/*    Разработчик*/}
                     {/*</div>*/}

@@ -1,21 +1,25 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
-import TopbarView from "../../views/controls/TopbarView";
+
+import ModalModel from "../../core/models/ModalModel";
 import LessonModel from "../../models/lesson/LessonModel";
-import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
-import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";
-import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
-import {BoardStatusEvent} from "../../models/common/BoardModel";
 import SettingsModel, {SettingsChangedEvent} from "../../models/lesson/SettingsModel";
+import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
+import {BoardStatusEvent} from "../../models/common/BoardModel";
+import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
+import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";
+import TopbarView, {MenuItem} from "../../views/controls/TopbarView";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private model_lesson: LessonModel;
     private model_progress: ProgressModel;
     private model_settings: SettingsModel;
+    private model_modal: ModalModel;
 
     public getInitialProps(): TopbarView.Props {
-        this.model_lesson = this.getModel(LessonModel);
+        this.model_lesson   = this.getModel(LessonModel);
         this.model_progress = this.getModel(ProgressModel);
         this.model_settings = this.getModel(SettingsModel);
+        this.model_modal    = this.getModel(ModalModel);
 
         const lesson = this.model_lesson.getState();
 
@@ -98,7 +102,8 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     @on(TopbarView.MenuItemEvent)
     private openLessonMenu(evt: TopbarView.MenuItemEvent) {
         switch (evt.item) {
-            case "lessons": this.forward('index', []); break;
+            case MenuItem.Lessons: this.forward('index', []); break;
+            case MenuItem.Settings: this.showSettingsModal(); break;
         }
     }
 
@@ -106,6 +111,16 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private updateSettingsChange() {
         this.setViewProps({
             is_demo: this.model_settings.getState().is_demo
+        });
+    }
+
+    private showSettingsModal() {
+        this.model_modal.showModal({
+            widget_alias: 'settings',
+            size: 'lg',
+            dialog: {
+                heading: 'Настройки'
+            }
         });
     }
 }

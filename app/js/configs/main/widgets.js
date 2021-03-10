@@ -36,14 +36,19 @@ import LessonKeyboardPresenter          from "../../presenters/lesson/KeyboardLe
 import VariableLessonPresenter          from "../../presenters/lesson/VariablesLessonPresenter";
 import PopoverLessonPresenter           from "../../presenters/lesson/PopoverLessonPresenter";
 import AlertBoardPresenter              from "../../presenters/lesson/AlertLessonPresenter";
+import TestkitView from "js/views/monkey/TestkitView";
+import TestkitPresenter from "js/presenters/monkey/TestkitPresenter";
+import TestkitModel from "js/models/monkey/TestkitModel";
+import {SettingsView} from "js/views/controls/SettingsView";
 
 export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
         {view_type: ToastView, presenter_types: [ToastPresenter]},
-        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
-        {view_type: AlertView, presenter_types: [AlertBoardPresenter]},
+        // {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
+        {view_type: ModalView, presenter_types: [ModalPresenter]},
+        // {view_type: AlertView, presenter_types: [AlertBoardPresenter]},
     ],
     widgets: {
         courses: {
@@ -84,6 +89,11 @@ export default {
         popover_content: {
             view_type: RichTextView.RichTextView,
             presenter_types: [PopoverContentLessonPresenter],
-        }
+        },
+        settings: {
+            view_type: SettingsView.SettingsView,
+            presenter_types: [],
+            view_props: {items: TestkitModel.FullTestKit}
+        },
     }
 }

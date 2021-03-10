@@ -87,7 +87,9 @@ const Dialog = (props: IDialogProps) => {
     if (props.is_closable || props.heading) {
         header = (
             <div className='mdl-dlg__header'>
-                <div className='mdl-dlg__heading' children={props.heading} />
+                <div className='mdl-dlg__heading'>
+                    {props.heading}
+                </div>
                 <div className='mdl-dlg__buttons'>
                     {props.is_closable
                         ? <div className='mdl-btn-close' title='Закрыть' onClick={onClose} />
