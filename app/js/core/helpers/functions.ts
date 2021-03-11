@@ -6,7 +6,7 @@ async function sleep(ms: number): Promise<void> {await new Promise(r => setTimeo
 
 type KeyValuePair = {[key: string]: any};
 
-const coverOptions: (options: KeyValuePair, defaults: KeyValuePair) => KeyValuePair
+const coverObjects: (options: KeyValuePair, defaults: KeyValuePair) => KeyValuePair
     = partialRight(assignWith, (obj: KeyValuePair, src: KeyValuePair) => isUndefined(obj) ? src : obj);
 
 function getClassNameAlias(class_name: string, postfix?: string) {
@@ -70,4 +70,4 @@ function clamp(min: number, max: number, val: number) {
     return Math.min(Math.max(val, min), max);
 }
 
-export {sleep, clamp, coverOptions, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};
+export {sleep, clamp, coverObjects, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};

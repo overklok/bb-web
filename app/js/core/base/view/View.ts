@@ -3,7 +3,7 @@ import ViewConnector from "../ViewConnector";
 import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";
-import {coverOptions} from "../../helpers/functions";
+import {coverObjects} from "../../helpers/functions";
 
 // export interface IViewOptions {
 //     overflow?: string;

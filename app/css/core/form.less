@@ -1,5 +1,77 @@
+@import "../colors";
+@import "../animations";
+
 .form {
   h1, h2 {
     margin: 0;
+  }
+
+  &__group {
+
+  }
+
+  &__setting {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.checkbox {
+  @cb_after_margin_top: 1/16em;
+
+  position: relative;
+  display: inline-block;
+  box-sizing: content-box;
+  vertical-align: top;
+
+  width: 4em;
+  height: 2em;
+  margin: 0;
+
+  background: #ffffff;
+  border: 1px solid #bbc1e1;
+  border-radius: 2em;
+  outline: none;
+
+  cursor: pointer;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  &::after {
+    content: "";
+
+    display: inline-block;
+    position: absolute;
+
+    left: @cb_after_margin_top * 2;
+    top: @cb_after_margin_top;
+
+    width: 2em - @cb_after_margin_top * 2;
+    height: 2em - @cb_after_margin_top * 2;
+    background-color: @primary;
+
+    border-radius: 50%;
+
+    transform: translateX(0);
+
+    transition: all .3s @wiggle;
+  }
+
+  &:hover {
+    &::after {
+
+    }
+  }
+
+  &:checked {
+    background-color: @primary;
+
+    &::after {
+      transform: translateX(calc(100% + @cb_after_margin_top));
+      background-color: #ffffff;
+    }
   }
 }

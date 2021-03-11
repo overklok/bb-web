@@ -2,7 +2,7 @@ import cloneDeep from "lodash/cloneDeep";
 import Datasource from "./Datasource";
 import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";
-import {coverOptions} from "../../helpers/functions";
+import {coverObjects} from "../../helpers/functions";
 
 /**
  * @see Model
@@ -49,7 +49,7 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
     }
 
     public setState(state: Partial<MS>): void {
-        this.state = coverOptions(state, this.state) as MS;
+        this.state = coverObjects(state, this.state) as MS;
     }
 
     public getState() {

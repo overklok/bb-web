@@ -2,7 +2,7 @@ import Presenter, {on, restore} from "../../core/base/Presenter";
 
 import ModalModel from "../../core/models/ModalModel";
 import LessonModel from "../../models/lesson/LessonModel";
-import SettingsModel, {SettingsChangedEvent} from "../../models/lesson/SettingsModel";
+import SettingsModel, {SettingsChangedEvent} from "../../core/models/SettingsModel";
 import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
 import {BoardStatusEvent} from "../../models/common/BoardModel";
 import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
@@ -28,7 +28,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
             missions: lesson.missions,
             progress: this.model_progress.getState(),
             status: ConnectionStatus.Unknown,
-            is_demo: this.model_settings.getState().is_demo,
+            is_demo: this.model_settings.getValue('general.is_demo') as boolean,
             admin_url_prefix: this.model_lesson.host_name
         }
     }
@@ -110,7 +110,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     @on(SettingsChangedEvent)
     private updateSettingsChange() {
         this.setViewProps({
-            is_demo: this.model_settings.getState().is_demo
+            is_demo: this.model_settings.getValue('general.is_demo') as boolean,
         });
     }
 
@@ -119,7 +119,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
             widget_alias: 'settings',
             size: 'lg',
             dialog: {
-                heading: 'Настройки'
+                heading: 'Настройки',
             }
         });
     }

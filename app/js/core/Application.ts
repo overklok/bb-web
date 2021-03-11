@@ -1,6 +1,6 @@
 import IServiceProvider, {ServiceProvider} from "./providers/ServiceProvider";
 import IConstructable from "./helpers/IConstructable";
-import {coverOptions} from "./helpers/functions";
+import {coverObjects} from "./helpers/functions";
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;
@@ -42,7 +42,7 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     }
 
     protected configure(config: AC): void {
-        this.config = coverOptions(config, this.config) as AC;
+        this.config = coverObjects(config, this.config) as AC;
     };
 
     /**

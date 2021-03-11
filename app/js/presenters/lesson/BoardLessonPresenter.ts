@@ -1,7 +1,7 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import BoardView from "../../views/common/BoardView";
 import BoardModel from "../../models/common/BoardModel";
-import SettingsModel, {SettingsChangedEvent} from "../../models/lesson/SettingsModel";
+import SettingsModel, {SettingsChangedEvent} from "../../core/models/SettingsModel";
 import ModalModel from "../../core/models/ModalModel";
 import {AlertType} from "../../core/views/modal/AlertView";
 import {ColorAccent} from "../../core/helpers/styles";
@@ -18,18 +18,18 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         this.settings = this.getModel(SettingsModel);
 
         return {
-            readonly: !this.settings.getState().is_demo
+            readonly: !this.settings.getValue('general.is_demo')
         };
     }
 
     @restore() @on(SettingsChangedEvent)
     private updateSettingsChange() {
-        this.view.setReadOnly(!this.settings.getState().is_demo);
+        this.view.setReadOnly(!this.settings.getValue('general.is_demo'));
     }
 
     @on(BoardView.ShortCircuitStartEvent)
     private showShortCircuitAlert() {
-        const readonly = !this.settings.getState().is_demo;
+        const readonly = !this.settings.getValue('general.is_demo');
 
         if (readonly) {
             this.modal.showAlert(AlertType.ShortCircuit);
@@ -44,7 +44,7 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
 
     @on(BoardView.ShortCircuitEndEvent)
     private shortCircuitEndEvent() {
-        const readonly = !this.settings.getState().is_demo;
+        const readonly = !this.settings.getValue('general.is_demo');
 
         if (readonly) {
             this.modal.hideAlert(AlertType.ShortCircuit);

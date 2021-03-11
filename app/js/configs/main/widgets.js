@@ -15,6 +15,7 @@ import LaunchView       from "js/views/controls/LaunchView";
 import RichTextView     from "js/views/common/RichTextView";
 import HomeView         from "js/views/common/HomeView";
 import VariableView     from "js/views/common/VariableView";
+import {SettingsView}   from "js/views/controls/SettingsView";
 
 /* Basic Presenters */
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
@@ -23,6 +24,7 @@ import BoardPresenter           from "../../presenters/common/BoardPresenter";
 import BlocklyCodePresenter     from "../../presenters/common/BlocklyPresenter";
 import TopbarPresenter          from "../../presenters/controls/TopbarPresenter";
 import LaunchPresenter          from "../../presenters/controls/LaunchPresenter";
+import SettingsPresenter        from "../../presenters/controls/SettingsPresenter";
 import LessonTaskPresenter      from "../../presenters/lesson/TaskLessonPresenter";
 import LessonMenuPresenter      from "../../presenters/lesson/MenuLessonPresenter";
 
@@ -36,18 +38,14 @@ import LessonKeyboardPresenter          from "../../presenters/lesson/KeyboardLe
 import VariableLessonPresenter          from "../../presenters/lesson/VariablesLessonPresenter";
 import PopoverLessonPresenter           from "../../presenters/lesson/PopoverLessonPresenter";
 import AlertBoardPresenter              from "../../presenters/lesson/AlertLessonPresenter";
-import TestkitView from "js/views/monkey/TestkitView";
-import TestkitPresenter from "js/presenters/monkey/TestkitPresenter";
-import TestkitModel from "js/models/monkey/TestkitModel";
-import {SettingsView} from "js/views/controls/SettingsView";
 
 export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
         {view_type: ToastView, presenter_types: [ToastPresenter]},
-        // {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
         {view_type: ModalView, presenter_types: [ModalPresenter]},
+        // {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
         // {view_type: AlertView, presenter_types: [AlertBoardPresenter]},
     ],
     widgets: {
@@ -92,8 +90,7 @@ export default {
         },
         settings: {
             view_type: SettingsView.SettingsView,
-            presenter_types: [],
-            view_props: {items: TestkitModel.FullTestKit}
+            presenter_types: [SettingsPresenter],
         },
     }
 }
