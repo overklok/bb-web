@@ -14,6 +14,7 @@ export interface IViewBasicProps {
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     widgets?: {[key: string]: Widget<any>};
+    close_request?: Function;
 }
 
 export type AllProps<P> = P & IViewBasicProps;
@@ -124,6 +125,10 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
 
     protected emit<E>(event: ViewEvent<E>) {
         return this.props.connector.emit(event);
+    }
+
+    protected requestModalClose() {
+        this.props.close_request && this.props.close_request();
     }
 
     private callDeferredUntilMount() {

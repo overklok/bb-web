@@ -15,6 +15,10 @@ interface INestProps<P=IViewProps> {
     view_type: ViewType<P, any>;
     view_props: P;
     nest_style?: CSSProperties;
+
+    // Request to close parent modal (available as ModalView child only)
+    close_request?: Function;
+
     label: string;
     index: number;
 }
@@ -102,6 +106,7 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
                         connector={this.props.connector}
                         ref_parent={this.ref}
                         nest_mounted={this.state.mounted}
+                        close_request={this.props.close_request}
                     />
                 </ErrorBoundary>
             </div>

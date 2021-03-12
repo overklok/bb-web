@@ -73,7 +73,7 @@ export default class ModalView extends View<IViewProps, ModalViewState> {
                         let content: string | JSX.Element = modal_data.content;
 
                         if (modal_data.widget_alias) {
-                            content = this.renderNest(modal_data.widget_alias);
+                            content = this.renderNest(modal_type, i, modal_data.widget_alias);
                         }
 
                         if (modal_data.dialog) {
@@ -125,7 +125,7 @@ export default class ModalView extends View<IViewProps, ModalViewState> {
         )
     }
 
-    private renderNest(widget_alias: string) {
+    private renderNest(modal_type: string, key: number, widget_alias: string) {
         if (!(widget_alias in this.props.widgets)) {
             throw new Error(`Cannot resolve widget by alias ${widget_alias}`)
         }
@@ -138,6 +138,7 @@ export default class ModalView extends View<IViewProps, ModalViewState> {
                   label={widget.label}
                   view_type={widget.view_type}
                   view_props={widget.view_props}
+                  close_request={() => this.closeModal(modal_type, key)}
             />
         )
     }
@@ -145,7 +146,7 @@ export default class ModalView extends View<IViewProps, ModalViewState> {
     private onCloseRequest(modal_type: string, index: number) {
         if (this.state.modals[modal_type][index].is_closable) {
             this.closeModal(modal_type, index);
-        };
+        }
     }
 
     private closeModal(modal_type: string, index: number) {

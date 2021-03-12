@@ -1,7 +1,7 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import BoardView from "../../views/common/BoardView";
 import BoardModel from "../../models/common/BoardModel";
-import SettingsModel, {SettingsChangedEvent} from "../../core/models/SettingsModel";
+import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsModel";
 import ModalModel from "../../core/models/ModalModel";
 import {AlertType} from "../../core/views/modal/AlertView";
 import {ColorAccent} from "../../core/helpers/styles";
@@ -22,7 +22,7 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         };
     }
 
-    @restore() @on(SettingsChangedEvent)
+    @restore() @on(SettingsChangeEvent)
     private updateSettingsChange() {
         this.view.setReadOnly(!this.settings.getValue('general.is_demo'));
     }

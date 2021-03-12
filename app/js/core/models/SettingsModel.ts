@@ -40,7 +40,7 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
     public applySettings(values: SettingsValues) {
         this.setState({values});
 
-        this.emit(new SettingsChangedEvent({values}));
+        this.emit(new SettingsChangeEvent({values}));
     }
 
     public getValue(path: string): SettingValue {
@@ -91,4 +91,4 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
     }
 }
 
-export class SettingsChangedEvent extends ModelEvent<SettingsChangedEvent> {}
+export class SettingsChangeEvent extends ModelEvent<SettingsChangeEvent> {}

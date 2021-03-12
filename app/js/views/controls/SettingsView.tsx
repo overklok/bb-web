@@ -35,8 +35,8 @@ export namespace SettingsView {
             };
         }
 
-        handleSettingChange(path: string, evt: React.ChangeEvent<HTMLInputElement>) {
-            this.emit(new SettingChangeEvent({path, value: evt.target.value}));
+        handleSettingChange(path: string, value: SettingValue) {
+            this.emit(new SettingChangeEvent({path, value}));
         }
 
         render(): React.ReactNode {
@@ -96,7 +96,8 @@ export namespace SettingsView {
                                 id={input_id}
                                 type="checkbox"
                                 className="checkbox"
-                                onChange={event => this.handleSettingChange(input_id, event)}
+                                checked={!!this.props.values[cat_key][key]}
+                                onChange={e => this.handleSettingChange(input_id, !!e.target.checked)}
                             />
                         </div>
                     );

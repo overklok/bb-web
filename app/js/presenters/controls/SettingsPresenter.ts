@@ -1,7 +1,4 @@
-import {AlertType} from "../../core/views/modal/AlertView";
-import {BoardStatusEvent} from "../../models/common/BoardModel";
-import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
-import SettingsModel, {SettingsChangedEvent} from "../../core/models/SettingsModel";
+import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsModel";
 import Presenter, {on} from "../../core/base/Presenter";
 import {SettingsView} from "../../views/controls/SettingsView";
 
@@ -21,6 +18,15 @@ export default class SettingsPresenter extends Presenter<SettingsView.SettingsVi
 
     @on(SettingsView.SettingChangeEvent)
     handleChange(evt: SettingsView.SettingChangeEvent) {
+        console.log(evt.path, evt.value);
+        this.settings.setValue(evt.path, evt.value);
+    }
 
+    @on(SettingsChangeEvent)
+    handleModelChange() {
+        console.log(this.settings.getState().values);
+        this.setViewProps({
+            values: this.settings.getState().values
+        })
     }
 }

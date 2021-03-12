@@ -37,16 +37,15 @@ import PopoverContentLessonPresenter    from "../../presenters/lesson/PopoverCon
 import LessonKeyboardPresenter          from "../../presenters/lesson/KeyboardLessonPresenter";
 import VariableLessonPresenter          from "../../presenters/lesson/VariablesLessonPresenter";
 import PopoverLessonPresenter           from "../../presenters/lesson/PopoverLessonPresenter";
-import AlertBoardPresenter              from "../../presenters/lesson/AlertLessonPresenter";
+import AlertLessonPresenter             from "../../presenters/lesson/AlertLessonPresenter";
 
 export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
         {view_type: ToastView, presenter_types: [ToastPresenter]},
-        {view_type: ModalView, presenter_types: [ModalPresenter]},
-        // {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
-        // {view_type: AlertView, presenter_types: [AlertBoardPresenter]},
+        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
+        {view_type: AlertView, presenter_types: [AlertLessonPresenter]},
     ],
     widgets: {
         courses: {
