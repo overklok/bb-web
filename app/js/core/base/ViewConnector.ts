@@ -203,6 +203,7 @@ export default class ViewConnector {
                         return (presenter as any)[method_name](...arguments);
                     } catch (e) {
                         console.error(e);
+                        console.log(presenter, method_name, (presenter as any)[method_name]);
                         svc_event.emitAsync(new GenericErrorEvent({error: e}));
                     }
                 };

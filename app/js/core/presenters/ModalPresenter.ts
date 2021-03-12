@@ -1,12 +1,34 @@
 import Presenter, {on} from "../base/Presenter";
 import ModalView from "../views/modal/ModalView";
-import {ShowModalEvent} from "../models/ModalModel";
+import ModalModel, {UpdateModalsEvent} from "../models/ModalModel";
+import {IModalData} from "../datatypes/modal";
 
 export default class ModalPresenter extends Presenter<ModalView> {
-    @on(ShowModalEvent)
-    private onShowModal(evt: ShowModalEvent) {
-        const {modal_data} = evt;
+    private modal: ModalModel;
 
-        this.view.showModal(modal_data);
+    getInitialProps(): any {
+        this.modal = this.getModel(ModalModel);
+
+        this.closeModal = this.closeModal.bind(this);
+
+        return {
+            on_close: this.closeModal,
+        }
+    }
+
+    protected pushModal(modal_data: IModalData, modal_type: string) {
+        this.modal.showModal(modal_data, modal_type);
+    }
+
+    protected closeModal(index: number, modal_type: string) {
+        this.modal.hideModal(index, modal_type);
+    }
+
+    @on(UpdateModalsEvent)
+    protected updateModals() {
+        console.log('update modals', this.modal.getState().modals);
+        this.setViewProps({
+            modals: {...this.modal.getState().modals}
+        });
     }
 }

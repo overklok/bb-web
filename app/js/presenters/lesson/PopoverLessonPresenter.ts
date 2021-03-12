@@ -1,19 +1,21 @@
-import Presenter, {on, restore} from "../../core/base/Presenter";
-import ModalView from "../../core/views/modal/ModalView";
-import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
+import {on, restore} from "../../core/base/Presenter";
+import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
 import LessonModel from "../../models/lesson/LessonModel";
+import ModalPresenter from "../../core/presenters/ModalPresenter";
 
-export default class PopoverLessonPresenter extends Presenter<ModalView> {
+export default class PopoverLessonPresenter extends ModalPresenter {
     private lesson: LessonModel;
     private progress: ProgressModel;
 
     getInitialProps(): any {
         this.lesson = this.getModel(LessonModel);
         this.progress = this.getModel(ProgressModel);
+
+        return super.getInitialProps();
     }
 
     @restore() @on(ExerciseRunEvent)
-    private async showIntroModal(evt: ExerciseRunEvent) {
+    private async showIntroModal() {
         const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
@@ -31,7 +33,7 @@ export default class PopoverLessonPresenter extends Presenter<ModalView> {
         this.lesson.setPopoverContent(content);
 
         return new Promise(resolve => {
-            this.view.showModal({
+            this.pushModal({
                 is_closable: true,
                 widget_alias: 'popover_content',
                 dialog: {
@@ -43,5 +45,9 @@ export default class PopoverLessonPresenter extends Presenter<ModalView> {
                 },
             }, 'popover');
         });
+    }
+
+    protected updateModals() {
+        return;
     }
 }

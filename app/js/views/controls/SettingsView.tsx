@@ -12,6 +12,7 @@ import {
 import classNames from "classnames";
 import {ViewEvent} from "../../core/base/Event";
 
+require('css/blocks/generic/btn.less');
 require('css/blocks/settings.less');
 require('css/core/sidebar.less');
 require('css/core/form.less');
@@ -41,21 +42,26 @@ export namespace SettingsView {
 
         render(): React.ReactNode {
             return <div className="settings">
-                <div className="settings__categories sidebar">
-                    {Object.entries(this.props.config).map(([cat_key, category]) => {
-                        const klasses = classNames({
-                            'sidebar__item': true,
-                            'sidebar__item_active': this.state.active_cat_key == cat_key
-                        });
+                <div className="settings__body">
+                    <div className="settings__categories sidebar">
+                        {Object.entries(this.props.config).map(([cat_key, category]) => {
+                            const klasses = classNames({
+                                'sidebar__item': true,
+                                'sidebar__item_active': this.state.active_cat_key == cat_key
+                            });
 
-                        return (
-                            <div key={cat_key} className={klasses}>
-                                {category.title}
-                            </div>
+                            return (
+                                <div key={cat_key} className={klasses}>
+                                    {category.title}
+                                </div>
+                            )}
                         )}
-                    )}
+                    </div>
+                    {this.renderCurrentCategory()}
                 </div>
-                {this.renderCurrentCategory()}
+                <div className="settings__actions">
+                    <div className="btn btn_primary">Применить</div>
+                </div>
             </div>;
         }
 
@@ -97,6 +103,7 @@ export namespace SettingsView {
                                 type="checkbox"
                                 className="checkbox"
                                 checked={!!this.props.values[cat_key][key]}
+                                disabled={setting.is_locked}
                                 onChange={e => this.handleSettingChange(input_id, !!e.target.checked)}
                             />
                         </div>

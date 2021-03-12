@@ -1,10 +1,10 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import LessonModel from "../../models/lesson/LessonModel";
 import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
-import ModalView from "../../core/views/modal/ModalView";
 import CodeModel from "../../models/common/CodeModel";
+import VariableView from "../../views/common/VariableView";
 
-export default class VariablesLessonPresenter extends Presenter<ModalView> {
+export default class VariablesLessonPresenter extends Presenter<VariableView.VariableView> {
     private code: CodeModel;
     private lesson: LessonModel;
     private progress: ProgressModel;

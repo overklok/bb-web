@@ -5,6 +5,7 @@ import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
 import IRoutingService from "../services/interfaces/IRoutingService";
 import RoutingService from "../services/RoutingService";
+import ModalPresenter from "../presenters/ModalPresenter";
 
 type EventTypeParam = typeof AbstractEvent;
 type RestorableEventTypeParam = [typeof AbstractEvent, boolean];
@@ -22,9 +23,20 @@ interface Subscriptable {
  */
 export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        if (target.presets == null) {
+        // TODO: Fix inheritance issue:
+        //       we usually don't want to combine base and derived inheritors to make both handlers working,
+        //       but we need to do it because of this
+
+        if (Object.getOwnPropertyDescriptor(target, 'presets') == null) {
             target.presets = new Map();
         }
+
+        // If we will do THIS instead of the code above, we will have troubles with using base and derived classes
+        // simultaneously because of duplicating event handlers and sometimes missing event handlers
+
+        // if (target.presets == null) {
+        //     target.presets = new Map();
+        // }
 
         // Temporary storage to track down types and then to remove duplicates
         const types_added = [];
@@ -45,6 +57,12 @@ export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam
             } else {
                 types_added.push(event_type);
             }
+
+            // TODO: Prevent preset creation for inheritors
+
+            // if (target.constructor.presets && target.constructor.presets[propertyKey] === target.presets[propertyKey]) {
+            //     continue;
+            // }
 
             if (target.presets.has(propertyKey)) {
                 target.presets.get(propertyKey).push({event_type, restorable});

@@ -2,7 +2,6 @@ import Presenter, {on} from "../../core/base/Presenter";
 import MonkeyView, {ApproveClick, ConfigureClick} from "../../views/monkey/MonkeyView";
 import ModalModel from "../../core/models/ModalModel";
 import BoardModel, {BoardErrorEvent, Plate, PlateEvent, UserPlateEvent} from "../../models/common/BoardModel";
-import Breadboard from "../../utils/breadboard/Breadboard";
 import TestkitModel, {ReferenceEvent} from "../../models/monkey/TestkitModel";
 import BoardLogModel from "../../models/monkey/BoardLogModel";
 import {comparePlates} from "../../utils/breadboard/core/extras/helpers";

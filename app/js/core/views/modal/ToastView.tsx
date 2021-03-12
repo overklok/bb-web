@@ -41,12 +41,8 @@ export default class ToastView extends View<ToastViewProps, null> {
         toasts: [],
     }
 
-    constructor(props: AllProps<ToastViewProps>) {
-        super(props);
-    }
-
     handleToastClose(idx: number) {
-        this.props.close_request && this.props.on_close(idx);
+        this.props.on_close && this.props.on_close(idx);
     }
 
     render(): React.ReactNode {

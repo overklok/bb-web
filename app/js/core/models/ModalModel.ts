@@ -1,69 +1,22 @@
 import Model from "../base/model/Model";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {ModelEvent} from "../base/Event";
-import {ColorAccent, ToastPosition} from "../helpers/styles";
 import {AlertType} from "../views/modal/AlertView";
+import {
+    IAlertData,
+    IModalData,
+    IModalDataWithIndex,
+    IToastData,
+    IToastDataWithIndex
+} from "../datatypes/modal";
 
-interface IDialogData {
-    heading?: string;
-    hint?: string;
-}
-
-interface IFullDialogData extends IDialogData {
-    label_accept?: string;
-    label_dismiss?: string;
-    on_accept?: Function;
-    on_dismiss?: Function;
-}
-
-interface IModalData {
-    dialog: IDialogData;
-
-    content?: string;
-    widget_alias?: string;
-
-    size?: 'sm'|'md'|'lg';
-    width?: number|string;
-    height?: number|string;
-
-    is_closable?: boolean;
-}
-
-interface IToastData {
-    title?: string;
-    content?: string;
-    status: ColorAccent;
-    timeout?: number;
-    position?: ToastPosition;
-    action?: {title: string, callback: Function};
-}
-
-interface IToastDataWithIndex extends IToastData {
-    idx: number;
-}
-
-interface IAlertData {
-    on_accept?: Function;
-    on_close?: (type: AlertType) => void;
-}
-
-interface IFullModalData extends IModalData {
-    dialog: IFullDialogData;
-}
-
-
-export class ShowModalEvent extends ModelEvent<ShowModalEvent> {
-    modal_data: IFullModalData;
-}
-
-export class UpdateAlertsEvent extends ModelEvent<ShowModalEvent> {
-}
-
-export class UpdateToastsEvent extends ModelEvent<ShowModalEvent> {
-}
+export class UpdateModalsEvent extends ModelEvent<UpdateModalsEvent> {}
+export class UpdateAlertsEvent extends ModelEvent<UpdateAlertsEvent> {}
+export class UpdateToastsEvent extends ModelEvent<UpdateToastsEvent> {}
 
 interface ModalStorage {
     alerts: {[type: number]: IAlertData};
+    modals: {[type: string]: IModalDataWithIndex[]};
     toasts: IToastDataWithIndex[];
 }
 
@@ -72,11 +25,37 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
 
     protected defaultState: ModalStorage = {
         alerts: {},
+        modals: {},
         toasts: []
     };
 
-    public showModal(modal_data: IModalData) {
-        this.emit(new ShowModalEvent({modal_data}));
+    public showModal(modal: IModalData, type: string = 'default') {
+        if (!this.state.modals.hasOwnProperty(type)) {
+            this.state.modals[type] = [];
+        }
+        
+        const modals_num = this.state.modals[type].push({...modal, idx: this.state.modals[type].length});
+        
+        // TODO: for non-default channels, only one modal at a time is allowed
+
+        this.emit(new UpdateModalsEvent());
+        
+        return modals_num;
+    }
+    
+    public hideModal(modal_idx: number, type: string = 'default') {
+        this.state.modals[type].splice(modal_idx, 1);
+
+        console.log('hide', type, this.state.modals[type].length);
+
+        if (this.state.modals[type].length === 0) {
+            console.log('0len');
+            delete this.state.modals[type];
+        }
+
+        console.log(this.state.modals);
+
+        this.emit(new UpdateModalsEvent());
     }
 
     public showAlert(type: AlertType, alert?: IAlertData) {
@@ -105,9 +84,9 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
         this.emit(new UpdateToastsEvent({}));
     }
 
-    public async showQuestionModal(modal_data: IFullModalData): Promise<boolean> {
+    public async showQuestionModal(modal_data: IModalData): Promise<boolean> {
         return new Promise(resolve => {
-            this.emit(new ShowModalEvent({
+            this.emit(new UpdateModalsEvent({
                 modal_data: {
                     ...modal_data,
                     dialog: {

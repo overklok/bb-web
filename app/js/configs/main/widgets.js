@@ -18,6 +18,8 @@ import VariableView     from "js/views/common/VariableView";
 import {SettingsView}   from "js/views/controls/SettingsView";
 
 /* Basic Presenters */
+import AlertPresenter           from "../../core/presenters/AlertPresenter";
+import LayoutPresenter          from "../../core/presenters/LayoutPresenter";
 import ModalPresenter           from "../../core/presenters/ModalPresenter";
 import ToastPresenter           from "../../core/presenters/ToastPresenter";
 import BoardPresenter           from "../../presenters/common/BoardPresenter";
@@ -42,10 +44,10 @@ import AlertLessonPresenter             from "../../presenters/lesson/AlertLesso
 export default {
     composer: OverlayViewComposer,
     root: [
-        {view_type: LayoutView, presenter_types: [LayoutLessonPresenter]},
+        {view_type: LayoutView, presenter_types: [LayoutPresenter, LayoutLessonPresenter]},
         {view_type: ToastView, presenter_types: [ToastPresenter]},
         {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
-        {view_type: AlertView, presenter_types: [AlertLessonPresenter]},
+        {view_type: AlertView, presenter_types: [AlertPresenter, AlertLessonPresenter]},
     ],
     widgets: {
         courses: {

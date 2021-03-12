@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 require("../../../css/blocks/variables.less");
 
-namespace VariableView {
+export namespace VariableView {
     interface Variable {
         name: string;
         type: string;

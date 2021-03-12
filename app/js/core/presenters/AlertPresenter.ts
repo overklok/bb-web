@@ -16,14 +16,14 @@ export default class AlertPresenter extends Presenter<AlertView> {
         });
     }
 
+    protected closeAlert(type: AlertType) {
+        this.modal.hideAlert(type);
+    }
+
     @on(UpdateAlertsEvent)
     private updateAlerts() {
         this.setViewProps({
             alerts: {...this.modal.getState().alerts}
         });
-    }
-
-    protected closeAlert(type: AlertType) {
-        this.modal.hideAlert(type);
     }
 }
