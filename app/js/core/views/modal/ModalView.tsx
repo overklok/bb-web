@@ -105,13 +105,22 @@ export default class ModalView extends View<ModalViewProps, null> {
 
         const widget = Object.assign({}, this.props.widgets[widget_alias]);
 
+        const nest_ref: React.Ref<Nest> = React.createRef();
+
+        const close_request = () => {
+            if (nest_ref.current && !nest_ref.current.requestModalClose()) {
+                this.handleModalClose(idx, modal_type);
+            }
+        }
+
         return (
             <Nest connector={widget.connector}
                   index={0}
                   label={widget.label}
                   view_type={widget.view_type}
                   view_props={widget.view_props}
-                  terminal_request={() => this.handleModalClose(idx, modal_type)}
+                  close_request={() => this.handleModalClose(idx, modal_type)}
+                  ref={nest_ref}
             />
         )
     }
