@@ -95,7 +95,7 @@ export default class AlertView extends View<AlertViewProps, null> {
         return (
             <CSSTransition key={'o_' + idx} classNames='mdl' timeout={0} unmountOnExit>
                 <Overlay
-                    onClose={alert.is_closable ? () => this.handleAlertClose(type) : null}
+                    on_close={alert.is_closable ? () => this.handleAlertClose(type) : null}
                 />
             </CSSTransition>
         )

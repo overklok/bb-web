@@ -6,7 +6,7 @@ import '../../../../css/core/modal.less'
 export type ModalSize = 'sm'|'md'|'lg';
 
 export interface IOverlayProps {
-    onClose: Function;
+    on_close?: Function;
 }
 
 export interface IModalProps {
@@ -18,7 +18,7 @@ export interface IModalProps {
 
 const Overlay = (props: IOverlayProps) => {
     const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
-        props.onClose && props.onClose();
+        props.on_close && props.on_close();
     };
 
     // Список классов, которые должны использоваться в зависимости от свойств

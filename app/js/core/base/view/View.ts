@@ -4,6 +4,7 @@ import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
 import {Widget} from "../../services/interfaces/IViewService";
 import {coverObjects} from "../../helpers/functions";
+import {ModalAction, ModalRequestCallback} from "./Nest";
 
 // export interface IViewOptions {
 //     overflow?: string;
@@ -14,7 +15,7 @@ export interface IViewBasicProps {
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     widgets?: {[key: string]: Widget<any>};
-    close_request?: Function;
+    action_request?: ModalRequestCallback;
 }
 
 export type AllProps<P> = P & IViewBasicProps;
@@ -112,8 +113,9 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
 
     public resize() {}
 
-    public requestModalClose() {
-        this.props.close_request && this.props.close_request();
+    public requestModalAction(action: ModalAction) {
+        console.trace('rma', action);
+        this.props.action_request && this.props.action_request(action);
     }
 
     protected viewDidMount() {

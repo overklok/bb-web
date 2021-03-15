@@ -7,6 +7,13 @@ import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
 import {CSSProperties} from "react";
 
+export enum ModalAction {
+    Escape,
+    Dismiss,
+    Accept
+}
+
+export type ModalRequestCallback = (action: ModalAction) => void;
 
 interface INestProps<P=IViewProps> {
     connector: ViewConnector;
@@ -17,7 +24,7 @@ interface INestProps<P=IViewProps> {
     nest_style?: CSSProperties;
 
     // Request to close parent modal (available as ModalView child only)
-    close_request?: Function;
+    on_action_request?: ModalRequestCallback;
 
     label: string;
     index: number;
@@ -86,9 +93,9 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
         }
     }
 
-    requestModalClose(): boolean {
+    requestModalAction(action: ModalAction): boolean {
         if (this.view) {
-            this.view.requestModalClose();
+            this.view.requestModalAction(action);
             return true;
         }
 
@@ -115,7 +122,7 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
                         connector={this.props.connector}
                         ref_parent={this.ref}
                         nest_mounted={this.state.mounted}
-                        close_request={this.props.close_request}
+                        action_request={this.props.on_action_request}
                     />
                 </ErrorBoundary>
             </div>

@@ -1,5 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
+import {ModalAction} from "../../base/view/Nest";
 
 export interface IDialogProps {
     heading?: string;
@@ -19,18 +20,22 @@ export interface IDialogProps {
 const Dialog = (props: IDialogProps) => {
     const {} = props;
 
-    const onClose = () => {
-        props.on_close && props.on_close();
+    const onClose = (action: ModalAction) => {
+        props.on_close && props.on_close(action);
     };
 
     const onAccept = () => {
         props.on_accept && props.on_accept();
-        onClose();
+        onClose(ModalAction.Accept);
     }
 
     const onDismiss = () => {
         props.on_dismiss && props.on_dismiss();
-        onClose();
+        onClose(ModalAction.Dismiss);
+    }
+
+    const onEscape = () => {
+        onClose(ModalAction.Escape);
     }
 
     React.useEffect(() => {
@@ -92,7 +97,7 @@ const Dialog = (props: IDialogProps) => {
                 </div>
                 <div className='mdl-dlg__buttons'>
                     {props.is_closable
-                        ? <div className='mdl-btn-close' title='Закрыть' onClick={onClose} />
+                        ? <div className='mdl-btn-close' title='Закрыть' onClick={onEscape} />
                         : null
                     }
                 </div>

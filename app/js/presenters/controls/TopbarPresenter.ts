@@ -120,6 +120,8 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
             size: 'lg',
             dialog: {
                 heading: 'Настройки',
+                on_accept: () => {},
+                on_dismiss: () => {},
             }
         });
     }
