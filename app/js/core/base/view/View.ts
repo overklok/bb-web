@@ -112,6 +112,10 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
 
     public resize() {}
 
+    public shouldModalTerminate() {
+        return true;
+    }
+
     protected viewDidMount() {
         // console.log(this.constructor.name, 'mount');
         this.props.connector.attach(this);

@@ -46,14 +46,9 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
     public hideModal(modal_idx: number, type: string = 'default') {
         this.state.modals[type].splice(modal_idx, 1);
 
-        console.log('hide', type, this.state.modals[type].length);
-
         if (this.state.modals[type].length === 0) {
-            console.log('0len');
             delete this.state.modals[type];
         }
-
-        console.log(this.state.modals);
 
         this.emit(new UpdateModalsEvent());
     }

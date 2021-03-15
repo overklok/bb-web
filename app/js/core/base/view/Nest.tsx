@@ -7,6 +7,12 @@ import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
 import {CSSProperties} from "react";
 
+export enum TerminalAction {
+    None,
+    Close,
+    Accept,
+    Dismiss
+}
 
 interface INestProps<P=IViewProps> {
     connector: ViewConnector;
@@ -17,7 +23,9 @@ interface INestProps<P=IViewProps> {
     nest_style?: CSSProperties;
 
     // Request to close parent modal (available as ModalView child only)
-    close_request?: Function;
+    terminal_request?: (action: TerminalAction) => void;
+    terminal_reject?: (action: TerminalAction) => void;
+    terminal_action?: TerminalAction;
 
     label: string;
     index: number;
@@ -41,6 +49,31 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
             mounted: false,
             view_props: this.props.connector.collectProps()
         };
+    }
+
+    shouldComponentUpdate(
+        nextProps: Readonly<INestProps<any>>,
+        nextState: Readonly<INestState>,
+        nextContext: any
+    ): boolean {
+        // Check if non-empty action has been requested
+        if (nextProps.terminal_action && this.props.terminal_action === TerminalAction.None) {
+            // Reject modal close if view exists and gives false response
+            if (this.view && !this.view.shouldModalTerminate()) {
+                this.props.terminal_reject && this.props.terminal_reject(nextProps.terminal_action);
+            } else {
+                this.props.terminal_request && this.props.terminal_request(nextProps.terminal_action);
+            }
+        }
+
+        // If terminal action is changed only, prevent re-rendering by hiding the change from the props
+        if (nextProps.terminal_action !== this.props.terminal_action) {
+            const props = {...nextProps, terminal_action: this.props.terminal_action};
+
+            return super.shouldComponentUpdate(props, nextState, nextContext);
+        }
+
+        return super.shouldComponentUpdate(nextProps, nextState, nextContext);
     }
 
     componentDidMount() {
@@ -106,7 +139,7 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
                         connector={this.props.connector}
                         ref_parent={this.ref}
                         nest_mounted={this.state.mounted}
-                        close_request={this.props.close_request}
+                        close_request={this.props.terminal_request}
                     />
                 </ErrorBoundary>
             </div>

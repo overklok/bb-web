@@ -157,10 +157,24 @@
 
 .mdl-enter-active, .mdl-enter-done {
   opacity: 1;
+
   .mdl-dlg {
     transform: scale(1);
   }
 }
 
-//.mdl-exit {opacity: 1;}
-//.mdl-exit-active, .mdl-exit-done {opacity: 0;}
+.mdl-exit {
+  opacity: 1;
+
+  .mdl-dlg {
+    transform: scale(1);
+  }
+}
+
+.mdl-exit-active, .mdl-exit-done {
+  opacity: 0;
+
+  .mdl-dlg {
+    transform: scale(0.8);
+  }
+}
