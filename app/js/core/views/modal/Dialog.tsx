@@ -9,9 +9,9 @@ export interface IDialogProps {
     is_closable?: boolean;
     is_centered?: boolean;
 
-    on_close?: Function;
-    on_accept?: Function;
-    on_dismiss?: Function;
+    on_close?: Function | boolean;
+    on_accept?: Function | boolean;
+    on_dismiss?: Function | boolean;
 
     label_accept?: string;
     label_dismiss?: string;
@@ -21,16 +21,16 @@ const Dialog = (props: IDialogProps) => {
     const {} = props;
 
     const onClose = (action: ModalAction) => {
-        props.on_close && props.on_close(action);
+        props.on_close && typeof props.on_close === "function" && props.on_close(action);
     };
 
     const onAccept = () => {
-        props.on_accept && props.on_accept();
+        props.on_accept && typeof props.on_accept === "function" && props.on_accept();
         onClose(ModalAction.Accept);
     }
 
     const onDismiss = () => {
-        props.on_dismiss && props.on_dismiss();
+        props.on_dismiss && typeof props.on_dismiss === "function" && props.on_dismiss();
         onClose(ModalAction.Dismiss);
     }
 

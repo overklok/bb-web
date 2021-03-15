@@ -6,8 +6,8 @@ export interface IDialogData {
     hint?: string;
     label_accept?: string;
     label_dismiss?: string;
-    on_accept?: Function;
-    on_dismiss?: Function;
+    on_accept?: Function | boolean;
+    on_dismiss?: Function | boolean;
 }
 
 export interface IModalData {
