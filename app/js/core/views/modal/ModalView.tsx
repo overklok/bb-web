@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import isFunction from "lodash/isFunction";
+
 import {IViewProps, View} from "../../base/view/View";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import {IModalData} from "../../datatypes/modal";
@@ -54,12 +56,14 @@ export default class ModalView extends View<ModalViewProps, null> {
     handleModalClose(idx: number, modal_type: string, action: ModalAction) {
         const modal_data = this.props.modals[modal_type][idx];
 
-        console.log(idx, modal_type);
-
         if (modal_data.dialog) {
             switch (action) {
-                case ModalAction.Accept:    modal_data.dialog.on_accept && modal_data.dialog.on_accept(); break;
-                case ModalAction.Dismiss:   modal_data.dialog.on_dismiss && modal_data.dialog.on_dismiss(); break;
+                case ModalAction.Accept:
+                    isFunction(modal_data.dialog.on_accept) && modal_data.dialog.on_accept();
+                    break;
+                case ModalAction.Dismiss:
+                    isFunction(modal_data.dialog.on_dismiss) && modal_data.dialog.on_dismiss();
+                    break;
             }
         }
 

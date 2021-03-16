@@ -20,8 +20,13 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
     @restore() @on(LessonRouteEvent, MissionRouteEvent)
     protected async runMission(evt: LessonRouteEvent|MissionRouteEvent) {
         if (evt instanceof LessonRouteEvent || evt instanceof MissionRouteEvent) {
-            const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
-            this.model_progress.loadLesson(lesson);
+            try {
+                const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
+                this.model_progress.loadLesson(lesson);
+            } catch (e) {
+                this.forward('index');
+                throw e;
+            }
         }
 
         if (evt instanceof MissionRouteEvent) {

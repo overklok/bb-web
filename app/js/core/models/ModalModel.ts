@@ -1,3 +1,5 @@
+import isFunction from "lodash/isFunction";
+
 import Model from "../base/model/Model";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {ModelEvent} from "../base/Event";
@@ -87,11 +89,11 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
                     dialog: {
                         ...modal_data.dialog,
                         on_accept: () => {
-                            typeof modal_data.dialog.on_accept === "function" && modal_data.dialog.on_accept();
+                            isFunction(modal_data.dialog.on_accept) && modal_data.dialog.on_accept();
                             resolve(true);
                         },
                         on_dismiss: () => {
-                            typeof modal_data.dialog.on_dismiss === "function" && modal_data.dialog.on_dismiss();
+                            isFunction(modal_data.dialog.on_dismiss) && modal_data.dialog.on_dismiss();
                             resolve(false);
                         },
                     }

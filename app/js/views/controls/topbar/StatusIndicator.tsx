@@ -68,7 +68,7 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
 
     componentDidMount() {
         if (this.state.is_popup_visible) {
-            this.show_timeout = setTimeout(this.disablePopupVisibility, TIME_SHOW);
+            this.show_timeout = global.setTimeout(this.disablePopupVisibility, TIME_SHOW);
         }
     }
 
@@ -78,7 +78,7 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
 
             this.setState({is_popup_visible: true});
 
-            this.show_timeout = setTimeout(this.disablePopupVisibility, TIME_SHOW);
+            this.show_timeout = global.setTimeout(this.disablePopupVisibility, TIME_SHOW);
         }
     }
 
@@ -95,7 +95,7 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
 
         this.setState({is_popup_visible: true});
 
-        this.show_timeout = setTimeout(this.disablePopupVisibility, TIME_SHOW);
+        this.show_timeout = global.setTimeout(this.disablePopupVisibility, TIME_SHOW);
     }
 
     render() {

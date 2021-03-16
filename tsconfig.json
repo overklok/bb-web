@@ -16,7 +16,11 @@
     "target": "es5",
     "jsx": "react",
     "moduleResolution": "node",
-    "allowJs": true
+    "allowJs": true,
+    "lib": [
+      "ES2020.Promise",
+      "dom"
+    ]
   },
   "include": [
     "app/js/**/*.ts",
@@ -26,7 +30,7 @@
       "node_modules"
   ],
   "lib": [
-    "es2017",
+    "ES2020.Promise",
     "dom"
   ]
 }

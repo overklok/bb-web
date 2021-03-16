@@ -1,7 +1,8 @@
-import IEventService from "./interfaces/IEventService";
+import IEventService, {EventHandlingError} from "./interfaces/IEventService";
 import {AbstractEvent} from "../base/Event";
 
 type HandlerPool = Map<any, Map<typeof AbstractEvent, Set<Function>>>;
+
 
 /**
  * An implementation of IEventService based on Map and Set.
@@ -120,7 +121,7 @@ export default class EventService extends IEventService {
 
         if (map == null) return;
 
-        let handlers = [];
+        let calls = [];
 
         // get prototype for class of this event, constructor of this prototype is event's class
         let proto = (event as any).__proto__;
@@ -132,21 +133,27 @@ export default class EventService extends IEventService {
             const handlers_for_class = map.get(evt_class);
 
             if (handlers_for_class) {
-                handlers.push(...handlers_for_class);
+                for (const handler of handlers_for_class) {
+                    if (!handler) continue;
+                    calls.push(handler(event));
+                }
             }
 
             // prototype is now a prototype of parent class
             proto = proto.__proto__;
         } while (proto.constructor !== AbstractEvent)
 
-        let promises = [];
+        const promises = await Promise.allSettled(calls);
 
-        for (const handler of handlers) {
-            if (!handler) continue;
-            promises.push(handler(event));
+        const errors = promises.filter(
+            (result: PromiseSettledResult<any>) => result.status === 'rejected'
+        ).map(
+            (result: PromiseRejectedResult) => result.reason
+        );
+
+        if (errors.length > 0) {
+            throw new EventHandlingError('Some handlers are failed', errors);
         }
-
-        await Promise.all(promises);
     }
 
     emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {

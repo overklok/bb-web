@@ -1,4 +1,4 @@
-import IEventService from "../services/interfaces/IEventService";
+import IEventService, {EventHandlingError} from "../services/interfaces/IEventService";
 import IModelService from "../services/interfaces/IModelService";
 import Presenter from "./Presenter";
 import {AbstractEvent, Action, GenericErrorEvent, ViewEvent} from "./Event";
@@ -202,8 +202,11 @@ export default class ViewConnector {
                     try {
                         return (presenter as any)[method_name](...arguments);
                     } catch (e) {
-                        console.error(e);
-                        console.log(presenter, method_name, (presenter as any)[method_name]);
+                        console.error(
+                            `Error occurred when tried to run ${presenter.constructor.name}.${method_name} ` +
+                            `to handle '${event_type.name}':\n`, e
+                        );
+
                         svc_event.emitAsync(new GenericErrorEvent({error: e}));
                     }
                 };
@@ -211,8 +214,18 @@ export default class ViewConnector {
                 try {
                     await this.svc_event.subscribe(event_type, presenter_method_handler, anchor, restorable);
                 } catch (e) {
-                    console.error(e);
-                    await svc_event.emitAsync(new GenericErrorEvent({error: e}));
+                    if (e instanceof EventHandlingError) {
+                        for (const suberror of e.suberrors) {
+                            console.error(
+                                `Error occurred when tried to subscribe ${presenter.constructor.name}.${method_name} ` +
+                                `to ${event_type.name}:\n`, suberror
+                            );
+
+                            await svc_event.emitAsync(new GenericErrorEvent({error: suberror}));
+                        }
+                    } else {
+                        throw e;
+                    }
                 }
 
                 this.handlers.push([event_type, presenter_method_handler]);

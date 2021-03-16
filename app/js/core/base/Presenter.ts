@@ -175,7 +175,7 @@ export default class Presenter<V extends View> implements Subscriptable {
         return model;
     }
 
-    protected forward(route_name: string, params: any[], override: boolean = false) {
+    protected forward(route_name: string, params: any[] = [], override: boolean = false) {
         if (!this.svc_routing) {
             throw new Error("No router is available for the application");
         }

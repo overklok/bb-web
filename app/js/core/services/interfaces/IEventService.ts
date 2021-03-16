@@ -1,5 +1,15 @@
 import {AbstractEvent} from "../../base/Event";
-import Application from "../../Application";
+
+
+export class EventHandlingError extends Error {
+    public suberrors: Error[];
+
+    constructor(message: string, reasons: Error[]) {
+        super(message);
+        Object.setPrototypeOf(this, EventHandlingError.prototype);
+        this.suberrors = reasons;
+    }
+}
 
 /**
  * A service that supports basic lifecycle of Event objects and provides management API
@@ -82,7 +92,7 @@ export default class IEventService {
     public async emitAsync<E extends AbstractEvent<E>>(
         event: E,
         anchor?: any
-    ): Promise<void> {throw new Error('abstract')}
+    ) {throw new Error('abstract')}
 
     public emit<E extends AbstractEvent<E>>(
         event: E,
