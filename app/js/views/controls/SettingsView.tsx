@@ -1,16 +1,11 @@
 import * as React from "react";
 
 import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
-import {
-    Setting,
-    SettingsConfig,
-    SettingsValues,
-    SettingType,
-    SettingValue
-} from "../../core/datatypes/settings";
+import {Setting, SettingsConfig, SettingsValues, SettingType, SettingValue} from "../../core/datatypes/settings";
 
 import classNames from "classnames";
 import {ViewEvent} from "../../core/base/Event";
+import {ModalAction} from "../../core/base/view/Nest";
 
 require('css/blocks/generic/btn.less');
 require('css/blocks/settings.less');
@@ -58,9 +53,6 @@ export namespace SettingsView {
                         )}
                     </div>
                     {this.renderCurrentCategory()}
-                </div>
-                <div className="settings__actions">
-                    <div className="btn btn_primary">Применить</div>
                 </div>
             </div>;
         }
@@ -110,6 +102,12 @@ export namespace SettingsView {
                     );
                 default: return null;
             }
+        }
+
+        handleModalAction(action: ModalAction) {
+            if (action !== ModalAction.Escape) return;
+
+            super.handleModalAction(action);
         }
     }
 

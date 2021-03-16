@@ -113,8 +113,12 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
 
     public resize() {}
 
-    public requestModalAction(action: ModalAction) {
-        console.trace('rma', action);
+    public handleModalAction(action: ModalAction) {
+        // pass by default, override if needed to customise
+        this.requestModalAction(action);
+    }
+
+    protected requestModalAction(action: ModalAction) {
         this.props.action_request && this.props.action_request(action);
     }
 

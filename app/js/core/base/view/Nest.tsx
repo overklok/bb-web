@@ -93,9 +93,9 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
         }
     }
 
-    requestModalAction(action: ModalAction): boolean {
+    handleModalAction(action: ModalAction): boolean {
         if (this.view) {
-            this.view.requestModalAction(action);
+            this.view.handleModalAction(action);
             return true;
         }
 

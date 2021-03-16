@@ -128,8 +128,8 @@ export default class ModalView extends View<ModalViewProps, null> {
         const nest_ref: React.Ref<Nest> = React.createRef();
 
         const action_request = (action: ModalAction) => {
-            if (nest_ref.current && !nest_ref.current.requestModalAction(action)) {
-                // this.handleModalClose(idx, modal_type, action);
+            if (nest_ref.current && !nest_ref.current.handleModalAction(action)) {
+                this.handleModalClose(idx, modal_type, action);
             }
         }
 
