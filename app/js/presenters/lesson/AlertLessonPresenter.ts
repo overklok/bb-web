@@ -1,25 +1,31 @@
 import {AlertType} from "../../core/views/modal/AlertView";
-import {BoardStatusEvent} from "../../models/common/BoardModel";
-import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
+import BoardModel, {BoardStatusEvent} from "../../models/common/BoardModel";
+import ConnectionModel, {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
 import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsModel";
 import AlertPresenter from "../../core/presenters/AlertPresenter";
 import {on} from "../../core/base/Presenter";
 
 export default class AlertLessonPresenter extends AlertPresenter {
+    private board: BoardModel;
     private settings: SettingsModel;
+    private connection: ConnectionModel;
 
     getInitialProps(): any {
         super.getInitialProps();
 
         this.settings = this.getModel(SettingsModel);
+        this.connection = this.getModel(ConnectionModel);
+        this.board = this.getModel(BoardModel);
     }
 
     @on(BoardStatusEvent, ConnectionStatusEvent, SettingsChangeEvent)
-    protected showAlert(evt: BoardStatusEvent | ConnectionStatusEvent) {
+    protected showAlert() {
+        const is_connected = this.board.getState().is_connected && this.connection.getState().is_active;
+
         const allow_demo = !this.settings.isLocked('general.is_demo'),
               is_demo = this.settings.getState().values.general.is_demo;
 
-        if (is_demo || evt.status === 'connected') {
+        if (allow_demo && (is_demo || is_connected)) {
             this.closeAlert(AlertType.BoardDisconnectedDemo);
             return;
         }

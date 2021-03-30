@@ -104,10 +104,8 @@ export namespace SettingsView {
             }
         }
 
-        handleModalAction(action: ModalAction) {
-            if (action !== ModalAction.Escape) return;
-
-            super.handleModalAction(action);
+        protected handleModalAccept() {
+            super.handleModalAccept();
         }
     }
 

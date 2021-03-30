@@ -120,6 +120,8 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
             size: 'lg',
             dialog: {
                 heading: 'Настройки',
+                label_accept: 'Сохранить',
+                label_dismiss: 'Отменить',
                 on_accept: true,
                 on_dismiss: true,
             }

@@ -1,9 +1,8 @@
 import * as React from "react";
-import ViewConnector from "../ViewConnector";
-import {AbstractEvent, ViewEvent} from "../Event";
 import {ReactNode} from "react";
+import ViewConnector from "../ViewConnector";
+import {ViewEvent} from "../Event";
 import {Widget} from "../../services/interfaces/IViewService";
-import {coverObjects} from "../../helpers/functions";
 import {ModalAction, ModalRequestCallback} from "./Nest";
 
 // export interface IViewOptions {
@@ -36,6 +35,9 @@ export interface IViewState {
 export class RenderEvent extends ViewEvent<RenderEvent>     {}
 export class MountEvent extends ViewEvent<MountEvent>       {}
 export class UnmountEvent extends ViewEvent<UnmountEvent>   {}
+export class AcceptEvent extends ViewEvent<AcceptEvent>     {}
+export class DismissEvent extends ViewEvent<DismissEvent>   {}
+export class EscapeEvent extends ViewEvent<EscapeEvent>     {}
 export class ResizeEvent extends ViewEvent<ResizeEvent>     {}
 
 export function deferUntilMounted(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -115,7 +117,26 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
 
     public handleModalAction(action: ModalAction) {
         // pass by default, override if needed to customise
-        this.requestModalAction(action);
+        switch (action) {
+            case ModalAction.Accept:    this.handleModalAccept(); return;
+            case ModalAction.Dismiss:   this.handleModalDismiss(); return;
+            case ModalAction.Escape:    this.handleModalEscape(); return;
+        }
+    }
+
+    protected handleModalAccept() {
+        // pass by default, override if needed to customise
+        this.requestModalAction(ModalAction.Accept);
+    }
+
+    protected handleModalDismiss() {
+        // pass by default, override if needed to customise
+        this.requestModalAction(ModalAction.Dismiss);
+    }
+
+    protected handleModalEscape() {
+        // pass by default, override if needed to customise
+        this.requestModalAction(ModalAction.Escape);
     }
 
     protected requestModalAction(action: ModalAction) {

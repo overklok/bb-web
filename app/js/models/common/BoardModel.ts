@@ -37,6 +37,7 @@ interface BreadboardModelState extends ModelState {
     layout_confirmed: boolean;
     snapshot_limit: number;
     snapshot_ttl: number;
+    is_connected: boolean;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
@@ -56,6 +57,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         layout_confirmed: false,
         snapshot_limit: 1000,
         snapshot_ttl: 30000, // ms
+        is_connected: false,
     }
 
     private last_snapshot_time: number = 0;
@@ -159,16 +161,19 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
     @listen(ChannelsFrom.BoardConnected)
     private reportConnection() {
+        this.setState({is_connected: true});
         this.emit(new BoardStatusEvent({status: 'connected'}));
     }
 
     @listen(ChannelsFrom.BoardDisconnected)
     private reportDisconnection() {
+        this.setState({is_connected: false});
         this.emit(new BoardStatusEvent({status: 'disconnected'}));
     }
 
     @listen(ChannelsFrom.BoardSearching)
     private reportSearching() {
+        this.setState({is_connected: false});
         this.emit(new BoardStatusEvent({status: 'searching'}));
     }
 
