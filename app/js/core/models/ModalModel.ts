@@ -31,7 +31,7 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
         toasts: []
     };
 
-    public showModal(modal: IModalData, type: string = 'default') {
+    public showModal(modal: IModalData, type: string = 'default'): number {
         if (!this.state.modals.hasOwnProperty(type)) {
             this.state.modals[type] = [];
         }

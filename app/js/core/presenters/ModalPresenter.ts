@@ -16,8 +16,8 @@ export default class ModalPresenter extends Presenter<ModalView> {
         }
     }
 
-    protected pushModal(modal_data: IModalData, modal_type: string) {
-        this.modal.showModal(modal_data, modal_type);
+    protected pushModal(modal_data: IModalData, modal_type: string): number {
+        return this.modal.showModal(modal_data, modal_type);
     }
 
     protected closeModal(index: number, modal_type: string) {
@@ -26,8 +26,6 @@ export default class ModalPresenter extends Presenter<ModalView> {
 
     @on(UpdateModalsEvent)
     protected updateModals() {
-        console.log('upd modals', this);
-
         this.setViewProps({
             modals: {...this.modal.getState().modals}
         });
