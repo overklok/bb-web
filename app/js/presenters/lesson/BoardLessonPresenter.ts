@@ -29,7 +29,7 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
 
     @on(BoardView.ShortCircuitStartEvent)
     private showShortCircuitAlert() {
-        const readonly = !this.settings.getValue('general.is_demo');
+        const readonly = !(this.settings.getValue('general.is_demo') || !this.board.getState().readonly);
 
         if (readonly) {
             this.modal.showAlert(AlertType.ShortCircuit);

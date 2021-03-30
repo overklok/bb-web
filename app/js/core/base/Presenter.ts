@@ -24,7 +24,7 @@ interface Subscriptable {
 export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         // TODO: Fix inheritance issue:
-        //       we usually don't want to combine base and derived inheritors to make both handlers working,
+        //       we usually don't want to combine base and derived classes to make both handlers working,
         //       but we need to do it because of this
 
         if (Object.getOwnPropertyDescriptor(target, 'presets') == null) {

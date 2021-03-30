@@ -38,6 +38,7 @@ interface BreadboardModelState extends ModelState {
     snapshot_limit: number;
     snapshot_ttl: number;
     is_connected: boolean;
+    readonly: boolean;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
@@ -58,6 +59,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         snapshot_limit: 1000,
         snapshot_ttl: 30000, // ms
         is_connected: false,
+        readonly: true,
     }
 
     private last_snapshot_time: number = 0;
@@ -179,6 +181,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
     @listen(ChannelsFrom.EditableChanged)
     private setEditable(is_editable: boolean) {
+        this.setState({readonly: !is_editable});
         this.emit(new BoardOptionsEvent({readonly: !is_editable}));
     }
 

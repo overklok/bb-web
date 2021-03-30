@@ -26,6 +26,8 @@ export default class ModalPresenter extends Presenter<ModalView> {
 
     @on(UpdateModalsEvent)
     protected updateModals() {
+        console.log('upd modals', this);
+
         this.setViewProps({
             modals: {...this.modal.getState().modals}
         });
