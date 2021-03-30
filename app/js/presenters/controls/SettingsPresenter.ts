@@ -33,6 +33,8 @@ export default class SettingsPresenter extends Presenter<SettingsView.SettingsVi
         })
     }
 
+    // @on()
+
     // @on(SettingsView.RollbackEvent)
     // rollbackChanges(evt: SettingsView.RollbackEvent) {
     //     if (!evt.hard) {

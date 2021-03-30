@@ -1,16 +1,9 @@
-import isFunction from "lodash/isFunction";
-
 import Model from "../base/model/Model";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {ModelEvent} from "../base/Event";
 import {AlertType} from "../views/modal/AlertView";
-import {
-    IAlertData,
-    IModalData,
-    IModalDataWithIndex,
-    IToastData,
-    IToastDataWithIndex
-} from "../datatypes/modal";
+import {IAlertData, IModalData, IModalDataWithIndex, IToastData, IToastDataWithIndex} from "../datatypes/modal";
+import {ModalAction} from "../base/view/Nest";
 
 export class UpdateModalsEvent extends ModelEvent<UpdateModalsEvent> {}
 export class UpdateAlertsEvent extends ModelEvent<UpdateAlertsEvent> {}
@@ -42,7 +35,7 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
 
         this.emit(new UpdateModalsEvent());
         
-        return modals_num;
+        return modals_num - 1;
     }
     
     public hideModal(modal_idx: number, type: string = 'default') {
@@ -88,13 +81,9 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
                     ...modal_data,
                     dialog: {
                         ...modal_data.dialog,
-                        on_accept: () => {
-                            isFunction(modal_data.dialog.on_accept) && modal_data.dialog.on_accept();
-                            resolve(true);
-                        },
-                        on_dismiss: () => {
-                            isFunction(modal_data.dialog.on_dismiss) && modal_data.dialog.on_dismiss();
-                            resolve(false);
+                        on_action: (action: ModalAction) => {
+                            modal_data.dialog.on_action && modal_data.dialog.on_action(action);
+                            resolve(action === ModalAction.Accept);
                         },
                     }
                 }

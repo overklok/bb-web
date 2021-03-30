@@ -9,6 +9,7 @@ import Modal, {IModalProps, Overlay} from "./Modal";
 import {IDialogProps} from "./Dialog";
 import DialogModal from "./DialogModal";
 import Nest, {ModalAction, ModalRequestCallback} from "../../base/view/Nest";
+import {ViewEvent} from "../../base/Event";
 
 interface ModalViewProps extends IViewProps {
     modals: {[type: string]: IModalData[]};
@@ -34,7 +35,7 @@ export default class ModalView extends View<ModalViewProps, null> {
 
     renderItem(idx: number, modal_type: string, modal_data: IModalData) {
         let content: string | JSX.Element = modal_data.content;
-        let action_request = (action: ModalAction) => this.handleModalClose(idx, modal_type, action);
+        let action_request = (action: ModalAction) => this.handleNestModalClose(idx, modal_type, action);
 
         if (modal_data.widget_alias) {
             [content, action_request] = this.renderNest(idx, modal_type, modal_data);
@@ -53,19 +54,12 @@ export default class ModalView extends View<ModalViewProps, null> {
         }
     }
 
-    handleModalClose(idx: number, modal_type: string, action: ModalAction) {
+    handleNestModalClose(idx: number, modal_type: string, action: ModalAction) {
         const modal_data = this.props.modals[modal_type][idx];
 
-        if (modal_data.dialog) {
-            switch (action) {
-                case ModalAction.Accept:
-                    isFunction(modal_data.dialog.on_accept) && modal_data.dialog.on_accept();
-                    break;
-                case ModalAction.Dismiss:
-                    isFunction(modal_data.dialog.on_dismiss) && modal_data.dialog.on_dismiss();
-                    break;
-            }
-        }
+        modal_data.dialog && modal_data.dialog.on_action && modal_data.dialog.on_action(action);
+
+        if (modal_data.is_close_manual) return;
 
         this.props.on_close && this.props.on_close(idx, modal_type);
     }
@@ -98,7 +92,7 @@ export default class ModalView extends View<ModalViewProps, null> {
 
                     {...dialog_props}
 
-                    on_close={(action: ModalAction) => action_request(action)}
+                    on_action={(action: ModalAction) => action_request && action_request(action)}
                 >
                     {content}
                 </DialogModal>
@@ -129,7 +123,7 @@ export default class ModalView extends View<ModalViewProps, null> {
 
         const action_request = (action: ModalAction) => {
             if (nest_ref.current && !nest_ref.current.handleModalAction(action)) {
-                this.handleModalClose(idx, modal_type, action);
+                this.handleNestModalClose(idx, modal_type, action);
             }
         }
 
@@ -139,7 +133,7 @@ export default class ModalView extends View<ModalViewProps, null> {
                   label={widget.label}
                   view_type={widget.view_type}
                   view_props={widget.view_props}
-                  on_action_request={(action) => this.handleModalClose(idx, modal_type, action)}
+                  on_action_request={(action) => this.handleNestModalClose(idx, modal_type, action)}
                   ref={nest_ref}
             />
         )

@@ -4,7 +4,7 @@ import ModalModel, {UpdateModalsEvent} from "../models/ModalModel";
 import {IModalData} from "../datatypes/modal";
 
 export default class ModalPresenter extends Presenter<ModalView> {
-    private modal: ModalModel;
+    protected modal: ModalModel;
 
     getInitialProps(): any {
         this.modal = this.getModel(ModalModel);
@@ -16,7 +16,7 @@ export default class ModalPresenter extends Presenter<ModalView> {
         }
     }
 
-    protected pushModal(modal_data: IModalData, modal_type: string): number {
+    protected pushModal(modal_data: IModalData, modal_type?: string): number {
         return this.modal.showModal(modal_data, modal_type);
     }
 

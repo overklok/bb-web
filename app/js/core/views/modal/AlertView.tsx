@@ -109,7 +109,8 @@ export default class AlertView extends View<AlertViewProps, null> {
                 <DialogModal size={alert.size}
                     is_centered={true}
                     label_accept={alert.label_accept}
-                    on_accept={alert.is_acceptable ? () => this.handleAlertAccept(type) : null}
+                    is_acceptable={alert.is_acceptable}
+                    on_action={() => this.handleAlertAccept(type)}
                 >
                     <h2>{alert.title}</h2>
                     <p>{alert.content}</p>

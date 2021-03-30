@@ -23,6 +23,8 @@ export namespace SettingsView {
     }
     
     export class SettingsView extends View<Props, State> {
+        private is_dirty: boolean;
+
         constructor(props: AllProps<Props>) {
             super(props);
 
@@ -102,10 +104,6 @@ export namespace SettingsView {
                     );
                 default: return null;
             }
-        }
-
-        protected handleModalAccept() {
-            super.handleModalAccept();
         }
     }
 

@@ -1,13 +1,15 @@
 import {ColorAccent, ToastPosition} from "../helpers/styles";
 import {AlertType} from "../views/modal/AlertView";
+import {ModalAction} from "../base/view/Nest";
 
 export interface IDialogData {
     heading?: string;
     hint?: string;
     label_accept?: string;
     label_dismiss?: string;
-    on_accept?: Function | boolean;
-    on_dismiss?: Function | boolean;
+    on_action?: (action: ModalAction) => void;
+    is_acceptable?: boolean;
+    is_dismissible?: boolean;
 }
 
 export interface IModalData {
@@ -19,6 +21,7 @@ export interface IModalData {
     width?: number|string;
     height?: number|string;
 
+    is_close_manual?: boolean;
     is_closable?: boolean;
 }
 

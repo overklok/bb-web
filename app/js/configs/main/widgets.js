@@ -40,13 +40,14 @@ import LessonKeyboardPresenter          from "../../presenters/lesson/KeyboardLe
 import VariableLessonPresenter          from "../../presenters/lesson/VariablesLessonPresenter";
 import PopoverLessonPresenter           from "../../presenters/lesson/PopoverLessonPresenter";
 import AlertLessonPresenter             from "../../presenters/lesson/AlertLessonPresenter";
+import SettingsModalPresenter           from "../../presenters/controls/SettingsModalPresenter";
 
 export default {
     composer: OverlayViewComposer,
     root: [
         {view_type: LayoutView, presenter_types: [LayoutPresenter, LayoutLessonPresenter]},
         {view_type: ToastView, presenter_types: [ToastPresenter]},
-        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter]},
+        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter, SettingsModalPresenter]},
         {view_type: AlertView, presenter_types: [AlertPresenter, AlertLessonPresenter]},
     ],
     widgets: {

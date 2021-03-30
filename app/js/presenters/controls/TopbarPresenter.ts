@@ -8,6 +8,7 @@ import {BoardStatusEvent} from "../../models/common/BoardModel";
 import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
 import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";
 import TopbarView, {MenuItem} from "../../views/controls/TopbarView";
+import {ModalAction} from "../../core/base/view/Nest";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private model_lesson: LessonModel;
@@ -103,7 +104,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private openLessonMenu(evt: TopbarView.MenuItemEvent) {
         switch (evt.item) {
             case MenuItem.Lessons: this.forward('index', []); break;
-            case MenuItem.Settings: this.showSettingsModal(); break;
+            case MenuItem.Settings: this.model_settings.showSettingsModal();
         }
     }
 
@@ -111,20 +112,6 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private updateSettingsChange() {
         this.setViewProps({
             is_demo: this.model_settings.getValue('general.is_demo') as boolean,
-        });
-    }
-
-    private showSettingsModal() {
-        this.model_modal.showModal({
-            widget_alias: 'settings',
-            size: 'lg',
-            dialog: {
-                heading: 'Настройки',
-                label_accept: 'Сохранить',
-                label_dismiss: 'Отменить',
-                on_accept: true,
-                on_dismiss: true,
-            }
         });
     }
 }

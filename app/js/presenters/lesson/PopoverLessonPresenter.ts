@@ -39,9 +39,8 @@ export default class PopoverLessonPresenter extends ModalPresenter {
                 dialog: {
                     heading: title,
                     label_accept: 'Продолжить',
-                    on_accept: () => {
-                        resolve(true);
-                    },
+                    is_acceptable: true,
+                    on_action: () => {resolve(true)},
                 },
             }, 'popover');
         });

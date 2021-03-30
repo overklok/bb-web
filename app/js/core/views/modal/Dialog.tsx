@@ -9,9 +9,9 @@ export interface IDialogProps {
     is_closable?: boolean;
     is_centered?: boolean;
 
-    on_close?: Function | boolean;
-    on_accept?: Function | boolean;
-    on_dismiss?: Function | boolean;
+    on_action?: (action: ModalAction) => void;
+    is_acceptable?: boolean;
+    is_dismissible?: boolean;
 
     label_accept?: string;
     label_dismiss?: string;
@@ -20,22 +20,20 @@ export interface IDialogProps {
 const Dialog = (props: IDialogProps) => {
     const {} = props;
 
-    const onClose = (action: ModalAction) => {
-        props.on_close && typeof props.on_close === "function" && props.on_close(action);
+    const onAction = (action: ModalAction) => {
+        props.on_action && props.on_action(action);
     };
 
     const onAccept = () => {
-        props.on_accept && typeof props.on_accept === "function" && props.on_accept();
-        onClose(ModalAction.Accept);
+        onAction(ModalAction.Accept);
     }
 
     const onDismiss = () => {
-        props.on_dismiss && typeof props.on_dismiss === "function" && props.on_dismiss();
-        onClose(ModalAction.Dismiss);
+        onAction(ModalAction.Dismiss);
     }
 
     const onEscape = () => {
-        onClose(ModalAction.Escape);
+        onAction(ModalAction.Escape);
     }
 
     React.useEffect(() => {
@@ -64,16 +62,16 @@ const Dialog = (props: IDialogProps) => {
         hint = null,
         header = null;
 
-    if (props.on_accept || props.on_dismiss) {
+    if (props.is_acceptable || props.is_dismissible) {
         footer = (
             <div className='mdl-dlg__footer'>
                 <div className={klasses_btn_bar}>
-                    {props.on_dismiss
+                    {props.is_dismissible
                         ? <div className='btn btn_danger'
                                onClick={e => onDismiss()}>{props.label_dismiss || 'Отклонить'}</div>
                         : null
                     }
-                    {props.on_accept
+                    {props.is_acceptable
                         ? <div className='btn btn_primary'
                                onClick={e => onAccept()}>{props.label_accept || 'Принять'}</div>
                         : null
