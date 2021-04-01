@@ -1,16 +1,21 @@
+import isEqual from "lodash/isEqual";
+
 import ModalPresenter from "../../core/presenters/ModalPresenter";
 import {on} from "../../core/base/Presenter";
 import SettingsModel, {SettingsModalEvent} from "../../core/models/SettingsModel";
 import {ModalAction} from "../../core/base/view/Nest";
+import {SettingsValues} from "../../core/datatypes/settings";
 
 export default class SettingsModalPresenter extends ModalPresenter {
     private mdl: number;
-    private settings: SettingsModel;
+    private model: SettingsModel;
 
     static ModalType = 'settings';
 
+    private saved: SettingsValues = {};
+
     getInitialProps(): any {
-        this.settings = this.getModel(SettingsModel);
+        this.model = this.getModel(SettingsModel);
 
         super.getInitialProps();
 
@@ -19,6 +24,8 @@ export default class SettingsModalPresenter extends ModalPresenter {
 
     @on(SettingsModalEvent)
     showSettingsModal() {
+        this.saveSettings();
+
         this.mdl = this.pushModal({
             widget_alias: 'settings',
             size: 'lg',
@@ -31,10 +38,21 @@ export default class SettingsModalPresenter extends ModalPresenter {
                 is_acceptable: true,
                 is_dismissible: true,
                 on_action: (action: ModalAction) => {
-                    if (action === ModalAction.Escape) {
-                        this.handleModalEscape();
-                    } else {
-                        this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
+                    switch (action) {
+                        case ModalAction.Escape: {
+                            this.handleModalEscape(); 
+                            break;
+                        }
+                        case ModalAction.Dismiss: {
+                            this.rollbackSettings();
+                            this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
+                            break;
+                        }
+                        case ModalAction.Accept: {
+                            this.saveSettings();
+                            this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
+                            break;
+                        }
                     }
                 },
             }
@@ -42,26 +60,38 @@ export default class SettingsModalPresenter extends ModalPresenter {
     }
 
     handleModalEscape() {
-        if (!this.settings.isDirty()) {
+        if (!this.isDirty()) {
             this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
             return;
         }
 
         this.pushModal({
+            size: 'sm',
+            content: 'Хотите откатить внесённые в настройки изменения?',
             dialog: {
-                heading: 'Отменить изменения',
-                label_accept: 'Отменить',
-                label_dismiss: 'Вернуться',
+                label_accept: 'Назад',
+                label_dismiss: 'Откатить',
                 is_acceptable: true,
                 is_dismissible: true,
                 on_action: action => {
-                    if (action === ModalAction.Accept) {
+                    if (action === ModalAction.Dismiss) {
+                        this.rollbackSettings();
                         this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
-                    } else {
-                        this.settings.rollbackSettings();
-                    }
+                    } 
                 }
             }
         })
+    }
+
+    public saveSettings() {
+        this.saved = this.model.getState().values;
+    }
+
+    public isDirty() {
+        return !isEqual(this.saved, this.model.getState().values);
+    }
+
+    public rollbackSettings() {
+        this.model.applySettings(this.saved);
     }
 }

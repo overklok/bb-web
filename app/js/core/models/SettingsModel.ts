@@ -1,5 +1,3 @@
-import isEqual from "lodash/isEqual";
-
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import Model from "../base/model/Model";
 import {ModelEvent} from "../base/Event";
@@ -17,8 +15,6 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         config: {},
         values: {}
     };
-
-    private saved: SettingsValues;
 
     init(state: Partial<Settings>) {
         super.init({config: state.config});
@@ -39,24 +35,10 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         this.setState({values});
         // Apply custom values if provided
         this.setState({values: state.values});
-
-        this.saveSettings();
-    }
-
-    public saveSettings() {
-        this.saved = this.getState().values;
-    }
-
-    public isDirty() {
-        return isEqual(this.saved, this.getState().values);
     }
 
     public showSettingsModal() {
         this.emit(new SettingsModalEvent());
-    }
-
-    public rollbackSettings() {
-        this.applySettings(this.saved);
     }
 
     public applySettings(values: SettingsValues) {
