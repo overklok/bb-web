@@ -40,7 +40,7 @@ const ALERT_DATA: {[key: number]: IAlert} = {
     [AlertType.BoardDisconnectedDemo]: {
         title: 'Доска отключена',
         content: 'Использовать программу без подключённой доски невозможно.',
-        label_accept: 'Продолжить в режиме презентации',
+        label_accept: 'Продолжить в автономном режиме',
         size: 'md',
         is_closable: false,
         is_acceptable: true

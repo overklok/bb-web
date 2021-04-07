@@ -8,7 +8,7 @@ export default function (allow_demo: boolean) {
                 {
                     settings: {
                         is_demo: {
-                            title: 'Режим презентации',
+                            title: 'Автономный режим',
                             type: SettingType.Boolean,
                             default: false,
                             is_locked: !allow_demo

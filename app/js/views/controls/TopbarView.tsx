@@ -237,7 +237,7 @@ namespace TopbarView {
                     </div>
                     <div className="navbar__section">
                         <h2 className={navbar_title_klasses}>{this.props.lesson_title}</h2>
-                        {this.props.is_demo ? <h2 className='navbar__subtitle'>Режим презентации</h2> : null}
+                        {this.props.is_demo ? <h2 className='navbar__subtitle'>Автономный режим</h2> : null}
                     </div>
                     <div className="navbar__spacer"/>
                     <div className="navbar__section navbar__section_pagerwrap">
