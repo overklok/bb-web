@@ -72,4 +72,10 @@ function clamp(min: number, max: number, val: number) {
     return Math.min(Math.max(val, min), max);
 }
 
-export {sleep, clamp, coverObjects, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};
+function assert(condition: any, msg?: string): asserts condition {
+    if (!condition) {
+        throw new Error(msg);
+    }
+}
+
+export {sleep, clamp, assert, coverObjects, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};

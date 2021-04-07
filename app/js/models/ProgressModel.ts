@@ -64,7 +64,7 @@ export class ExerciseRunEvent extends ModelEvent<ExerciseRunEvent> {
     exercise_idx: number;
 }
 
-export class MissionRunEvent extends ModelEvent<ExerciseRunEvent> {
+export class MissionRunEvent extends ModelEvent<MissionRunEvent> {
     mission_idx: number;
     data: ExerciseData;
 }
@@ -386,7 +386,7 @@ export default class ProgressModel extends HttpModel<Progress> {
 
             this.in_progress = false;
             this.emit(new ExerciseSolutionValidatedEvent({
-                message: undefined,
+                error: undefined,
                 verdict: verdict
             }));
         }).catch(err => {

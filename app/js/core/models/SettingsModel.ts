@@ -1,7 +1,15 @@
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import Model from "../base/model/Model";
 import {ModelEvent} from "../base/Event";
-import {Setting, SettingsConfig, SettingsValues, SettingValue} from "../datatypes/settings";
+import {
+    assert_type,
+    Setting,
+    SettingsConfig,
+    SettingsValues,
+    SettingType,
+    SettingValue
+} from "../datatypes/settings";
+import {assert} from "../helpers/functions";
 
 interface Settings {
     config: SettingsConfig;
@@ -41,32 +49,74 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         this.emit(new SettingsModalEvent());
     }
 
-    public applySettings(values: SettingsValues) {
-        this.setState({values});
-
-        this.emit(new SettingsChangeEvent({values}));
+    public getBoolean(path: string): boolean {
+        return this.getValue(path, SettingType.Boolean) as boolean;
     }
 
-    public getValue(path: string): SettingValue {
+    public getNumber(path: string): number {
+        return this.getValue(path, SettingType.Number) as number;
+    }
+
+    public getString(path: string): string {
+        return this.getValue(path, SettingType.String) as string;
+    }
+
+    /**
+     * Apply specific settings as a tree or array of key-value pairs
+     *
+     * @param values
+     * @param is_manual
+     */
+    public applySettings(values: SettingsValues, is_manual: boolean = false) {
+        this.setState({values});
+
+        this.emit(new SettingsChangeEvent({values: values, is_manual}));
+    }
+
+    public getValue(path: string, check_type?: SettingType): SettingValue {
         const [cat_key, key] = this.splitSettingPath(path);
+
+        // check setting type
+        if (check_type) {
+            assert(this.getSetting(cat_key, key).type == check_type);
+        }
 
         // get setting value
         return this.state.values[cat_key][key];
     }
 
-    public setValue(path: string, value: SettingValue): void {
-        const [cat_key, key] = this.splitSettingPath(path);
+    public setValue(path: string, value: SettingValue, is_manual: boolean = false): void {
+        let cat_key, key;
 
-        // set setting value
-        this.state.values[cat_key][key] = value;
+        [cat_key, key, value] = this.setSettingValueState(path, value);
 
-        this.applySettings({[cat_key]: {[key]: value}});
+        this.applySettings({[cat_key]: {[key]: value}}, is_manual);
     }
 
     public isLocked(path: string): boolean {
         const [cat_key, key] = this.splitSettingPath(path);
 
         return !!this.getSetting(cat_key, key).is_locked;
+    }
+
+    /**
+     * Set state for specific key-value pair of settings
+     *
+     * @param path
+     * @param value
+     * @protected
+     */
+    protected setSettingValueState<SV extends SettingValue>(path: string, value: SV): [string, string, SV] {
+        const [cat_key, key] = this.splitSettingPath(path);
+
+        // set setting value
+        this.state.values[cat_key][key] = value;
+
+        // check value type
+        const type = this.getSetting(cat_key, key).type;
+        assert_type(value, type);
+
+        return [cat_key, key, value];
     }
 
     protected splitSettingPath(path: string): [string, string] {
@@ -95,5 +145,8 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
     }
 }
 
-export class SettingsChangeEvent extends ModelEvent<SettingsChangeEvent> {}
 export class SettingsModalEvent extends ModelEvent<SettingsModalEvent> {}
+export class SettingsChangeEvent extends ModelEvent<SettingsChangeEvent> {
+    values: SettingsValues;
+    is_manual: boolean;
+}

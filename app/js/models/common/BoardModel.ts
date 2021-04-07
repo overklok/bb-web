@@ -38,7 +38,8 @@ interface BreadboardModelState extends ModelState {
     snapshot_limit: number;
     snapshot_ttl: number;
     is_connected: boolean;
-    readonly: boolean;
+    is_editable: boolean;
+    is_passive: boolean;
 }
 
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
@@ -59,7 +60,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         snapshot_limit: 1000,
         snapshot_ttl: 30000, // ms
         is_connected: false,
-        readonly: true,
+        is_editable: false,
+        is_passive: false
     }
 
     private last_snapshot_time: number = 0;
@@ -139,6 +141,14 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     public onUserChange(cb: Function) {
         this.__legacy_onuserchange = cb;
     }
+
+    public setPassive(is_passive: boolean) {
+        this.setState({is_passive});
+
+        this.emit(new BoardOptionsEvent({
+            readonly: this.state.is_editable && this.state.is_passive
+        }));
+    }
     
     /**
      * Send meta information about the board (incl. layout name and structure)
@@ -181,8 +191,11 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
     @listen(ChannelsFrom.EditableChanged)
     private setEditable(is_editable: boolean) {
-        this.setState({readonly: !is_editable});
-        this.emit(new BoardOptionsEvent({readonly: !is_editable}));
+        this.setState({is_editable});
+
+        this.emit(new BoardOptionsEvent({
+            readonly: this.state.is_editable && this.state.is_passive
+        }));
     }
 
     /**

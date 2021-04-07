@@ -2,9 +2,10 @@ import isEqual from "lodash/isEqual";
 
 import ModalPresenter from "../../core/presenters/ModalPresenter";
 import {on} from "../../core/base/Presenter";
-import SettingsModel, {SettingsModalEvent} from "../../core/models/SettingsModel";
+import SettingsModel, {SettingsChangeEvent, SettingsModalEvent} from "../../core/models/SettingsModel";
 import {ModalAction} from "../../core/base/view/Nest";
 import {SettingsValues} from "../../core/datatypes/settings";
+import {coverObjects} from "../../core/helpers/functions";
 
 export default class SettingsModalPresenter extends ModalPresenter {
     private mdl: number;
@@ -68,10 +69,10 @@ export default class SettingsModalPresenter extends ModalPresenter {
 
         this.pushModal({
             size: 'sm',
-            content: 'Хотите откатить внесённые в настройки изменения?',
+            content: 'Хотите отменить внесённые изменения?',
             dialog: {
                 label_accept: 'Назад',
-                label_dismiss: 'Откатить',
+                label_dismiss: 'Отменить',
                 is_acceptable: true,
                 is_dismissible: true,
                 on_action: action => {
@@ -94,5 +95,12 @@ export default class SettingsModalPresenter extends ModalPresenter {
 
     public rollbackSettings() {
         this.model.applySettings(this.saved);
+    }
+
+    @on(SettingsChangeEvent)
+    handleModelChange(evt: SettingsChangeEvent) {
+        if (!evt.is_manual) {
+            this.saved = coverObjects(evt.values, this.saved);
+        }
     }
 }
