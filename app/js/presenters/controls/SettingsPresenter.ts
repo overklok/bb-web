@@ -27,7 +27,6 @@ export default class SettingsPresenter extends Presenter<SettingsView.SettingsVi
 
     @on(SettingsChangeEvent)
     handleModelChange() {
-        console.log(this.settings.getState().values);
         this.setViewProps({
             values: this.settings.getState().values
         })

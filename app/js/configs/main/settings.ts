@@ -16,6 +16,21 @@ export default function (allow_demo: boolean) {
                     }
                 }
             ]
+        },
+        board: {
+            title: 'Доска',
+            groups: [
+                {
+                    title: 'Отладка',
+                    settings: {
+                        is_verbose: {
+                            title: 'Показывать подробности',
+                            type: SettingType.Boolean,
+                            default: true,
+                        }
+                    }
+                }
+            ]
         }
     }
 }
