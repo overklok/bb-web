@@ -37,6 +37,12 @@ export namespace SettingsView {
             this.emit(new SettingChangeEvent({path, value}));
         }
 
+        handleCategoryChange(cat_key: string) {
+            this.setState({
+                active_cat_key: cat_key
+            });
+        }
+
         render(): React.ReactNode {
             return <div className="settings">
                 <div className="settings__body">
@@ -48,7 +54,7 @@ export namespace SettingsView {
                             });
 
                             return (
-                                <div key={cat_key} className={klasses}>
+                                <div key={cat_key} className={klasses} onClick={() => this.handleCategoryChange(cat_key)}>
                                     {category.title}
                                 </div>
                             )}
@@ -64,8 +70,10 @@ export namespace SettingsView {
                   category = this.props.config[cat_key];
 
             return (
-                <form className="settings__content form">
+                <form className="settings__content form" key={cat_key}>
                     <h2>{category.title}</h2>
+
+                    <hr />
 
                     {category.groups.map((group, idx) => {
                         return (

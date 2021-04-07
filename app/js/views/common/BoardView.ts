@@ -61,6 +61,10 @@ namespace BoardView {
             this.bb.setReadOnly(readonly);
         }
 
+        setVerbose(verbose: boolean = true) {
+            this.bb.switchVerbose(verbose);
+        }
+
         setRandom(protos: { type: string, properties: any, quantity: number }[],
                   size_mid?: number,
                   size_deviation?: number,

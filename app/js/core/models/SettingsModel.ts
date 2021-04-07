@@ -72,8 +72,8 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
     protected splitSettingPath(path: string): [string, string] {
         const [cat_key, key] = path.split('.');
 
-        if (!this.state.values.hasOwnProperty(cat_key)) throw new Error(`Category ${cat_key} does not exist`);
-        if (!this.state.values[cat_key].hasOwnProperty(key)) throw new Error(`Setting ${path} does not exist`);
+        if (!this.state.values.hasOwnProperty(cat_key)) throw new Error(`Category '${cat_key}' does not exist`);
+        if (!this.state.values[cat_key].hasOwnProperty(key)) throw new Error(`Setting '${path}' does not exist`);
 
         return [cat_key, key];
     }

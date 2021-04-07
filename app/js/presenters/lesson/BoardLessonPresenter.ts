@@ -18,13 +18,16 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         this.settings = this.getModel(SettingsModel);
 
         return {
-            readonly: !this.settings.getValue('general.is_demo')
+            readonly: !this.settings.getValue('general.is_demo'),
+            verbose: this.settings.getValue('board.is_verbose'),
         };
     }
 
     @restore() @on(SettingsChangeEvent)
     private updateSettingsChange() {
+        console.log('ro', !this.settings.getValue('general.is_demo'), 'vbs', this.settings.getValue('board.is_verbose'))
         this.view.setReadOnly(!this.settings.getValue('general.is_demo'));
+        this.view.setVerbose(this.settings.getValue('board.is_verbose') as boolean);
     }
 
     @on(BoardView.ShortCircuitStartEvent)

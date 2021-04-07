@@ -131,9 +131,9 @@ export default class PlateLayer extends Layer {
         for (let plate_data of plates_data) {
             this.addPlate(
                 plate_data.type,
-                plate_data.x,
-                plate_data.y,
-                plate_data.orientation,
+                plate_data.position.cell.x,
+                plate_data.position.cell.y,
+                plate_data.position.orientation,
                 plate_data.id,
                 plate_data.properties,
                 false

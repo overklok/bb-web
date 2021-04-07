@@ -29,6 +29,7 @@ export default class SettingsModalPresenter extends ModalPresenter {
         this.mdl = this.pushModal({
             widget_alias: 'settings',
             size: 'lg',
+            height: '70%',
             is_closable: true,
             is_close_manual: true,
             dialog: {
