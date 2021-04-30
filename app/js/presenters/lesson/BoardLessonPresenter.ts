@@ -18,7 +18,7 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         this.settings = this.getModel(SettingsModel);
 
         return {
-            readonly: !this.settings.getBoolean('general.is_demo'),
+            //readonly: !this.settings.getBoolean('general.is_demo'),
             verbose: this.settings.getBoolean('board.is_verbose'),
         };
     }

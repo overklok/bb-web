@@ -8,9 +8,12 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     public getInitialProps() {
         this.board = this.getModel(BoardModel);
 
+        const board_state = this.board.getState();
+
         return {
             layouts: BoardModel.Layouts,
-            layout_name: this.board.getState().layout_name
+            layout_name: board_state.layout_name,
+            readonly: board_state.is_editable && board_state.is_passive
         }
     }
 
@@ -24,7 +27,7 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
         this.board.setUserPlates(this.view.getPlates());
     }
 
-    @on(BoardOptionsEvent)
+    @restore() @on(BoardOptionsEvent)
     private onOptionsChange(evt: BoardOptionsEvent) {
         this.view.setReadOnly(evt.readonly);
     }
