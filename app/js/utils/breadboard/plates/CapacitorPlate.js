@@ -13,6 +13,7 @@ export default class CapacitorPlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
+            ...super.__defaultProps__,
             [CapacitorPlate.PROP_CAPACITANCE]: 0.001
         }
     }

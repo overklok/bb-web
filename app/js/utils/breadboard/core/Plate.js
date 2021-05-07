@@ -36,6 +36,8 @@ let QUAD_SIZE = QUAD_SIZE_DEFAULT,
  * @abstract
  */
 export default class Plate {
+    static get PROP_INVERTED() {return "inv"}
+
     // Ориентации плашки
     static get Orientations() {return ORIENTATIONS}
     // CSS-класс контейнера плашки
@@ -221,7 +223,9 @@ export default class Plate {
     }
 
     get __defaultProps__() {
-        return {};
+        return {
+            [Plate.PROP_INVERTED]: 0
+        };
     }
 
     __cm_class__() {

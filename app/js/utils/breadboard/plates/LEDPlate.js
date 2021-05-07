@@ -1,7 +1,5 @@
 import Plate from "../core/Plate";
-import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
-import PlateLayer from "../layers/PlateLayer";
 
 const LED_COLOURS = {
     RED: 0,
@@ -21,6 +19,7 @@ export default class LEDPlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
+            ...super.__defaultProps__,
             [LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED
         }
     }

@@ -12,6 +12,7 @@ export default class ResistorPlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
+            ...super.__defaultProps__,
             [ResistorPlate.PROP_RESISTANCE]: 200
         };
     }

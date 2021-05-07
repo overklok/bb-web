@@ -24,6 +24,7 @@ export default class BridgePlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
+            ...super.__defaultProps__,
             [BridgePlate.PROP_LENGTH]: 2
         }
     }

@@ -24,6 +24,7 @@ export default class UnkPlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
+            ...super.__defaultProps__,
             [UnkPlate.PROP_TYPE]: -1
         }
     }

@@ -13,6 +13,7 @@ export default class InductorPlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
+            ...super.__defaultProps__,
             [InductorPlate.PROP_INDUCTANCE]: 100
         }
     }
