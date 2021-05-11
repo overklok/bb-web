@@ -293,12 +293,8 @@ export default class CurrentLayer extends Layer {
         const   aux_point_from  = this.__grid.auxPoint(points.from.x, points.from.y),
                 aux_point_to    = this.__grid.auxPoint(points.to.x, points.to.y);
 
-        console.log(aux_point_to);
-
         const   aux_point = aux_point_to || aux_point_from,
                 to_aux = !!aux_point_to;
-
-        console.log(aux_point);
 
         if (aux_point) {
             const c_arb = to_aux ? this.__grid.cell(points.from.x, points.from.y)
