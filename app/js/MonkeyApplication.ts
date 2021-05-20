@@ -9,7 +9,6 @@ import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
-import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 
@@ -26,12 +25,6 @@ import widgets_config from "./configs/monkey/widgets";
 import ModalModel from "./core/models/ModalModel";
 import TestkitModel from "./models/monkey/TestkitModel";
 import BoardLogModel from "./models/monkey/BoardLogModel";
-import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
-import LayoutView from "./core/views/layout/LayoutView";
-import LayoutPresenter from "./core/presenters/LayoutPresenter";
-import ModalView from "./core/views/modal/ModalView";
-import ModalPresenter from "./core/presenters/ModalPresenter";
-import IEventService from "./core/services/interfaces/IEventService";
 
 class MonkeyApplication extends Application {
     public bb: BoardModel;

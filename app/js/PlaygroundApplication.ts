@@ -52,8 +52,6 @@ class PlaygroundApplication extends Application<PlaygroundApplicationConfig> {
     }
 
     protected setup() {
-        const svc_event = this.instance(IEventService);
-
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             new SocketDatasource('127.0.0.1', 8005),

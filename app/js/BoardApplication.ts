@@ -8,28 +8,29 @@ import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 
+import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
+import HttpDatasource from "./core/base/model/datasources/HttpDatasource";
+import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
+import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";
 
 import BoardPresenter from "./presenters/common/BoardPresenter";
+import ToastPresenter from "./core/presenters/ToastPresenter";
+import DumpSnapshotPresenter from "./presenters/controls/DumpSnapshotPresenter";
 
+import LogModel from "./models/common/LogModel";
 import BoardModel from "./models/common/BoardModel";
+import ModalModel from "./core/models/ModalModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
 import BoardView from "./views/common/BoardView";
+import ToastView from "./core/views/modal/ToastView";
+import DumpSnapshotView from "./views/controls/DumpSnapshotView";
+
+import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
 
 import "../css/global.less";
-import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";
-import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
-import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
-import DumpSnapshotView from "./views/controls/DumpSnapshotView";
-import DumpSnapshotPresenter from "./presenters/controls/DumpSnapshotPresenter";
-import HttpDatasource from "./core/base/model/datasources/HttpDatasource";
-import LogModel from "./models/common/LogModel";
-import ModalModel from "./core/models/ModalModel";
-import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
-import ToastPresenter from "./core/presenters/ToastPresenter";
-import ToastView from "./core/views/modal/ToastView";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;

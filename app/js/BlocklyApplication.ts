@@ -8,13 +8,13 @@ import ViewServiceProvider from "./core/providers/ViewServiceProvider";
 import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 
-import "../css/global.less";
-
-import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
-import BlocklyView from "./views/common/BlocklyView";
 import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import AdminBlocklyPresenter from "./presenters/common/AdminBlocklyPresenter";
 import AdminCodeModel from "./models/common/AdminCodeModel";
+import BlocklyView from "./views/common/BlocklyView";
+import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
+
+import "../css/global.less";
 
 interface BlocklyApplicationConfig extends AppConf {
     all_blocks?: boolean;
