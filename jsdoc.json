@@ -1,0 +1,40 @@
+{
+  "opts": {
+    "template": "./node_modules/better-docs",
+    "tutorials": "./man/pages",
+    "destination": "./doc",
+    "readme": "./man/pages/index.md"
+  },
+  "tags": {
+    "allowUnknownTags": ["optional", "category", "subcategory", "component"]
+  },
+  "plugins": [
+    "plugins/markdown",
+    "node_modules/better-docs/category",
+    "node_modules/better-docs/component",
+    "node_modules/better-docs/typescript",
+    "node_modules/@ckeditor/jsdoc-plugins/lib/export-fixer/export-fixer.js",
+    "node_modules/@ckeditor/jsdoc-plugins/lib/relation-fixer/index.js",
+    "node_modules/@ckeditor/jsdoc-plugins/lib/longname-fixer/longname-fixer.js"
+  ],
+  "source": {
+      "include": ["./src/js", "./src/js/utils/breadboard"],
+      "exclude": ["./src/js/configs/main/settings.ts"],
+      "includePattern": ".+\\.(jsx|js|ts|tsx)?$"
+  },
+  "templates": {
+    "search": true,
+    "default": {
+      "staticFiles": {
+        "include": ["./man/static"]
+      }
+    },
+    "better-docs": {
+      "logo": "images/logo.png",
+      "title": "HTML TITLE",
+      "css": "styles/style.css",
+      "trackingCode": "<script crossorigin src=\"https://unpkg.com/react@17/umd/react.development.js\"></script><script crossorigin src=\"https://unpkg.com/react-dom@17/umd/react-dom.development.js\"></script><script src='https://cdn.jsdelivr.net/npm/enzyme@3.11.0/build/ReactWrapper.js'></script>",
+      "hideGenerator": false
+    }
+  }
+}

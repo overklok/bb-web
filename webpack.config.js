@@ -59,17 +59,17 @@ module.exports = (env, argv) => {
                     use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
                     test: /\.(less|css)/,
                     include: [
-                        path.resolve(__dirname, "app"),
+                        path.resolve(__dirname, "src"),
                     ],
                 },
             ]
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
-            modules: [path.resolve(__dirname, './app'), 'node_modules'],
+            modules: [path.resolve(__dirname, './src'), 'node_modules'],
             alias: {
-                root: path.join(__dirname, 'app'),
-                '~': path.resolve(__dirname, "app"),
+                root: path.join(__dirname, 'src'),
+                '~': path.resolve(__dirname, "src"),
             }
         },
         plugins: [
@@ -112,11 +112,11 @@ function resolveEnvEntries(env) {
 function getEntries(env) {
     // Bundle entries
     let entries = {};
-    if (env.main === true)          entries['main']         = './app/js/MainApplication.ts';
-    if (env.board === true)         entries['board']        = './app/js/BoardApplication.ts';
-    if (env.blockly === true)       entries['blockly']      = './app/js/BlocklyApplication.ts';
-    if (env.monkey === true)        entries['monkey']       = './app/js/MonkeyApplication.ts';
-    if (env.playground === true)    entries['playground']   = './app/js/PlaygroundApplication.ts';
+    if (env.main === true)          entries['main']         = './src/js/MainApplication.ts';
+    if (env.board === true)         entries['board']        = './src/js/BoardApplication.ts';
+    if (env.blockly === true)       entries['blockly']      = './src/js/BlocklyApplication.ts';
+    if (env.monkey === true)        entries['monkey']       = './src/js/MonkeyApplication.ts';
+    if (env.playground === true)    entries['playground']   = './src/js/PlaygroundApplication.ts';
 
     return entries;
 }
@@ -148,7 +148,7 @@ function getHtmlCopyPluginInstances(env) {
     if (env.main === true) {
         htmls = [...htmls,
             new HtmlWebpackPlugin({
-                template: './app/html/main.html',
+                template: './src/html/main.html',
                 inject: 'body',
                 filename: 'main.html'
             }),
@@ -157,7 +157,7 @@ function getHtmlCopyPluginInstances(env) {
     if (env.board === true) {
         htmls = [...htmls,
             new HtmlWebpackPlugin({
-                template: './app/html/board.html',
+                template: './src/html/board.html',
                 inject: 'body',
                 filename: 'board.html'
             }),
@@ -166,7 +166,7 @@ function getHtmlCopyPluginInstances(env) {
     if (env.blockly === true) {
         htmls = [...htmls,
             new HtmlWebpackPlugin({
-                template: './app/html/blockly.html',
+                template: './src/html/blockly.html',
                 inject: 'body',
                 filename: 'blockly.html'
             }),
@@ -175,7 +175,7 @@ function getHtmlCopyPluginInstances(env) {
     if (env.monkey === true) {
         htmls = [...htmls,
             new HtmlWebpackPlugin({
-                template: './app/html/monkey.html',
+                template: './src/html/monkey.html',
                 inject: 'body',
                 filename: 'monkey.html'
             }),
@@ -184,7 +184,7 @@ function getHtmlCopyPluginInstances(env) {
     if (env.playground === true) {
         htmls = [...htmls,
             new HtmlWebpackPlugin({
-                template: './app/html/playground.html',
+                template: './src/html/playground.html',
                 inject: 'body',
                 filename: 'playground.html'
             }),
@@ -287,8 +287,8 @@ function getCopypaths(env, is_dev, no_copy) {
 
     if (env.main === true && dotenv.parsed.PATH_DIST_MAIN) {
         copypaths = [...copypaths,
-            {from: './app/fonts/',          to: './fonts', force: true},
-            {from: './app/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts', force: true},
+            {from: './src/fonts/',          to: './fonts', force: true},
+            {from: './src/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts', force: true},
         ];
     }
 

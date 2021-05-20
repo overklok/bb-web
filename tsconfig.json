@@ -1,4 +1,63 @@
 {
+//  "typedocOptions": {
+//    "entryPoints": ["src/js"],
+//    "out": "doc",
+//    "theme": "pages-plugin",
+//    "readme": "./man/index.md",
+//    "pages": {
+//      "source": "./man",
+//      "groups": [
+//        {
+//          "title": "Getting Started",
+//          "source": "./getting-started",
+//          "pages": [
+//            {
+//              "title": "Introduction",
+//              "source": "./introduction.md"
+//            },
+//            {
+//              "title": "Installation",
+//              "source": "./installation.md"
+//            },
+//            {
+//              "title": "Build & Deployment",
+//              "source": "./build.md"
+//            }
+//          ]
+//        },
+//        {
+//          "title": "Applications",
+//          "source": "./applications",
+//          "pages": [
+//            {
+//              "title": "Applications Overview",
+//              "source": "./overview.md"
+//            }
+//          ]
+//        },
+//        {
+//          "title": "Architecture",
+//          "source": "./architecture",
+//          "pages": [
+//            {
+//              "title": "Core Overview",
+//              "source": "./core-overview.md"
+//            }
+//          ]
+//        },
+//        {
+//          "title": "Development",
+//          "source": "./development",
+//          "pages": [
+//            {
+//              "title": "Development Conventions",
+//              "source": "conventions.md"
+//            }
+//          ]
+//        }
+//      ]
+//    }
+//  },
   "compilerOptions": {
     "paths": {
       "*": [
@@ -23,8 +82,8 @@
     ]
   },
   "include": [
-    "app/js/**/*.ts",
-    "app/js/**/*.tsx"
+    "src/js/**/*.ts",
+    "src/js/**/*.tsx"
   ],
   "exclude": [
       "node_modules"

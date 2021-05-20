@@ -1,0 +1,28 @@
+{
+  "index": {
+    "title": "Introduction"
+  },
+  "gs_index": {
+    "title": "Getting Started",
+    "children": {
+      "gs_installation": {
+        "title": "Installation"
+      },
+      "gs_build": {
+        "title": "Build"
+      },
+      "gs_deployment": {
+        "title": "Deployment"
+      }
+    }
+  },
+  "apps_index": {
+    "title": "Applications"
+  },
+  "arch_index": {
+    "title": "Architecture"
+  },
+  "dev_index": {
+    "title": "Development"
+  }
+}
