@@ -123,8 +123,10 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      */
     public setUserPlates(plates: Plate[]): void {
         this.setState({plates});
-        this.send(ChannelsTo.Plates, plates);
+        this.sendPlates(this.state.plates);
+
         this.emit(new UserPlateEvent({plates}));
+
         this.__legacy_onuserchange && this.__legacy_onuserchange();
     }
 
@@ -212,7 +214,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         if (this.state.layout_name === layout_name) {
             // confirm board data change
             this.setState({layout_confirmed: true});
-            this.send(ChannelsTo.Plates, this.state.plates);
+
+            this.sendPlates(this.state.plates);
         }
     }
 
@@ -256,6 +259,12 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     @listen(ChannelsFrom.Error)
     private receiveError({message, code}: ErrorData) {
         this.emit(new BoardErrorEvent({message, code}));
+    }
+
+    private sendPlates(plates: Plate[]): void {
+        if (this.state.is_editable) {
+            this.send(ChannelsTo.Plates, plates);
+        }
     }
 
     /**
