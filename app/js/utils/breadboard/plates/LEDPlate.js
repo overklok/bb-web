@@ -3,7 +3,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 
 const LED_COLOURS = {
     RED: 0,
-    GREEN: 1
+    GREEN: 1,
+    BLUE: 2
 }
 
 export default class LEDPlate extends LinearPlate {
@@ -31,12 +32,13 @@ export default class LEDPlate extends LinearPlate {
 
         if (colour === 'R') {colour = LEDPlate.COLOURS.RED}
         if (colour === 'G') {colour = LEDPlate.COLOURS.GREEN}
+        if (colour === 'B') {colour = LEDPlate.COLOURS.BLUE}
 
         colour = Number(colour);
 
-        if (colour !== 0 && colour !== 1) {
+        if (colour !== 0 && colour !== 1 && colour !== 2) {
             colour = 0;
-            console.error("Colour of LED must be one of R, G, 0, 1. Fall back to 0");
+            console.error("Colour of LED must be one of R, G, B, 0, 1, 2. Fall back to 0");
         }
 
         this._props[LEDPlate.PROP_COLOUR] = colour;
@@ -49,8 +51,16 @@ export default class LEDPlate extends LinearPlate {
      * @param {string}  orientation ориентация светодиода
      */
     __draw__(position, orientation) {
+        let label;
+
+        switch (this._props[LEDPlate.PROP_COLOUR]) {
+            case LEDPlate.COLOURS.RED:      label = 'R'; break;
+            case LEDPlate.COLOURS.GREEN:    label = 'G'; break;
+            case LEDPlate.COLOURS.BLUE:     label = 'B'; break;
+        }
+
         this._drawPicture();
-        this._drawLabel(this._props[LEDPlate.PROP_COLOUR] === LEDPlate.COLOURS.RED ? 'R' : 'G');
+        this._drawLabel(label);
 
         if (this._params.verbose) {
             this._redrawOutput(this._state.output);
