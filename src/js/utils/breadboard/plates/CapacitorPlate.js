@@ -7,7 +7,7 @@ export default class CapacitorPlate extends LinearPlate {
 
     static get PROP_CAPACITANCE() {return "cap"}
 
-    constructor(container, grid, schematic=false, verbose=false, id, props) {
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
         super(container, grid, schematic, verbose, id, props);
     }
 

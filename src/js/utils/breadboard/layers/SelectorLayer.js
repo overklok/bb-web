@@ -16,6 +16,7 @@ import InductorPlate from "../plates/InductorPlate";
 import RelayPlate from "../plates/RelayPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
 import RGBPlate from "../plates/RGBPlate";
+import ControlsLayer from "js/utils/breadboard/layers/ControlsLayer";
 
 const ITEMS = [
     {
@@ -150,6 +151,8 @@ export default class SelectorLayer extends Layer {
 
         this._items = [];
 
+        this._oncloseclick = this._handleCloseClick.bind(this);
+
         this.hide();
     }
 
@@ -168,29 +171,24 @@ export default class SelectorLayer extends Layer {
         }
 
         this._filterItems();
-
-        document.addEventListener('click', (evt) => this._closeOnClick(evt));
-        document.addEventListener('mousedown', (evt) => this._closeOnClick(evt));
     }
 
     show() {
-        this._container.style.display = 'block';
+        this._container.style.left = `4px`;
     }
 
     hide() {
-        this._container.style.display = 'none';
+        this._container.style.left = `-${this._container.offsetWidth + this._container.offsetLeft}px`;
     }
 
     open() {
-        this._container.style.opacity = '1';
-        setTimeout(() => {this.show(); this._opened = true;}, 100);
+        this.show();
+        document.addEventListener('click', this._oncloseclick);
     }
 
     close() {
-        this._opened = false;
-
-        this._container.style.opacity = 0;
-        setTimeout(() => this.hide(), 100);
+        this.hide();
+        document.removeEventListener('click', this._oncloseclick);
     }
 
     onPlateTake(cb) {
@@ -215,13 +213,19 @@ export default class SelectorLayer extends Layer {
         }
     }
 
-    _closeOnClick(evt) {
+    _handleCloseClick(evt) {
         let el = evt.target;
 
-        /// Определить, является ли элемент, по которому выполнено нажатие, частью слоя
-        while ((el = el.parentElement) && !(el.classList.contains(SelectorLayer.Class))) {}
+        if (el.id === ControlsLayer.MenuButtonId) return;
 
-        if (!el && this._opened) {
+        /// Определить, является ли элемент, по которому выполнено нажатие, частью слоя или кнопкой открытия
+        while (
+            (el = el.parentElement) &&
+            !(el.classList.contains(SelectorLayer.Class)) &&
+            el.id !== ControlsLayer.MenuButtonId
+        ) {}
+
+        if (!el) {
             this.close();
         }
     }
@@ -347,9 +351,6 @@ export default class SelectorLayer extends Layer {
         this._list.appendChild(cell);
 
         title.innerText = settings.title;
-
-        slidectrl_right.innerText = ">";
-        slidectrl_left.innerText = "<";
 
         if (!settings.custom) {
             inp_custom.style.display = "none";

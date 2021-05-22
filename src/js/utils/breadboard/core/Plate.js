@@ -61,7 +61,7 @@ export default class Plate {
     static set LEDSizePreferred(v)          {LED_SIZE = v};
     static set LabelFontSizePreferred(v)    {LABEL_FONT_SIZE = v};
 
-    constructor(container_parent, grid, schematic=false, verbose=false, id=null, props) {
+    constructor(container_parent, grid, schematic=false, verbose=false, id=null, props=null) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }

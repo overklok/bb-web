@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class ButtonPlate extends LinearPlate {
     static get Alias() {return "button"}
 
-    constructor(container, grid, schematic=false, verbose=false, id) {
-        super(container, grid, schematic, verbose, id);
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+        super(container, grid, schematic, verbose, id, props);
 
         this.state.input = true;
     }

@@ -4,10 +4,10 @@ import Cell from "../core/Cell";
 export default class StripPlate extends Plate {
     static get Alias() {return "strip"}
 
-    constructor(container, grid, schematic=false, verbose=false, id, length=1) {
-        super(container, grid, schematic, verbose, id, length);
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+        super(container, grid, schematic, verbose, id, props);
 
-        this._params.extra = Number((length <= 0) ? 1 : length);
+        this._params.extra = Number((length <= 0) ? 1 : props.length);
         this._params.size = {x: this._params.extra, y: 1};
 
         this._leds_svg = [];

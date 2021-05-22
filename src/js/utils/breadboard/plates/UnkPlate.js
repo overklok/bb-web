@@ -7,7 +7,7 @@ export default class UnkPlate extends LinearPlate {
 
     static get PROP_TYPE() {return 'type'}
 
-    constructor(container, grid, schematic=false, verbose=false, id, props) {
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
         super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: this.__length__, y: 1};

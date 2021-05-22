@@ -286,6 +286,7 @@ export default class Breadboard {
      * @param {Array<Object>} plates список плашек, которые должны отображаться на плате
      */
     setPlates(plates) {
+        console.log(plates);
         return this._layers.plate.setPlates(plates);
     }
 

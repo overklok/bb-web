@@ -14,7 +14,7 @@ export default class LEDPlate extends LinearPlate {
 
     static get COLOURS() {return LED_COLOURS}
 
-    constructor(container, grid, schematic=false, verbose=false, id, props) {
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
         super(container, grid, schematic, verbose, id, props);
     }
 

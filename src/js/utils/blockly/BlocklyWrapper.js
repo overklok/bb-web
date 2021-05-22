@@ -383,7 +383,7 @@ export default class BlocklyWrapper {
      *
      * Обновляется список допустимых типов блоков в редакторе
      *
-     * @param {Array<Object>} block_types массив объектов типа {тип_блока: макс. кол-во}
+     * @param {Array<string> | Object<string, number>} block_types массив объектов типа {тип_блока: макс. кол-во}
      */
     updateBlockTypes(block_types) {
         if (this._read_only) return;

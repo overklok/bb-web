@@ -4,8 +4,8 @@ import Cell from "../core/Cell";
 export default class DummyPlate extends Plate {
     static get Alias() {return "dummy"}
 
-    constructor(container, grid, schematic=false, verbose=false, id) {
-        super(container, grid, false, verbose, id);
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+        super(container, grid, false, verbose, id, props);
 
         this._params.size = {x: 1, y: 1};
     }

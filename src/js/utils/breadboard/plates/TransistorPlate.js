@@ -5,8 +5,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 export default class TransistorPlate extends LinearPlate {
     static get Alias() {return "transistor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id) {
-        super(container, grid, schematic, verbose, id);
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+        super(container, grid, schematic, verbose, id, props);
 
         // Относительные точки плашки (координаты в стандартной ориентации)
         // Единица - размер ячейки (в кадом измерении)

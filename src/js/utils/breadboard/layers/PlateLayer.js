@@ -257,10 +257,6 @@ export default class PlateLayer extends Layer {
               {x: px0, y: py0} = plate.pos,
               plate_rels = plate.surface;
 
-        if (!plate.surface) {
-            console.log(plate);
-        }
-
         for (const p of Object.values(this._plates)) {
             const {x: x0, y: y0} = p.pos,
                   p_rels = p.surface;
@@ -268,10 +264,6 @@ export default class PlateLayer extends Layer {
             if (p.id === plate.id) continue;
 
             if ((x0 === px0) && (y0 === py0)) return true;
-
-            if (!p.surface) {
-               console.log(p);
-            }
 
             for (const p_rel of p_rels) {
                 const {x, y} = Plate._orientXYObject(p_rel, p.state.orientation);
@@ -289,28 +281,6 @@ export default class PlateLayer extends Layer {
         }
 
         return false;
-    }
-
-    _isAreaOccupied(from, to) {
-        const [x_begin, x_end] = from.x > to.x ? [from.x, to.x] : [to.x, from.x],
-              [y_begin, y_end] = from.y > to.y ? [from.y, to.y] : [to.y, from.y];
-
-        for (let x = x_begin; x <= x_end; x++) {
-            for (let y = y_begin; y <= y_end; y++) {
-                if (grid[x] && grid[x][y]) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    _getRandomCell(grid_width, grid_height) {
-        return [
-            Math.floor(Math.random() * grid_width + 1),
-            Math.floor(Math.random() * grid_height + 1)
-        ];
     }
 
     /**
@@ -375,6 +345,7 @@ export default class PlateLayer extends Layer {
             return id;
         } else {
             plate_class = PlateLayer.typeToPlateClass(type);
+
             plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, properties);
         }
 
@@ -429,15 +400,13 @@ export default class PlateLayer extends Layer {
         let is_dirty = false;
 
         /// снять возможную метку с локальных плашек
-        for (let plate_id in this._plates) {
+        for (let plate_id of Object.keys(this._plates)) {
             this._plates[plate_id].___touched = undefined;
             this._plates[plate_id].highlightError(false);
         }
 
         /// выполнить основной цикл
-        // console.log(typeof(plates));
         for (let plate of plates) {
-            // console.log(plate);
             /// если плашки нет, пропустить итерацию
             if (!plate) continue;
 

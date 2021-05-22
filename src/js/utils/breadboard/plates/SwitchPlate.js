@@ -4,8 +4,8 @@ import ButtonPlate from "./ButtonPlate";
 export default class SwitchPlate extends ButtonPlate {
     static get Alias() {return "switch"}
 
-    constructor(container, grid, schematic=false, verbose=false, id) {
-        super(container, grid, schematic, verbose, id);
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+        super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: 3, y: 2};
 

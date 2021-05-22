@@ -12,6 +12,8 @@ const LOGO_COLOR_DEFAULT    = "#000000";
 export default class ControlsLayer extends Layer {
     static get Class() {return "bb-layer-controls"}
 
+    static get MenuButtonId() {return "bb-btn-menu"}
+
     constructor(container, grid, schematic=false) {
         super(container, grid, schematic);
 
@@ -60,7 +62,7 @@ export default class ControlsLayer extends Layer {
     compose() {
         this._logogroup = this._container.group().id("logogroup");
         this._menugroup = this._container.group();
-        this._buttongroup = this._container.nested();
+        this._buttongroup = this._container.nested().id(ControlsLayer.MenuButtonId);
 
         this._drawLogo();
         this._drawMenuButton();

@@ -5,8 +5,8 @@ import ButtonPlate from "./ButtonPlate";
 export default class TButtonPlate extends ButtonPlate {
     static get Alias() {return "button_t"}
 
-    constructor(container, grid, schematic=false, verbose=false, id) {
-        super(container, grid, schematic, verbose, id);
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+        super(container, grid, schematic, verbose, id, props);
     }
 
     /**

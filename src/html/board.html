@@ -22,26 +22,27 @@
     document.getElementById("version").innerText = window.app.version;
 
     // setInterval(() => {
-        window.app.bb.setElectronics({
-            threads: [
-                {"from": {"x": 1, "y": 1}, "to": {"x": 1, "y": 5}, "weight": "8.25E-01"},
-                {"from": {"x": -1, "y": 0}, "to": {"x": 1, "y": 0}, "weight": "8.25E-01"},
-                {"from": {"x": 1, "y": 6}, "to": {"x": 1, "y": 7}, "weight": "4.77E-17"},
-                {"from": {"x": 1, "y": 6}, "to": {"x": 1, "y": 9}, "weight": "8.25E-01"},
-                {"from": {"x": 1, "y": 10}, "to": {"x": 1, "y": 14}, "weight": "8.25E-01"},
-                {"from": {"x": 1, "y": 15}, "to": {"x": -1, "y": 15}, "weight": "8.25E-01"}
-            ],
-            elements: [],
-            arduino_pins: [],
-        });
+    //     window.app.bb.setElectronics({
+    //         threads: [
+    //             {"from": {"x": 1, "y": 1}, "to": {"x": 1, "y": 5}, "weight": "8.25E-01"},
+    //             {"from": {"x": -1, "y": 0}, "to": {"x": 1, "y": 0}, "weight": "8.25E-01"},
+    //             {"from": {"x": 1, "y": 6}, "to": {"x": 1, "y": 7}, "weight": "4.77E-17"},
+    //             {"from": {"x": 1, "y": 6}, "to": {"x": 1, "y": 9}, "weight": "8.25E-01"},
+    //             {"from": {"x": 1, "y": 10}, "to": {"x": 1, "y": 14}, "weight": "8.25E-01"},
+    //             {"from": {"x": 1, "y": 15}, "to": {"x": -1, "y": 15}, "weight": "8.25E-01"}
+    //         ],
+    //         elements: [],
+    //         arduino_pins: [],
+    //     });
     // }, 1000);
 
-    // window.app.bb.forcePlates([
-    //     {position: {cell: {x: 0, y: 0}, orientation: 'north'}, type: 'bridge'},
+    window.app.bb.setPlates([
+        {position: {cell: {x: 0, y: 0}, orientation: 'west'}, type: 'rgb'},
+        {position: {cell: {x: 0, y: 1}, orientation: 'west'}, type: 'rgb', properties: {inv: 1}},
     //     {position: {cell: {x: 0, y: 5}, orientation: 'north'}, type: 'bridge'},
     //     {position: {cell: {x: 0, y: 9}, orientation: 'north'}, type: 'bridge'},
     //     {position: {cell: {x: 0, y: 14}, orientation: 'north'}, type: 'bridge'}
-    // ]);
+    ]);
 </script>
 </body>
 </html>

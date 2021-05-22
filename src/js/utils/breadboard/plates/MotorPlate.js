@@ -4,8 +4,8 @@ import Plate from "../core/Plate";
 export default class MotorPlate extends LinearPlate {
     static get Alias() {return "motor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id) {
-        super(container, grid, schematic, verbose, id);
+    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+        super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: 2, y: 1};
     }
