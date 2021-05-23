@@ -1,7 +1,7 @@
 import Cell from "./Cell";
 import Grid from "../core/Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
-import {coverObjects, getCursorPoint} from "./extras/helpers";
+import {coverObjects} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
 
 function mod(n, m) {
@@ -126,7 +126,6 @@ export default class Plate {
         /// Обработчики событий
         this._callbacks = {
             change: () => {},           // изменения плашки
-            ctxmenuitemclick: () => {}, // нажатия на пункт контекстного меню
             mousedown: () => {},
             mousewheel: () => {},
             dragstart: () => {},
@@ -137,9 +136,6 @@ export default class Plate {
         this._dragging = false;
         /// Отрисована ли была плашка
         this._drawn = false;
-
-        this._ctxmenu = new (this.__cm_class__())(this._container, this.__grid, {id: this._id, schematic: this._params.schematic});
-        this._ctxmenu.onItemClick((alias, value) => {this._callbacks.ctxmenuitemclick(alias, value)});
 
         this._group.mousedown((evt) => {this._callbacks.mousedown(evt)});
 
@@ -409,8 +405,6 @@ export default class Plate {
             this._beforeReposition();
         }
 
-        if (this._ctxmenu.active) {return}
-
         this._state.cell = cell;
 
         let pos = this._getPositionAdjusted(cell);
@@ -457,7 +451,6 @@ export default class Plate {
      */
     rotate(orientation, suppress_events=false, prevent_overflow=true) {
         if (this._dragging) return;
-        if (this._ctxmenu.active) {return}
 
         if (orientation === this._state.orientation) {return}
 
@@ -640,38 +633,6 @@ export default class Plate {
         if (!cb) {this._callbacks.mousewheel = () => {}; return}
 
         this._callbacks.mousewheel = cb;
-    }
-
-    /**
-     * Установить обработчик нажатия на пункт контекстного меню плашки
-     *
-     * @param {function} cb обработчик нажатия на пункт контекстного меню плашки.
-     */
-    onContextMenuItemClick(cb) {
-        if (!cb) {this._callbacks.ctxmenuitemclick = () => {}; return}
-
-        this._callbacks.ctxmenuitemclick = cb;
-    }
-
-    /**
-     * Отобразить контекстное меню плашки
-     *
-     * @param {MouseEvent}      evt         событие нажатия кнопки мыши
-     * @param {HTMLElement}     svg_main    родительский SVG-узел
-     */
-    showContextMenu(evt, svg_main) {
-        if (this._dragging) return;
-
-        let cursor_point = getCursorPoint(svg_main, evt.clientX, evt.clientY);
-
-        this._ctxmenu.draw(cursor_point, true, [this._state.input]);
-    }
-
-    /**
-     * Скрыть контекстное меню плашки
-     */
-    hideContextMenu() {
-        this._ctxmenu.dispose();
     }
 
     /**

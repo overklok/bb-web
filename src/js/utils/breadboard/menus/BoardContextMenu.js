@@ -13,8 +13,8 @@ export default class BoardContextMenu extends ContextMenu {
     static get CMI_MOD_VERBOS() {return "cmi_mod_vbs"}
     static get CMI_MOD_VERBOS_INP() {return "cmi_mod_vbs_inp"}
 
-    constructor(container, grid, item_height) {
-        super(container, grid, item_height);
+    constructor() {
+        super();
 
         this._items_data = [
             {
@@ -71,12 +71,6 @@ export default class BoardContextMenu extends ContextMenu {
         ];
 
         this._verbose_on = false;
-    }
-
-    addItem(alias, label, active=true) {
-        this._items_data.push({
-            alias, label, active
-        });
     }
 
     _beforeVerboseClick() {

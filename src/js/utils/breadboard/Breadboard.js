@@ -3,6 +3,7 @@ import canvg from 'canvg';
 import { saveAs } from 'file-saver';
 
 import Grid from "./core/Grid";
+import MenuLayer from "./layers/MenuLayer";
 import LabelLayer from "./layers/LabelLayer";
 import PlateLayer from "./layers/PlateLayer";
 import RegionLayer from "./layers/RegionLayer";
@@ -16,6 +17,7 @@ import SelectorLayer from "./layers/SelectorLayer";
 import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 import {layoutToBoardInfo} from "./core/extras/board_info";
 import {buildGrid} from "./core/extras/helpers";
+
 
 require("./styles/main.css");
 
@@ -107,7 +109,6 @@ export default class Breadboard {
         // this._layers.controls.toggle(!on);
         // this._layers.current.toggle(!on);
         this._layers.controls.toggleButtonDisplay(!on);
-        this._layers.controls.toggleLogoActive(!on, false);
     }
 
     getPlates() {
@@ -478,8 +479,10 @@ export default class Breadboard {
         let plate       = this._brush.nested(); // плашки
         let controls    = this._brush.nested(); // органы управления
         let selector    = document.createElement("div"); // органы управления
+        let menu        = document.createElement("div"); // органы управления
 
         this._div_wrap.appendChild(selector);
+        this._div_wrap.appendChild(menu);
 
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed, true);
@@ -489,6 +492,7 @@ export default class Breadboard {
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
+        this._layers.menu       = new MenuLayer(menu, this.__grid);
 
         this._layers.background.setDomainConfig(this._layout.domains);
         this._layers.controls.setLayoutConfig(this._layout.controls);
@@ -497,23 +501,15 @@ export default class Breadboard {
         this._layers.label.setLabelStyle(this._layout.label_style);
 
         /// внутренняя компоновка каждого слоя
-        this._layers.background.compose(true);
-        this._layers.label.compose();
-        this._layers.current.compose();
-        this._layers.plate.compose();
-        this._layers.region.compose();
-        this._layers.controls.compose();
-        this._layers.selector.compose();
+        for (const layer of Object.values(this._layers)) {
+            layer.compose();
+            layer.onContextMenuCall(this._layers.menu.showMenu);
+        }
 
         /// включение / отключение режима только чтения
         this._setLayersReadOnly(this._options.readOnly);
         this._attachControlsEvents();
         this._attachNotificationEvents();
-
-        /// выполнить нажатие вручную, если требуется показать органы управления при запуске
-        //if (this._options.showControlsDefault) {
-            //this._layers.background.clickLogo();
-        //}
     }
 
     /**
@@ -523,8 +519,6 @@ export default class Breadboard {
      */
     _setLayersReadOnly(readOnly) {
         this._layers.plate.setEditable(!readOnly);
-        this._layers.controls.toggleLogoActive(!readOnly);
-        this._layers.controls.setVisibilityBlocking(readOnly);
         this._layers.controls.setVisibility(!readOnly);
 
         /// если не режим только чтения, подключить обработчик изменения состояния платы
@@ -604,7 +598,7 @@ export default class Breadboard {
         });
 
         /// нажатие на пункт глобального контекстного меню (платы)
-        this._layers.controls.onContextMenuItemClick((alias, value) => {
+        this._layers.menu.onContextMenuItemClick((item_id, alias, value) => {
             switch (alias) {
                 case BoardContextMenu.CMI_SNAPSH_SVG:
                     this._saveToImage();
@@ -632,6 +626,10 @@ export default class Breadboard {
                     break;
             }
 
+            if (item_id != null) {
+                this._layers.plate.handlePlateContextMenuItemClick(item_id, alias, value);
+            }
+
             for (const layout_alias of Object.keys(this._layouts)) {
                 if (alias === `layout-${layout_alias}`) {
                     this.setLayout(layout_alias);
@@ -641,7 +639,7 @@ export default class Breadboard {
 
         /// переопределить пункты меню, определяющие разметку
         for (const [alias, layout] of Object.entries(this._layouts)) {
-            this._layers.controls.addMenuItem(`layout-${alias}`, `Разметка: ${alias}`);
+            this._layers.controls.addContextMenuItem(`layout-${alias}`, `Разметка: ${alias}`);
         }
 
         /// начало перетаскивания плашки

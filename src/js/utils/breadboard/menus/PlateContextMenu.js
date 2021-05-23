@@ -8,14 +8,14 @@ export default class PlateContextMenu extends ContextMenu {
     static get CMI_ROTCCW() {return "cmi_rccw"}
     static get CMI_DUPLIC() {return "cmi_dupl"}
 
-    constructor(container, grid, extra, item_height) {
-        super(container, grid, item_height);
+    constructor(plate_id) {
+        super(plate_id);
 
-        let plate_naming = extra.schematic ? 'Элемент' : 'Плашка';
+        let plate_naming = 'Плашка';
 
         this._items_data = [
             {
-                label: `${plate_naming} #${extra.id}`,
+                label: `${plate_naming} #${plate_id}`,
                 active: false
             },
             {

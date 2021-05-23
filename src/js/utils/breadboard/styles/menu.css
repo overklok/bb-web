@@ -1,0 +1,63 @@
+.bb-layer-menu {
+    display: block;
+
+    position: absolute;
+
+    top: 0;
+}
+
+.bb-menu {
+    background: white;
+    position: absolute;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 4px;
+}
+
+.bb-menu-item {
+    padding: 4px;
+
+    cursor: pointer;
+
+    white-space: pre;
+}
+
+.bb-menu-item:hover {
+    background: #e0ffef;
+}
+
+.bb-menu-item_disabled {
+    background: #beffe3;
+    font-weight: bold;
+
+    pointer-events: none;
+}
+
+.bb-menu-item_accepted {
+    fill: #0f0fff;
+	-webkit-animation: flash linear 80ms infinite;
+	animation: flash linear 80ms infinite;
+}
+
+.bb-menu-item-shortcut {
+    font-weight: bold;
+    font-style: italic;
+    margin: 4px;
+    padding: 2px;
+    background-color: #d1d1d1;
+    border-radius: 4px;
+}
+
+.bb-menu-item-input {
+    margin: 0 6px;
+}
+
+@-webkit-keyframes flash {
+	0% { opacity: 1; }
+	50% { opacity: .1; }
+	100% { opacity: 1; }
+}
+@keyframes flash {
+	0% { opacity: 1; }
+	50% { opacity: .1; }
+	100% { opacity: 1; }
+}

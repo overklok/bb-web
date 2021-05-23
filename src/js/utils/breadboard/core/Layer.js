@@ -15,6 +15,8 @@ export default class Layer {
         this.__schematic = schematic;
         this.__detailed = detailed;
         this.__verbose = verbose;
+
+        this._onctxmenucall = undefined;
     }
 
     /**
@@ -39,5 +41,25 @@ export default class Layer {
         } else {
             this.hide();
         }
+    }
+
+    onContextMenuCall(cb) {
+        this._onctxmenucall = cb;
+    }
+
+    /**
+     *
+     * @param menu
+     * @param position
+     * @param inputs
+     *
+     * @protected
+     */
+    _callContextMenu(menu, position, inputs) {
+        this._onctxmenucall && this._onctxmenucall(menu, position, inputs);
+    }
+
+    _clearContextMenus() {
+        this._onctxmenucall && this._onctxmenucall();
     }
 }

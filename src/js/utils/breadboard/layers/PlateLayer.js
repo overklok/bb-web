@@ -113,6 +113,12 @@ export default class PlateLayer extends Layer {
 
         /// Последняя позиция перемещения курсора
         this._cursor_point_mousedown = undefined;
+
+        this._handleKey = this._handleKey.bind(this);
+        this._handleClick = this._handleClick.bind(this);
+        this._handleMouseUp = this._handleMouseUp.bind(this);
+        this._handleMouseMove = this._handleMouseMove.bind(this);
+        this._handleContextMenu = this._handleContextMenu.bind(this);
     }
 
     compose() {
@@ -169,7 +175,7 @@ export default class PlateLayer extends Layer {
     getSerializedPlates() {
         let data = [];
 
-        for (let plate_id in this._plates) {
+        for (let plate_id of Object.keys(this._plates)) {
             let plate = this._plates[plate_id];
 
             data.push(plate.serialize());
@@ -312,7 +318,7 @@ export default class PlateLayer extends Layer {
         let plate_point = getCursorPoint(this._container.node, plate_x, plate_y);
 
         plate.center_to_point(plate_point.x, plate_point.y);
-        this._onPlateMouseDown({which: 1}, plate);
+        this._handlePlateMouseDown({which: 1}, plate);
         this.selectPlate(plate);
     }
 
@@ -577,10 +583,10 @@ export default class PlateLayer extends Layer {
             this._plate_selected = null;     // удалить ссылку на выделенный элемент
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
 
-            document.removeEventListener('click', this._onClick(), false);
-            document.removeEventListener('keydown', this._onKey(), false);
-            document.removeEventListener('keyup',   this._onKey(), false);
-            document.removeEventListener('contextmenu', this._onContextMenu(), false);
+            document.removeEventListener('click', this._handleClick, false);
+            document.removeEventListener('keydown', this._handleKey, false);
+            document.removeEventListener('keyup',   this._handleKey, false);
+            document.removeEventListener('contextmenu', this._handleContextMenu, false);
 
             for (let plate_id in this._plates) {
                 let plate = this._plates[plate_id];
@@ -601,10 +607,10 @@ export default class PlateLayer extends Layer {
             this._attachEventsEditable(plate);
         }
 
-        document.addEventListener('click', this._onClick(), false);
-        document.addEventListener('keydown', this._onKey(), false);
-        document.addEventListener('keyup',   this._onKey(), false);
-        document.addEventListener('contextmenu', this._onContextMenu(), false);
+        document.addEventListener('click', this._handleClick, false);
+        document.addEventListener('keydown', this._handleKey, false);
+        document.addEventListener('keyup',   this._handleKey, false);
+        document.addEventListener('contextmenu', this._handleContextMenu, false);
 
         return true;
     }
@@ -623,19 +629,15 @@ export default class PlateLayer extends Layer {
 
         /// Когда на плашку нажали кнопкой мыши
         plate.container.mousedown(evt => {
+            evt.preventDefault();
+
             if (evt.target.classList.contains(ContextMenu.ItemClass)) return;
             if (evt.target.classList.contains(ContextMenu.ItemInputClass)) return;
 
             this.selectPlate(plate);
 
             if (evt.which === 1) {
-                this._onPlateMouseDown(evt, this._plate_selected);
-            }
-
-            if (evt.which === 3) {
-                plate.showContextMenu(evt, this._container.node);
-            } else {
-                plate.hideContextMenu();
+                this._handlePlateMouseDown(evt, this._plate_selected);
             }
         });
     }
@@ -645,8 +647,6 @@ export default class PlateLayer extends Layer {
         if (this._plate_selected && plate !== this._plate_selected) {
             /// Снять её выделение
             this._plate_selected.deselect();
-            /// Убрать контекстное меню
-            this._plate_selected.hideContextMenu();
             /// Отключить её события
             this.setPlateEditable(plate, false);
             this._plate_selected.onChange(null);
@@ -655,7 +655,6 @@ export default class PlateLayer extends Layer {
         /// Обрабатывать её события
         this.setPlateEditable(plate);
         plate.onChange(data => this._callbacks.change(data));
-        plate.onContextMenuItemClick((alias, value) => {this._onPlateContextMenuItemClick(alias, value)});
         plate.onDragFinish(() => this._onPlateDragFinish(plate));
         plate.onDragStart(() => {
             this._onPlateDragStart(plate);
@@ -679,7 +678,7 @@ export default class PlateLayer extends Layer {
         plate.setEditable(editable);
 
         if (editable) {
-            plate.onMouseDown((evt) => this._onPlateMouseDown(evt, plate));
+            plate.onMouseDown((evt) => this._handlePlateMouseDown(evt, plate));
             plate.onMouseWheel((evt) => this._onPlateMouseWheel(evt, plate));
         } else {
             plate.onMouseDown(null);
@@ -697,42 +696,31 @@ export default class PlateLayer extends Layer {
      *
      * @private
      */
-    _onClick() {
-        if (this._onclick) {
-            return this._onclick;
+    _handleClick(evt) {
+        let el = evt.target;
+
+        /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
+        while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
+
+        /// Если не попали по плашке, но есть выделенная плашка
+        if (!el && this._plate_selected) {
+            /// Снять выделение
+            this._plate_selected.deselect();
+
+            /// Отключить её события
+            this.setPlateEditable(this._plate_selected, false);
+            this._plate_selected.onChange(null);
+
+            this._plate_selected = null;
         }
-
-        this._onclick = (evt) => {
-            let el = evt.target;
-
-            /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
-            while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
-
-            /// Если не попали по плашке, но есть выделенная плашка
-            if (!el && this._plate_selected) {
-                /// Снять выделение
-                this._plate_selected.deselect();
-                /// Убрать контекстное меню
-                this._plate_selected.hideContextMenu();
-
-                /// Отключить её события
-                this.setPlateEditable(this._plate_selected, false);
-                this._plate_selected.onChange(null);
-                this._plate_selected.onContextMenuItemClick(null);
-
-                this._plate_selected = null;
-            }
-        };
-
-        return this._onclick;
     }
 
-    _onPlateMouseDown(evt, plate) {
+    _handlePlateMouseDown(evt, plate) {
         if (evt.which === 1 && !this._plate_dragging) {
             plate.rearrange();
 
-            document.body.addEventListener('mousemove', this._onMouseMove(), false);
-            document.body.addEventListener('mouseup', this._onMouseUp(), false);
+            document.body.addEventListener('mousemove', this._handleMouseMove, false);
+            document.body.addEventListener('mouseup', this._handleMouseUp, false);
 
             this._cursor_point_mousedown = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
 
@@ -741,44 +729,28 @@ export default class PlateLayer extends Layer {
         }
     }
 
-    _onMouseMove() {
-        if (this._onmousemove) {
-            return this._onmousemove;
+    _handleMouseMove(evt) {
+        let cursor_point = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+
+        let dx = cursor_point.x - this._cursor_point_mousedown.x;
+        let dy = cursor_point.y - this._cursor_point_mousedown.y;
+
+        this._cursor_point_mousedown = cursor_point;
+
+        if (dx !== 0 || dy !== 0) {
+            this._plate_dragging.dmove(dx, dy);
         }
-
-        this._onmousemove = (evt) => {
-            let cursor_point = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
-
-            let dx = cursor_point.x - this._cursor_point_mousedown.x;
-            let dy = cursor_point.y - this._cursor_point_mousedown.y;
-
-            this._cursor_point_mousedown = cursor_point;
-
-            if (dx !== 0 || dy !== 0) {
-                this._plate_dragging.dmove(dx, dy);
-            }
-        };
-
-        return this._onmousemove;
     }
 
-    _onMouseUp() {
-        if (this._onmouseup) {
-            return this._onmouseup;
+    _handleMouseUp(evt) {
+        if (evt.which === 1) {
+            document.body.removeEventListener('mousemove', this._handleMouseMove, false);
+            document.body.removeEventListener('mouseup', this._handleMouseUp, false);
+
+            // Snap & release
+            this._plate_dragging.snap();
+            this._plate_dragging = undefined;
         }
-
-        this._onmouseup = (evt) => {
-            if (evt.which === 1) {
-                document.body.removeEventListener('mousemove', this._onMouseMove(), false);
-                document.body.removeEventListener('mouseup', this._onMouseUp(), false);
-
-                // Snap & release
-                this._plate_dragging.snap();
-                this._plate_dragging = undefined;
-            }
-        };
-
-        return this._onmouseup;
     }
 
     _onPlateMouseWheel(evt, plate) {
@@ -798,27 +770,21 @@ export default class PlateLayer extends Layer {
      *
      * @private
      */
-    _onContextMenu() {
-        if (this._oncontextmenu) {
-            return this._oncontextmenu;
-        }
-
+    _handleContextMenu(evt) {
         // ie 9+ only
-        this._oncontextmenu = (evt) => {
-            let el = evt.target;
+        let el = evt.target;
 
-            /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
-            while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
+        /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
+        while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
 
-            /// Если элемент является частью плашки
-            if (el) {
-                evt.preventDefault();
-            } else if (this._plate_selected) {
-                this._plate_selected.hideContextMenu();
-            }
-        };
+        /// Если элемент является частью плашки
+        if (el) {
+            evt.preventDefault();
+            const plate = this._plate_selected;
 
-        return this._oncontextmenu;
+            const ctxmenu = new (plate.__cm_class__())(plate.id);
+            this._callContextMenu(ctxmenu, {x: evt.clientX, y: evt.clientY}, [plate.state.input]);
+        }
     }
 
     /**
@@ -827,94 +793,92 @@ export default class PlateLayer extends Layer {
      * Если обработчик события был сгенерирован ранее, возвращается точно тот же обработчик.
      * Это можно использовать для открепления обработчика с помощью функции removeEventListener.
      *
-     * @returns {function} обработчик события нажатия клавиши
-     *
      * @private
      */
-    _onKey() {
-        if (this._onkey) {
-            return this._onkey;
-        }
+    _handleKey(evt) {
+        const keydown = evt.type === 'keydown';
 
-        /// Когда нажата кнопка клавиатуры
-        this._onkey = (evt) => {
-            const keydown = evt.type === 'keydown';
+        /// Если есть выделенная плашка
+        if (this._plate_selected) {
+            /// Убрать контекстное меню
+            this._clearContextMenus();
 
-            if (this._plate_selected) {
-                /// Если есть выделенная плашка
-                if (keydown) {
-                    switch (evt.code) {
-                        case "BracketLeft":
-                            this._plate_selected.rotateClockwise();
-                            evt.preventDefault();
-                            break;
-                        case "BracketRight":
-                            this._plate_selected.rotateCounterClockwise();
-                            evt.preventDefault();
-                            break;
-                        case "ArrowLeft":
-                            this._plate_selected.shift(-1, 0);
-                            evt.preventDefault();
-                            break;
-                        case "ArrowRight":
-                            this._plate_selected.shift(1, 0);
-                            evt.preventDefault();
-                            break;
-                        case "ArrowUp":
-                            this._plate_selected.shift(0, -1);
-                            evt.preventDefault();
-                            break;
-                        case "ArrowDown":
-                            this._plate_selected.shift(0, 1);
-                            evt.preventDefault();
-                            break;
-                        case "KeyD":
-                            this._duplicatePlate(this._plate_selected);
-                            evt.preventDefault();
-                            break;
-                        case "Delete":
-                            /// Удалить её
-                            this.removePlate(this._plate_selected.id);
-                            this._plate_selected = null;
-                            evt.preventDefault();
-                            break;
-                    }
+            if (keydown) {
+                switch (evt.code) {
+                    case "BracketLeft":
+                        this._plate_selected.rotateClockwise();
+                        evt.preventDefault();
+                        break;
+                    case "BracketRight":
+                        this._plate_selected.rotateCounterClockwise();
+                        evt.preventDefault();
+                        break;
+                    case "ArrowLeft":
+                        this._plate_selected.shift(-1, 0);
+                        evt.preventDefault();
+                        break;
+                    case "ArrowRight":
+                        this._plate_selected.shift(1, 0);
+                        evt.preventDefault();
+                        break;
+                    case "ArrowUp":
+                        this._plate_selected.shift(0, -1);
+                        evt.preventDefault();
+                        break;
+                    case "ArrowDown":
+                        this._plate_selected.shift(0, 1);
+                        evt.preventDefault();
+                        break;
+                    case "KeyD":
+                        this._duplicatePlate(this._plate_selected);
+                        evt.preventDefault();
+                        break;
+                    case "Delete":
+                        /// Удалить её
+                        this.removePlate(this._plate_selected.id);
+                        this._plate_selected = null;
+                        evt.preventDefault();
+                        break;
                 }
             }
+        }
 
-            this._plate_selected && this._plate_selected.handleKeyPress(evt.code, keydown);
-        };
-
-        return this._onkey;
+        this._plate_selected && this._plate_selected.handleKeyPress(evt.code, keydown);
     }
 
     /**
      * Обработать нажатие на пункт контекстного меню текущей плашки
      *
+     * @param plate_id
      * @param {string} action_alias кодовое название пункта меню
-     *
-     * @private
+     * @param value
      */
-    _onPlateContextMenuItemClick(action_alias, value) {
+    handlePlateContextMenuItemClick(plate_id, action_alias, value) {
+        if (!this._plates[plate_id]) return;
+
+        const plate = this._plates[plate_id];
+
+        console.log(plate, action_alias, value);
+
         switch (action_alias) {
             case PlateContextMenu.CMI_REMOVE: {
-                this.removePlate(this._plate_selected.id);
+                this.removePlate(plate.id);
                 break;
             }
             case PlateContextMenu.CMI_ROTCW: {
-                this._plates[this._plate_selected.id].rotateClockwise();
+                this._plates[plate.id].rotateClockwise();
                 break;
             }
             case PlateContextMenu.CMI_ROTCCW: {
-                this._plates[this._plate_selected.id].rotateCounterClockwise();
+                this._plates[plate.id].rotateCounterClockwise();
                 break;
             }
             case PlateContextMenu.CMI_DUPLIC: {
-                this._duplicatePlate(this._plate_selected);
+                this._duplicatePlate(plate);
                 break;
             }
             case PlateContextMenu.CMI_INPUT: {
-                this._plate_selected.setState({input: value});
+                plate.setState({input: value});
                 break;
             }
         }

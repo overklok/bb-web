@@ -1,120 +1,78 @@
-const ITEM_TEXT_PADDING = 10;
-const ITEM_HEIGHT_DEFAULT = 50;
-const ITEM_INPUT_WIDTH = 60;
-
 export default class ContextMenu {
     // CSS-класс контейнера контекстного меню
-    static get Class() {return "bb-cm"}
+    static get Class() {return "bb-menu"}
     // CSS-класс фона элемента контекстного меню
-    static get ItemClass() {return "bb-cm-item"}
+    static get ItemClass() {return "bb-menu-item"}
     // CSS-класс фона неактивного элемента контекстного меню
-    static get ItemDisabledClass() {return "bb-cm-item-disabled"}
-    // CSS-класс текста элемента контекстного меню
-    static get ItemTextClass() {return "bb-cm-item-text"}
-    // CSS-класс текста неактивного элемента контекстного меню
-    static get ItemDisabledTextClass() {return "bb-cm-item-disabled-text"}
-    // CSS-класс поля ввода элемента контекстного меню
-    static get ItemInputClass() {return "bb-cm-item-input"}
+    static get ItemDisabledClass() {return "bb-menu-item_disabled"}
+    static get ItemAcceptedClass() {return "bb-menu-item_accepted"}
+    static get ItemInputClass() {return "bb-menu-item-input"}
+    static get ItemTextClass() {return "bb-menu-item-text"}
+    static get ItemShortcutClass() {return "bb-menu-item-shortcut"}
 
-    constructor(container, grid, item_height=ITEM_HEIGHT_DEFAULT) {
-        this._container_parent = container;
-        this._container = container.group().move(0, 0);
-        this.__grid = grid;
+    constructor(item_id) {
+        this._item_id = item_id;
+        this._container = undefined;
 
-        this._item_height = item_height;
         this._items_data = [];
-        this._items = [];
-
-        this._active = false;
-
-        this._callbacks = {
-            itemclick: () => {}
-        };
 
         this._size = {
             x: 0,
             y: 0,
         };
+
+        this._itemclick = undefined;
     }
 
-    get active() {
-        return this._active;
+    addItem(alias, label, active=true) {
+        this._items_data.push({
+            alias, label, active
+        });
+    }
+
+    get container() {
+        return this._container;
     }
 
     onItemClick(cb) {
-        if (!cb) {cb = () => {}}
-
-        this._callbacks.itemclick = cb;
+        this._itemclick = cb;
     }
 
-    draw(cursor_point, use_offset=false, input_values=[]) {
-        if (this._active) {
-            this.dispose();
-        }
+    draw(position, inputs=[]) {
+        this._container = document.createElement('div');
+        this._container.classList.add(ContextMenu.Class);
 
-        let cell = this.__grid.cell(0,0);
+        this._drawItems(inputs);
 
-        let nested = this._container.nested();
-        nested.addClass(ContextMenu.Class);
+        this._container.style.left = `${position.x}px`;
+        this._container.style.top = `${position.y}px`;
 
-        this._drawItems(nested, input_values);
-
-        let offset = {
-            x: use_offset ? (cell.size.x + this.__grid.gap.x) - this.__grid.pos.x : 0,
-            y: use_offset ? (cell.size.y * 2 + this.__grid.gap.y) - this.__grid.pos.y : 0
-        };
-
-        let pos = {
-            x: cursor_point.x - this._container_parent.x() - offset.x,
-            y: cursor_point.y - this._container_parent.y() - offset.y
-        };
-
-        nested.move(pos.x, pos.y);
-
-        let pos_global = {
-            x: cursor_point.x - offset.x + this._size.x,
-            y: cursor_point.y - offset.y + this._size.y,
-        };
-
-        if (pos_global.x > this.__grid.size.x + this.__grid.pos.x) {nested.dx(-this._size.x)}
-        if (pos_global.y > this.__grid.size.y + this.__grid.pos.y) {nested.dy(-this._size.y)}
-
-        nested.addClass('bb-cm-fade-in');
-
-        this._active = true;
+        return this._container;
     }
 
     dispose() {
-        if (!this._active) return;
-
-        this._container.clear();
-
-        this._size = {
-            x: 0,
-            y: 0,
-        };
-
-        this._items = [];
-        this._active = false;
+        while(this._container.firstChild) {
+            this._container.removeChild(this._container.firstChild);
+        }
     }
 
-    _drawItems(container, input_values) {
+    _drawItems(inputs) {
         let i = 0;
 
         for (let item_data of this._items_data) {
             let input_value = undefined;
 
-            if (i < input_values.length) {
-                input_value = input_values[i];
+            if (i < inputs.length) {
+                input_value = inputs[i];
             }
 
-            this._drawItem(container, item_data, input_value);
+            this._container.appendChild(
+                this._drawItem(item_data, input_value)
+            );
         }
-
-        this._resizeItems();
     }
 
-    _drawItem(container, item_data, input_value=null) {
+    _drawItem(item_data, input_value=null) {
         let label = item_data.label ? item_data.label : item_data.alias;
         let shortcut = item_data.shortcut;
         let active = item_data.active;
@@ -125,73 +83,65 @@ export default class ContextMenu {
             label = label();
         }
 
-        let rect = this._drawItemRect(container, active);
-        let item_length = this._drawItemText(container, label, shortcut, active);
+        const root = document.createElement('div');
+        root.classList.add(ContextMenu.ItemClass);
 
-        this._items.push({rect});
+        if (!active) {
+            root.classList.add(ContextMenu.ItemDisabledClass);
+        }
+
+        const text = document.createElement('span');
+        text.innerText = label;
+        text.classList.add(ContextMenu.ItemTextClass);
+        root.appendChild(text);
+
+        if (shortcut) {
+            const short = document.createElement('small');
+            short.innerText = shortcut;
+            text.appendChild(short);
+            short.classList.add(ContextMenu.ItemShortcutClass);
+        }
 
         if (input) {
-            item_length += 10;
             input_node = this._drawInput(
-                container, item_length, this._size.y, `bb-input-${item_data.alias}`,
+                `bb-input-${item_data.alias}`,
                 input.type, input.min, input.max, input_value
             );
 
+            root.appendChild(input_node);
+
             input_node.classList.add(ContextMenu.ItemInputClass);
-            item_length += ITEM_INPUT_WIDTH;
         }
 
-        this._size.x = Math.max(this._size.x, item_length + ITEM_TEXT_PADDING * 2);
-        this._size.y += this._item_height;
+        this._attachItemEvents(root, item_data, input, input_node);
 
-        this._attachItemEvents(rect, item_data, input, input_node);
+        return root;
     }
 
-    _drawItemRect(container, active) {
-        let rect = container.rect(0, this._item_height)
-            .fill("#e7e4ff")
-            .stroke({color: "#e7e4ff", width: 2, linejoin: "round"})
-            .x(-ITEM_TEXT_PADDING)
-            .y(this._size.y);
+    _drawInput(id, type="number", min=0, max=9000, initial_value=null) {
+        let input = document.createElement("input");
+        input.classList.add(ContextMenu.ItemInputClass);
+        input.id = id ? id : "bb-unnamed-input-" + x + y;
+        input.type = type;
 
-        rect.addClass(ContextMenu.ItemClass);
-
-        if (!active) {
-            rect.addClass(ContextMenu.ItemDisabledClass);
+        if (type === "number") {
+            input.min = min;
+            input.max = max;
+            input.placeholder = min;
         }
 
-        return rect;
+        if (type === "file") {
+            input.style.display = "none";
+        }
+
+        if (initial_value) {
+            input.value = initial_value;
+        }
+
+        return input;
     }
 
-    _drawItemText(container, label, shortcut, active) {
-        let text = container.text(label).y(this._size.y).font({family: 'IBM Plex Sans, monospace', size: 24});
-
-        text.build(true);
-
-        if (shortcut) {
-            text.plain(' (');
-            text.tspan(shortcut).font({style: 'italic', weight: 'bolder'});
-            text.plain(')');
-        }
-
-        text.addClass(ContextMenu.ItemTextClass);
-
-        if (!active) {
-            text.addClass(ContextMenu.ItemDisabledTextClass);
-        }
-
-        let text_length = text.length();
-
-        text.build(false);
-
-        return text_length;
-    }
-
-    _attachItemEvents(rect, item_data, input, input_node) {
-        rect.mousedown(() => {
-            rect.addClass('bb-cm-item-flash');
-        });
-
+    _attachItemEvents(root, item_data, input, input_node) {
         const apply = () => {
             setTimeout(() => {
                 if (input && input.type === 'file') {
@@ -213,8 +163,6 @@ export default class ContextMenu {
             }, 100);
         }
 
-        rect.mousedown(() => apply());
-
         if (input && input.type !== 'file') {
             input_node.addEventListener("keyup", (event) => {
                 if (event.keyCode === 13) {
@@ -222,6 +170,13 @@ export default class ContextMenu {
                 }
             })
         }
+
+        root.addEventListener('mousedown', (evt) => {
+            if (evt.target.classList.contains(ContextMenu.ItemInputClass)) return;
+
+            root.classList.add(ContextMenu.ItemAcceptedClass);
+            apply();
+        });
     }
 
     /**
@@ -240,59 +195,6 @@ export default class ContextMenu {
             value = as.beforeClick(value);
         }
 
-        this._callbacks.itemclick(alias, value);
-    }
-
-    _resizeItems() {
-        for (let item of this._items) {
-            item.rect.width(this._size.x);
-        }
-    }
-
-    _drawInput(container, x, y, id, type="number", min=0, max=9000, initial_value=null) {
-        let html = this._getEmbeddedHtmlGroup(container, ITEM_INPUT_WIDTH, this._item_height, x, y);
-
-        let input = document.createElement("input");
-        input.classList += ContextMenu.ItemInputClass;
-        input.id = id ? id : "bb-unnamed-input-" + x + y;
-        input.type = type;
-
-        if (type === "number") {
-            input.min = min;
-            input.max = max;
-            input.placeholder = min;
-        }
-
-        if (type === "file") {
-            input.style.display = "none";
-        }
-
-        if (initial_value) {
-            input.value = initial_value;
-        }
-
-        html.appendChild(input);
-
-        return input;
-    }
-
-    _getEmbeddedHtmlGroup(container, width=0, height=0, x=0, y=0) {
-        let fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-
-        fo.classList.add("node");
-        fo.setAttribute("width", width);
-        fo.setAttribute("height", height);
-        fo.setAttribute("x", x);
-        fo.setAttribute("y", y);
-        fo.setAttribute("contentEditable", "true");
-
-        container.node.appendChild(fo);
-
-        let body = document.createElement("div");
-        body.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-
-        fo.appendChild(body);
-
-        return body;
+        this._itemclick(this._item_id, alias, value);
     }
 }
