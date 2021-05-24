@@ -19,6 +19,12 @@
     cursor: pointer;
 
     white-space: pre;
+
+    display: flex;
+}
+
+.bb-menu-item-text {
+    font-family: 'IBM Plex Sans', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
 .bb-menu-item:hover {
@@ -41,14 +47,18 @@
 .bb-menu-item-shortcut {
     font-weight: bold;
     font-style: italic;
-    margin: 4px;
     padding: 2px;
     background-color: #d1d1d1;
     border-radius: 4px;
 }
 
+.bb-menu-item-divider {
+    margin: 0 4px;
+    flex-grow: 1;
+}
+
 .bb-menu-item-input {
-    margin: 0 6px;
+    padding: 3px 0;
 }
 
 @-webkit-keyframes flash {

@@ -8,6 +8,7 @@ export default class ContextMenu {
     static get ItemAcceptedClass() {return "bb-menu-item_accepted"}
     static get ItemInputClass() {return "bb-menu-item-input"}
     static get ItemTextClass() {return "bb-menu-item-text"}
+    static get ItemDividerClass() {return "bb-menu-item-divider"}
     static get ItemShortcutClass() {return "bb-menu-item-shortcut"}
 
     constructor(item_id) {
@@ -90,17 +91,14 @@ export default class ContextMenu {
             root.classList.add(ContextMenu.ItemDisabledClass);
         }
 
-        const text = document.createElement('span');
+        const text = document.createElement('div');
         text.innerText = label;
         text.classList.add(ContextMenu.ItemTextClass);
         root.appendChild(text);
 
-        if (shortcut) {
-            const short = document.createElement('small');
-            short.innerText = shortcut;
-            text.appendChild(short);
-            short.classList.add(ContextMenu.ItemShortcutClass);
-        }
+        const divider = document.createElement('div')
+        divider.classList.add(ContextMenu.ItemDividerClass);
+        root.appendChild(divider);
 
         if (input) {
             input_node = this._drawInput(
@@ -111,6 +109,13 @@ export default class ContextMenu {
             root.appendChild(input_node);
 
             input_node.classList.add(ContextMenu.ItemInputClass);
+        }
+
+        if (shortcut) {
+            const short = document.createElement('div');
+            short.innerText = shortcut;
+            short.classList.add(ContextMenu.ItemShortcutClass);
+            root.appendChild(short);
         }
 
         this._attachItemEvents(root, item_data, input, input_node);

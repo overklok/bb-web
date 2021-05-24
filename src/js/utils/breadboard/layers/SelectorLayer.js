@@ -137,6 +137,7 @@ const ITEMS = [
 
 export default class SelectorLayer extends Layer {
     static get Class() {return "bb-layer-selector"}
+    static get Items() {return ITEMS}
 
     constructor(container, grid) {
         super(container, grid);
@@ -527,5 +528,11 @@ export default class SelectorLayer extends Layer {
         let index = 0;
         while ( (node = node.previousElementSibling) ) {index++;}
         return index;
+    }
+
+    static plateTypeToTitle(plate_type) {
+        for (const details of SelectorLayer.Items) {
+            if (details.type === plate_type) return details.title;
+        }
     }
 }

@@ -1,4 +1,5 @@
 import ContextMenu from "../core/ContextMenu"
+import SelectorLayer from "~/js/utils/breadboard/layers/SelectorLayer";
 
 export default class PlateContextMenu extends ContextMenu {
     // Алиасы пунктов контекстного меню
@@ -8,10 +9,10 @@ export default class PlateContextMenu extends ContextMenu {
     static get CMI_ROTCCW() {return "cmi_rccw"}
     static get CMI_DUPLIC() {return "cmi_dupl"}
 
-    constructor(plate_id) {
+    constructor(plate_id, plate_type) {
         super(plate_id);
 
-        let plate_naming = 'Плашка';
+        let plate_naming = SelectorLayer.plateTypeToTitle(plate_type) || 'Плашка';
 
         this._items_data = [
             {
