@@ -50,19 +50,25 @@ export default class ButtonPlate extends LinearPlate {
      * @param suppress_events   глушить вызов событий
      */
     setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-
         if (state.input === undefined) return;
 
-        let input = state.input;
+        state = {input: !!state.input};
 
-        this._ctxmenu.setValue(input);
+        super.setState(state, suppress_events);
 
         this._rotateJumper();
 
         if (this._params.verbose) {
-            this._redrawInput(input);
+            this._redrawInput(state.input);
         }
+    }
+
+    inputIncrement() {
+        this.setState({input: !this.input});
+    }
+
+    inputDecrement() {
+        this.inputIncrement();
     }
 
     _rotateJumper() {

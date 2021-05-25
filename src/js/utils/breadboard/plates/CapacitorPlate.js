@@ -18,6 +18,10 @@ export default class CapacitorPlate extends LinearPlate {
         }
     }
 
+    get variant() {
+        return this._shortLabel() + 'Ф';
+    }
+
     __setProps__(props) {
         super.__setProps__(props);
 
@@ -33,7 +37,7 @@ export default class CapacitorPlate extends LinearPlate {
     __draw__(position, orientation) {
         this._drawPicture();
 
-        this._drawLabel(this._props[CapacitorPlate.PROP_CAPACITANCE]);
+        this._drawLabel();
     };
 
     /**
@@ -69,17 +73,23 @@ export default class CapacitorPlate extends LinearPlate {
         this._group.text("+").move(line2.x() + 4, line2.y() - 8);
     }
 
-    _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
+    _drawLabel(size=Plate.LabelFontSizePreferred) {
+        this._group.text(this._shortLabel() + 'Ф')
+            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
+            .cx(this._container.width() / 2)
+            .y(this._container.height() - size - 2)
+            .stroke({width: 0.5})
+    }
+
+    _shortLabel() {
+        let text = this._props[CapacitorPlate.PROP_CAPACITANCE];
+
         let num = Number(text);
 
         if (num * 1e6 >= 1)    {text = String(Number(num * 1e6).toPrecision())   + 'мк'}
         // if (num * 1e3 >= 1)    {text = String(Number(num * 1e3).toPrecision())   + 'н'}
         if (num >= 1)          {text = String(Number(num).toPrecision())   + 'пк'}
 
-        this._group.text(text + 'Ф')
-            .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
-            .cx(this._container.width() / 2)
-            .y(this._container.height() - size - 2)
-            .stroke({width: 0.5})
+        return String(text);
     }
 }

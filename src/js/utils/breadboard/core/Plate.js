@@ -88,7 +88,7 @@ export default class Plate {
         this._group_editable = this._group.group();                     // для режима редактирования
         this._error_highlighter = undefined;
 
-        /// Параметры - неизменяемые атрибуты плашки
+        /// Параметры - статические атрибуты плашки
         this._params = {
             size:       {x: 0, y: 0},   // кол-во ячеек, занимаемое плашкой на доске
             size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
@@ -100,7 +100,7 @@ export default class Plate {
             verbose:    verbose,       // схематическое отображение плашки
         };
 
-        /// Свойства плашки - неизменяемые изнутри атрибуты плашки
+        /// Свойства - неизменяемые атрибуты плашки
         this._props = this.__defaultProps__;
 
         if (props) {
@@ -116,8 +116,6 @@ export default class Plate {
             voltages:       undefined,
             input:          undefined,
             output:         undefined,
-            cell_num:       undefined,
-            contr_num:      undefined,
         };
 
         /// Присвоить класс контейнеру
@@ -168,6 +166,15 @@ export default class Plate {
     }
 
     /**
+     * Возвратить строку, определяющую подтип плашки
+     *
+     * @returns {string}
+     */
+    get variant() {
+        return '';
+    }
+
+    /**
      * Возвратить идентификатор плашки
      *
      * @returns {number|*} число, если задан идентификатор по умолчанию
@@ -206,7 +213,7 @@ export default class Plate {
     }
 
     get input() {
-        return this._state.input;
+        return this._state.input || 0;
     }
 
     /**
@@ -224,7 +231,7 @@ export default class Plate {
         };
     }
 
-    __cm_class__() {
+    get __ctxmenu__() {
         return PlateContextMenu;
     }
 
@@ -255,6 +262,10 @@ export default class Plate {
 
     __setProps__(props) {
         this._props = coverObjects(props, this._props);
+    }
+
+    get_cm_instance() {
+        return new this.__ctxmenu__(this.id, this.alias, this.variant);
     }
 
     serialize() {
@@ -498,6 +509,24 @@ export default class Plate {
         let orientation;
 
         switch (this._state.orientation) {
+            case Plate.Orientations.East: {orientation = Plate.Orientations.North; break}
+            case Plate.Orientations.South: {orientation = Plate.Orientations.East; break}
+            case Plate.Orientations.West: {orientation = Plate.Orientations.South; break}
+            case Plate.Orientations.North: {orientation = Plate.Orientations.West; break}
+
+            default: {throw new TypeError("Current orientation is invalid")}
+        }
+
+        this.rotate(orientation);
+    }
+
+    /**
+     * Повернуть плашку против часовой стрелки
+     */
+    rotateCounterClockwise() {
+        let orientation;
+
+        switch (this._state.orientation) {
             case Plate.Orientations.East: {orientation = Plate.Orientations.South; break}
             case Plate.Orientations.South: {orientation = Plate.Orientations.West; break}
             case Plate.Orientations.West: {orientation = Plate.Orientations.North; break}
@@ -510,21 +539,17 @@ export default class Plate {
     }
 
     /**
-     * Повернуть плашку по часовой стрелке
+     * Увеличить входное значение
      */
-    rotateCounterClockwise() {
-        let orientation;
+    inputIncrement() {
+        this.setState({input: Number(this.input) + 1});
+    }
 
-        switch (this._state.orientation) {
-            case Plate.Orientations.East: {orientation = Plate.Orientations.North; break}
-            case Plate.Orientations.South: {orientation = Plate.Orientations.East; break}
-            case Plate.Orientations.West: {orientation = Plate.Orientations.South; break}
-            case Plate.Orientations.North: {orientation = Plate.Orientations.West; break}
-
-            default: {throw new TypeError("Current orientation is invalid")}
-        }
-
-        this.rotate(orientation);
+    /**
+     * Уменшьить входное значение
+     */
+    inputDecrement() {
+        this.setState({input: Number(this.input) - 1});
     }
 
     /**
@@ -596,7 +621,7 @@ export default class Plate {
      * @param {function} cb обработчик события изменения плашки
      */
     onChange(cb) {
-        if (!cb) {cb = () => {}};
+        if (!cb) {cb = () => {}}
 
         this._callbacks.change = cb;
     }

@@ -25,6 +25,10 @@ export default class LEDPlate extends LinearPlate {
         }
     }
 
+    get variant() {
+        return this._shortLabel();
+    }
+
     __setProps__(props) {
         super.__setProps__(props);
 
@@ -51,16 +55,8 @@ export default class LEDPlate extends LinearPlate {
      * @param {string}  orientation ориентация светодиода
      */
     __draw__(position, orientation) {
-        let label;
-
-        switch (this._props[LEDPlate.PROP_COLOUR]) {
-            case LEDPlate.COLOURS.RED:      label = 'R'; break;
-            case LEDPlate.COLOURS.GREEN:    label = 'G'; break;
-            case LEDPlate.COLOURS.BLUE:     label = 'B'; break;
-        }
-
         this._drawPicture();
-        this._drawLabel(label);
+        this._drawLabel();
 
         if (this._params.verbose) {
             this._redrawOutput(this._state.output);
@@ -165,11 +161,21 @@ export default class LEDPlate extends LinearPlate {
         ptr2.move(trng.x() + trng.width() / 2 + 5, trng.y() - trng.height() / 4 + 5);
     }
 
-    _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
-        this._group.text(String(text))
+    _drawLabel(size=Plate.LabelFontSizePreferred) {
+        this._group.text(this._shortLabel())
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
             .cx(this._container.width() - size/1.5)
             .cy(this._container.height() - size/1.5)
             .stroke({width: 0.5})
+    }
+
+    _shortLabel() {
+        switch (this._props[LEDPlate.PROP_COLOUR]) {
+            case LEDPlate.COLOURS.RED:      return 'R'; break;
+            case LEDPlate.COLOURS.GREEN:    return 'G'; break;
+            case LEDPlate.COLOURS.BLUE:     return 'B'; break;
+        }
+
+        return 'UNK';
     }
 }

@@ -40,8 +40,9 @@ const ITEMS = [
         tags: "светодиод лампа свет led diode light cdtnjlbjl kfvgf cdtn дув вшщву дшпре",
         type: LEDPlate,
         options: [
-            {title: "Зелёный", properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.GREEN}},
-            {title: "Красный", properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED}}
+            {title: "Красный",  properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED}},
+            {title: "Зелёный",  properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.GREEN}},
+            {title: "Синий",    properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.BLUE}},
         ]
     },
     {
@@ -528,11 +529,5 @@ export default class SelectorLayer extends Layer {
         let index = 0;
         while ( (node = node.previousElementSibling) ) {index++;}
         return index;
-    }
-
-    static plateTypeToTitle(plate_type) {
-        for (const details of SelectorLayer.Items) {
-            if (details.type === plate_type) return details.title;
-        }
     }
 }

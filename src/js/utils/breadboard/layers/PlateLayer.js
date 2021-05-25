@@ -360,6 +360,8 @@ export default class PlateLayer extends Layer {
 
             /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
             plate.showGroupEditable(true);
+
+            plate.onChange((data) => this._callbacks.change(data));
         }
 
         try {
@@ -435,10 +437,8 @@ export default class PlateLayer extends Layer {
 
                 /// обновить состояние
                 this.setPlateState(id, {
-                    // cell_num: plate.cell_num,
-                    // contr_num: plate.contr_num,
-                    input: plate.input,
-                    output: plate.output,
+                    input: plate.dynamic.input,
+                    output: plate.dynamic.output,
                 });
             }
         }
@@ -516,7 +516,6 @@ export default class PlateLayer extends Layer {
         if (!(plate_id in this._plates)) {
             console.debug('This plate does not exist', plate_id);
             return false;
-            // throw new RangeError(`Plate does not exist (id = '${plate_id}')`);
         }
 
         let plate = this._plates[plate_id];
@@ -605,6 +604,12 @@ export default class PlateLayer extends Layer {
             /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
             plate.showGroupEditable(true);
             this._attachEventsEditable(plate);
+
+            if (editable) {
+                plate.onChange(data => this._callbacks.change(data));
+            } else {
+                plate.onChange(null);
+            }
         }
 
         document.addEventListener('click', this._handleClick, false);
@@ -649,12 +654,12 @@ export default class PlateLayer extends Layer {
             this._plate_selected.deselect();
             /// Отключить её события
             this.setPlateEditable(plate, false);
-            this._plate_selected.onChange(null);
+            // this._plate_selected.onChange(null);
         }
 
         /// Обрабатывать её события
         this.setPlateEditable(plate);
-        plate.onChange(data => this._callbacks.change(data));
+        // plate.onChange(this._callbacks.change);
         plate.onDragFinish(() => this._onPlateDragFinish(plate));
         plate.onDragStart(() => {
             this._onPlateDragStart(plate);
@@ -709,7 +714,7 @@ export default class PlateLayer extends Layer {
 
             /// Отключить её события
             this.setPlateEditable(this._plate_selected, false);
-            this._plate_selected.onChange(null);
+            // this._plate_selected.onChange(null);
 
             this._plate_selected = null;
         }
@@ -782,7 +787,7 @@ export default class PlateLayer extends Layer {
             evt.preventDefault();
             const plate = this._plate_selected;
 
-            const ctxmenu = new (plate.__cm_class__())(plate.id, plate.type);
+            const ctxmenu = plate.get_cm_instance();
             this._callContextMenu(ctxmenu, {x: evt.clientX, y: evt.clientY}, [plate.state.input]);
         }
     }
@@ -805,11 +810,19 @@ export default class PlateLayer extends Layer {
 
             if (keydown) {
                 switch (evt.code) {
-                    case "BracketLeft":
-                        this._plate_selected.rotateClockwise();
+                    case "Period": // >
+                        this._plate_selected.inputIncrement();
+                        evt.preventDefault();
+                        break;
+                    case "Comma": // <
+                        this._plate_selected.inputDecrement();
                         evt.preventDefault();
                         break;
                     case "BracketRight":
+                        this._plate_selected.rotateClockwise();
+                        evt.preventDefault();
+                        break;
+                    case "BracketLeft":
                         this._plate_selected.rotateCounterClockwise();
                         evt.preventDefault();
                         break;
@@ -857,8 +870,6 @@ export default class PlateLayer extends Layer {
         if (!this._plates[plate_id]) return;
 
         const plate = this._plates[plate_id];
-
-        console.log(plate, action_alias, value);
 
         switch (action_alias) {
             case PlateContextMenu.CMI_REMOVE: {

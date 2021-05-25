@@ -1,5 +1,6 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
+import {mod} from "~/js/utils/breadboard/core/extras/helpers";
 
 export default class RheostatPlate extends Plate {
     static get Alias() {return "rheostat"}
@@ -41,9 +42,13 @@ export default class RheostatPlate extends Plate {
      * @param suppress_events   глушить вызов событий
      */
     setState(state, suppress_events) {
-        super.setState(state, suppress_events);
-
         if (state.input === undefined) return;
+
+        let input = state.input;
+
+        input = Math.min(Math.max(input, 0), 255);
+
+        super.setState({input}, suppress_events);
 
         if (this._params.verbose) {
             this._redrawInput(state.input);
@@ -71,6 +76,14 @@ export default class RheostatPlate extends Plate {
      */
     rotate(orientation) {
         super.rotate(orientation);
+    }
+
+    inputIncrement() {
+        this.setState({input: mod(Number(this.input) + 1, 256)});
+    }
+
+    inputDecrement() {
+        this.setState({input: mod(Number(this.input) - 1, 256)});
     }
 
     _redrawInput(input_value) {

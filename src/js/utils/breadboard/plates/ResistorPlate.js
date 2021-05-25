@@ -17,6 +17,10 @@ export default class ResistorPlate extends LinearPlate {
         };
     }
 
+    get variant() {
+        return `${this._shortLabel()} Ω`;
+    }
+
     __setProps__(props) {
         let resistance = Number(props[ResistorPlate.PROP_RESISTANCE]);
 
@@ -37,7 +41,7 @@ export default class ResistorPlate extends LinearPlate {
      */
     __draw__(position, orientation) {
         this._drawPicture();
-        this._drawLabel(this._props[ResistorPlate.PROP_RESISTANCE]);
+        this._drawLabel();
     };
 
     /**
@@ -94,16 +98,22 @@ export default class ResistorPlate extends LinearPlate {
             .cy(rect1.cy())
     }
 
-    _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
-        let num = Number(text);
-
-        if (num / 1000 >= 1)    {text = num / 1000      + 'k'}
-        if (num / 1000000 >= 1) {text = num / 1000000   + 'M'}
-
-        this._group.text(String(text))
+    _drawLabel(size=Plate.LabelFontSizePreferred) {
+        this._group.text(this._shortLabel())
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
             .cx(this._container.width() / 2)
             .cy(this._container.height() / 4)
             .stroke({width: 0.5})
+    }
+
+    _shortLabel() {
+        let label = this._props[ResistorPlate.PROP_RESISTANCE]
+
+        let num = Number(label);
+
+        if (num / 1000 >= 1)    {label = num / 1000      + 'k'}
+        if (num / 1000000 >= 1) {label = num / 1000000   + 'M'}
+
+        return String(label);
     }
 }

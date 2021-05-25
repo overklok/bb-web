@@ -11,6 +11,8 @@ export default class ContextMenu {
     static get ItemDividerClass() {return "bb-menu-item-divider"}
     static get ItemShortcutClass() {return "bb-menu-item-shortcut"}
 
+    static get TransitionTime() {return 100}
+
     constructor(item_id) {
         this._item_id = item_id;
         this._container = undefined;
@@ -39,14 +41,23 @@ export default class ContextMenu {
         this._itemclick = cb;
     }
 
+    fadeOut(cb_destroy) {
+        this._container.style.opacity = 0;
+
+        setTimeout(() => {
+            cb_destroy && cb_destroy();
+        }, ContextMenu.TransitionTime);
+    }
+
     draw(position, inputs=[]) {
         this._container = document.createElement('div');
         this._container.classList.add(ContextMenu.Class);
+        this._container.style.opacity = 0;
+        this._container.style.transition = `opacity linear ${ContextMenu.TransitionTime}ms`;
 
         this._drawItems(inputs);
 
-        this._container.style.left = `${position.x}px`;
-        this._container.style.top = `${position.y}px`;
+        setTimeout(() => {this._container.style.opacity = 1;}, 0);
 
         return this._container;
     }
@@ -75,10 +86,19 @@ export default class ContextMenu {
 
     _drawItem(item_data, input_value=null) {
         let label = item_data.label ? item_data.label : item_data.alias;
-        let shortcut = item_data.shortcut;
         let active = item_data.active;
         let input = item_data.input;
+
+        let shortcuts = item_data.shortcuts ? item_data.shortcuts : item_data.shortcut;
+        let is_shortcut_combined = Array.isArray(item_data.shortcut);
+
+        if (!Array.isArray(shortcuts)) {
+            shortcuts = shortcuts ? [shortcuts] : [];
+        }
+
         let input_node = undefined;
+
+        if (item_data.shortcuts) {}
 
         if (typeof label === "function") {
             label = label();
@@ -91,15 +111,13 @@ export default class ContextMenu {
             root.classList.add(ContextMenu.ItemDisabledClass);
         }
 
+        // Add item text
         const text = document.createElement('div');
         text.innerText = label;
         text.classList.add(ContextMenu.ItemTextClass);
         root.appendChild(text);
 
-        const divider = document.createElement('div')
-        divider.classList.add(ContextMenu.ItemDividerClass);
-        root.appendChild(divider);
-
+        // Add input
         if (input) {
             input_node = this._drawInput(
                 `bb-input-${item_data.alias}`,
@@ -111,11 +129,29 @@ export default class ContextMenu {
             input_node.classList.add(ContextMenu.ItemInputClass);
         }
 
-        if (shortcut) {
-            const short = document.createElement('div');
-            short.innerText = shortcut;
-            short.classList.add(ContextMenu.ItemShortcutClass);
-            root.appendChild(short);
+        // Add spacer
+        const divider = document.createElement('div')
+        divider.classList.add(ContextMenu.ItemDividerClass);
+        root.appendChild(divider);
+
+        // Add shortcuts
+        if (shortcuts) {
+            for (let i = 0; i < shortcuts.length; i++) {
+                const shortcut_component = shortcuts[i];
+
+                if (!shortcut_component) continue;
+
+                const short = document.createElement('div');
+                short.innerText = shortcut_component;
+                short.classList.add(ContextMenu.ItemShortcutClass);
+                root.appendChild(short);
+
+                if (is_shortcut_combined && i < shortcuts.length - 1) {
+                    const joint = document.createElement('div');
+                    joint.innerText = '+';
+                    root.appendChild(joint);
+                }
+            }
         }
 
         this._attachItemEvents(root, item_data, input, input_node);
@@ -133,6 +169,7 @@ export default class ContextMenu {
             input.min = min;
             input.max = max;
             input.placeholder = min;
+            initial_value = Number(initial_value) || 0;
         }
 
         if (type === "file") {

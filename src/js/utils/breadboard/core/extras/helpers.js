@@ -3,6 +3,10 @@ import SVG from "svg.js";
 import PlateLayer from "../../layers/PlateLayer";
 import merge from "lodash/merge";
 
+export function mod(x, base) {
+    return ((x % base) + base) % base;
+}
+
 export const coverObjects = (o, d) => merge(d, o);
 
 export function copyTextToClipboard(text) {

@@ -37,6 +37,10 @@ export default class BridgePlate extends LinearPlate {
         return this.props[BridgePlate.PROP_LENGTH];
     }
 
+    get variant() {
+        return String(this.__length__);
+    }
+
     __setProps__(props) {
         super.__setProps__(props);
 

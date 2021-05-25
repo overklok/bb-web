@@ -287,7 +287,6 @@ export default class Breadboard {
      * @param {Array<Object>} plates список плашек, которые должны отображаться на плате
      */
     setPlates(plates) {
-        console.log(plates);
         return this._layers.plate.setPlates(plates);
     }
 
@@ -503,7 +502,7 @@ export default class Breadboard {
         /// внутренняя компоновка каждого слоя
         for (const layer of Object.values(this._layers)) {
             layer.compose();
-            layer.onContextMenuCall(this._layers.menu.showMenu);
+            layer.onContextMenuCall(this._layers.menu.openMenu.bind(this._layers.menu));
         }
 
         /// включение / отключение режима только чтения

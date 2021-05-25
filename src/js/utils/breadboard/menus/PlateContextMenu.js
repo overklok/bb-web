@@ -1,5 +1,4 @@
 import ContextMenu from "../core/ContextMenu"
-import SelectorLayer from "~/js/utils/breadboard/layers/SelectorLayer";
 
 export default class PlateContextMenu extends ContextMenu {
     // Алиасы пунктов контекстного меню
@@ -9,14 +8,13 @@ export default class PlateContextMenu extends ContextMenu {
     static get CMI_ROTCCW() {return "cmi_rccw"}
     static get CMI_DUPLIC() {return "cmi_dupl"}
 
-    constructor(plate_id, plate_type) {
+    constructor(plate_id, plate_type, plate_variant) {
         super(plate_id);
-
-        let plate_naming = SelectorLayer.plateTypeToTitle(plate_type) || 'Плашка';
 
         this._items_data = [
             {
-                label: `${plate_naming} #${plate_id}`,
+                label: `Плашка #${plate_id}`,
+                shortcuts: [plate_type, plate_variant],
                 active: false
             },
             {
@@ -28,6 +26,7 @@ export default class PlateContextMenu extends ContextMenu {
             {
                 alias: PlateContextMenu.CMI_INPUT,
                 label: 'Ввод:',
+                shortcuts: ['<', '>'],
                 active: true,
                 input: {
                     type: "number",
@@ -38,13 +37,13 @@ export default class PlateContextMenu extends ContextMenu {
             {
                 alias: PlateContextMenu.CMI_ROTCW,
                 label: 'Повернуть по часовой',
-                shortcut: '[',
+                shortcut: ']',
                 active: true
             },
             {
                 alias: PlateContextMenu.CMI_ROTCCW,
                 label: 'Повернуть против часовой',
-                shortcut: ']',
+                shortcut: '[',
                 active: true
             },
             {

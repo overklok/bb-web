@@ -36,15 +36,13 @@ export default class MenuLayer extends Layer {
      * @param position
      * @param inputs
      */
-    showMenu(menu, position, inputs) {
+    openMenu(menu, position, inputs) {
         this.hideMenu();
 
         if (menu) {
             if (!position) throw new Error("parameter 'position' is undefined");
 
-            this._menu = menu;
-            this._menu.draw(position, inputs);
-            this._container.appendChild(this._menu.container);
+            this.showMenu(menu, position, inputs)
 
             this._menu.onItemClick((item_id, alias, value) => {
                 this.hideMenu();
@@ -53,9 +51,40 @@ export default class MenuLayer extends Layer {
         }
     }
 
+    showMenu(menu, position, inputs) {
+        this._menu = menu;
+
+        const container_menu = this._menu.draw(position, inputs);
+        this._container.appendChild(container_menu);
+
+        container_menu.style.left = position.x + 'px';
+        container_menu.style.top = position.y + 'px';
+
+        const root_x0 = this._container.offsetLeft,
+              root_x1 = this._container.offsetWidth + root_x0,
+              root_y0 = this._container.offsetTop,
+              root_y1 = this._container.offsetHeight + root_y0;
+
+        const menu_x0 = container_menu.offsetLeft,
+              menu_x1 = container_menu.offsetWidth + menu_x0,
+              menu_y0 = container_menu.offsetTop,
+              menu_y1 = container_menu.offsetHeight + menu_y0;
+
+        if (menu_x0 < root_x0) container_menu.style.left = (position.x + root_x0 - menu_x0) + 'px';
+        if (menu_x1 > root_x1) container_menu.style.left = (position.x - menu_x1 + root_x1) + 'px';
+
+        if (menu_y0 < root_y0) container_menu.style.top = (position.y + root_y0 - menu_y0) + 'px';
+        if (menu_y1 > root_y1) container_menu.style.top = (position.y - menu_y1 + root_y1) + 'px';
+    }
+
     hideMenu() {
         if (this._menu) {
-            this._container.removeChild(this._menu.container);
+            const container = this._menu.container;
+
+            this._menu.fadeOut(() => {
+                this._container.removeChild(container);
+            });
+
             this._menu = undefined;
         }
     }
