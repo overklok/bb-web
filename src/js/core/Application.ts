@@ -1,6 +1,6 @@
 import IServiceProvider, {ServiceProvider} from "./providers/ServiceProvider";
 import IConstructable from "./helpers/IConstructable";
-import {coverObjects} from "./helpers/functions";
+import defaultsDeep from "lodash/defaultsDeep";
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;
@@ -45,7 +45,7 @@ export default abstract class Application<AC extends AppConf = AppConf> {
     }
 
     protected configure(config: AC): void {
-        this.config = coverObjects(config, this.config) as AC;
+        this.config = defaultsDeep(config, this.config) as AC;
     };
 
     /**

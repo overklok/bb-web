@@ -14,6 +14,7 @@ namespace BoardView {
         schematic?: boolean;
         verbose?: boolean;
         readonly?: boolean;
+        debug?: boolean;
         layouts: object;
         layout_name: string;
     }
@@ -23,6 +24,7 @@ namespace BoardView {
             schematic: true,
             readonly: true,
             verbose: false,
+            debug: false,
             layouts: [],
             layout_name: 'default'
         }
@@ -48,6 +50,7 @@ namespace BoardView {
                 schematic: this.props.schematic,
                 detailed: this.props.schematic,
                 verbose: this.props.verbose,
+                debug: this.props.debug,
                 layout_name: this.props.layout_name,
             });
         }
@@ -63,6 +66,10 @@ namespace BoardView {
 
         setVerbose(verbose: boolean = true) {
             this.bb.switchVerbose(verbose);
+        }
+
+        setDebug(debug: boolean = true) {
+            this.bb.switchDebug(debug);
         }
 
         setRandom(protos: { type: string, properties: any, quantity: number }[],

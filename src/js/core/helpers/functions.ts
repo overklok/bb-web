@@ -1,15 +1,4 @@
-//import isUndefined from "lodash/isUndefined";
-//import partialRight from "lodash/partialRight";
-import defaults from "lodash/defaults";
-
 async function sleep(ms: number): Promise<void> {await new Promise(r => setTimeout(r, ms))}
-
-type KeyValuePair = {[key: string]: any};
-
-// const coverObjects: (options: KeyValuePair, defaults: KeyValuePair) => KeyValuePair
-//    = partialRight(mergeWith, (obj: KeyValuePair, src: KeyValuePair) => isUndefined(obj) ? src : obj);
-const coverObjects: (options: KeyValuePair, defaults: KeyValuePair) => KeyValuePair =
-    (o, d) => defaults(o, d);
 
 function getClassNameAlias(class_name: string, postfix?: string) {
     if (postfix) {
@@ -78,4 +67,4 @@ function assert(condition: any, msg?: string): asserts condition {
     }
 }
 
-export {sleep, clamp, assert, coverObjects, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};
+export {sleep, clamp, assert, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};

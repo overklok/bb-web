@@ -60,6 +60,8 @@ export default class MenuLayer extends Layer {
         container_menu.style.left = position.x + 'px';
         container_menu.style.top = position.y + 'px';
 
+        const {top: dy, left: dx} = this._container.getBoundingClientRect();
+
         const root_x0 = this._container.offsetLeft,
               root_x1 = this._container.offsetWidth + root_x0,
               root_y0 = this._container.offsetTop,
@@ -70,11 +72,16 @@ export default class MenuLayer extends Layer {
               menu_y0 = container_menu.offsetTop,
               menu_y1 = container_menu.offsetHeight + menu_y0;
 
-        if (menu_x0 < root_x0) container_menu.style.left = (position.x + root_x0 - menu_x0) + 'px';
-        if (menu_x1 > root_x1) container_menu.style.left = (position.x - menu_x1 + root_x1) + 'px';
+        let {x: px, y: py} = position;
 
-        if (menu_y0 < root_y0) container_menu.style.top = (position.y + root_y0 - menu_y0) + 'px';
-        if (menu_y1 > root_y1) container_menu.style.top = (position.y - menu_y1 + root_y1) + 'px';
+        if (menu_x0 < root_x0) px = (position.x + root_x0 - menu_x0);
+        if (menu_x1 > root_x1) px = (position.x - menu_x1 + root_x1);
+
+        if (menu_y0 < root_y0) py = (position.y + root_y0 - menu_y0);
+        if (menu_y1 > root_y1) py = (position.y - menu_y1 + root_y1);
+
+        container_menu.style.left = px - dx + 'px';
+        container_menu.style.top = py - dy + 'px';
     }
 
     hideMenu() {

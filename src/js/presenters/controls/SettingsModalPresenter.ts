@@ -1,11 +1,11 @@
 import isEqual from "lodash/isEqual";
+import defaultsDeep from "lodash/defaultsDeep";
 
 import ModalPresenter from "../../core/presenters/ModalPresenter";
 import {on} from "../../core/base/Presenter";
 import SettingsModel, {SettingsChangeEvent, SettingsModalEvent} from "../../core/models/SettingsModel";
 import {ModalAction} from "../../core/base/view/Nest";
 import {SettingsValues} from "../../core/datatypes/settings";
-import {coverObjects} from "../../core/helpers/functions";
 
 export default class SettingsModalPresenter extends ModalPresenter {
     private mdl: number;
@@ -100,7 +100,7 @@ export default class SettingsModalPresenter extends ModalPresenter {
     @on(SettingsChangeEvent)
     handleModelChange(evt: SettingsChangeEvent) {
         if (!evt.is_manual) {
-            this.saved = coverObjects(evt.values, this.saved);
+            this.saved = defaultsDeep(evt.values, this.saved);
         }
     }
 }

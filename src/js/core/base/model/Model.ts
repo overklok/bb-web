@@ -1,8 +1,9 @@
+import defaults from "lodash/defaults";
+import defaultsDeep from "lodash/defaultsDeep";
 import cloneDeep from "lodash/cloneDeep";
 import Datasource from "./Datasource";
 import {ModelEvent} from "../Event";
 import IEventService from "../../services/interfaces/IEventService";
-import {coverObjects} from "../../helpers/functions";
 
 /**
  * @see Model
@@ -48,8 +49,10 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
         }
     }
 
-    public setState(state: Partial<MS>): void {
-        this.state = coverObjects(state, this.state) as MS;
+    public setState(state: Partial<MS>, deep=false): void {
+        const fn = deep ? defaultsDeep : defaults;
+
+        this.state = fn(cloneDeep(state), this.state) as MS;
     }
 
     public getState() {

@@ -21,6 +21,7 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         return {
             //readonly: !this.settings.getBoolean('general.is_demo'),
             verbose: this.settings.getBoolean('board.is_verbose'),
+            debug: this.settings.getBoolean('board.is_debug'),
         };
     }
 
@@ -28,6 +29,7 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
     private updateSettingsChange() {
         this.board.setPassive(this.settings.getBoolean('general.is_demo'));
         this.view.setVerbose(this.settings.getBoolean('board.is_verbose') as boolean);
+        this.view.setDebug(this.settings.getBoolean('board.is_debug') as boolean);
     }
 
     @on(ExerciseRunEvent)

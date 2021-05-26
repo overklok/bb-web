@@ -228,8 +228,8 @@ export default class Breadboard {
         this.inject(this._dom_node_parent, this._mergeOptions(options));
     }
 
-    redraw(schematic, detailed, verbose) {
-        this._layers.background.recompose(schematic, detailed);
+    redraw(schematic, detailed, verbose, debug) {
+        this._layers.background.recompose(schematic, detailed, debug);
         this._layers.plate.recompose(schematic, verbose);
         this._layers.current.recompose(schematic, detailed);
         this._layers.controls.recompose(schematic);
@@ -381,7 +381,7 @@ export default class Breadboard {
         this._options.schematic = on;
         this._options.detailed = detailed;
 
-        this.redraw(this._options.schematic, this._options.detailed, this._options.verbose);
+        this.redraw(this._options.schematic, this._options.detailed, this._options.verbose, this._options.debug);
     }
 
     switchVerbose(on) {
@@ -389,7 +389,15 @@ export default class Breadboard {
 
         this._options.verbose = on;
 
-        this.redraw(this._options.schematic, this._options.detailed, this._options.verbose);
+        this.redraw(this._options.schematic, this._options.detailed, this._options.verbose, this._options.debug);
+    }
+
+    switchDebug(on) {
+        if (this._options.debug === on) return;
+
+        this._options.debug = on;
+
+        this.redraw(this._options.schematic, this._options.detailed, this._options.verbose, this._options.debug);
     }
 
     switchSpareFilters(on) {
@@ -484,7 +492,7 @@ export default class Breadboard {
         this._div_wrap.appendChild(menu);
 
         /// инициализация слоёв
-        this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed, true);
+        this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed, this._options.debug);
         this._layers.label      = new LabelLayer(label_panes, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.current    = new CurrentLayer(current, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.plate      = new PlateLayer(plate, this.__grid, this._options.schematic, this._options.verbose);
@@ -546,6 +554,7 @@ export default class Breadboard {
         }
 
         this._options = {
+            debug:      options.debug || false,
             verbose:    options.verbose || false,
             detailed:   options.detailed || false,
             schematic:  options.schematic || false,

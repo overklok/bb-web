@@ -26,7 +26,12 @@ export default function (allow_demo: boolean) {
                         is_verbose: {
                             title: 'Показывать подробности',
                             type: SettingType.Boolean,
-                            default: true,
+                            default: false,
+                        },
+                        is_debug: {
+                            title: 'Подсвечивать ячейки',
+                            type: SettingType.Boolean,
+                            default: false,
                         }
                     }
                 }

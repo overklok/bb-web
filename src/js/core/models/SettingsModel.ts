@@ -68,7 +68,7 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
      * @param is_manual
      */
     public applySettings(values: SettingsValues, is_manual: boolean = false) {
-        this.setState({values});
+        this.setState({values}, true);
 
         this.emit(new SettingsChangeEvent({values: values, is_manual}));
     }

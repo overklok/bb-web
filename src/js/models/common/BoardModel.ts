@@ -199,7 +199,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.setState({is_editable});
 
         this.emit(new BoardOptionsEvent({
-            readonly: this.state.is_editable && this.state.is_passive
+            readonly: !this.state.is_editable && !this.state.is_passive
         }));
     }
 

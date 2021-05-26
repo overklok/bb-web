@@ -22,7 +22,7 @@ export default class BackgroundLayer extends Layer {
 
     static get DomainSchematicStyles() {return DOMAIN_SCHEMATIC_STYLES}
 
-    constructor(container, grid, schematic=false, detailed=false, debug_mode=false) {
+    constructor(container, grid, schematic=false, detailed=false, debug=false) {
         super(container, grid, schematic, detailed);
 
         this._container.addClass(BackgroundLayer.Class);
@@ -35,7 +35,7 @@ export default class BackgroundLayer extends Layer {
 
         this._domain_config = undefined;
 
-        this._debug_mode = debug_mode;
+        this._debug = debug;
         this._gcells = [];
         this._gcells_hovered = [];
         this._cell_last_hovered = undefined;
@@ -56,7 +56,7 @@ export default class BackgroundLayer extends Layer {
             .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
 
-        if (this._debug_mode) {
+        if (this._debug) {
             this._debug_text = this._boardgroup
                 .text('debug mode enabled')
                 .move('100%', 0)
@@ -68,8 +68,10 @@ export default class BackgroundLayer extends Layer {
         this._drawCells();
     }
 
-    recompose(schematic, detailed) {
+    recompose(schematic, detailed, debug) {
         super.recompose(schematic, detailed);
+
+        this._debug = debug;
 
         this._initGroups();
         this.compose();
@@ -94,7 +96,7 @@ export default class BackgroundLayer extends Layer {
     }
 
     _attachHandlers() {
-        if (!this._debug_mode) return;
+        if (!this._debug) return;
 
         this._gcells_hovered = [];
         this._cell_last_hovered = undefined;
