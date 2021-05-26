@@ -1,6 +1,7 @@
 import Layer from "../core/Layer";
 import Grid from "../core/Grid";
 import {GRADIENTS} from "../styles/gradients";
+import {extractLabeledCells} from "js/utils/breadboard/core/extras/helpers";
 
 const SYMBOL_UP = "🠩"
 const SYMBOL_DOWN = "🠫"
@@ -35,7 +36,7 @@ export default class LabelLayer extends Layer {
 
         this._domaingroup = undefined;
 
-        this._domain_config = undefined;
+        this._layout_config = undefined;
 
         this._pinval_labels = [];
 
@@ -47,8 +48,8 @@ export default class LabelLayer extends Layer {
         this._initGroups();
     }
 
-    setDomainConfig(domain_config) {
-        this._domain_config = domain_config;
+    setLayoutConfig(layout_config) {
+        this._layout_config = layout_config;
     }
 
     compose() {
@@ -125,66 +126,46 @@ export default class LabelLayer extends Layer {
     }
 
     _drawLabels() {
-        if (!this._domain_config) return;
+        if (!this._layout_config) return;
 
         const   font_size = this._label_style.font_size,
                 text_bias = this._label_style.text_bias;
 
-        for (const domain of this._domain_config) {
-            if (domain.no_labels) continue;
+        const i = extractLabeledCells(this._layout_config);
 
-            const d_from = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
-                  d_to   = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
+        for (const labeled of extractLabeledCells(this._layout_config)) {
+            const cell = labeled.cell;
 
-            let text = "",
-                pin_num = (domain.pins_to == null) ? domain.pins_from : domain.pins_to,
-                pin_dir = (domain.pins_to == null) ? 1 : -1;
+            let text = "*",
+                pos_y = cell.center.y - cell.size.y - text_bias;
 
-            pin_num = pin_num || 0;
-
-            switch (domain.role) {
-                case LabelLayer.CellRoles.Plus:     {text = "+"; break;}
-                case LabelLayer.CellRoles.Minus:    {text = "-"; break;}
+            switch (labeled.role) {
+                case LabelLayer.CellRoles.Plus:     {text = "+";                    break;}
+                case LabelLayer.CellRoles.Minus:    {text = "-";                    break;}
+                case LabelLayer.CellRoles.Analog:   {text = 'A' + labeled.pin_num;  break}
             }
 
-            const [d_from_y, d_to_y] = d_from.y > d_to.y ? [d_to.y, d_from.y] : [d_from.y, d_to.y],
-                  [d_from_x, d_to_x] = d_from.x > d_to.x ? [d_to.x, d_from.x] : [d_from.x, d_to.x];
+            switch (labeled.label_pos) {
+                case "top":     pos_y = cell.center.y - cell.size.y - text_bias/2; break;
+                case "bottom":  pos_y = cell.center.y + cell.size.y + text_bias/2; break;
+                default:        pos_y = cell.center.y - cell.size.y/2 - text_bias; break;
+            }
 
-            for (let row = d_from_y; row <= d_to_y; row++) {
-                for (let col = d_from_x; col <= d_to_x; col++) {
-                    const cell = this.__grid.cell(col, row);
+            this._drawLabelText(cell.center.x, pos_y, text, font_size);
 
-                    if (domain.role === LabelLayer.CellRoles.Analog) {
-                        text = `A${pin_num}`;
-                    }
+            if (labeled.role === LabelLayer.CellRoles.Analog) {
+                let cx = labeled.cell.center.x,
+                    cy = pos_y;
 
-                    let pos_y = cell.center.y - cell.size.y - text_bias;
-
-                    switch (domain.label_pos) {
-                        case "top":     pos_y = cell.center.y - cell.size.y - text_bias/2; break;
-                        case "bottom":  pos_y = cell.center.y + cell.size.y + text_bias/2; break;
-                        default:        pos_y = cell.center.y - cell.size.y/2 - text_bias; break;
-                    }
-
-                    this._drawLabelText(cell.center.x, pos_y, text, font_size);
-
-                    if (domain.role === LabelLayer.CellRoles.Analog) {
-                        let cx = cell.center.x,
-                            cy = pos_y;
-
-                        switch (domain.value_orientation) {
-                            case 'north':   {cy -= cell.size.y; break;}
-                            case 'south':   {cy += cell.size.y * .10; break;}
-                            case 'west':    {cy -= cell.size.y * .45; cx -= cell.size.x * 1.2; break;}
-                            case "east":    {cy -= cell.size.y * .45; cx += cell.size.x * 1.2; break;}
-                        }
-
-                        this._pinval_labels[pin_num] =
-                            this._drawLabelText(cx, cy, '', font_size + 4);
-                    }
-
-                    pin_num += pin_dir;
+                switch (labeled.value_orientation) {
+                    case 'north':   {cy -= cell.size.y; break;}
+                    case 'south':   {cy += cell.size.y * .10; break;}
+                    case 'west':    {cy -= cell.size.y * .45; cx -= cell.size.x * 1.2; break;}
+                    case "east":    {cy -= cell.size.y * .45; cx += cell.size.x * 1.2; break;}
                 }
+
+                this._pinval_labels[labeled.pin_num] =
+                    this._drawLabelText(cx, cy, '', font_size + 4);
             }
         }
     }

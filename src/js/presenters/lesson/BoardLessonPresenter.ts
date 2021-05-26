@@ -5,6 +5,7 @@ import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsMode
 import ModalModel from "../../core/models/ModalModel";
 import {AlertType} from "../../core/views/modal/AlertView";
 import {ColorAccent} from "../../core/helpers/styles";
+import {ExerciseRunEvent} from "../../models/ProgressModel";
 
 export default class BoardLessonPresenter extends Presenter<BoardView.BoardView> {
     private board: BoardModel;
@@ -27,6 +28,11 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
     private updateSettingsChange() {
         this.board.setPassive(this.settings.getBoolean('general.is_demo'));
         this.view.setVerbose(this.settings.getBoolean('board.is_verbose') as boolean);
+    }
+
+    @on(ExerciseRunEvent)
+    private prepareForExercise() {
+        this.board.resetAnalog();
     }
 
     @on(BoardView.ShortCircuitStartEvent)

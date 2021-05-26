@@ -9,6 +9,8 @@ import AsynchronousModel, {
     listen,
     connect,
 } from "../../core/base/model/AsynchronousModel";
+import {extractLabeledCells} from "../../utils/breadboard/core/extras/helpers";
+import LabelLayer from "../../utils/breadboard/layers/LabelLayer";
 
 // Event channels
 const enum ChannelsTo {
@@ -298,28 +300,15 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     }
 
     public resetAnalog() {
-        // const domains = BoardModel.Layouts[this.state.layout_name].domains;
-        //
-        // const pins = [];
-        //
-        // for (const domain of domains) {
-        //     if (!domain.pin_state_initial) continue;
-        //
-        //
-        // }
+        const layout = BoardModel.Layouts[this.state.layout_name];
 
-        this.emit(new BoardAnalogResetEvent({
-            arduino_pins: {
-                0: [PinDirection.Input, 0],
-                1: [PinDirection.Input, 0],
-                2: [PinDirection.Input, 0],
-                3: [PinDirection.Input, 0],
-                8: [PinDirection.Output, 0],
-                9: [PinDirection.Output, 0],
-                10: [PinDirection.Output, 0],
-                11: [PinDirection.Output, 0],
-            }
-        }));
+        const pins: [number, string|number][] = [];
+
+        for (const cell of extractLabeledCells(layout, LabelLayer.CellRoles.Analog)) {
+            pins.push([cell.pin_num, cell.pin_state_initial]);
+        }
+
+        this.emit(new BoardAnalogResetEvent({arduino_pins: pins}));
     }
 }
 
@@ -412,5 +401,5 @@ export class BoardStatusEvent extends ModelEvent<BoardStatusEvent> {
 }
 
 export class BoardAnalogResetEvent extends ModelEvent<BoardAnalogResetEvent> {
-    arduino_pins: {[key: number]: ArduinoPin};
+    arduino_pins: [number, string|number][];
 }

@@ -495,7 +495,7 @@ export default class Breadboard {
 
         this._layers.background.setDomainConfig(this._layout.domains);
         this._layers.controls.setLayoutConfig(this._layout.controls);
-        this._layers.label.setDomainConfig(this._layout.domains);
+        this._layers.label.setLayoutConfig(this._layout);
         this._layers.plate.setPlateStyle(this._layout.plate_style);
         this._layers.label.setLabelStyle(this._layout.label_style);
 

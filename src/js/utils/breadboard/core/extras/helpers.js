@@ -1,13 +1,71 @@
 import Grid from "../Grid";
 import SVG from "svg.js";
 import PlateLayer from "../../layers/PlateLayer";
-import merge from "lodash/merge";
+import defaults from "lodash/defaults";
+import LabelLayer from "js/utils/breadboard/layers/LabelLayer";
 
 export function mod(x, base) {
     return ((x % base) + base) % base;
 }
 
-export const coverObjects = (o, d) => merge(d, o);
+export const coverObjects = (o, d) => defaults(o, d);
+
+/**
+ * Loop over labeled cells in layout config
+ *
+ * @param layout source board layout
+ * @param role domain role to filter by
+ *
+ * @return {Generator<{
+ *              cell: Cell,
+ *              role: string,
+ *              label_pos: string,
+ *              value_orientation: string,
+ *              pin_num: (number|undefined),
+ *              pin_state_initial: (string|number|undefined)
+ *          }>}
+ */
+export function* extractLabeledCells(layout, role=null) {
+    const grid = buildGrid(layout);
+
+    for (const domain of layout.domains) {
+        if (domain.no_labels) continue;
+        if (!domain.role) continue;
+
+        // filter if filtering role is specified
+        if (role !== null && role !== domain.role) continue;
+
+        const d_from = grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
+              d_to   = grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
+
+        let pin_num = (domain.pins_to == null) ? domain.pins_from : domain.pins_to,
+            pin_dir = (domain.pins_to == null) ? 1 : -1;
+
+        pin_num = pin_num || 0;
+
+        const [d_from_y, d_to_y] = d_from.y > d_to.y ? [d_to.y, d_from.y] : [d_from.y, d_to.y],
+              [d_from_x, d_to_x] = d_from.x > d_to.x ? [d_to.x, d_from.x] : [d_from.x, d_to.x];
+
+        for (let row = d_from_y; row <= d_to_y; row++) {
+            for (let col = d_from_x; col <= d_to_x; col++) {
+                const cell = grid.cell(col, row);
+
+                const is_analog = domain.role === LabelLayer.CellRoles.Analog;
+
+                yield {
+                    cell,
+                    role: domain.role,
+                    label_pos: domain.label_pos,
+                    value_orientation: domain.value_orientation,
+                    pin_num: is_analog && pin_num,
+                    pin_state_initial: is_analog && domain.pin_state_initial || 0
+                };
+
+                pin_num += pin_dir;
+            }
+        }
+    }
+}
 
 export function copyTextToClipboard(text) {
     if (!navigator.clipboard) {

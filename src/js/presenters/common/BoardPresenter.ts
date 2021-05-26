@@ -62,13 +62,23 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     private resetArduinoPins(evt: BoardAnalogResetEvent) {
         const commands = [];
 
-        for (const [key, pin] of Object.entries(evt.arduino_pins)) {
+        for (const [pin_num, pin_val] of evt.arduino_pins) {
+            let cmd = 'arduino_out_write_pwm',
+                val =  pin_val;
+
+            if (typeof(pin_val) === 'string') {
+                cmd = 'arduino_out_write_logical';
+                val = pin_val === 'input' ? 1 : 0;
+            }
+
             commands.push({
-                name: 'arduino_out_write_logical',
+                name: cmd,
                 block_id: null,
-                // 1 - "-", 0 - "+"
-                args: [{type: "expression", value: String(key)}, {type: "number", value: 1}]
-            })
+                args: [
+                    {type: "expression", value: String(pin_num)},
+                    {type: "number", value: val}
+                ]
+            });
         }
 
         this.code.executeOnce(commands);

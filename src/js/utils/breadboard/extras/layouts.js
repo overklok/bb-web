@@ -48,7 +48,7 @@ export const LAYOUTS = {
                 line_before: 1,
                 label_pos: "top",
                 value_orientation: 'north',
-                pin_state_initial: ["input", 0]
+                pin_state_initial: "input"
             },
 
             // Одиночные контакты - аналоговые пины
@@ -58,7 +58,6 @@ export const LAYOUTS = {
                 minus: {x: 4, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 4,
                 value_orientation: 'east',
-                pin_state_initial: ["input", 0]
             },
             {
                 horz: false,
@@ -66,7 +65,6 @@ export const LAYOUTS = {
                 minus: {x: 5, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 5,
                 value_orientation: 'east',
-                pin_state_initial: ["input", 0]
             },
             {
                 horz: false,
@@ -74,7 +72,6 @@ export const LAYOUTS = {
                 minus: {x: 6, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 6,
                 value_orientation: 'east',
-                pin_state_initial: ["input", 0]
             },
             {
                 horz: false,
@@ -82,7 +79,6 @@ export const LAYOUTS = {
                 minus: {x: 7, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog, pins_from: 7,
                 value_orientation: 'east',
-                pin_state_initial: ["input", 0]
             },
 
             // Нижняя линия
@@ -106,7 +102,7 @@ export const LAYOUTS = {
                 line_before: 1,
                 label_pos: "bottom",
                 value_orientation: 'south',
-                pin_state_initial: ["input", 0]
+                pin_state_initial: "output"
             },
 
             // Три группы вертикальных линий

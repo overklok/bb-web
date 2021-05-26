@@ -64,6 +64,7 @@ export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
     public executeOnce(commands: any) {
         this.send(ChannelsFrom.CodeUpdate, {
             launch: true,
+            pause: 0,
             commands: commands
         });
 
