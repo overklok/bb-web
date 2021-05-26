@@ -437,8 +437,8 @@ export default class PlateLayer extends Layer {
 
                 /// обновить состояние
                 this.setPlateState(id, {
-                    input: plate.dynamic.input,
-                    output: plate.dynamic.output,
+                    input: plate.dynamic && plate.dynamic.input,
+                    output: plate.dynamic && plate.dynamic.output,
                 });
             }
         }

@@ -34,7 +34,7 @@ module.exports = (env, argv) => {
         entry: getEntries(env),
         devtool: is_dev ? 'eval-source-map' : 'source-map',
         optimization: {
-            minimizer: getMinimizer(is_dev)
+            minimizer: getMinimizer(is_dev),
         },
         output: {
             publicPath: "/"

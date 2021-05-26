@@ -78,7 +78,9 @@
     flex-grow: 1;
 }
 
-.bb-menu-item-input {}
+.bb-menu-item-input {
+    width: 60px;
+}
 
 @-webkit-keyframes flash {
 	0% { opacity: 1; }

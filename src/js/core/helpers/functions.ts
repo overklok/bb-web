@@ -1,6 +1,6 @@
 //import isUndefined from "lodash/isUndefined";
 //import partialRight from "lodash/partialRight";
-import merge from "lodash/merge";
+import defaults from "lodash/defaults";
 
 async function sleep(ms: number): Promise<void> {await new Promise(r => setTimeout(r, ms))}
 
@@ -9,7 +9,7 @@ type KeyValuePair = {[key: string]: any};
 // const coverObjects: (options: KeyValuePair, defaults: KeyValuePair) => KeyValuePair
 //    = partialRight(mergeWith, (obj: KeyValuePair, src: KeyValuePair) => isUndefined(obj) ? src : obj);
 const coverObjects: (options: KeyValuePair, defaults: KeyValuePair) => KeyValuePair =
-    (o, d) => merge(d, o);
+    (o, d) => defaults(o, d);
 
 function getClassNameAlias(class_name: string, postfix?: string) {
     if (postfix) {
