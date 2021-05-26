@@ -171,6 +171,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.setState({layout_confirmed: false});
         const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
+        this.resetAnalog();
     }
 
     @listen(ChannelsFrom.BoardConnected)
@@ -295,6 +296,31 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
         this.emit(new ElectronicEvent({threads, elements, arduino_pins}));
     }
+
+    public resetAnalog() {
+        // const domains = BoardModel.Layouts[this.state.layout_name].domains;
+        //
+        // const pins = [];
+        //
+        // for (const domain of domains) {
+        //     if (!domain.pin_state_initial) continue;
+        //
+        //
+        // }
+
+        this.emit(new BoardAnalogResetEvent({
+            arduino_pins: {
+                0: [PinDirection.Input, 0],
+                1: [PinDirection.Input, 0],
+                2: [PinDirection.Input, 0],
+                3: [PinDirection.Input, 0],
+                8: [PinDirection.Output, 0],
+                9: [PinDirection.Output, 0],
+                10: [PinDirection.Output, 0],
+                11: [PinDirection.Output, 0],
+            }
+        }));
+    }
 }
 
 // Types
@@ -330,6 +356,12 @@ export type Thread = {
 export type BoardLayout = {
     grid_rows: number;
     grid_cols: number;
+    domains: {
+        horz: boolean;
+        from: {x: number, y: number},
+        to: {x: number, y: number},
+        pin_state_initial?: any
+    }[];
 }
 
 // Event data types
@@ -377,4 +409,8 @@ export class BoardLayoutEvent extends ModelEvent<BoardLayoutEvent> {
 
 export class BoardStatusEvent extends ModelEvent<BoardStatusEvent> {
     status: 'connected' | 'disconnected' | 'searching';
+}
+
+export class BoardAnalogResetEvent extends ModelEvent<BoardAnalogResetEvent> {
+    arduino_pins: {[key: number]: ArduinoPin};
 }

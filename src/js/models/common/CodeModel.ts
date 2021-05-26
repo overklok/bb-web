@@ -61,6 +61,15 @@ export default class CodeModel extends AsynchronousModel<BlocklyModelState> {
         this.setState({chainset});
     }
 
+    public executeOnce(commands: any) {
+        this.send(ChannelsFrom.CodeUpdate, {
+            launch: true,
+            commands: commands
+        });
+
+        this.launching = false;
+    }
+
     public executeMainChain() {
         if (this.launching === true) {
             console.warn('Another program is launching now, skipping');

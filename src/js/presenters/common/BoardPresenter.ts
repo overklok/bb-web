@@ -1,11 +1,19 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import BoardView from "../../views/common/BoardView";
-import BoardModel, {ElectronicEvent, BoardOptionsEvent, PlateEvent} from "../../models/common/BoardModel";
+import BoardModel, {
+    ElectronicEvent,
+    BoardOptionsEvent,
+    PlateEvent,
+    BoardAnalogResetEvent
+} from "../../models/common/BoardModel";
+import CodeModel from "../../models/common/CodeModel";
 
 export default class BoardPresenter extends Presenter<BoardView.BoardView> {
+    private code: CodeModel;
     private board: BoardModel;
 
     public getInitialProps() {
+        this.code = this.getModel(CodeModel);
         this.board = this.getModel(BoardModel);
 
         const board_state = this.board.getState();
@@ -48,5 +56,21 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
                 highlighted: element.highlight
             });
         }
+    }
+
+    @restore() @on(BoardAnalogResetEvent)
+    private resetArduinoPins(evt: BoardAnalogResetEvent) {
+        const commands = [];
+
+        for (const [key, pin] of Object.entries(evt.arduino_pins)) {
+            commands.push({
+                name: 'arduino_out_write_logical',
+                block_id: null,
+                // 1 - "-", 0 - "+"
+                args: [{type: "expression", value: String(key)}, {type: "number", value: 1}]
+            })
+        }
+
+        this.code.executeOnce(commands);
     }
 }

@@ -31,6 +31,7 @@ import DumpSnapshotView from "./views/controls/DumpSnapshotView";
 import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
 
 import "../css/global.less";
+import CodeModel from "./models/common/CodeModel";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;
@@ -83,6 +84,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
         svc_model.register(ConnectionModel, ads);
         svc_model.register(ModalModel,  dds);
         svc_model.register(LogModel, hds);
+        svc_model.register(CodeModel, ads);
         svc_model.register(BoardModel, ads, {
             layout_name: this.config.layout_name,
         });
