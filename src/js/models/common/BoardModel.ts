@@ -173,7 +173,6 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.setState({layout_confirmed: false});
         const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
-        this.resetAnalog();
     }
 
     @listen(ChannelsFrom.BoardConnected)
@@ -214,6 +213,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      */
     @listen(ChannelsFrom.BoardLayoutName)
     private receiveBoardLayoutName(layout_name: string) {
+        this.resetAnalog();
+
         if (this.state.layout_name === layout_name) {
             // confirm board data change
             this.setState({layout_confirmed: true});
@@ -300,6 +301,8 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     }
 
     public resetAnalog() {
+        console.log('reset analog');
+
         const layout = BoardModel.Layouts[this.state.layout_name];
 
         const pins: [number, string|number][] = [];
