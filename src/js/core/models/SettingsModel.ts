@@ -1,3 +1,7 @@
+import isEqual from "lodash/isEqual";
+import cloneDeep from "lodash/cloneDeep";
+import defaultsDeep from "lodash/defaultsDeep";
+
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import Model from "../base/model/Model";
 import {ModelEvent} from "../base/Event";
@@ -14,6 +18,7 @@ import {assert} from "../helpers/functions";
 interface Settings {
     config: SettingsConfig;
     values: SettingsValues;
+    uncommitted: SettingsValues;
 }
 
 export default class SettingsModel extends Model<Settings, DummyDatasource> {
@@ -21,7 +26,8 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
 
     protected defaultState: Settings = {
         config: {},
-        values: {}
+        values: {},
+        uncommitted: {},
     };
 
     init(state: Partial<Settings>) {
@@ -61,18 +67,6 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         return this.getValue(path, SettingType.String) as string;
     }
 
-    /**
-     * Apply specific settings as a tree or array of key-value pairs
-     *
-     * @param values
-     * @param is_manual
-     */
-    public applySettings(values: SettingsValues, is_manual: boolean = false) {
-        this.setState({values}, true);
-
-        this.emit(new SettingsChangeEvent({values: values, is_manual}));
-    }
-
     public getValue(path: string, check_type?: SettingType): SettingValue {
         const [cat_key, key] = this.splitSettingPath(path);
 
@@ -85,12 +79,46 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         return this.state.values[cat_key][key];
     }
 
-    public setValue(path: string, value: SettingValue, is_manual: boolean = false): void {
+    public setValue(path: string, value: SettingValue, force: boolean = false): void {
         let cat_key, key;
 
-        [cat_key, key, value] = this.setSettingValueState(path, value);
+        [cat_key, key, value] = this.validateSetting(path, value);
 
-        this.applySettings({[cat_key]: {[key]: value}}, is_manual);
+        this.setValues({[cat_key]: {[key]: value}}, force);
+    }
+
+    /**
+     * Apply specific settings as a tree or array of key-value pairs
+     *
+     * @param values
+     * @param force
+     */
+    public setValues(values: SettingsValues, force: boolean = false) {
+        if (force) {
+            this.setState({uncommitted: values}, true);
+        } else {
+            this.setState({values}, true);
+        }
+
+        this.emit(new SettingsChangeEvent({values, force}));
+    }
+
+    public commit() {
+        this.setState({values: this.getState().uncommitted}, true);
+        this.setState({uncommitted: {}});
+    }
+
+    public hasUncommitted() {
+        const state = this.getState();
+
+        const committed = defaultsDeep(state.uncommitted, state.values);
+
+        return !isEqual(committed, state.values);
+    }
+
+    public rejectUncommitted() {
+        this.setState({uncommitted: {}});
+        this.emit(new SettingsChangeEvent({values: this.getState().values, force: false}));
     }
 
     public isLocked(path: string): boolean {
@@ -100,17 +128,18 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
     }
 
     /**
-     * Set state for specific key-value pair of settings
+     * Get category, key and validate value for specific key-value pair of settings
      *
      * @param path
      * @param value
+     *
      * @protected
      */
-    protected setSettingValueState<SV extends SettingValue>(path: string, value: SV): [string, string, SV] {
+    protected validateSetting<SV extends SettingValue>(path: string, value: SV): [string, string, SV] {
         const [cat_key, key] = this.splitSettingPath(path);
 
         // set setting value
-        this.state.values[cat_key][key] = value;
+        // this.state.values[cat_key][key] = value;
 
         // check value type
         const type = this.getSetting(cat_key, key).type;
@@ -148,5 +177,5 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
 export class SettingsModalEvent extends ModelEvent<SettingsModalEvent> {}
 export class SettingsChangeEvent extends ModelEvent<SettingsChangeEvent> {
     values: SettingsValues;
-    is_manual: boolean;
+    force: boolean;
 }

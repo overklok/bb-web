@@ -1,6 +1,7 @@
 import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsModel";
 import Presenter, {on} from "../../core/base/Presenter";
 import {SettingsView} from "../../views/controls/SettingsView";
+import defaultsDeep from "lodash/defaultsDeep";
 
 export default class SettingsPresenter extends Presenter<SettingsView.SettingsView> {
     private settings: SettingsModel;
@@ -23,8 +24,11 @@ export default class SettingsPresenter extends Presenter<SettingsView.SettingsVi
 
     @on(SettingsChangeEvent)
     handleModelChange() {
+        const state = this.settings.getState();
+        const committed = defaultsDeep(state.uncommitted, state.values);
+
         this.setViewProps({
-            values: this.settings.getState().values
+            values: committed
         })
     }
 }

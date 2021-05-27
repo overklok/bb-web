@@ -1,12 +1,11 @@
 {
   "name": "tapanda-board-web",
-  "version": "1.0.4-c",
+  "version": "1.0.4-d",
   "description": "A Tapanda project's web GUI module",
   "main": "MainApplication.ts",
   "dependencies": {
     "@types/js-cookie": "^2.2.6",
     "@types/lodash": "^4.14.168",
-    "@types/lodash-es": "^4.17.4",
     "@types/react": "^16.14.5",
     "@types/react-dom": "^16.9.11",
     "@types/react-transition-group": "^4.4.1",

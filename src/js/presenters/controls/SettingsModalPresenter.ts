@@ -25,7 +25,7 @@ export default class SettingsModalPresenter extends ModalPresenter {
 
     @on(SettingsModalEvent)
     showSettingsModal() {
-        this.saveSettings();
+        this.model.commit();
 
         this.mdl = this.pushModal({
             widget_alias: 'settings',
@@ -46,12 +46,12 @@ export default class SettingsModalPresenter extends ModalPresenter {
                             break;
                         }
                         case ModalAction.Dismiss: {
-                            this.rollbackSettings();
+                            this.model.rejectUncommitted();
                             this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
                             break;
                         }
                         case ModalAction.Accept: {
-                            this.saveSettings();
+                            this.model.commit();
                             this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
                             break;
                         }
@@ -62,7 +62,7 @@ export default class SettingsModalPresenter extends ModalPresenter {
     }
 
     handleModalEscape() {
-        if (!this.isDirty()) {
+        if (!this.model.hasUncommitted()) {
             this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
             return;
         }
@@ -77,30 +77,11 @@ export default class SettingsModalPresenter extends ModalPresenter {
                 is_dismissible: true,
                 on_action: action => {
                     if (action === ModalAction.Dismiss) {
-                        this.rollbackSettings();
+                        this.model.rejectUncommitted();
                         this.closeModal(this.mdl, SettingsModalPresenter.ModalType);
                     } 
                 }
             }
         })
-    }
-
-    public saveSettings() {
-        this.saved = this.model.getState().values;
-    }
-
-    public isDirty() {
-        return !isEqual(this.saved, this.model.getState().values);
-    }
-
-    public rollbackSettings() {
-        this.model.applySettings(this.saved);
-    }
-
-    @on(SettingsChangeEvent)
-    handleModelChange(evt: SettingsChangeEvent) {
-        if (!evt.is_manual) {
-            this.saved = defaultsDeep(evt.values, this.saved);
-        }
     }
 }
