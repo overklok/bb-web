@@ -1,6 +1,7 @@
 import Plate from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
+import {mod} from "~/js/utils/breadboard/core/extras/helpers";
 
 export default class PhotoresistorPlate extends LinearPlate {
     static get Alias() {return "photoresistor"}
@@ -46,12 +47,22 @@ export default class PhotoresistorPlate extends LinearPlate {
         super.rotate(orientation);
     }
 
-    setState(state, suppress_events = false) {
-        super.setState(state, suppress_events);
+    inputIncrement() {
+        this.setState({input: mod(Number(this.input) + 1, 256)});
+    }
 
+    inputDecrement() {
+        this.setState({input: mod(Number(this.input) - 1, 256)});
+    }
+
+    setState(state, suppress_events = false) {
         if (state.input === undefined) return;
 
-        let input = state.input;
+        let input = state.input || 0;
+
+        input = Math.min(Math.max(input, 0), 255);
+
+        super.setState({input}, suppress_events);
 
         if (this._params.verbose) {
             this._redrawInput(input);

@@ -35,26 +35,6 @@ export default class RheostatPlate extends Plate {
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
 
-    /**
-     * Установить состояние резистора
-     *
-     * @param {object} state    новое состояние резистора
-     * @param suppress_events   глушить вызов событий
-     */
-    setState(state, suppress_events) {
-        if (state.input === undefined) return;
-
-        let input = state.input;
-
-        input = Math.min(Math.max(input, 0), 255);
-
-        super.setState({input}, suppress_events);
-
-        if (this._params.verbose) {
-            this._redrawInput(state.input);
-        }
-    }
-
     get input() {
         return Number(this._state.input);
     }
@@ -84,6 +64,26 @@ export default class RheostatPlate extends Plate {
 
     inputDecrement() {
         this.setState({input: mod(Number(this.input) - 1, 256)});
+    }
+
+    /**
+     * Установить состояние резистора
+     *
+     * @param {object} state    новое состояние резистора
+     * @param suppress_events   глушить вызов событий
+     */
+    setState(state, suppress_events) {
+        if (state.input === undefined) return;
+
+        let input = state.input || 0;
+
+        input = Math.min(Math.max(input, 0), 255);
+
+        super.setState({input}, suppress_events);
+
+        if (this._params.verbose) {
+            this._redrawInput(state.input);
+        }
     }
 
     _redrawInput(input_value) {
