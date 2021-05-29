@@ -56,7 +56,7 @@ export default class ButtonPlate extends LinearPlate {
 
         super.setState(state, suppress_events);
 
-        this._rotateJumper();
+        this._toggleJumper();
 
         if (this._params.verbose) {
             this._redrawInput(state.input);
@@ -71,7 +71,7 @@ export default class ButtonPlate extends LinearPlate {
         this.inputIncrement();
     }
 
-    _rotateJumper() {
+    _toggleJumper() {
         let line_len = this.rect2.x() - this.rect1.x();
         let line_gap = line_len / 6;
 
@@ -138,6 +138,6 @@ export default class ButtonPlate extends LinearPlate {
         this._group.circle(this.rect1.width() / 3).center(this.rect1.cx() + line_len/2 - line_gap, this.rect1.cy());
         this._group.circle(this.rect1.width() / 3).center(this.rect1.cx() + line_len/2 + line_gap, this.rect1.cy());
 
-        this._rotateJumper();
+        this._toggleJumper();
     }
 }

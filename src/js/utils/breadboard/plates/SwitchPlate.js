@@ -33,11 +33,13 @@ export default class SwitchPlate extends ButtonPlate {
         // this._group.text(`Switch`).font({size: 20});
     };
 
-    _rotateJumper() {
+    _toggleJumper() {
         if (this.state.input) {
-            this.line_jumper.hide();
+            this.jumper_off.show();
+            this.jumper_on.hide();
         } else {
-            this.line_jumper.show();
+            this.jumper_off.hide();
+            this.jumper_on.show();
         }
     }
 
@@ -67,13 +69,11 @@ export default class SwitchPlate extends ButtonPlate {
         let line_right = this._group.path([
             ['M', cell1.center_rel.x, cell1.center_rel.y],
             ['H', cell3.rel.x],
-            // ['L', contact_node.x, contact_node.y],
         ]);
 
         let line_left = this._group.path([
             ['M', cell2.center_rel.x, cell2.center_rel.y],
             ['H', cell3.rel.x + cell3.size.x],
-            ['L', contact_point.x, contact_point.y],
         ]);
 
         let line_middle = this._group.path([
@@ -81,17 +81,24 @@ export default class SwitchPlate extends ButtonPlate {
             ['V', contact_point.y]
         ]);
 
-        this.line_jumper = this._group.path([
-            ['M', contact_point.x, contact_point.y],
+        this.jumper_off = this._group.path([
+            ['M', cell3.center_rel.x, cell3.center_rel.y],
+            ['L', contact_point.x, contact_point.y],
             ['L', cell1.center_rel.x + cell1.size.x, cell1.center_rel.y],
             ['L', cell1.center_rel.x, cell1.center_rel.y]
+        ]);
+
+        this.jumper_on = this._group.path([
+            ['M', cell1.center_rel.x, cell1.center_rel.y],
+            ['H', cell3.rel.x + cell3.size.x],
         ]);
 
         line_right.stroke({width: 3}).fill('none');
         line_left.stroke({width: 3}).fill('none');
         line_middle.stroke({width: 3}).fill('none');
-        this.line_jumper.stroke({width: 3}).fill('none');
+        this.jumper_off.stroke({width: 3}).fill('none');
+        this.jumper_on.stroke({width: 3}).fill('none');
 
-        this._rotateJumper();
+        this._toggleJumper();
     }
 }
