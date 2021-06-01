@@ -55,24 +55,31 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         this.emit(new SettingsModalEvent());
     }
 
-    public getBoolean(path: string): boolean {
-        return this.getValue(path, SettingType.Boolean) as boolean;
+    public getBoolean(path: string, get_uncommited = false): boolean {
+        return this.getValue(path, SettingType.Boolean, get_uncommited) as boolean;
     }
 
-    public getNumber(path: string): number {
-        return this.getValue(path, SettingType.Number) as number;
+    public getNumber(path: string, get_uncommited = false): number {
+        return this.getValue(path, SettingType.Number, get_uncommited) as number;
     }
 
-    public getString(path: string): string {
-        return this.getValue(path, SettingType.String) as string;
+    public getString(path: string, get_uncommited = false): string {
+        return this.getValue(path, SettingType.String, get_uncommited) as string;
     }
 
-    public getValue(path: string, check_type?: SettingType): SettingValue {
+    public getValue(path: string, check_type?: SettingType, get_uncommited = false): SettingValue {
         const [cat_key, key] = this.splitSettingPath(path);
 
         // check setting type
         if (check_type) {
             assert(this.getSetting(cat_key, key).type == check_type);
+        }
+
+        if (get_uncommited &&
+            cat_key in this.state.uncommitted &&
+            key in this.state.uncommitted[cat_key]
+        ) {
+            return this.state.uncommitted[cat_key][key];
         }
 
         // get setting value

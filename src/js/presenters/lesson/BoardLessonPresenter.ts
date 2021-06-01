@@ -27,9 +27,9 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
 
     @restore() @on(SettingsChangeEvent)
     private updateSettingsChange() {
-        this.board.setPassive(this.settings.getBoolean('general.is_demo'));
-        this.view.setVerbose(this.settings.getBoolean('board.is_verbose') as boolean);
-        this.view.setDebug(this.settings.getBoolean('board.is_debug') as boolean);
+        this.board.setPassive(this.settings.getBoolean('general.is_demo', true));
+        this.view.setVerbose(this.settings.getBoolean('board.is_verbose', true));
+        this.view.setDebug(this.settings.getBoolean('board.is_debug', true));
     }
 
     @on(ExerciseRunEvent)

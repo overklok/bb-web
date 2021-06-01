@@ -111,7 +111,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     @on(SettingsChangeEvent)
     private updateSettingsChange() {
         this.setViewProps({
-            is_demo: this.model_settings.getValue('general.is_demo') as boolean,
+            is_demo: this.model_settings.getBoolean('general.is_demo', true),
         });
     }
 }
