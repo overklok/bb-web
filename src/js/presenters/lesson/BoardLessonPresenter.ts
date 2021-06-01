@@ -40,6 +40,8 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
     @on(BoardView.ShortCircuitStartEvent)
     private showShortCircuitAlert() {
         const readonly = !(this.settings.getValue('general.is_demo') || !this.board.getState().readonly);
+        
+        this.shortCircuitEndAlert();
 
         if (readonly) {
             this.modal.showAlert(AlertType.ShortCircuit);
@@ -53,15 +55,11 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
     }
 
     @on(BoardView.ShortCircuitEndEvent)
-    private shortCircuitEndEvent() {
-        const readonly = !this.settings.getValue('general.is_demo');
-
-        if (readonly) {
-            this.modal.hideAlert(AlertType.ShortCircuit);
-        } else {
-            if (this.sctoast == null) return;
-
+    private shortCircuitEndAlert() {
+        if (this.sctoast != null) {
             this.modal.hideToast(this.sctoast);
+        } else {
+            this.modal.hideAlert(AlertType.ShortCircuit);
         }
     }
 }

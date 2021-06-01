@@ -246,8 +246,11 @@ export default class CurrentLayer extends Layer {
             }
         }
 
+        if (this._shorted === true) {
+            this._callbacks.shortcircuitend();
+        }
+
         this._shorted = false;
-        this._callbacks.shortcircuitend();
     }
 
     /**
