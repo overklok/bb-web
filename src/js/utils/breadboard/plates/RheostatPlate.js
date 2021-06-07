@@ -17,6 +17,7 @@ export default class RheostatPlate extends Plate {
 
         this._params.origin = {x: 0, y: 0};
 
+        this._state.input = 0;
     }
 
     /**

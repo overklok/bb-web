@@ -1,6 +1,6 @@
 {
   "name": "tapanda-board-web",
-  "version": "1.0.4e",
+  "version": "1.0.4f",
   "description": "A Tapanda project's web GUI module",
   "main": "MainApplication.ts",
   "dependencies": {

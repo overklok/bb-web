@@ -8,6 +8,8 @@ export default class PhotoresistorPlate extends LinearPlate {
 
     constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
         super(container, grid, schematic, verbose, id, props);
+
+        this._state.input = 0;
     }
 
     /**
