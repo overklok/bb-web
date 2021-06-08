@@ -53,6 +53,7 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         this.setRootRef = this.setRootRef.bind(this);
         this.showPopup  = this.showPopup.bind(this);
         this.disablePopupVisibility = this.disablePopupVisibility.bind(this);
+        this.updatePopupPosition = this.updatePopupPosition.bind(this);
 
         this.ref_popup = React.createRef();
 
@@ -70,14 +71,15 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
 
         this.div_root = element;
 
-        const {top, left} = this.div_root.getBoundingClientRect();
-        this.setState({top, left});
+        this.updatePopupPosition();
     }
 
     componentDidMount() {
         if (this.state.is_popup_visible) {
             this.show_timeout = global.setTimeout(this.disablePopupVisibility, TIME_SHOW);
         }
+
+        window.addEventListener('resize', this.updatePopupPosition);
     }
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
@@ -92,6 +94,7 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
 
     componentWillUnmount() {
         clearTimeout(this.show_timeout);
+        window.removeEventListener('resize', this.updatePopupPosition);
     }
 
     disablePopupVisibility() {
@@ -104,6 +107,11 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         this.setState({is_popup_visible: true});
 
         this.show_timeout = global.setTimeout(this.disablePopupVisibility, TIME_SHOW);
+    }
+
+    updatePopupPosition() {
+        const {top, left} = this.div_root.getBoundingClientRect();
+        this.setState({top, left});
     }
 
     render() {

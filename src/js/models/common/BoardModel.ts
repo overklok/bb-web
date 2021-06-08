@@ -301,8 +301,6 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
     }
 
     public resetAnalog() {
-        console.log('reset analog');
-
         const layout = BoardModel.Layouts[this.state.layout_name];
 
         const pins: [number, string|number][] = [];
