@@ -53,7 +53,8 @@ const CATEGORIES = {
         colour: "#ffce75"
     },
     EVENTS: {
-        colour: "#0800a1"
+        colour: "#00a511"
+        // colour: "#0800a1"
     },
     MATH: {
         colour: "#3200ff"
@@ -191,7 +192,7 @@ const BLOCK_INPUTS_CONSTRAINTS = {
 
     DUMMY_VARS: [
         ['dummy_1', 'dummy_out_value_1'],
-        ['dummy_2', 'dummy_out_value_1'],
+        ['dummy_2', 'dummy_out_value_2'],
     ]
 };
 

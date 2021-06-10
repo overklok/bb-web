@@ -540,7 +540,51 @@ let JSONBlocks = {
                 tooltip:            "Все цвета гирлянды смещаются вправо на 1 позицию"
             })
         }
-    }
+    },
+
+    math_number_brightness: {
+        init: function() {
+            this.jsonInit({
+                type: "block_type",
+                message0: "%1",
+                args0: [
+                    {
+                        type: "field_number",
+                        name: "NUM",
+                        min: 0,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_COMPONENT_VALUE,
+                        precision: 1
+                    },
+                ],
+                inputsInline: true,
+                output: FIELDTYPES.NUMBER,
+                colour: CATEGORIES.BRIGHTNESS.colour,
+                tooltip: "Уровень яркости"
+            });
+        }
+    },
+
+    math_number_index: {
+        init: function() {
+            this.jsonInit({
+                type: "block_type",
+                message0: "%1",
+                args0: [
+                    {
+                        type: "field_number",
+                        name: "NUM",
+                        min: 1,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_INDEX_VALUE,
+                        precision: 1
+                    },
+                ],
+                inputsInline: true,
+                output: FIELDTYPES.NUMBER,
+                colour: CATEGORIES.INDEX.colour,
+                tooltip: "Номер лампочки"
+            });
+        }
+    },
 };
 
 export default JSONBlocks;

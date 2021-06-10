@@ -227,6 +227,7 @@ export default class BlocklyWrapper {
         /// Задать контейнерам соответствующие идентификаторы
         this.container.setAttribute("id", DIV_IDS.BLOCKLY);
         this.toolbox.setAttribute("id", DIV_IDS.TOOLBOX);
+        this.toolbox.innerHTML = '<category name="Unknown"></category>';
 
         if (!read_only) {
             this.dimmer.setAttribute("id", DIV_IDS.DIMMER);
@@ -245,6 +246,7 @@ export default class BlocklyWrapper {
         this.workspace = Blockly.inject(
             this.container,
             {
+                trashcan: false,
                 toolbox: this.toolbox,
                 readOnly: read_only,
                 sounds: false,
@@ -392,8 +394,18 @@ export default class BlocklyWrapper {
 
         let block_type_array = Array.isArray(block_types) ? block_types : Object.keys(block_types);
 
-        for (let block_type of block_type_array) {
-            toolbox_content += "<block type='" + block_type + "'></block>";
+        for (const category of this._block_types) {
+            const block_types = block_type_array.filter((value) => Object.keys(category.items).indexOf(value) > -1);
+
+            if (block_types.length > 0) {
+                toolbox_content += `<category colour=${category.colour} name='${category.name}'>`
+
+                for (const block_type of block_types) {
+                    toolbox_content += `<block type='${block_type}'></block>`;
+                }
+
+                toolbox_content += "</category>";
+            }
         }
 
         this.toolbox.innerHTML = toolbox_content;
@@ -983,8 +995,10 @@ export default class BlocklyWrapper {
      * @private
      */
     _loadBlocksJSON() {
-        for (let block_name of Object.keys(this._block_types)) {
-            Blockly.Blocks[block_name] = this._block_types[block_name];
+        for (const category of this._block_types) {
+            for (let block_name of Object.keys(category.items)) {
+                Blockly.Blocks[block_name] = category.items[block_name];
+            }
         }
     }
 

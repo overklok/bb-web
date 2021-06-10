@@ -5,15 +5,15 @@ import EventJSONBlocks      from './event/blocks';
 import StripJSONBlocks      from './strip/blocks';
 import ArduinoJSONBlocks    from './arduino/blocks';
 import DummyJSONBlocks        from './dummy/blocks';
+import { CATEGORIES } from './constants';
 
-let JSONBlocks = {};
-
-for (let math_block     in MathJSONBlocks)          {JSONBlocks[math_block] = MathJSONBlocks[math_block]}
-for (let logic_block    in LogicJSONBlocks)         {JSONBlocks[logic_block] = LogicJSONBlocks[logic_block]}
-for (let control_block  in ControlsJSONBlocks)      {JSONBlocks[control_block] = ControlsJSONBlocks[control_block]}
-for (let event_block    in EventJSONBlocks)         {JSONBlocks[event_block] = EventJSONBlocks[event_block]}
-for (let strip_block    in StripJSONBlocks)         {JSONBlocks[strip_block] = StripJSONBlocks[strip_block]}
-for (let arduino_block  in ArduinoJSONBlocks)       {JSONBlocks[arduino_block] = ArduinoJSONBlocks[arduino_block]}
-for (let dummy_block    in DummyJSONBlocks)         {JSONBlocks[dummy_block] = DummyJSONBlocks[dummy_block]}
+const JSONBlocks = [
+    {name: 'Арифметика', colour: CATEGORIES.MATH.colour,     items: {...MathJSONBlocks}},
+    {name: 'Логика',     colour: CATEGORIES.LOGIC.colour,    items: {...LogicJSONBlocks}},
+    {name: 'Управление', colour: CATEGORIES.LOOP.colour,     items: {...ControlsJSONBlocks, ...EventJSONBlocks}},
+    {name: 'Гирлянда',   colour: CATEGORIES.COLOUR.colour,   items: {...StripJSONBlocks}},
+    {name: 'Arduino',    colour: CATEGORIES.ARDUINO.colour,  items: {...ArduinoJSONBlocks}},
+    {name: 'Dummy',      colour: CATEGORIES.DUMMY.colour,    items: {...DummyJSONBlocks}}
+];
 
 export default JSONBlocks;

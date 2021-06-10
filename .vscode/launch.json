@@ -68,6 +68,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "npm",
+            "console": "integratedTerminal",
             "runtimeArgs": ["run", "watch:playground"]
         },
         {

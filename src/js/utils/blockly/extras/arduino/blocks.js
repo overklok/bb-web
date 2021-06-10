@@ -161,6 +161,28 @@ let JSONBlocks = {
             })
         }
     },
+    
+    math_number_pwm: {
+        init: function() {
+            this.jsonInit({
+                type: "block_type",
+                message0: "%1",
+                args0: [
+                    {
+                        type: "field_number",
+                        name: "NUM",
+                        min: 0,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_PWM_VALUE,
+                        precision: 1
+                    },
+                ],
+                inputsInline: true,
+                output: FIELDTYPES.NUMBER,
+                colour: CATEGORIES.PWM.colour,
+                tooltip: "Значение ШИМ"
+            });
+        }
+    }
 };
 
 export default JSONBlocks;

@@ -21,7 +21,7 @@ export default class RheostatPlate extends Plate {
     }
 
     /**
-     * Нарисовать резистор
+     * Нарисовать реостат
      *
      * @param {Cell}   position    положение резистора
      * @param {string}  orientation ориентация резистора

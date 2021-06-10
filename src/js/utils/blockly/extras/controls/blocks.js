@@ -1,4 +1,4 @@
-import {CATEGORIES, FIELDTYPES} from "../constants";
+import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS} from '../constants'
 import {appendShadowBlock} from "../_common";
 
 let JSONBlocks = {
@@ -26,6 +26,7 @@ let JSONBlocks = {
             appendShadowBlock(this, "SECS", "math_number_seconds");
         }
     },
+
     controls_repeat_ext: {
         init: function () {
             this.jsonInit({
@@ -48,7 +49,51 @@ let JSONBlocks = {
             });
             appendShadowBlock(this, "TIMES", "math_number_repeats");
         }
-  },
+    },
+
+    math_number_seconds: {
+        init: function() {
+            this.jsonInit({
+                type: "block_type",
+                message0: "%1",
+                args0: [
+                    {
+                        type: "field_number",
+                        name: "NUM",
+                        min: 1,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_WAIT_SECONDS,
+                        precision: 1
+                    },
+                ],
+                inputsInline: true,
+                output: FIELDTYPES.NUMBER,
+                colour: CATEGORIES.WAIT.colour,
+                tooltip: "Число секунд задержки"
+            });
+        }
+    },
+
+    math_number_repeats: {
+        init: function() {
+            this.jsonInit({
+                type: "block_type",
+                message0: "%1",
+                args0: [
+                    {
+                        type: "field_number",
+                        name: "NUM",
+                        min: 1,
+                        max: BLOCK_INPUTS_CONSTRAINTS.MAX_REPEAT_TIMES,
+                        precision: 1
+                    },
+                ],
+                inputsInline: true,
+                output: FIELDTYPES.NUMBER,
+                colour: CATEGORIES.LOOP.colour,
+                tooltip: "Число повторений цикла"
+            });
+        }
+    },
 };
 
 export default JSONBlocks;
