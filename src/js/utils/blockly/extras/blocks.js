@@ -11,7 +11,7 @@ const JSONBlocks = [
     {name: 'Арифметика', colour: CATEGORIES.MATH.colour,     items: {...MathJSONBlocks}},
     {name: 'Логика',     colour: CATEGORIES.LOGIC.colour,    items: {...LogicJSONBlocks}},
     {name: 'Управление', colour: CATEGORIES.LOOP.colour,     items: {...ControlsJSONBlocks, ...EventJSONBlocks}},
-    {name: 'Гирлянда',   colour: CATEGORIES.COLOUR.colour,   items: {...StripJSONBlocks}},
+    {name: 'Гирлянда',   colour: CATEGORIES.COLOUR.colour,   hidden: true, items: {...StripJSONBlocks}},
     {name: 'Arduino',    colour: CATEGORIES.ARDUINO.colour,  items: {...ArduinoJSONBlocks}},
     {name: 'Dummy',      colour: CATEGORIES.DUMMY.colour,    items: {...DummyJSONBlocks}}
 ];

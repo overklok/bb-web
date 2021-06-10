@@ -148,6 +148,7 @@ export default class BlocklyWrapper {
         this._history_limit     = 10;           // максимальное количество блоков в истории
         this._history_root_id   = undefined;
         this._read_only         = undefined;
+        this._use_categories    = undefined;
 
         this._flyout_width_nonzero      = undefined;
         this._container_width             = undefined;
@@ -214,7 +215,7 @@ export default class BlocklyWrapper {
      * @param {number}  zoom_initial    исходный зум-фактор
      * @param {boolean} read_only       режим только чтения
      */
-    inject(dom_node, use_scrollbars=false, read_only=false, zoom_initial=0.7) {
+    inject(dom_node, use_scrollbars=false, read_only=false, zoom_initial=0.7, use_categories=false) {
         /// Определить узел вставки контейнера
         this.area        = dom_node;
         /// Зафиксировать флаг режима только чтения
@@ -227,13 +228,18 @@ export default class BlocklyWrapper {
         /// Задать контейнерам соответствующие идентификаторы
         this.container.setAttribute("id", DIV_IDS.BLOCKLY);
         this.toolbox.setAttribute("id", DIV_IDS.TOOLBOX);
-        this.toolbox.innerHTML = '<category name="Unknown"></category>';
+
+        if (this._use_categories) {
+            this.toolbox.innerHTML = '<category name="Unknown"></category>';
+        }
 
         if (!read_only) {
             this.dimmer.setAttribute("id", DIV_IDS.DIMMER);
             this.dimmer.setAttribute("style", this._getDimmerStyle());
             this.unlock();
         }
+
+        this._use_categories = use_categories;
 
         this.toolbox.style.display = 'none';
 
@@ -395,16 +401,22 @@ export default class BlocklyWrapper {
         let block_type_array = Array.isArray(block_types) ? block_types : Object.keys(block_types);
 
         for (const category of this._block_types) {
+            if (category.hidden) continue;
+
             const block_types = block_type_array.filter((value) => Object.keys(category.items).indexOf(value) > -1);
 
             if (block_types.length > 0) {
-                toolbox_content += `<category colour=${category.colour} name='${category.name}'>`
+                if (this._use_categories) {
+                    toolbox_content += `<category colour=${category.colour} name='${category.name}'>`
+                }
 
                 for (const block_type of block_types) {
                     toolbox_content += `<block type='${block_type}'></block>`;
                 }
 
-                toolbox_content += "</category>";
+                if (this.use_categories) {
+                    toolbox_content += "</category>";
+                }
             }
         }
 
