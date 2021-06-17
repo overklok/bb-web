@@ -264,7 +264,8 @@ export default class Plate {
         this._props = coverObjects(props, this._props);
     }
 
-    get_cm_instance() {
+    getCmInstance() {
+        console.log(this.__ctxmenu__);
         return new this.__ctxmenu__(this.id, this.alias, this.variant);
     }
 

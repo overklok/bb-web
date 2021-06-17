@@ -26,6 +26,14 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
         this._on = false;
     }
 
+    draw(position, inputs=[]) {
+        this.setValue(inputs[0]);
+
+        const container = super.draw(position, inputs);
+
+        return container;
+    }
+
     setValue(value) {
         this._on = !!value;
     }
