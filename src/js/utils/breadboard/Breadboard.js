@@ -632,6 +632,9 @@ export default class Breadboard {
                 case BoardContextMenu.CMI_MOD_VERBOS_INP:
                     this.switchVerbose(value);
                     break;
+                case BoardContextMenu.CMI_SELECTOR:
+                    this._layers.selector.togglePin();
+                    break;
             }
 
             if (item_id != null) {

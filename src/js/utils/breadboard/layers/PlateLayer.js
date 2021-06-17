@@ -789,7 +789,6 @@ export default class PlateLayer extends Layer {
 
             const ctxmenu = plate.getCmInstance();
             this._callContextMenu(ctxmenu, {x: evt.clientX, y: evt.clientY}, [plate.state.input]);
-            console.log(plate.state.input);
         }
     }
 
