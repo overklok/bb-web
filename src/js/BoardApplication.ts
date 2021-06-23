@@ -17,16 +17,18 @@ import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDa
 
 import BoardPresenter from "./presenters/common/BoardPresenter";
 import ToastPresenter from "./core/presenters/ToastPresenter";
-import DumpSnapshotPresenter from "./presenters/controls/DumpSnapshotPresenter";
+import DebugDumpBoardPresenter from "./presenters/debug/DebugDumpBoardPresenter";
+import DebugCheckBoardPresenter from "./presenters/debug/DebugCheckBoardPresenter";
 
 import LogModel from "./models/common/LogModel";
 import BoardModel from "./models/common/BoardModel";
 import ModalModel from "./core/models/ModalModel";
 import ConnectionModel from "./models/common/ConnectionModel";
+import AdminCheckModel from "./models/debug/DebugCheckModel";
 
 import BoardView from "./views/common/BoardView";
 import ToastView from "./core/views/modal/ToastView";
-import DumpSnapshotView from "./views/controls/DumpSnapshotView";
+import DebugDumpBoardView from "./views/debug/DebugDumpBoardView";
 
 import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";
 
@@ -39,6 +41,7 @@ interface BoardApplicationConfig extends AppConf {
     readonly?: boolean;
     layout_name?: string;
     allow_dumps?: boolean;
+    allow_check?: boolean;
     server_addr: string;
     server_port: number;
 }
@@ -82,6 +85,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
 
         svc_model.launch(ads);
         svc_model.register(ConnectionModel, ads);
+        svc_model.register(AdminCheckModel, dds);
         svc_model.register(ModalModel,  dds);
         svc_model.register(LogModel, hds);
         svc_model.register(CodeModel, ads);
@@ -103,18 +107,33 @@ class BoardApplication extends Application<BoardApplicationConfig> {
                     schematic: true,
                     readonly: this.config.readonly,
                     verbose: this.config.verbose,
-                }
+                },
             },
         ];
 
+        // Handle dump responses / check verdicts by toasts
+        if (this.config.allow_dumps || this.config.allow_check) {
+            wgt_types.push(
+                {
+                    view_type: ToastView, 
+                    presenter_types: [ToastPresenter]
+                }
+            );
+        }
+
+        // Make dump requests by clicking button
         if (this.config.allow_dumps) {
             wgt_types.push(
                 {
-                    view_type: DumpSnapshotView.DumpSnapshotView,
-                    presenter_types: [DumpSnapshotPresenter],
-                },
-                {view_type: ToastView, presenter_types: [ToastPresenter]}
+                    view_type: DebugDumpBoardView.DebugDumpBoardView,
+                    presenter_types: [DebugDumpBoardPresenter],
+                }
             );
+        }
+
+        // Handle board check verdicts by BoardView
+        if (this.config.allow_check) {
+            wgt_types[0].presenter_types.push(DebugCheckBoardPresenter);
         }
 
         this.instance(IViewService).setRootWidgets(OverlayViewComposer, wgt_types);

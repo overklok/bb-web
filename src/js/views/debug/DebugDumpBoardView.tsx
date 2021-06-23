@@ -1,3 +1,8 @@
+/**
+ * This module is used only for development purposes.
+ * Some applications can optionally use this to visualize board circuit verification.
+ */
+
 import * as React from "react";
 import {IViewProps, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
@@ -6,10 +11,11 @@ require('../../../css/blocks/generic/btn.less')
 require('../../../css/blocks/fabdesk.less')
 
 
-namespace DumpSnapshotView {
+namespace DebugDumpBoardView {
     export class DumpClickEvent extends ViewEvent<DumpClickEvent> {}
+    export class VerifyClickEvent extends ViewEvent<VerifyClickEvent> {}
 
-    export class DumpSnapshotView extends View<IViewProps, undefined> {
+    export class DebugDumpBoardView extends View<IViewProps, undefined> {
         private handleDumpClick() {
             this.emit(new DumpClickEvent());
         }
@@ -26,4 +32,4 @@ namespace DumpSnapshotView {
     }
 }
 
-export default DumpSnapshotView;
+export default DebugDumpBoardView;

@@ -1,12 +1,12 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import DumpSnapshotView from "../../views/controls/DumpSnapshotView";
+import DebugDumpBoardView from "../../views/debug/DebugDumpBoardView";
 import BoardModel from "../../models/common/BoardModel";
 import LogModel from "../../models/common/LogModel";
 import {ColorAccent, ToastPosition} from "../../core/helpers/styles";
 import ModalModel from "../../core/models/ModalModel";
 import {classicCopyTextToClipboard} from "../../utils/breadboard/core/extras/helpers";
 
-export default class DumpSnapshotPresenter extends Presenter<DumpSnapshotView.DumpSnapshotView> {
+export default class DebugDumpBoardPresenter extends Presenter<DebugDumpBoardView.DebugDumpBoardView> {
     private board: BoardModel;
     private modal: ModalModel;
     private log: LogModel;
@@ -17,8 +17,8 @@ export default class DumpSnapshotPresenter extends Presenter<DumpSnapshotView.Du
         this.log = this.getModel(LogModel);
     }
 
-    @on(DumpSnapshotView.DumpClickEvent)
-    protected async onLaunchClick() {
+    @on(DebugDumpBoardView.DumpClickEvent)
+    private async onLaunchClick() {
         const snapshots = this.board.getSnapshots();
 
         const toast = this.modal.showToast({
