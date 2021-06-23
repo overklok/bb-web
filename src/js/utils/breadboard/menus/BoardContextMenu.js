@@ -5,6 +5,7 @@ export default class BoardContextMenu extends ContextMenu {
     // Алиасы пунктов контекстного меню
     static get CMI_EXPORT()     {return "cmi_exp"}
     static get CMI_IMPORT()     {return "cmi_imp"}
+    static get CMI_SELECTOR()   {return "cmi_sel"}
     static get CMI_SNAPSH_SVG() {return "cmi_snp_svg"}
     static get CMI_SNAPSH_PNG() {return "cmi_snp_png"}
     static get CMI_MOD_PHOTO()  {return "cmi_mod_pht"}
@@ -37,6 +38,12 @@ export default class BoardContextMenu extends ContextMenu {
                 active: true
             },
             {
+                alias: BoardContextMenu.CMI_SELECTOR,
+                label: 'Вкл/выкл. селектор плашек',
+                active: true,
+                shortcut: 'M'
+            },
+            {
                 alias: BoardContextMenu.CMI_IMPORT,
                 label: 'Импорт плашек',
                 active: true,
@@ -61,11 +68,11 @@ export default class BoardContextMenu extends ContextMenu {
             },
             {
                 alias: BoardContextMenu.CMI_MOD_VERBOS,
-                label: () => {return this._getVerboseLabel()},
+                label: () => this._getVerboseLabel(),
                 active: true,
                 as: {
                     alias: BoardContextMenu.CMI_MOD_VERBOS_INP,
-                    beforeClick: () => {return this._beforeVerboseClick()}
+                    beforeClick: () => this._beforeVerboseClick()
                 }
             },
         ];

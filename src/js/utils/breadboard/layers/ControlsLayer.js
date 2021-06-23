@@ -49,7 +49,7 @@ export default class ControlsLayer extends Layer {
         this._buttongroup = this._container.nested().id(ControlsLayer.MenuButtonId);
 
         document.addEventListener('contextmenu', this._handleContextMenu, false);
-
+        document.addEventListener('keyup', this.handleKey, false);
         this._drawMenuButton();
 
         this._hide();

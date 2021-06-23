@@ -11,7 +11,7 @@ export default class ButtonPlate extends LinearPlate {
         this.state.input = true;
     }
 
-    __cm_class__() {
+    get __ctxmenu__() {
         return SwitchPlateContextMenu;
     }
 
@@ -52,7 +52,7 @@ export default class ButtonPlate extends LinearPlate {
     setState(state, suppress_events) {
         if (state.input === undefined) return;
 
-        state = {input: !!state.input};
+        state = {input: !!Number(state.input)};
 
         super.setState(state, suppress_events);
 

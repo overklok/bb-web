@@ -89,8 +89,10 @@ export default class SwitchPlate extends ButtonPlate {
         ]);
 
         this.jumper_on = this._group.path([
-            ['M', cell1.center_rel.x, cell1.center_rel.y],
-            ['H', cell3.rel.x + cell3.size.x],
+            ['M', cell3.center_rel.x, cell3.center_rel.y],
+            ['L', contact_point.x, contact_point.y],
+            ['L', cell2.center_rel.x - cell2.size.x, cell2.center_rel.y],
+            ['L', cell2.center_rel.x, cell2.center_rel.y]
         ]);
 
         line_right.stroke({width: 3}).fill('none');

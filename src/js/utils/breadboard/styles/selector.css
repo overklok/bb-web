@@ -234,7 +234,7 @@ svg.bb-sel-svg {
     transform: perspective(500px);
 }
 
-.bb-sel-btn-fullscreen, .bb-sel-btn-clear {
+.bb-sel-btn-fullscreen, .bb-sel-btn-clear, .bb-sel-btn-pin {
     display: block;
     float: right;
 

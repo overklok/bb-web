@@ -151,6 +151,8 @@ export default class SelectorLayer extends Layer {
             fullscreen: () => {},
         };
 
+        this._is_pinned = false;
+
         this._items = [];
 
         this._oncloseclick = this._handleCloseClick.bind(this);
@@ -173,24 +175,58 @@ export default class SelectorLayer extends Layer {
         }
 
         this._filterItems();
+
+        document.addEventListener('keyup', this._handleKey.bind(this), false);
     }
 
     show() {
         this._container.style.left = `4px`;
+        this.reveal();
     }
 
     hide() {
         this._container.style.left = `-${this._container.offsetWidth + this._container.offsetLeft}px`;
     }
 
-    open() {
-        this.show();
-        document.addEventListener('click', this._oncloseclick);
+    conceal() {
+        this._container.style.opacity = '0.5';
     }
 
-    close() {
+    reveal() {
+        this._container.style.opacity = '1';
+    }
+
+    togglePin() {
+        this._is_pinned = !this._is_pinned;
+
+        if (this._is_pinned) {
+            this.show(true);
+            this._btn_pin.innerHTML = 'Открепить';
+        } else {
+            this.hide(true);
+            this._btn_pin.innerHTML = 'Закрепить';
+        }
+    }
+
+    open(permanently=false) {
+        this.show();
+
+        if (!permanently) {
+            document.addEventListener('click', this._oncloseclick);
+        }
+    }
+
+    close(permanently=false) {
         this.hide();
-        document.removeEventListener('click', this._oncloseclick);
+
+        console.trace();
+
+        // Unpin if requested to close manually
+        this._is_pinned = false;
+
+        if (!permanently) {
+            document.removeEventListener('click', this._oncloseclick);
+        }
     }
 
     onPlateTake(cb) {
@@ -228,7 +264,13 @@ export default class SelectorLayer extends Layer {
         ) {}
 
         if (!el) {
-            this.close();
+            if (!this._is_pinned) {
+                this.close();
+            }
+        }
+        
+        if (this._is_pinned) {
+            this.reveal();
         }
     }
 
@@ -274,13 +316,17 @@ export default class SelectorLayer extends Layer {
     _appendControls() {
         let btn_clear = document.createElement("a");
         let btn_fullscreen = document.createElement("a");
+        let btn_pin = document.createElement("a");
         let inp_search = document.createElement("input");
+
+        this._btn_pin = btn_pin;
 
         btn_clear.classList.add("bb-sel-btn-clear");
         btn_fullscreen.classList.add("bb-sel-btn-fullscreen");
+        btn_pin.classList.add("bb-sel-btn-pin");
         inp_search.classList.add("bb-sel-inp-search");
 
-        inp_search.setAttribute("placeholder", "Поиск")
+        inp_search.setAttribute("placeholder", "Поиск");
 
         btn_clear.addEventListener("click", () => {
             this._callbacks.clear();
@@ -293,15 +339,21 @@ export default class SelectorLayer extends Layer {
             btn_fullscreen.innerHTML = this._is_fullscreen ? "Свернуть" : "Во весь экран";
         });
 
+        btn_pin.addEventListener("click", () => {
+            this.togglePin();
+        });
+
         inp_search.addEventListener("input", () => {
             this._filterItems(inp_search.value);
         })
 
         btn_clear.innerHTML = "Очистить всё";
         btn_fullscreen.innerHTML = "Во весь экран";
+        btn_pin.innerHTML = this._is_pinned ? "Открепить" : "Закрепить";
 
         this._controls.appendChild(btn_clear);
         this._controls.appendChild(btn_fullscreen);
+        this._controls.appendChild(btn_pin);
         this._controls.appendChild(inp_search);
     }
 
@@ -522,12 +574,22 @@ export default class SelectorLayer extends Layer {
             evt.clientX, evt.clientY
         );
 
-        this.close();
+        if (this._is_pinned) {
+            this.conceal();
+        } else {
+            this.close();
+        }
     }
 
     _getElementIndex(node) {
         let index = 0;
         while ( (node = node.previousElementSibling) ) {index++;}
         return index;
+    }
+
+    _handleKey(evt) {
+        if (evt.code === 'KeyM') {
+            this.togglePin();
+        }
     }
 }

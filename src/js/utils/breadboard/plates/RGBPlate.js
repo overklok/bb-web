@@ -75,9 +75,9 @@ export default class RGBPlate extends Plate {
             this.__grid.cell(3, 0)
         ];
 
-        if (this.props[Plate.PROP_INVERTED] === 1) {
-            cells = cells.reverse();
-        }
+        // if (this.props[Plate.PROP_INVERTED] === 1) {
+        //     cells = cells.reverse();
+        // }
 
         this._group.text("R")
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight, anchor: "center"})
