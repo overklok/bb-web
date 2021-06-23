@@ -35,11 +35,11 @@ export default class SwitchPlate extends ButtonPlate {
 
     _toggleJumper() {
         if (this.state.input) {
-            this.jumper_off.show();
-            this.jumper_on.hide();
-        } else {
             this.jumper_off.hide();
             this.jumper_on.show();
+        } else {
+            this.jumper_off.show();
+            this.jumper_on.hide();
         }
     }
 

@@ -153,6 +153,15 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
             readonly: this.state.is_editable && this.state.is_passive
         }));
     }
+
+    public getCurrentBoardInfo() {
+        const layout_name = this.state.layout_name;
+        if (!layout_name) return;
+
+        const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
+
+        return board_info;
+    }
     
     /**
      * Send meta information about the board (incl. layout name and structure)
@@ -166,12 +175,13 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
     private sendCurrentBoardInfo() {
         const layout_name = this.state.layout_name;
-
         if (!layout_name) return;
 
         // disallow board data before confirmation
         this.setState({layout_confirmed: false});
-        const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
+
+        const board_info = this.getCurrentBoardInfo();
+
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
     }
 
