@@ -1,8 +1,9 @@
 import BackgroundLayer from "../../layers/BackgroundLayer";
 import LabelLayer from "../../layers/LabelLayer";
 import Grid from "../Grid";
+import {Layout} from "../types";
 
-export const LAYOUTS = {
+export const LAYOUTS: {[key: string]: Layout} = {
     v5x: {
         plate_style: {
             label_font_size: 16,

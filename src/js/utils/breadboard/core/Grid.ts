@@ -1,5 +1,6 @@
 import Cell from "./Cell";
 import {pointsToCoordList} from "./extras/helpers";
+import {Domain} from "./types";
 
 const BORDER_TYPES = {
     None: 'none',
@@ -30,6 +31,23 @@ const AUX_POINT_CATEGORIES = {
     Usb3: 'usb3',
 };
 
+type GridParams = {
+    dim: {x: number, y: number},
+    size: {x: number, y: number},
+    gap: {x: number, y: number},
+    pos: {x: number, y: number},
+    wrap: {x: number, y: number}
+}
+
+type AuxPoint = {
+    idx: {x: number, y: number},
+    pos: {x: number, y: number},
+    cell: Cell,
+    name: string,
+    cat: string,
+    bias?: number
+}
+
 /**
  * Класс "Сетка"
  */
@@ -38,16 +56,25 @@ export default class Grid {
     static get AuxPoints() {return AUX_POINTS}
     static get AuxPointCats() {return AUX_POINT_CATEGORIES}
 
+    private _cells: Cell[][];
+    private _params: GridParams;
+    private _aux_points_cats: string[];
+    private curr_straight_top_y: number;
+    private curr_straight_bottom_y: number;
+
+    private readonly _virtual_points: {x: number, y:number}[];
+    private readonly _aux_points: Map<number|string, AuxPoint|AuxPoint[]>
+
     constructor(
-        rows, cols,
-        width, height,
+        rows: number, cols: number,
+        width: number, height: number,
         pos_x=0, pos_y=0,
         gap_x=0, gap_y=0,
         wrap_x=0, wrap_y = 0,
-        aux_points_categories=null,
-        domains=null,
-        curr_straight_top_y=null,
-        curr_straight_bottom_y=null
+        aux_points_categories: [] = null,
+        domains: Domain[] = null,
+        curr_straight_top_y: number = null,
+        curr_straight_bottom_y: number = null
     ) {
         if (rows == null || cols == null || width == null || height == null) {
             throw new TypeError("All required arguments should be defined");
@@ -90,7 +117,7 @@ export default class Grid {
 
         /// Ячейки сетки
         this._cells = [];
-        this._aux_points = {};
+        this._aux_points = new Map();
         this._virtual_points = [];
         this._createCells();
         this._initAuxPoints();
@@ -121,7 +148,7 @@ export default class Grid {
         return this._cells;
     }
 
-    getCellByPos(x, y, border_type) {
+    getCellByPos(x: number, y: number, border_type: string) {
         let ix = Math.floor((x - this.pos.x) / this.size.x * this.dim.x);
         let iy = Math.floor((y - this.pos.y) / this.size.y * this.dim.y);
 
@@ -149,7 +176,7 @@ export default class Grid {
      *
      * @returns {Cell}
      */
-    cell(i, j, border_type=Grid.BorderTypes.None) {
+    cell(i: number, j: number, border_type=Grid.BorderTypes.None) {
         if (!Number.isInteger(i) || !Number.isInteger(j)) {
             throw new TypeError("Indices must be integers");
         }
@@ -178,19 +205,23 @@ export default class Grid {
         return this._cells[i][j];
     }
 
-    auxPoint(i, j=null) {
+    auxPoint(i: string|number, j: number = null): AuxPoint|AuxPoint[] {
+        const item = this._aux_points.get(i);
+
         try {
             if (typeof i === 'string') {
-                return this._aux_points[i];
+                return item;
             }
 
-            return this._aux_points[i][j];
+            if (typeof j === 'number' && Array.isArray(item)) {
+                return item[j];
+            }
         } catch (TypeError) {
             return undefined;
         }
     }
 
-    virtualPoint(x, y) {
+    virtualPoint(x: number, y: number) {
         if (!this._virtual_points) return;
 
         for (const point of this._virtual_points) {
@@ -204,7 +235,7 @@ export default class Grid {
         return undefined;
     }
 
-    isAuxPointCatRequired(cat) {
+    isAuxPointCatRequired(cat: string) {
         return this._aux_points_cats.indexOf(cat) !== -1;
     }
 
@@ -234,7 +265,7 @@ export default class Grid {
      * @returns {string}
      * @private
      */
-    _getTrackOfCell(i, j) {
+    _getTrackOfCell(i: number, j: number) {
         if (j === 1)                return "h0";
         if (j === this.dim.y-1)     return "h1";
 
@@ -251,21 +282,21 @@ export default class Grid {
                 y: this.cell(0, 5).center.y + celldist_y / 2
             };
 
-            this._aux_points[Grid.AuxPoints.Vcc] = {
+            this._aux_points.set(Grid.AuxPoints.Vcc, {
                 idx: {x: -1, y: 1},
                 pos: {x: source_center.x, y: source_center.y - 20},
                 cell: this.cell(0, 1, Grid.BorderTypes.Wrap),
                 cat: Grid.AuxPointCats.SourceV5,
                 name: Grid.AuxPoints.Vcc
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.Gnd] = {
+            this._aux_points.set(Grid.AuxPoints.Gnd, {
                 idx: {x: -1, y: this.dim.y - 1},
                 pos: {x: source_center.x, y: source_center.y + 20},
                 cell: this.cell(0, -1, Grid.BorderTypes.Wrap),
                 cat: Grid.AuxPointCats.SourceV5,
                 name: Grid.AuxPoints.Gnd
-            };
+            });
         }
 
         if (this.isAuxPointCatRequired(Grid.AuxPointCats.SourceV8)) {
@@ -274,21 +305,21 @@ export default class Grid {
                 y: this.cell(0, 8).center.y + celldist_y / 2
             };
 
-            this._aux_points[Grid.AuxPoints.Vcc] = {
+            this._aux_points.set(Grid.AuxPoints.Vcc, {
                 idx: {x: -1, y: 0},
                 pos: {x: source_center.x, y: source_center.y - 20},
                 cell: this.cell(0, 0, Grid.BorderTypes.Wrap),
                 cat: Grid.AuxPointCats.SourceV8,
                 name: Grid.AuxPoints.Vcc
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.Gnd] = {
+            this._aux_points.set(Grid.AuxPoints.Gnd, {
                 idx: {x: -1, y: this.dim.y - 1},
                 pos: {x: source_center.x, y: source_center.y + 20},
                 cell: this.cell(0, -1, Grid.BorderTypes.Wrap),
                 cat: Grid.AuxPointCats.SourceV8,
                 name: Grid.AuxPoints.Gnd
-            };
+            });
         }
 
         // USB1
@@ -300,41 +331,41 @@ export default class Grid {
                 y: this.cell(0, 4).center.y + celldist_y / 2
             };
 
-            this._aux_points[Grid.AuxPoints.U1Vcc] = {
+            this._aux_points.set(Grid.AuxPoints.U1Vcc, {
                 idx: {x: 8, y: 3},
                 pos: {x: usb1_center.x, y: usb1_center.y - 21},
                 cell: this.cell(-1, 3, Grid.BorderTypes.Wrap),
                 bias: 20,
                 cat: Grid.AuxPointCats.Usb1,
                 name: Grid.AuxPoints.U1Vcc
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.U1Gnd] = {
+            this._aux_points.set(Grid.AuxPoints.U1Gnd, {
                 idx: {x: 8, y: 6},
                 pos: {x: usb1_center.x, y: usb1_center.y + 21},
                 cell: this.cell(-1, 6, Grid.BorderTypes.Wrap),
                 bias: 20,
                 cat: Grid.AuxPointCats.Usb1,
                 name: Grid.AuxPoints.U1Gnd
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.U1Analog1] = {
+            this._aux_points.set(Grid.AuxPoints.U1Analog1, {
                 idx: {x: 8, y: 4},
                 pos: {x: usb1_center.x, y: usb1_center.y - 7},
                 cell: this.cell(-1, 4, Grid.BorderTypes.Wrap),
                 bias: 40,
                 cat: Grid.AuxPointCats.Usb1,
                 name: Grid.AuxPoints.U1Analog1
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.U1Analog2] = {
+            this._aux_points.set(Grid.AuxPoints.U1Analog2, {
                 idx: {x: 8, y: 5},
                 pos: {x: usb1_center.x, y: usb1_center.y + 7},
                 cell: this.cell(-1, 5, Grid.BorderTypes.Wrap),
                 bias: 40,
                 cat: Grid.AuxPointCats.Usb1,
                 name: Grid.AuxPoints.U1Analog2
-            };
+            });
         }
 
         // USB3
@@ -346,53 +377,57 @@ export default class Grid {
                 y: this.cell(0, 10).center.y + celldist_y / 2
             };
 
-            this._aux_points[Grid.AuxPoints.U3Vcc] = {
+            this._aux_points.set(Grid.AuxPoints.U3Vcc, {
                 idx: {x: 8, y: 9},
                 pos: {x: usb3_center.x, y: usb3_center.y - 21},
                 cell: this.cell(-1, 9, Grid.BorderTypes.Wrap),
                 bias: 20,
                 cat: Grid.AuxPointCats.Usb3,
                 name: Grid.AuxPoints.U3Vcc
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.U3Gnd] = {
+            this._aux_points.set(Grid.AuxPoints.U3Gnd, {
                 idx: {x: 8, y: 12},
                 pos: {x: usb3_center.x, y: usb3_center.y + 21},
                 cell: this.cell(-1, 12, Grid.BorderTypes.Wrap),
                 bias: 20,
                 cat: Grid.AuxPointCats.Usb3,
                 name: Grid.AuxPoints.U3Gnd
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.U3Analog1] = {
+            this._aux_points.set(Grid.AuxPoints.U3Analog1, {
                 idx: {x: 8, y: 10},
                 pos: {x: usb3_center.x, y: usb3_center.y - 7},
                 cell: this.cell(-1, 10, Grid.BorderTypes.Wrap),
                 bias: 40,
                 cat: Grid.AuxPointCats.Usb3,
                 name: Grid.AuxPoints.U3Analog1
-            };
+            });
 
-            this._aux_points[Grid.AuxPoints.U3Analog2] = {
+            this._aux_points.set(Grid.AuxPoints.U3Analog2, {
                 idx: {x: 8, y: 11},
                 pos: {x: usb3_center.x, y: usb3_center.y + 7},
                 cell: this.cell(-1, 11, Grid.BorderTypes.Wrap),
                 bias: 40,
                 cat: Grid.AuxPointCats.Usb3,
                 name: Grid.AuxPoints.U3Analog2
-            };
+            });
         }
 
         for (const point of Object.values(this._aux_points)) {
             if (!(point.idx.x in this._aux_points)) {
-                this._aux_points[point.idx.x] = [];
+                this._aux_points.set(point.idx.x, []);
             }
 
-            this._aux_points[point.idx.x][point.idx.y] = point;
+            const item = this._aux_points.get(point.idx.x);
+
+            if (Array.isArray(item)) {
+                item[point.idx.y] = point;
+            }
         }
     }
 
-    _initVirtualPoints(domains) {
+    _initVirtualPoints(domains: Domain[]) {
         if (!domains) return;
 
         for (const domain of domains) {

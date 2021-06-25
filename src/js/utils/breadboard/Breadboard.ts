@@ -17,9 +17,24 @@ import SelectorLayer from "./layers/SelectorLayer";
 import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 import {layoutToBoardInfo} from "./core/extras/board_info";
 import {buildGrid} from "./core/extras/helpers";
+import {Layout} from "./core/types";
+import Layer from "./core/Layer";
+import Plate from "./core/Plate";
 
 
 require("./styles/main.css");
+
+type BreadboardOptions = {
+    layouts?: unknown,
+    layout_name?: unknown,
+    debug?: boolean,
+    verbose?: boolean,
+    detailed?: boolean,
+    schematic?: boolean,
+    readOnly? : boolean,
+    showControlsDefault?: boolean,
+    showSourceCurrents?: boolean
+}
 
 /**
  * Основной класс платы.
@@ -28,13 +43,27 @@ require("./styles/main.css");
  * @category Breadboard
  */
 export default class Breadboard {
-    constructor(options) {
+    private _options: BreadboardOptions;
+    private _brush: SVG.Doc;
+    private __grid: Grid;
+    private _layers: {[key: string]: Layer};
+    private _callbacks: {[key: string]: () => void}
+    private _cache: {[key: string]: {current: {}}}
+    private _dom_node_parent: HTMLElement;
+    private _spare: boolean;
+    private _filters_defined: boolean;
+    private _injected: boolean;
+
+    private readonly _layouts: {[key: string]: Layout};
+    private _div_wrap: HTMLDivElement;
+
+    constructor(options: BreadboardOptions) {
         if (!SVG.supported) {
             alert("SVG is not supported. Please use any modern browser.");
         }
 
         this._brush = undefined;
-        this.__grid  = undefined;
+        this.__grid = undefined;
 
         this._layers = {
             background: undefined,
@@ -71,7 +100,8 @@ export default class Breadboard {
         this._injected = false;
     }
 
-    static drawPlate(parent, type, properties) {
+    /* TODO: Define 'properties' type */
+    static drawPlate(parent: HTMLElement, type: string, properties: unknown) {
         const grid = new Grid(10, 10, 1000, 700);
         const div_wrap = SVG(parent);
 
@@ -123,7 +153,7 @@ export default class Breadboard {
      * @param {HTMLElement} dom_node    DOM-узел, в который будет встроена плата
      * @param {Object}      options     дополнительные опции инициализации
      */
-    inject(dom_node, options) {
+    inject(dom_node: HTMLElement, options: BreadboardOptions) {
         if (dom_node === undefined) {
             throw new TypeError("Breadboard::inject(): DOM node is undefined");
         }
@@ -542,7 +572,7 @@ export default class Breadboard {
      * @param {Object} options словарь опций
      * @private
      */
-    _setOptions(options) {
+    _setOptions(options: BreadboardOptions) {
         options = options || {};
 
         if (options.layouts) {

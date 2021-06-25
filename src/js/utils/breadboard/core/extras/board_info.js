@@ -1,5 +1,4 @@
 import Grid from "../Grid";
-import Breadboard from "../../Breadboard";
 import LabelLayer from "../../layers/LabelLayer";
 import {boundsToCoordList, buildGrid, pointsToCoordList} from "./helpers";
 

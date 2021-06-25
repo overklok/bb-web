@@ -29,7 +29,7 @@ let QUAD_SIZE = QUAD_SIZE_DEFAULT,
     LED_SIZE = LED_SIZE_DEFAULT,
     LABEL_FONT_SIZE = LABEL_FONT_SIZE_DEFAULT;
 
-export type PlateRef = new (...args: any) => Plate;
+export type PlateRef<P extends Plate> = new (...args: any) => P;
 
 /**
  * Класс плашки доски

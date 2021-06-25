@@ -1,6 +1,6 @@
 import Layer from "../core/Layer";
 
-import Plate from "../core/Plate";
+import Plate, {PlateRef} from "../core/Plate";
 import ContextMenu from "../core/ContextMenu";
 
 import PlateContextMenu from "../menus/PlateContextMenu";
@@ -962,7 +962,7 @@ export default class PlateLayer extends Layer {
      *
      * @returns {Plate} класс плашки
      */
-    static typeToPlateClass<P extends Plate>(type: string) {
+    static typeToPlateClass(type: string): typeof Plate {
         if (!type) {
             throw new TypeError("Parameter `type` is not defined");
         }
