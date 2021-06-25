@@ -962,7 +962,7 @@ export default class PlateLayer extends Layer {
      *
      * @returns {Plate} класс плашки
      */
-    static typeToPlateClass(type) {
+    static typeToPlateClass<P extends Plate>(type: string) {
         if (!type) {
             throw new TypeError("Parameter `type` is not defined");
         }

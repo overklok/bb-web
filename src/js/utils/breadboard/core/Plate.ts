@@ -1,5 +1,5 @@
 import Cell from "./Cell";
-import Grid from "../core/Grid";
+import Grid from "./Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 import {coverObjects} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
@@ -28,6 +28,8 @@ const QUAD_SIZE_DEFAULT = 24,
 let QUAD_SIZE = QUAD_SIZE_DEFAULT,
     LED_SIZE = LED_SIZE_DEFAULT,
     LABEL_FONT_SIZE = LABEL_FONT_SIZE_DEFAULT;
+
+export type PlateRef = new (...args: any) => Plate;
 
 /**
  * Класс плашки доски
