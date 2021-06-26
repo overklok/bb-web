@@ -1,3 +1,4 @@
+import SVG from 'svg.js'
 import Cell from "./Cell";
 import Grid from "./Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
@@ -38,6 +39,51 @@ export type PlateRef<P extends Plate> = new (...args: any) => P;
  * @abstract
  */
 export default class Plate {
+    private __grid: Grid;
+    private _node_parent: HTMLElement;
+    private _alias: string;
+    private _id: number;
+    private _shadow: SVG.Nested;
+    private _container: SVG.Nested;
+    private _shadowgroup: SVG.G;
+    private _group: SVG.G;
+    private _bezel: any;
+    private _group_editable: SVG.G;
+    private _error_highlighter: any;
+    private _params: {
+        size: { x: number; y: number; }; // кол-во ячеек, занимаемое плашкой на доске
+        size_px: { x: number; y: number; }; // физический размер плашки (в px)
+        origin: { x: number; y: number; }; // опорная точка плашки
+        surface: any; // контур плашки
+        rels: {x: number, y: number, adj: {x: number, y: number}}[]; // относительные позиции занимаемых ячеек
+        adjs: any; // корректировки положения плашки
+        schematic: boolean; // схематическое отображение плашки
+        verbose: boolean;
+    };
+    private _props: { [x: number]: number; };
+    private _state: {
+        cell: Cell; // ячейка, задающая положение опорной точки
+        orientation: string; // ориентация плашки
+        highlighted: boolean; // подсвечена ли плашка
+        currents: any; 
+        voltages: any; 
+        input: any; 
+        output: any;
+    };
+    private _callbacks: {
+        change: CallableFunction; // изменения плашки
+        mousedown: CallableFunction; 
+        mousewheel: CallableFunction; 
+        dragstart: CallableFunction; 
+        dragfinish: CallableFunction;
+    };
+    private _dragging: boolean;
+    private _drawn: boolean;
+    private _shadowimg: SVG.Rect;
+    private _cell_supposed: any;
+    private _constraints: any;
+    _dir_prev: any;
+
     static get PROP_INVERTED() {return "inv"}
 
     // Ориентации плашки
@@ -63,7 +109,7 @@ export default class Plate {
     static set LEDSizePreferred(v)          {LED_SIZE = v};
     static set LabelFontSizePreferred(v)    {LABEL_FONT_SIZE = v};
 
-    constructor(container_parent, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(container_parent: SVG.Doc, grid: Grid, schematic=false, verbose=false, id: number = null, props: {} = null) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
@@ -73,7 +119,7 @@ export default class Plate {
         this._node_parent = container_parent.node;
 
         /// Кодовое имя плашки
-        this._alias = this.constructor.Alias;
+        this._alias = (this as any).constructor.Alias;
 
         /// Идентификатор - по умолчанию случайная строка
         this._id = (id === null) ? (Math.floor(Math.random() * (10 ** 6))) : (id);
@@ -137,22 +183,18 @@ export default class Plate {
         /// Отрисована ли была плашка
         this._drawn = false;
 
-        this._group.mousedown((evt) => {this._callbacks.mousedown(evt)});
+        this._group.mousedown((evt: MouseEvent) => {this._callbacks.mousedown(evt)});
 
         /// обработчик вращения колёсика мыши на плашке
-        if (this._group.node.addEventListener) {
-            if ('onwheel' in document) {
-                // IE9+, FF17+, Ch31+
-                this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt), {passive: true});
-            } else if ('onmousewheel' in document) {
-                // устаревший вариант события
-                this._group.node.addEventListener("mousewheel", (evt) => this._callbacks.mousewheel(evt));
-            } else {
-                // Firefox < 17
+        if ('onwheel' in document) {
+            // IE9+, FF17+, Ch31+
+            this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt), {passive: true});
+        } else if ('onmousewheel' in document) {
+            // устаревший вариант события
+            this._group.node.addEventListener("mousewheel", (evt) => this._callbacks.mousewheel(evt));
+        } else {
+            // Firefox < 17
             this._group.node.addEventListener("MozMousePixelScroll", (evt) => this._callbacks.mousewheel(evt));
-            }
-        } else { // IE8-
-            this._group.node.attachEvent("onmousewheel", (evt) => this._callbacks.mousewheel(evt));
         }
 
         this.showGroupEditable(false);
@@ -164,7 +206,7 @@ export default class Plate {
      * @returns {string}
      */
     get alias() {
-        return this.constructor.Alias;
+        return (this as any).constructor.Alias;
     }
 
     /**
@@ -244,7 +286,7 @@ export default class Plate {
      * @abstract
      * @private
      */
-    __draw__() {
+    __draw__(cell: Cell, orientation: string) {
         throw new Error("Method should be implemented");
     }
 
@@ -258,11 +300,11 @@ export default class Plate {
      * @abstract
      * @private
      */
-    __getOppositeCell__(cell) {
+    __getOppositeCell__(cell: Cell) {
         throw new Error("Method should be implemented");
     }
 
-    __setProps__(props) {
+    __setProps__(props: {}) {
         this._props = coverObjects(props, this._props);
     }
 
@@ -299,7 +341,7 @@ export default class Plate {
      * @param {string}  orientation ориентация элемента относительно опорной точки
      * @param {boolean} animate     анимировать появление плашки
      */
-    draw(cell, orientation, animate=false) {
+    draw(cell: Cell, orientation: any, animate=false) {
         this._checkParams();
 
         this._beforeReposition();
@@ -318,8 +360,8 @@ export default class Plate {
             this._bezel = this._group.path(surf_path);
             this._error_highlighter = this._group.path(surf_path);
         } else {
-            this._bezel = this._group.rect("100%", "100%").radius(BackgroundLayer.CellRadius);
-            this._error_highlighter = this._group.rect("100%", "100%").radius(BackgroundLayer.CellRadius);
+            this._bezel = this._group.rect(100, 100).radius(BackgroundLayer.CellRadius);
+            this._error_highlighter = this._group.rect(100, 100).radius(BackgroundLayer.CellRadius);
         }
 
         if (this._params.schematic) {
@@ -359,7 +401,7 @@ export default class Plate {
      * @param {object} state новое состояние плашки, которое требуется отобразить
      * @param suppress_events
      */
-    setState(state, suppress_events=false) {
+    setState(state: {[key: string]: any}, suppress_events=false) {
         let is_dirty = false;
 
         for (let state_param in this._state) {
@@ -410,7 +452,7 @@ export default class Plate {
      * @param {boolean} suppress_events подавить инициацию событий
      * @param {boolean} animate         анимировать перемещение
      */
-    move(cell, suppress_events=false, animate=false) {
+    move(cell: Cell, suppress_events=false, animate=false) {
         if (cell.__grid !== this.__grid) {
             throw new Error("Cell's grid and plate's grid are not the same");
         }
@@ -426,7 +468,7 @@ export default class Plate {
         this._shadow.move(pos.x, pos.y);
 
         if (animate) {
-            this._container.animate('100ms', '<>').move(pos.x, pos.y);
+            this._container.animate(100, '<>').move(pos.x, pos.y);
         } else {
             this._container.move(pos.x, pos.y);
         }
@@ -448,7 +490,7 @@ export default class Plate {
      * @param {int}     dy                  смещение по оси Y
      * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
      */
-    shift(dx, dy, prevent_overflow=true) {
+    shift(dx: number, dy: number, prevent_overflow=true) {
         this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy, Grid.BorderTypes.Replicate));
 
         if (prevent_overflow) {
@@ -463,7 +505,7 @@ export default class Plate {
      * @param {boolean} suppress_events     подавить инициацию событий
      * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
      */
-    rotate(orientation, suppress_events=false, prevent_overflow=true) {
+    rotate(orientation: string, suppress_events=false, prevent_overflow=true) {
         if (this._dragging) return;
 
         if (orientation === this._state.orientation) {return}
@@ -597,11 +639,11 @@ export default class Plate {
         this._afterReposition();
     }
 
-    handleKeyPress(key_code, keydown) {
+    handleKeyPress(key_code: any, keydown: boolean) {
 
     }
 
-    getOppositeCell(cell) {
+    getOppositeCell(cell: Cell) {
         return this.__getOppositeCell__(cell);
     }
 
@@ -623,7 +665,7 @@ export default class Plate {
      *
      * @param {function} cb обработчик события изменения плашки
      */
-    onChange(cb) {
+    onChange(cb: CallableFunction) {
         if (!cb) {cb = () => {}}
 
         this._callbacks.change = cb;
@@ -634,7 +676,7 @@ export default class Plate {
      *
      * @param {function} cb обработчик начала перетаскивания плашки
      */
-    onDragStart(cb) {
+    onDragStart(cb: CallableFunction) {
         if (!cb) {this._callbacks.dragstart = () => {}; return}
 
         this._callbacks.dragstart = cb;
@@ -645,19 +687,19 @@ export default class Plate {
      *
      * @param {function} cb обработчик конца перетаскивания плашки
      */
-    onDragFinish(cb) {
+    onDragFinish(cb: CallableFunction) {
         if (!cb) {this._callbacks.dragfinish = () => {}; return}
 
         this._callbacks.dragfinish = cb;
     }
 
-    onMouseDown(cb) {
+    onMouseDown(cb: CallableFunction) {
         if (!cb) {this._callbacks.mousedown = () => {}; return}
 
         this._callbacks.mousedown = cb;
     }
 
-    onMouseWheel(cb) {
+    onMouseWheel(cb: CallableFunction) {
         if (!cb) {this._callbacks.mousewheel = () => {}; return}
 
         this._callbacks.mousewheel = cb;
@@ -706,7 +748,7 @@ export default class Plate {
         this._callbacks.dragfinish();
     }
 
-    move_to_point(x, y, animate=false) {
+    move_to_point(x: number, y: number, animate=false) {
         if (animate) {
             this._container.animate('100ms', '<>').move(x, y);
         } else {
@@ -714,7 +756,7 @@ export default class Plate {
         }
     }
 
-    center_to_point(x, y, animate=false) {
+    center_to_point(x: number, y: number, animate=false) {
         if (animate) {
             this._container.animate('100ms', '<>').center(x, y);
         } else {
@@ -722,7 +764,7 @@ export default class Plate {
         }
     }
 
-    dmove(dx, dy) {
+    dmove(dx: number, dy: number) {
         this._container.dmove(dx, dy);
 
         requestAnimationFrame(() => {
@@ -754,7 +796,7 @@ export default class Plate {
      *
      * @private
      */
-    _dropShadowToCell(cell) {
+    _dropShadowToCell(cell: Cell) {
         let pos = this._getPositionAdjusted(cell);
 
         this._shadow.x(pos.x);
@@ -871,7 +913,7 @@ export default class Plate {
         return nearest;
     }
 
-    _getPlacementConstraints(orientation) {
+    _getPlacementConstraints(orientation: string) {
         if (!this._constraints) {
             this._constraints = this._calcPlacementConstraints();
         }
@@ -894,7 +936,7 @@ export default class Plate {
         /// Количество точек от опорной до края
         let rem = {x: Sx - orn.x, y: Sy - orn.y};
 
-        let constraints = [];
+        let constraints: {[key: string]: [number, number, number, number]} = {};
 
         // x goes to Nx, y goes to Ny
         constraints[Plate.Orientations.East] =  [orn.x,          orn.y,         Dx - rem.x,        Dy - rem.y];
@@ -916,7 +958,7 @@ export default class Plate {
      *
      * @private
      */
-    _getCellOriginal(cell) {
+    _getCellOriginal(cell: Cell) {
         let ix = cell.idx.x,
             iy = cell.idx.y;
 
@@ -1067,7 +1109,7 @@ export default class Plate {
      * @returns {*} координаты с учётном подгонки
      * @private
      */
-    _getPositionAdjusted(cell=null) {
+    _getPositionAdjusted(cell: Cell = null) {
         cell = cell || this._state.cell;
 
         /// Опорная точка плашки
@@ -1094,7 +1136,7 @@ export default class Plate {
 
     _generateSurfacePath(radius=5) {
         if (this._params.surface) {
-            let path = [];
+            let path: (string | number)[][] = [];
 
             // TODO: Verify closed surfaces
 
@@ -1109,8 +1151,8 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePath(cell, surfcnt, radius, dir_idx=0, is_root=true) {
-        let path = [];
+    _buildSurfacePath(cell: Cell, surfcnt: number[][], radius: number, dir_idx=0, is_root=true) {
+        let path: (string | number)[][] = [];
 
         // clockwise dir sequence
         let dirs = Cell.DirectionsClockwise;
@@ -1163,7 +1205,7 @@ export default class Plate {
         return path;
     }
 
-    _buildSurfacePathGapPush(dir, dir_corner, radius) {
+    _buildSurfacePathGapPush(dir: string, dir_corner: string, radius: number) {
         let corner = this._buildSurfacePathCorner(dir_corner, radius);
 
         if (corner === null) {
@@ -1190,7 +1232,7 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePathGapPull(dir, dir_corner, radius) {
+    _buildSurfacePathGapPull(dir: string, dir_corner: string, radius: number) {
         let corner = this._buildSurfacePathCorner(dir_corner, radius);
 
         if (corner === null) {
@@ -1217,7 +1259,7 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePathEdge(cell, dir, radius) {
+    _buildSurfacePathEdge(cell: Cell, dir: string, radius: number) {
         let corner = this._buildSurfacePathCorner(dir, radius);
 
         if (corner === null) {
@@ -1244,14 +1286,14 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePathOffset(cell, radius) {
+    _buildSurfacePathOffset(cell: Cell, radius: number) {
         let mv_x = (cell.idx.x * (cell.size.x + this.__grid.gap.x * 2)),
             mv_y = (cell.idx.y * (cell.size.y + this.__grid.gap.y * 2));
 
         return [['M', mv_x + radius, mv_y]];
     }
 
-    _buildSurfacePathClosure(dir_curr, radius) {
+    _buildSurfacePathClosure(dir_curr: string, radius: number) {
         if (this._dir_prev == null) return [];
 
         let closure = this._buildSurfacePathCorner(dir_curr, radius);
@@ -1261,7 +1303,7 @@ export default class Plate {
         return closure;
     }
 
-    _buildSurfacePathCorner(dir_curr, radius) {
+    _buildSurfacePathCorner(dir_curr: string, radius: number) {
         let dir_prev = this._dir_prev;
 
         if (dir_curr === dir_prev) return null;
@@ -1298,8 +1340,8 @@ export default class Plate {
      * @param surface Array<object>
      * @private
      */
-    _convertSurfaceToArray(surface) {
-        let arr = [];
+    _convertSurfaceToArray(surface: {x: number, y: number}[]) {
+        let arr: number[][] = [];
 
         for (let item of surface) {
             if (!arr.hasOwnProperty(item.x)) arr[item.x] = [];
@@ -1320,11 +1362,11 @@ export default class Plate {
         return arr;
     }
 
-    static IsOrientationHorizontal(orientation) {
+    static IsOrientationHorizontal(orientation: string) {
         return (orientation === Plate.Orientations.West || orientation === Plate.Orientations.East);
     }
 
-    static IsOrientationVertical(orientation) {
+    static IsOrientationVertical(orientation: string) {
         return (orientation === Plate.Orientations.North || orientation === Plate.Orientations.South);
     }
 
@@ -1336,7 +1378,7 @@ export default class Plate {
      * @returns {number} угол поворота в градусах
      * @private
      */
-    static _orientationToAngle(orientation) {
+    static _orientationToAngle(orientation: string) {
         switch (orientation) {
             case Plate.Orientations.East:            {return 0}
             case Plate.Orientations.North:           {return 90}
@@ -1346,8 +1388,8 @@ export default class Plate {
         }
     }
 
-    static _orientXYObject(xyobj, orientation) {
-        let xynew = {};
+    static _orientXYObject(xyobj: {x: number, y: number}, orientation: string): {x: number, y: number} {
+        let xynew: {x: number, y: number} = {x: undefined, y: undefined};
 
         switch (orientation) {
             case Plate.Orientations.East:   {xynew.x = xyobj.x;    xynew.y = xyobj.y;     break;}
