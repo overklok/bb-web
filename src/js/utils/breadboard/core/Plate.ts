@@ -8,6 +8,7 @@ import Grid from "./Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 import {coverObjects} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
+import {Direction} from "./types";
 
 function mod(n: number, m: number): number {
   return ((n % m) + m) % m;
@@ -455,7 +456,7 @@ export default class Plate {
      * @param {boolean} animate         анимировать перемещение
      */
     move(cell: Cell, suppress_events=false, animate=false) {
-        if (cell.__grid !== this.__grid) {
+        if (cell.grid !== this.__grid) {
             throw new Error("Cell's grid and plate's grid are not the same");
         }
 
@@ -645,7 +646,7 @@ export default class Plate {
 
     }
 
-    getOppositeCell(cell: Cell) {
+    getOppositeCell(cell: Cell): Cell {
         return this.__getOppositeCell__(cell);
     }
 
@@ -1064,7 +1065,7 @@ export default class Plate {
      * @param {boolean} clear освободить ячейки
      * @private
      */
-    _reoccupyCells(clear=false) {
+    _reoccupyCells(clear: boolean=false) {
         if (!this._params.schematic) return;
 
         if (!this._params.rels) return;
@@ -1157,7 +1158,7 @@ export default class Plate {
         let path: (string | number)[][] = [];
 
         // clockwise dir sequence
-        let dirs = Cell.DirectionsClockwise;
+        let dirs = DirectionClockwise;
 
         if (is_root) {
             path = path.concat(this._buildSurfacePathOffset(cell, radius));
@@ -1216,16 +1217,16 @@ export default class Plate {
         }
 
         switch (dir) {
-            case Cell.Directions.Up: {
+            case Direction.Up: {
                 return [corner, ['v', -(this.__grid.gap.y * 2 - radius*2)]]; // draw up
             }
-            case Cell.Directions.Right: {
+            case Direction.Right: {
                 return [corner, ['h', +(this.__grid.gap.x * 2 - radius*2)]]; // draw right
             }
-            case Cell.Directions.Down: {
+            case Direction.Down: {
                 return [corner, ['v', +(this.__grid.gap.y * 2 - radius*2)]]; // draw down
             }
-            case Cell.Directions.Left: {
+            case Direction.Left: {
                 return [corner, ['h', -(this.__grid.gap.x * 2 - radius*2)]]; // draw left
             }
             default: {
@@ -1243,16 +1244,16 @@ export default class Plate {
         }
 
         switch (dir) {
-            case Cell.Directions.Up: {
+            case Direction.Up: {
                 return [corner, ['v', +(this.__grid.gap.y * 2 - radius*2)]]; // draw down
             }
-            case Cell.Directions.Right: {
+            case Direction.Right: {
                 return [corner, ['h', -(this.__grid.gap.x * 2 - radius*2)]]; // draw left
             }
-            case Cell.Directions.Down: {
+            case Direction.Down: {
                 return [corner, ['v', -(this.__grid.gap.y * 2 - radius*2)]]; // draw up
             }
-            case Cell.Directions.Left: {
+            case Direction.Left: {
                 return [corner, ['h', +(this.__grid.gap.x * 2 - radius*2)]]; // draw right
             }
             default: {
@@ -1270,16 +1271,16 @@ export default class Plate {
         }
 
         switch (dir) {
-            case Cell.Directions.Up: {
+            case Direction.Up: {
                 return [corner, ['h', +(cell.size.x - radius*2)]]; // draw right
             }
-            case Cell.Directions.Right: {
+            case Direction.Right: {
                 return [corner, ['v', +(cell.size.y - radius*2)]]; // draw down
             }
-            case Cell.Directions.Down: {
+            case Direction.Down: {
                 return [corner, ['h', -(cell.size.x - radius*2)]]; // draw left
             }
-            case Cell.Directions.Left: {
+            case Direction.Left: {
                 return [corner, ['v', -(cell.size.y - radius*2)]]; // draw up
             }
             default: {
@@ -1316,13 +1317,13 @@ export default class Plate {
         let arc = null;
 
         if (Cell.IsDirHorizontal(dir_prev) && Cell.IsDirVertical(dir_curr)) {
-            rx = (dir_prev === Cell.Directions.Up)      ? radius : -radius;
-            ry = (dir_curr === Cell.Directions.Right)    ? radius : -radius;
+            rx = (dir_prev === Direction.Up)      ? radius : -radius;
+            ry = (dir_curr === Direction.Right)    ? radius : -radius;
         }
 
         if (Cell.IsDirHorizontal(dir_curr) && Cell.IsDirVertical(dir_prev)) {
-            rx = (dir_curr === Cell.Directions.Up)      ? radius : -radius;
-            ry = (dir_prev === Cell.Directions.Right)    ? radius : -radius;
+            rx = (dir_curr === Direction.Up)      ? radius : -radius;
+            ry = (dir_prev === Direction.Right)    ? radius : -radius;
         }
 
         if (rx !== null && ry !== null) {

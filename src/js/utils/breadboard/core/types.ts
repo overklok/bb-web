@@ -1,4 +1,4 @@
-type XYObject = { x: number, y: number }
+export type XYObject = { x: number, y: number }
 
 export type Domain = {
     horz: boolean,
@@ -37,3 +37,12 @@ export type Layout = {
     curr_straight_top_y: number,
     curr_straight_bottom_y: number
 }
+
+export const enum Direction {
+    Up,
+    Right,
+    Down,
+    Left,
+}
+
+export const DirsClockwise = [Direction.Up, Direction.Right, Direction.Down, Direction.Left];
