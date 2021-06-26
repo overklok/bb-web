@@ -1,11 +1,15 @@
 import SVG from 'svg.js'
+import cloneDeep from "lodash/cloneDeep";
+import defaultsDeep from "lodash/defaultsDeep";
+import isEqual from 'lodash/isEqual';
+
 import Cell from "./Cell";
 import Grid from "./Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 import {coverObjects} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
 
-function mod(n, m) {
+function mod(n: number, m: number): number {
   return ((n % m) + m) % m;
 }
 
@@ -32,6 +36,27 @@ let QUAD_SIZE = QUAD_SIZE_DEFAULT,
 
 export type PlateRef<P extends Plate> = new (...args: any) => P;
 
+export type PlateState = {
+    cell: Cell; // ячейка, задающая положение опорной точки
+    orientation: string; // ориентация плашки
+    highlighted: boolean; // подсвечена ли плашка
+    currents: any;
+    voltages: any;
+    input: any;
+    output: any;
+}
+
+export type PlateParams = {
+    size: { x: number; y: number; }; // кол-во ячеек, занимаемое плашкой на доске
+    size_px: { x: number; y: number; }; // физический размер плашки (в px)
+    origin: { x: number; y: number; }; // опорная точка плашки
+    surface: any; // контур плашки
+    rels: { x: number, y: number, adj: { x: number, y: number } }[]; // относительные позиции занимаемых ячеек
+    adjs: any; // корректировки положения плашки
+    schematic: boolean; // схематическое отображение плашки
+    verbose: boolean;
+}
+
 /**
  * Класс плашки доски
  *
@@ -50,31 +75,14 @@ export default class Plate {
     private _bezel: any;
     private _group_editable: SVG.G;
     private _error_highlighter: any;
-    private _params: {
-        size: { x: number; y: number; }; // кол-во ячеек, занимаемое плашкой на доске
-        size_px: { x: number; y: number; }; // физический размер плашки (в px)
-        origin: { x: number; y: number; }; // опорная точка плашки
-        surface: any; // контур плашки
-        rels: {x: number, y: number, adj: {x: number, y: number}}[]; // относительные позиции занимаемых ячеек
-        adjs: any; // корректировки положения плашки
-        schematic: boolean; // схематическое отображение плашки
-        verbose: boolean;
-    };
+    protected _params: PlateParams;
     private _props: { [x: number]: number; };
-    private _state: {
-        cell: Cell; // ячейка, задающая положение опорной точки
-        orientation: string; // ориентация плашки
-        highlighted: boolean; // подсвечена ли плашка
-        currents: any; 
-        voltages: any; 
-        input: any; 
-        output: any;
-    };
+    private _state: PlateState;
     private _callbacks: {
         change: CallableFunction; // изменения плашки
-        mousedown: CallableFunction; 
-        mousewheel: CallableFunction; 
-        dragstart: CallableFunction; 
+        mousedown: CallableFunction;
+        mousewheel: CallableFunction;
+        dragstart: CallableFunction;
         dragfinish: CallableFunction;
     };
     private _dragging: boolean;
@@ -84,32 +92,32 @@ export default class Plate {
     private _constraints: any;
     _dir_prev: any;
 
-    static get PROP_INVERTED() {return "inv"}
+    static get PROP_INVERTED() { return "inv" }
 
     // Ориентации плашки
-    static get Orientations() {return ORIENTATIONS}
+    static get Orientations() { return ORIENTATIONS }
     // CSS-класс контейнера плашки
-    static get Class() {return "bb-plate"}
+    static get Class() { return "bb-plate" }
     // Алиас контейнера плашки
-    static get Alias() {return "default"}
+    static get Alias() { return "default" }
     // CSS-класс изображения тени
-    static get ShadowImgClass() {return "bb-plate-shadow-img"}
+    static get ShadowImgClass() { return "bb-plate-shadow-img" }
 
-    static get CaptionFontFamily() {return "'IBM Plex Mono', 'Lucida Console', Monaco, monospace"}
-    static get CaptionFontWeight() {return "normal"}
+    static get CaptionFontFamily() { return "'IBM Plex Mono', 'Lucida Console', Monaco, monospace" }
+    static get CaptionFontWeight() { return "normal" }
 
-    static get QuadSizeDefault()            {return QUAD_SIZE_DEFAULT}
-    static get LEDSizeDefault()             {return LED_SIZE_DEFAULT}
-    static get LabelFontSizeDefault()       {return LABEL_FONT_SIZE_DEFAULT}
+    static get QuadSizeDefault() { return QUAD_SIZE_DEFAULT }
+    static get LEDSizeDefault() { return LED_SIZE_DEFAULT }
+    static get LabelFontSizeDefault() { return LABEL_FONT_SIZE_DEFAULT }
 
-    static get QuadSizePreferred()          {return QUAD_SIZE};
-    static get LEDSizePreferred()           {return LED_SIZE};
-    static get LabelFontSizePreferred()     {return LABEL_FONT_SIZE};
-    static set QuadSizePreferred(v)         {QUAD_SIZE = v};
-    static set LEDSizePreferred(v)          {LED_SIZE = v};
-    static set LabelFontSizePreferred(v)    {LABEL_FONT_SIZE = v};
+    static get QuadSizePreferred() { return QUAD_SIZE };
+    static get LEDSizePreferred() { return LED_SIZE };
+    static get LabelFontSizePreferred() { return LABEL_FONT_SIZE };
+    static set QuadSizePreferred(v) { QUAD_SIZE = v };
+    static set LEDSizePreferred(v) { LED_SIZE = v };
+    static set LabelFontSizePreferred(v) { LABEL_FONT_SIZE = v };
 
-    constructor(container_parent: SVG.Doc, grid: Grid, schematic=false, verbose=false, id: number = null, props: {} = null) {
+    constructor(container_parent: SVG.Doc, grid: Grid, schematic = false, verbose = false, id: number = null, props: {} = null) {
         if (!container_parent || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
@@ -125,12 +133,12 @@ export default class Plate {
         this._id = (id === null) ? (Math.floor(Math.random() * (10 ** 6))) : (id);
 
         /// Контейнер, группа и ссылка на сетку
-        this._shadow        = container_parent.nested();        // для тени
-        this._container     = container_parent.nested();        // для масштабирования
-        this._shadowgroup   = this._shadow.group();             // для поворота тени
-        this._group         = this._container.group();          // для поворота
+        this._shadow = container_parent.nested();        // для тени
+        this._container = container_parent.nested();        // для масштабирования
+        this._shadowgroup = this._shadow.group();             // для поворота тени
+        this._group = this._container.group();          // для поворота
 
-        this._bezel         = undefined; // окантовка
+        this._bezel = undefined; // окантовка
 
         /// Дополнительные контейнеры
         this._group_editable = this._group.group();                     // для режима редактирования
@@ -138,14 +146,14 @@ export default class Plate {
 
         /// Параметры - статические атрибуты плашки
         this._params = {
-            size:       {x: 0, y: 0},   // кол-во ячеек, занимаемое плашкой на доске
-            size_px:    {x: 0, y: 0},   // физический размер плашки (в px)
-            origin:     {x: 0, y: 0},   // опорная точка плашки
-            surface:    undefined,      // контур плашки
-            rels:       undefined,      // относительные позиции занимаемых ячеек
-            adjs:       undefined,      // корректировки положения плашки
-            schematic:  schematic,       // схематическое отображение плашки
-            verbose:    verbose,       // схематическое отображение плашки
+            size: { x: 0, y: 0 },   // кол-во ячеек, занимаемое плашкой на доске
+            size_px: { x: 0, y: 0 },   // физический размер плашки (в px)
+            origin: { x: 0, y: 0 },   // опорная точка плашки
+            surface: undefined,      // контур плашки
+            rels: undefined,      // относительные позиции занимаемых ячеек
+            adjs: undefined,      // корректировки положения плашки
+            schematic: schematic,       // схематическое отображение плашки
+            verbose: verbose,       // схематическое отображение плашки
         };
 
         /// Свойства - неизменяемые атрибуты плашки
@@ -157,13 +165,13 @@ export default class Plate {
 
         /// Состояние - изменяемые атрибуты плашки
         this._state = {
-            cell:           new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
-            orientation:    Plate.Orientations.East,        // ориентация плашки
-            highlighted:    false,                          // подсвечена ли плашка
-            currents:       undefined,
-            voltages:       undefined,
-            input:          undefined,
-            output:         undefined,
+            cell: new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
+            orientation: Plate.Orientations.East,        // ориентация плашки
+            highlighted: false,                          // подсвечена ли плашка
+            currents: undefined,
+            voltages: undefined,
+            input: undefined,
+            output: undefined,
         };
 
         /// Присвоить класс контейнеру
@@ -171,11 +179,11 @@ export default class Plate {
 
         /// Обработчики событий
         this._callbacks = {
-            change: () => {},           // изменения плашки
-            mousedown: () => {},
-            mousewheel: () => {},
-            dragstart: () => {},
-            dragfinish: () => {},
+            change: () => { },           // изменения плашки
+            mousedown: () => { },
+            mousewheel: () => { },
+            dragstart: () => { },
+            dragfinish: () => { },
         };
 
         /// Режим перетаскивания
@@ -183,12 +191,12 @@ export default class Plate {
         /// Отрисована ли была плашка
         this._drawn = false;
 
-        this._group.mousedown((evt: MouseEvent) => {this._callbacks.mousedown(evt)});
+        this._group.mousedown((evt: MouseEvent) => { this._callbacks.mousedown(evt) });
 
         /// обработчик вращения колёсика мыши на плашке
         if ('onwheel' in document) {
             // IE9+, FF17+, Ch31+
-            this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt), {passive: true});
+            this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt), { passive: true });
         } else if ('onmousewheel' in document) {
             // устаревший вариант события
             this._group.node.addEventListener("mousewheel", (evt) => this._callbacks.mousewheel(evt));
@@ -315,9 +323,9 @@ export default class Plate {
 
     serialize() {
         return {
-            id:             this.id,
-            type:           this.alias,
-            length:         this.length,
+            id: this.id,
+            type: this.alias,
+            length: this.length,
 
             position: {
                 cell: {
@@ -341,13 +349,13 @@ export default class Plate {
      * @param {string}  orientation ориентация элемента относительно опорной точки
      * @param {boolean} animate     анимировать появление плашки
      */
-    draw(cell: Cell, orientation: any, animate=false) {
+    draw(cell: Cell, orientation: any, animate = false) {
         this._checkParams();
 
         this._beforeReposition();
 
-        let width   = (cell.size.x * this._params.size.x) + (this.__grid.gap.x * 2 * (this._params.size.x - 1));
-        let height  = (cell.size.y * this._params.size.y) + (this.__grid.gap.y * 2 * (this._params.size.y - 1));
+        let width = (cell.size.x * this._params.size.x) + (this.__grid.gap.x * 2 * (this._params.size.x - 1));
+        let height = (cell.size.y * this._params.size.y) + (this.__grid.gap.y * 2 * (this._params.size.y - 1));
 
         this._container.size(width, height);
         this._shadow.size(width, height);
@@ -360,20 +368,20 @@ export default class Plate {
             this._bezel = this._group.path(surf_path);
             this._error_highlighter = this._group.path(surf_path);
         } else {
-            this._bezel = this._group.rect(100, 100).radius(BackgroundLayer.CellRadius);
-            this._error_highlighter = this._group.rect(100, 100).radius(BackgroundLayer.CellRadius);
+            this._bezel = this._group.rect().width('100%').height('100%').radius(BackgroundLayer.CellRadius);
+            this._error_highlighter = this._group.rect().width('100%').height('100%').radius(BackgroundLayer.CellRadius);
         }
 
         if (this._params.schematic) {
-            this._bezel.fill({opacity: 0}).stroke({opacity: 0});
+            this._bezel.fill({ opacity: 0 }).stroke({ opacity: 0 });
         } else {
-            this._bezel.fill("#fffffd").stroke({color: "#f0eddb", width: 2});
+            this._bezel.fill("#fffffd").stroke({ color: "#f0eddb", width: 2 });
         }
 
-        this._error_highlighter.fill({color: "#f00"});
+        this._error_highlighter.fill({ color: "#f00" });
 
         this._shadowimg = this._shadowgroup.rect(width, height); // изображение тени
-        this._shadowimg.fill({color: "#51ff1e"}).radius(10).opacity(0.4);
+        this._shadowimg.fill({ color: "#51ff1e" }).radius(10).opacity(0.4);
         this._shadowimg.addClass(Plate.ShadowImgClass);
         this._hideShadow();
 
@@ -398,19 +406,13 @@ export default class Plate {
     /**
      * Установить состояние плашки
      *
-     * @param {object} state новое состояние плашки, которое требуется отобразить
+     * @param state новое состояние плашки, которое требуется отобразить
      * @param suppress_events
      */
-    setState(state: {[key: string]: any}, suppress_events=false) {
-        let is_dirty = false;
+    setState(state: Partial<PlateState>, suppress_events=false) {
+        const is_dirty = !isEqual(this._state, state);
 
-        for (let state_param in this._state) {
-            if (state_param in state) {
-                this._state[state_param] = state[state_param];
-
-                is_dirty = true;
-            }
-        }
+        this._state = defaultsDeep(cloneDeep(state), this._state);
 
         if (!suppress_events) {
             if (is_dirty) {
@@ -713,7 +715,7 @@ export default class Plate {
      */
     freeze() {
         this._container.style('pointer-events', 'none');
-        this._container.animate('100ms').opacity(0.5);
+        this._container.animate(100).attr({ 'opacity': 0.5 });
     }
 
     /**
@@ -723,7 +725,7 @@ export default class Plate {
      */
     unfreeze() {
         this._container.style('pointer-events', 'inherit');
-        this._container.animate('100ms').opacity(1);
+        this._container.animate(100).attr({ 'opacity': 1 });
     }
 
     setEditable(editable=true) {
@@ -750,7 +752,7 @@ export default class Plate {
 
     move_to_point(x: number, y: number, animate=false) {
         if (animate) {
-            this._container.animate('100ms', '<>').move(x, y);
+            this._container.animate(100, '<>').move(x, y);
         } else {
             this._container.move(x, y);
         }
@@ -758,7 +760,7 @@ export default class Plate {
 
     center_to_point(x: number, y: number, animate=false) {
         if (animate) {
-            this._container.animate('100ms', '<>').center(x, y);
+            this._container.animate(100, '<>').center(x, y);
         } else {
             this._container.center(x, y);
         }

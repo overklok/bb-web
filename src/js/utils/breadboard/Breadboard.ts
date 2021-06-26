@@ -1,6 +1,8 @@
 import SVG from 'svg.js'
 import canvg from 'canvg';
 import { saveAs } from 'file-saver';
+import cloneDeep from "lodash/cloneDeep";
+import defaultsDeep from "lodash/defaultsDeep";
 
 import Grid from "./core/Grid";
 import MenuLayer from "./layers/MenuLayer";
@@ -25,8 +27,8 @@ import Plate from "./core/Plate";
 require("./styles/main.css");
 
 type BreadboardOptions = {
-    layouts?: unknown,
-    layout_name?: unknown,
+    layouts?: {[layout_name: string]: Layout},
+    layout_name?: string,
     debug?: boolean,
     verbose?: boolean,
     detailed?: boolean,
@@ -46,16 +48,33 @@ export default class Breadboard {
     private _options: BreadboardOptions;
     private _brush: SVG.Doc;
     private __grid: Grid;
-    private _layers: {[key: string]: Layer};
-    private _callbacks: {[key: string]: () => void}
-    private _cache: {[key: string]: {current: {}}}
-    private _dom_node_parent: HTMLElement;
-    private _spare: boolean;
-    private _filters_defined: boolean;
-    private _injected: boolean;
+    private _layers: {
+        background?: BackgroundLayer,
+        label?:      LabelLayer,
+        current?:    CurrentLayer,
+        plate?:      PlateLayer,
+        region?:     RegionLayer,
+        controls?:   ControlsLayer,
+        selector?:   SelectorLayer,
+        menu?:       MenuLayer
+    }
+
+    private _callbacks: {
+        change: CallableFunction,
+        dragstart: CallableFunction,
+        shortcircuitstart: CallableFunction,
+        shortcircuitend: CallableFunction,
+        layoutchange: CallableFunction
+    }
 
     private readonly _layouts: {[key: string]: Layout};
     private _div_wrap: HTMLDivElement;
+    private _layout: any;
+    private _cache: { current: any; };
+    private _dom_node_parent: any;
+    private _spare: boolean;
+    private _filters_defined: boolean;
+    private _injected: boolean;
 
     constructor(options: BreadboardOptions) {
         if (!SVG.supported) {
@@ -73,6 +92,7 @@ export default class Breadboard {
             region:     undefined,
             controls:   undefined,
             selector:   undefined,
+            menu:       undefined,
         };
 
         this._callbacks = {
@@ -105,7 +125,7 @@ export default class Breadboard {
         const grid = new Grid(10, 10, 1000, 700);
         const div_wrap = SVG(parent);
 
-        const plate_type = PlateLayer.typeToPlateClass(type);
+        const plate_type: any = PlateLayer.typeToPlateClass(type);
 
         const plate = new plate_type(div_wrap, grid, false, false, null, properties);
 
@@ -198,7 +218,7 @@ export default class Breadboard {
         this.setReadOnly(this._options.readOnly);
     };
 
-    setRandomPlates(protos, size_mid, size_deviation, attempts_max) {
+    setRandomPlates(protos: {}, size_mid: number, size_deviation: number, attempts_max: number) {
         if (!this._layers.plate) throw new Error("Breadboard must be injected first");
         this._layers.plate.setRandom(protos, size_mid, size_deviation, attempts_max);
     }
@@ -208,7 +228,7 @@ export default class Breadboard {
      *
      * @param readOnly {boolean}
      */
-    setReadOnly(readOnly) {
+    setReadOnly(readOnly: boolean) {
         this._options.readOnly = readOnly;
         this._setLayersReadOnly(this._options.readOnly);
         // this.redraw(this._options.schematic);
@@ -219,19 +239,19 @@ export default class Breadboard {
         // this._attachControlsEvents();
     }
 
-    registerLayouts(layouts) {
+    registerLayouts(layouts: {[layout_name: string]: Layout}) {
         if (!layouts) return;
 
         for (const [name, layout] of Object.entries(layouts)) {
             this._layouts[name] = layout;
 
             if (this._layers.controls) {
-                this._layers.controls.addMenuItem(`layout-${name}`, `Разметка: ${name}`);
+                this._layers.controls.addContextMenuItem(`layout-${name}`, `Разметка: ${name}`);
             }
         }
     }
 
-    setLayout(layout_name) {
+    setLayout(layout_name: string) {
         this.reinject({layout_name});
         this._callbacks.layoutchange(layout_name);
         this._callbacks.change({
@@ -253,12 +273,12 @@ export default class Breadboard {
         this._layers = {};
     }
 
-    reinject(options) {
+    reinject(options: BreadboardOptions) {
         this.dispose();
         this.inject(this._dom_node_parent, this._mergeOptions(options));
     }
 
-    redraw(schematic, detailed, verbose, debug) {
+    redraw(schematic: boolean, detailed: boolean, verbose: boolean, debug: boolean) {
         this._layers.background.recompose(schematic, detailed, debug);
         this._layers.plate.recompose(schematic, verbose);
         this._layers.current.recompose(schematic, detailed);
@@ -276,7 +296,7 @@ export default class Breadboard {
      *
      * @returns {null|int} идентификатор плашки
      */
-    addPlate(type, position, id=null, properties) {
+    addPlate(type: string, position: {x: number, y: number}, id: number=null, properties: {}) {
         return this._layers.plate.addPlateSerialized(type, position, id, properties);
     }
 
@@ -286,7 +306,7 @@ export default class Breadboard {
      * @param {int}     plate_id    идентификатор плашки
      * @param {object}  state       состояние плашки
      */
-    setPlateState(plate_id, state) {
+    setPlateState(plate_id: number, state: {}) {
         this._layers.plate.setPlateState(plate_id, state);
     }
 
@@ -296,7 +316,7 @@ export default class Breadboard {
      * @param {Array} plate_ids массив идентификаторов плашек, которые требуется подсветить
      *
      */
-    highlightPlates(plate_ids) {
+    highlightPlates(plate_ids: number[]) {
         this._layers.plate.highlightPlates(plate_ids);
     }
 
@@ -316,7 +336,7 @@ export default class Breadboard {
      *
      * @param {Array<Object>} plates список плашек, которые должны отображаться на плате
      */
-    setPlates(plates) {
+    setPlates(plates: {}[]) {
         return this._layers.plate.setPlates(plates);
     }
 
@@ -325,7 +345,7 @@ export default class Breadboard {
      *
      * @param {Array<Object>} threads контуры токов
      */
-    setCurrents(threads) {
+    setCurrents(threads: {}[]) {
         // this._layers.current.setCurrents(threads, this._spare);
         this._layers.current.setCurrents(threads, false, this._options.showSourceCurrents);
     }
@@ -347,9 +367,8 @@ export default class Breadboard {
      * @param {Object}  from    исходная координата выделения
      * @param {Object}  to      конечная координата выделения
      * @param {boolean} clear   очистить предыдущее выделение
-     * @param {String}  color   цвет выделения в формате Hex
      */
-    highlightRegion(from, to, clear) {
+    highlightRegion(from: {x: number, y: number}, to: {x: number, y: number}, clear: boolean) {
         this._layers.region.highlightRegion(from, to, clear);
     }
 
@@ -360,7 +379,7 @@ export default class Breadboard {
         this._layers.region.clearRegions();
     }
 
-    setPinsValues(values) {
+    setPinsValues(values: ['input'|'output', number][]) {
         this._layers.label.setPinsValues(values);
     }
 
@@ -369,7 +388,7 @@ export default class Breadboard {
      *
      * @param {Function} cb обработчик события изменения состояния платы
      */
-    onChange(cb) {
+    onChange(cb: Function) {
         if (!cb) {this._callbacks.change = () => {}}
 
         this._callbacks.change = cb;
@@ -380,31 +399,31 @@ export default class Breadboard {
      *
      * @param {Function} cb обработчик начала перетаскивания плашки
      */
-    onDragStart(cb) {
+    onDragStart(cb: Function) {
         if (!cb) {this._callbacks.dragstart = () => {}}
 
         this._callbacks.dragstart = cb;
     }
 
-    onShortCircuitStart(cb) {
+    onShortCircuitStart(cb: Function) {
         if (!cb) {this._callbacks.shortcircuitstart = () => {}}
 
         this._callbacks.shortcircuitstart = cb;
     }
 
-    onShortCircuitEnd(cb) {
+    onShortCircuitEnd(cb: Function) {
         if (!cb) {this._callbacks.shortcircuitend = () => {}}
 
         this._callbacks.shortcircuitend = cb;
     }
 
-    onLayoutChange(cb) {
+    onLayoutChange(cb: Function) {
         if (!cb) {this._callbacks.layoutchange = () => {}}
 
         this._callbacks.layoutchange = cb;
     }
 
-    switchSchematic(on, detailed) {
+    switchSchematic(on: boolean, detailed=false) {
         // TODO: Merge detailed and schematic modes
         if (this._options.schematic === on && this._options.detailed === detailed) return;
 
@@ -414,7 +433,7 @@ export default class Breadboard {
         this.redraw(this._options.schematic, this._options.detailed, this._options.verbose, this._options.debug);
     }
 
-    switchVerbose(on) {
+    switchVerbose(on: boolean) {
         if (this._options.verbose === on) return;
 
         this._options.verbose = on;
@@ -422,7 +441,7 @@ export default class Breadboard {
         this.redraw(this._options.schematic, this._options.detailed, this._options.verbose, this._options.debug);
     }
 
-    switchDebug(on) {
+    switchDebug(on: boolean) {
         if (this._options.debug === on) return;
 
         this._options.debug = on;
@@ -430,7 +449,7 @@ export default class Breadboard {
         this.redraw(this._options.schematic, this._options.detailed, this._options.verbose, this._options.debug);
     }
 
-    switchSpareFilters(on) {
+    switchSpareFilters(on: boolean) {
         this._spare = on;
 
         return;
@@ -554,15 +573,15 @@ export default class Breadboard {
      *
      * @param {boolean} readOnly
      */
-    _setLayersReadOnly(readOnly) {
+    _setLayersReadOnly(readOnly: boolean) {
         this._layers.plate.setEditable(!readOnly);
         this._layers.controls.setVisibility(!readOnly);
 
         /// если не режим только чтения, подключить обработчик изменения состояния платы
         if (!readOnly) {
-            this._layers.plate.onChange((data) => {this._callbacks.change(data)});
+            this._layers.plate.onChange((data: {}) => {this._callbacks.change(data)});
         } else {
-            this._layers.plate.onChange();
+            this._layers.plate.onChange(null);
         }
     }
 
@@ -596,12 +615,10 @@ export default class Breadboard {
         }
     }
 
-    _mergeOptions(options) {
+    _mergeOptions(options: {[key: string]: any}) {
         options = options || {};
 
-        for (const [index, option] of Object.entries(this._options)) {
-            options[index] = (options[index] === undefined) ? this._options[index] : options[index];
-        }
+        options = defaultsDeep(cloneDeep(options), this._options);
 
         return options;
     }
@@ -626,17 +643,23 @@ export default class Breadboard {
             this._layers.selector.open();
         })
 
-        this._layers.selector.onPlateTake((plate_data, plate_x, plate_y, cursor_x, cursor_y) => {
+        this._layers.selector.onPlateTake((
+            plate_data: {},
+            plate_x: number,
+            plate_y: number,
+            cursor_x: number,
+            cursor_y: number
+        ) => {
             this._layers.plate.takePlate(plate_data, plate_x, plate_y, cursor_x, cursor_y);
         })
 
         /// переключение полноэкранного режима
-        this._layers.selector.onFullscreen((on) => {
+        this._layers.selector.onFullscreen((on: boolean) => {
             Breadboard.fullScreen(on, this._brush.node);
         });
 
         /// нажатие на пункт глобального контекстного меню (платы)
-        this._layers.menu.onContextMenuItemClick((item_id, alias, value) => {
+        this._layers.menu.onContextMenuItemClick((item_id: number, alias: string, value: any) => {
             switch (alias) {
                 case BoardContextMenu.CMI_SNAPSH_SVG:
                     this._saveToImage();
@@ -705,13 +728,15 @@ export default class Breadboard {
      * @param {File} file файл, содержащий JSON-объект с информацией о состоянии платы
      * @private
      */
-    _importPlates(file) {
+    _importPlates(file: File) {
         let reader = new FileReader();
 
         reader.readAsText(file, "UTF-8");
 
-        reader.onload = (evt) => {
-            let plates = JSON.parse(evt.target.result);
+        reader.onload = (evt: ProgressEvent) => {
+            console.log(evt);
+            /* TODO */
+            let plates = JSON.parse((evt.target as any).result);
 
             this.clearPlates();
 
@@ -746,7 +771,7 @@ export default class Breadboard {
 
         if (window.navigator.msSaveOrOpenBlob) {
             // IE10+
-            window.navigator.msSaveOrOpenBlob(file, filename);
+            window.navigator.msSaveOrOpenBlob(file, "bbconfig.json");
         } else {
             // Others
             let a = document.createElement("a");
@@ -879,7 +904,7 @@ export default class Breadboard {
     };
 
     _defineGradients() {
-        initGradients(this._brush.group("gradients"));
+        initGradients(this._brush.group());
     }
 
     /**
@@ -888,7 +913,7 @@ export default class Breadboard {
      * @param {boolean}     on      включить полноэкранный режим?
      * @param {HTMLElement} element DOM-элемент
      */
-    static fullScreen(on, element) {
+    static fullScreen(on: boolean, element: any) {
         if (on) {
             if (element.requestFullScreen) {
                 element.requestFullScreen();
@@ -900,12 +925,12 @@ export default class Breadboard {
         } else {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.webkitCancelFullScreen) {
-                document.webkitCancelFullScreen();
+            } else if ((document as any).msExitFullscreen) {
+                (document as any).msExitFullscreen();
+            } else if ((document as any).mozCancelFullScreen) {
+                (document as any).mozCancelFullScreen();
+            } else if ((document as any).webkitCancelFullScreen) {
+                (document as any).webkitCancelFullScreen();
             }
         }
     }

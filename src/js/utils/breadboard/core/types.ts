@@ -1,11 +1,11 @@
-type DomainPoint = { x: number, y: number }
+type XYObject = { x: number, y: number }
 
 export type Domain = {
     horz: boolean,
-    from: DomainPoint,
-    to: DomainPoint
-    minus_from?: DomainPoint,
-    minus_to?: DomainPoint,
+    from: XYObject,
+    to: XYObject
+    minus_from?: XYObject,
+    minus_to?: XYObject,
     /* TODO: Narrow types 'style' and 'role' */
     style?: string,
     role?: string,

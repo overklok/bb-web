@@ -2,6 +2,7 @@ import {ImperativeView} from "../../core/base/view/ImperativeView";
 import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
 import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/base/view/View";
+import {Layout} from "../../utils/breadboard/core/types";
 
 namespace BoardView {
     export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}
@@ -15,7 +16,7 @@ namespace BoardView {
         verbose?: boolean;
         readonly?: boolean;
         debug?: boolean;
-        layouts: object;
+        layouts: {[name: string]: Layout};
         layout_name: string;
     }
 
@@ -25,7 +26,7 @@ namespace BoardView {
             readonly: true,
             verbose: false,
             debug: false,
-            layouts: [],
+            layouts: {},
             layout_name: 'default'
         }
 
@@ -96,7 +97,7 @@ namespace BoardView {
             return this.bb.getPlates();
         }
 
-        setPlates(plates: Array<object>) {
+        setPlates(plates: object[]) {
             if (plates == null) throw new TypeError("Plates is not defined");
 
             this.bb.clearRegions();
@@ -104,7 +105,7 @@ namespace BoardView {
             return this.bb.setPlates(plates);
         }
 
-        highlightErrorPlates(plate_ids: Array<string>) {
+        highlightErrorPlates(plate_ids: number[]) {
             if (!plate_ids) {
                 return true
             }
@@ -116,11 +117,11 @@ namespace BoardView {
             this.bb.setPlateState(plate_id, state);
         }
 
-        setCurrents(threads: Array<object>) {
+        setCurrents(threads: object[]) {
             this.bb.setCurrents(threads);
         }
 
-        setPinsValues(values: Array<object>) {
+        setPinsValues(values: ['input'|'output', number][]) {
             this.bb.setPinsValues(values)
         }
 

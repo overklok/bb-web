@@ -1,7 +1,6 @@
-import Layer from "js/utils/breadboard/core/Layer";
-
 import '../styles/menu.css';
-import ContextMenu from "js/utils/breadboard/core/ContextMenu";
+import Layer from "../core/Layer";
+import ContextMenu from "../core/ContextMenu";
 
 export default class MenuLayer extends Layer {
     static get Class() {return "bb-layer-menu"}
