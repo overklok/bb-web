@@ -1,9 +1,30 @@
 import { XYObject } from "./types"
 
+
+/**
+ * Type of context menu item input
+ */
+export enum ContextMenuItemInputType {
+    String = 'string',
+    Number = 'number',
+    File = 'file'
+}
+
+/**
+ * Properties of context menu item input
+ * 
+ * If needed, `min` and `max` might be set for {@link ContextMenuItemInputType.Number} items.
+ */
+export type ContextMenuItemInputProps = {
+    type: ContextMenuItemInputType,
+    min?: number,
+    max?: number
+}
+
 /**
  * Context menu item properties
  */
-export type ContextMenuItemData = {
+export type ContextMenuItemProps = {
     /** Text label which will be displayed to user */
     label: string | (() => string),
     /** String alias to reference in sources */
@@ -16,25 +37,23 @@ export type ContextMenuItemData = {
      */
     active: boolean,
 
-    /** Optional input type */
-    input?: {
-        type: "file" | "number",
-        min?: number,
-        max?: number
-    },
+    /** 
+     * Optional input type 
+     */
+    input?: ContextMenuItemInputProps,
 
     /**
      * Keyboard shortcut / shortcut combination
      * NB: it would still be required to handle it manually
-     * shortcut?: string | string[],
      */
+    shortcut?: string | string[],
     
     /** 
      * Keyboard shortcut options. Use it when the item has multiple binds.
      * NB: it would still be required to handle it manually
      * NB2: if the `shortcut` option is specified, this option will overwrite it.
-     * shortcuts?: string[],
      */
+    shortcuts?: string[],
 
     /** 
      * Present the item _as_ another item with the type already registered in {@link ContextMenu}
@@ -47,7 +66,7 @@ export type ContextMenuItemData = {
         /** Alias of original menu item which is going to be duplicated */
         alias: string,
         /** Custom item click handler to modify menu's internal state or smth else */
-        beforeClick?: () => void
+        beforeClick?: (value: number|string|File|void) => number|string|void|File
     }
 }
 
@@ -65,7 +84,7 @@ export default class ContextMenu {
     private _container: HTMLDivElement;
 
     /** {@link ContextMenu} configuration */
-    private _items_data: ContextMenuItemData[];
+    private _items_props: ContextMenuItemProps[];
 
     /** An 'item click' event handler */
     private _itemclick: Function;
@@ -102,7 +121,7 @@ export default class ContextMenu {
         this._caller_id = item_id;
         this._container = undefined;
 
-        this._items_data = [];
+        this._items_props = [];
 
         this._itemclick = undefined;
     }
@@ -127,7 +146,7 @@ export default class ContextMenu {
      * @param active    whether the item should be active
      */
     addItem(alias: string, label: string, active: boolean = true): void {
-        this._items_data.push({
+        this._items_props.push({
             alias, label, active
         });
     }
@@ -189,10 +208,15 @@ export default class ContextMenu {
         }
     }
 
-    private _drawItems(inputs: []) {
+    /**
+     * Renders all menu items
+     * 
+     * @param inputs values for optional menu item fields
+     */
+    private _drawItems(inputs: []): void {
         let i = 0;
 
-        for (let item_data of this._items_data) {
+        for (let item_props of this._items_props) {
             let input_value = undefined;
 
             if (i < inputs.length) {
@@ -200,18 +224,27 @@ export default class ContextMenu {
             }
 
             this._container.appendChild(
-                this._drawItem(item_data, input_value)
+                this._drawItem(item_props, input_value)
             );
         }
     }
 
-    private _drawItem(item_data, input_value=null) {
-        let label = item_data.label ? item_data.label : item_data.alias;
-        let active = item_data.active;
-        let input = item_data.input;
+    /**
+     * Renders single menu item
+     * 
+     * Function creates div container, generates the content,
+     * and returns the container as a result.
+     * 
+     * @param item_props     menu item config
+     * @param input_value    initial input field value
+     */
+    private _drawItem(item_props: ContextMenuItemProps, input_value: any = null): HTMLDivElement {
+        let label = item_props.label ? item_props.label : item_props.alias;
+        let active = item_props.active;
+        let input = item_props.input;
 
-        let shortcuts = item_data.shortcuts ? item_data.shortcuts : item_data.shortcut;
-        let is_shortcut_combined = Array.isArray(item_data.shortcut);
+        let shortcuts = item_props.shortcuts ? item_props.shortcuts : item_props.shortcut;
+        let is_shortcut_combined = Array.isArray(item_props.shortcut);
 
         if (!Array.isArray(shortcuts)) {
             shortcuts = shortcuts ? [shortcuts] : [];
@@ -219,7 +252,7 @@ export default class ContextMenu {
 
         let input_node = undefined;
 
-        if (item_data.shortcuts) {}
+        if (item_props.shortcuts) {}
 
         if (typeof label === "function") {
             label = label();
@@ -241,7 +274,7 @@ export default class ContextMenu {
         // Add input
         if (input) {
             input_node = this._drawInput(
-                `bb-input-${item_data.alias}`,
+                `bb-input-${item_props.alias}`,
                 input.type, input.min, input.max, input_value
             );
 
@@ -275,44 +308,75 @@ export default class ContextMenu {
             }
         }
 
-        this._attachItemEvents(root, item_data, input, input_node);
+        this._attachItemEvents(root, item_props, input, input_node);
 
         return root;
     }
 
-    private _drawInput(id, type="number", min=0, max=9000, initial_value=null) {
+    /**
+     * Renders an input field for specific menu item
+     * 
+     * @param id            dom node id for the item
+     * @param type          
+     * @param min 
+     * @param max 
+     * @param initial_value 
+     * @returns 
+     */
+    private _drawInput(
+        id: string,
+        type: ContextMenuItemInputType,
+        min: number = 0,
+        max: number = 9000,
+        initial_value: number | string = null
+    ) {
         let input = document.createElement("input");
         input.classList.add(ContextMenu.ItemInputClass);
-        input.id = id ? id : "bb-unnamed-input-" + x + y;
-        input.type = type;
+        input.id = id ? id : `bb-unnamed-input-${type}`;
 
-        if (type === "number") {
-            input.min = min;
-            input.max = max;
-            input.placeholder = min;
+        if (type === ContextMenuItemInputType.Number) {
+            input.type = "number";
+            input.min = String(min);
+            input.max = String(max);
+            input.placeholder = String(min);
             initial_value = Number(initial_value) || 0;
         }
 
-        if (type === "file") {
+        if (type === ContextMenuItemInputType.String) {
+            input.type = "string";
             input.style.display = "none";
         }
 
         if (initial_value) {
-            input.value = initial_value;
+            input.value = String(initial_value);
         }
 
         return input;
     }
 
-    private _attachItemEvents(root, item_data, input, input_node) {
+    /**
+     * Attach handlers to menu item events
+     * 
+     * @param root          root HTML container of the menu item
+     * @param item_props    properties of the menu item
+     * @param input_props   properties of the input field
+     * @param input_node    input field HTML element
+     */
+    private _attachItemEvents(
+        root: HTMLDivElement,
+        item_props: ContextMenuItemProps,
+        input_props: ContextMenuItemInputProps,
+        input_node: HTMLInputElement
+    ) {
         const apply = () => {
             setTimeout(() => {
-                if (input && input.type === 'file') {
+                if (input_props && input_props.type === 'file') {
                     input_node.click();
-                    input_node.addEventListener("change", evt => {
-                        const value = evt.target.files[0];
+                    input_node.addEventListener("change", (evt: Event) => {
+                        const tgt = (evt.target as HTMLInputElement);
 
-                        this._itemClick(item_data, value);
+                        const value = tgt.files[0];
+                        this._itemClick(item_props, value);
                     });
                 }
 
@@ -320,13 +384,13 @@ export default class ContextMenu {
 
                 this.dispose();
 
-                if (!(input && input.type === 'file')) {
-                    this._itemClick(item_data, value);
+                if (!(input_props && input_props.type === 'file')) {
+                    this._itemClick(item_props, value);
                 }
             }, 100);
         }
 
-        if (input && input.type !== 'file') {
+        if (input_props && input_props.type !== 'file') {
             input_node.addEventListener("keyup", (event) => {
                 if (event.keyCode === 13) {
                     apply();
@@ -335,24 +399,26 @@ export default class ContextMenu {
         }
 
         root.addEventListener('mousedown', (evt) => {
-            if (evt.target.classList.contains(ContextMenu.ItemInputClass)) return;
+            const tgt = (evt.target as HTMLElement);
+
+            if (tgt.classList.contains(ContextMenu.ItemInputClass)) return;
 
             root.classList.add(ContextMenu.ItemAcceptedClass);
+
             apply();
         });
     }
 
     /**
-     * Вызвать обработчик события "нажат пункт конеткстного меню"
+     * Call handler for 'context menu items click' event
      *
-     * @param item_data
-     * @param value
-     * @private
+     * @param item_props    properties of the menu item clicked
+     * @param value         current input field value
      */
-    private _itemClick(item_data, value) {
-        let as = item_data.as;
+    private _itemClick(item_props: ContextMenuItemProps, value: number|string|File|void) {
+        let as = item_props.as;
 
-        let alias = as && as.alias ? as.alias : item_data.alias;
+        let alias = as && as.alias ? as.alias : item_props.alias;
 
         if (as && as.beforeClick) {
             value = as.beforeClick(value);
