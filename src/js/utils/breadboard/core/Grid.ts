@@ -81,7 +81,7 @@ type AuxPoint = {
 }
 
 /**
- * Logical representation of a breadboard grid
+ * Logical representation of the breadboard grid
  * 
  * {@link Grid} does not make any drawing, it just stores the collection of {@link Cell}s
  * and contains helper methods to manage them.

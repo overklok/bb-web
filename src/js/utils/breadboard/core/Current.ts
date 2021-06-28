@@ -1,24 +1,85 @@
-import thm from '../styles/current.css';
+import SVG from 'svg.js';
+
+import { XYObject } from './types';
+
+import '../styles/current.css';
 
 let SYMBOL_SMOKE = undefined;
 
+export type Thread = {
+    /** The weight of the current */
+    weight: number;
+    /** Start point of the current */
+    from: XYObject;
+    /** Finish point of the current */
+    to: XYObject;
+}
+
 /**
- * Класс "Ток"
+ * Displays current segment and manages its graphical components and animations. 
+ * Single current segment is a line defined by two {@link Cell}s of a breadboard grid with 
+ * custom properties.
  *
- * Необходим для отображения на сетке точек одного тока с определёнными свойствами.
+ * Each {@link Current} has its own container to display the animation. The main element is
+ * the _line_ along which little particles move to show the weight and direction of the current.
  *
- * Каждый ток имеет собственный контейнер для отображения анимации.
+ * (!) Before launching the animation, it's required to call {@link draw}, which is needed to set
+ * the animation path.
  *
- * (!) Прежде чем запускать анимацию, необходимо вызвать draw(), с помощью которого можно задать
- * току контур, по которому будет идти анимация.
- *
- * @param container контейнер, в котором будет производиться отрисовка и анимация тока
- * @param style     SVG-стиль линии, изображающей ток
- * @param speed     Скорость движения анимации тока
- * @constructor
+ * @param container container for the {@link Current} elements and animations
+ * @param style     SVG style for the lines
+ * @param speed     speed of partical animations
  */
 export default class Current {
-    static get Colors() {return [
+    /** Root container of the {@link Current} */
+    private container: SVG.Container;
+    /** General properties of the {@link Current} */
+    private _thread: Thread;
+    /** Animation-specific container of the {@link Current} */
+    private _container_anim: SVG.Nested;
+    /** Debug container of the {@link Current} */
+    private _group_debug: any;
+    /** Current identifier */
+    private _id: number;
+    /** Schematic style flag */
+    private _schematic: boolean;
+    /** Current particle SVG elements */
+    private _particles: any[];
+    /** Current SVG line */
+    private _line: any;
+    /** Geometric SVG-formatted path string of the current line */
+    private _line_path: string;
+    /** Calculated length of the {@link _line_path} */
+    private _line_length: any;
+    /** Current animation stylesheet */
+    private _sheet: any;
+    /** Current animation duration */
+    private _anim_dur: any;
+    /** Current animation delay */
+    private _anim_delay: any;
+    /** Current weight */
+    private _weight: number;
+    /** Current style */
+    private _style: { linecap: string; color: string; width: number; particle_radius: number; opacity: any; };
+    /** Current visibility flag */
+    private _visible: boolean;
+    /** Current activation flag */
+    private _activated: boolean;
+    /** Current burning flag */
+    private _burning: boolean;
+
+    /**
+     * Color gradations of the {@link Current} weight
+     * 
+     * An arbitrary number of the colors is allowed.
+     * Current instance will pick the color from the gradient of the evenly distributed points of colors listed here
+     * based on the normailzed value of the weight (0..1). 
+     * In this way, currents with weight `0` will have a color `{@link Colors}[0]`, 
+     * and currents with weight `1` will be colored with `{@link Colors}[Colors.length - 1]`.
+     * 
+     * Each color is a string with a six-digit hexadecimal number preceded by hash symbol (`#`).
+     */
+    static Colors: string[] = [
         "#006eff",
         "#ff0006"
         // "#cd1800",
@@ -29,41 +90,52 @@ export default class Current {
         // "#00c282",
         // "#00b5c2",
         // "#006ec2",
-    ]}
+    ]
 
-    static get DurationMin() {return 200}       // Длительность цикла анимации частиц тока при минимальном весе
-    static get DurationMax() {return 10000}     // Длительность цикла анимации частиц тока при максимальном весе
-    static get AnimationDelta() {return 200}    // Расстояние между соседними частицами, px
+    /** Length of the animation loop for currents with minimum {@link weight} */
+    static DurationMin: number = 200;
+    /** Length of the animation loop for currents with maximum {@link weight} */
+    static DurationMax: number = 10000;
+    /** Distance between adjacent particles (px) */
+    static AnimationDelta: number = 200;
 
-    static get WidthMax() {return 14};           // Толщина тока при максимальном весе
-    static get WidthSchematicMax() {return 10};  // Толщина тока при максимальном весе (в схематическом режиме)
+    /** Line width for currents with maximum weight (px) */
+    static WidthMax = 14; 
+    /** Line width for currents with maximum weight (px) - schematic mode */
+    static WidthSchematicMax = 10;
 
-    static get RadiusMax() {return 18};           // Радиус частиц при максимальном весе
-    static get RadiusSchematicMax() {return 16};  // Радиус частиц при максимальном весе (в схематическом режиме)
+    /** Particle radius for currents with maximum weight (px) */
+    static RadiusMax = 18;
+    /** Particle radius for currents with maximum weight (px) - schematic mode */
+    static RadiusSchematicMax = 16;
+    private _rule_idx_burn_kfs: any;
+    private _rule_idx_burn: any;
 
-    static get FullOpacityThreshold() {return 0.07} // Граница веса, при которой ток ещё полностью непрозрачности
+    /** Weight point when the current begins to lose its opacity (the weight is lower - the current is less opaque) */
+    static get FullOpacityThreshold() {return 0.07} 
 
-    constructor(container, thread, schematic) {
-        this.container  = container;        // родительский DOM-узел
-        this.thread     = thread;           // координаты виртуальных точек линии тока (начало и конец)
+    constructor(container: SVG.Container, thread: Thread, schematic: boolean) {
+        this.container  = container;
+        this._thread = thread;
 
-        this._container_anim    = this.container.nested();     // родительский DOM-узел анимации
-        // this._group_debug       = this.container.group();      // DOM-узел для отладки
-        this._id = Math.floor(Math.random() * (10 ** 6));   // Идентификатор по умолчанию - случайная строка
+        this._container_anim = this.container.nested();     // animation root 
+        this._group_debug = undefined; //this.container.group();      // debug root
 
-        // Прочие внутрение параметры
+        this._id = Math.floor(Math.random() * (10 ** 6));   // Default identifier is a random six-digit number
+
+        // Misc internal parameters
         this._schematic     = schematic;
-        this._particles     = [];           // частицы тока (для анимации)
-        this._line          = null;         // SVG-линия тока
-        this._line_path     = undefined;    // координаты реальных точек линии тока (начало и конец)
-        this._line_length   = undefined;    // длина линии тока
+        this._particles     = [];
+        this._line          = null;
+        this._line_path     = undefined;
+        this._line_length   = undefined;
 
-        // Параметры анимации
-        this._sheet             = undefined;    // CSS-контейнер
-        this._anim_dur          = undefined;    // текущая длительность прохождения Current.AnimationDelta px
-        this._anim_delay        = undefined;    // накопленное запаздывание анимации
+        // Animation parameters
+        this._sheet             = undefined;
+        this._anim_dur          = undefined; 
+        this._anim_delay        = undefined; 
 
-        // Прочие параметры анимации
+        // Misc animation parameters
         this._weight    = this._normalizeWeight(thread.weight);
         this._style     = this._getStyle(this._weight);
 
@@ -72,53 +144,28 @@ export default class Current {
         this._burning   = false;
     }
 
-    static defineSmokeSymbol(svg, color="black") {
-        const smoke = svg.symbol("smoke");
-        const c1 = smoke.circle(10).fill(color).opacity(1.0).move(0, 15),
-              c2 = smoke.circle(10).fill(color).opacity(0.8).move(10, 7),
-              c3 = smoke.circle(10).fill(color).opacity(0.9).move(10, 23),
-              c4 = smoke.circle(10).fill(color).opacity(0.3).move(20, 0),
-              c5 = smoke.circle(10).fill(color).opacity(0.5).move(20, 30),
-              c6 = smoke.circle(10).fill(color).opacity(1.0).move(20, 15);
-
-        c1.animate({duration: 600,  delay: 0}).radius(0).dmove(4, 2)
-        c2.animate({duration: 1000, delay: 10}).radius(0).dmove(2, 4)
-        c3.animate({duration: 840,  delay: 20}).radius(0).dmove(1, 3)
-        c4.animate({duration: 800,  delay: 30}).radius(0).dmove(3, 1)
-        c5.animate({duration: 1200, delay: 40}).radius(0).dmove(5, 3)
-        c6.animate({duration: 300,  delay: 50}).radius(0).dmove(1, 2)
-
-        return smoke;
-    }
-
     /**
-     * Возратить идентификатор
-     *
-     * @returns {number | *}
+     * Identifier of the {@link Current}
      */
-    get id() {
+    get id(): number {
         return this._id;
     }
 
     /**
-     * Замкнут ли накоротко ток в данный момент
-     *
-     * @returns {boolean}
+     * Whether the current is short-circuited
      */
-    get is_burning() {
-        return this.thread.weight > 2;
+    get is_burning(): boolean {
+        return this._thread.weight > 2;
     }
 
     /**
-     * Отрисовать контур тока по заданному пути
+     * Renders current line by given path
      *
-     * Применяется фильтр свечения.
+     * The glow filter can be applied.
      *
-     * @param path
-     * @param weight
+     * @param path original SVG path (geometric coordinates)
      */
-    draw(path) {
-        // big thanks to Pythagoras for this formula
+    draw(path: [string, number, number][]): void {
         this._line_path = Current._pathArrayToString(path);
         this._line_length = Current.getPathLength(this._line_path);
 
@@ -144,12 +191,12 @@ export default class Current {
     };
 
     /**
-     * Стереть ток
+     * Erases the current
      */
-    erase() {
+    erase(): void {
         if (!this._line) {
             console.warn("An attempt to erase NULL line was made");
-            return null;
+            return;
         }
 
         this._particles = [];
@@ -168,34 +215,42 @@ export default class Current {
     };
 
     /**
-     * Проверить, совпадает ли контур у тока
+     * Checks whether the given thread is identical with the {@link Current}'s one
      *
-     * @param {Object} thread контур
-     * @returns {boolean}
+     * @param {Object} thread thread to compare
      */
-    hasSameThread(thread) {
-        if (!this.thread) return false;
+    hasSameThread(thread: Thread): boolean {
+        if (!this._thread) return false;
 
-        return  thread.from.x === this.thread.from.x &&
-                thread.from.y === this.thread.from.y &&
-                thread.to.x === this.thread.to.x &&
-                thread.to.y === this.thread.to.y;
+        return  thread.from.x === this._thread.from.x &&
+                thread.from.y === this._thread.from.y &&
+                thread.to.x === this._thread.to.x &&
+                thread.to.y === this._thread.to.y;
     }
 
     /**
-     * Анимировать ток по контуру this._line
+     * Animates the current within the {@link _line} path
      *
-     * Генерируется некоторое число частиц - векторных объектов, изображающих ток по контуру.
-     * Каждая частица циклически проходит фрагмент пути длины delta с заданной скоростью speed
-     * таким образом, что путь движения каждой последующей частицы берёт начало в том месте,
-     * где предыдущая заканчивает итерацию цикла движения.
+     * A certain number of particles are generated. Particle is a vector object representing the
+     * current motion along its path. Along with the color, it helps to visually "feel" the current weight.
+     * 
+     * Each particle cycles through the path fragment of length `delta` at a certain `speed` 
+     * in a way that the motion path of the next particle begins at the end of the previous 
+     * particle motion path.
+     * 
+     * It's important to reduce lags as much as possible in order to update animation properties, 
+     * so instead of re-drawing particles, which causes lags due to CPU-intensive DOM component mount operations, 
+     * this method alters animation properties through CSS manipulations.
+     * To make speed changes seamless, particle animation delay is calculated from the very beginning 
+     * of the first {@link Current} appearance as if the new speed was always the same. 
+     * See {@link _setParticleSpeed} to get more details.
+     * 
+     * @see _animateParticle
+     * @see _setParticleSpeed
      *
-     * Отключение сброса частиц необходимо в случае, когда требуется изменить свойства анимации,
-     * не перерисовывая частицы с нуля.
-     *
-     * @param weight    Скорость анимации тока (движения частиц по контуру)
+     * @param weight current particle motion speed
      */
-    activate() {
+    activate(): void {
         if (!this._visible) throw new Error("Cannot activate invisible current");
         if (this._activated) return;
 
@@ -256,31 +311,42 @@ export default class Current {
     };
 
     /**
-     * Остановить анимацию тока
+     * Stops the {@link Current} animation
      */
-    deactivate() {
+    deactivate(): void {
         this._particles = [];
         this._container_anim.clear();
         this._initStyleSheet();
         this._activated = false;
     };
 
-    showParticles() {
+    /**
+     * Shows hidden particles
+     * 
+     * @see hideParticles
+     */
+    showParticles(): void {
         this._container_anim.opacity(1);
     }
 
-    hideParticles() {
+    /**
+     * Hides visible particles
+     * 
+     * @see showParticles
+     */
+    hideParticles(): void {
         this._container_anim.opacity(0);
     }
 
     /**
-     * Изменить вес тока
+     * Alters the {@link Current} weight
+     * 
      * @param weight
      */
-    setWeight(weight=0) {
+    setWeight(weight: number = 0) {
         const _weight = this._normalizeWeight(weight);
 
-        if (this.thread.weight !== weight) {
+        if (this._thread.weight !== weight) {
             // задать скорость
             this._setParticleSpeed(_weight);
 
@@ -297,13 +363,22 @@ export default class Current {
         }
 
         this._weight = _weight;
-        this.thread.weight = weight;
+        this._thread.weight = weight;
 
         this._updateBurning();
         this._updateDebugInfo();
     }
 
-    _updateBurning() {
+    /**
+     * Enables or disables short circuit effect
+     * 
+     * This function should not be called manually because the animation loop
+     * is sensitive to specific effects such as this.
+     * 
+     * Each time the weight is changed, {@link setWeight} calls this function to
+     * ensure proper state of the animation to display short circuit effect.
+     */
+    private _updateBurning() {
         if (this.is_burning) {
             // "Сжигать" ток от КЗ
             this._burnEnable();
@@ -313,10 +388,22 @@ export default class Current {
         }
     }
 
-    _normalizeWeight(weight) {
+    /**
+     * Converts the weight to normalized value, 
+     * which can be applied to assess the 'power' of the current
+     * 
+     * An easing is applied because it's difficult to use such visual properties
+     * as color and particle speed to illustrate the weight, 
+     * The more is the speed, the harder to recognise the differences (as well as when the speed is too low).
+     * Linear mapping is not suitable to highlight the weight change.
+     * 
+     * It's also needed to have a finite limit of the mapping so the `1` value is reachable. 
+     * Moreover, values more than `1` is allowed but this will be treated as a _short circuit_ state.
+     */
+    private _normalizeWeight(weight: string|number): number {
         weight = Number(weight);
 
-        // Держать значение в интервале [0..1]
+        // Keep value in [0..1] interval
         const k = 1.6;
         weight = 1 - 1 / (1 + k * weight);
 
@@ -324,13 +411,22 @@ export default class Current {
     }
 
     /**
-     * Добавить фильтр свечения к току
+     * Apply glow effect to the current line
+     * 
+     * @deprecated
      */
-    _addGlowFilter() {
+    private _addGlowFilter(): void {
         // this._line.attr('filter', 'url(#glow-current)');
     };
 
-    _burnEnable() {
+    /**
+     * Enable short circuit effect
+     * 
+     * @see setWeight
+     * @see _updateBurning
+     * @see _burnDisable
+     */
+    private _burnEnable(): void {
         if (this._burning) return;
         this._burning = true;
 
@@ -353,7 +449,14 @@ export default class Current {
         this._line.node.classList.add(animname);
     }
 
-    _burnDisable() {
+    /**
+     * Disable short circuit effect
+     * 
+     * @see setWeight
+     * @see _updateBurning
+     * @see _burnEnable
+     */
+    private _burnDisable(): void {
         if (!this._burning) return;
         this._burning = false;
 
@@ -366,79 +469,84 @@ export default class Current {
     }
 
     /**
-     * Анимировать частицу.
+     * Animate individual particle
      *
-     * Для анимации используется CSS Keyframes.
-     * Этот подход является наиболее оптимальным с точки зрения изменения параметров
-     * анимации в режиме реального времени, однако требует больше памяти для манипуляции
-     * таблицами стилей.
+     * For animation, CSS Keyframes is used.
+     * This approach is most optimal for real-time animation parameter updates, 
+     * but it requires more memory to keep the CSS and more code to manipulate it.
      *
-     * Предполагается, что функция вызывается в цикле по частицам.
+     * It's supposed to call this function in the loop over the particles.
      *
-     * @param particle              {SVG.Circle}    SVG-представление частицы, изображающей ток
-     * @param index                 {Number}        Порядковый номер (индекс) сгенерированной частицы
-     * @param particles_count       {Number}        Число частиц на ток
-     * @param progress_start        {Number}        Доля пути, на которой следует начать движение
-     * @param progress_end          {Number}        Доля пути, на которой следует закончить движение
-     * @param dur                   {Number}        Время, за которое частица должна пройти Current.AnimationDelta px
+     * @param particle          particle's SVG element
+     * @param index             particle index in the current
+     * @param particles_count   number of the particles in the current
+     * @param progress_start    the percentage of the path to begin the motion
+     * @param progress_end      the percentage of the path to end the motion
+     * @param dur               time for a particle to move {@link AnimationDelta} px
      */
-    _animateParticle(particle, index, particles_count, progress_start, progress_end, dur=1000) {
+    private _animateParticle(
+        particle: SVG.Circle,
+        index: number,
+        particles_count: number,
+        progress_start: number,
+        progress_end: number,
+        dur: number = 1000
+    ) {
         if (!this._line_path) {throw new Error("Cannot animate current which hasn't been drawn")}
 
-        // действительная разница точек прогресса
+        // actual difference between progress point
         let progress_diff_actual = progress_end - progress_start;
 
-        // нормальная разница точек прогресса, обычно равна progress_diff_actual
-        // за исключением случая с последней частицей, когда она проходит путь меньший, чем у остальных
+        // normalized progress point difference, it's usually equal to `progress_diff_actual` 
+        // except for the last particle, which has a slightly shorter (incomplete) path.
         let progress_diff_normal = 1 / particles_count;
 
-        // Префикс правил для класса анимации
+        // Rule prefix within the CSS animation class 
         let animname = `cur-${this._id}-${index}-anim`;
 
-        // Процент окончания анимации (use ceil if floating point value will cause troubles)
+        // Animation finish percent (use ceil if floating point value will cause troubles)
         let perc = (progress_diff_actual / progress_diff_normal * 100);
 
-        let rule_animation              = undefined,    // CSS-класс анимации
-            rule_keyframes_move         = undefined,    // контрольные точки перемещения
-            rule_keyframes_blink        = undefined,    // контрольные точки непрозрачности
-            rule_keyframes_radius       = undefined;    // контрольные точки радиуса
+        let rule_animation              = undefined,    // CSS animation class
+            rule_keyframes_move         = undefined,    // CSS keyframes for the motion
+            rule_keyframes_blink        = undefined,    // CSS keyframes for the opacity
+            rule_keyframes_radius       = undefined;    // CSS keyframes for the radius
 
-        /// Задание контрольных точек:
+        /// Define the keyframes
 
-        // движение
+        // for motion
         rule_keyframes_move = this._generateKeyframeRuleMove(index, progress_start*100, progress_end*100, perc);
 
-        // исчезновение - для частицы, проходящих неполный путь
-        // (как правило, последней)
+        // for opacity - for particles passing an incomplete path (i.e. the last one)
         if (perc < 100) {
             rule_keyframes_blink = this._generateKeyframeRuleBlink(index, perc);
         }
 
-        // масштабирование
+        // for scaling
         if (progress_start === 0 && progress_end === 1) {
-            // уменьшение - для первой и последней частицы одновременно
+            // scaling down - for the first and the last particles simultaneously
             rule_keyframes_radius = this._generateKeyframeRuleScaleUpDown(index, perc);
         } else if (progress_start === 0) {
-            // увеличение - для первой частицы
+            // scaling up - for the first particle only
             rule_keyframes_radius = this._generateKeyframeRuleScaleUp(index, perc);
         } else if (progress_end === 1) {
-            // уменьшение - для последней частицы
+            // scaling down - for the last particle only
             rule_keyframes_radius = this._generateKeyframeRuleScaleDown(index, perc);
         }
 
-        /// Составление класса анимации
+        /// Construct animation class properties
 
-        // движение
+        // motion
         rule_animation = `.${animname} {animation:  ${this._generateAnimationRuleMove(index, dur)}`;
         this._sheet.insertRule(rule_keyframes_move);
 
-        // исчезновение
+        // opacity
         if (rule_keyframes_blink) {
            rule_animation += `, ${this._generateAnimationRuleBlink(index, dur)}`;
            this._sheet.insertRule(rule_keyframes_blink);
         }
 
-        // радиус
+        // radius
         if (rule_keyframes_radius) {
             rule_animation += `, ${this._generateAnimationRuleScale(index, dur)}`;
             this._sheet.insertRule(rule_keyframes_radius);
@@ -453,12 +561,12 @@ export default class Current {
 
         particle.node.classList.add(animname);
 
-        // Зафиксировать параметры времени
+        /// Apply time-related properties
         this._anim_dur = dur;
         this._anim_delay = 0;
     }
 
-    _generateKeyframeRuleBurn(id, to) {
+    private _generateKeyframeRuleBurn(id: number, to: number) {
         return `
             @keyframes dash-${this._id} {
                 to {
@@ -468,7 +576,7 @@ export default class Current {
         `;
     }
 
-    _generateKeyframeRuleMove(index, from, to, perc) {
+    private _generateKeyframeRuleMove(index: number, from: number, to: number, perc: number) {
         return `
             @keyframes cur-${this._id}-${index}-kfs-move {
                 0% {offset-distance: ${from}%}
@@ -478,7 +586,7 @@ export default class Current {
         `;
     }
 
-    _generateKeyframeRuleBlink(index, perc) {
+    private _generateKeyframeRuleBlink(index: number, perc: number) {
         return `
             @keyframes cur-${this._id}-${index}-kfs-blink {
                 0% {opacity: 1}
@@ -488,7 +596,7 @@ export default class Current {
         `;
     }
 
-    _generateKeyframeRuleScaleUp(index, perc) {
+    private _generateKeyframeRuleScaleUp(index: number, perc: number) {
         const scale_min = this._style.width / 2,
               scale_max = this._style.particle_radius;
 
@@ -501,7 +609,7 @@ export default class Current {
         `;
     }
 
-    _generateKeyframeRuleScaleDown(index, perc) {
+    private _generateKeyframeRuleScaleDown(index: number, perc: number) {
         const scale_min = this._style.width / 2,
               scale_max = this._style.particle_radius;
 
@@ -515,7 +623,7 @@ export default class Current {
         `;
     }
 
-    _generateKeyframeRuleScaleUpDown(index, perc) {
+    private _generateKeyframeRuleScaleUpDown(index: number, perc: number) {
         const scale_min = this._style.width / 2,
               scale_max = this._style.particle_radius;
 
@@ -530,7 +638,7 @@ export default class Current {
         `;
     }
 
-    _generateAnimationRuleSmoke(duration, nonlinearity=0) {
+    private _generateAnimationRuleSmoke(duration: number, nonlinearity: number = 0) {
         if (nonlinearity < 0) throw RangeError("animation nonlinearity shouldn't be less than 0");
         if (nonlinearity > 1) throw RangeError("animation nonlinearity shouldn't be more than 1");
 
@@ -540,19 +648,19 @@ export default class Current {
         return `smokemove ${duration}ms cubic-bezier(${firstnum/100},${secnum/100},1,1) reverse;`
     }
 
-    _generateAnimationRuleMove(index, duration) {
+    private _generateAnimationRuleMove(index: number, duration: number) {
         return `cur-${this._id}-${index}-kfs-move ${duration}ms linear infinite`;
     }
 
-    _generateAnimationRuleBlink(index, duration) {
+    private _generateAnimationRuleBlink(index: number, duration: number) {
         return `cur-${this._id}-${index}-kfs-blink ${duration}ms step-start infinite`;
     }
 
-    _generateAnimationRuleScale(index, duration) {
+    private _generateAnimationRuleScale(index: number, duration: number) {
         return `cur-${this._id}-${index}-kfs-radius ${duration}ms linear infinite`;
     }
 
-    _setParticleSpeed(speed) {
+    private _setParticleSpeed(speed: number) {
         if (!this._sheet) return;
 
         let delay;
@@ -591,18 +699,18 @@ export default class Current {
         this._anim_delay = delay;
     }
 
-    _getSheetRules() {
+    private _getSheetRules() {
         // firefox compat
         return this._sheet.rules ? this._sheet.rules : this._sheet.cssRules;
     }
 
-    _initStyleSheet() {
+    private _initStyleSheet() {
         if (this._sheet) {
             this._sheet.ownerNode.remove();
         }
 
         let style = document.createElement('style');
-        style.id = this._id;
+        style.id = String(this._id);
         document.body.appendChild(style);
 
         this._sheet = style.sheet;
@@ -610,7 +718,7 @@ export default class Current {
         this._initStaticAnimationRules();
     }
 
-    _initStaticAnimationRules() {
+    private _initStaticAnimationRules() {
         this._sheet.insertRule(`@keyframes smokemove {
             0% {
                 opacity: 0;
@@ -625,7 +733,7 @@ export default class Current {
         }`);
     }
 
-    static getPathLength(path) {
+    static getPathLength(path: string) {
         let path_node = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path_node.innerHTML = path;
         path_node.setAttributeNS(null, "d", path);
@@ -633,7 +741,7 @@ export default class Current {
         return path_node.getTotalLength();
     }
 
-    static _pathArrayToString(path_arr) {
+    static _pathArrayToString(path_arr: [string, number, number][]): string {
         let str = "";
 
         for (let path_item of path_arr) {
@@ -669,7 +777,7 @@ export default class Current {
 
     _updateDebugInfo() {
         const wght_anim = Number.parseFloat(this._weight).toPrecision(4);
-        const wght_thrd = Number.parseFloat(this.thread.weight).toPrecision(4);
+        const wght_thrd = Number.parseFloat(this._thread.weight).toPrecision(4);
 
         if (this._group_debug) {
             this._group_debug.clear();
