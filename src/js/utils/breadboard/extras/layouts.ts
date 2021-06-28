@@ -1,10 +1,11 @@
 import BackgroundLayer from "../layers/BackgroundLayer";
 import LabelLayer from "../layers/LabelLayer";
-import Grid from "../core/Grid";
+import Grid, { AuxPointCategory } from "../core/Grid";
+import { Layout } from "../core/types";
 
 const ARD_GND_Y = -144;
 
-export const LAYOUTS = {
+export const LAYOUTS: {[key: string]: Layout} = {
     v8x: {
         plate_style: {
             label_font_size: 16,
@@ -120,9 +121,9 @@ export const LAYOUTS = {
         ],
 
         points: [
-            Grid.AuxPointCats.SourceV8,
-            Grid.AuxPointCats.Usb1,
-            Grid.AuxPointCats.Usb3,
+            AuxPointCategory.SourceV8,
+            AuxPointCategory.Usb1,
+            AuxPointCategory.Usb3,
         ],
 
         controls: {horz: false},

@@ -394,12 +394,12 @@ export default class BackgroundLayer extends Layer {
 
     _drawAuxPointSource() {
         if (
-            !this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.SourceV5) &&
-            !this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.SourceV8)
+            !this.__grid.isAuxPointCatRequired(AuxPointCategory.SourceV5) &&
+            !this.__grid.isAuxPointCatRequired(AuxPointCategory.SourceV8)
         ) return;
 
-        const   p_vcc = this.__grid.auxPoint(Grid.AuxPoints.Vcc),
-                p_gnd = this.__grid.auxPoint(Grid.AuxPoints.Gnd);
+        const   p_vcc = this.__grid.auxPoint(AuxPoint.Vcc),
+                p_gnd = this.__grid.auxPoint(AuxPoint.Gnd);
 
         // try {
             // Line takeaway/rise
@@ -475,21 +475,21 @@ export default class BackgroundLayer extends Layer {
     }
 
     _drawAuxPointUsbs() {
-        if (this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.Usb1)) {
+        if (this.__grid.isAuxPointCatRequired(AuxPointCategory.Usb1)) {
             this._drawAuxPointUsb(
-                this.__grid.auxPoint(Grid.AuxPoints.U1Vcc),
-                this.__grid.auxPoint(Grid.AuxPoints.U1Gnd),
-                this.__grid.auxPoint(Grid.AuxPoints.U1Analog1),
-                this.__grid.auxPoint(Grid.AuxPoints.U1Analog2),
+                this.__grid.auxPoint(AuxPoint.U1Vcc),
+                this.__grid.auxPoint(AuxPoint.U1Gnd),
+                this.__grid.auxPoint(AuxPoint.U1Analog1),
+                this.__grid.auxPoint(AuxPoint.U1Analog2),
             );
         }
 
-        if (this.__grid.isAuxPointCatRequired(Grid.AuxPointCats.Usb3)) {
+        if (this.__grid.isAuxPointCatRequired(AuxPointCategory.Usb3)) {
             this._drawAuxPointUsb(
-                this.__grid.auxPoint(Grid.AuxPoints.U3Vcc),
-                this.__grid.auxPoint(Grid.AuxPoints.U3Gnd),
-                this.__grid.auxPoint(Grid.AuxPoints.U3Analog1),
-                this.__grid.auxPoint(Grid.AuxPoints.U3Analog2),
+                this.__grid.auxPoint(AuxPoint.U3Vcc),
+                this.__grid.auxPoint(AuxPoint.U3Gnd),
+                this.__grid.auxPoint(AuxPoint.U3Analog1),
+                this.__grid.auxPoint(AuxPoint.U3Analog2),
             );
         }
     }

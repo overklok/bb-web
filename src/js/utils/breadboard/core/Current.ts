@@ -6,6 +6,20 @@ import '../styles/current.css';
 
 let SYMBOL_SMOKE = undefined;
 
+type RGBColor = [number, number, number];
+
+/**
+ * 
+ * @category Breadboard
+ */
+export type CurrentStyle = {
+    linecap: string,
+    color: string, 
+    width: number,
+    particle_radius: number,
+    opacity: number,
+}
+
 /**
  * 
  * 
@@ -677,7 +691,7 @@ export default class Current {
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;
-        let dt = this._container_anim.node.getCurrentTime() * 1000;
+        let dt = (this._container_anim.node as unknown as SVGSVGElement).getCurrentTime() * 1000;
 
         // сколько прошло времени для того, чтобы частица попала в текущее положение
         let togo_now = (dt - this._anim_delay) % this._anim_dur; // при текщущей ДЦА, учитывая предыдущую задержку
@@ -761,7 +775,7 @@ export default class Current {
         return str;
     }
 
-    _getStyle(weight) {
+    _getStyle(weight: number): CurrentStyle {
         const width_max = this._schematic ? Current.WidthSchematicMax : Current.WidthMax,
               radii_max = this._schematic ? Current.RadiusSchematicMax : Current.RadiusMax;
 
@@ -782,9 +796,9 @@ export default class Current {
         return style;
     }
 
-    _updateDebugInfo() {
-        const wght_anim = Number.parseFloat(this._weight).toPrecision(4);
-        const wght_thrd = Number.parseFloat(this._thread.weight).toPrecision(4);
+    _updateDebugInfo(): void {
+        const wght_anim = Number.parseFloat(String(this._weight)).toPrecision(4);
+        const wght_thrd = Number.parseFloat(String(this._thread.weight)).toPrecision(4);
 
         if (this._group_debug) {
             this._group_debug.clear();
@@ -794,7 +808,7 @@ export default class Current {
         }
     }
 
-    static pickOpacityFromRange(weight) {
+    static pickOpacityFromRange(weight: number): number {
         weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
 
         const max = Current.FullOpacityThreshold;
@@ -804,7 +818,7 @@ export default class Current {
         return weight;
     }
 
-    static pickColorFromRange(weight) {
+    static pickColorFromRange(weight: number): string {
         // вес должен быть в пределах [0..1]
         weight = weight > 1 ? 1 : weight < 0 ? 0 : weight;
 
@@ -851,7 +865,7 @@ export default class Current {
         return this.convertRGBToHex(rgb);
     }
 
-    static convertHexToRGB(hex) {
+    static convertHexToRGB(hex: string): RGBColor {
         return [
             parseInt(hex.slice(1,3), 16),
             parseInt(hex.slice(3,5), 16),
@@ -859,7 +873,7 @@ export default class Current {
         ];
     }
 
-    static convertRGBToHex(rgb) {
+    static convertRGBToHex(rgb: RGBColor): string {
         let rs = Number(rgb[0]).toString(16),
             gs = Number(rgb[1]).toString(16),
             bs = Number(rgb[2]).toString(16);
@@ -871,7 +885,7 @@ export default class Current {
         return '#' + rs + gs + bs;
     }
 
-    static pickHex(color1, color2, weight) {
+    static pickHex(color1: RGBColor, color2: RGBColor, weight: number): RGBColor {
         let w1 = weight,
             w2 = 1 - w1;
 
@@ -885,29 +899,29 @@ export default class Current {
 
 const EasingFunctions = {
   // no easing, no acceleration
-  linear: t => t,
+  linear: (t: number) => t,
   // accelerating from zero velocity
-  easeInQuad: t => t*t,
+  easeInQuad: (t: number) => t*t,
   // decelerating to zero velocity
-  easeOutQuad: t => t*(2-t),
+  easeOutQuad: (t: number) => t*(2-t),
   // acceleration until halfway, then deceleration
-  easeInOutQuad: t => t<.5 ? 2*t*t : -1+(4-2*t)*t,
+  easeInOutQuad: (t: number) => t<.5 ? 2*t*t : -1+(4-2*t)*t,
   // accelerating from zero velocity
-  easeInCubic: t => t*t*t,
+  easeInCubic: (t: number) => t*t*t,
   // decelerating to zero velocity
-  easeOutCubic: t => (--t)*t*t+1,
+  easeOutCubic: (t: number) => (--t)*t*t+1,
   // acceleration until halfway, then deceleration
-  easeInOutCubic: t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1,
+  easeInOutCubic: (t: number) => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1,
   // accelerating from zero velocity
-  easeInQuart: t => t*t*t*t,
+  easeInQuart: (t: number) => t*t*t*t,
   // decelerating to zero velocity
-  easeOutQuart: t => 1-(--t)*t*t*t,
+  easeOutQuart: (t: number) => 1-(--t)*t*t*t,
   // acceleration until halfway, then deceleration
-  easeInOutQuart: t => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t,
+  easeInOutQuart: (t: number) => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t,
   // accelerating from zero velocity
-  easeInQuint: t => t*t*t*t*t,
+  easeInQuint: (t: number) => t*t*t*t*t,
   // decelerating to zero velocity
-  easeOutQuint: t => 1+(--t)*t*t*t*t,
+  easeOutQuint: (t: number) => 1+(--t)*t*t*t*t,
   // acceleration until halfway, then deceleration
-  easeInOutQuint: t => t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t
+  easeInOutQuint: (t: number) => t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t
 }

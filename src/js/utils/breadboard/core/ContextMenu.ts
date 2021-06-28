@@ -263,10 +263,6 @@ export default class ContextMenu {
 
         if (item_props.shortcuts) {}
 
-        if (typeof label === "function") {
-            label = label();
-        }
-
         const root = document.createElement('div');
         root.classList.add(ContextMenu.ItemClass);
 
@@ -276,7 +272,13 @@ export default class ContextMenu {
 
         // Add item text
         const text = document.createElement('div');
-        text.innerText = label;
+
+        if (typeof label === "function") {
+            text.innerText = label();
+        } else {
+            text.innerText = label;
+        }
+
         text.classList.add(ContextMenu.ItemTextClass);
         root.appendChild(text);
 

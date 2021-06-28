@@ -16,7 +16,13 @@ export type Domain = {
     value_orientation?: string,
     bias_inv?: boolean,
     no_labels?: boolean,
-    virtual?: {from: number, to: number}
+    virtual?: { from: { x: number, y: number }, to: { x: number, y: number } },
+    label_pos?: "top" | "bottom" | "left" | "right",
+    pins_from?: number,
+    pins_to?: number,
+    line_before?: number,
+    pin_state_initial?: "input" | "output",
+    minus?: {x: number, y: number}
 }
 
 /* TODO: Narrow type 'Point' */
@@ -34,7 +40,7 @@ type Point = string;
  * @category Breadboard
  */
 export type Layout = {
-    plate_style?: { label_font_size: number },
+    plate_style?: { label_font_size?: number, quad_size?: number },
     label_style?: { font_size: number, text_bias: number },
     wrap_width: number,
     wrap_height: number,
