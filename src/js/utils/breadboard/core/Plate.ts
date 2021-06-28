@@ -4,11 +4,11 @@ import defaultsDeep from "lodash/defaultsDeep";
 import isEqual from 'lodash/isEqual';
 
 import Cell from "./Cell";
-import Grid from "./Grid";
+import Grid, { BorderType } from "./Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 import {coverObjects} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
-import {Direction} from "./types";
+import {Direction, DirsClockwise} from "./types";
 
 function mod(n: number, m: number): number {
   return ((n % m) + m) % m;
@@ -309,7 +309,7 @@ export default class Plate {
      * @abstract
      * @private
      */
-    __getOppositeCell__(cell: Cell) {
+    __getOppositeCell__(cell: Cell): Cell {
         throw new Error("Method should be implemented");
     }
 
@@ -494,7 +494,7 @@ export default class Plate {
      * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
      */
     shift(dx: number, dy: number, prevent_overflow=true) {
-        this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy, Grid.BorderTypes.Replicate));
+        this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy, BorderType.Replicate));
 
         if (prevent_overflow) {
             this._preventOverflow();
@@ -855,7 +855,7 @@ export default class Plate {
         }
 
         /// Клетка, над которой находится верхняя левая ячейка плашки
-        let cell = this.__grid.getCellByPos(x, y, Grid.BorderTypes.Replicate);
+        let cell = this.__grid.getCellByPos(x, y, BorderType.Replicate);
         /// Клетка, над которой находится опорная ячейка плашки
         let cell_orig = this._getCellOriginal(cell);
 
@@ -981,7 +981,7 @@ export default class Plate {
             case Plate.Orientations.South:  {dix = orn.y;             diy = sx - orn.x - 1;     break;}
         }
 
-        return this.__grid.cell(ix + dix, iy + diy, Grid.BorderTypes.Replicate);
+        return this.__grid.cell(ix + dix, iy + diy, BorderType.Replicate);
     }
 
     /**
@@ -1158,7 +1158,7 @@ export default class Plate {
         let path: (string | number)[][] = [];
 
         // clockwise dir sequence
-        let dirs = DirectionClockwise;
+        let dirs = DirsClockwise;
 
         if (is_root) {
             path = path.concat(this._buildSurfacePathOffset(cell, radius));
@@ -1208,7 +1208,7 @@ export default class Plate {
         return path;
     }
 
-    _buildSurfacePathGapPush(dir: string, dir_corner: string, radius: number) {
+    _buildSurfacePathGapPush(dir: Direction, dir_corner: Direction, radius: number) {
         let corner = this._buildSurfacePathCorner(dir_corner, radius);
 
         if (corner === null) {
@@ -1235,7 +1235,7 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePathGapPull(dir: string, dir_corner: string, radius: number) {
+    _buildSurfacePathGapPull(dir: Direction, dir_corner: Direction, radius: number) {
         let corner = this._buildSurfacePathCorner(dir_corner, radius);
 
         if (corner === null) {
@@ -1262,7 +1262,7 @@ export default class Plate {
         }
     }
 
-    _buildSurfacePathEdge(cell: Cell, dir: string, radius: number) {
+    _buildSurfacePathEdge(cell: Cell, dir: Direction, radius: number) {
         let corner = this._buildSurfacePathCorner(dir, radius);
 
         if (corner === null) {
@@ -1296,7 +1296,7 @@ export default class Plate {
         return [['M', mv_x + radius, mv_y]];
     }
 
-    _buildSurfacePathClosure(dir_curr: string, radius: number) {
+    _buildSurfacePathClosure(dir_curr: Direction, radius: number) {
         if (this._dir_prev == null) return [];
 
         let closure = this._buildSurfacePathCorner(dir_curr, radius);
@@ -1306,7 +1306,7 @@ export default class Plate {
         return closure;
     }
 
-    _buildSurfacePathCorner(dir_curr: string, radius: number) {
+    _buildSurfacePathCorner(dir_curr: Direction, radius: number) {
         let dir_prev = this._dir_prev;
 
         if (dir_curr === dir_prev) return null;

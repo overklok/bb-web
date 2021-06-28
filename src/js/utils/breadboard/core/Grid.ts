@@ -1,36 +1,63 @@
 import Cell from "./Cell";
 import {pointsToCoordList} from "./extras/helpers";
-import {Domain} from "./types";
+import {Domain, XYObject} from "./types";
 
-const BORDER_TYPES = {
-    None: 'none',
-    Replicate: 'replicate',
-    Reflect: 'reflect',
-    Wrap: 'wrap',
+/**
+ * Type of 'out-of-bound' behavour for cell search functions
+ * 
+ * When a function receives indices that go over the boundaries of a {@link Grid},
+ * it can throw an exception or consider a fallback for invalid index.
+ * To define typical behavior which may be required to follow, this type should be used. 
+ */
+export const enum BorderType {
+    None = 'none',              // throw an exception / do nothing              | [1 2 3 E E E]
+    Replicate = 'replicate',    // 'continue' the last index available          | [1 2 3 3 3 3]
+                                // for each dimenision 
+    Reflect = 'reflect',        // reverse index sequence from the boundary     | [1 2 3 3 2 1]
+    Wrap = 'wrap',              // loop index sequence from the boundary        | [1 2 3 1 2 3]
 };
 
-const AUX_POINTS = {
-    Vcc: 'vcc',
-    Gnd: 'gnd',
+/**
+ * Types of auxiliary points, which has non-regular (martix) positions,
+ * that can be used on the board
+ * 
+ * Each point can be specified in the {@link Grid} only within a corresponding {@link AuxPointType}.
+ */
+export const enum AuxPointType {
+    // Voltage and ground pins
+    Vcc = 'vcc',
+    Gnd = 'gnd',
 
-    U1Vcc:      'u1_vcc',
-    U1Gnd:      'u1_gnd',
-    U1Analog1:  'u1_a1',
-    U1Analog2:  'u1_a2',
+    // USB 1 pins
+    U1Vcc =      'u1_vcc',
+    U1Gnd =      'u1_gnd',
+    U1Analog1 =  'u1_a1',
+    U1Analog2 =  'u1_a2',
 
-    U3Vcc:      'u3_vcc',
-    U3Gnd:      'u3_gnd',
-    U3Analog1:  'u3_a1',
-    U3Analog2:  'u3_a2',
+    // USB 3 pins
+    U3Vcc =      'u3_vcc',
+    U3Gnd =      'u3_gnd',
+    U3Analog1 =  'u3_a1',
+    U3Analog2 =  'u3_a2',
 };
 
-const AUX_POINT_CATEGORIES = {
-    SourceV5: 'source-v5',
-    SourceV8: 'source-v8',
-    Usb1: 'usb1',
-    Usb3: 'usb3',
-};
+/**
+ * Categories
+ */
+export const enum AuxPointCategory {
+    // Source pins for 5th revision of the board
+    SourceV5 = 'source-v5',
+    // Source pins for 8th revision of the board
+    SourceV8 = 'source-v8',
+    // USB1 pins
+    Usb1 = 'usb1',
+    // USB3 pins
+    Usb3 = 'usb3',
+}
 
+/**
+ * A set of fixed properties of the {@link Grid}
+ */
 type GridParams = {
     dim: {x: number, y: number},
     size: {x: number, y: number},
@@ -39,32 +66,70 @@ type GridParams = {
     wrap: {x: number, y: number}
 }
 
+/**
+ * A visible point which is displaced arbitrarily on the {@link Grid}
+ * 
+ * Each {@link AuxPoint} has a name and belongs to some {@link AuxPointCategory}.
+ */
 type AuxPoint = {
     idx: {x: number, y: number},
     pos: {x: number, y: number},
     cell: Cell,
-    name: string,
-    cat: string,
+    name: AuxPointType,
+    cat: AuxPointCategory,
     bias?: number
 }
 
 /**
- * Класс "Сетка"
+ * Logical representation of a breadboard grid
+ * 
+ * {@link Grid} does not make any drawing, it just stores the collection of {@link Cell}s
+ * and contains helper methods to manage them.
  */
 export default class Grid {
-    static get BorderTypes() {return BORDER_TYPES}
-    static get AuxPoints() {return AUX_POINTS}
-    static get AuxPointCats() {return AUX_POINT_CATEGORIES}
-
+    /** An array of cells placed on the {@link Grid} */
     private _cells: Cell[][];
+    /** A set of fixed propertis of the {@link Grid} */
     private _params: GridParams;
+    /** Categories of auxiliary points placed in the {@link Grid} */
     private _aux_points_cats: string[];
+
+    /** TODO: Additional info that is not directly related to the Grid, should be generalized */
     private curr_straight_top_y: number;
+    /** TODO: Additional info that is not directly related to the Grid, should be generalized */
     private curr_straight_bottom_y: number;
 
+    /** 
+     * A set of virtual (invisible but logically important) points on the {@link Grid} 
+     */
     private readonly _virtual_points: {x: number, y:number}[];
+    
+    /** 
+     * A set of {@link AuxPoint} placed on the {@link Grid}.
+     * 
+     * Auxiliary points don't fit into the standard matrix layout of the {@link Grid}
+     * so they should be stored in specific attribute
+     */
     private readonly _aux_points: Map<number|string, AuxPoint|AuxPoint[]>
 
+    /**
+     * Create the {@link Grid} instance
+     * 
+     * @param rows                      number of visible rows of the {@link Grid}'s matrix
+     * @param cols                      number of visible cols of the {@link Grid}'s matrix
+     * @param width                     width of the matrix 
+     * @param height                    height of the matrix
+     * @param pos_x                     horizontal geometric position of the matrix 
+     * @param pos_y                     horizontal geometric position of the matrix
+     * @param gap_x                     horizontal gap between the {@link Cell}s
+     * @param gap_y                     vertical gap between the {@link Cell}s
+     * @param wrap_x                    width of the total board workspace ({@link Grid} wrap)
+     * @param wrap_y                    height of the total board workspace ({@link Grid} wrap)
+     * @param aux_points_categories     categories of auxiliary points needed in the {@link Grid}
+     * @param domains                   point domains
+     * @param curr_straight_top_y       additional info
+     * @param curr_straight_bottom_y    additional info
+     */
     constructor(
         rows: number, cols: number,
         width: number, height: number,
@@ -86,7 +151,6 @@ export default class Grid {
         if (gap_x < 0 || gap_y < 0)     throw new RangeError("Gap X/Y should be non-negative values");
         if (wrap_x < 0 || wrap_y < 0)   throw new RangeError("Wrap X/Y should be non-negative values");
 
-        /// Размер сетки
         this._params = {
             dim: {
                 x: cols,
@@ -115,7 +179,6 @@ export default class Grid {
 
         this._aux_points_cats = aux_points_categories || [];
 
-        /// Ячейки сетки
         this._cells = [];
         this._aux_points = new Map();
         this._virtual_points = [];
@@ -124,31 +187,61 @@ export default class Grid {
         this._initVirtualPoints(domains);
     }
 
-    get dim() {
+    /**
+     * Dimension size of the {@link Grid} for each dimension (number of {@link Cell} items in a row/column)
+     */
+    get dim(): XYObject {
         return this._params.dim;
     }
     
-    get size() {
+    /**
+     * Geometric size of the {@link Grid} for each dimension
+     */
+    get size(): XYObject {
         return this._params.size;
     }
 
-    get gap() {
+    /**
+     * Geometric distance between each {@link Cell} for each dimension
+     */
+    get gap(): XYObject {
         return this._params.gap;
     }
 
-    get pos() {
+    /**
+     * Geometric position of the {@link Grid}'s matrix
+     */
+    get pos(): XYObject {
         return this._params.pos;
     }
 
+    /**
+     * Geometric size of the board workspace for each dimension ({@link Grid} wrap)
+     */
     get wrap() {
         return this._params.wrap;
     }
 
+    /**
+     * 2D-array of {@link Cell}s placed in the {@link Grid} matrix
+     */
     get cells() {
         return this._cells;
     }
 
-    getCellByPos(x: number, y: number, border_type: string) {
+    /**
+     * Returns {@link Cell} instance placed on the {@link Grid} matrix 
+     * nearest to given _geometrical_ coordinates
+     * 
+     * Specific {@link BorderType} can be specified to set the search behavior.
+     * 
+     * {@see cell()}
+     * 
+     * @param x             horizontal geometric position
+     * @param y             vertical geometric position
+     * @param border_type   boundary cell selection behavior, described in {@link cell}
+     */
+    getCellByPos(x: number, y: number, border_type: BorderType) {
         let ix = Math.floor((x - this.pos.x) / this.size.x * this.dim.x);
         let iy = Math.floor((y - this.pos.y) / this.size.y * this.dim.y);
 
@@ -162,36 +255,38 @@ export default class Grid {
     }
 
     /**
-     * Выдать конкретную ячейку из сетки
+     * Returns specific {@link Cell} from the {@link Grid} 
+     * by given indices
+     * 
+     * Note that you can choose how to behave when indices go beyond 
+     * the {@link Grid} dimensions (i.e. out-of-bound conditions)
+     * 
+     * Few type of out-of-bound behavior options are available:
+     *  - Grid.BorderType.None      (throw an exception)
+     *  - Grid.BorderType.Replicate (cell indices are equal to the nearest boundary)
+     *  - Grid.BorderType.Reflect   (cell indices are mirrored)
+     *  - Grid.BorderType.Wrap      (cell indides are looped)
      *
-     * @param i номер строки
-     * @param j номре столбца
-     * @param border_type тип границы
-     *
-     * Доступно несколько типов границ, устанавливающих поведение функции при выходе за границы сетки:
-     *  - Grid.BorderType.None      (выход за границы запрещён)
-     *  - Grid.BorderType.Replicate (индексы элементов равны граничным)
-     *  - Grid.BorderType.Reflect   (индексы элементов зеркально отражаются)
-     *  - Grid.BorderType.Wrap      (индексы элементов циклически повторяются)
-     *
-     * @returns {Cell}
+     * @param i column index
+     * @param j row index
+     * @param border_type boundary cell selection behavior 
      */
-    cell(i: number, j: number, border_type=Grid.BorderTypes.None) {
+    cell(i: number, j: number, border_type: BorderType = BorderType.None): Cell {
         if (!Number.isInteger(i) || !Number.isInteger(j)) {
             throw new TypeError("Indices must be integers");
         }
 
         switch (border_type) {
-            case Grid.BorderTypes.Replicate: {
+            case BorderType.Replicate: {
                 i = (i < 0) ? 0 : i;    i = (i >= this._params.dim.x) ? (this._params.dim.x - 1) : i;
                 j = (j < 0) ? 0 : j;    j = (j >= this._params.dim.y) ? (this._params.dim.y - 1) : j;
                 break;
             }
-            case Grid.BorderTypes.Reflect: {
+            case BorderType.Reflect: {
                 // TODO: Not needed yet
                 break;
             }
-            case Grid.BorderTypes.Wrap: {
+            case BorderType.Wrap: {
                 i = (i < 0) ? (i % this._params.dim.x) + this._params.dim.x : (i % this._params.dim.x);
                 j = (j < 0) ? (j % this._params.dim.y) + this._params.dim.y : (j % this._params.dim.y);
                 break;
@@ -205,6 +300,16 @@ export default class Grid {
         return this._cells[i][j];
     }
 
+    /**
+     * Returns auxiliary point placed on the {@link Grid}
+     * 
+     * {@link AuxPoint}s are the points with arbitrary coordinates outside the matrix 
+     * 
+     * Note that points can be adressed both by pair of numeric coordinates and by single string key
+     * 
+     * @param i string key / column index
+     * @param j optional row index
+     */
     auxPoint(i: string|number, j: number = null): AuxPoint|AuxPoint[] {
         const item = this._aux_points.get(i);
 
@@ -221,7 +326,13 @@ export default class Grid {
         }
     }
 
-    virtualPoint(x: number, y: number) {
+    /**
+     * Returns virtual points placed on the {@link Grid}
+     * 
+     * @param x virtual column of the point
+     * @param y virtual row of the point
+     */
+    virtualPoint(x: number, y: number): XYObject {
         if (!this._virtual_points) return;
 
         for (const point of this._virtual_points) {
@@ -235,16 +346,24 @@ export default class Grid {
         return undefined;
     }
 
-    isAuxPointCatRequired(cat: string) {
+    /**
+     * Returns whether the given auxiliary point category is required in the {@link Grid}
+     * 
+     * Some components in Breadboard library may request this information to decide whether to display
+     * graphic elements related to some of the points.
+     * 
+     * @param cat 
+     */
+    isAuxPointCatRequired(cat: AuxPointCategory) {
         return this._aux_points_cats.indexOf(cat) !== -1;
     }
 
     /**
-     * Расположить ячейки сетки
+     * Initializes {@link Grid} matrix with regular {@link Cell}s
      *
      * @private
      */
-    _createCells() {
+    private _createCells() {
         // Массив ссылок на отрисованные точки
         this._cells = [];
 
@@ -258,14 +377,17 @@ export default class Grid {
     }
 
     /**
-     * Определить дорожку, на которой установлена ячейка
+     * Defines the {@link Grid}'s track name based on the position of a cell.
      *
+     * Grid tracks is a deprecated feature which will be removed 
+     * in further development of the module.
+     * 
      * @param i
      * @param j
-     * @returns {string}
-     * @private
+     * 
+     * @deprecated
      */
-    _getTrackOfCell(i: number, j: number) {
+    private _getTrackOfCell(i: number, j: number) {
         if (j === 1)                return "h0";
         if (j === this.dim.y-1)     return "h1";
 
@@ -273,144 +395,147 @@ export default class Grid {
         if (j >= 6 && j <= 9) {return "vb" + i;}
     }
 
-    _initAuxPoints() {
+    /**
+     * Initializes auxiliary points based on the categories specified for the {@link Grid} 
+     */
+    private _initAuxPoints() {
         const celldist_y = this.cell(0, 1).pos.y - this.cell(0, 0).pos.y;
 
-        if (this.isAuxPointCatRequired(Grid.AuxPointCats.SourceV5)) {
+        if (this.isAuxPointCatRequired(AuxPointCategory.SourceV5)) {
             const source_center = {
                 x: 80,
                 y: this.cell(0, 5).center.y + celldist_y / 2
             };
 
-            this._aux_points.set(Grid.AuxPoints.Vcc, {
+            this._aux_points.set(AuxPointType.Vcc, {
                 idx: {x: -1, y: 1},
                 pos: {x: source_center.x, y: source_center.y - 20},
-                cell: this.cell(0, 1, Grid.BorderTypes.Wrap),
-                cat: Grid.AuxPointCats.SourceV5,
-                name: Grid.AuxPoints.Vcc
+                cell: this.cell(0, 1, BorderType.Wrap),
+                cat: AuxPointCategory.SourceV5,
+                name: AuxPointType.Vcc
             });
 
-            this._aux_points.set(Grid.AuxPoints.Gnd, {
+            this._aux_points.set(AuxPointType.Gnd, {
                 idx: {x: -1, y: this.dim.y - 1},
                 pos: {x: source_center.x, y: source_center.y + 20},
-                cell: this.cell(0, -1, Grid.BorderTypes.Wrap),
-                cat: Grid.AuxPointCats.SourceV5,
-                name: Grid.AuxPoints.Gnd
+                cell: this.cell(0, -1, BorderType.Wrap),
+                cat: AuxPointCategory.SourceV5,
+                name: AuxPointType.Gnd
             });
         }
 
-        if (this.isAuxPointCatRequired(Grid.AuxPointCats.SourceV8)) {
+        if (this.isAuxPointCatRequired(AuxPointCategory.SourceV8)) {
             const source_center = {
                 x: 80,
                 y: this.cell(0, 8).center.y + celldist_y / 2
             };
 
-            this._aux_points.set(Grid.AuxPoints.Vcc, {
+            this._aux_points.set(AuxPointType.Vcc, {
                 idx: {x: -1, y: 0},
                 pos: {x: source_center.x, y: source_center.y - 20},
-                cell: this.cell(0, 0, Grid.BorderTypes.Wrap),
-                cat: Grid.AuxPointCats.SourceV8,
-                name: Grid.AuxPoints.Vcc
+                cell: this.cell(0, 0, BorderType.Wrap),
+                cat: AuxPointCategory.SourceV8,
+                name: AuxPointType.Vcc
             });
 
-            this._aux_points.set(Grid.AuxPoints.Gnd, {
+            this._aux_points.set(AuxPointType.Gnd, {
                 idx: {x: -1, y: this.dim.y - 1},
                 pos: {x: source_center.x, y: source_center.y + 20},
-                cell: this.cell(0, -1, Grid.BorderTypes.Wrap),
-                cat: Grid.AuxPointCats.SourceV8,
-                name: Grid.AuxPoints.Gnd
+                cell: this.cell(0, -1, BorderType.Wrap),
+                cat: AuxPointCategory.SourceV8,
+                name: AuxPointType.Gnd
             });
         }
 
         // USB1
 
-        if (this.isAuxPointCatRequired(Grid.AuxPointCats.Usb1)) {
+        if (this.isAuxPointCatRequired(AuxPointCategory.Usb1)) {
             const usb1_center = {
                 // take border width into account
                 x: this.wrap.x - 5,
                 y: this.cell(0, 4).center.y + celldist_y / 2
             };
 
-            this._aux_points.set(Grid.AuxPoints.U1Vcc, {
+            this._aux_points.set(AuxPointType.U1Vcc, {
                 idx: {x: 8, y: 3},
                 pos: {x: usb1_center.x, y: usb1_center.y - 21},
-                cell: this.cell(-1, 3, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 3, BorderType.Wrap),
                 bias: 20,
-                cat: Grid.AuxPointCats.Usb1,
-                name: Grid.AuxPoints.U1Vcc
+                cat: AuxPointCategory.Usb1,
+                name: AuxPointType.U1Vcc
             });
 
-            this._aux_points.set(Grid.AuxPoints.U1Gnd, {
+            this._aux_points.set(AuxPointType.U1Gnd, {
                 idx: {x: 8, y: 6},
                 pos: {x: usb1_center.x, y: usb1_center.y + 21},
-                cell: this.cell(-1, 6, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 6, BorderType.Wrap),
                 bias: 20,
-                cat: Grid.AuxPointCats.Usb1,
-                name: Grid.AuxPoints.U1Gnd
+                cat: AuxPointCategory.Usb1,
+                name: AuxPointType.U1Gnd
             });
 
-            this._aux_points.set(Grid.AuxPoints.U1Analog1, {
+            this._aux_points.set(AuxPointType.U1Analog1, {
                 idx: {x: 8, y: 4},
                 pos: {x: usb1_center.x, y: usb1_center.y - 7},
-                cell: this.cell(-1, 4, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 4, BorderType.Wrap),
                 bias: 40,
-                cat: Grid.AuxPointCats.Usb1,
-                name: Grid.AuxPoints.U1Analog1
+                cat: AuxPointCategory.Usb1,
+                name: AuxPointType.U1Analog1
             });
 
-            this._aux_points.set(Grid.AuxPoints.U1Analog2, {
+            this._aux_points.set(AuxPointType.U1Analog2, {
                 idx: {x: 8, y: 5},
                 pos: {x: usb1_center.x, y: usb1_center.y + 7},
-                cell: this.cell(-1, 5, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 5, BorderType.Wrap),
                 bias: 40,
-                cat: Grid.AuxPointCats.Usb1,
-                name: Grid.AuxPoints.U1Analog2
+                cat: AuxPointCategory.Usb1,
+                name: AuxPointType.U1Analog2
             });
         }
 
         // USB3
 
-        if (this.isAuxPointCatRequired(Grid.AuxPointCats.Usb3)) {
+        if (this.isAuxPointCatRequired(AuxPointCategory.Usb3)) {
             const usb3_center = {
                 // take border width into account
                 x: this.wrap.x - 5,
                 y: this.cell(0, 10).center.y + celldist_y / 2
             };
 
-            this._aux_points.set(Grid.AuxPoints.U3Vcc, {
+            this._aux_points.set(AuxPointType.U3Vcc, {
                 idx: {x: 8, y: 9},
                 pos: {x: usb3_center.x, y: usb3_center.y - 21},
-                cell: this.cell(-1, 9, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 9, BorderType.Wrap),
                 bias: 20,
-                cat: Grid.AuxPointCats.Usb3,
-                name: Grid.AuxPoints.U3Vcc
+                cat: AuxPointCategory.Usb3,
+                name: AuxPointType.U3Vcc
             });
 
-            this._aux_points.set(Grid.AuxPoints.U3Gnd, {
+            this._aux_points.set(AuxPointType.U3Gnd, {
                 idx: {x: 8, y: 12},
                 pos: {x: usb3_center.x, y: usb3_center.y + 21},
-                cell: this.cell(-1, 12, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 12, BorderType.Wrap),
                 bias: 20,
-                cat: Grid.AuxPointCats.Usb3,
-                name: Grid.AuxPoints.U3Gnd
+                cat: AuxPointCategory.Usb3,
+                name: AuxPointType.U3Gnd
             });
 
-            this._aux_points.set(Grid.AuxPoints.U3Analog1, {
+            this._aux_points.set(AuxPointType.U3Analog1, {
                 idx: {x: 8, y: 10},
                 pos: {x: usb3_center.x, y: usb3_center.y - 7},
-                cell: this.cell(-1, 10, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 10, BorderType.Wrap),
                 bias: 40,
-                cat: Grid.AuxPointCats.Usb3,
-                name: Grid.AuxPoints.U3Analog1
+                cat: AuxPointCategory.Usb3,
+                name: AuxPointType.U3Analog1
             });
 
-            this._aux_points.set(Grid.AuxPoints.U3Analog2, {
+            this._aux_points.set(AuxPointType.U3Analog2, {
                 idx: {x: 8, y: 11},
                 pos: {x: usb3_center.x, y: usb3_center.y + 7},
-                cell: this.cell(-1, 11, Grid.BorderTypes.Wrap),
+                cell: this.cell(-1, 11, BorderType.Wrap),
                 bias: 40,
-                cat: Grid.AuxPointCats.Usb3,
-                name: Grid.AuxPoints.U3Analog2
+                cat: AuxPointCategory.Usb3,
+                name: AuxPointType.U3Analog2
             });
         }
 
@@ -427,7 +552,7 @@ export default class Grid {
         }
     }
 
-    _initVirtualPoints(domains: Domain[]) {
+    private _initVirtualPoints(domains: Domain[]) {
         if (!domains) return;
 
         for (const domain of domains) {
@@ -440,10 +565,9 @@ export default class Grid {
     }
 
     /**
-     * @returns {number}
-     * @private
+     * Returns number of occupied cells
      */
-    _howMuchOccupied() {
+    private _howMuchOccupied() {
         let how = 0;
 
         for (let i = 0; i < this.dim.x; i++) {

@@ -1,74 +1,195 @@
+import { XYObject } from "./types"
+
+/**
+ * Context menu item properties
+ */
+export type ContextMenuItemData = {
+    /** Text label which will be displayed to user */
+    label: string | (() => string),
+    /** String alias to reference in sources */
+    alias: string,
+    /** 
+     * Whether the item can be activated 
+     * 
+     * Inactive items are used when it's needed to display some information 
+     * or to add a sort of a delimiter to the item list.
+     */
+    active: boolean,
+
+    /** Optional input type */
+    input?: {
+        type: "file" | "number",
+        min?: number,
+        max?: number
+    },
+
+    /**
+     * Keyboard shortcut / shortcut combination
+     * NB: it would still be required to handle it manually
+     * shortcut?: string | string[],
+     */
+    
+    /** 
+     * Keyboard shortcut options. Use it when the item has multiple binds.
+     * NB: it would still be required to handle it manually
+     * NB2: if the `shortcut` option is specified, this option will overwrite it.
+     * shortcuts?: string[],
+     */
+
+    /** 
+     * Present the item _as_ another item with the type already registered in {@link ContextMenu}
+     * to prevent alias duplication.
+     * 
+     * Someteimes it's needed to provide a menu item that is functionally the same, 
+     * but with some modification. This option allows to fire the same event but with the different alias.
+     */
+    as?: {
+        /** Alias of original menu item which is going to be duplicated */
+        alias: string,
+        /** Custom item click handler to modify menu's internal state or smth else */
+        beforeClick?: () => void
+    }
+}
+
+/**
+ * Basic context menu drawer
+ */
 export default class ContextMenu {
-    // CSS-класс контейнера контекстного меню
-    static get Class() {return "bb-menu"}
-    // CSS-класс фона элемента контекстного меню
-    static get ItemClass() {return "bb-menu-item"}
-    // CSS-класс фона неактивного элемента контекстного меню
-    static get ItemDisabledClass() {return "bb-menu-item_disabled"}
-    static get ItemAcceptedClass() {return "bb-menu-item_accepted"}
-    static get ItemInputClass() {return "bb-menu-item-input"}
-    static get ItemTextClass() {return "bb-menu-item-text"}
-    static get ItemDividerClass() {return "bb-menu-item-divider"}
-    static get ItemShortcutClass() {return "bb-menu-item-shortcut"}
+    /** 
+     * Identifier of the object that called the 
+     * menu to refer it on further handling 
+     */
+    private _caller_id: number
 
-    static get TransitionTime() {return 100}
+    /** Root HTML container */
+    private _container: HTMLDivElement;
 
-    constructor(item_id) {
-        this._item_id = item_id;
+    /** {@link ContextMenu} configuration */
+    private _items_data: ContextMenuItemData[];
+
+    /** An 'item click' event handler */
+    private _itemclick: Function;
+
+    // CSS class of the root container of the menu
+    static Class = "bb-menu"
+    // CSS class of menu item background
+    static ItemClass = "bb-menu-item"
+    // CSS class of inactive menu item background
+    static ItemDisabledClass = "bb-menu-item_disabled"
+    // CSS class of accepted menu item background
+    static ItemAcceptedClass = "bb-menu-item_accepted"
+    // CSS class of menu item input element 
+    static ItemInputClass = "bb-menu-item-input"
+    // CSS class of menu item text 
+    static ItemTextClass = "bb-menu-item-text"
+    // CSS class of menu item divider 
+    static ItemDividerClass = "bb-menu-item-divider"
+    // CSS class of menu item shortcut 
+    static ItemShortcutClass = "bb-menu-item-shortcut"
+
+    // Menu fade in/out transition time
+    static TransitionTime = 100
+
+    /**
+     * Creates an instance of ContextMenu
+     * 
+     * An optional arbitrary caller object ID can be provided 
+     * to pass it to the item click handler 
+     * 
+     * @param item_id an arbitrary optional caller object identifier
+     */
+    constructor(item_id?: number) {
+        this._caller_id = item_id;
         this._container = undefined;
 
         this._items_data = [];
 
-        this._size = {
-            x: 0,
-            y: 0,
-        };
-
         this._itemclick = undefined;
     }
 
-    addItem(alias, label, active=true) {
+    /** 
+     * Publicly accessible root HTML container of the {@link ContextMenu}
+     */
+    get container(): HTMLDivElement {
+        return this._container;
+    }
+
+    /**
+     * Adds an item to the {@link ContextMenu}
+     * 
+     * Note that this method should be called before drawing.
+     * It helps modifying the item list on-the-go, after instantiation of class.
+     * 
+     * @see draw 
+     * 
+     * @param alias     item alias
+     * @param label     item label to display
+     * @param active    whether the item should be active
+     */
+    addItem(alias: string, label: string, active: boolean = true): void {
         this._items_data.push({
             alias, label, active
         });
     }
 
-    get container() {
-        return this._container;
+    /**
+     * Attach an 'item click' event handler
+     * 
+     * @param cb callback or null to clear
+     */
+    onItemClick(cb: Function = null): void {
+        this._itemclick = cb || (() => {});
     }
 
-    onItemClick(cb) {
-        this._itemclick = cb;
-    }
-
-    fadeOut(cb_destroy) {
-        this._container.style.opacity = 0;
+    /**
+     * Animates menu hiding
+     * 
+     * An additional callback is required to pass. It will be called
+     * when the animation ends, so the menu can be removed from the DOM.
+     * 
+     * Transition time is defined by the {@link TransitionTime} value.
+     * 
+     * @param cb_destroy callback which will be called when the menu will be ready to destroy.
+     */
+    fadeOut(cb_destroy: Function): void {
+        this._container.style.opacity = '0';
 
         setTimeout(() => {
             cb_destroy && cb_destroy();
         }, ContextMenu.TransitionTime);
     }
 
-    draw(position, inputs=[]) {
+    /**
+     * Renders {@link ContextMenu} contents to the DOM
+     * 
+     * This method returns the root HTML container where the contents is drawn
+     * 
+     * @param position  position when the right click is occurred
+     * @param inputs    optional input values to pass into the items that has input fields
+     */
+    draw(position: XYObject, inputs: [] = []): HTMLDivElement {
         this._container = document.createElement('div');
         this._container.classList.add(ContextMenu.Class);
-        this._container.style.opacity = 0;
+        this._container.style.opacity = '0';
         this._container.style.transition = `opacity linear ${ContextMenu.TransitionTime}ms`;
 
         this._drawItems(inputs);
 
-        setTimeout(() => {this._container.style.opacity = 1;}, 0);
+        setTimeout(() => {this._container.style.opacity = '1'}, 0);
 
         return this._container;
     }
 
+    /**
+     * Clears all content from the root HTML container
+     */
     dispose() {
         while(this._container.firstChild) {
             this._container.removeChild(this._container.firstChild);
         }
     }
 
-    _drawItems(inputs) {
+    private _drawItems(inputs: []) {
         let i = 0;
 
         for (let item_data of this._items_data) {
@@ -84,7 +205,7 @@ export default class ContextMenu {
         }
     }
 
-    _drawItem(item_data, input_value=null) {
+    private _drawItem(item_data, input_value=null) {
         let label = item_data.label ? item_data.label : item_data.alias;
         let active = item_data.active;
         let input = item_data.input;
@@ -159,7 +280,7 @@ export default class ContextMenu {
         return root;
     }
 
-    _drawInput(id, type="number", min=0, max=9000, initial_value=null) {
+    private _drawInput(id, type="number", min=0, max=9000, initial_value=null) {
         let input = document.createElement("input");
         input.classList.add(ContextMenu.ItemInputClass);
         input.id = id ? id : "bb-unnamed-input-" + x + y;
@@ -183,7 +304,7 @@ export default class ContextMenu {
         return input;
     }
 
-    _attachItemEvents(root, item_data, input, input_node) {
+    private _attachItemEvents(root, item_data, input, input_node) {
         const apply = () => {
             setTimeout(() => {
                 if (input && input.type === 'file') {
@@ -228,7 +349,7 @@ export default class ContextMenu {
      * @param value
      * @private
      */
-    _itemClick(item_data, value) {
+    private _itemClick(item_data, value) {
         let as = item_data.as;
 
         let alias = as && as.alias ? as.alias : item_data.alias;
@@ -237,6 +358,6 @@ export default class ContextMenu {
             value = as.beforeClick(value);
         }
 
-        this._itemclick(this._item_id, alias, value);
+        this._itemclick(this._caller_id, alias, value);
     }
 }

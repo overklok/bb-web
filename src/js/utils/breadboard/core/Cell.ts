@@ -3,8 +3,8 @@ import {Direction, DirsClockwise, XYObject} from "./types";
 
 /**
  * Logical representation of single board cell.
- * Cell does not make any drawing, it just manages the data about
- * its size, position and relations with another Cells with respect to given {@link Grid}.
+ * Cell does not make any drawing, it just manages the data 
+ * about its size, position and relations with another Cells with respect to given {@link Grid}.
  */
 export default class Cell {
     /* the Grid instance this Cell belongs to */
@@ -268,6 +268,7 @@ export default class Cell {
      * Checks if the properties of the {@link Cell} do not contradict {@link Grid} properties.
      *
      * @private
+     * @throws RangeError
      */
     private validate() {
         if (this.idx.x < 0 || this.idx.y < 0 || this.idx.x >= this.grid.dim.x || this.idx.y >= this.grid.dim.y) {
@@ -286,8 +287,10 @@ export default class Cell {
      * @param cell_to   a second {@link Cell} the index position of which belongs to the line
      * @param x         horizontal index (column) for that the line will be tested
      * @param y         vertical index (row) for that the line will be tested
+     * 
+     * @throws RangeError
      */
-    static IsLineAt(cell_from: Cell, cell_to: Cell, x: number = null, y: number = null) {
+    static IsLineAt(cell_from: Cell, cell_to: Cell, x: number = null, y: number = null): boolean {
         if ((x !== null && y !== null) || (x === null && y === null)) {
             throw new RangeError("Either 'x' or 'y' should be defined only");
         }
@@ -297,26 +300,51 @@ export default class Cell {
 
     /**
      * @static
+     * 
+     * Returns whether is line formed by tho cell points is vertical
      *
      * @param cell_from
      * @param cell_to
+     * 
+     * @throws RangeError
      */
-    static IsLineVertical(cell_from: Cell, cell_to: Cell) {
+    static IsLineVertical(cell_from: Cell, cell_to: Cell): boolean {
         return cell_from.idx.x === cell_to.idx.x;
     }
 
+    /**
+     * Returns whether is line formed by tho cell points is horizontal
+     * 
+     * @param cell_from 
+     * @param cell_to 
+     */
     static IsLineHorizontal(cell_from: Cell, cell_to: Cell) {
         return cell_from.idx.y === cell_to.idx.y;
     }
 
-    static IsDirHorizontal(dir: Direction) {
+    /**
+     * Returns whether the given {@line Direction} is horizontal 
+     * @param dir 
+     */
+    static IsDirHorizontal(dir: Direction): boolean {
         return (dir === Direction.Up || dir === Direction.Down);
     }
 
+    /**
+     * Returns whether the given {@line Direction} is vertical 
+     * 
+     * @param dir 
+     */
     static IsDirVertical(dir: Direction) {
         return (dir === Direction.Left || dir === Direction.Right);
     }
 
+    /**
+     * Returns whether the sequence of two {@link Direction}s is clockwise-ordered
+     * 
+     * @param dir1 
+     * @param dir2 
+     */
     static IsDirsClockwise(dir1: Direction, dir2: Direction) {
         let dir_idx_1 = DirsClockwise.indexOf(dir1),
             dir_idx_2 = DirsClockwise.indexOf(dir2);
