@@ -12,6 +12,8 @@ import { XYObject } from './types';
  * 
  * {@link Layer} defines basic restrictions for each {@link Layer} to provide
  * a general interface to manage its lifecycle.
+ * 
+ * @category Breadboard
  */
 export default abstract class Layer {
     /** SVG container that contains the {@link Layer} content */

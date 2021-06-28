@@ -26,6 +26,10 @@ import Plate from "./core/Plate";
 
 require("./styles/main.css");
 
+/**
+ * 
+ * @category Breadboard
+ */
 type BreadboardOptions = {
     layouts?: {[layout_name: string]: Layout},
     layout_name?: string,

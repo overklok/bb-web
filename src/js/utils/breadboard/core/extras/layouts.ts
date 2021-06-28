@@ -1,8 +1,13 @@
 import BackgroundLayer from "../../layers/BackgroundLayer";
 import LabelLayer from "../../layers/LabelLayer";
-import Grid from "../Grid";
+import Grid, { AuxPointCategory } from "../Grid";
 import {Layout} from "../types";
 
+/**
+ * 
+ * 
+ * @category Breadboard
+ */
 export const LAYOUTS: {[key: string]: Layout} = {
     v5x: {
         plate_style: {
@@ -60,7 +65,7 @@ export const LAYOUTS: {[key: string]: Layout} = {
         ],
 
         points: [
-            Grid.AuxPointCats.SourceV5,
+            AuxPointCategory.SourceV5,
         ],
 
         controls: {horz: true},

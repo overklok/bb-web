@@ -5,6 +5,8 @@ import {Direction, DirsClockwise, XYObject} from "./types";
  * Logical representation of single board cell.
  * Cell does not make any drawing, it just manages the data 
  * about its size, position and relations with another Cells with respect to given {@link Grid}.
+ * 
+ * @category Breadboard
  */
 export default class Cell {
     /* the Grid instance this Cell belongs to */

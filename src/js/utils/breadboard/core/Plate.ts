@@ -63,6 +63,8 @@ export type PlateParams = {
  *
  * @class
  * @abstract
+ * 
+ * @category Breadboard
  */
 export default class Plate {
     private __grid: Grid;

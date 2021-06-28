@@ -1,3 +1,7 @@
+/**
+ * 
+ * @category Breadboard
+ */
 export type XYObject = { x: number, y: number }
 
 export type Domain = {
@@ -16,8 +20,19 @@ export type Domain = {
 }
 
 /* TODO: Narrow type 'Point' */
+
+/**
+ * 
+ * 
+ * @category Breadboard
+ */
 type Point = string;
 
+/**
+ * 
+ * 
+ * @category Breadboard
+ */
 export type Layout = {
     plate_style?: { label_font_size: number },
     label_style?: { font_size: number, text_bias: number },
@@ -38,6 +53,11 @@ export type Layout = {
     curr_straight_bottom_y: number
 }
 
+/**
+ * 
+ * 
+ * @category Breadboard
+ */
 export const enum Direction {
     Up,
     Right,
@@ -45,4 +65,9 @@ export const enum Direction {
     Left,
 }
 
+/**
+ * 
+ * 
+ * @category Breadboard
+ */
 export const DirsClockwise = [Direction.Up, Direction.Right, Direction.Down, Direction.Left];

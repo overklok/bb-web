@@ -6,6 +6,11 @@ import '../styles/current.css';
 
 let SYMBOL_SMOKE = undefined;
 
+/**
+ * 
+ * 
+ * @category Breadboard
+ */
 export type Thread = {
     /** The weight of the current */
     weight: number;
@@ -29,6 +34,8 @@ export type Thread = {
  * @param container container for the {@link Current} elements and animations
  * @param style     SVG style for the lines
  * @param speed     speed of partical animations
+ * 
+ * @category Breadboard
  */
 export default class Current {
     /** Root container of the {@link Current} */

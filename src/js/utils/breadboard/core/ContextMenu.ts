@@ -3,6 +3,8 @@ import { XYObject } from "./types"
 
 /**
  * Type of context menu item input
+ *
+ * @category Breadboard
  */
 export enum ContextMenuItemInputType {
     String = 'string',
@@ -14,6 +16,8 @@ export enum ContextMenuItemInputType {
  * Properties of context menu item input
  * 
  * If needed, `min` and `max` might be set for {@link ContextMenuItemInputType.Number} items.
+ *
+ * @category Breadboard
  */
 export type ContextMenuItemInputProps = {
     type: ContextMenuItemInputType,
@@ -23,10 +27,13 @@ export type ContextMenuItemInputProps = {
 
 /**
  * Context menu item properties
+ *
+ * @category Breadboard
  */
 export type ContextMenuItemProps = {
     /** Text label which will be displayed to user */
-    label: string | (() => string),
+    label: string | Function,
+
     /** String alias to reference in sources */
     alias: string,
     /** 
@@ -72,6 +79,8 @@ export type ContextMenuItemProps = {
 
 /**
  * Basic context menu drawer
+ *
+ * @category Breadboard
  */
 export default class ContextMenu {
     /** 
@@ -202,7 +211,7 @@ export default class ContextMenu {
     /**
      * Clears all content from the root HTML container
      */
-    dispose() {
+    dispose(): void {
         while(this._container.firstChild) {
             this._container.removeChild(this._container.firstChild);
         }
@@ -321,7 +330,6 @@ export default class ContextMenu {
      * @param min 
      * @param max 
      * @param initial_value 
-     * @returns 
      */
     private _drawInput(
         id: string,
@@ -329,7 +337,7 @@ export default class ContextMenu {
         min: number = 0,
         max: number = 9000,
         initial_value: number | string = null
-    ) {
+    ): HTMLInputElement {
         let input = document.createElement("input");
         input.classList.add(ContextMenu.ItemInputClass);
         input.id = id ? id : `bb-unnamed-input-${type}`;
@@ -367,7 +375,7 @@ export default class ContextMenu {
         item_props: ContextMenuItemProps,
         input_props: ContextMenuItemInputProps,
         input_node: HTMLInputElement
-    ) {
+    ): void {
         const apply = () => {
             setTimeout(() => {
                 if (input_props && input_props.type === 'file') {
@@ -415,7 +423,7 @@ export default class ContextMenu {
      * @param item_props    properties of the menu item clicked
      * @param value         current input field value
      */
-    private _itemClick(item_props: ContextMenuItemProps, value: number|string|File|void) {
+    private _itemClick(item_props: ContextMenuItemProps, value: number|string|File|void): void {
         let as = item_props.as;
 
         let alias = as && as.alias ? as.alias : item_props.alias;

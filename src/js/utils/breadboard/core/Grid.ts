@@ -8,6 +8,8 @@ import {Domain, XYObject} from "./types";
  * When a function receives indices that go over the boundaries of a {@link Grid},
  * it can throw an exception or consider a fallback for invalid index.
  * To define typical behavior which may be required to follow, this type should be used. 
+ * 
+ * @category Breadboard
  */
 export const enum BorderType {
     None = 'none',              // throw an exception / do nothing              | [1 2 3 E E E]
@@ -22,6 +24,8 @@ export const enum BorderType {
  * that can be used on the board
  * 
  * Each point can be specified in the {@link Grid} only within a corresponding {@link AuxPointType}.
+ * 
+ * @category Breadboard
  */
 export const enum AuxPointType {
     // Voltage and ground pins
@@ -43,6 +47,8 @@ export const enum AuxPointType {
 
 /**
  * Categories
+ * 
+ * @category Breadboard
  */
 export const enum AuxPointCategory {
     // Source pins for 5th revision of the board
@@ -57,6 +63,8 @@ export const enum AuxPointCategory {
 
 /**
  * A set of fixed properties of the {@link Grid}
+ * 
+ * @category Breadboard
  */
 type GridParams = {
     dim: {x: number, y: number},
@@ -70,6 +78,8 @@ type GridParams = {
  * A visible point which is displaced arbitrarily on the {@link Grid}
  * 
  * Each {@link AuxPoint} has a name and belongs to some {@link AuxPointCategory}.
+ * 
+ * @category Breadboard
  */
 type AuxPoint = {
     idx: {x: number, y: number},
@@ -85,6 +95,8 @@ type AuxPoint = {
  * 
  * {@link Grid} does not make any drawing, it just stores the collection of {@link Cell}s
  * and contains helper methods to manage them.
+ * 
+ * @category Breadboard
  */
 export default class Grid {
     /** An array of cells placed on the {@link Grid} */
