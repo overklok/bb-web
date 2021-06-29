@@ -14,9 +14,9 @@ npm run build
 # srv-dev
 cd /home/overklok/tapanda/ch-board/srv-dev || exit
 
-cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/fonts
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/main.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/main.css
 cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.js
 cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.css
 cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/coursesvc/static/admin/vendor/admin-board/board.js
@@ -25,9 +25,9 @@ cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses
 # srv-main
 cd /home/overklok/tapanda/ch-board/srv-main || exit
 
-cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/fonts
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/main.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/main.css
 cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.js
 cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.css
 cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/board.js
