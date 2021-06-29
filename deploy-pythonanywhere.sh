@@ -50,12 +50,14 @@ cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses
 
 # srv-dev
 workon bb-srv-dev
+cd /home/overklok/tapanda/ch-board/srv-dev || exit
 python /home/overklok/tapanda/ch-board/srv-dev/manage.py collectstatic --no-input
 touch /var/www/dev_tapanda_ru_wsgi.py
 deactivate
 
 # srv-main
 workon bb-srv-main
+cd /home/overklok/tapanda/ch-board/srv-main || exit
 python /home/overklok/tapanda/ch-board/srv-main/manage.py collectstatic --no-input
 touch /var/www/board_tapanda_ru_wsgi.py
 deactivate
