@@ -2,6 +2,7 @@ import Layer from "js/utils/breadboard/core/Layer";
 
 import '../styles/menu.css';
 import ContextMenu from "js/utils/breadboard/core/ContextMenu";
+import { getAbsolutePosition, getCursorPoint } from "../core/extras/helpers";
 
 export default class MenuLayer extends Layer {
     static get Class() {return "bb-layer-menu"}
@@ -51,7 +52,7 @@ export default class MenuLayer extends Layer {
         }
     }
 
-    showMenu(menu, position, inputs) {
+    showMenu(menu, position, inputs, svg) {
         this._menu = menu;
 
         const container_menu = this._menu.draw(position, inputs);
@@ -60,16 +61,16 @@ export default class MenuLayer extends Layer {
         container_menu.style.left = position.x + 'px';
         container_menu.style.top = position.y + 'px';
 
-        const {top: dy, left: dx} = this._container.getBoundingClientRect();
+        const {x: root_x0, y: root_y0} = getAbsolutePosition(this._container);
+        const menu_x0 = position.x, menu_y0 = position.y;
 
-        const root_x0 = this._container.offsetLeft,
-              root_x1 = this._container.offsetWidth + root_x0,
-              root_y0 = this._container.offsetTop,
+        let dx = root_x0;
+        let dy = root_y0;
+
+        const root_x1 = this._container.offsetWidth + root_x0,
               root_y1 = this._container.offsetHeight + root_y0;
 
-        const menu_x0 = container_menu.offsetLeft,
-              menu_x1 = container_menu.offsetWidth + menu_x0,
-              menu_y0 = container_menu.offsetTop,
+        const menu_x1 = container_menu.offsetWidth + menu_x0,
               menu_y1 = container_menu.offsetHeight + menu_y0;
 
         let {x: px, y: py} = position;
