@@ -1,10 +1,13 @@
+import SVG from "svg.js";
+
 import Layer from "../core/Layer";
 import Plate from "../core/Plate";
-import Grid from "../core/Grid";
+import Grid, { BorderType } from "../core/Grid";
 import Cell from "../core/Cell";
 
 import {GRADIENTS} from "../styles/gradients";
 import {getCursorPoint} from "../core/extras/helpers";
+import { Domain } from "../core/types";
 
 export const DOMAIN_SCHEMATIC_STYLES = {
     Default: 'default',
@@ -13,16 +16,35 @@ export const DOMAIN_SCHEMATIC_STYLES = {
 }
 
 export default class BackgroundLayer extends Layer {
-    static get Class() {return "bb-layer-background"}
+    static Class = "bb-layer-background";
 
-    static get CellRadius() {return 5}
+    static CellRadius = 5;
 
     /** отклонение линий доменов в схематическом режиме */
-    static get DomainSchematicBias() {return 20}
+    static DomainSchematicBias = 20;
 
-    static get DomainSchematicStyles() {return DOMAIN_SCHEMATIC_STYLES}
+    static DomainSchematicStyles = DOMAIN_SCHEMATIC_STYLES;
+    private _boardgroup: SVG.Container;
+    private _domaingroup: SVG.Container;
+    private _currentgroup: SVG.Container;
+    private _decogroup: SVG.Container;
+    private _domain_config: Domain;
+    private _debug: boolean;
+    private _gcells: any[];
+    private _gcells_hovered: any[];
+    private _cell_last_hovered: any;
+    private _debug_text: any;
+    private _hover_pos: { x: number; y: number; };
+    private _scheduled_animation_frame: any;
+    private _cell_hovered: any;
 
-    constructor(container, grid, schematic=false, detailed=false, debug=false) {
+    constructor(
+        container: SVG.Container, 
+        grid: Grid, 
+        schematic: boolean = false, 
+        detailed: boolean = false, 
+        debug: boolean = false
+    ) {
         super(container, grid, schematic, detailed);
 
         this._container.addClass(BackgroundLayer.Class);
@@ -44,7 +66,7 @@ export default class BackgroundLayer extends Layer {
         this._initGroups();
     }
 
-    setDomainConfig(domain_config) {
+    setDomainConfig(domain_config: Domain) {
         this._domain_config = domain_config;
     }
 
@@ -60,7 +82,8 @@ export default class BackgroundLayer extends Layer {
             this._debug_text = this._boardgroup
                 .text('debug mode enabled')
                 .move('100%', 0)
-                .font({family: Plate.CaptionFontFamily, anchor: 'end', fill: 'magenta'})
+                .font({family: Plate.CaptionFontFamily, anchor: 'end'})
+                .fill('magenta');
         }
 
         this._drawAuxPoints();
@@ -68,7 +91,7 @@ export default class BackgroundLayer extends Layer {
         this._drawCells();
     }
 
-    recompose(schematic, detailed, debug) {
+    recompose(schematic: boolean, detailed: boolean, debug: boolean) {
         super.recompose(schematic, detailed);
 
         this._debug = debug;
@@ -101,7 +124,7 @@ export default class BackgroundLayer extends Layer {
         this._gcells_hovered = [];
         this._cell_last_hovered = undefined;
 
-        this._boardgroup.on('mousemove', evt => {
+        this._boardgroup.on('mousemove', (evt: MouseEvent) => {
             this._hover_pos = {x: evt.clientX, y: evt.clientY};
 
             if (this._scheduled_animation_frame) return;
@@ -115,7 +138,7 @@ export default class BackgroundLayer extends Layer {
     _hoverCell() {
         this._scheduled_animation_frame = false;
 
-        const svg_main = this._container.node;
+        const svg_main = this._container.node as unknown as SVGSVGElement;
         const cursor_point = getCursorPoint(svg_main, this._hover_pos.x, this._hover_pos.y);
 
         const cell = this.__grid.getCellByPos(cursor_point.x, cursor_point.y);
@@ -169,8 +192,8 @@ export default class BackgroundLayer extends Layer {
         if (!this._domain_config) return;
 
         for (const domain of this._domain_config) {
-            let d_from  = this.__grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
-                d_to    = this.__grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
+            let d_from  = this.__grid.cell(domain.from.x, domain.from.y, BorderType.Wrap).idx,
+                d_to    = this.__grid.cell(domain.to.x, domain.to.y, BorderType.Wrap).idx;
 
             if (domain.style === BackgroundLayer.DomainSchematicStyles.None) continue;
 
@@ -221,12 +244,13 @@ export default class BackgroundLayer extends Layer {
      * @private
      */
     _drawDomain(
-        container,
-        cell_from, cell_to,
-        color="#D4AF37",
-        dotted=false,
-        inversed=false,
-        after=0, before= 0,
+        container: SVG.Container,
+        cell_from: Cell, cell_to: Cell,
+        color: string = "#D4AF37",
+        dotted: boolean = false,
+        inversed: boolean = false,
+        after: number = 0, 
+        before: number = 0,
     ) {
         if (this.__schematic && typeof color !== 'string') {
             console.error('String color is not supported in schematic mode');
@@ -245,8 +269,8 @@ export default class BackgroundLayer extends Layer {
                     cell_to.idx.y
                 );
                 const cell_to_add = this.__grid.cell(
-                    cell_to.idx.x + after * is_horizontal,
-                    cell_to.idx.y + after * is_vertical
+                    cell_to.idx.x + after * Number(is_horizontal),
+                    cell_to.idx.y + after * Number(is_vertical)
                 )
 
                 this._drawDomainLine(
@@ -256,8 +280,8 @@ export default class BackgroundLayer extends Layer {
 
             if (before > 0) {
                 const cell_from_add = this.__grid.cell(
-                    cell_from.idx.x - before * is_horizontal,
-                    cell_from.idx.y - before * is_vertical
+                    cell_from.idx.x - before * Number(is_horizontal),
+                    cell_from.idx.y - before * Number(is_vertical)
                 );
                 const cell_to_add = this.__grid.cell(
                     cell_from.idx.x,
@@ -273,7 +297,7 @@ export default class BackgroundLayer extends Layer {
         }
     }
 
-    _drawCell(container, cell) {
+    _drawCell(container: SVG.Container, cell: Cell) {
         if (this._gcells[cell.idx.x] == null) {
             this._gcells[cell.idx.x] = [];
         }
@@ -312,7 +336,15 @@ export default class BackgroundLayer extends Layer {
             .move(cell.pos.x, cell.pos.y);
     }
 
-    _drawDomainLine(container, cell_from, cell_to, inversed, use_notches, color, dotted) {
+    _drawDomainLine(
+        container: SVG.Container, 
+        cell_from: Cell, 
+        cell_to: Cell, 
+        inversed: boolean, 
+        use_notches: boolean, 
+        color: string, 
+        dotted: boolean
+    ) {
         const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
               is_vertical = Cell.IsLineVertical(cell_from, cell_to);
 

@@ -17,16 +17,16 @@ import { XYObject } from './types';
  */
 export default abstract class Layer {
     /** SVG container that contains the {@link Layer} content */
-    private _container: SVG.Container;
+    protected _container: SVG.Container;
     /** Reference to the {@link Grid}, it keeps all board options synced between the {@link Layer}s */
-    private __grid: Grid;
+    protected __grid: Grid;
 
     /** Schematic mode flag */
-    private __schematic: boolean;
+    protected __schematic: boolean;
     /** Detailed mode flag */
-    private __detailed: boolean;
+    protected __detailed: boolean;
     /** Verbose mode flag */
-    private __verbose: boolean;
+    protected __verbose: boolean;
 
     /** Context menu call callback */
     private _onctxmenucall: any;

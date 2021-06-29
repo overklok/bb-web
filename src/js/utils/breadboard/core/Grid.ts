@@ -253,7 +253,7 @@ export default class Grid {
      * @param y             vertical geometric position
      * @param border_type   boundary cell selection behavior, described in {@link cell}
      */
-    getCellByPos(x: number, y: number, border_type: BorderType) {
+    getCellByPos(x: number, y: number, border_type?: BorderType) {
         let ix = Math.floor((x - this.pos.x) / this.size.x * this.dim.x);
         let iy = Math.floor((y - this.pos.y) / this.size.y * this.dim.y);
 
