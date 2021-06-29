@@ -57,3 +57,5 @@ coverage
 
 # Parcel cache
 .cache
+
+doc
