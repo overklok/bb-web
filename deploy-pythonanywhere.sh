@@ -14,39 +14,39 @@ npm run build
 # srv-dev
 cd /home/overklok/tapanda/ch-board/srv-dev || exit
 
-cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/fonts
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/main.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/main.css
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.css
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/coursesvc/static/admin/vendor/admin-board/board.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/coursesvc/static/admin/vendor/admin-board/board.css
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.css
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/courses/static/admin/vendor/admin-board/board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses/static/admin/vendor/admin-board/board.css
 
 # srv-main
 cd /home/overklok/tapanda/ch-board/srv-main || exit
 
-cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/fonts
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/main.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/main.css
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/blockly.css
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/board.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/coursesvc/static/admin/vendor/admin-blockly/board.css
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.css
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/courses/static/admin/vendor/admin-blockly/board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses/static/admin/vendor/admin-blockly/board.css
 
 # srv-alpha1
 #cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha1/frontend/static/frontend/app/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-blockly/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-board/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-alpha1/courses/static/admin/vendor/admin-blockly/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-alpha1/courses/static/admin/vendor/admin-board/js/
 
 # srv-alpha2
 #cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha2/frontend/static/frontend/app/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha2/coursesvc/static/admin/vendor/admin-blockly/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha2/courses/static/admin/vendor/admin-blockly/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/courses/static/admin/vendor/admin-board/js/
 
 # srv-alpha3
 #cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/frontend/static/frontend/app/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-blockly/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/courses/static/admin/vendor/admin-blockly/js/
+#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/courses/static/admin/vendor/admin-board/js/
 
 # srv-dev
 workon bb-srv-dev

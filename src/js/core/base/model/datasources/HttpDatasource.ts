@@ -114,6 +114,15 @@ export default class HttpDatasource extends SynchronousDatasource {
 
         const response = await fetch(this.buildURL(path, params.query), fetch_init);
 
+        if (!response.ok) {
+            let content;
+
+            try {
+                content = await response.text();
+            } catch {}
+            throw new Error(content ? `${response.statusText}: ${content}` : response.statusText);
+        }
+
         return await response.json();
     }
 
