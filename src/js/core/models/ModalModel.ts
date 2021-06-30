@@ -76,18 +76,16 @@ export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
 
     public async showQuestionModal(modal_data: IModalData): Promise<boolean> {
         return new Promise(resolve => {
-            this.emit(new UpdateModalsEvent({
-                modal_data: {
-                    ...modal_data,
-                    dialog: {
-                        ...modal_data.dialog,
-                        on_action: (action: ModalAction) => {
-                            modal_data.dialog.on_action && modal_data.dialog.on_action(action);
-                            resolve(action === ModalAction.Accept);
-                        },
-                    }
+            this.showModal({
+                ...modal_data,
+                dialog: {
+                    ...modal_data.dialog,
+                    on_action: (action: ModalAction) => {
+                        modal_data.dialog.on_action && modal_data.dialog.on_action(action);
+                        resolve(action === ModalAction.Accept);
+                    },
                 }
-            }));
+            });
         });
     }
 }

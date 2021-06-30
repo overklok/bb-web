@@ -10,7 +10,7 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
 
     protected schema(): RestSchema {
         return {
-            [CRUDAction.Read]: ({lesson_id}) => `coursesvc/lesson/${lesson_id}/`,
+            [CRUDAction.Read]: ({lesson_id}) => `courses/lesson/${lesson_id}/`,
         }
     }
 
@@ -292,6 +292,7 @@ export const enum BoardMode {
 export type ExerciseSolution = {
     code?: object;
     board?: object;
+    board_info?: object;
 }
 
 export type Lesson = {

@@ -8,8 +8,10 @@ import ProgressModel, {
     ExercisePassEvent,
     ExerciseRunEvent,
     ExerciseSolutionCommittedEvent,
-    ExerciseSolutionValidatedEvent, MissionPassEvent
+    ExerciseSolutionValidatedEvent, MissionPassEvent, ValidationVerdictStatus
 } from "../../models/ProgressModel";
+import { RequestErrorEvent } from "../../core/base/model/HttpModel";
+import { ColorAccent } from "../../core/helpers/styles";
 
 export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchView> {
     private code: CodeModel;
@@ -42,7 +44,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             // run checks
             this.progress.validateExerciseSolution(exercise.id, {
                 code: this.code.getState().chainset,
-                board: this.board.getState().plates
+                board: this.board.getState().plates,
+                board_info: this.board.getCurrentBoardInfo()
             });
         }
     }
@@ -56,7 +59,36 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     protected onValidationFinish(evt: ExerciseSolutionValidatedEvent) {
         this.setViewProps({is_checking: LaunchView.ButtonState.Idle});
 
-        if (evt.verdict.is_passed) {
+        console.log(evt);
+        
+
+        if (evt.error) {
+            this.modal.showToast({
+                title: 'Ошибка отправки запроса',
+                content: evt.error,
+                status: ColorAccent.Danger
+            });
+
+            return;
+        }
+
+        if (evt.verdict.status === ValidationVerdictStatus.Fail || evt.verdict.status === ValidationVerdictStatus.Error) {
+            this.modal.showToast({
+                title: 'Упражнение не выполнено',
+                content: evt.verdict.message,
+                status: ColorAccent.Danger
+            })
+        }
+
+        if (evt.verdict.status === ValidationVerdictStatus.Undefined) {
+            this.modal.showToast({
+                title: 'Упражнение не может быть проверено',
+                content: evt.verdict.message || 'Неизвестная ошибка',
+                status: ColorAccent.Warning
+            })
+        }
+
+        if (evt.verdict.status === ValidationVerdictStatus.Success) {
             this.progress.passExercise();
         }
     }
@@ -77,8 +109,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     @on(MissionPassEvent)
     protected async onMissionPass(evt: MissionPassEvent) {
         const go_forward = await this.modal.showQuestionModal({
-            dialog: {heading: 'Задание пройдено', label_accept: 'Продолжить', label_dismiss: 'Остаться'},
-            content: 'Молорик',
+            dialog: {heading: 'Задание пройдено', label_accept: 'Продолжить', label_dismiss: 'Остаться', is_acceptable: true, is_dismissible: true},
+            content: 'Остаться и попробовать ещё, или перейти к следующему заданию?',
             is_closable: false,
         });
 

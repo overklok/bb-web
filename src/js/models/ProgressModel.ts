@@ -5,11 +5,19 @@ import HttpModel from "../core/base/model/HttpModel";
 import {Simulate} from "react-dom/test-utils";
 import error = Simulate.error;
 
+export enum ValidationVerdictStatus {
+    Undefined = 'undefined',
+    Success = 'success',
+    Fail = 'fail',
+    Error = 'error',
+}
+
 export type ValidationVerdict = {
+    status: ValidationVerdictStatus;
     message: string;
-    blocks: string[];
-    region: object;
-    is_passed: boolean;
+    details: {
+        region?: any
+    };
 }
 
 export type ExerciseData = {
@@ -356,43 +364,34 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         this.in_progress = true;
 
+        if (!!solution.board != !!solution.board_info) {
+            throw new Error("`board_info` is required to provide with the `board`");
+        }
+
         this.emit(new ExerciseSolutionCommittedEvent());
 
-        this.request(`/coursesvc/check/${exercise_id}`, {
+        this.request(`/courses/check/${exercise_id}`, {
             method: RequestMethod.POST,
             data: {
                 handlers: solution.code || {},
-                board: solution.board
+                board: solution.board,
+                board_info: solution.board_info
             }
         }).then(res => {
-            if (res.error) {
-                console.error('Error', res);
-
-                this.in_progress = false;
-                this.emit(new ExerciseSolutionValidatedEvent({
-                    error: res.error.message,
-                    verdict: undefined
-                }));
-
-                return;
-            }
-
             const verdict: ValidationVerdict = {
-                is_passed: res.status === "OK",
                 message: res.html,
-                blocks: res.blocks,
-                region: res.data ? res.data.lane : null,
+                status: res.status,
+                details: {}
             };
 
             this.in_progress = false;
-            this.emit(new ExerciseSolutionValidatedEvent({
-                error: undefined,
-                verdict: verdict
-            }));
+
+            this.emit(new ExerciseSolutionValidatedEvent({error: undefined, verdict: verdict}));
         }).catch(err => {
             console.error('Error', err);
 
             this.in_progress = false;
+
             this.emit(new ExerciseSolutionValidatedEvent({
                 error: err.message,
                 verdict: undefined

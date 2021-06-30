@@ -8,6 +8,7 @@ import Presenter, { on } from "../../core/base/Presenter";
 import BoardView from "../../views/common/BoardView";
 import ModalModel from "../../core/models/ModalModel";
 import {ColorAccent} from "../../core/helpers/styles";
+import { ValidationVerdictStatus } from "../../models/ProgressModel";
 
 export default class DebugCheckBoardPresenter extends Presenter<BoardView.BoardView> {
     private modal: ModalModel;
@@ -18,17 +19,38 @@ export default class DebugCheckBoardPresenter extends Presenter<BoardView.BoardV
 
     @on(AdminVerdictEvent)
     private onVerdict(evt: AdminVerdictEvent) {
+        if (evt.verdict.status === ValidationVerdictStatus.Success) {
+
         this.modal.showToast({
-            status: evt.verdict.is_passed ? ColorAccent.Success : ColorAccent.Danger,
-            title: `Verification ${evt.verdict.is_passed ? 'succeeded' : 'failed'}`,
+            status: ColorAccent.Success,
+            title: `Verification succeeded`,
             content: evt.verdict.message,
             timeout: 5000,
         });
+        }
 
-        if (evt.verdict.is_passed) return;
+        if (evt.verdict.status === ValidationVerdictStatus.Error || evt.verdict.status === ValidationVerdictStatus.Fail) {
+            this.modal.showToast({
+                status: ColorAccent.Danger,
+                title: `Verification failed`,
+                content: evt.verdict.message,
+                timeout: 5000,
+            });
+        }
 
-        const region = evt.verdict.region;
+        if (evt.verdict.status === ValidationVerdictStatus.Undefined) {
+            this.modal.showToast({
+                status: ColorAccent.Warning,
+                title: `Verification result is undefined`,
+                content: evt.verdict.message,
+                timeout: 5000,
+            });
+        }
 
-        this.view.highlightRegion(region, true);
+        if (evt.verdict.status === ValidationVerdictStatus.Success) return;
+
+        if (evt.verdict.details.hasOwnProperty('region')) {
+            this.view.highlightRegion(evt.verdict.details['region'], true);
+        }
     }
 }

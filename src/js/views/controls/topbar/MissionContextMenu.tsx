@@ -105,7 +105,7 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
                             <a className="mission__context"
                                target="_blank"
                                href={
-                                   this.props.admin_url_prefix + '/admin/coursesvc/mission/' +
+                                   this.props.admin_url_prefix + '/admin/courses/mission/' +
                                    this.props.id + '/change/'
                                }
                             >
@@ -139,7 +139,7 @@ export default class MissionContextMenu extends React.Component<MCMProps, MCMSta
                                             <a className="cl-context__action"
                                                target="_blank"
                                                href={
-                                                   this.props.admin_url_prefix + '/admin/coursesvc/exercise/' +
+                                                   this.props.admin_url_prefix + '/admin/courses/exercise/' +
                                                    exercise.id + '/change/'
                                                }
                                             >

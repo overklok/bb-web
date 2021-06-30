@@ -19,7 +19,7 @@ export default class CourseModel extends CRUDHttpModel<Course> {
 
     protected schema(): RestSchema {
         return {
-            [CRUDAction.List]: () => `coursesvc`,
+            [CRUDAction.List]: () => `courses`,
         }
     }
 
