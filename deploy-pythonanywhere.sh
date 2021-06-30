@@ -30,8 +30,8 @@ cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/fronten
 cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/
 cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.js
 cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.css
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/courses/static/admin/vendor/admin-blockly/board.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses/static/admin/vendor/admin-blockly/board.css
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/courses/static/admin/vendor/admin-board/board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses/static/admin/vendor/admin-board/board.css
 
 # srv-alpha1
 #cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha1/frontend/static/frontend/app/js/
