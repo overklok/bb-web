@@ -48,6 +48,7 @@ export type RequestParams = {
     data?: any;
     redirect?: RequestRedirect;
     method?: RequestMethod|string;
+    timeout?: number;
 }
 
 const DefaultOptions: RequestOptions = {
@@ -55,6 +56,21 @@ const DefaultOptions: RequestOptions = {
     cache: RequestCache.Default,
     credentials: RequestCredentials.SameOrigin
 }
+
+async function fetchWithTimeout(resource: RequestInfo, options: any) {
+    const { timeout = 8000 } = options;
+    
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+  
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal  
+    });
+    clearTimeout(id);
+  
+    return response;
+  }
 
 export default class HttpDatasource extends SynchronousDatasource {
     private readonly hostname: string;
@@ -97,6 +113,7 @@ export default class HttpDatasource extends SynchronousDatasource {
         let fetch_init: any = {
             method:         params.method,
             redirect:       params.redirect,
+            timeout:        params.timeout,
             mode:           this.options.mode,
             cache:          this.options.cache,
             credentials:    this.options.credentials,
@@ -112,15 +129,15 @@ export default class HttpDatasource extends SynchronousDatasource {
             fetch_init.body = JSON.stringify(params.data);
         }
 
-        const response = await fetch(this.buildURL(path, params.query), fetch_init);
+        const response = await fetchWithTimeout(this.buildURL(path, params.query), fetch_init);
 
         if (!response.ok) {
-            let content;
+            // let content;
 
-            try {
-                content = await response.text();
-            } catch {}
-            throw new Error(content ? `${response.statusText}: ${content}` : response.statusText);
+            // try {
+                // content = await response.text();
+            // } catch {}
+            throw new Error(response.statusText);
         }
 
         return await response.json();

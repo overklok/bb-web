@@ -293,6 +293,7 @@ export type ExerciseSolution = {
     code?: object;
     board?: object;
     board_info?: object;
+    board_layout_name?: string;
 }
 
 export type Lesson = {

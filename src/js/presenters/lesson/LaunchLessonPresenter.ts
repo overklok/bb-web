@@ -45,7 +45,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             this.progress.validateExerciseSolution(exercise.id, {
                 code: this.code.getState().chainset,
                 board: this.board.getState().plates,
-                board_info: this.board.getCurrentBoardInfo()
+                board_info: this.board.getCurrentBoardInfo(),
+                board_layout_name: this.board.getBoardLayout()
             });
         }
     }
@@ -59,9 +60,6 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     protected onValidationFinish(evt: ExerciseSolutionValidatedEvent) {
         this.setViewProps({is_checking: LaunchView.ButtonState.Idle});
 
-        console.log(evt);
-        
-
         if (evt.error) {
             this.modal.showToast({
                 title: 'Ошибка отправки запроса',
@@ -72,11 +70,19 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             return;
         }
 
-        if (evt.verdict.status === ValidationVerdictStatus.Fail || evt.verdict.status === ValidationVerdictStatus.Error) {
+        if (evt.verdict.status === ValidationVerdictStatus.Fail) {
             this.modal.showToast({
                 title: 'Упражнение не выполнено',
                 content: evt.verdict.message,
                 status: ColorAccent.Danger
+            })
+        }
+
+        if (evt.verdict.status === ValidationVerdictStatus.Error) {
+            this.modal.showToast({
+                title: 'Ошибка проверки задания',
+                content: evt.verdict.message,
+                status: ColorAccent.Warning
             })
         }
 
@@ -96,8 +102,13 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     @on(ExercisePassEvent)
     protected async onExercisePass() {
         const go_forward = await this.modal.showQuestionModal({
-            dialog: {heading: 'Упражнение пройдено', label_accept: 'Продолжить', label_dismiss: 'Остаться'},
-            content: 'Молорик',
+            dialog: {
+                heading: 'Упражнение пройдено',
+                label_accept: 'Продолжить',
+                label_dismiss: 'Остаться',
+                is_acceptable: true,
+                is_dismissible: true
+            },
             is_closable: false,
         });
 

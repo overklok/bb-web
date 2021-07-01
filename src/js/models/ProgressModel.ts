@@ -45,6 +45,8 @@ type Progress = {
     missions: MissionProgress[];
     mission_idx: number;
     mission_idx_last: number;
+    mission_idx_passed: number;
+    mission_idx_passed_max: number;
     mission_idx_available: number;
     lock_exercises: boolean;
     lock_missions: boolean;
@@ -91,6 +93,8 @@ export default class ProgressModel extends HttpModel<Progress> {
         missions: [],
         mission_idx: undefined,
         mission_idx_last: undefined,
+        mission_idx_passed: undefined,
+        mission_idx_passed_max: undefined,
         mission_idx_available: undefined,
         lock_exercises: false,
         lock_missions: false,
@@ -113,6 +117,8 @@ export default class ProgressModel extends HttpModel<Progress> {
             missions: [],
             mission_idx: -1,
             mission_idx_last: 0,
+            mission_idx_passed: -1,
+            mission_idx_passed_max: -1,
             mission_idx_available: 0,
             lock_exercises: this.state.lock_exercises,
             lock_missions: this.state.lock_missions,
@@ -142,6 +148,8 @@ export default class ProgressModel extends HttpModel<Progress> {
     public getExerciseCurrent(): [number, number] {
         let missionIDX = this.state.mission_idx;
         let exerciseIDX = this.state.missions[missionIDX].exercise_idx;
+
+        console.log(this.state.mission_idx);
 
         return [missionIDX, exerciseIDX];
     }
@@ -344,16 +352,16 @@ export default class ProgressModel extends HttpModel<Progress> {
         if (this.in_progress) return;
 
         if (this.state.mission_idx < this.state.mission_idx_last) {
-            this.state.mission_idx += 1;
-            this.state.mission_idx_available += 1;
+            // this.state.mission_idx += 1;
+            this.state.mission_idx_available = this.state.mission_idx + 1;
             // this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
 
             this.emit(new MissionPassEvent({
-                mission_idx: this.state.mission_idx,
+                mission_idx: this.state.mission_idx + 1,
             }));
         } else {
             this.emit(new MissionPassEvent({
-                mission_idx: this.state.mission_idx,
+                mission_idx: this.state.mission_idx + 1,
             }));
             // this.emit(new LessonPassEvent()); TODO: maybe needed, maybe not
         }
@@ -375,11 +383,12 @@ export default class ProgressModel extends HttpModel<Progress> {
             data: {
                 handlers: solution.code || {},
                 board: solution.board,
-                board_info: solution.board_info
+                board_info: solution.board_info,
+                board_layout_name: solution.board_layout_name
             }
         }).then(res => {
             const verdict: ValidationVerdict = {
-                message: res.html,
+                message: res.message,
                 status: res.status,
                 details: {}
             };
