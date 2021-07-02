@@ -19,11 +19,11 @@ export default class AlertLessonPresenter extends AlertPresenter {
     }
 
     @on(BoardStatusEvent, ConnectionStatusEvent, SettingsChangeEvent)
-    protected showAlert() {
+    protected showAlert(evt: BoardStatusEvent | ConnectionStatusEvent | SettingsChangeEvent) {
         const is_connected = this.board.getState().is_connected && this.connection.getState().is_active;
 
         const allow_demo = !this.settings.isLocked('general.is_demo'),
-              is_demo = this.settings.getState().values.general.is_demo;
+              is_demo = this.settings.getBoolean('general.is_demo', true);
 
         if (allow_demo && (is_demo || is_connected)) {
             this.closeAlert(AlertType.BoardDisconnectedDemo);
@@ -37,6 +37,6 @@ export default class AlertLessonPresenter extends AlertPresenter {
     }
 
     private setDemoMode() {
-        this.settings.setValue('general.is_demo', true);
+        this.settings.setValue('general.is_demo', true, true);
     }
 }

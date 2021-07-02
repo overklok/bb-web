@@ -59,15 +59,15 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         return this.getValue(path, SettingType.Boolean, get_uncommited) as boolean;
     }
 
-    public getNumber(path: string, get_uncommited = false): number {
-        return this.getValue(path, SettingType.Number, get_uncommited) as number;
+    public getNumber(path: string, get_uncommitted = false): number {
+        return this.getValue(path, SettingType.Number, get_uncommitted) as number;
     }
 
-    public getString(path: string, get_uncommited = false): string {
-        return this.getValue(path, SettingType.String, get_uncommited) as string;
+    public getString(path: string, get_uncommitted = false): string {
+        return this.getValue(path, SettingType.String, get_uncommitted) as string;
     }
 
-    public getValue(path: string, check_type?: SettingType, get_uncommited = false): SettingValue {
+    public getValue(path: string, check_type?: SettingType, get_uncommitted = false): SettingValue {
         const [cat_key, key] = this.splitSettingPath(path);
 
         // check setting type
@@ -75,7 +75,7 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
             assert(this.getSetting(cat_key, key).type == check_type);
         }
 
-        if (get_uncommited &&
+        if (get_uncommitted &&
             cat_key in this.state.uncommitted &&
             key in this.state.uncommitted[cat_key]
         ) {

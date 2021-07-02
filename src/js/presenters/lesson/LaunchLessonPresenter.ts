@@ -64,7 +64,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             this.modal.showToast({
                 title: 'Ошибка отправки запроса',
                 content: evt.error,
-                status: ColorAccent.Danger
+                status: ColorAccent.Danger,
+                timeout: 5000
             });
 
             return;
@@ -74,7 +75,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             this.modal.showToast({
                 title: 'Упражнение не выполнено',
                 content: evt.verdict.message,
-                status: ColorAccent.Danger
+                status: ColorAccent.Danger,
+                timeout: 5000
             })
         }
 
@@ -82,7 +84,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             this.modal.showToast({
                 title: 'Ошибка проверки задания',
                 content: evt.verdict.message,
-                status: ColorAccent.Warning
+                status: ColorAccent.Warning,
+                timeout: 5000
             })
         }
 
@@ -90,7 +93,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             this.modal.showToast({
                 title: 'Упражнение не может быть проверено',
                 content: evt.verdict.message || 'Неизвестная ошибка',
-                status: ColorAccent.Warning
+                status: ColorAccent.Warning,
+                timeout: 5000
             })
         }
 
@@ -103,7 +107,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     protected async onExercisePass() {
         const go_forward = await this.modal.showQuestionModal({
             dialog: {
-                heading: 'Упражнение пройдено',
+                heading: 'Упражнение пройдено!',
                 label_accept: 'Продолжить',
                 label_dismiss: 'Остаться',
                 is_acceptable: true,

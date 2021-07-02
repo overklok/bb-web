@@ -5,6 +5,7 @@ import {CSSTransition, TransitionGroup} from "react-transition-group";
 import {ColorAccent, ToastPosition} from "../../helpers/styles";
 import {Toast} from "./Toast";
 
+require("css/core/cornfield.less");
 require("css/core/toaster.less");
 
 export interface IToast {
@@ -48,21 +49,25 @@ export default class ToastView extends View<ToastViewProps, null> {
     render(): React.ReactNode {
         const klass_names = {enter: 'toast_hidden', exit: 'toast_hidden toast_collapsed'};
 
-        return Object.values(ToastPosition).map((pos: ToastPosition) => (
-            <TransitionGroup className={`toaster toaster_${pos}`} key={pos}>
-                {this.props.toasts.filter(t => filterToast(t, pos)).map((toast, i) => (
-                    <CSSTransition key={toast.idx} timeout={200} classNames={klass_names}>
-                        <Toast index={toast.idx}
-                               status={toast.status}
-                               title={toast.title}
-                               timeout={toast.timeout}
-                               action={toast.action}
-                               on_close={() => this.handleToastClose(toast.idx)}>
-                            {toast.content}
-                        </Toast>
-                    </CSSTransition>
-                ))}
-            </TransitionGroup>
-        ))
+        return <div className="cornfield">
+            {
+                Object.values(ToastPosition).map((pos: ToastPosition) => (
+                    <TransitionGroup className={`toaster toaster_${pos}`} key={pos}>
+                        {this.props.toasts.filter(t => filterToast(t, pos)).map((toast, i) => (
+                            <CSSTransition key={toast.idx} timeout={200} classNames={klass_names}>
+                                <Toast index={toast.idx}
+                                       status={toast.status}
+                                       title={toast.title}
+                                       timeout={toast.timeout}
+                                       action={toast.action}
+                                       on_close={() => this.handleToastClose(toast.idx)}>
+                                    {toast.content}
+                                </Toast>
+                            </CSSTransition>
+                        ))}
+                    </TransitionGroup>
+                ))
+            }
+        </div>
     }
 }
