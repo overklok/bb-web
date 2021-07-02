@@ -1,7 +1,7 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import BlocklyView, {BlocklyCodeChangeEvent} from "../../views/common/BlocklyView";
 import LessonModel from "../../models/lesson/LessonModel";
-import ProgressModel, {ExerciseRunEvent, MissionRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExerciseRunEvent, MissionRunEvent} from "../../models/lesson/ProgressModel";
 import {MountEvent} from "../../core/base/view/View";
 
 export default class BlocklyLessonPresenter extends Presenter<BlocklyView> {

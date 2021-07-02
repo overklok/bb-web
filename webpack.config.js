@@ -68,7 +68,7 @@ module.exports = (env, argv) => {
             extensions: ['.tsx', '.ts', '.js'],
             modules: [path.resolve(__dirname, './src'), 'node_modules'],
             alias: {
-                root: path.join(__dirname, 'src'),
+                // JS-only rules. TS rules is in tsconfig.json:compilerOptions.paths
                 '~': path.resolve(__dirname, "src"),
             }
         },

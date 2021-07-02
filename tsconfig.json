@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
+      "src/*": ["./src/*"],
+      "~/*": ["./src/*"],
       "*": [
-        "types/*"
-      ]
+        "types/*",
+      ],
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "baseUrl": ".",
     "outDir": "./dist/",
     "noImplicitAny": true,
     "downlevelIteration": true,
@@ -27,7 +29,9 @@
     "src/js/**/*.tsx"
   ],
   "exclude": [
-      "node_modules"
+    "node_modules",
+    "src/js/**/*.test.ts",
+    "src/js/**/*.test.tsx"
   ],
   "lib": [
     "ES2020.Promise",

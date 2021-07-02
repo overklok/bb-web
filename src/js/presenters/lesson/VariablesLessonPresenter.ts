@@ -1,6 +1,6 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import LessonModel from "../../models/lesson/LessonModel";
-import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExerciseRunEvent} from "../../models/lesson/ProgressModel";
 import CodeModel from "../../models/common/CodeModel";
 import VariableView from "../../views/common/VariableView";
 

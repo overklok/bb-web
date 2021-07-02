@@ -96,7 +96,7 @@ export default class HttpDatasource extends SynchronousDatasource {
         this.middleware = middleware;
     }
 
-    async request(path: string, params: RequestParams = {}) {
+    async request(path: string, params: RequestParams = {}): Promise<any> {
         params = {
             query: {},
             headers: {},

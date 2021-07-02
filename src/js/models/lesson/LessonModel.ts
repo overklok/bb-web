@@ -256,24 +256,24 @@ type Mission = {
     exercises: Exercise[];
 }
 
-export const enum LaunchMode {
+export enum LaunchMode {
     DoNothing = 0,
     CheckOnly = 1,
     ExecuteOnly = 2,
     CheckAndExecute = 3
 }
 
-export const enum CodeCheckType {
+export enum CodeCheckType {
     Commands = 0,
     States = 1
 }
 
-export const enum BoardCheckType {
+export enum BoardCheckType {
     Hard = 0,
     Soft = 1
 }
 
-export const enum ExerciseType {
+export enum ExerciseType {
     CircuitAssembly     = 0,
     ProgramAssembly     = 1,
     ButtonPressSeq      = 2,
@@ -282,7 +282,7 @@ export const enum ExerciseType {
     Arduino             = 6,
 }
 
-export const enum BoardMode {
+export enum BoardMode {
     Default = 'default',
     Programming = 'programming',
     Electronics = 'electronics',

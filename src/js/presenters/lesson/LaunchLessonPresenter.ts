@@ -9,7 +9,7 @@ import ProgressModel, {
     ExerciseRunEvent,
     ExerciseSolutionCommittedEvent,
     ExerciseSolutionValidatedEvent, MissionPassEvent, ValidationVerdictStatus
-} from "../../models/ProgressModel";
+} from "../../models/lesson/ProgressModel";
 import { RequestErrorEvent } from "../../core/base/model/HttpModel";
 import { ColorAccent } from "../../core/helpers/styles";
 

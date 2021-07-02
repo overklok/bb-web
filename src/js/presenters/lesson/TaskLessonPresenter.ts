@@ -1,7 +1,7 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import RichTextView from "../../views/common/RichTextView";
 import LessonModel from "../../models/lesson/LessonModel";
-import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/lesson/ProgressModel";
 
 export default class TaskLessonPresenter extends Presenter<RichTextView.RichTextView> {
     private lesson: LessonModel;
