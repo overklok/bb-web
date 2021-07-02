@@ -51,8 +51,13 @@ type Progress = {
     mission_idx_passed: number;
     // Maximum value of lastly passed mission index
     mission_idx_passed_max: number;
+    // Maximum value of mission index user can assign to
+    // (if lock_missions is true)
     mission_idx_available: number;
+
+    // Whether to lock free exercise switching
     lock_exercises: boolean;
+    // Whether to lock free mission switching
     lock_missions: boolean;
 }
 
