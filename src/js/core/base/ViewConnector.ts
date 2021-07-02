@@ -23,22 +23,22 @@ import IRoutingService from "../services/interfaces/IRoutingService";
  * including some of React components that used in {@link LayoutView}
  */
 export default class ViewConnector {
-    /** @property An instance of View that is available directly to Presenters */
+    /** An instance of View that is available directly to Presenters */
     public view: View<any, any>;
-    /** @property An instance of EventService that is used to pass events from Presenters or the View */
+    /** An instance of EventService that is used to pass events from Presenters or the View */
     private readonly svc_event: IEventService;
-    /** @property An instance of ModelService that is used to extract Model instances for Presenters */
+    /** An instance of ModelService that is used to extract Model instances for Presenters */
     private readonly svc_model: IModelService;
-    /** @property An instance of RoutingService if Router needed in application */
+    /** An instance of RoutingService if Router needed in application */
     private readonly svc_routing: IRoutingService;
 
-    /** @property Handler keys that kept here to unsubscribe in the future (i.e. in case of re-attaching the View) */
+    /** Handler keys that kept here to unsubscribe in the future (i.e. in case of re-attaching the View) */
     private handlers: [typeof AbstractEvent, Function][] = [];
 
-    /** @property An array of presenter prototypes to construct Presenter instances when the View is attached */
+    /** An array of presenter prototypes to construct Presenter instances when the View is attached */
     public readonly presenter_types: PresenterType<View>[];
 
-    /** @property An array of {@link Action} bindings - the title, an Action type */
+    /** An array of {@link Action} bindings - the title, an Action type */
     public actions: [string, Action<any>, Function][] = [];
 
     private presenters: Presenter<any>[];

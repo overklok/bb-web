@@ -149,8 +149,6 @@ export default class ProgressModel extends HttpModel<Progress> {
         let missionIDX = this.state.mission_idx;
         let exerciseIDX = this.state.missions[missionIDX].exercise_idx;
 
-        console.log(this.state.mission_idx);
-
         return [missionIDX, exerciseIDX];
     }
 

@@ -65,7 +65,14 @@ export default class ViewService extends IViewService {
 
             this.view_connectors_external.push([alias, connector]);
 
-            this.widgets[alias] = {connector, view_type, label: label || alias, view_props, nest_style} as Widget<any>;
+            this.widgets[alias] = {
+                label: label || alias,
+                alias,
+                view_type,
+                connector,
+                view_props,
+                nest_style
+            } as Widget<any>;
         }
 
         if (this.widget_type_key) {
@@ -123,6 +130,7 @@ export default class ViewService extends IViewService {
             return <Nest
                 key={index}
                 index={index}
+                widget_alias={'unnamed'}
                 view_type={SpecificView}
                 view_props={view_props}
                 connector={view_connector}

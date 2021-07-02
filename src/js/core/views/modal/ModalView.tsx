@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import isFunction from "lodash/isFunction";
-
 import {IViewProps, View} from "../../base/view/View";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import {IModalData} from "../../datatypes/modal";
@@ -9,7 +7,6 @@ import Modal, {IModalProps, Overlay} from "./Modal";
 import {IDialogProps} from "./Dialog";
 import DialogModal from "./DialogModal";
 import Nest, {ModalAction, ModalRequestCallback} from "../../base/view/Nest";
-import {ViewEvent} from "../../base/Event";
 
 interface ModalViewProps extends IViewProps {
     modals: {[type: string]: IModalData[]};
@@ -131,6 +128,7 @@ export default class ModalView extends View<ModalViewProps, null> {
             <Nest connector={widget.connector}
                   index={0}
                   label={widget.label}
+                  widget_alias={widget.alias}
                   view_type={widget.view_type}
                   view_props={widget.view_props}
                   on_action_request={(action) => this.handleNestModalClose(idx, modal_type, action)}

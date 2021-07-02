@@ -9,7 +9,8 @@ export type Widget<P extends IViewProps> = {
     view_type: ViewType<P, any>,
     view_props?: P,
     nest_style?: CSSProperties,
-    label?: string
+    label?: string,
+    alias: string
 };
 
 export type WidgetType<P extends IViewProps> = {

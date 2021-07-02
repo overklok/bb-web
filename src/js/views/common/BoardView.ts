@@ -26,7 +26,7 @@ namespace BoardView {
             verbose: false,
             debug: false,
             layouts: [],
-            layout_name: 'default'
+            layout_name: 'v5x'
         }
 
         private readonly bb: Breadboard;

@@ -461,8 +461,9 @@ export default class Pane extends React.Component<IProps, IState> {
     renderNest(index: number, widget: Widget<any>, ref: RefObject<Nest>): JSX.Element {
         return (
             <Nest
-                key={index}
+                key={widget.alias}
                 index={index}
+                widget_alias={widget.alias}
                 view_type={widget.view_type}
                 view_props={widget.view_props}
                 nest_style={widget.nest_style}
