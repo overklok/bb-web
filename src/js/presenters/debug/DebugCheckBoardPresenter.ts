@@ -20,13 +20,12 @@ export default class DebugCheckBoardPresenter extends Presenter<BoardView.BoardV
     @on(AdminVerdictEvent)
     private onVerdict(evt: AdminVerdictEvent) {
         if (evt.verdict.status === ValidationVerdictStatus.Success) {
-
-        this.modal.showToast({
-            status: ColorAccent.Success,
-            title: `Verification succeeded`,
-            content: evt.verdict.message,
-            timeout: 5000,
-        });
+            this.modal.showToast({
+                status: ColorAccent.Success,
+                title: `Verification succeeded`,
+                content: evt.verdict.message,
+                timeout: 5000,
+            });
         }
 
         if (evt.verdict.status === ValidationVerdictStatus.Error || evt.verdict.status === ValidationVerdictStatus.Fail) {
@@ -49,7 +48,7 @@ export default class DebugCheckBoardPresenter extends Presenter<BoardView.BoardV
 
         if (evt.verdict.status === ValidationVerdictStatus.Success) return;
 
-        if (evt.verdict.details.hasOwnProperty('region')) {
+        if (evt.verdict.details && evt.verdict.details.hasOwnProperty('region')) {
             this.view.highlightRegion(evt.verdict.details['region'], true);
         }
     }
