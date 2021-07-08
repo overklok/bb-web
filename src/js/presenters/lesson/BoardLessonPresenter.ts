@@ -5,7 +5,7 @@ import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsMode
 import ModalModel from "../../core/models/ModalModel";
 import {AlertType} from "../../core/views/modal/AlertView";
 import {ColorAccent} from "../../core/helpers/styles";
-import {ExerciseRunEvent} from "../../models/ProgressModel";
+import {ExerciseRunEvent} from "../../models/lesson/ProgressModel";
 
 export default class BoardLessonPresenter extends Presenter<BoardView.BoardView> {
     private board: BoardModel;

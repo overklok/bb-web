@@ -1,9 +1,7 @@
-import {ExerciseSolution, Lesson} from "./lesson/LessonModel";
-import {ModelEvent} from "../core/base/Event";
-import {RequestMethod} from "../core/base/model/datasources/HttpDatasource";
-import HttpModel from "../core/base/model/HttpModel";
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
+import {ExerciseSolution, Lesson} from "./LessonModel";
+import {ModelEvent} from "~/js/core/base/Event";
+import {RequestMethod} from "~/js/core/base/model/datasources/HttpDatasource";
+import HttpModel from "~/js/core/base/model/HttpModel";
 
 export enum ValidationVerdictStatus {
     Undefined = 'undefined',
@@ -25,11 +23,11 @@ export type ExerciseData = {
 }
 
 type MissionProgress = {
-    // Current index of exercise being passed
+    // Current index of the exercise opened
     exercise_idx: number;
     // Maximum value of exercise index
     exercise_idx_last: number;
-    // Value of lastly passed exercise index
+    // Lastly passed exercise index
     exercise_idx_passed: number;
     // Maximum value of lastly passed exercise index
     exercise_idx_passed_max: number;
@@ -41,14 +39,25 @@ type MissionProgress = {
 }
 
 type Progress = {
+    // ID of the lesson opened
     lesson_id: number;
+    // Array of per-mission sub-progresses
     missions: MissionProgress[];
+    // Current index of the mission opened
     mission_idx: number;
+    // Maximum value of mission index
     mission_idx_last: number;
+    // Lastly passed mission index
     mission_idx_passed: number;
+    // Maximum value of lastly passed mission index
     mission_idx_passed_max: number;
+    // Maximum value of mission index user can assign to
+    // (if lock_missions is true)
     mission_idx_available: number;
+
+    // Whether to lock free exercise switching
     lock_exercises: boolean;
+    // Whether to lock free mission switching
     lock_missions: boolean;
 }
 

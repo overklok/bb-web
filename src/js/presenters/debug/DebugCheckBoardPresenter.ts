@@ -8,7 +8,7 @@ import Presenter, { on } from "../../core/base/Presenter";
 import BoardView from "../../views/common/BoardView";
 import ModalModel from "../../core/models/ModalModel";
 import {ColorAccent} from "../../core/helpers/styles";
-import { ValidationVerdictStatus } from "../../models/ProgressModel";
+import { ValidationVerdictStatus } from "../../models/lesson/ProgressModel";
 
 export default class DebugCheckBoardPresenter extends Presenter<BoardView.BoardView> {
     private modal: ModalModel;

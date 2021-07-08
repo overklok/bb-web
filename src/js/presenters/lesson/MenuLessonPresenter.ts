@@ -1,7 +1,7 @@
 import Presenter, {on} from "../../core/base/Presenter";
 import HomeView from "../../views/common/HomeView";
-import CourseModel from "../../models/CourseModel";
-import ProgressModel from "../../models/ProgressModel";
+import CourseModel from "../../models/lesson/CourseModel";
+import ProgressModel from "../../models/lesson/ProgressModel";
 import {RequestErrorEvent} from "../../core/base/model/HttpModel";
 
 export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
