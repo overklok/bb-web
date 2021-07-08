@@ -7,14 +7,13 @@ import {RequestErrorEvent} from "../../core/base/model/HttpModel";
 export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     private course: CourseModel;
     private progress: ProgressModel;
+    load_handle: ReturnType<typeof setTimeout>;
 
     public async getInitialProps() {
         this.course = this.getModel(CourseModel);
         this.progress = this.getModel(ProgressModel);
 
-        const lesson_id = this.progress.getState().lesson_id;
-
-        this.course.list().then((courses) => {this.setViewProps({courses, lesson_id})});
+        this.loadCourses();
 
         document.title = `Tapanda | Main menu`;
     }
@@ -28,6 +27,18 @@ export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     private showError(evt: RequestErrorEvent) {
         this.setViewProps({
             error: 'Нет доступа к серверу.'
-        })
+        });
+
+        this.load_handle = setTimeout(() => {
+            this.loadCourses();
+        }, 2000);
+    }
+
+    private loadCourses() {
+        const lesson_id = this.progress.getState().lesson_id;
+        this.course.list().then((courses) => {
+            clearTimeout(this.load_handle);
+            this.setViewProps({ error: null, courses, lesson_id });
+        });
     }
 }

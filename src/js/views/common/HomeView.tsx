@@ -71,6 +71,7 @@ namespace HomeView {
                         <DialogModal size='md' is_centered={true}>
                             <h2>Произошла ошибка</h2>
                             <p>{this.props.error}</p>
+                            <p>Пробуем загрузиться снова...</p>
                         </DialogModal>
                     </CSSTransition>
                 )

@@ -151,6 +151,10 @@ export default class ProgressModel extends HttpModel<Progress> {
         this.emit(new LessonRunEvent());
     }
 
+    public isLessonLoaded(): boolean {
+        return this.getState().lesson_id != null;
+    }
+
     /**
      * Возвратить индекс текущего упражнения
      */
