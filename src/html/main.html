@@ -13,7 +13,10 @@
     </body>
 
     <script type="application/javascript">
-        const app = new Application();
+        const app = new Application({
+            allow_demo: true,
+            no_menu: false
+        });
         app.run(document.getElementById('app'));
     </script>
 </html>

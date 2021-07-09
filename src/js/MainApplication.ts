@@ -41,6 +41,7 @@ require("css/global.less");
 
 interface MainAppConf {
     allow_demo: boolean;
+    no_menu: boolean;
     server_addr: string;
     server_port: number;
     sock_addr: string;
@@ -54,6 +55,7 @@ class MainApplication extends Application<MainAppConf> {
     protected defaultConfig() {
         return {
             allow_demo: true,
+            no_menu: false,
             server_addr: '127.0.0.1',
             server_port: 8000,
             sock_addr: '127.0.0.1',
@@ -112,7 +114,7 @@ class MainApplication extends Application<MainAppConf> {
     async run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
-        const {root: wgt_root, widgets, composer} = widgets_config;
+        const {root: wgt_root, widgets, composer} = widgets_config(this.config.no_menu);
 
         const svc_view = this.instance(IViewService);
         svc_view.setRootWidgets(composer, wgt_root);

@@ -47,8 +47,9 @@ namespace TopbarView {
         progress: Progress;
         lesson_title: string;
         status: ConnectionStatus;
-        is_demo: boolean;
         admin_url_prefix: string;
+        is_demo: boolean;
+        no_menu?: boolean;
     }
 
     export interface State extends IViewState {
@@ -181,14 +182,6 @@ namespace TopbarView {
         }
 
         public render(): React.ReactNode {
-            const menu_btn_klasses = classNames({
-                'btn': true,
-                'btn_primary': !this.props.is_demo,
-                'btn_secondary': this.props.is_demo,
-                'btn_contoured': true,
-                'btn_inv': this.state.menu_active
-            });
-
             const nav_prefix_klasses = classNames({
                 'nav__prefix': true,
                 'nav__prefix_secondary': this.props.is_demo,
@@ -198,7 +191,7 @@ namespace TopbarView {
                 <React.Fragment>
                     <div className="nav">
                         <div className={nav_prefix_klasses}>
-                            <div className={menu_btn_klasses} onClick={this.toggleMenu}>Меню</div>
+                            {this.renderMenuButton()}
                         </div>
                         <div className="nav__content navslider">
                             {this.renderMain()}
@@ -209,6 +202,28 @@ namespace TopbarView {
 
                     </div>
                 </React.Fragment>
+            )
+        }
+
+        private renderMenuButton() {
+            const menu_btn_klasses = classNames({
+                'btn': true,
+                'btn_primary': !this.props.is_demo,
+                'btn_secondary': this.props.is_demo,
+                'btn_contoured': true,
+                'btn_inv': this.state.menu_active
+            });
+
+            let click_handler = this.toggleMenu,
+                title = 'Меню';
+
+            if (this.props.no_menu) {
+                title = 'Уроки';
+                click_handler = () => this.chooseMenuItem(MenuItem.Lessons);
+            }
+
+            return (
+                <div className={menu_btn_klasses} onClick={click_handler}>{title}</div>
             )
         }
 
