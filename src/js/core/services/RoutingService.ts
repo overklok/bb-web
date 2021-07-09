@@ -37,12 +37,13 @@ export default class RoutingService extends IRoutingService {
 
     async forward(route_name: string, params: any[], override: boolean = false) {
         const path = this.router.reverse(route_name, params);
+        const search = document.location.search;
 
         if (window.location.pathname !== path) {
             if (override) {
-                window.history.replaceState({route_name, params}, 'nothing', path);
+                window.history.replaceState({route_name, params}, 'nothing', path + search);
             } else {
-                window.history.pushState({route_name, params}, 'nothing', path);
+                window.history.pushState({route_name, params}, 'nothing', path + search);
             }
         }
 

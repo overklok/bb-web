@@ -21,10 +21,8 @@ export default class AlertLessonPresenter extends AlertPresenter {
         this.progress = this.getModel(ProgressModel);
     }
 
-    @on(BoardStatusEvent, ConnectionStatusEvent, SettingsChangeEvent, ExerciseRunEvent)
-    protected showAlert(evt: BoardStatusEvent | ConnectionStatusEvent | SettingsChangeEvent | LessonRunEvent) {
-        if (!this.progress.isLessonLoaded()) return;
-
+    @on(BoardStatusEvent, ConnectionStatusEvent, SettingsChangeEvent)
+    protected showAlert(evt: BoardStatusEvent | ConnectionStatusEvent | SettingsChangeEvent) {
         const is_connected = this.board.getState().is_connected && this.connection.getState().is_active;
 
         const allow_demo = !this.settings.isLocked('general.is_demo'),
