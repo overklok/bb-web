@@ -33,7 +33,7 @@ export default class AlertLessonPresenter extends AlertPresenter {
             return;
         }
 
-        if (!allow_demo && (is_demo || is_connected)) {
+        if (!allow_demo && (is_connected)) {
             this.closeAlert(AlertType.BoardDisconnected);
             return;
         }
