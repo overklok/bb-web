@@ -3,8 +3,8 @@ version: '3.8'
 services:
   webpack:
     build: ./
-    command: 'npm run build'
+    command: 'npm run build:main'
     volumes: 
-      - ./xdist:/opt/tapanda/dist
+      - ./dist:/opt/tapanda/dist
     env_file: 
       - .env
