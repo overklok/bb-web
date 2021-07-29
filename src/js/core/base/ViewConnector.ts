@@ -7,22 +7,22 @@ import {PresenterType} from "../helpers/types";
 import IRoutingService from "../services/interfaces/IRoutingService";
 
 /**
- * ViewConnector is a class that makes possible to Views be communicated with logical layer of application
+ * Communicates single {@link View} with the logical layer of application
  * in the face of Presenter objects.
  *
- * For {@link Presenter}, {@link ViewConnector} provides an interface
+ * For {@link Presenter}, {@link ViewCompound} provides an interface
  * to extract Model instances using {@link IModelService}.
  * For both {@link View} and {@link Presenter} to emit events using {@link IEventService}.
  *
  * Although Views can be constructed and destructed multiple times in a single Application lifetime,
- * ViewConnector is persistent. Each time ViewService needs to construct the View, it should provide a View instance
+ * {@link ViewCompound} is persistent. Each time ViewService needs to construct the View, it should provide a View instance
  * by calling {@link attach} method in any way available to View.
- * ViewConnector, in the meanwhile, will give an access to View instance for Presenters connected to it.
+ * {@link ViewCompound}, in the meanwhile, will give an access to View instance for Presenters connected to it.
  *
- * ViewConnector may be available for any part of {@link ViewService} machinery
+ * {@link ViewCompound} may be available for any part of {@link ViewService} machinery
  * including some of React components that used in {@link LayoutView}
  */
-export default class ViewConnector {
+export default class ViewCompound {
     /** An instance of View that is available directly to Presenters */
     public view: View<any, any>;
     /** An instance of EventService that is used to pass events from Presenters or the View */
@@ -47,7 +47,7 @@ export default class ViewConnector {
     private on_props_cb: (props: IViewProps) => void;
 
     /**
-     * View connectors are usually built by ViewService at the registration of Widget
+     * View compounds are usually built by ViewService at the registration of Widget
      * and stays permanent throughout the entire lifecycle of application.
      *
      * @param svc_event
@@ -71,6 +71,14 @@ export default class ViewConnector {
         this.activateActionBindings();
     }
 
+    /**
+     * Collect initial props from all of the presenters collected in the {@link ViewCompound}.
+     * 
+     * All props from the presenters will be merged and re-written in the order 
+     * of presentation in the {@link Widget} definition.
+     * 
+     * @returns 
+     */
     collectProps(): IViewProps {
         let props = {};
 
@@ -93,10 +101,21 @@ export default class ViewConnector {
         return props;
     }
 
+    /**
+     * Request to update {@link View} properties.
+     * 
+     * If the {@link View} is not yet ready to accept prop updates, defer it before it passes
+     * the prop update callback via {@link onPropsUpdate} method.
+     * 
+     * @param props 
+     */
     setViewProps(props: IViewProps) {
         if (this.on_props_cb) {
+            // pass the props if the View's parent component is ready to update it
             this.on_props_cb(props);
         } else {
+            // create or update existing deferred props to pass 
+            // until `on_props_cb` will be defined
             if (this.props_deferred) {
                 this.props_deferred = {...props, ...this.props_deferred};
             } else {
@@ -108,17 +127,28 @@ export default class ViewConnector {
     /**
      * Attach a {@link View} instance that is created by the {@link ViewService}.
      * The instance will be available for {@link Presenter} instances.
+     * 
+     * The {@link View} will be propagated to all of the presenters collected in the object.
+     * All presenter' event handlers would be subscribed to its events.
      *
-     * @param view
+     * React-based {@link View} components can call this procedure at any time
+     * in no particular order.
+     * Consider the call of this function as a random event to avoid errors related
+     * with out-of-order object state changes. 
+     * 
+     * @param view the {@link View} created by React
      */
     attach(view: View) {
-        if (this.view) {
-            this.detach();
-        }
+        // if (this.view) {
+        //     this.detach();
+        // }
 
-        console.log('attach', view.constructor.name);
+        // console.log('attach', view.constructor.name);
+
+        // Assign or reassign the view proposed
         this.view = view;
 
+        // To prevent duplicated (further) subscriptions, unsubscribe current handlers
         this.unsubscribePresenterHandlers();
 
         for (const presenter of this.presenters) {
@@ -127,12 +157,13 @@ export default class ViewConnector {
         }
     }
 
+    /**
+     * @deprecated
+     */
     detach() {
-        this.unsubscribePresenterHandlers();
+        // this.unsubscribePresenterHandlers();
 
-        console.log('detach', this.view.constructor.name);
-
-        delete this.view;
+        // delete this.view;
     }
 
     /**
@@ -155,9 +186,20 @@ export default class ViewConnector {
         }
     }
 
+    /**
+     * Attach a callback function to call when on of the related {@link Presenter}s will request
+     * prop changes for the {@link View} attached.
+     * 
+     * This requires that the parent component of the {@link View} is ready to update the props of its children.
+     * For React-based {@link View}s, this is the moment when `componentDidMount` has been called for the parent component. 
+     * 
+     * @param cb 
+     */
     onPropsUpdate(cb: (props: IViewProps) => void) {
+        // Attach the callback
         this.on_props_cb = cb;
 
+        // If there are props set earlier, immediately pass the to the View
         if (this.props_deferred) {
             this.setViewProps(this.props_deferred);
             this.props_deferred = undefined;
@@ -169,7 +211,7 @@ export default class ViewConnector {
      *
      * Presenters can declare a number of Action types.
      * From the ViewService side, some UI can be provided to call this actions, and
-     * by calling this method ViewConnector makes available to pass an action back to Presenter that declared it.
+     * by calling this method {@link ViewCompound} makes available to pass an action back to Presenter that declared it.
      *
      * For example, {@link LayoutView} can display a widget-specific menu that lists all of the actions declared
      * by Providers in the {@link Widget}.

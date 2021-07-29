@@ -2,8 +2,6 @@ import EventService from "../../services/EventService";
 import ModelService from "../../services/ModelService";
 import {ViewEvent} from "../Event";
 import {View} from "../view/View";
-import Presenter, {restore, on} from "../Presenter";
-import ViewConnector from "../ViewConnector";
 
 class FooEvent extends ViewEvent<FooEvent> {}
 class BarEvent extends ViewEvent<BarEvent> {}
