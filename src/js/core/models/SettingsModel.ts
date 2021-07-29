@@ -1,5 +1,4 @@
 import isEqual from "lodash/isEqual";
-import cloneDeep from "lodash/cloneDeep";
 import defaultsDeep from "lodash/defaultsDeep";
 
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
