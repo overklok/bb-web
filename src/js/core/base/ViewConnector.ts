@@ -116,6 +116,7 @@ export default class ViewConnector {
             this.detach();
         }
 
+        console.log('attach', view.constructor.name);
         this.view = view;
 
         this.unsubscribePresenterHandlers();
@@ -128,6 +129,8 @@ export default class ViewConnector {
 
     detach() {
         this.unsubscribePresenterHandlers();
+
+        console.log('detach', this.view.constructor.name);
 
         delete this.view;
     }
