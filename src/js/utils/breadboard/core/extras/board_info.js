@@ -1,11 +1,10 @@
 import Grid from "../Grid";
-import Breadboard from "../../Breadboard";
 import LabelLayer from "../../layers/LabelLayer";
 import {boundsToCoordList, buildGrid, pointsToCoordList} from "./helpers";
 
 let ard_plate_ser_num = 0;
 
-function layoutToBoardInfo(layout) {
+function layoutToBoardInfo(layout, no_arduino_embedded=false) {
     const grid = buildGrid(layout);
 
     let cell_structure = {};
@@ -114,7 +113,10 @@ function layoutToBoardInfo(layout) {
                               minus_coord = anal_minus_coords[i];
 
                         cell_structure[cell_str_idx++] = [coord];
-                        embedded_plates.push(getArduinoPinPlate(coord, minus_coord, domain.pin_state_initial));
+
+                        if (!no_arduino_embedded) {
+                            embedded_plates.push(getArduinoPinPlate(coord, minus_coord, domain.pin_state_initial));
+                        }
                     }
 
                     break;
