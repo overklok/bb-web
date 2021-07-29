@@ -154,11 +154,11 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         }));
     }
 
-    public getCurrentBoardInfo() {
+    public getCurrentBoardInfo(no_arduino_embedded=false) {
         const layout_name = this.state.layout_name;
         if (!layout_name) return;
 
-        const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name]);
+        const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name], no_arduino_embedded);
 
         return board_info;
     }
