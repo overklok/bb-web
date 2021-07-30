@@ -8,7 +8,6 @@ import {MountEvent} from "../../core/base/view/View";
 export default class ReferenceBoardPresenter extends Presenter<BoardView.BoardView> {
     private testkit: TestkitModel;
     private board: BoardModel;
-    private layout_name: string;
 
     private testkit_qtys: TestKitItemQuanitites;
     private testkit_size: number;

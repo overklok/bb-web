@@ -26,13 +26,13 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     }
 
     @on(BoardView.LayoutChangeEvent)
-    private onLayoutChange() {
-        this.board.setBoardLayout(this.view.getLayoutName());
+    private onLayoutChange(evt: BoardView.LayoutChangeEvent) {
+        this.board.setBoardLayout(evt.layout_name);
     }
     
     @on(BoardView.BoardChangeEvent)
-    private onUserChange() {
-        this.board.setUserPlates(this.view.getPlates());
+    private onUserChange(evt: BoardView.BoardChangeEvent) {
+        this.board.setUserPlates(evt.plates);
     }
 
     @restore() @on(BoardOptionsEvent)
