@@ -15,8 +15,8 @@ export default class BlocklyPresenter extends Presenter<BlocklyView> {
     }
 
     @on(BlocklyCodeChangeEvent)
-    private onCodeChange() {
-        const chains = this.view.getChainset();
+    private onCodeChange(evt: BlocklyCodeChangeEvent) {
+        const chains = BlocklyView.getChainset(evt.workspace);
 
         this.model.setChainset(chains);
     }
