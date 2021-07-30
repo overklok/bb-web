@@ -1,5 +1,5 @@
-import CRUDHttpModel, {CRUDAction, PathParams, RestSchema} from "../core/base/model/CRUDHttpModel";
-import {Query} from "../core/base/model/datasources/HttpDatasource";
+import CRUDHttpModel, {CRUDAction, PathParams, RestSchema} from "../../core/base/model/CRUDHttpModel";
+import {Query} from "~/js/core/base/model/datasources/HttpDatasource";
 
 type CourseLesson = {
     id: number;
@@ -19,7 +19,7 @@ export default class CourseModel extends CRUDHttpModel<Course> {
 
     protected schema(): RestSchema {
         return {
-            [CRUDAction.List]: () => `coursesvc`,
+            [CRUDAction.List]: () => `courses`,
         }
     }
 

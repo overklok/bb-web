@@ -11,68 +11,23 @@ npm run build
 
 # For PythonAnywhere servers
 
-# srv-dev
-cd /home/overklok/tapanda/ch-board/srv-dev || exit
-
-cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./coursesvc/static/admin/vendor/admin-blockly/blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./coursesvc/static/admin/vendor/admin-blockly/blockly.css
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./coursesvc/static/admin/vendor/admin-board/board.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./coursesvc/static/admin/vendor/admin-board/board.css
-
 # srv-main
-cd /home/overklok/tapanda/ch-board/srv-main || exit
+cd /home/overklok/tapanda/ch-board/srv-main/app || exit
 
-cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./frontend/static/frontend/app
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./coursesvc/static/admin/vendor/admin-blockly/blockly.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./coursesvc/static/admin/vendor/admin-blockly/blockly.css
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./coursesvc/static/admin/vendor/admin-blockly/board.js
-cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./coursesvc/static/admin/vendor/admin-blockly/board.css
-
-# srv-alpha1
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha1/frontend/static/frontend/app/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-blockly/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js /home/overklok/tapanda/ch-board/srv-alpha1/coursesvc/static/admin/vendor/admin-board/js/
-
-# srv-alpha2
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha2/frontend/static/frontend/app/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha2/coursesvc/static/admin/vendor/admin-blockly/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
-
-# srv-alpha3
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/frontend/static/frontend/app/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-blockly/js/
-#cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js /home/overklok/tapanda/ch-board/srv-alpha3/coursesvc/static/admin/vendor/admin-board/js/
-
-# srv-dev
-workon bb-srv-dev
-python /home/overklok/tapanda/ch-board/srv-dev/manage.py collectstatic --no-input
-touch /var/www/dev_tapanda_ru_wsgi.py
-deactivate
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/fonts/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.css
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/courses/static/admin/vendor/admin-board/board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses/static/admin/vendor/admin-board/board.css
 
 # srv-main
 workon bb-srv-main
-python /home/overklok/tapanda/ch-board/srv-main/manage.py collectstatic --no-input
+cd /home/overklok/tapanda/ch-board/srv-main/app || exit
+python manage.py collectstatic --no-input
 touch /var/www/board_tapanda_ru_wsgi.py
 deactivate
-
-# srv-alpha1
-#workon bb-srv-alpha
-#python /home/overklok/tapanda/ch-board/srv-alpha1/manage.py collectstatic --no-input
-#touch /var/www/alpha1_tapanda_ru_wsgi.py
-
-# srv-alpha2
-#python /home/overklok/tapanda/ch-board/srv-alpha2/manage.py collectstatic --no-input
-#touch /var/www/alpha2_tapanda_ru_wsgi.py
-
-# srv-alpha3
-#python /home/overklok/tapanda/ch-board/srv-alpha3/manage.py collectstatic --no-input
-#touch /var/www/alpha3_tapanda_ru_wsgi.py
-#deactivate
 
 # hooks/post-receive (+x):
 

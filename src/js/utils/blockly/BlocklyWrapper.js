@@ -174,6 +174,130 @@ export default class BlocklyWrapper {
     }
 
     /**
+     * Получить список обработчиков в виде объекта
+     *
+     * Обработчик - последовательность команд, которая срабатывает
+     * при нажатии на клавишу с соответствующим кодом.
+     *
+     * Главный обработчик - обработчик, срабатывающий при нажатии кнопки "Запустить".
+     *
+     * Формат списка обработчиков:
+     *
+     * `{{main: string, sub: Object}}`,
+     *
+     * где ключ `main` указывает на главный обработчик.
+     *
+     * Ключ `sub` указывает на объект, содержащий обработчики нажатий клавиш:
+     * каждый его ключ - ID блока-обработчика, указывающий на объект типа
+     *
+     * {btn: number, code: string},
+     *
+     * где btn - код клавиши, нажатие которой обрабатывается, code - обработчик её нажатия.
+     *
+     * @returns {{main: string, sub: Object}}
+     */
+    static workspaceToJSON(workspace) {
+        let code = Blockly.JSON.workspaceToCode(workspace);
+        let statements = Blockly.JSON.audible_args;
+
+        return {main: code, sub: statements};
+    }
+
+    /**
+     * Получить текущий код программы Blockly в нотации XML
+     *
+     * @see https://developers.google.com/blockly/guides/get-started/web
+     *
+     * @returns {string} строка, содержащая XML-код программы
+     */
+    static getXMLCode(workspace) {
+        let xml = Blockly.Xml.workspaceToDom(workspace);
+
+        return Blockly.Xml.domToText(xml);
+    }
+
+    /**
+     * Получить строку с XML-кодом состояния рабочей области Blockly
+     *
+     * @returns {string} строка, содержащая XML-представление набранного кода
+     */
+    static getXMLText(workspace) {
+        let dom = Blockly.Xml.workspaceToDom(workspace);
+        return Blockly.Xml.domToText(dom);
+    }
+
+    /**
+     * Возвратить достаточное (но не всегда необходимое) число блоков
+     * для сборки текущей последовательности блоков
+     *
+     * @returns {number} число блоков
+     */
+    static getBlockLimit(workspace) {
+        if (!workspace) {return false}
+
+        let block_count = 0;
+
+        let blocks = workspace.getAllBlocks();
+
+        let block_taken_ids = new Set();
+
+        for (let block of blocks) {
+            if (!block_taken_ids.has(block.id)) {
+                block_count += 1;
+            }
+
+            block_taken_ids.add(block.id);
+
+            for (let subblock of block.childBlocks_) {
+                /// Блок не должен быть вложенной цепочкой
+                if (subblock.nextConnection || subblock.previousConnection) {
+                    continue;
+                }
+
+                if (block_taken_ids.has(subblock.id)) {
+                    if (!subblock.isShadow_) {
+                        block_count += 1;
+                    }
+                } else  {
+                    if (!subblock.isShadow_) {
+                        block_count += 1; // maybe 2?
+                    } else {
+                        block_count += 1;
+                    }
+                }
+
+                block_taken_ids.add(subblock.id);
+            }
+        }
+
+        return block_count;
+    }
+
+    /**
+     * Возвратить значения полей, определяющих максимально допустимое количество блоков,
+     * по всем типам блоков
+     *
+     * @returns {} тип_блока: макс. кол-во
+     */
+    static getBlockLimitInputsByType(workspace) {
+        if (!workspace) {return false}
+
+        let block_counts = {};
+
+        for (let block of workspace.getAllBlocks()) {
+            for (let input of block.inputList) {
+                for (let field of input.fieldRow) {
+                    if (field.name === "MAX_COUNT") {
+                        block_counts[block.type] = parseInt(field.getValue());
+                    }
+                }
+            }
+        }
+
+        return block_counts;
+    }
+
+    /**
      * Зарегистрировать типы блоков в Blockly
      *
      * Формат входных данных см. в разделах Block Definition и Define Blocks
@@ -493,77 +617,6 @@ export default class BlocklyWrapper {
     }
 
     /**
-     * Возвратить достаточное (но не всегда необходимое) число блоков
-     * для сборки текущей последовательности блоков
-     *
-     * @returns {number} число блоков
-     */
-    getBlockLimit() {
-        if (!this.workspace) {return false}
-
-        let block_count = 0;
-
-        let blocks = this.workspace.getAllBlocks();
-
-        let block_taken_ids = new Set();
-
-        for (let block of blocks) {
-            if (!block_taken_ids.has(block.id)) {
-                block_count += 1;
-            }
-
-            block_taken_ids.add(block.id);
-
-            for (let subblock of block.childBlocks_) {
-                /// Блок не должен быть вложенной цепочкой
-                if (subblock.nextConnection || subblock.previousConnection) {
-                    continue;
-                }
-
-                if (block_taken_ids.has(subblock.id)) {
-                    if (!subblock.isShadow_) {
-                        block_count += 1;
-                    }
-                } else  {
-                    if (!subblock.isShadow_) {
-                        block_count += 1; // maybe 2?
-                    } else {
-                        block_count += 1;
-                    }
-                }
-
-                block_taken_ids.add(subblock.id);
-            }
-        }
-
-        return block_count;
-    }
-
-    /**
-     * Возвратить значения полей, определяющих максимально допустимое количество блоков,
-     * по всем типам блоков
-     *
-     * @returns {} тип_блока: макс. кол-во
-     */
-    getBlockLimitInputsByType() {
-        if (!this.workspace) {return false}
-
-        let block_counts = {};
-
-        for (let block of this.workspace.getAllBlocks()) {
-            for (let input of block.inputList) {
-                for (let field of input.fieldRow) {
-                    if (field.name === "MAX_COUNT") {
-                        block_counts[block.type] = parseInt(field.getValue());
-                    }
-                }
-            }
-        }
-
-        return block_counts;
-    }
-
-    /**
      * Установить значения полей, определяющих максимально допустимое количество блоков,
      * по всем типам блоков
      *
@@ -589,61 +642,6 @@ export default class BlocklyWrapper {
     }
 
     /**
-     * Получить текущий код программы Blockly в нотации XML
-     *
-     * @see https://developers.google.com/blockly/guides/get-started/web
-     *
-     * @returns {string} строка, содержащая XML-код программы
-     */
-    getXMLCode() {
-        let xml = Blockly.Xml.workspaceToDom(this.workspace);
-
-        return Blockly.Xml.domToText(xml);
-    }
-
-    /**
-     * Получить список обработчиков в виде объекта
-     *
-     * Обработчик - последовательность команд, которая срабатывает
-     * при нажатии на клавишу с соответствующим кодом.
-     *
-     * Главный обработчик - обработчик, срабатывающий при нажатии кнопки "Запустить".
-     *
-     * Формат списка обработчиков:
-     *
-     * `{{main: string, sub: Object}}`,
-     *
-     * где ключ `main` указывает на главный обработчик.
-     *
-     * Ключ `sub` указывает на объект, содержащий обработчики нажатий клавиш:
-     * каждый его ключ - ID блока-обработчика, указывающий на объект типа
-     *
-     * {btn: number, code: string},
-     *
-     * где btn - код клавиши, нажатие которой обрабатывается, code - обработчик её нажатия.
-     *
-     * @returns {{main: string, sub: Object}}
-     */
-    getJSONHandlers() {
-        let code = Blockly.JSON.workspaceToCode(this.workspace);
-        let statements = Blockly.JSON.audible_args;
-
-        this._lastCodeMain = code;
-
-        return {main: code, sub: statements};
-    }
-
-    /**
-     * Получить строку с XML-кодом состояния рабочей области Blockly
-     *
-     * @returns {string} строка, содержащая XML-представление набранного кода
-     */
-    getXMLText() {
-        let dom = Blockly.Xml.workspaceToDom(this.workspace);
-        return Blockly.Xml.domToText(dom);
-    }
-
-    /**
      * Задать состояние рабочей области Blockly через строку с XML-кодом
      *
      * @param text строка, содержащая XML-представление кода Blockly
@@ -666,8 +664,6 @@ export default class BlocklyWrapper {
 
     /**
      * Задать обработчик события изменения основного кода
-     *
-     * @deprecated
      *
      * @param {function} callback функция, вызывающаяся при изменении основного кода
      */

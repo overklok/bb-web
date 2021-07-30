@@ -1,4 +1,4 @@
-import Presenter, {on} from "../base/Presenter";
+import Presenter, {on, restore} from "../base/Presenter";
 import ModalView from "../views/modal/ModalView";
 import ModalModel, {UpdateModalsEvent} from "../models/ModalModel";
 import {IModalData} from "../datatypes/modal";
@@ -24,7 +24,7 @@ export default class ModalPresenter extends Presenter<ModalView> {
         this.modal.hideModal(index, modal_type);
     }
 
-    @on(UpdateModalsEvent)
+    @restore() @on(UpdateModalsEvent)
     protected updateModals() {
         this.setViewProps({
             modals: {...this.modal.getState().modals}

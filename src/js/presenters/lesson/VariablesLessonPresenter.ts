@@ -1,6 +1,6 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import LessonModel from "../../models/lesson/LessonModel";
-import ProgressModel, {ExerciseRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExerciseRunEvent} from "../../models/lesson/ProgressModel";
 import CodeModel from "../../models/common/CodeModel";
 import VariableView from "../../views/common/VariableView";
 
@@ -32,7 +32,9 @@ export default class VariablesLessonPresenter extends Presenter<VariableView.Var
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
         const variables = this.code.getState().variables;
 
-        return exercise.module_settings.code.variables.map(variable => {return {
+        const code = exercise.module_settings.code;
+
+        return !code ? [] : code.variables.map(variable => {return {
             name: variable.name,
             type: variable.type,
             value: variables[variable.name] != null ? variables[variable.name] : variable.initial_value

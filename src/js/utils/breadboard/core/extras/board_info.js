@@ -4,7 +4,21 @@ import {boundsToCoordList, buildGrid, pointsToCoordList} from "./helpers";
 
 let ard_plate_ser_num = 0;
 
-function layoutToBoardInfo(layout) {
+/**
+ * Convert generic board config to core-specific format
+ * 
+ * For core, it's required to specify only the topology and some electrical properties.
+ * 
+ * Whereas the generic format is mostly visual-oriented, some overhead required to perform such a
+ * conversion so the code here may seem confusing.
+ * 
+ * TODO: Refactor in pair with the config format
+ * 
+ * @param layout                generic board config (layout)
+ * @param no_arduino_embedded   whether to exclude arduino pin functionalty (specifically for board verification)
+ * @returns 
+ */
+function layoutToBoardInfo(layout, no_arduino_embedded=false) {
     const grid = buildGrid(layout);
 
     let cell_structure = {};
@@ -15,6 +29,10 @@ function layoutToBoardInfo(layout) {
     let cell_str_idx = 0;
 
     let minus_coords_idx = undefined;
+    let plus_coords_idx = undefined;
+
+    let arduino_remap_minus = [];
+    let arduino_remap_plus = [];
 
     for (const domain of domains) {
         const   from  = grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
@@ -112,13 +130,19 @@ function layoutToBoardInfo(layout) {
                         const coord = coords[i],
                               minus_coord = anal_minus_coords[i];
 
-                        cell_structure[cell_str_idx++] = [coord];
-                        embedded_plates.push(getArduinoPinPlate(coord, minus_coord, domain.pin_state_initial));
+                        if (no_arduino_embedded) {
+                            if (domain.pin_state_initial == 'output') arduino_remap_minus.push(coord);
+                            if (domain.pin_state_initial == 'input') arduino_remap_plus.push(coord);
+                        } else {
+                            cell_structure[cell_str_idx++] = [coord];
+                            embedded_plates.push(getArduinoPinPlate(coord, minus_coord, domain.pin_state_initial));
+                        }
                     }
 
                     break;
                 }
                 case LabelLayer.CellRoles.Plus:
+                    plus_coords_idx = cell_str_idx;
                     cell_structure[cell_str_idx++] = [{x: -1, y: from.y}, ...coords];
                     break;
                 case LabelLayer.CellRoles.Minus: {
@@ -131,6 +155,11 @@ function layoutToBoardInfo(layout) {
                 }
             }
         }
+    }
+
+    if (no_arduino_embedded) {
+        cell_structure[plus_coords_idx] = cell_structure[plus_coords_idx].concat(arduino_remap_plus);
+        cell_structure[minus_coords_idx] = cell_structure[minus_coords_idx].concat(arduino_remap_minus);
     }
 
     const point_minus = grid.auxPoint(Grid.AuxPoints.Gnd),

@@ -18,6 +18,7 @@ export type ModalRequestCallback = (action: ModalAction) => void;
 interface INestProps<P=IViewProps> {
     connector: ViewConnector;
 
+    widget_alias: string;
     widgets?: {[key: string]: Widget<any>};
     view_type: ViewType<P, any>;
     view_props: P;

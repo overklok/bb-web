@@ -8,7 +8,7 @@ export default class LogModel extends HttpModel<any> {
 
     async registerSnapshots(snapshots: any) {
         const response = await this.request(
-            'logsvc/snapshot',
+            'logs/snapshot',
             {data: snapshots, method: RequestMethod.POST}
         );
 
@@ -16,6 +16,6 @@ export default class LogModel extends HttpModel<any> {
             return this.data_source.buildURL(response.url);
         }
 
-        throw new RequestErrorEvent("Request error: " + response.message || "[unknown]");
+        throw new RequestErrorEvent({ message: "Request error: " + response.message || "[unknown]" });
     }
 }

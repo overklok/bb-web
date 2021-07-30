@@ -113,7 +113,7 @@ export default class ControlsLayer extends Layer {
         if (el) {
             evt.preventDefault();
 
-            this._callContextMenu(this._menu, {x: evt.clientX, y: evt.clientY});
+            this._callContextMenu(this._menu, {x: evt.pageX, y: evt.pageY});
         }
     }
 }

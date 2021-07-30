@@ -1,0 +1,21 @@
+/**
+ | An element that allows you to place absolute-positioned contents in any place of the page
+ | inside a nest, without blocking any underlying element and also without getting out of bounds.
+ |
+ | It is compatible with layer-nest system used here to manage page layouts.
+ */
+.cornfield {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  // using div here is a hack to enlarge priority of the selector
+  div.layer > div.nest > & {
+    pointer-events: none;
+
+    & > * {
+      pointer-events: all;
+    }
+  }
+}

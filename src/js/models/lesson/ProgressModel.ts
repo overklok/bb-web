@@ -1,15 +1,21 @@
-import {ExerciseSolution, Lesson} from "./lesson/LessonModel";
-import {ModelEvent} from "../core/base/Event";
-import {RequestMethod} from "../core/base/model/datasources/HttpDatasource";
-import HttpModel from "../core/base/model/HttpModel";
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
+import {ExerciseSolution, Lesson} from "./LessonModel";
+import {ModelEvent} from "~/js/core/base/Event";
+import {RequestMethod} from "~/js/core/base/model/datasources/HttpDatasource";
+import HttpModel from "~/js/core/base/model/HttpModel";
+
+export enum ValidationVerdictStatus {
+    Undefined = 'undefined',
+    Success = 'success',
+    Fail = 'fail',
+    Error = 'error',
+}
 
 export type ValidationVerdict = {
+    status: ValidationVerdictStatus;
     message: string;
-    blocks: string[];
-    region: object;
-    is_passed: boolean;
+    details: {
+        region?: any
+    };
 }
 
 export type ExerciseData = {
@@ -17,11 +23,11 @@ export type ExerciseData = {
 }
 
 type MissionProgress = {
-    // Current index of exercise being passed
+    // Current index of the exercise opened
     exercise_idx: number;
     // Maximum value of exercise index
     exercise_idx_last: number;
-    // Value of lastly passed exercise index
+    // Lastly passed exercise index
     exercise_idx_passed: number;
     // Maximum value of lastly passed exercise index
     exercise_idx_passed_max: number;
@@ -33,12 +39,25 @@ type MissionProgress = {
 }
 
 type Progress = {
+    // ID of the lesson opened
     lesson_id: number;
+    // Array of per-mission sub-progresses
     missions: MissionProgress[];
+    // Current index of the mission opened
     mission_idx: number;
+    // Maximum value of mission index
     mission_idx_last: number;
+    // Lastly passed mission index
+    mission_idx_passed: number;
+    // Maximum value of lastly passed mission index
+    mission_idx_passed_max: number;
+    // Maximum value of mission index user can assign to
+    // (if lock_missions is true)
     mission_idx_available: number;
+
+    // Whether to lock free exercise switching
     lock_exercises: boolean;
+    // Whether to lock free mission switching
     lock_missions: boolean;
 }
 
@@ -83,6 +102,8 @@ export default class ProgressModel extends HttpModel<Progress> {
         missions: [],
         mission_idx: undefined,
         mission_idx_last: undefined,
+        mission_idx_passed: undefined,
+        mission_idx_passed_max: undefined,
         mission_idx_available: undefined,
         lock_exercises: false,
         lock_missions: false,
@@ -105,6 +126,8 @@ export default class ProgressModel extends HttpModel<Progress> {
             missions: [],
             mission_idx: -1,
             mission_idx_last: 0,
+            mission_idx_passed: -1,
+            mission_idx_passed_max: -1,
             mission_idx_available: 0,
             lock_exercises: this.state.lock_exercises,
             lock_missions: this.state.lock_missions,
@@ -126,6 +149,10 @@ export default class ProgressModel extends HttpModel<Progress> {
         this.setState(progress);
 
         this.emit(new LessonRunEvent());
+    }
+
+    public isLessonLoaded(): boolean {
+        return this.getState().lesson_id != null;
     }
 
     /**
@@ -336,16 +363,16 @@ export default class ProgressModel extends HttpModel<Progress> {
         if (this.in_progress) return;
 
         if (this.state.mission_idx < this.state.mission_idx_last) {
-            this.state.mission_idx += 1;
-            this.state.mission_idx_available += 1;
+            // this.state.mission_idx += 1;
+            this.state.mission_idx_available = this.state.mission_idx + 1;
             // this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
 
             this.emit(new MissionPassEvent({
-                mission_idx: this.state.mission_idx,
+                mission_idx: this.state.mission_idx + 1,
             }));
         } else {
             this.emit(new MissionPassEvent({
-                mission_idx: this.state.mission_idx,
+                mission_idx: this.state.mission_idx + 1,
             }));
             // this.emit(new LessonPassEvent()); TODO: maybe needed, maybe not
         }
@@ -356,43 +383,35 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         this.in_progress = true;
 
+        if (!!solution.board != !!solution.board_info) {
+            throw new Error("`board_info` is required to provide with the `board`");
+        }
+
         this.emit(new ExerciseSolutionCommittedEvent());
 
-        this.request(`/coursesvc/check/${exercise_id}`, {
+        this.request(`/courses/check/${exercise_id}`, {
             method: RequestMethod.POST,
             data: {
                 handlers: solution.code || {},
-                board: solution.board
+                board: solution.board,
+                board_info: solution.board_info,
+                board_layout_name: solution.board_layout_name
             }
         }).then(res => {
-            if (res.error) {
-                console.error('Error', res);
-
-                this.in_progress = false;
-                this.emit(new ExerciseSolutionValidatedEvent({
-                    error: res.error.message,
-                    verdict: undefined
-                }));
-
-                return;
-            }
-
             const verdict: ValidationVerdict = {
-                is_passed: res.status === "OK",
-                message: res.html,
-                blocks: res.blocks,
-                region: res.data ? res.data.lane : null,
+                message: res.message,
+                status: res.status,
+                details: {}
             };
 
             this.in_progress = false;
-            this.emit(new ExerciseSolutionValidatedEvent({
-                error: undefined,
-                verdict: verdict
-            }));
+
+            this.emit(new ExerciseSolutionValidatedEvent({error: undefined, verdict: verdict}));
         }).catch(err => {
             console.error('Error', err);
 
             this.in_progress = false;
+
             this.emit(new ExerciseSolutionValidatedEvent({
                 error: err.message,
                 verdict: undefined

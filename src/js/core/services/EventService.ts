@@ -152,6 +152,10 @@ export default class EventService extends IEventService {
         );
 
         if (errors.length > 0) {
+            for (const error of errors) {
+                console.error(error);
+            }
+
             throw new EventHandlingError('Some handlers are failed', errors);
         }
     }

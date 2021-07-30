@@ -1,4 +1,3 @@
-import Model from "./Model";
 import HttpDatasource, {Query, RequestMethod} from "./datasources/HttpDatasource";
 import HttpModel from "./HttpModel";
 
@@ -25,12 +24,12 @@ export default abstract class CRUDHttpModel<MS> extends HttpModel<MS, HttpDataso
         return this.data_source.host_name;
     }
 
-    async list(params: PathParams = {}, query?: Query) {
+    async list(params: PathParams = {}, query?: Query): Promise<any[]> {
         if (!this.schema()[CRUDAction.List]) throw Error("Batch reading is not available for this model");
 
         const path = this.schema()[CRUDAction.List](params);
 
-        return await this.request(path, {query, method: RequestMethod.GET});
+        return await this.request(path, {query, method: RequestMethod.GET}) as [];
     }
 
     async read(params: PathParams, query?: Query) {

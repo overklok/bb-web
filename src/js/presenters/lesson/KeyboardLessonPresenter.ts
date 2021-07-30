@@ -2,7 +2,7 @@ import LessonModel from "../../models/lesson/LessonModel";
 import KeyboardView from "../../views/common/KeyboardView";
 import Presenter, {on, restore} from "../../core/base/Presenter";
 import KeyboardModel, {KeySeqMatchEvent, KeyUpEvent} from "../../core/models/KeyboardModel";
-import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExerciseRunEvent, LessonRunEvent} from "../../models/lesson/ProgressModel";
 
 
 export default class KeyboardLessonPresenter extends Presenter<KeyboardView.KeyboardView> {

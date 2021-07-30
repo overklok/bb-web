@@ -5,11 +5,11 @@ import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/ba
 import {Layout} from "../../utils/breadboard/core/types";
 
 namespace BoardView {
-    export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {}
-    export class LayoutChangeEvent extends ViewEvent<LayoutChangeEvent> {}
     export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
     export class ShortCircuitStartEvent extends ViewEvent<ShortCircuitStartEvent> {}
     export class ShortCircuitEndEvent extends ViewEvent<ShortCircuitEndEvent> {}
+    export class LayoutChangeEvent extends ViewEvent<LayoutChangeEvent> {layout_name: string}
+    export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {plates: any[]}
 
     export interface BoardViewProps extends IViewProps {
         schematic?: boolean;
@@ -27,7 +27,7 @@ namespace BoardView {
             verbose: false,
             debug: false,
             layouts: {},
-            layout_name: 'default'
+            layout_name: 'v5x'
         }
 
         private readonly bb: Breadboard;
@@ -65,14 +65,17 @@ namespace BoardView {
             this.bb.setReadOnly(readonly);
         }
 
+        @deferUntilMounted
         setVerbose(verbose: boolean = true) {
             this.bb.switchVerbose(verbose);
         }
 
+        @deferUntilMounted
         setDebug(debug: boolean = true) {
             this.bb.switchDebug(debug);
         }
 
+        @deferUntilMounted
         setRandom(protos: { type: string, properties: any, quantity: number }[],
                   size_mid?: number,
                   size_deviation?: number,
@@ -89,15 +92,15 @@ namespace BoardView {
             // }
         }
 
-        getLayoutName() {
-            return this.bb.getLayoutName();
-        }
-
+        /**
+         * @deprecated
+         */
         getPlates() {
             return this.bb.getPlates();
         }
 
-        setPlates(plates: object[]) {
+        @deferUntilMounted
+        setPlates(plates: Array<object>) {
             if (plates == null) throw new TypeError("Plates is not defined");
 
             this.bb.clearRegions();
@@ -105,7 +108,8 @@ namespace BoardView {
             return this.bb.setPlates(plates);
         }
 
-        highlightErrorPlates(plate_ids: number[]) {
+        @deferUntilMounted
+        highlightErrorPlates(plate_ids: Array<string>) {
             if (!plate_ids) {
                 return true
             }
@@ -113,18 +117,22 @@ namespace BoardView {
             this.bb.highlightPlates(plate_ids);
         }
 
+        @deferUntilMounted
         setPlateState(plate_id: number, state: object) {
             this.bb.setPlateState(plate_id, state);
         }
 
-        setCurrents(threads: object[]) {
+        @deferUntilMounted
+        setCurrents(threads: Array<object>) {
             this.bb.setCurrents(threads);
         }
 
-        setPinsValues(values: ['input'|'output', number][]) {
+        @deferUntilMounted
+        setPinsValues(values: Array<object>) {
             this.bb.setPinsValues(values)
         }
 
+        @deferUntilMounted
         highlightRegion(region: object, clear: boolean) {
             if (!region) {
                 return false;
@@ -134,6 +142,7 @@ namespace BoardView {
             this.bb.highlightRegion(region.from, region.to, clear, null);
         }
 
+        @deferUntilMounted
         clearRegions() {
             this.bb.clearRegions();
         }
@@ -143,9 +152,9 @@ namespace BoardView {
         }
 
         private setup() {
-            this.bb.onChange(() => this.emit(new BoardChangeEvent({})));
             this.bb.onDragStart(() => this.emit(new PlateDragStartEvent({})));
-            this.bb.onLayoutChange(() => this.emit(new LayoutChangeEvent({})));
+            this.bb.onChange(() => this.emit(new BoardChangeEvent({plates: this.bb.getPlates()})));
+            this.bb.onLayoutChange((layout_name: string) => this.emit(new LayoutChangeEvent({layout_name})));
             this.bb.onShortCircuitStart(() => this.emit(new ShortCircuitStartEvent({})));
             this.bb.onShortCircuitEnd(() => this.emit(new ShortCircuitEndEvent({})));
         }

@@ -5,8 +5,9 @@ import JSONBlocks       from '../../utils/blockly/extras/blocks';
 import JSONGenerators   from '../../utils/blockly/extras/generators';
 import {AllProps, deferUntilMounted, IViewProps} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
+import Blockly from "blockly";
 
-export class BlocklyCodeChangeEvent extends ViewEvent<BlocklyCodeChangeEvent> {}
+export class BlocklyCodeChangeEvent extends ViewEvent<BlocklyCodeChangeEvent> {workspace: Blockly.Workspace}
 
 export interface BlocklyViewProps extends IViewProps {
     edit_limits: boolean;
@@ -21,12 +22,12 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
         zoom: 0.7,
     }
 
+    // TODO: Move to Model
+    private static PauseDuration: number = 0.2;
+
     private readonly blockly: BlocklyWrapper;
 
     private block_types: { [p: string]: number };
-
-    // TODO: Move to Model
-    private readonly pause_duration: number;
 
     constructor(props: AllProps<BlocklyViewProps>) {
         super(props);
@@ -36,8 +37,6 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
         this.blockly.extra_fields = this.props.edit_limits;
         this.blockly.registerBlockTypes(JSONBlocks);
         this.blockly.registerGenerators(JSONGenerators);
-
-        this.pause_duration = 0.2;
 
         this.setup();
     }
@@ -56,47 +55,6 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
         this.blockly.eject();
     }
 
-    public getMainChain() {
-        let chains = this.blockly.getJSONHandlers();
-
-        let code = BlocklyView.preprocessCode(chains.main);
-
-        return {commands: code, btn: "None", pause: this.pause_duration};
-    }
-
-    /**
-     * Возвратить программу
-     *
-     * Формат возвращаемого объекта:
-     *      - ключ: `main`/ ID блока-обработчика
-     *      - значение: {commands: {Array}, button: {number}}, где `commands` - JSON-код программы, `button` - код клавиши
-     *
-     * @returns {Object} основной код и коды обработчиков
-     */
-    public getChainset() {
-        let chains: any = null;
-
-        try {
-            let _handlers: any = this.blockly.getJSONHandlers();
-
-            let code_main = BlocklyView.preprocessCode(_handlers.main);
-
-            chains = {main: {commands: code_main, btn: "None", pause: this.pause_duration}};
-
-            for (let block_id of Object.keys(_handlers.sub)) {
-                chains[block_id] = {
-                    commands: BlocklyView.preprocessCode(_handlers.sub[block_id].code),
-                    btn: _handlers.sub[block_id].btn,
-                    pause: this.pause_duration
-                }
-            }
-        } catch (err) {
-            return chains;
-        }
-
-        return chains;
-    }
-
     /**
      * Установить используемые блоки
      *
@@ -112,19 +70,12 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     }
 
     /**
-     * Возвратить используемые блоки
-     */
-    public getBlockTypes() {
-        return this.blockly.getBlockTypes();
-    }
-
-    /**
      * Подсветить блок
      *
      * Подсвеченный ранее блок гаснет.
      * Если в качестве идентификатора задать null, только гаснет подсвеченный ранее блок
      *
-     * @param {string|null} block_id идентификатор блока
+     * @param block_id идентификатор блока
      */
     @deferUntilMounted
     public highlightBlock(block_id: string|null) {
@@ -134,7 +85,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     /**
      * Выделить ошибочные блоки
      *
-     * @param {Array<string>} block_ids идентификаторы блоков
+     * @param block_ids идентификаторы блоков
      */
     @deferUntilMounted
     public highlightErrorBlocks(block_ids: string[]) {
@@ -154,25 +105,14 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     /**
      * Установить предел количества блоков
      *
-     * @param {number} [max_block_count=0] максимальное количество блоков
+     * @param max_block_count максимальное количество блоков
      */
     @deferUntilMounted
-    public setBlockLimit(max_block_count=0) {
+    public setBlockLimit(max_block_count: number=0) {
         this.blockly.updateBlockLimit(max_block_count);
     }
 
-    /**
-     * Возвратить значения полей ввода пределов количества блоков по типам
-     *
-     * Формат возвращаемого объекта:
-     *      - ключ:     {string} тип блока
-     *      - значение: {number} предел количества блоков по типу
-     */
-    public getBlockLimitInputsByType(): {[block_type: string]: number} {
-        return this.blockly.getBlockLimitInputsByType();
-    }
-
-    /**
+    /*e
      * Установить значения полей ввода пределов количества блоков по типам
      *
      * @param block_counts - объект, в котором:
@@ -182,19 +122,6 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
     @deferUntilMounted
     public setBlockLimitInputsByType(block_counts: {[block_type: string]: number}) {
         this.blockly.setBlockLimitInputsByType(block_counts);
-    }
-
-    /**
-     * Получить строку с XML-кодом состояния рабочей области Blockly
-     *
-     * @returns {string} строка, содержащая XML-представление набранного кода
-     */
-    public getCodeTree(): string {
-        return this.blockly.getXMLText();
-    }
-
-    public getBlockLimit(): number {
-        return this.blockly.getBlockLimit();
     }
 
     /**
@@ -242,7 +169,72 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
 
     private setup() {
         // TODO: Throttle
-        this.blockly.onChange(() => this.emit(new BlocklyCodeChangeEvent({})));
+        this.blockly.onChange(
+            () => this.emit(
+                new BlocklyCodeChangeEvent({
+                    workspace: this.blockly.workspace
+                })
+            )
+        );
+    }
+
+    /**
+     * Возвратить программу
+     *
+     * Формат возвращаемого объекта:
+     *      - ключ: `main`/ ID блока-обработчика
+     *      - значение: {commands: {Array}, button: {number}}, где `commands` - JSON-код программы, `button` - код клавиши
+     *
+     * @returns {Object} основной код и коды обработчиков
+     */
+    public static getChainset(workspace: Blockly.Workspace) {
+        let chains: any = null;
+
+        try {
+            let _handlers: any = BlocklyWrapper.workspaceToJSON(workspace);
+
+            let code_main = BlocklyView.preprocessCode(_handlers.main);
+
+            chains = {main: {commands: code_main, btn: "None", pause: BlocklyView.PauseDuration}};
+
+            for (let block_id of Object.keys(_handlers.sub)) {
+                chains[block_id] = {
+                    commands: BlocklyView.preprocessCode(_handlers.sub[block_id].code),
+                    btn: _handlers.sub[block_id].btn,
+                    pause: BlocklyView.PauseDuration
+                }
+            }
+        } catch (err) {
+            return chains;
+        }
+
+        return chains;
+    }
+
+    /**
+     * Получить строку с XML-кодом состояния рабочей области Blockly
+     *
+     * @returns {string} строка, содержащая XML-представление набранного кода
+     */
+    public static getCodeTree(workspace: Blockly.Workspace): string {
+        return BlocklyWrapper.getXMLText(workspace);
+    }
+
+    /**
+     */
+    public static getBlockLimit(workspace: Blockly.Workspace): number {
+        return BlocklyWrapper.getBlockLimit(workspace);
+    }
+
+    /**
+     * Возвратить значения полей ввода пределов количества блоков по типам
+     *
+     * Формат возвращаемого объекта:
+     *      - ключ:     {string} тип блока
+     *      - значение: {number} предел количества блоков по типу
+     */
+    public static getBlockLimitInputsByType(workspace: Blockly.Workspace): {[block_type: string]: number} {
+        return BlocklyWrapper.getBlockLimitInputsByType(workspace);
     }
 
     private static preprocessCode(code: string): any {

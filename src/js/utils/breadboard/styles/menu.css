@@ -41,6 +41,7 @@
 .bb-menu-item-text {
     font-family: 'IBM Plex Sans', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
     padding: 2px;
+    line-height: 1em;
 }
 
 .bb-menu-item:hover {
@@ -67,6 +68,7 @@
     background-color: #d1d1d1;
     border-radius: 4px;
     margin: 0 2px;
+    line-height: 1em;
 }
 
 .bb-menu-item_disabled .bb-menu-item-shortcut {

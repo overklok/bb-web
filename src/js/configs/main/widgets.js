@@ -1,98 +1,101 @@
-import OverlayViewComposer from "../../core/base/view/viewcomposers/OverlayViewComposer";
+import OverlayViewComposer from "~/js/core/base/view/viewcomposers/OverlayViewComposer";
 
 /* Generic Views */
-import AlertView        from "../../core/views/modal/AlertView";
-import ModalView        from "../../core/views/modal/ModalView";
-import ToastView        from "../../core/views/modal/ToastView";
-import LayoutView       from "../../core/views/layout/LayoutView";
+import AlertView        from "~/js/core/views/modal/AlertView";
+import ModalView        from "~/js/core/views/modal/ModalView";
+import ToastView        from "~/js/core/views/modal/ToastView";
+import LayoutView       from "~/js/core/views/layout/LayoutView";
 
 /* Application-specific Views */
-import BoardView        from "js/views/common/BoardView";
-import BlocklyView      from "js/views/common/BlocklyView";
-import KeyboardView     from "js/views/common/KeyboardView";
-import TopbarView       from "js/views/controls/TopbarView";
-import LaunchView       from "js/views/controls/LaunchView";
-import RichTextView     from "js/views/common/RichTextView";
-import HomeView         from "js/views/common/HomeView";
-import VariableView     from "js/views/common/VariableView";
-import {SettingsView}   from "js/views/controls/SettingsView";
+import BoardView        from "~/js/views/common/BoardView";
+import BlocklyView      from "~/js/views/common/BlocklyView";
+import KeyboardView     from "~/js/views/common/KeyboardView";
+import TopbarView       from "~/js/views/controls/TopbarView";
+import LaunchView       from "~/js/views/controls/LaunchView";
+import RichTextView     from "~/js/views/common/RichTextView";
+import HomeView         from "~/js/views/common/HomeView";
+import VariableView     from "~/js/views/common/VariableView";
+import {SettingsView}   from "~/js/views/controls/SettingsView";
 
 /* Basic Presenters */
-import AlertPresenter           from "../../core/presenters/AlertPresenter";
-import LayoutPresenter          from "../../core/presenters/LayoutPresenter";
-import ModalPresenter           from "../../core/presenters/ModalPresenter";
-import ToastPresenter           from "../../core/presenters/ToastPresenter";
-import BoardPresenter           from "../../presenters/common/BoardPresenter";
-import BlocklyCodePresenter     from "../../presenters/common/BlocklyPresenter";
-import TopbarPresenter          from "../../presenters/controls/TopbarPresenter";
-import LaunchPresenter          from "../../presenters/controls/LaunchPresenter";
-import SettingsPresenter        from "../../presenters/controls/SettingsPresenter";
-import LessonTaskPresenter      from "../../presenters/lesson/TaskLessonPresenter";
-import LessonMenuPresenter      from "../../presenters/lesson/MenuLessonPresenter";
+import AlertPresenter           from "~/js/core/presenters/AlertPresenter";
+import LayoutPresenter          from "~/js/core/presenters/LayoutPresenter";
+import ModalPresenter           from "~/js/core/presenters/ModalPresenter";
+import ToastPresenter           from "~/js/core/presenters/ToastPresenter";
+import BoardPresenter           from "~/js/presenters/common/BoardPresenter";
+import BlocklyCodePresenter     from "~/js/presenters/common/BlocklyPresenter";
+import TopbarPresenter          from "~/js/presenters/controls/TopbarPresenter";
+import LaunchPresenter          from "~/js/presenters/controls/LaunchPresenter";
+import SettingsPresenter        from "~/js/presenters/controls/SettingsPresenter";
+import LessonTaskPresenter      from "~/js/presenters/lesson/TaskLessonPresenter";
+import LessonMenuPresenter      from "~/js/presenters/lesson/MenuLessonPresenter";
 
-/* Domain-specific Presenters */
-import LayoutLessonPresenter            from "../../presenters/lesson/LayoutLessonPresenter";
-import BlocklyLessonPresenter           from "../../presenters/lesson/BlocklyLessonPresenter";
-import LaunchLessonPresenter            from "../../presenters/lesson/LaunchLessonPresenter";
-import BoardLessonPresenter             from "../../presenters/lesson/BoardLessonPresenter";
-import PopoverContentLessonPresenter    from "../../presenters/lesson/PopoverContentLessonPresenter";
-import LessonKeyboardPresenter          from "../../presenters/lesson/KeyboardLessonPresenter";
-import VariableLessonPresenter          from "../../presenters/lesson/VariablesLessonPresenter";
-import PopoverLessonPresenter           from "../../presenters/lesson/PopoverLessonPresenter";
-import AlertLessonPresenter             from "../../presenters/lesson/AlertLessonPresenter";
-import SettingsModalPresenter           from "../../presenters/controls/SettingsModalPresenter";
+/* App-specific Presenters */
+import LayoutLessonPresenter            from "~/js/presenters/lesson/LayoutLessonPresenter";
+import BlocklyLessonPresenter           from "~/js/presenters/lesson/BlocklyLessonPresenter";
+import LaunchLessonPresenter            from "~/js/presenters/lesson/LaunchLessonPresenter";
+import BoardLessonPresenter             from "~/js/presenters/lesson/BoardLessonPresenter";
+import PopoverContentLessonPresenter    from "~/js/presenters/lesson/PopoverContentLessonPresenter";
+import LessonKeyboardPresenter          from "~/js/presenters/lesson/KeyboardLessonPresenter";
+import VariableLessonPresenter          from "~/js/presenters/lesson/VariablesLessonPresenter";
+import PopoverLessonPresenter           from "~/js/presenters/lesson/PopoverLessonPresenter";
+import AlertLessonPresenter             from "~/js/presenters/lesson/AlertLessonPresenter";
+import SettingsModalPresenter           from "~/js/presenters/controls/SettingsModalPresenter";
 
-export default {
-    composer: OverlayViewComposer,
-    root: [
-        {view_type: LayoutView, presenter_types: [LayoutPresenter, LayoutLessonPresenter]},
-        {view_type: ToastView, presenter_types: [ToastPresenter]},
-        {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter, SettingsModalPresenter]},
-        {view_type: AlertView, presenter_types: [AlertPresenter, AlertLessonPresenter]},
-    ],
-    widgets: {
-        courses: {
-            view_type: HomeView.HomeView,
-            presenter_types: [LessonMenuPresenter],
-        },
-        task: {
-            view_type: RichTextView.RichTextView,
-            presenter_types: [LessonTaskPresenter],
-        },
-        launcher: {
-            view_type: LaunchView.LaunchView,
-            presenter_types: [LaunchPresenter, LaunchLessonPresenter]
-        },
-        navbar: {
-            view_type: TopbarView.TopbarView,
-            presenter_types: [TopbarPresenter],
-            nest_style: {overflow: 'hidden'}
-        },
-        board: {
-            view_type: BoardView.BoardView,
-            presenter_types: [BoardPresenter, BoardLessonPresenter],
-            view_props: {readonly: true}
-        },
-        blockly: {
-            view_type: BlocklyView,
-            presenter_types: [BlocklyCodePresenter, BlocklyLessonPresenter],
-        },
-        variables: {
-            view_type: VariableView.VariableView,
-            presenter_types: [VariableLessonPresenter],
-        },
-        keyboard: {
-            view_type: KeyboardView.KeyboardView,
-            presenter_types: [LessonKeyboardPresenter],
-            nest_style: {overflow: 'hidden'}
-        },
-        popover_content: {
-            view_type: RichTextView.RichTextView,
-            presenter_types: [PopoverContentLessonPresenter],
-        },
-        settings: {
-            view_type: SettingsView.SettingsView,
-            presenter_types: [SettingsPresenter],
-        },
+export default function(no_menu) {
+    return {
+        composer: OverlayViewComposer,
+        root: [
+            {view_type: LayoutView, presenter_types: [LayoutPresenter, LayoutLessonPresenter]},
+            {view_type: ToastView, presenter_types: [ToastPresenter]},
+            {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter, SettingsModalPresenter]},
+            {view_type: AlertView, presenter_types: [AlertPresenter, AlertLessonPresenter]},
+        ],
+        widgets: {
+            courses: {
+                view_type: HomeView.HomeView,
+                presenter_types: [LessonMenuPresenter],
+            },
+            task: {
+                view_type: RichTextView.RichTextView,
+                presenter_types: [LessonTaskPresenter],
+            },
+            launcher: {
+                view_type: LaunchView.LaunchView,
+                presenter_types: [LaunchPresenter, LaunchLessonPresenter]
+            },
+            navbar: {
+                view_type: TopbarView.TopbarView,
+                presenter_types: [TopbarPresenter],
+                view_props: {no_menu},
+                nest_style: {overflow: 'hidden'}
+            },
+            board: {
+                view_type: BoardView.BoardView,
+                presenter_types: [BoardPresenter, BoardLessonPresenter],
+                view_props: {readonly: true}
+            },
+            blockly: {
+                view_type: BlocklyView,
+                presenter_types: [BlocklyCodePresenter, BlocklyLessonPresenter],
+            },
+            variables: {
+                view_type: VariableView.VariableView,
+                presenter_types: [VariableLessonPresenter],
+            },
+            keyboard: {
+                view_type: KeyboardView.KeyboardView,
+                presenter_types: [LessonKeyboardPresenter],
+                nest_style: {overflow: 'hidden'}
+            },
+            popover_content: {
+                view_type: RichTextView.RichTextView,
+                presenter_types: [PopoverContentLessonPresenter],
+            },
+            settings: {
+                view_type: SettingsView.SettingsView,
+                presenter_types: [SettingsPresenter],
+            },
+        }
     }
 }

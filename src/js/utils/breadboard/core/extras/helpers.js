@@ -182,3 +182,17 @@ export function comparePlates(layout, plate1, plate2) {
 
     return PlateLayer.comparePlates(svg, grid, plate1, plate2);
 }
+
+export function getAbsolutePosition(element) {
+    let absX = 0,
+        absY = 0;
+
+    do {
+        absX += element.offsetLeft;
+        absY += element.offsetTop;
+
+        element = element.offsetParent;
+    } while ( element )
+
+    return {x: absX, y: absY};
+}

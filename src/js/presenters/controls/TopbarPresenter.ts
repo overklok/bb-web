@@ -3,7 +3,7 @@ import Presenter, {on, restore} from "../../core/base/Presenter";
 import ModalModel from "../../core/models/ModalModel";
 import LessonModel from "../../models/lesson/LessonModel";
 import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsModel";
-import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/ProgressModel";
+import ProgressModel, {ExercisePassEvent, ExerciseRunEvent, LessonRunEvent} from "../../models/lesson/ProgressModel";
 import {BoardStatusEvent} from "../../models/common/BoardModel";
 import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
 import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";

@@ -6,7 +6,7 @@
 import { ModelEvent } from "../../core/base/Event";
 import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
 import Model, { ModelState } from "../../core/base/model/Model";
-import { ValidationVerdict } from "../ProgressModel";
+import { ValidationVerdict } from "../lesson/ProgressModel";
 
 interface AdminCheckModelState extends ModelState {}
 

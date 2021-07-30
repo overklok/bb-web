@@ -68,7 +68,7 @@ module.exports = (env, argv) => {
             extensions: ['.tsx', '.ts', '.js'],
             modules: [path.resolve(__dirname, './src'), 'node_modules'],
             alias: {
-                root: path.join(__dirname, 'src'),
+                // JS-only rules. TS rules is in tsconfig.json:compilerOptions.paths
                 '~': path.resolve(__dirname, "src"),
             }
         },
@@ -203,48 +203,49 @@ function getHtmlIndexFile(env) {
 }
 
 function getCopypaths(env, is_dev, no_copy) {
+    let settings = [];
+
     if (!dotenv.parsed || no_copy) {
         console.warn("Nothing to copy.");
-        return [];
+    } else {
+        settings = [
+            {
+                enable: env.main === true,
+                paths: [
+                    dotenv.parsed.PATH_DIST_MAIN,
+                ],
+                entry: 'main'
+            },
+            {
+                enable: env.board === true,
+                paths: [
+                    dotenv.parsed.PATH_DIST_BOARD,
+                    dotenv.parsed.PATH_DIST_BOARD_SOCK,
+                    dotenv.parsed.PATH_DIST_BOARD_ADMIN
+                ],
+                entry: 'board'
+            },
+            {
+                enable: env.blockly === true,
+                paths: [
+                    dotenv.parsed.PATH_DIST_BLOCKLY_ADMIN
+                ],
+                entry: 'blockly'
+            },
+            {
+                enable: env.monkey === true,
+                paths: [dotenv.parsed.PATH_DIST_MONKEY],
+                entry: 'monkey'
+            },
+            {
+                enable: env.playground === true,
+                paths: [dotenv.parsed.PATH_DIST_PLAYGROUND],
+                entry: 'playground'
+            }
+        ]
+
+        console.log("Copy settings", settings);
     }
-
-    const settings = [
-        {
-            enable: env.main === true,
-            paths: [
-                dotenv.parsed.PATH_DIST_MAIN,
-            ],
-            entry: 'main'
-        },
-        {
-            enable: env.board === true,
-            paths: [
-                dotenv.parsed.PATH_DIST_BOARD,
-                dotenv.parsed.PATH_DIST_BOARD_SOCK,
-                dotenv.parsed.PATH_DIST_BOARD_ADMIN
-            ],
-            entry: 'board'
-        },
-        {
-            enable: env.blockly === true,
-            paths: [
-                dotenv.parsed.PATH_DIST_BLOCKLY_ADMIN
-            ],
-            entry: 'blockly'
-        },
-        {
-            enable: env.monkey === true,
-            paths: [dotenv.parsed.PATH_DIST_MONKEY],
-            entry: 'monkey'
-        },
-        {
-            enable: env.playground === true,
-            paths: [dotenv.parsed.PATH_DIST_PLAYGROUND],
-            entry: 'playground'
-        }
-    ]
-
-    console.log("Copy settings", settings);
 
     // Copy paths
     let copypaths = [];
@@ -285,10 +286,15 @@ function getCopypaths(env, is_dev, no_copy) {
         }
     }
 
-    if (env.main === true && dotenv.parsed.PATH_DIST_MAIN) {
+    if (env.main === true && dotenv.parsed && dotenv.parsed.PATH_DIST_MAIN) {
+        copypaths = [...copypaths,
+            {from: './src/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts', force: true},
+        ];
+    }
+
+    if (env.main === true) {
         copypaths = [...copypaths,
             {from: './src/fonts/',          to: './fonts', force: true},
-            {from: './src/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts', force: true},
         ];
     }
 
