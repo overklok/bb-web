@@ -12,6 +12,9 @@ require("../../../css/logo.less");
 require("../../../css/core/list.less");
 require("../../../css/core/pave.less");
 
+// passed by DefinePlugin in Webpack config
+declare const __VERSION__: string;
+
 interface Lesson {
     id: number;
     name: string;
@@ -49,6 +52,8 @@ namespace HomeView {
         }
 
         render(): React.ReactNode {
+            const ver = 'v' + __VERSION__.split('/')[1].split('.').slice(0, 3).join('.');
+
             return (
                 <div className="pave">
                     <div className="home-header">
@@ -59,6 +64,10 @@ namespace HomeView {
                         <TransitionGroup component={null}>
                             {this.renderCourses()}
                         </TransitionGroup>
+                    </div>
+
+                    <div className="home-version">
+                        {ver}
                     </div>
                 </div>
             )
