@@ -4,21 +4,25 @@ import AdminCodeModel, {
     BlockTypeLimitsUpdatedEvent,
     CodeXmlUpdatedEvent,
 } from "../../models/common/AdminCodeModel";
+import Blockly from "blockly";
 
 export default class AdminBlocklyPresenter extends Presenter<BlocklyView> {
     private model: AdminCodeModel;
+    private workspace: Blockly.Workspace;
 
     public getInitialProps() {
         this.model = this.getModel(AdminCodeModel);
     }
 
     @on(BlocklyCodeChangeEvent)
-    private onUserCodeChange() {
-        const chainset = this.view.getChainset(),
-              xml = this.view.getCodeTree(),
-              limit = this.view.getBlockLimit();
+    private onUserCodeChange(evt: BlocklyCodeChangeEvent) {
+        this.workspace = evt.workspace;
 
-        const block_type_limits = this.view.getBlockLimitInputsByType();
+        const chainset = BlocklyView.getChainset(evt.workspace),
+              xml = BlocklyView.getCodeTree(evt.workspace),
+              limit = BlocklyView.getBlockLimit(evt.workspace);
+
+        const block_type_limits = BlocklyView.getBlockLimitInputsByType(evt.workspace);
 
         this.model.setUserCode(xml, chainset, limit, block_type_limits);
     }
@@ -38,11 +42,13 @@ export default class AdminBlocklyPresenter extends Presenter<BlocklyView> {
     }
 
     private setModelData() {
-        const chainset = this.view.getChainset(),
-              xml = this.view.getCodeTree(),
-              limit = this.view.getBlockLimit();
+        if (!this.workspace) return;
 
-        const block_type_limits = this.view.getBlockLimitInputsByType();
+        const chainset = BlocklyView.getChainset(this.workspace),
+              xml = BlocklyView.getCodeTree(this.workspace),
+              limit = BlocklyView.getBlockLimit(this.workspace);
+
+        const block_type_limits = BlocklyView.getBlockLimitInputsByType(this.workspace);
 
         this.model.setCode(xml, chainset, limit, block_type_limits);
     }

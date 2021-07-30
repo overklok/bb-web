@@ -24,9 +24,8 @@ export default class BlocklyLessonPresenter extends Presenter<BlocklyView> {
     }
 
     @on(BlocklyCodeChangeEvent)
-    private saveMissionCode() {
-        const code = this.view.getCodeTree();
-
+    private saveMissionCode(evt: BlocklyCodeChangeEvent) {
+        const code = BlocklyView.getCodeTree(evt.workspace);
         this.progress.setMissionData({code});
     }
 
