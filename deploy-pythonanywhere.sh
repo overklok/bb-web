@@ -22,11 +22,29 @@ cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/courses
 cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/courses/static/admin/vendor/admin-board/board.js
 cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses/static/admin/vendor/admin-board/board.css
 
+# srv-dev
+cd /home/overklok/tapanda/ch-board/srv-dev/app || exit
+
+cp -r /home/overklok/tapanda/ch-board/jsapp/dist/fonts    ./tapanda/apps/frontend/static/frontend/app/fonts/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.js     ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/main.css    ./tapanda/apps/frontend/static/frontend/app/
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.js  ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/blockly.css ./tapanda/apps/courses/static/admin/vendor/admin-blockly/blockly.css
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.js    ./tapanda/apps/courses/static/admin/vendor/admin-board/board.js
+cp /home/overklok/tapanda/ch-board/jsapp/dist/board.css   ./tapanda/apps/courses/static/admin/vendor/admin-board/board.css
+
 # srv-main
 workon bb-srv-main
 cd /home/overklok/tapanda/ch-board/srv-main/app || exit
 python manage.py collectstatic --no-input
 touch /var/www/board_tapanda_ru_wsgi.py
+deactivate
+
+# srv-dev
+workon bb-srv-dev
+cd /home/overklok/tapanda/ch-board/srv-dev/app || exit
+python manage.py collectstatic --no-input
+touch /var/www/dev_tapanda_ru_wsgi.py
 deactivate
 
 # hooks/post-receive (+x):
