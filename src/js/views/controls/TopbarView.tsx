@@ -38,7 +38,8 @@ export const enum MenuItem {
     Lessons = 'lessons',
     Settings = 'settings',
     Developer = 'developer',
-    Execute = 'execute'
+    Execute = 'execute',
+    About = 'about',
 }
 
 namespace TopbarView {
@@ -284,6 +285,9 @@ namespace TopbarView {
                         </div>
                     </div>
                     <div className="navbar__section">
+                        <i className="fa fa-exclamation-triangle" style={{cursor: 'pointer'}} onClick={() => this.chooseMenuItem(MenuItem.About)}></i>
+                    </div>
+                    <div className="navbar__section">
                         <StatusIndicator status={this.props.status} />
                     </div>
                 </div>
@@ -305,6 +309,9 @@ namespace TopbarView {
                     </div>
                     <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Settings)}>
                         Настройки
+                    </div>
+                    <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.About)}>
+                        О программе
                     </div>
                     {/*<div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Developer)}>*/}
                     {/*    Разработчик*/}

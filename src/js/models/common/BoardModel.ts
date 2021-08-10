@@ -376,7 +376,7 @@ interface ErrorData {
 }
 
 export class ServerGreeting {
-    version: string;
+    version: { core: (number|string)[], client: (number|string)[], comm: (number|string)[] }
     is_editable: boolean;
 }
 
