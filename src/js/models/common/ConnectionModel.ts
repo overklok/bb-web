@@ -22,7 +22,7 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
         this.emit(new ConnectionStatusEvent({
             status: "connected",
             version: {
-                self: ['n/a'],
+                client: ['n/a'],
                 core: ['n/a']
             }
         }));
@@ -54,5 +54,5 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
 
 export class ConnectionStatusEvent extends ModelEvent<ConnectionStatusEvent> {
     status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
-    version?: { self: (string|number)[], core: (string|number)[] };
+    version?: { client: (string|number)[], core: (string|number)[] };
 }
