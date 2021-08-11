@@ -72,7 +72,7 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
             this.once('connect', (greeting: any) => {
                 QtIPCDatasource.Status = QtWebStatus.Connected;
 
-                const cli_version: string = greeting['version'];
+                const cli_version: any = greeting['version'] && greeting['version']['comm'];
 
                 console.log(`connection established. Client: ${cli_version}`);
 

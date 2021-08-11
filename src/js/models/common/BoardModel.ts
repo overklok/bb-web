@@ -11,6 +11,7 @@ import AsynchronousModel, {
 } from "../../core/base/model/AsynchronousModel";
 import {extractLabeledCells} from "../../utils/breadboard/core/extras/helpers";
 import LabelLayer from "../../utils/breadboard/layers/LabelLayer";
+import { ServerGreeting } from "./ConnectionModel";
 
 // Event channels
 const enum ChannelsTo {
@@ -373,11 +374,6 @@ interface ElectronicData {
 
 interface ErrorData {
     code: number, message: string
-}
-
-export class ServerGreeting {
-    version: { core: (number|string)[], client: (number|string)[], comm: (number|string)[] }
-    is_editable: boolean;
 }
 
 export class UserPlateEvent extends ModelEvent<PlateEvent> {

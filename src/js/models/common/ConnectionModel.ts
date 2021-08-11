@@ -10,6 +10,10 @@ import {ModelEvent} from "../../core/base/Event";
 type Connection = {
     is_active: boolean;
 }
+export class ServerGreeting {
+    version: { core: (number|string)[], app: (number|string)[], comm: (number|string)[] }
+    is_editable: boolean;
+}
 
 export default class ConnectionModel extends AsynchronousModel<Connection> {
     static alias = 'connection';
@@ -17,13 +21,13 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
     protected defaultState: Connection = {is_active: undefined}
 
     @connect()
-    private onConnect() {
+    private onConnect(greeting: ServerGreeting) {
         this.setState({is_active: true});
         this.emit(new ConnectionStatusEvent({
             status: "connected",
             version: {
-                client: ['n/a'],
-                core: ['n/a']
+                self: greeting.version.app || ['n/a'],
+                core: greeting.version.core || ['n/a']
             }
         }));
     }
@@ -54,5 +58,5 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
 
 export class ConnectionStatusEvent extends ModelEvent<ConnectionStatusEvent> {
     status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
-    version?: { client: (string|number)[], core: (string|number)[] };
+    version?: { self: (string|number)[], core: (string|number)[] };
 }
