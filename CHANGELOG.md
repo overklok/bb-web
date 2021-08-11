@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.1.2] - 2021-08-11
+## [1.1.1] - 2021-08-11
 
 ### Added
 - 'About' widget with version information
