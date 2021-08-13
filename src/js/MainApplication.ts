@@ -36,6 +36,7 @@ import LessonModel from "./models/lesson/LessonModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
 import MainRouter from "./routers/MainRouter";
+import ServerModel from "./models/common/ServerModel";
 
 require("css/global.less");
 
@@ -92,6 +93,7 @@ class MainApplication extends Application<MainAppConf> {
         svc_model.register(CourseModel,     hds);
         svc_model.register(SettingsModel,   dds, {config: settings_config(this.config.allow_demo)});
         svc_model.register(LessonModel,     hds);
+        svc_model.register(ServerModel,     hds);
 
         svc_model.register(ConnectionModel, ads);
         svc_model.register(CodeModel,       ads);

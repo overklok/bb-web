@@ -25,6 +25,7 @@ import widgets_config from "./configs/monkey/widgets";
 import ModalModel from "./core/models/ModalModel";
 import TestkitModel from "./models/monkey/TestkitModel";
 import BoardLogModel from "./models/monkey/BoardLogModel";
+import CodeModel from "./models/common/CodeModel";
 
 class MonkeyApplication extends Application {
     public bb: BoardModel;
@@ -67,6 +68,7 @@ class MonkeyApplication extends Application {
         svc_model.register(BoardModel, this.ads);
         svc_model.register(TestkitModel, this.dds);
         svc_model.register(BoardLogModel, this.dds);
+        svc_model.register(CodeModel, this.ads);
 
         this.bb = svc_model.retrieve(BoardModel);
         this.log = svc_model.retrieve(BoardLogModel);

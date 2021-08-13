@@ -126,6 +126,7 @@ export default class Presenter<V extends View> implements Subscriptable {
     private svc_model: IModelService;
     private readonly svc_routing: IRoutingService;
     private on_props_cb: (props: Partial<ViewPropsOf<V>>) => void;
+    private props_deferred: Partial<ViewPropsOf<V>>;
 
     /**
      * Create a Presenter.
@@ -151,10 +152,19 @@ export default class Presenter<V extends View> implements Subscriptable {
 
     public onPropsUpdate(cb: (props: ViewPropsOf<V>) => void) {
         this.on_props_cb = cb;
+
+        if (this.props_deferred) {
+            this.setViewProps(this.props_deferred);
+            this.props_deferred = undefined;
+        }
     }
 
     protected setViewProps(props: Partial<ViewPropsOf<V>>) {
-        this.on_props_cb && this.on_props_cb(props);
+        if (this.on_props_cb) {
+            this.on_props_cb(props);
+        } else {
+            this.props_deferred = { ...this.props_deferred, ...props };
+        }
     }
 
     /**

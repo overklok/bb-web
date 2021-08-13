@@ -104,7 +104,8 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private openLessonMenu(evt: TopbarView.MenuItemEvent) {
         switch (evt.item) {
             case MenuItem.Lessons: this.forward('index', []); break;
-            case MenuItem.Settings: this.model_settings.showSettingsModal();
+            case MenuItem.Settings: this.model_settings.showSettingsModal(); break;
+            case MenuItem.About: this.showAboutModal(); break;
         }
     }
 
@@ -113,5 +114,18 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         this.setViewProps({
             is_demo: this.model_settings.getBoolean('general.is_demo', true),
         });
+    }
+
+    private showAboutModal() {
+        this.model_modal.showModal({
+            widget_alias: 'about',
+            size: 'md',
+            dialog: {    
+                heading: 'О программе',
+                is_acceptable: true,
+                label_accept: 'Отправить отчёт об ошибке',
+                on_action: () => { }
+            }
+        }); 
     }
 }
