@@ -15,10 +15,16 @@ export class ServerGreeting {
     is_editable: boolean;
 }
 
+const CHANNEL_ISSUE_REPORT_REQUEST = 'issue_report_request'
+
 export default class ConnectionModel extends AsynchronousModel<Connection> {
     static alias = 'connection';
 
     protected defaultState: Connection = {is_active: undefined}
+
+    public requestIssueReport(versions: object, message: string = '') {
+        this.send(CHANNEL_ISSUE_REPORT_REQUEST, {versions, message})
+    }
 
     @connect()
     private onConnect(greeting: ServerGreeting) {
@@ -60,3 +66,5 @@ export class ConnectionStatusEvent extends ModelEvent<ConnectionStatusEvent> {
     status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
     version?: { self: (string|number)[], core: (string|number)[] };
 }
+
+export class IssueReportCompleteEvent extends ModelEvent<IssueReportCompleteEvent> {}
