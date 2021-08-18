@@ -1,6 +1,6 @@
 import Presenter, { on, restore } from "~/js/core/base/Presenter";
 import AboutView from "~/js/views/controls/AboutView";
-import { ConnectionStatusEvent } from "~/js/models/common/ConnectionModel";
+import ConnectionModel, { ConnectionStatusEvent } from "~/js/models/common/ConnectionModel";
 import ServerModel from "~/js/models/common/ServerModel";
 import ModalModel from "~/js/core/models/ModalModel";
 
@@ -10,12 +10,14 @@ declare const __VERSION__: string;
 export default class AboutPresenter extends Presenter<AboutView.AboutView> {
     private ver_srv: { self: number[]; core: number[]; verifier: number[]; };
 
-    private model_modal: ModalModel;
+    // private model_modal: ModalModel;
     private model_server: ServerModel;
+    private model_connection: ConnectionModel;
 
     getInitialProps(): AboutView.Props {
-        this.model_modal = this.getModel(ModalModel);
+        // this.model_modal = this.getModel(ModalModel);
         this.model_server = this.getModel(ServerModel);
+        this.model_connection = this.getModel(ConnectionModel);
 
         this.updateVersionNumbers();
 
@@ -26,13 +28,15 @@ export default class AboutPresenter extends Presenter<AboutView.AboutView> {
 
     @on(AboutView.IssuePromptEvent)
     private showIssuePromptModal() {
-        this.model_modal.showModal({
-            dialog: {
-                heading: 'Сообщить об ошибке',
-            },
-            widget_alias: 'issue',
-            is_closable: true
-        })
+        this.model_connection.requestLogDownload();
+
+        // this.model_modal.showModal({
+        //     dialog: {
+        //         heading: 'Сообщить об ошибке',
+        //     },
+        //     widget_alias: 'issue',
+        //     is_closable: true
+        // })
     }
 
     @restore() @on(ConnectionStatusEvent)

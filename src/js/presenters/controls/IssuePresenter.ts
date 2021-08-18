@@ -20,7 +20,7 @@ export default class IssuePresenter extends Presenter<IssueView.IssueView> {
 
     @on(IssueView.LogDownloadRequestEvent)
     private requestLogDwnload() {
-
+        this.model_connection.requestLogDownload();
     }
 
     @on(IssueView.IssueReportRequestEvent)

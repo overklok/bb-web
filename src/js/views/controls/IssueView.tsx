@@ -16,7 +16,7 @@ namespace IssueView {
     export class IssueView extends View<undefined, undefined> {
         render(): React.ReactNode {
             return <div className="issue">
-                <div className="issue__section">
+                {/* <div className="issue__section">
                     <p className="issue__text">
                         Если произошла какая-то проблема, возникла ошибка или программа
                         ведёт себя неожиданно, отправьте отчёт, дополнив его текстовым описанием.
@@ -32,7 +32,7 @@ namespace IssueView {
                     </div>
                 </div>
 
-                <hr/>
+                <hr/> */}
 
                 <div className="issue__section">
                     <p className="issue__text">

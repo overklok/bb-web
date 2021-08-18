@@ -15,7 +15,9 @@ export class ServerGreeting {
     is_editable: boolean;
 }
 
-const CHANNEL_ISSUE_REPORT_REQUEST = 'issue_report_request'
+const CHANNEL_APP_COMMAND = 'app_command'
+const COMMAND_ISSUE_REPORT_REQUEST = 'issue_report_request'
+const COMMAND_LOG_DOWNLOAD_REQUEST = 'log_download_request'
 
 export default class ConnectionModel extends AsynchronousModel<Connection> {
     static alias = 'connection';
@@ -23,7 +25,11 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
     protected defaultState: Connection = {is_active: undefined}
 
     public requestIssueReport(versions: object, message: string = '') {
-        this.send(CHANNEL_ISSUE_REPORT_REQUEST, {versions, message})
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_ISSUE_REPORT_REQUEST, data: { versions, message } })
+    }
+
+    public requestLogDownload() {
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_LOG_DOWNLOAD_REQUEST })
     }
 
     @connect()

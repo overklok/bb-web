@@ -45,9 +45,12 @@ namespace AboutView {
                     </div>
                 </div>
 
-                <div className="about__footer btn-bar btn-bar_right">
-                    <div className="btn btn_sm btn_danger" onClick={() => this.emit(new IssuePromptEvent())}>Сообщить об ошибке</div>
-                </div>
+                {(this.props.ver_cli.self[0] != 'n/a') ?
+                    <div className="about__footer btn-bar btn-bar_right">
+                        <div className="btn btn_sm btn_danger" onClick={() => this.emit(new IssuePromptEvent())}>Скачать журнал событий{/*Сообщить об ошибке*/}</div>
+                    </div>
+                    : null
+                }
             </div>
         }
     }
