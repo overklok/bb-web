@@ -15,10 +15,22 @@ export class ServerGreeting {
     is_editable: boolean;
 }
 
+const CHANNEL_APP_COMMAND = 'app_command'
+const COMMAND_ISSUE_REPORT_REQUEST = 'issue_report_request'
+const COMMAND_LOG_DOWNLOAD_REQUEST = 'log_download_request'
+
 export default class ConnectionModel extends AsynchronousModel<Connection> {
     static alias = 'connection';
 
     protected defaultState: Connection = {is_active: undefined}
+
+    public requestIssueReport(versions: object, message: string = '') {
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_ISSUE_REPORT_REQUEST, data: { versions, message } })
+    }
+
+    public requestLogDownload() {
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_LOG_DOWNLOAD_REQUEST })
+    }
 
     @connect()
     private onConnect(greeting: ServerGreeting) {
@@ -60,3 +72,5 @@ export class ConnectionStatusEvent extends ModelEvent<ConnectionStatusEvent> {
     status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
     version?: { self: (string|number)[], core: (string|number)[] };
 }
+
+export class IssueReportCompleteEvent extends ModelEvent<IssueReportCompleteEvent> {}

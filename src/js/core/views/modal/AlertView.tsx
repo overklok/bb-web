@@ -9,6 +9,7 @@ import Dialog from "./Dialog";
 import DialogModal from "./DialogModal";
 
 export const enum AlertType {
+    IssueReportCompleted,
     BoardDisconnected,
     BoardDisconnectedDemo,
     ShortCircuit
@@ -30,6 +31,13 @@ interface IAlertHandlers {
 }
 
 const ALERT_DATA: {[key: number]: IAlert} = {
+    [AlertType.IssueReportCompleted]: {
+        title: 'Отчёт отправлен успешно!',
+        size: 'md',
+        is_closable: true,
+        is_acceptable: true,
+        label_accept: 'Хорошо'
+    },
     [AlertType.BoardDisconnected]: {
         title: 'Доска отключена',
         content: 'Использовать программу без подключённой доски невозможно.',
