@@ -9,6 +9,7 @@ import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
 import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";
 import TopbarView, {MenuItem} from "../../views/controls/TopbarView";
 import {ModalAction} from "../../core/base/view/Nest";
+import Modal from "src/js/core/views/modal/Modal";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private model_lesson: LessonModel;
@@ -104,7 +105,8 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private openLessonMenu(evt: TopbarView.MenuItemEvent) {
         switch (evt.item) {
             case MenuItem.Lessons: this.forward('index', []); break;
-            case MenuItem.Settings: this.model_settings.showSettingsModal();
+            case MenuItem.Settings: this.model_settings.showSettingsModal(); break;
+            case MenuItem.About: this.showAboutModal(); break;
         }
     }
 
@@ -113,5 +115,14 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         this.setViewProps({
             is_demo: this.model_settings.getBoolean('general.is_demo', true),
         });
+    }
+
+    private showAboutModal() {
+        this.model_modal.showModal({
+            widget_alias: 'about',
+            size: 'md',
+            dialog: { heading: 'О программе' },
+            is_closable: true
+        }); 
     }
 }

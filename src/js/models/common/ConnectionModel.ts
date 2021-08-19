@@ -10,16 +10,38 @@ import {ModelEvent} from "../../core/base/Event";
 type Connection = {
     is_active: boolean;
 }
+export class ServerGreeting {
+    version: { core: (number|string)[], app: (number|string)[], comm: (number|string)[] }
+    is_editable: boolean;
+}
+
+const CHANNEL_APP_COMMAND = 'app_command'
+const COMMAND_ISSUE_REPORT_REQUEST = 'issue_report_request'
+const COMMAND_LOG_DOWNLOAD_REQUEST = 'log_download_request'
 
 export default class ConnectionModel extends AsynchronousModel<Connection> {
     static alias = 'connection';
 
     protected defaultState: Connection = {is_active: undefined}
 
+    public requestIssueReport(versions: object, message: string = '') {
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_ISSUE_REPORT_REQUEST, data: { versions, message } })
+    }
+
+    public requestLogDownload() {
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_LOG_DOWNLOAD_REQUEST })
+    }
+
     @connect()
-    private onConnect() {
+    private onConnect(greeting: ServerGreeting) {
         this.setState({is_active: true});
-        this.emit(new ConnectionStatusEvent({status: "connected"}));
+        this.emit(new ConnectionStatusEvent({
+            status: "connected",
+            version: {
+                self: greeting.version.app || ['n/a'],
+                core: greeting.version.core || ['n/a']
+            }
+        }));
     }
 
     @disconnect()
@@ -48,4 +70,7 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
 
 export class ConnectionStatusEvent extends ModelEvent<ConnectionStatusEvent> {
     status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
+    version?: { self: (string|number)[], core: (string|number)[] };
 }
+
+export class IssueReportCompleteEvent extends ModelEvent<IssueReportCompleteEvent> {}

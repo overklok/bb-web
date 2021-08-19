@@ -16,6 +16,8 @@ import RichTextView     from "~/js/views/common/RichTextView";
 import HomeView         from "~/js/views/common/HomeView";
 import VariableView     from "~/js/views/common/VariableView";
 import {SettingsView}   from "~/js/views/controls/SettingsView";
+import AboutView        from "~/js/views/controls/AboutView";
+import IssueView        from "~/js/views/controls/IssueView";
 
 /* Basic Presenters */
 import AlertPresenter           from "~/js/core/presenters/AlertPresenter";
@@ -41,6 +43,8 @@ import VariableLessonPresenter          from "~/js/presenters/lesson/VariablesLe
 import PopoverLessonPresenter           from "~/js/presenters/lesson/PopoverLessonPresenter";
 import AlertLessonPresenter             from "~/js/presenters/lesson/AlertLessonPresenter";
 import SettingsModalPresenter           from "~/js/presenters/controls/SettingsModalPresenter";
+import AboutPresenter                   from "~/js/presenters/controls/AboutPresenter";
+import IssuePresenter                   from "~/js/presenters/controls/IssuePresenter";
 
 export default function(no_menu) {
     return {
@@ -96,6 +100,14 @@ export default function(no_menu) {
                 view_type: SettingsView.SettingsView,
                 presenter_types: [SettingsPresenter],
             },
+            about: {
+                view_type: AboutView.AboutView,
+                presenter_types: [AboutPresenter]
+            },
+            issue: {
+                view_type: IssueView.IssueView,
+                presenter_types: [IssuePresenter]
+            }
         }
     }
 }

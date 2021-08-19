@@ -5,7 +5,6 @@ import {Setting, SettingsConfig, SettingsValues, SettingType, SettingValue} from
 
 import classNames from "classnames";
 import {ViewEvent} from "../../core/base/Event";
-import {ModalAction} from "../../core/base/view/Nest";
 
 require('css/blocks/generic/btn.less');
 require('css/blocks/settings.less');

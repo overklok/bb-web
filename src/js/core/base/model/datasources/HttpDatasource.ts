@@ -51,6 +51,13 @@ export type RequestParams = {
     timeout?: number;
 }
 
+
+export type FakeHttpRule = {
+    path: string;
+    params: RequestParams;
+    response_data: object;
+};
+
 const DefaultOptions: RequestOptions = {
     mode: RequestMode.CORS,
     cache: RequestCache.Default,
@@ -76,6 +83,7 @@ export default class HttpDatasource extends SynchronousDatasource {
     private readonly hostname: string;
     private options: RequestOptions;
     private middleware: HttpMiddleware[] = [];
+    private fake_response_generator: (path: string, params: RequestParams) => object;
 
     constructor(addr: string, port?: number, options: RequestOptions = DefaultOptions) {
         super();
@@ -97,6 +105,10 @@ export default class HttpDatasource extends SynchronousDatasource {
     }
 
     async request(path: string, params: RequestParams = {}): Promise<any> {
+        const fake_response = this.fake_response_generator && this.fake_response_generator(path, params);
+
+        if (fake_response !== undefined) return fake_response;
+
         params = {
             query: {},
             headers: {},
@@ -150,6 +162,25 @@ export default class HttpDatasource extends SynchronousDatasource {
         const q = HttpDatasource.serializeQuery(query);
 
         return `${this.hostname}/${path}?${q}`;
+    }
+
+    public setFakeRules(rules: FakeHttpRule[]) {
+        this.fake_response_generator = (path, params) => {
+            for (const rule of rules) {
+                if (rule.path == path &&
+                    rule.params.method == params.method &&
+                    rule.params.query == params.query
+                ) {
+                    return rule.response_data;
+                }
+            }
+
+            return undefined;
+        }
+    }
+
+    public setFakeGenerator(generator: (path: string, params: RequestParams) => object) {
+        this.fake_response_generator = generator;
     }
 
     private static serializeQuery(query: Query = {}): string {

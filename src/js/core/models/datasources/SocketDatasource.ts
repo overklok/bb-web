@@ -45,7 +45,7 @@ export default class SocketDatasource extends AsynchronousDatasource {
                 this.socket.on('xconnect', (greeting: any) => {
                     // of course you can use 'connect' instead of 'xconnect' here
 
-                    const cli_version: string = greeting['version'];
+                    const cli_version: string = greeting['version'] && greeting['version']['comm'];
 
                     this._status = AsyncDatasourceStatus.Connected;
                     console.debug(`[SocketIPC] connection established. Client: ${cli_version || 'unknown'}.`);

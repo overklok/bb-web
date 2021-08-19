@@ -14,6 +14,7 @@ import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
+import { FakeHttpRule } from "./core/base/model/datasources/HttpDatasource";
 
 import CSRFMiddleware from "./core/models/middlewares/CSRFMiddleware";
 import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";
@@ -36,6 +37,7 @@ import LessonModel from "./models/lesson/LessonModel";
 import ConnectionModel from "./models/common/ConnectionModel";
 
 import MainRouter from "./routers/MainRouter";
+import ServerModel from "./models/common/ServerModel";
 
 require("css/global.less");
 
@@ -46,6 +48,7 @@ interface MainAppConf {
     server_port: number;
     sock_addr: string;
     sock_port: number;
+    fake_http_responses?: FakeHttpRule[];
 }
 
 /**
@@ -59,7 +62,7 @@ class MainApplication extends Application<MainAppConf> {
             server_addr: '127.0.0.1',
             server_port: 8000,
             sock_addr: '127.0.0.1',
-            sock_port: 8085
+            sock_port: 8085,
         }
     }
 
@@ -85,6 +88,10 @@ class MainApplication extends Application<MainAppConf> {
 
         const hds = new HttpDatasource(this.config.server_addr, this.config.server_port);
 
+        if (this.config.fake_http_responses) {
+            hds.setFakeRules(this.config.fake_http_responses);
+        }
+
         svc_model.launch(ads);
 
         svc_model.register(ModalModel,      dds);
@@ -92,6 +99,7 @@ class MainApplication extends Application<MainAppConf> {
         svc_model.register(CourseModel,     hds);
         svc_model.register(SettingsModel,   dds, {config: settings_config(this.config.allow_demo)});
         svc_model.register(LessonModel,     hds);
+        svc_model.register(ServerModel,     hds);
 
         svc_model.register(ConnectionModel, ads);
         svc_model.register(CodeModel,       ads);
