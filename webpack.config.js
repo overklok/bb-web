@@ -19,6 +19,7 @@ const BundleAnalyzerPlugin              = require('webpack-bundle-analyzer').Bun
 const MiniCssExtractPlugin              = require('mini-css-extract-plugin');
 const LodashModuleReplacementPlugin     = require('lodash-webpack-plugin');
 
+const fake_http_responses = require('./fixtures/http_responses');
 
 module.exports = (env, argv) => {
     resolveEnvEntries(env);
@@ -150,7 +151,8 @@ function getHtmlCopyPluginInstances(env) {
             new HtmlWebpackPlugin({
                 template: './src/html/main.html',
                 inject: 'body',
-                filename: 'main.html'
+                filename: 'main.html',
+                configuration: {fake_http_responses}
             }),
         ];
     }
