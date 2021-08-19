@@ -2,7 +2,7 @@ import SVG from "svg.js";
 
 import Layer from "../core/Layer";
 import Plate from "../core/Plate";
-import Grid, { BorderType } from "../core/Grid";
+import Grid, { AuxPointCategory, BorderType, AuxPoint, AuxPointType } from "../core/Grid";
 import Cell from "../core/Cell";
 
 import {GRADIENTS} from "../styles/gradients";
@@ -28,7 +28,7 @@ export default class BackgroundLayer extends Layer {
     private _domaingroup: SVG.Container;
     private _currentgroup: SVG.Container;
     private _decogroup: SVG.Container;
-    private _domain_config: Domain;
+    private _domain_config: Domain[];
     private _debug: boolean;
     private _gcells: any[];
     private _gcells_hovered: any[];
@@ -66,7 +66,7 @@ export default class BackgroundLayer extends Layer {
         this._initGroups();
     }
 
-    setDomainConfig(domain_config: Domain) {
+    setDomainConfig(domain_config: Domain[]) {
         this._domain_config = domain_config;
     }
 
@@ -308,7 +308,7 @@ export default class BackgroundLayer extends Layer {
             if (cell.isAt(null, 0) || this.__detailed) {
                 this._gcells[cell.idx.x][cell.idx.y] =
                     container
-                    .circle(10, 10)
+                    .circle(10)
                     .center(cell.center.x, cell.center.y)
                     .fill({color: "#555"});
             }
@@ -373,7 +373,7 @@ export default class BackgroundLayer extends Layer {
         }
 
         container.line(0, 0, len_x + bias_cont_x, len_y + bias_cont_y)
-            .stroke({color, width: 6, linecap: 'round', dasharray: dotted ? 16 : null})
+            .stroke({color, width: 6, linecap: 'round', dasharray: dotted ? '16' : null})
             .move(cell_from.center.x + bias_x - bias_cont_x, cell_from.center.y + bias_y - bias_cont_y)
             .opacity(0.5);
     }
@@ -387,7 +387,7 @@ export default class BackgroundLayer extends Layer {
      * @param color
      * @private
      */
-    _drawDomainLineNotches(container, cell_from, cell_to, inversed, color) {
+    _drawDomainLineNotches(container: SVG.Container, cell_from: Cell, cell_to: Cell, inversed: boolean, color: string) {
         const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
               is_vertical   = Cell.IsLineVertical(cell_from, cell_to);
 
@@ -395,7 +395,7 @@ export default class BackgroundLayer extends Layer {
         let pos_to    = is_horizontal ? cell_to.idx.x   : cell_to.idx.y;
 
         // swap
-        if (pos_from > pos_to) {pos_to = [pos_from, pos_from = pos_to]}
+        if (pos_from > pos_to) {[pos_to, pos_from] = [pos_from, pos_to]}
 
         for (let pos = pos_from; pos <= pos_to; pos++) {
             let cell = is_horizontal ? this.__grid.cell(pos, cell_from.idx.y) : this.__grid.cell(cell_from.idx.x, pos);
@@ -413,7 +413,7 @@ export default class BackgroundLayer extends Layer {
         }
     }
 
-    _drawDomainRect(container, cell_from, cell_to, color) {
+    _drawDomainRect(container: SVG.Container, cell_from: Cell, cell_to: Cell, color: string) {
         const width = Math.abs(cell_from.pos.x - cell_to.pos.x),
               height = Math.abs(cell_from.pos.y - cell_to.pos.y);
 
@@ -430,8 +430,8 @@ export default class BackgroundLayer extends Layer {
             !this.__grid.isAuxPointCatRequired(AuxPointCategory.SourceV8)
         ) return;
 
-        const   p_vcc = this.__grid.auxPoint(AuxPoint.Vcc),
-                p_gnd = this.__grid.auxPoint(AuxPoint.Gnd);
+        const   p_vcc = this.__grid.auxPoint(AuxPointType.Vcc) as AuxPoint,
+                p_gnd = this.__grid.auxPoint(AuxPointType.Gnd) as AuxPoint;
 
         // try {
             // Line takeaway/rise
@@ -509,33 +509,33 @@ export default class BackgroundLayer extends Layer {
     _drawAuxPointUsbs() {
         if (this.__grid.isAuxPointCatRequired(AuxPointCategory.Usb1)) {
             this._drawAuxPointUsb(
-                this.__grid.auxPoint(AuxPoint.U1Vcc),
-                this.__grid.auxPoint(AuxPoint.U1Gnd),
-                this.__grid.auxPoint(AuxPoint.U1Analog1),
-                this.__grid.auxPoint(AuxPoint.U1Analog2),
+                this.__grid.auxPoint(AuxPointType.U1Vcc) as AuxPoint,
+                this.__grid.auxPoint(AuxPointType.U1Gnd) as AuxPoint,
+                this.__grid.auxPoint(AuxPointType.U1Analog1) as AuxPoint,
+                this.__grid.auxPoint(AuxPointType.U1Analog2) as AuxPoint,
             );
         }
 
         if (this.__grid.isAuxPointCatRequired(AuxPointCategory.Usb3)) {
             this._drawAuxPointUsb(
-                this.__grid.auxPoint(AuxPoint.U3Vcc),
-                this.__grid.auxPoint(AuxPoint.U3Gnd),
-                this.__grid.auxPoint(AuxPoint.U3Analog1),
-                this.__grid.auxPoint(AuxPoint.U3Analog2),
+                this.__grid.auxPoint(AuxPointType.U3Vcc) as AuxPoint,
+                this.__grid.auxPoint(AuxPointType.U3Gnd) as AuxPoint,
+                this.__grid.auxPoint(AuxPointType.U3Analog1) as AuxPoint,
+                this.__grid.auxPoint(AuxPointType.U3Analog2) as AuxPoint,
             );
         }
     }
 
-    _drawAuxPointUsb(p_vcc, p_gnd, p_an1, p_an2) {
+    _drawAuxPointUsb(p_vcc: AuxPoint, p_gnd: AuxPoint, p_an1: AuxPoint, p_an2: AuxPoint) {
         this._drawAuxPointUsbPath(p_vcc, BackgroundLayer.DomainSchematicBias);
         this._drawAuxPointUsbPath(p_gnd, BackgroundLayer.DomainSchematicBias);
         this._drawAuxPointUsbPath(p_an1);
         this._drawAuxPointUsbPath(p_an2);
     }
 
-    _drawAuxPointUsbPath(point, bias_domain=0) {
-        let needs_bias  = this.__schematic && this.__detailed;
-        bias_domain = needs_bias * bias_domain;
+    _drawAuxPointUsbPath(point: AuxPoint, bias_domain: number = 0) {
+        let needs_bias = this.__schematic && this.__detailed;
+        bias_domain = bias_domain * Number(needs_bias);
 
         const cell_x = needs_bias ? point.cell.center.x : point.cell.pos.x + point.cell.size.x;
 

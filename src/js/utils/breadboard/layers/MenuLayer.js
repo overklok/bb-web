@@ -1,6 +1,7 @@
 import '../styles/menu.css';
 import Layer from "../core/Layer";
 import ContextMenu from "../core/ContextMenu";
+import { getAbsolutePosition } from '../core/extras/helpers';
 
 export default class MenuLayer extends Layer {
     static get Class() {return "bb-layer-menu"}

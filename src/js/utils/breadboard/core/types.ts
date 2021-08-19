@@ -20,6 +20,7 @@ export type Domain = {
     label_pos?: "top" | "bottom" | "left" | "right",
     pins_from?: number,
     pins_to?: number,
+    line_after?: number,
     line_before?: number,
     pin_state_initial?: "input" | "output",
     minus?: {x: number, y: number}

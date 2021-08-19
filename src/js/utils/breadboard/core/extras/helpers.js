@@ -1,4 +1,4 @@
-import Grid from "../Grid";
+import Grid, { BorderType } from "../Grid";
 import SVG from "svg.js";
 import PlateLayer from "../../layers/PlateLayer";
 import defaults from "lodash/defaults";
@@ -35,8 +35,8 @@ export function* extractLabeledCells(layout, role=null) {
         // filter if filtering role is specified
         if (role !== null && role !== domain.role) continue;
 
-        const d_from = grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
-              d_to   = grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
+        const d_from = grid.cell(domain.from.x, domain.from.y, BorderType.Wrap).idx,
+              d_to   = grid.cell(domain.to.x, domain.to.y, BorderType.Wrap).idx;
 
         let pin_num = (domain.pins_to == null) ? domain.pins_from : domain.pins_to,
             pin_dir = (domain.pins_to == null) ? 1 : -1;

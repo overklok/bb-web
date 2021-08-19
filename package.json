@@ -36,6 +36,7 @@
     "@babel/preset-env": "^7.14.7",
     "@ckeditor/jsdoc-plugins": "^25.2.4",
     "@types/classnames": "^2.2.11",
+    "@types/file-saver": "^2.0.3",
     "@types/jest": "^26.0.20",
     "@types/socket.io-client": "^1.4.36",
     "@typescript-eslint/eslint-plugin": "^4.28.1",

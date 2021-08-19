@@ -1,4 +1,4 @@
-import Grid from "../Grid";
+import Grid, { AuxPointType, BorderType } from "../Grid";
 import LabelLayer from "../../layers/LabelLayer";
 import {boundsToCoordList, buildGrid, pointsToCoordList} from "./helpers";
 
@@ -35,8 +35,8 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
     let arduino_remap_plus = [];
 
     for (const domain of domains) {
-        const   from  = grid.cell(domain.from.x, domain.from.y, Grid.BorderTypes.Wrap).idx,
-                to    = grid.cell(domain.to.x, domain.to.y, Grid.BorderTypes.Wrap).idx;
+        const   from  = grid.cell(domain.from.x, domain.from.y, BorderType.Wrap).idx,
+                to    = grid.cell(domain.to.x, domain.to.y, BorderType.Wrap).idx;
 
         let anal_minus_from, anal_minus_to;
         let is_minus_virtual = false;
@@ -46,7 +46,7 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
                 anal_minus_from = domain.minus_from;
                 is_minus_virtual = true;
             } else {
-                anal_minus_from = grid.cell(domain.minus_from.x, domain.minus_from.y, Grid.BorderTypes.Wrap).idx;
+                anal_minus_from = grid.cell(domain.minus_from.x, domain.minus_from.y, BorderType.Wrap).idx;
             }
         }
 
@@ -55,7 +55,7 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
                 anal_minus_to = domain.minus_to;
                 is_minus_virtual = true;
             } else {
-                anal_minus_to = grid.cell(domain.minus_to.x, domain.minus_to.y, Grid.BorderTypes.Wrap).idx;
+                anal_minus_to = grid.cell(domain.minus_to.x, domain.minus_to.y, BorderType.Wrap).idx;
             }
         }
 
@@ -64,7 +64,7 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
                 anal_minus_from = domain.minus;
                 is_minus_virtual = true;
             } else {
-                anal_minus_from = grid.cell(domain.minus.x, domain.minus.y, Grid.BorderTypes.Wrap).idx;
+                anal_minus_from = grid.cell(domain.minus.x, domain.minus.y, BorderType.Wrap).idx;
             }
 
             anal_minus_to = anal_minus_from;
@@ -162,8 +162,8 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
         cell_structure[minus_coords_idx] = cell_structure[minus_coords_idx].concat(arduino_remap_minus);
     }
 
-    const point_minus = grid.auxPoint(Grid.AuxPoints.Gnd),
-          point_vcc = grid.auxPoint(Grid.AuxPoints.Vcc);
+    const point_minus = grid.auxPoint(AuxPointType.Gnd),
+          point_vcc = grid.auxPoint(AuxPointType.Vcc);
 
     if (point_minus && point_vcc) {
         embedded_plates.push(getVoltageSourcePlate(point_minus.idx, point_vcc.idx));

@@ -320,7 +320,6 @@ export default class Plate {
     }
 
     getCmInstance() {
-        console.log(this.__ctxmenu__);
         return new this.__ctxmenu__(this.id, this.alias, this.variant);
     }
 

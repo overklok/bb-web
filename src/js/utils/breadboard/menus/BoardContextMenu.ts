@@ -1,7 +1,9 @@
-import ContextMenu from "../core/ContextMenu"
+import ContextMenu, { ContextMenuItemInputType } from "../core/ContextMenu"
 import PlateContextMenu from "./PlateContextMenu";
 
 export default class BoardContextMenu extends ContextMenu {
+    private _verbose_on: boolean;
+
     // Алиасы пунктов контекстного меню
     static get CMI_EXPORT()     {return "cmi_exp"}
     static get CMI_IMPORT()     {return "cmi_imp"}
@@ -17,7 +19,7 @@ export default class BoardContextMenu extends ContextMenu {
     constructor() {
         super();
 
-        this._items_data = [
+        this._items_props = [
             {
                 label: `Плата`,
                 active: false
@@ -45,10 +47,10 @@ export default class BoardContextMenu extends ContextMenu {
             },
             {
                 alias: BoardContextMenu.CMI_IMPORT,
-                label: 'Импорт плашек',
+                label: 'Импорт плашек...',
                 active: true,
                 input: {
-                    type: "file",
+                    type: ContextMenuItemInputType.File,
                 }
             },
             {

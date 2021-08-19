@@ -81,7 +81,7 @@ type GridParams = {
  * 
  * @category Breadboard
  */
-type AuxPoint = {
+export type AuxPoint = {
     idx: {x: number, y: number},
     pos: {x: number, y: number},
     cell: Cell,

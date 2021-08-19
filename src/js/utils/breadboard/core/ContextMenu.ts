@@ -35,7 +35,7 @@ export type ContextMenuItemProps = {
     label: string | Function,
 
     /** String alias to reference in sources */
-    alias: string,
+    alias?: string,
     /** 
      * Whether the item can be activated 
      * 
@@ -73,7 +73,7 @@ export type ContextMenuItemProps = {
         /** Alias of original menu item which is going to be duplicated */
         alias: string,
         /** Custom item click handler to modify menu's internal state or smth else */
-        beforeClick?: (value: number|string|File|void) => number|string|void|File
+        beforeClick?: (value: number|string|boolean|File|void) => number|string|boolean|void|File
     }
 }
 
@@ -93,7 +93,7 @@ export default class ContextMenu {
     private _container: HTMLDivElement;
 
     /** {@link ContextMenu} configuration */
-    private _items_props: ContextMenuItemProps[];
+    protected _items_props: ContextMenuItemProps[];
 
     /** An 'item click' event handler */
     private _itemclick: Function;
@@ -195,7 +195,7 @@ export default class ContextMenu {
      * @param position  position when the right click is occurred
      * @param inputs    optional input values to pass into the items that has input fields
      */
-    draw(position: XYObject, inputs: [] = []): HTMLDivElement {
+    draw(position: XYObject, inputs: any[] = []): HTMLDivElement {
         this._container = document.createElement('div');
         this._container.classList.add(ContextMenu.Class);
         this._container.style.opacity = '0';
@@ -222,7 +222,7 @@ export default class ContextMenu {
      * 
      * @param inputs values for optional menu item fields
      */
-    private _drawItems(inputs: []): void {
+    private _drawItems(inputs: any[]): void {
         let i = 0;
 
         for (let item_props of this._items_props) {
@@ -357,6 +357,11 @@ export default class ContextMenu {
             input.style.display = "none";
         }
 
+        if (type === ContextMenuItemInputType.File) {
+            input.type = "file";
+            input.style.display = "none";
+        }
+
         if (initial_value) {
             input.value = String(initial_value);
         }
@@ -425,7 +430,7 @@ export default class ContextMenu {
      * @param item_props    properties of the menu item clicked
      * @param value         current input field value
      */
-    private _itemClick(item_props: ContextMenuItemProps, value: number|string|File|void): void {
+    private _itemClick(item_props: ContextMenuItemProps, value: number|string|boolean|File|void): void {
         let as = item_props.as;
 
         let alias = as && as.alias ? as.alias : item_props.alias;

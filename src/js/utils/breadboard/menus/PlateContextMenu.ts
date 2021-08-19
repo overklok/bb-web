@@ -1,4 +1,4 @@
-import ContextMenu from "../core/ContextMenu"
+import ContextMenu, { ContextMenuItemInputType } from "../core/ContextMenu"
 
 export default class PlateContextMenu extends ContextMenu {
     // Алиасы пунктов контекстного меню
@@ -8,10 +8,10 @@ export default class PlateContextMenu extends ContextMenu {
     static get CMI_ROTCCW() {return "cmi_rccw"}
     static get CMI_DUPLIC() {return "cmi_dupl"}
 
-    constructor(plate_id, plate_type, plate_variant) {
+    constructor(plate_id: number, plate_type: string, plate_variant: string) {
         super(plate_id);
 
-        this._items_data = [
+        this._items_props = [
             {
                 label: `Плашка #${plate_id}`,
                 shortcuts: [plate_type, plate_variant],
@@ -29,7 +29,7 @@ export default class PlateContextMenu extends ContextMenu {
                 shortcuts: ['<', '>'],
                 active: true,
                 input: {
-                    type: "number",
+                    type: ContextMenuItemInputType.Number,
                     min: 0,
                     max: 255
                 }

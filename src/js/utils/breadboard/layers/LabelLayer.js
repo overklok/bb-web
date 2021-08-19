@@ -1,7 +1,5 @@
 import Layer from "../core/Layer";
-import Grid from "../core/Grid";
-import {GRADIENTS} from "../styles/gradients";
-import {extractLabeledCells} from "js/utils/breadboard/core/extras/helpers";
+import {extractLabeledCells} from "~/js/utils/breadboard/core/extras/helpers";
 
 const SYMBOL_UP = "🠩"
 const SYMBOL_DOWN = "🠫"

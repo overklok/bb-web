@@ -100,7 +100,7 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        setPlates(plates: Array<object>) {
+        setPlates(plates: object[]) {
             if (plates == null) throw new TypeError("Plates is not defined");
 
             this.bb.clearRegions();
@@ -109,7 +109,7 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        highlightErrorPlates(plate_ids: Array<string>) {
+        highlightErrorPlates(plate_ids: number[]) {
             if (!plate_ids) {
                 return true
             }
@@ -123,12 +123,12 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        setCurrents(threads: Array<object>) {
+        setCurrents(threads: object[]) {
             this.bb.setCurrents(threads);
         }
 
         @deferUntilMounted
-        setPinsValues(values: Array<object>) {
+        setPinsValues(values: ["input"|"output", number][]) {
             this.bb.setPinsValues(values)
         }
 

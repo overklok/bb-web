@@ -20,8 +20,6 @@ import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 import {layoutToBoardInfo} from "./core/extras/board_info";
 import {buildGrid} from "./core/extras/helpers";
 import {Layout} from "./core/types";
-import Layer from "./core/Layer";
-import Plate from "./core/Plate";
 
 
 require("./styles/main.css");
