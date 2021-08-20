@@ -1,4 +1,4 @@
-import BackgroundLayer from "../layers/BackgroundLayer";
+import BackgroundLayer, { DomainSchematicStyle } from "../layers/BackgroundLayer";
 import LabelLayer from "../layers/LabelLayer";
 import Grid, { AuxPointCategory } from "../core/Grid";
 import { Layout } from "../core/types";
@@ -44,7 +44,7 @@ export const LAYOUTS: {[key: string]: Layout} = {
                 from: {x: 4, y: 0}, to: {x: -1, y: 0},
                 minus_from: {x: 0, y: ARD_GND_Y}, minus_to: {x: 3, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog,
-                style: BackgroundLayer.DomainSchematicStyles.Dotted,
+                style: DomainSchematicStyle.Dotted,
                 pins_from: 0, bias_inv: true,
                 line_before: 1,
                 label_pos: "top",
@@ -98,7 +98,7 @@ export const LAYOUTS: {[key: string]: Layout} = {
                 from: {x: -1, y: 15}, to: {x: 4, y: 15},
                 minus_from: {x: 8, y: ARD_GND_Y}, minus_to: {x: 11, y: ARD_GND_Y},
                 role: LabelLayer.CellRoles.Analog,
-                style: BackgroundLayer.DomainSchematicStyles.Dotted,
+                style: DomainSchematicStyle.Dotted,
                 pins_to: 11,
                 line_before: 1,
                 label_pos: "bottom",

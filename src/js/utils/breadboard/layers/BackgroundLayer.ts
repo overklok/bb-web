@@ -9,34 +9,69 @@ import {GRADIENTS} from "../styles/gradients";
 import {getCursorPoint} from "../core/extras/helpers";
 import { Domain } from "../core/types";
 
-export const DOMAIN_SCHEMATIC_STYLES = {
-    Default: 'default',
-    Dotted: 'dotted',
-    None: 'none'
+export const enum DomainSchematicStyle {
+    Default = 'default',
+    Dotted = 'dotted',
+    None = 'none'
 }
 
+/**
+ * The lowest {@link Layer} of the {@link Breadboard} to display.
+ * 
+ * Contains background canvas and some visual details such as:
+ *  - mount points (cells) and their contact groups (domains)
+ *  - voltage source element
+ *  - usb contact lines
+ *  - debug information (cursor positioning feedback)
+ * 
+ * This layer has two styles: schematic (default) and photographic (which is obsolete).
+ *  
+ * The _cell_ is a point at which a plate can be mounted. Each plate occupies at least one cell at the moment.
+ * The _domain_ (or contact group) is the group of interconnected cells. 
+ * 
+ * Connected cells creates a contact so current can flow through it.
+ * To connect cells from different groups, you need a {@link Plate} mounted on cells from each of the groups,
+ * and this {@link Plate} should be able to pass current through itself (which depends on its type).
+ * This is why it's needed to visually display the contact groups.
+ */
 export default class BackgroundLayer extends Layer {
+    /** CSS class of the layer */
     static Class = "bb-layer-background";
 
+    /** the radius of the cell point (which is virtually a circle) */
     static CellRadius = 5;
 
-    /** отклонение линий доменов в схематическом режиме */
+    /** an offset of domain lines relative to cell positions in schematic mode */
     static DomainSchematicBias = 20;
 
-    static DomainSchematicStyles = DOMAIN_SCHEMATIC_STYLES;
-    private _boardgroup: SVG.Container;
-    private _domaingroup: SVG.Container;
-    private _currentgroup: SVG.Container;
-    private _decogroup: SVG.Container;
+    /** topology configuration of the specific breadboard */
     private _domain_config: Domain[];
+
+    /** whether to display debug information */
     private _debug: boolean;
+
+    /** SVG group for the main background */
+    private _boardgroup: SVG.Container;
+    /** SVG group for domain lines */
+    private _domaingroup: SVG.Container;
+    /** SVG group for cells  */
+    private _currentgroup: SVG.Container;
+    /** SVG group for decorative elements (such as voltage source lines and poles) */
+    private _decogroup: SVG.Container;
+
+    /** SVG cells (2D)  */
     private _gcells: any[];
+
+    /** SVG cells to display when hovered (2D) in debug mode */
     private _gcells_hovered: any[];
+    /** SVG cell which has been hovered last time */
     private _cell_last_hovered: any;
+    /** SVG text which is displayed in debug mode */
     private _debug_text: any;
+    /** current position of the client cursor */
     private _hover_pos: { x: number; y: number; };
-    private _scheduled_animation_frame: any;
-    private _cell_hovered: any;
+    /** whether another animation frame is scheduled */
+    private _scheduled_animation_frame: boolean;
 
     constructor(
         container: SVG.Container, 
@@ -179,7 +214,6 @@ export default class BackgroundLayer extends Layer {
 
     _drawCells() {
         this._gcells = [];
-        this._cell_hovered = undefined;
 
         for (let col of this.__grid.cells) {
             for (let cell of col) {
@@ -195,7 +229,7 @@ export default class BackgroundLayer extends Layer {
             let d_from  = this.__grid.cell(domain.from.x, domain.from.y, BorderType.Wrap).idx,
                 d_to    = this.__grid.cell(domain.to.x, domain.to.y, BorderType.Wrap).idx;
 
-            if (domain.style === BackgroundLayer.DomainSchematicStyles.None) continue;
+            if (domain.style === DomainSchematicStyle.None) continue;
 
             if (domain.horz) {
                 if (d_from.x > d_to.x) [d_from, d_to] = [d_to, d_from];
@@ -206,7 +240,7 @@ export default class BackgroundLayer extends Layer {
                         this.__grid.cell(d_from.x, row),
                         this.__grid.cell(d_to.x, row),
                         this.__schematic ? '#777' : GRADIENTS.GOLD.HORZ,
-                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
+                        domain.style === DomainSchematicStyle.Dotted,
                         !!domain.bias_inv,
                         domain.line_after,
                         domain.line_before
@@ -221,7 +255,7 @@ export default class BackgroundLayer extends Layer {
                         this.__grid.cell(col, d_from.y),
                         this.__grid.cell(col, d_to.y),
                         this.__schematic ? '#777' : GRADIENTS.GOLD.VERT,
-                        domain.style === BackgroundLayer.DomainSchematicStyles.Dotted,
+                        domain.style === DomainSchematicStyle.Dotted,
                         !!domain.bias_inv,
                         domain.line_after,
                         domain.line_before

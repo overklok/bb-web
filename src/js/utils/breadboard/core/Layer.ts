@@ -10,8 +10,8 @@ import { XYObject } from './types';
  * where each layer is responsible for some part of visual appearance, such a
  * background, cells, plates, currents etc.
  * 
- * {@link Layer} defines basic restrictions for each {@link Layer} to provide
- * a general interface to manage its lifecycle.
+ * {@link Layer} defines basic restrictions for each {@link Layer} inheritor to provide
+ * a general interface to manage their lifecycle.
  * 
  * @category Breadboard
  */

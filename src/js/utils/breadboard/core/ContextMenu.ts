@@ -92,7 +92,7 @@ export default class ContextMenu {
     /** Root HTML container */
     private _container: HTMLDivElement;
 
-    /** {@link ContextMenu} configuration */
+    /** List of {@link ContextMenu} items properties */
     protected _items_props: ContextMenuItemProps[];
 
     /** An 'item click' event handler */
@@ -138,7 +138,7 @@ export default class ContextMenu {
     /** 
      * Publicly accessible root HTML container of the {@link ContextMenu}
      */
-    get container(): HTMLDivElement {
+    public get container(): HTMLDivElement {
         return this._container;
     }
 
@@ -154,7 +154,7 @@ export default class ContextMenu {
      * @param label     item label to display
      * @param active    whether the item should be active
      */
-    addItem(alias: string, label: string, active: boolean = true): void {
+    public addItem(alias: string, label: string, active: boolean = true): void {
         this._items_props.push({
             alias, label, active
         });
@@ -165,7 +165,7 @@ export default class ContextMenu {
      * 
      * @param cb callback or null to clear
      */
-    onItemClick(cb: Function = null): void {
+    public onItemClick(cb: Function = null): void {
         this._itemclick = cb || (() => {});
     }
 
@@ -179,7 +179,7 @@ export default class ContextMenu {
      * 
      * @param cb_destroy callback which will be called when the menu will be ready to destroy.
      */
-    fadeOut(cb_destroy: Function): void {
+    public fadeOut(cb_destroy: Function): void {
         this._container.style.opacity = '0';
 
         setTimeout(() => {
@@ -188,14 +188,14 @@ export default class ContextMenu {
     }
 
     /**
-     * Renders {@link ContextMenu} contents to the DOM
+     * Renders {@link ContextMenu} contents to DOM
      * 
      * This method returns the root HTML container where the contents is drawn
      * 
      * @param position  position when the right click is occurred
      * @param inputs    optional input values to pass into the items that has input fields
      */
-    draw(position: XYObject, inputs: any[] = []): HTMLDivElement {
+    public draw(position: XYObject, inputs: any[] = []): HTMLDivElement {
         this._container = document.createElement('div');
         this._container.classList.add(ContextMenu.Class);
         this._container.style.opacity = '0';
@@ -211,7 +211,7 @@ export default class ContextMenu {
     /**
      * Clears all content from the root HTML container
      */
-    dispose(): void {
+    public dispose(): void {
         while(this._container.firstChild) {
             this._container.removeChild(this._container.firstChild);
         }
@@ -328,10 +328,12 @@ export default class ContextMenu {
      * Renders an input field for specific menu item
      * 
      * @param id            dom node id for the item
-     * @param type          
-     * @param min 
-     * @param max 
-     * @param initial_value 
+     * @param type          input type (e.g. number, text, file)
+     * @param min           min value for the input (if applicable)
+     * @param max           max value for the input (if applicable)
+     * @param initial_value initial value for the input
+     * 
+     * @returns generated html element ready to be mounted to the DOM
      */
     private _drawInput(
         id: string,

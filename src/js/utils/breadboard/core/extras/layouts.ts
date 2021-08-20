@@ -1,4 +1,4 @@
-import BackgroundLayer from "../../layers/BackgroundLayer";
+import BackgroundLayer, { DomainSchematicStyle } from "../../layers/BackgroundLayer";
 import LabelLayer from "../../layers/LabelLayer";
 import Grid, { AuxPointCategory } from "../Grid";
 import {Layout} from "../types";
@@ -40,7 +40,7 @@ export const LAYOUTS: {[key: string]: Layout} = {
                 horz: true,
                 from: {x: 0, y: 0}, to: {x: -1, y: 0},
                 minus_from: {x: 0, y: -1}, minus_to: {x: -1, y: -1},
-                style: BackgroundLayer.DomainSchematicStyles.None,
+                style: DomainSchematicStyle.None,
                 role: LabelLayer.CellRoles.Analog,
                 value_orientation: 'north'
             },

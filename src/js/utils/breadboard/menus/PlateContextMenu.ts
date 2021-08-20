@@ -1,7 +1,10 @@
 import ContextMenu, { ContextMenuItemInputType } from "../core/ContextMenu"
 
+/**
+ * Context menu intended to draw when clicking on the plate
+ */
 export default class PlateContextMenu extends ContextMenu {
-    // Алиасы пунктов контекстного меню
+    // Context menu items aliases
     static get CMI_REMOVE() {return "cmi_rm"}
     static get CMI_INPUT()  {return "cmi_inp"}
     static get CMI_ROTCW()  {return "cmi_rcw"}
