@@ -1,24 +1,40 @@
+import SVG from "svg.js";
 import Layer from "../core/Layer";
-import BackgroundLayer from "js/utils/breadboard/layers/BackgroundLayer";
-import LabelLayer from "js/utils/breadboard/layers/LabelLayer";
-import {getCursorPoint} from "js/utils/breadboard/core/extras/helpers";
-import BoardContextMenu from "js/utils/breadboard/menus/BoardContextMenu";
+import BackgroundLayer from "~/js/utils/breadboard/layers/BackgroundLayer";
+import LabelLayer from "~/js/utils/breadboard/layers/LabelLayer";
+import BoardContextMenu from "~/js/utils/breadboard/menus/BoardContextMenu";
+import Grid from "../core/Grid";
+import ContextMenu from "../core/ContextMenu";
 
+/**
+ * The {@link Layer} that displays menu button and handles events to
+ * open the {@link BoardContextMenu}
+ */
 export default class ControlsLayer extends Layer {
+    private _menu: ContextMenu;
+    private _buttongroup: any;
+    /** CSS class of the layer */
     static get Class() {return "bb-layer-controls"}
 
+    /** HTML menu button id */
     static get MenuButtonId() {return "bb-btn-menu"}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    private _callbacks: { menuclick: () => void; };
+
+    constructor(
+        container: SVG.Container, 
+        grid: Grid, 
+        schematic=false, 
+        detailed=false, 
+        verbose=false
+    ) {
+        super(container, grid, schematic, detailed, verbose);
 
         this._container.addClass(ControlsLayer.Class);
 
         this._callbacks = {
             menuclick: () => {}
         };
-
-        this._is_fullscreen = false;
 
         this.setLayoutConfig();
 
@@ -27,39 +43,25 @@ export default class ControlsLayer extends Layer {
         this._menu = new BoardContextMenu();
     }
 
-    setLayoutConfig(config) {
+    setLayoutConfig(config: { horz?: any; } = {}) {
         config = config || {};
-
-        this._params = {
-            x1: config.horz ? 130 : 10,
-            y1: config.horz ? 0 : 40,
-            w1: config.horz ? 240 : 180,
-            h1: config.horz ? 120 : 120,
-
-            x2: config.horz ? 850 : 10,
-            y2: config.horz ? 0 : this.__grid.size.y - 40,
-            w2: config.horz ? 210 : 180,
-            h2: config.horz ? 120 : 120,
-
-            logo_horz: !!config.horz,
-        };
     }
 
     compose() {
         this._buttongroup = this._container.nested().id(ControlsLayer.MenuButtonId);
 
         document.addEventListener('contextmenu', this._handleContextMenu, false);
-        document.addEventListener('keyup', this.handleKey, false);
+        // document.addEventListener('keyup', this.handleKey, false);
         this._drawMenuButton();
 
         this._hide();
     }
 
-    addContextMenuItem(alias, label, active) {
+    addContextMenuItem(alias: string, label: string, active: boolean = true) {
         this._menu.addItem(alias, label, active);
     }
 
-    setVisibility(is_visible) {
+    setVisibility(is_visible: boolean) {
         is_visible ? this._show() : this._hide();
     }
 
@@ -71,7 +73,7 @@ export default class ControlsLayer extends Layer {
         }
     }
 
-    onMenuClick(cb) {
+    onMenuClick(cb: () => void) {
         if (!cb) {this._callbacks.menuclick = () => {}; return}
 
         this._callbacks.menuclick = cb;
@@ -101,8 +103,8 @@ export default class ControlsLayer extends Layer {
      * @param {MouseEvent} evt
      * @private
      */
-    _handleContextMenu(evt) {
-        let el = evt.target;
+    _handleContextMenu(evt: MouseEvent) {
+        let el = evt.target as Element;
 
         /// Определить, является ли элемент, по которому выполнено нажатие, частью слоя
         while ((el = el.parentElement) && !(

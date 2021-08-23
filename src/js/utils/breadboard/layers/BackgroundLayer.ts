@@ -78,9 +78,9 @@ export default class BackgroundLayer extends Layer {
         grid: Grid, 
         schematic: boolean = false, 
         detailed: boolean = false, 
-        debug: boolean = false
+        verbose: boolean = false
     ) {
-        super(container, grid, schematic, detailed);
+        super(container, grid, schematic, detailed, verbose);
 
         this._container.addClass(BackgroundLayer.Class);
 
@@ -92,7 +92,7 @@ export default class BackgroundLayer extends Layer {
 
         this._domain_config = undefined;
 
-        this._debug = debug;
+        this._debug = verbose;
         this._gcells = [];
         this._gcells_hovered = [];
         this._cell_last_hovered = undefined;
@@ -101,11 +101,21 @@ export default class BackgroundLayer extends Layer {
         this._initGroups();
     }
 
-    setDomainConfig(domain_config: Domain[]) {
+    /**
+     * Sets the board topology required to display cells and contacts
+     * 
+     * The method is expected to be called before the {@link compose} is called
+     * 
+     * @param domain_config 
+     */
+    public setDomainConfig(domain_config: Domain[]) {
         this._domain_config = domain_config;
     }
 
-    compose() {
+    /**
+     * Draw contents for the layer
+     */
+    public compose() {
         this._boardgroup
             .rect().width('99%').height('99%') /// 99 из-за обрезания рамки
             .radius(20)
@@ -126,16 +136,25 @@ export default class BackgroundLayer extends Layer {
         this._drawCells();
     }
 
-    recompose(schematic: boolean, detailed: boolean, debug: boolean) {
+    /**
+     * @inheritdoc
+     */
+    public recompose(schematic: boolean, detailed: boolean, verbose: boolean) {
         super.recompose(schematic, detailed);
 
-        this._debug = debug;
+        this._debug = verbose;
 
         this._initGroups();
         this.compose();
     }
 
-    _initGroups() {
+
+    /**
+     * Initializes internal SVG groups of the layer
+     * 
+     * Removes previously created groups and re-attaches event handlers
+     */
+    private _initGroups() {
         this._clearGroups();
 
         this._boardgroup    = this._container.group();
@@ -146,14 +165,20 @@ export default class BackgroundLayer extends Layer {
         this._attachHandlers();
     }
 
-    _clearGroups() {
+    /** 
+     * Removes SVG groups created previously with {@link _initGroups}
+     */
+    private _clearGroups() {
         if (this._boardgroup)   this._boardgroup.remove();
         if (this._domaingroup)  this._domaingroup.remove();
         if (this._currentgroup) this._currentgroup.remove();
         if (this._decogroup)    this._decogroup.remove();
     }
 
-    _attachHandlers() {
+    /**
+     * Attaches event handlers for mouse movement to highlight hovered cells
+     */
+    private _attachHandlers() {
         if (!this._debug) return;
 
         this._gcells_hovered = [];
@@ -170,7 +195,10 @@ export default class BackgroundLayer extends Layer {
         });
     }
 
-    _hoverCell() {
+    /**
+     * Handles cell hovers (debug-only)
+     */
+    private _hoverCell() {
         this._scheduled_animation_frame = false;
 
         const svg_main = this._container.node as unknown as SVGSVGElement;
@@ -207,12 +235,16 @@ export default class BackgroundLayer extends Layer {
         }
     }
 
-    _drawAuxPoints() {
+    /**
+     * Draws auxiliary points (special points which fall outside the regular grid)
+     */
+    private _drawAuxPoints() {
         this._drawAuxPointSource();
         this._drawAuxPointUsbs();
     }
 
-    _drawCells() {
+    /** Draws cells (points of the regular grid) */
+    private _drawCells() {
         this._gcells = [];
 
         for (let col of this.__grid.cells) {
@@ -222,7 +254,11 @@ export default class BackgroundLayer extends Layer {
         }
     }
 
-    _drawDomains() {
+    /**
+     * Draws cell domains (contact lines which groups the cells into the "domains", 
+     * see {@link BackgroundLayer})
+     */
+    private _drawDomains() {
         if (!this._domain_config) return;
 
         for (const domain of this._domain_config) {
@@ -266,18 +302,31 @@ export default class BackgroundLayer extends Layer {
     }
 
     /**
-     *
-     * @param {SVG.Container}   container   SVG-узел, в котором рисовать
-     * @param {Cell}            cell_from   Начальная ячейка сетки
-     * @param {Cell}            cell_to     Конечная ячейка сетки
-     * @param {SVG.Gradient}    color       Задать цвет домена
-     * @param {boolean}         dotted      Пунктирный стиль (в схем. режиме)
-     * @param {boolean}         inversed    Инвертировать смещение линии (в схем. режиме)
-     * @param {number}          after       Дорисовать линию на N ячеек после (в схем. режиме)
-     * @param {number}          before      Дорисовать линию на N ячеек до (в схем. режиме)
-     * @private
+     * Draws separate contact line (also called "domain" here)
+     * 
+     * Domain is a group of interconnected cells. 
+     * It's usually represented as the non-diagonal contact line.
+     * It can have different visual styles, which can be adusted through the parameters
+     * of this method.
+     * 
+     * In schematic mode, the contact line has an offset in order not to block 
+     * the contact cells themselves (which looks as the dots in this mode).
+     * The line and cells are connected with the notches.
+     * 
+     * You can prepend and append the line without the notches 
+     * by setting the `after` and `before` parameters to draw adjacent domains
+     * with different styles continuously, which is needed for some of the board configurations.
+     * 
+     * @param container   SVG parent element to render the content to
+     * @param cell_from   Starting cell of the domain
+     * @param cell_to     End cell of the domain
+     * @param color       Color of the domain
+     * @param dotted      (schematic mode only) apply dotted style
+     * @param inversed    (schematic mode only) invert line offset
+     * @param after       (schematic mode only) append the line for N cells after
+     * @param before      (schematic mode only) prepend the line for N cells before
      */
-    _drawDomain(
+    private _drawDomain(
         container: SVG.Container,
         cell_from: Cell, cell_to: Cell,
         color: string = "#D4AF37",
@@ -331,7 +380,13 @@ export default class BackgroundLayer extends Layer {
         }
     }
 
-    _drawCell(container: SVG.Container, cell: Cell) {
+    /**
+     * Draws separate cell (regular point of the {@link Grid} 
+     * 
+     * @param container SVG parent element to render the content to
+     * @param cell related {@link Cell} of the grid
+     */
+    private _drawCell(container: SVG.Container, cell: Cell) {
         if (this._gcells[cell.idx.x] == null) {
             this._gcells[cell.idx.x] = [];
         }
@@ -370,7 +425,20 @@ export default class BackgroundLayer extends Layer {
             .move(cell.pos.x, cell.pos.y);
     }
 
-    _drawDomainLine(
+    /**
+     * Draws separate domain as line (intended to use in schematic mode)
+     * 
+     * @see _drawDomain
+     * 
+     * @param container     SVG parent element to render the content to
+     * @param cell_from     Starting cell of the line
+     * @param cell_to       End cell of the line
+     * @param inversed      (schematic mode only) invert line offset
+     * @param use_notches   Whether to draw notches to connect the cells with the line
+     * @param color         Color of the line
+     * @param dotted        (schematic mode only) apply dotted style       
+     */
+    private _drawDomainLine(
         container: SVG.Container, 
         cell_from: Cell, 
         cell_to: Cell, 
@@ -413,15 +481,22 @@ export default class BackgroundLayer extends Layer {
     }
 
     /**
-     * Только для детального схематического режима
+     * Draws notches connecting cells and a line in the domain (intended to use in schematic mode)
+     * 
+     * @see _drawDomainLine
      *
-     * @param container
-     * @param cell_from
-     * @param cell_to
-     * @param color
-     * @private
+     * @param container SVG parent element to render the content to 
+     * @param cell_from Starting cell of the line
+     * @param cell_to   End cell of the line
+     * @param color     Notch color
      */
-    _drawDomainLineNotches(container: SVG.Container, cell_from: Cell, cell_to: Cell, inversed: boolean, color: string) {
+    private _drawDomainLineNotches(
+        container: SVG.Container, 
+        cell_from: Cell, 
+        cell_to: Cell, 
+        inversed: boolean, 
+        color: string
+    ) {
         const is_horizontal = Cell.IsLineHorizontal(cell_from, cell_to),
               is_vertical   = Cell.IsLineVertical(cell_from, cell_to);
 
@@ -447,7 +522,25 @@ export default class BackgroundLayer extends Layer {
         }
     }
 
-    _drawDomainRect(container: SVG.Container, cell_from: Cell, cell_to: Cell, color: string) {
+    /**
+     * Draws separate domain as a rectangle (intended to use in non-schematic mode)
+     * 
+     * Note: non-schematic mode is now obsolete as the board faceplate does not differ from
+     * schematic representation. It's still needed to keep this for older board versions though.
+     * 
+     * @see _drawDomain
+     * 
+     * @param container SVG parent element to render the content to 
+     * @param cell_from Starting cell of the line
+     * @param cell_to   End cell of the line
+     * @param color     Rectangle color
+     */
+    private _drawDomainRect(
+        container: SVG.Container, 
+        cell_from: Cell, 
+        cell_to: Cell, 
+        color: string
+    ) {
         const width = Math.abs(cell_from.pos.x - cell_to.pos.x),
               height = Math.abs(cell_from.pos.y - cell_to.pos.y);
 
@@ -458,7 +551,14 @@ export default class BackgroundLayer extends Layer {
             .radius(10);
     }
 
-    _drawAuxPointSource() {
+    /**
+     * Draws voltage source element (as a group of auxiliary points of the {@link Grid} 
+     * if required in the domain config specified in {@link setDomainConfig})
+     * 
+     * @see AuxPointCategory
+     * @see _drawAuxPoints
+     */
+    private _drawAuxPointSource() {
         if (
             !this.__grid.isAuxPointCatRequired(AuxPointCategory.SourceV5) &&
             !this.__grid.isAuxPointCatRequired(AuxPointCategory.SourceV8)
@@ -540,7 +640,14 @@ export default class BackgroundLayer extends Layer {
         // }
     }
 
-    _drawAuxPointUsbs() {
+    /**
+     * Draws usb ports (as a groups of auxiliary points of the {@link Grid} 
+     * if required in the domain config specified in {@link setDomainConfig})
+     * 
+     * @see AuxPointCategory
+     * @see _drawAuxPoints
+     */
+    private _drawAuxPointUsbs() {
         if (this.__grid.isAuxPointCatRequired(AuxPointCategory.Usb1)) {
             this._drawAuxPointUsb(
                 this.__grid.auxPoint(AuxPointType.U1Vcc) as AuxPoint,
@@ -560,14 +667,32 @@ export default class BackgroundLayer extends Layer {
         }
     }
 
-    _drawAuxPointUsb(p_vcc: AuxPoint, p_gnd: AuxPoint, p_an1: AuxPoint, p_an2: AuxPoint) {
+    /**
+     * Draws specific USB port from its {@link AuxPointCategory}
+     * 
+     * @see _drawAuxPointUsbs
+     * 
+     * @param p_vcc an auxiliary point for VCC contact of the USB port
+     * @param p_gnd an auxiliary point for gnD contact of the USB port
+     * @param p_an1 an auxiliary point for Analog1 contact of the USB port
+     * @param p_an2 an auxiliary point for Analog2 contact of the USB port
+     */
+    private _drawAuxPointUsb(p_vcc: AuxPoint, p_gnd: AuxPoint, p_an1: AuxPoint, p_an2: AuxPoint) {
         this._drawAuxPointUsbPath(p_vcc, BackgroundLayer.DomainSchematicBias);
         this._drawAuxPointUsbPath(p_gnd, BackgroundLayer.DomainSchematicBias);
         this._drawAuxPointUsbPath(p_an1);
         this._drawAuxPointUsbPath(p_an2);
     }
 
-    _drawAuxPointUsbPath(point: AuxPoint, bias_domain: number = 0) {
+    /**
+     * Draws the contact line for the specific contact of USB port
+     * 
+     * @see _drawAuxPointUsb
+     * 
+     * @param point         an auxiliary point for the contact
+     * @param bias_domain   an offset of the domain lines relative to cell positions in schematic mode
+     */
+    private _drawAuxPointUsbPath(point: AuxPoint, bias_domain: number = 0) {
         let needs_bias = this.__schematic && this.__detailed;
         bias_domain = bias_domain * Number(needs_bias);
 

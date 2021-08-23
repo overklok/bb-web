@@ -31,6 +31,15 @@ export default abstract class Layer {
     /** Context menu call callback */
     private _onctxmenucall: any;
 
+    /**
+     * Prepares properties and modifies container as needed
+     * 
+     * @param container SVG container to draw the content in
+     * @param grid      the {@link Grid} applied to the board
+     * @param schematic enable schematic display mode (optional to use in children class)
+     * @param detailed  enable detailed display mode (optional to use in children class)
+     * @param verbose   display debug details (optional to use in children class)
+     */
     constructor(
         container: SVG.Container, 
         grid: Grid, 
@@ -59,7 +68,7 @@ export default abstract class Layer {
     abstract compose(): void;
 
     /**
-     * Removes and {@link compose}s the layer again with new options
+     * Removes and {@link compose}s layer's content again with new options
      * 
      * @param schematic schematic mode flag
      * @param detailed  detailed mode flag
@@ -116,7 +125,7 @@ export default abstract class Layer {
      *
      * @protected
      */
-    protected _callContextMenu(menu: ContextMenu, position: XYObject, inputs: []): void {
+    protected _callContextMenu(menu: ContextMenu, position: XYObject, inputs: [] = []): void {
         this._onctxmenucall && this._onctxmenucall(menu, position, inputs);
     }
 
