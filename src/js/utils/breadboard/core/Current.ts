@@ -32,6 +32,9 @@ export type Thread = {
     from: XYObject;
     /** Finish point of the current */
     to: XYObject;
+
+    /** flag for extra purposes */
+    ___touched?: boolean;
 }
 
 /**
@@ -88,6 +91,9 @@ export default class Current {
     private _activated: boolean;
     /** Current burning flag */
     private _burning: boolean;
+
+    /** flag for extra purposes */
+    public ___touched: boolean;
 
     /**
      * Color gradations of the {@link Current} weight

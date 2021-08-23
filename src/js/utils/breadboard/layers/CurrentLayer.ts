@@ -1,18 +1,42 @@
-import Grid from "../core/Grid";
+import SVG from "svg.js";
+
+import Grid, { AuxPoint, AuxPointCategory, AuxPointType } from "../core/Grid";
 import Cell from "../core/Cell";
 import Layer from "../core/Layer";
-import Current from "../core/Current";
-import BackgroundLayer from "../layers/BackgroundLayer";
+import Current, { Thread } from "../core/Current";
+import BackgroundLayer from "./BackgroundLayer";
 import * as Threads from "../core/extras/threads";
-import {cloneDeep} from "lodash-es";
+import { XYObject } from "../core/types";
 
+/**
+ * Displays and manages {@link Current} objects.
+ * Handles current data formats, generates paths for the {@link Current}s.
+ * 
+ * @see Current
+ */
 export default class CurrentLayer extends Layer {
+    /** CSS class of the layer */
     static get Class() {return "bb-layer-current"}
 
+    /** The minimum weight of a {@link Current} that is required to render it */
     static get MeaningfulnessThreshold() {return 1e-8}
 
-    constructor(container, grid, schematic=false, detailed=false) {
-        super(container, grid, schematic, detailed);
+    private _currents: {[key: number]: Current};
+    private _threads: {};
+    private _spare: any;
+    private _show_source: any;
+    private _currentgroup: any;
+    private _shorted: boolean;
+    private _callbacks: { shortcircuit: () => void; shortcircuitstart: () => void; shortcircuitend: () => void; };
+
+    constructor(
+        container: SVG.Container, 
+        grid: Grid, 
+        schematic: boolean = false, 
+        detailed: boolean = false,
+        verbose: boolean = false
+    ) {
+        super(container, grid, schematic, detailed, verbose);
 
         this._container.addClass(CurrentLayer.Class);
 
@@ -40,7 +64,11 @@ export default class CurrentLayer extends Layer {
         this._initGroups();
     }
 
-    recompose(schematic, detailed, show_source=true) {
+    recompose(
+        schematic: boolean, 
+        detailed: boolean, 
+        show_source: boolean = true
+    ) {
         super.recompose(schematic, detailed);
 
         let threads = Object.assign([], this._threads);
@@ -52,19 +80,19 @@ export default class CurrentLayer extends Layer {
         this.setCurrents(threads, this._spare, show_source);
     }
 
-    onShortCircuit(cb) {
+    onShortCircuit(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuit = () => {}}
 
         this._callbacks.shortcircuit = cb;
     }
 
-    onShortCircuitStart(cb) {
+    onShortCircuitStart(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuitstart = () => {}}
 
         this._callbacks.shortcircuitstart = cb;
     }
 
-    onShortCircuitEnd(cb) {
+    onShortCircuitEnd(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuitend = () => {}}
 
         this._callbacks.shortcircuitend = cb;
@@ -82,9 +110,9 @@ export default class CurrentLayer extends Layer {
     /**
      * Удалить ток
      *
-     * @param {String|Number} id идентификатор тока
+     * @param id идентификатор тока
      */
-    removeCurrent(id) {
+    removeCurrent(id: number) {
         if (typeof id === "undefined") {
             throw new TypeError("Argument 'id' must be defined");
         }
@@ -105,7 +133,7 @@ export default class CurrentLayer extends Layer {
      */
     removeAllCurrents() {
         for (let current_id in this._currents) {
-            this.removeCurrent(current_id);
+            this.removeCurrent(Number(current_id));
         }
 
         this._threads = {};
@@ -115,7 +143,7 @@ export default class CurrentLayer extends Layer {
      * Активировать все токи
      */
     activateAllCurrents() {
-        for (let current of this._currents) {
+        for (let current of Object.values(this._currents)) {
             current.activate();
         }
     };
@@ -124,7 +152,7 @@ export default class CurrentLayer extends Layer {
      * Деактивировать все токи
      */
     deactivateAllCurrents () {
-        for (let current of this._currents) {
+        for (let current of Object.values(this._currents)) {
             current.deactivate();
         }
     }
@@ -139,7 +167,7 @@ export default class CurrentLayer extends Layer {
      * @param {boolean}         spare       щадящий режим (для слабых машин)
      * @param {boolean}         show_source показывать путь тока от источника напряжения
      */
-    setCurrents(threads, spare, show_source=true) {
+    setCurrents(threads: Thread[], spare: boolean, show_source: boolean = true) {
         const threads_filtered = [];
 
         for (const thread of threads) {
@@ -166,7 +194,7 @@ export default class CurrentLayer extends Layer {
             let current = this._currents[current_id];
 
             /// здесь будет храниться обнаруженный идентичный контур
-            let same = false;
+            let same: boolean|Thread = false;
 
             /// цикл по новым контурам
             for (let [i, thread] of threads.entries()) {
@@ -185,7 +213,7 @@ export default class CurrentLayer extends Layer {
             if (same) {
                 if (same.weight < CurrentLayer.MeaningfulnessThreshold) {
                     // удалить ток, если он недостаточно весомый
-                    this.removeCurrent(current_id);
+                    this.removeCurrent(Number(current_id));
                 } else {
                     // обновить вес тока
                     current.setWeight(same.weight);
@@ -196,7 +224,7 @@ export default class CurrentLayer extends Layer {
         /// удалить непомеченные токи
         for (let current_id in this._currents) {
             if (!this._currents[current_id].___touched) {
-                this.removeCurrent(current_id)
+                this.removeCurrent(Number(current_id))
             }
         }
 
@@ -262,7 +290,7 @@ export default class CurrentLayer extends Layer {
      * @returns {Current|null}
      * @private
      */
-    _addCurrent(thread, spare, show_source=true) {
+    _addCurrent(thread: Thread, spare: boolean, show_source: boolean = true) {
         if (!thread || thread.length === 0) {}
 
         let line_path = this._buildCurrentLinePath(thread);
@@ -286,7 +314,7 @@ export default class CurrentLayer extends Layer {
      * @returns {Array} последовательность SVG-координат
      * @private
      */
-    _buildCurrentLinePath(points) {
+    _buildCurrentLinePath(points: {from: XYObject, to: XYObject}) {
         if (this.__grid.virtualPoint(points.from.x, points.from.y) ||
             this.__grid.virtualPoint(points.to.x, points.to.y)
         ) {
@@ -299,15 +327,15 @@ export default class CurrentLayer extends Layer {
         const   aux_point = aux_point_to || aux_point_from,
                 to_aux = !!aux_point_to;
 
-        if (aux_point) {
+        if (aux_point && !Array.isArray(aux_point)) {
             const c_arb = to_aux ? this.__grid.cell(points.from.x, points.from.y)
                                  : this.__grid.cell(points.to.x, points.to.y);
 
             switch (aux_point.cat) {
-                case Grid.AuxPointCats.SourceV5:  return this._getLinePathSource(c_arb, aux_point, to_aux);
-                case Grid.AuxPointCats.SourceV8:  return this._getLinePathSource(c_arb, aux_point, to_aux);
-                case Grid.AuxPointCats.Usb1:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
-                case Grid.AuxPointCats.Usb3:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+                case AuxPointCategory.SourceV5:  return this._getLinePathSource(c_arb, aux_point, to_aux);
+                case AuxPointCategory.SourceV8:  return this._getLinePathSource(c_arb, aux_point, to_aux);
+                case AuxPointCategory.Usb1:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
+                case AuxPointCategory.Usb3:    return this._getLinePathUsb(c_arb, aux_point, to_aux);
             }
         }
 
@@ -317,7 +345,7 @@ export default class CurrentLayer extends Layer {
         return this._getLinePathArbitrary(c_from, c_to);
     };
 
-    _getLinePathArbitrary(c_from, c_to) {
+    _getLinePathArbitrary(c_from: Cell, c_to: Cell) {
         let needs_bias = false;
 
         if (this.__schematic && this.__detailed) {
@@ -357,12 +385,12 @@ export default class CurrentLayer extends Layer {
         ];
     }
 
-    _getLinePathSource(c_arb, aux_point, to_source=false) {
-        let needs_bias  = this.__schematic && this.__detailed,
-            bias_y      = needs_bias * BackgroundLayer.DomainSchematicBias;
+    _getLinePathSource(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false) {
+        let needs_bias = this.__schematic && this.__detailed,
+            bias_y     = Number(needs_bias) * BackgroundLayer.DomainSchematicBias;
 
         if (to_source) {
-            if (aux_point.name === Grid.AuxPoints.Vcc) {
+            if (aux_point.name === AuxPointType.Vcc) {
                 bias_y = -bias_y;
             }
 
@@ -374,7 +402,7 @@ export default class CurrentLayer extends Layer {
                 ['L', aux_point.pos.x, aux_point.pos.y]
             ];
         } else {
-            if (aux_point.name === Grid.AuxPoints.Gnd) {
+            if (aux_point.name === AuxPointType.Gnd) {
                 bias_y = -bias_y;
             }
 
@@ -388,7 +416,7 @@ export default class CurrentLayer extends Layer {
         }
     }
 
-    _getLinePathUsb(c_arb, aux_point, to_source=false) {
+    _getLinePathUsb(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false) {
         if (to_source) {
             return [
                 ['M', c_arb.center_adj.x, c_arb.center_adj.y],
@@ -415,7 +443,7 @@ export default class CurrentLayer extends Layer {
      * @private
      * @deprecated
      */
-    static _appendLinePath(path, cell_from, cell_to) {
+    static _appendLinePath(path: number|string[][], cell_from: Cell, cell_to: Cell) {
         path.push(['M', cell_from.center.x, cell_from.center.y]);
         path.push(['L', cell_from.center.x, cell_from.center.y]);
         path.push(['L', cell_to.center.x,   cell_to.center.y]);

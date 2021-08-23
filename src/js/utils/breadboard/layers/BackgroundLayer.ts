@@ -113,7 +113,7 @@ export default class BackgroundLayer extends Layer {
     }
 
     /**
-     * Draw contents for the layer
+     * Draws contents for the layer
      */
     public compose() {
         this._boardgroup

@@ -11,16 +11,24 @@ import ContextMenu from "../core/ContextMenu";
  * open the {@link BoardContextMenu}
  */
 export default class ControlsLayer extends Layer {
-    private _menu: ContextMenu;
-    private _buttongroup: any;
     /** CSS class of the layer */
     static get Class() {return "bb-layer-controls"}
 
     /** HTML menu button id */
     static get MenuButtonId() {return "bb-btn-menu"}
 
+    /** Board context menu instance that is currently visible */
+    private _menu: ContextMenu;
+
+    /** SVG group for button details */
+    private _buttongroup: any;
+
+    /** Event handlers */
     private _callbacks: { menuclick: () => void; };
 
+    /**
+     * @inheritdoc 
+     */
     constructor(
         container: SVG.Container, 
         grid: Grid, 
@@ -36,18 +44,15 @@ export default class ControlsLayer extends Layer {
             menuclick: () => {}
         };
 
-        this.setLayoutConfig();
-
         this._handleContextMenu = this._handleContextMenu.bind(this);
 
         this._menu = new BoardContextMenu();
     }
 
-    setLayoutConfig(config: { horz?: any; } = {}) {
-        config = config || {};
-    }
-
-    compose() {
+    /**
+     * Draws contents for the layer
+     */
+    public compose() {
         this._buttongroup = this._container.nested().id(ControlsLayer.MenuButtonId);
 
         document.addEventListener('contextmenu', this._handleContextMenu, false);
@@ -57,15 +62,35 @@ export default class ControlsLayer extends Layer {
         this._hide();
     }
 
-    addContextMenuItem(alias: string, label: string, active: boolean = true) {
+    /** 
+     * Adds an item to the board context menu 
+     * 
+     * This method is useful to add some extra items to the menu,
+     * such as options to switch the board layout, which can be added
+     * eventually, so they cannot be defined at the initialization step
+     */
+    public addContextMenuItem(alias: string, label: string, active: boolean = true) {
         this._menu.addItem(alias, label, active);
     }
 
-    setVisibility(is_visible: boolean) {
+    /**
+     * Toggles the appearance of the layer
+     * 
+     * Controls are needed only when managing the board's contents,
+     * but it needs to be disabled for end users.
+     * 
+     * @param is_visible whether to make the layer visible
+     */
+    public setVisibility(is_visible: boolean) {
         is_visible ? this._show() : this._hide();
     }
 
-    toggleButtonDisplay(on=true) {
+    /**
+     * Toggles the appearance of the menu button
+     * 
+     * @param on 
+     */
+    public toggleButtonDisplay(on=true) {
         if (on) {
             this._buttongroup.show();
         } else {
@@ -73,13 +98,21 @@ export default class ControlsLayer extends Layer {
         }
     }
 
-    onMenuClick(cb: () => void) {
+    /**
+     * Attaches a handler of the menu click event
+     * 
+     * @param cb callback function as a handler to attach
+     */
+    public onMenuClick(cb: () => void) {
         if (!cb) {this._callbacks.menuclick = () => {}; return}
 
         this._callbacks.menuclick = cb;
     }
 
-    _drawMenuButton() {
+    /**
+     * Draws the menu button to the layer
+     */
+    private _drawMenuButton() {
         this._buttongroup
             .click(() => this._callbacks.menuclick())
             .style({cursor: 'pointer'});
@@ -91,19 +124,22 @@ export default class ControlsLayer extends Layer {
         this._buttongroup.rect(30, 5).move(20, 40);
     }
 
-    _show() {
+    private _show() {
         this._buttongroup.show();
     }
 
-    _hide() {
+    private _hide() {
         this._buttongroup.hide();
     }
 
     /**
+     * Handles mouse clicks on the board background to call the context menu
+     * 
+     * The handler prevents the opening of the system menu
+     * 
      * @param {MouseEvent} evt
-     * @private
      */
-    _handleContextMenu(evt: MouseEvent) {
+    private _handleContextMenu(evt: MouseEvent) {
         let el = evt.target as Element;
 
         /// Определить, является ли элемент, по которому выполнено нажатие, частью слоя

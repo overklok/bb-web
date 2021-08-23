@@ -99,17 +99,17 @@ export type AuxPoint = {
  * @category Breadboard
  */
 export default class Grid {
+    /** TODO: Additional info that is not directly related to the Grid, should be generalized */
+    public curr_straight_top_y: number;
+    /** TODO: Additional info that is not directly related to the Grid, should be generalized */
+    public curr_straight_bottom_y: number;
+
     /** An array of cells placed on the {@link Grid} */
     private _cells: Cell[][];
     /** A set of fixed propertis of the {@link Grid} */
     private _params: GridParams;
     /** Categories of auxiliary points placed in the {@link Grid} */
     private _aux_points_cats: string[];
-
-    /** TODO: Additional info that is not directly related to the Grid, should be generalized */
-    private curr_straight_top_y: number;
-    /** TODO: Additional info that is not directly related to the Grid, should be generalized */
-    private curr_straight_bottom_y: number;
 
     /** 
      * A set of virtual (invisible but logically important) points on the {@link Grid} 
