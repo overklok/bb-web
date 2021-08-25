@@ -1,8 +1,17 @@
-import Grid, { AuxPointType, BorderType } from "../Grid";
-import LabelLayer from "../../layers/LabelLayer";
+import { AuxPoint, AuxPointType, BorderType } from "../Grid";
 import {boundsToCoordList, buildGrid, pointsToCoordList} from "./helpers";
+import { CellRole, Layout, PinState, XYObject } from "../types";
 
 let ard_plate_ser_num = 0;
+
+export type CellStructure = {
+
+}
+
+export type BoardInfo = {
+    cell_struct: { [key: number]: CellStructure[] },
+    emb_plates: any
+}
 
 /**
  * Convert generic board config to core-specific format
@@ -18,10 +27,10 @@ let ard_plate_ser_num = 0;
  * @param no_arduino_embedded   whether to exclude arduino pin functionalty (specifically for board verification)
  * @returns 
  */
-function layoutToBoardInfo(layout, no_arduino_embedded=false) {
+function layoutToBoardInfo(layout: Layout, no_arduino_embedded=false): BoardInfo {
     const grid = buildGrid(layout);
 
-    let cell_structure = {};
+    let cell_structure: {[key: number]: CellStructure[]} = {};
     let embedded_plates = [];
 
     const {domains} = layout;
@@ -98,13 +107,14 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
             }
 
             switch(domain.role) {
-                case LabelLayer.CellRoles.Analog: {
+                case CellRole.Analog: {
                     if (!anal_minus_from || !anal_minus_to) {
                         throw Error("Analog domain specified but minus mapping were not provided");
                     }
 
                     // Map arduino cells to minus cells
-                    let anal_minus_map_horz = domain.minus_horz ? domain.minus_horz : domain.horz;
+                    // let anal_minus_map_horz = domain.minus_horz ? domain.minus_horz : domain.horz;
+                    let anal_minus_map_horz = domain.horz;
                     // In-domain analog minus coordinates
                     let anal_minus_coords = [];
 
@@ -141,11 +151,11 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
 
                     break;
                 }
-                case LabelLayer.CellRoles.Plus:
+                case CellRole.Plus:
                     plus_coords_idx = cell_str_idx;
                     cell_structure[cell_str_idx++] = [{x: -1, y: from.y}, ...coords];
                     break;
-                case LabelLayer.CellRoles.Minus: {
+                case CellRole.Minus: {
                     minus_coords_idx = cell_str_idx;
                     cell_structure[cell_str_idx++] = [{x: -1, y: from.y}, ...coords];
                     break;
@@ -162,8 +172,8 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
         cell_structure[minus_coords_idx] = cell_structure[minus_coords_idx].concat(arduino_remap_minus);
     }
 
-    const point_minus = grid.auxPoint(AuxPointType.Gnd),
-          point_vcc = grid.auxPoint(AuxPointType.Vcc);
+    const point_minus = grid.auxPoint(AuxPointType.Gnd) as AuxPoint,
+          point_vcc = grid.auxPoint(AuxPointType.Vcc) as AuxPoint;
 
     if (point_minus && point_vcc) {
         embedded_plates.push(getVoltageSourcePlate(point_minus.idx, point_vcc.idx));
@@ -175,7 +185,7 @@ function layoutToBoardInfo(layout, no_arduino_embedded=false) {
     }
 }
 
-function getVoltageSourcePlate(coords_minus, coords_vcc) {
+function getVoltageSourcePlate(coords_minus: XYObject, coords_vcc: XYObject) {
     return {
         type: 'Vss',
         id: -100,
@@ -191,7 +201,7 @@ function getVoltageSourcePlate(coords_minus, coords_vcc) {
     }
 }
 
-function getArduinoPinPlate(arduino_node, minus_node, pin_state_initial) {
+function getArduinoPinPlate(arduino_node: XYObject, minus_node: XYObject, pin_state_initial: PinState) {
     return {
         type: 'ard_pin',
         id: -101 - ard_plate_ser_num++,

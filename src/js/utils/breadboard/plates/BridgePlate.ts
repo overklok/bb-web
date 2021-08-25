@@ -1,13 +1,23 @@
-import Plate from "../core/Plate";
+import SVG from 'svg.js';
+
+import Plate, { PlateProps } from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
+import Grid from '../core/Grid';
 
 export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}
 
     static get PROP_LENGTH() {return 'len'}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id?: number,
+        props?: PlateProps
+    ) {
         super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: this.__length__, y: 1};
@@ -24,7 +34,7 @@ export default class BridgePlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
-            ...super.__defaultProps__,
+            ...super['__defaultProps__'],
             [BridgePlate.PROP_LENGTH]: 2
         }
     }
@@ -41,7 +51,7 @@ export default class BridgePlate extends LinearPlate {
         return String(this.__length__);
     }
 
-    __setProps__(props) {
+    __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         let length = Number(props[BridgePlate.PROP_LENGTH]);
@@ -54,7 +64,7 @@ export default class BridgePlate extends LinearPlate {
      * @param {Cell}    position    положение перемычки
      * @param {string}  orientation ориентация перемычки
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: any) {
         this._drawPicture();
 
         // this._group.text(`Bridge ${this._params.len} cells`).font({size: 20});
@@ -66,7 +76,7 @@ export default class BridgePlate extends LinearPlate {
      * @private
      */
     _drawPicture(qs=Plate.QuadSizePreferred) {
-        let ls = this.__schematic ? 10 : 6;
+        let ls = this._params.schematic ? 10 : 6;
 
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);

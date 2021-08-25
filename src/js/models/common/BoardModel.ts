@@ -10,8 +10,8 @@ import AsynchronousModel, {
     connect,
 } from "../../core/base/model/AsynchronousModel";
 import {extractLabeledCells} from "../../utils/breadboard/core/extras/helpers";
-import LabelLayer from "../../utils/breadboard/layers/LabelLayer";
 import { ServerGreeting } from "./ConnectionModel";
+import { CellRole, Layout } from "~/js/utils/breadboard/core/types";
 
 // Event channels
 const enum ChannelsTo {
@@ -48,7 +48,7 @@ interface BreadboardModelState extends ModelState {
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
     static alias = 'board';
 
-    static Layouts: {[key: string]: BoardLayout} = {
+    static Layouts: {[key: string]: Layout} = {
         v5x: CORE_LAYOUTS['v5x'],
         v8x: LAYOUTS['v8x']
     };
@@ -316,7 +316,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
         const pins: [number, string|number][] = [];
 
-        for (const cell of extractLabeledCells(layout, LabelLayer.CellRoles.Analog)) {
+        for (const cell of extractLabeledCells(layout, CellRole.Analog)) {
             pins.push([cell.pin_num, cell.pin_state_initial]);
         }
 
@@ -353,17 +353,6 @@ export type Thread = {
     from: {x: number, y: number};
     to: {x: number, y: number};
     weight: number;
-}
-
-export type BoardLayout = {
-    grid_rows: number;
-    grid_cols: number;
-    domains: {
-        horz: boolean;
-        from: {x: number, y: number},
-        to: {x: number, y: number},
-        pin_state_initial?: any
-    }[];
 }
 
 // Event data types

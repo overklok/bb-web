@@ -58,29 +58,30 @@ export type PlateParams = {
     verbose: boolean;
 }
 
+export type PlateProps = { [key: string]: number };
+
 /**
  * Класс плашки доски
  *
  * @class
- * @abstract
  * 
  * @category Breadboard
  */
 export default class Plate {
-    private __grid: Grid;
     private _node_parent: HTMLElement;
     private _alias: string;
     private _id: number;
     private _shadow: SVG.Nested;
     private _container: SVG.Nested;
     private _shadowgroup: SVG.G;
-    private _group: SVG.G;
+    protected _group: SVG.G;
     private _bezel: any;
     private _group_editable: SVG.G;
     private _error_highlighter: any;
     protected _params: PlateParams;
-    private _props: { [x: number]: number; };
-    private _state: PlateState;
+    protected __grid: Grid;
+    protected _state: PlateState;
+    protected _props: PlateProps;
     private _callbacks: {
         change: CallableFunction; // изменения плашки
         mousedown: CallableFunction;
@@ -120,14 +121,21 @@ export default class Plate {
     static set LEDSizePreferred(v) { LED_SIZE = v };
     static set LabelFontSizePreferred(v) { LABEL_FONT_SIZE = v };
 
-    constructor(container_parent: SVG.Doc, grid: Grid, schematic = false, verbose = false, id: number = null, props: {} = null) {
-        if (!container_parent || !grid) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic = false,
+        verbose = false,
+        id?: number,
+        props?: PlateProps
+    ) {
+        if (!container || !grid) {
             throw new TypeError("Both of container and grid arguments should be specified");
         }
 
         this.__grid = grid;
 
-        this._node_parent = container_parent.node;
+        this._node_parent = container.node;
 
         /// Кодовое имя плашки
         this._alias = (this as any).constructor.Alias;
@@ -136,8 +144,8 @@ export default class Plate {
         this._id = (id === null) ? (Math.floor(Math.random() * (10 ** 6))) : (id);
 
         /// Контейнер, группа и ссылка на сетку
-        this._shadow = container_parent.nested();        // для тени
-        this._container = container_parent.nested();        // для масштабирования
+        this._shadow = container.nested();        // для тени
+        this._container = container.nested();        // для масштабирования
         this._shadowgroup = this._shadow.group();             // для поворота тени
         this._group = this._container.group();          // для поворота
 
@@ -315,7 +323,7 @@ export default class Plate {
         throw new Error("Method should be implemented");
     }
 
-    __setProps__(props: {}) {
+    __setProps__(props: PlateProps) {
         this._props = coverObjects(props, this._props);
     }
 

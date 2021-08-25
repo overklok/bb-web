@@ -4,6 +4,11 @@
  */
 export type XYObject = { x: number, y: number }
 
+export enum PinState {
+    Input = "input",
+    Output = "output"
+}
+
 export type Domain = {
     horz: boolean,
     from: XYObject,
@@ -22,7 +27,7 @@ export type Domain = {
     pins_to?: number,
     line_after?: number,
     line_before?: number,
-    pin_state_initial?: "input" | "output",
+    pin_state_initial?: PinState,
     minus?: {x: number, y: number}
 }
 
@@ -70,6 +75,13 @@ export const enum Direction {
     Right,
     Down,
     Left,
+}
+
+export enum CellRole {
+    Plus = 'plus',
+    Minus = 'minus',
+    Analog = 'analog',
+    None = 'none'
 }
 
 /**

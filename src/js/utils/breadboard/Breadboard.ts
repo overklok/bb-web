@@ -283,10 +283,10 @@ export default class Breadboard {
 
     redraw(schematic: boolean, detailed: boolean, verbose: boolean, debug: boolean) {
         this._layers.background.recompose(schematic, detailed, debug);
-        this._layers.plate.recompose(schematic, verbose);
+        this._layers.plate.recompose(schematic, verbose,);
         this._layers.current.recompose(schematic, detailed);
-        this._layers.controls.recompose(schematic);
-        this._layers.label.recompose(schematic, detailed);
+        this._layers.controls.recompose(schematic, detailed, debug);
+        this._layers.label.recompose(schematic, detailed, debug);
     }
 
     /**
@@ -771,8 +771,10 @@ export default class Breadboard {
 
         let file = new Blob([plates_str], {type: "text/plain;charset=utf-8"});
 
+        // @ts-ignore
         if (window.navigator.msSaveOrOpenBlob) {
             // IE10+
+            // @ts-ignore
             window.navigator.msSaveOrOpenBlob(file, "bbconfig.json");
         } else {
             // Others

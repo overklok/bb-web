@@ -2,7 +2,7 @@ import Grid, { BorderType } from "../Grid";
 import SVG from "svg.js";
 import PlateLayer from "../../layers/PlateLayer";
 import defaults from "lodash/defaults";
-import LabelLayer from "js/utils/breadboard/layers/LabelLayer";
+import { CellRole } from "../types";
 
 export function mod(x, base) {
     return ((x % base) + base) % base;
@@ -50,7 +50,7 @@ export function* extractLabeledCells(layout, role=null) {
             for (let col = d_from_x; col <= d_to_x; col++) {
                 const cell = grid.cell(col, row);
 
-                const is_analog = domain.role === LabelLayer.CellRoles.Analog;
+                const is_analog = domain.role === CellRole.Analog;
 
                 yield {
                     cell,

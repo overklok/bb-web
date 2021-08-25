@@ -1,3 +1,7 @@
+import SVG from 'svg.js';
+import Cell from '../Cell';
+
+import Grid from '../Grid';
 import Plate from "../Plate";
 
 /**
@@ -7,7 +11,7 @@ import Plate from "../Plate";
  * @abstract
  */
 export default class LinearPlate extends Plate {
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(container: SVG.Container, grid: Grid, schematic = false, verbose = false, id: number = null, props: {} = null) {
         super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: this.__length__, y: 1};
@@ -38,7 +42,7 @@ export default class LinearPlate extends Plate {
     /**
      * @private
      */
-    __draw__() {
+    __draw__(position: Cell, orientation: any) {
         if (this._params.size.x !== 1 && this._params.size.y !== 1) {
             throw new RangeError("Invalid size of LinearPlate");
         }
@@ -52,7 +56,7 @@ export default class LinearPlate extends Plate {
      * @param cell
      * @private
      */
-    __getOppositeCell__(cell) {
+    __getOppositeCell__(cell: Cell) {
         let cell_main = this._state.cell;
 
         if (cell === cell_main) {

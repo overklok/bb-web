@@ -1,21 +1,55 @@
-import Layer from "../core/Layer";
+import SVG from "svg.js";
+import Grid from "../core/Grid";
 
+import Layer from "../core/Layer";
+import { XYObject } from "../core/types";
+
+/**
+ * Highlights rectangular cell regions to point out user failures
+ */
 export default class RegionLayer extends Layer {
+    /** CSS class of the layer */
     static get Class() {return "bb-layer-region"}
 
-    constructor(container, grid, schematic=false) {
-        super(container, grid, schematic);
+    /** layer's main SVG container */
+    protected _container: SVG.Container;
+
+    /** SVG group for highighters */
+    private _regiongroup: any;
+
+    /**
+     * @inheritdoc
+     */
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        detailed: boolean = false,
+        verbose: boolean = false
+    ) {
+        super(container, grid, schematic, detailed, verbose);
 
         this._container.addClass(RegionLayer.Class);
 
-        this._regiongroup   = undefined;
+        this._regiongroup = undefined;
     }
 
-    compose() {
+    /**
+     * @inheritdoc
+     */
+    public compose() {
         this._drawRegions();
     }
 
-    highlightRegion(from, to, clear=false, color="#d40010") {
+    /**
+     * Highlight single cell region
+     * 
+     * @param from  position of the first highlighter corner
+     * @param to    position of the second highlighter corner
+     * @param clear remove prevously created highighters
+     * @param color color of the highlighter
+     */
+    public highlightRegion(from: XYObject, to: XYObject, clear: boolean = false, color: string = "#d40010") {
         if (clear) {
             this._regiongroup.clear();
         }
@@ -39,7 +73,7 @@ export default class RegionLayer extends Layer {
         let width = Math.abs(cell_from.pos.x - cell_to.pos.x) + cell_from.size.x + this.__grid.gap.x * 2;
         let height = Math.abs(cell_from.pos.y - cell_to.pos.y) + cell_from.size.y + this.__grid.gap.y * 2;
 
-        let quad = this._regiongroup
+        this._regiongroup
             .rect(width, height)
             .move(cell_from.pos.x - this.__grid.gap.x, cell_from.pos.y - this.__grid.gap.y)
             .radius(10)
@@ -50,16 +84,29 @@ export default class RegionLayer extends Layer {
             .animate(1000).fill({opacity: 0.6}).loop(100000, true);
     }
 
-    clearRegions() {
+    /**
+     * Remove all the highlighters created
+     * 
+     * This action will be done automatically if a new region is added via {@link highlightRegion} by default.
+     */
+    public clearRegions() {
         this._regiongroup.clear();
     }
 
-    _drawRegions() {
+    /** 
+     * Initializes internal SVG group to draw highlighter elements inside
+     */
+    private _drawRegions() {
         this._regiongroup = this._container.group().id("regiongroup");
         // this._regiongroup.move(100, 170);
     }
 
-    _highlightOccupiedCells() {
+    /**
+     * Highlight all cells occupied by plate in the {@link Grid}
+     * 
+     * This method might be useful when debugging plate behavior.
+     */
+    private _highlightOccupiedCells() {
         this._regiongroup.clear();
 
         for (let col of this.__grid.cells) {

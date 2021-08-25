@@ -17,6 +17,9 @@ export default class ControlsLayer extends Layer {
     /** HTML menu button id */
     static get MenuButtonId() {return "bb-btn-menu"}
 
+    /** layer's main SVG container */
+    protected _container: SVG.Container;
+
     /** Board context menu instance that is currently visible */
     private _menu: ContextMenu;
 

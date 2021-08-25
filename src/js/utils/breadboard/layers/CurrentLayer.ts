@@ -21,6 +21,9 @@ export default class CurrentLayer extends Layer {
     /** The minimum weight of a {@link Current} that is required to render it */
     static get MeaningfulnessThreshold() {return 1e-8}
 
+    /** layer's main SVG container */
+    protected _container: SVG.Container;
+
     /** list of {@link Current} instances being displayed */
     private _currents: {[key: number]: Current};
     /** collection of {@link Current} data objects */
@@ -72,14 +75,14 @@ export default class CurrentLayer extends Layer {
     /**
      * @inheritdoc
      */
-    compose() {
+    public compose() {
         this._initGroups();
     }
 
     /**
      * @inheritdoc
      */
-    recompose(
+    public recompose(
         schematic: boolean, 
         detailed: boolean, 
         verbose: boolean = true
@@ -104,7 +107,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @param cb callback to attach
      */
-    onShortCircuit(cb?: () => void) {
+    public onShortCircuit(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuit = () => {}}
 
         this._callbacks.shortcircuit = cb;
@@ -118,7 +121,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @param cb callback to attach
      */
-    onShortCircuitStart(cb?: () => void) {
+    public onShortCircuitStart(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuitstart = () => {}}
 
         this._callbacks.shortcircuitstart = cb;
@@ -132,7 +135,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @param cb callback to attach
      */
-    onShortCircuitEnd(cb?: () => void) {
+    public onShortCircuitEnd(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuitend = () => {}}
 
         this._callbacks.shortcircuitend = cb;
@@ -143,7 +146,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @returns an object in which the keys are the IDs of the {@link Current} instance presented in the value
      */
-    getAllCurrents(): {[key: number]: Current} {
+    public getAllCurrents(): {[key: number]: Current} {
         return this._currents;
     }
 
@@ -152,7 +155,7 @@ export default class CurrentLayer extends Layer {
      *
      * @param id current ID
      */
-    removeCurrent(id: number) {
+    public removeCurrent(id: number) {
         if (typeof id === "undefined") {
             throw new TypeError("Argument 'id' must be defined");
         }
@@ -171,7 +174,7 @@ export default class CurrentLayer extends Layer {
     /**
      * Removes all of the currents presented in the layer
      */
-    removeAllCurrents() {
+    public removeAllCurrents() {
         for (let current_id in this._currents) {
             this.removeCurrent(Number(current_id));
         }
@@ -186,7 +189,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @see Current.activate
      */
-    activateAllCurrents() {
+    public activateAllCurrents() {
         for (let current of Object.values(this._currents)) {
             current.activate();
         }
@@ -197,7 +200,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @see Current.deactivate
      */
-    deactivateAllCurrents () {
+    public deactivateAllCurrents () {
         for (let current of Object.values(this._currents)) {
             current.deactivate();
         }
@@ -213,7 +216,7 @@ export default class CurrentLayer extends Layer {
      * @param spare       use simple graphics to keep performance comfortable
      * @param show_source draw additional currents to show the flow from voltage source
      */
-    setCurrents(threads: Thread[], spare: boolean, show_source: boolean = true) {
+    public setCurrents(threads: Thread[], spare: boolean, show_source: boolean = true) {
         const threads_filtered = [];
 
         for (const thread of threads) {
@@ -296,7 +299,7 @@ export default class CurrentLayer extends Layer {
     /**
      * Initializes internal SVG groups 
      */
-    _initGroups() {
+    private _initGroups() {
         this._clearGroups();
 
         this._currentgroup = this._container.group();
@@ -305,7 +308,7 @@ export default class CurrentLayer extends Layer {
     /** 
      * Removes SVG groups created previously with {@link _initGroups}
      */
-    _clearGroups() {
+    private _clearGroups() {
         if (this._currentgroup) this._currentgroup.remove();
     }
 
@@ -313,7 +316,7 @@ export default class CurrentLayer extends Layer {
      * Detects any short circuited {@link Current}s, i.e. {@link Current}s with the 
      * {@link Current.is_burning} flag set
      */
-    _findShortCircuits() {
+    private _findShortCircuits() {
         for (const id in this._currents) {
             if (!this._currents.hasOwnProperty(id)) continue;
 
@@ -347,7 +350,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @returns the {@link Current} instance added to the layer
      */
-    _addCurrent(thread: Thread, spare: boolean, show_source: boolean = true) {
+    private _addCurrent(thread: Thread, spare: boolean, show_source: boolean = true) {
         if (!thread) {}
 
         let line_path = this._buildCurrentLinePath(thread);
@@ -370,7 +373,7 @@ export default class CurrentLayer extends Layer {
      *
      * @returns a sequence of SVG path commands
      */
-    _buildCurrentLinePath(points: {from: XYObject, to: XYObject}): CurrentPath {
+    private _buildCurrentLinePath(points: {from: XYObject, to: XYObject}): CurrentPath {
         if (this.__grid.virtualPoint(points.from.x, points.from.y) ||
             this.__grid.virtualPoint(points.to.x, points.to.y)
         ) {
@@ -409,7 +412,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @returns a sequence of SVG path commands
      */
-    _getLinePathArbitrary(c_from: Cell, c_to: Cell): CurrentPath {
+    private _getLinePathArbitrary(c_from: Cell, c_to: Cell): CurrentPath {
         let needs_bias = false;
 
         if (this.__schematic && this.__detailed) {
@@ -464,7 +467,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @returns a sequence of SVG path commands
      */
-    _getLinePathSource(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false): CurrentPath {
+    private _getLinePathSource(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false): CurrentPath {
         let needs_bias = this.__schematic && this.__detailed,
             bias_y     = Number(needs_bias) * BackgroundLayer.DomainSchematicBias;
 
@@ -509,7 +512,7 @@ export default class CurrentLayer extends Layer {
      * @param to_source 
      * @returns 
      */
-    _getLinePathUsb(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false): CurrentPath {
+    private _getLinePathUsb(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false): CurrentPath {
         if (to_source) {
             return [
                 ['M', c_arb.center_adj.x, c_arb.center_adj.y],
@@ -536,7 +539,7 @@ export default class CurrentLayer extends Layer {
      * 
      * @deprecated
      */
-    static _appendLinePath(path: CurrentPath, cell_from: Cell, cell_to: Cell) {
+    private static _appendLinePath(path: CurrentPath, cell_from: Cell, cell_to: Cell) {
         path.push(['M', cell_from.center.x, cell_from.center.y]);
         path.push(['L', cell_from.center.x, cell_from.center.y]);
         path.push(['L', cell_to.center.x,   cell_to.center.y]);

@@ -16,9 +16,30 @@ import InductorPlate from "../plates/InductorPlate";
 import RelayPlate from "../plates/RelayPlate";
 import BuzzerPlate from "../plates/BuzzerPlate";
 import RGBPlate from "../plates/RGBPlate";
-import ControlsLayer from "js/utils/breadboard/layers/ControlsLayer";
+import ControlsLayer from "~/js/utils/breadboard/layers/ControlsLayer";
+import Plate from '../core/Plate';
+import Grid from '../core/Grid';
 
-const ITEMS = [
+type SelectorItemOption = {
+    title: string,
+    properties?: {[key: string]: any}
+}
+
+type SelectorItem = {
+    title: string,
+    type: new (...args: any[]) => Plate,
+    tags: string,
+    options?: SelectorItemOption[],
+    custom?: {
+        property_key: string,
+        default: {
+            title: string,
+            properties: { [key: string]: any }
+        }
+    }
+}
+
+const ITEMS: SelectorItem[] = [
     {
         title: "Перемычка",
         type: BridgePlate,
@@ -136,11 +157,21 @@ const ITEMS = [
     },
 ]
 
-export default class SelectorLayer extends Layer {
+export default class SelectorLayer extends Layer<HTMLDivElement> {
+    private _callbacks: { onplatetake: (plate_data: any, plate_x: any, plate_y: any, cursor_x: any, cursor_y: any) => void; clear: () => void; fullscreen: (is_fullscreen: boolean) => void; };
+    private _is_pinned: boolean;
+    private _items: any[];
+    private _oncloseclick: any;
+    private _htmlcontainer: HTMLDivElement;
+    private _btn_pin: any;
+    private _area: HTMLDivElement;
+    private _list: HTMLDivElement;
+    private _controls: HTMLDivElement;
+    private _is_fullscreen: boolean;
     static get Class() {return "bb-layer-selector"}
     static get Items() {return ITEMS}
 
-    constructor(container, grid) {
+    constructor(container: HTMLDivElement, grid: Grid) {
         super(container, grid);
 
         this._container.classList.add(SelectorLayer.Class);
@@ -156,6 +187,8 @@ export default class SelectorLayer extends Layer {
         this._items = [];
 
         this._oncloseclick = this._handleCloseClick.bind(this);
+
+        this._htmlcontainer = undefined;
 
         this.hide();
     }
@@ -200,10 +233,10 @@ export default class SelectorLayer extends Layer {
         this._is_pinned = !this._is_pinned;
 
         if (this._is_pinned) {
-            this.show(true);
+            this.show();
             this._btn_pin.innerHTML = 'Открепить';
         } else {
-            this.hide(true);
+            this.hide();
             this._btn_pin.innerHTML = 'Закрепить';
         }
     }
@@ -229,13 +262,19 @@ export default class SelectorLayer extends Layer {
         }
     }
 
-    onPlateTake(cb) {
+    onPlateTake(cb: (
+        plate_data: {},
+        plate_x: number,
+        plate_y: number,
+        cursor_x: number,
+        cursor_y: number
+    ) => void) {
         if (!cb) this._callbacks.onplatetake = () => {};
 
         this._callbacks.onplatetake = cb;
     }
 
-    onClear(cb) {
+    onClear(cb: () => void) {
         if (!cb) {
             this._callbacks.clear = () => {};
         } else {
@@ -243,7 +282,7 @@ export default class SelectorLayer extends Layer {
         }
     }
 
-    onFullscreen(cb) {
+    onFullscreen(cb: (on: boolean) => void) {
         if (!cb) {
             this._callbacks.fullscreen = () => {};
         } else {
@@ -251,8 +290,8 @@ export default class SelectorLayer extends Layer {
         }
     }
 
-    _handleCloseClick(evt) {
-        let el = evt.target;
+    _handleCloseClick(evt: MouseEvent) {
+        let el = evt.target as Element;
 
         if (el.id === ControlsLayer.MenuButtonId) return;
 
@@ -357,7 +396,7 @@ export default class SelectorLayer extends Layer {
         this._controls.appendChild(inp_search);
     }
 
-    _appendItem(settings) {
+    _appendItem(settings: SelectorItem) {
         if (!settings.options) return;
 
         const cell = document.createElement("div");
@@ -383,7 +422,7 @@ export default class SelectorLayer extends Layer {
         subtitle.classList.add('bb-sel-subtitle');
         inp_custom.classList.add('bb-sel-inp-custom');
 
-        const elements = [];
+        const elements: [HTMLElement, HTMLElement, SVG.Doc][] = [];
 
         for (const option of settings.options) {
             elements.push(
@@ -455,7 +494,14 @@ export default class SelectorLayer extends Layer {
         return cell;
     }
 
-    _generateSlide(cell, pedestal, subtitle, settings_item, settings, bullet_custom=false) {
+    _generateSlide(
+        cell: HTMLElement,
+        pedestal: HTMLElement,
+        subtitle: HTMLElement,
+        settings_item: SelectorItem,
+        settings: SelectorItemOption,
+        bullet_custom: boolean = false
+    ): [HTMLElement, HTMLElement, SVG.Doc] {
         const slide = document.createElement("div");
         const bullet = document.createElement("li");
         const svg_wrap = document.createElement("div");
@@ -483,12 +529,18 @@ export default class SelectorLayer extends Layer {
         return [slide, bullet, svg];
     }
 
-    _updateSlide(slide, svg, subtitle, settings_item, settings) {
+    _updateSlide(
+        slide: HTMLElement,
+        svg: SVG.Doc,
+        subtitle: HTMLElement,
+        settings_item: SelectorItem,
+        settings: SelectorItemOption
+    ) {
         svg.node.innerHTML = "";
 
         const gcell = this.__grid.cell(0, 0);
 
-        let plate,
+        let plate: Plate,
             error_message = null;
 
         try {
@@ -503,16 +555,16 @@ export default class SelectorLayer extends Layer {
 
         plate.move_to_point(0, 0);
 
-        const width = plate._container.width(),
-              height = plate._container.width();
+        const width = plate.container.width(),
+              height = plate.container.width();
 
-        plate._container.center(width / 2, height / 2);
+        plate.container.center(width / 2, height / 2);
 
         svg.node.setAttributeNS(
             null,"viewBox", `0 0 ${width} ${height}`
         );
 
-        slide.onmousedown = (evt) => this._onSlideHold(evt, svg.node, plate);
+        slide.onmousedown = (evt: MouseEvent) => this._onSlideHold(evt, svg.node, plate);
 
         slide.setAttribute('data-title', settings.title);
 
@@ -523,7 +575,7 @@ export default class SelectorLayer extends Layer {
         }
     }
 
-    _onBulletClick(cell, pedestal, subtitle, slide, bullet) {
+    _onBulletClick(cell: HTMLElement, pedestal: HTMLElement, subtitle: HTMLElement, slide: HTMLElement, bullet: HTMLElement) {
         const slide_active  = cell.getElementsByClassName('active')[0];
         const bullet_active = pedestal.getElementsByClassName('active')[0];
 
@@ -563,7 +615,7 @@ export default class SelectorLayer extends Layer {
         subtitle.innerText = slide.getAttribute('data-title');
     }
 
-    _onSlideHold(evt, svg_node, plate) {
+    _onSlideHold(evt: MouseEvent, svg_node: Element, plate: Plate) {
         if (evt.which !== 1) return;
 
         const rect = svg_node.getBoundingClientRect();
@@ -581,13 +633,13 @@ export default class SelectorLayer extends Layer {
         }
     }
 
-    _getElementIndex(node) {
+    _getElementIndex(node: NonDocumentTypeChildNode) {
         let index = 0;
         while ( (node = node.previousElementSibling) ) {index++;}
         return index;
     }
 
-    _handleKey(evt) {
+    _handleKey(evt: KeyboardEvent) {
         if (evt.code === 'KeyM') {
             this.togglePin();
         }

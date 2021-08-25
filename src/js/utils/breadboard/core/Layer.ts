@@ -1,4 +1,5 @@
 import SVG from 'svg.js';
+
 import ContextMenu from './ContextMenu';
 import Grid from './Grid';
 import { XYObject } from './types';
@@ -13,11 +14,18 @@ import { XYObject } from './types';
  * {@link Layer} defines basic restrictions for each {@link Layer} inheritor to provide
  * a general interface to manage their lifecycle.
  * 
+ * By default, the {@link Layer} uses an SVG container, so its content is SVG-based.
+ * But this can be changed to another type via generic parameter. 
+ * {@link Layer} is also HTML-aware. Inherit with generic parameter `ST` set to {@link HTMLElement}.
+ * 
+ * If you want to use another type of container, note that you may need to override some default methods 
+ * such as {@link show} and {@link hide}.
+ * 
  * @category Breadboard
  */
-export default abstract class Layer {
+export default abstract class Layer<CT = SVG.Container> {
     /** SVG container that contains the {@link Layer} content */
-    protected _container: SVG.Container;
+    protected _container: CT;
     /** Reference to the {@link Grid}, it keeps all board options synced between the {@link Layer}s */
     protected __grid: Grid;
 
@@ -41,7 +49,7 @@ export default abstract class Layer {
      * @param verbose   display debug details (optional to use in children class)
      */
     constructor(
-        container: SVG.Container, 
+        container: CT,
         grid: Grid, 
         schematic: boolean = false, 
         detailed: boolean = false, 
@@ -63,7 +71,7 @@ export default abstract class Layer {
 
     /**
      * Deploys {@link Layer}'s general internal DOM structure
-     * and optionally draw contents
+     * and optionally draws contents
      */
     abstract compose(): void;
 
@@ -84,14 +92,22 @@ export default abstract class Layer {
      * Hides the layer
      */
     hide(): void {
-        this._container.hide()
+        if (this._container instanceof SVG.Container) {
+            this._container.hide();
+        } else if (this._container instanceof HTMLElement) {
+            this._container.style.visibility = 'hidden';
+        }
     }
 
     /**
      * Shows the layer
      */
     show(): void {
-        this._container.show()
+        if (this._container instanceof SVG.Container) {
+            this._container.show()
+        } else if (this._container instanceof HTMLElement) {
+            this._container.style.visibility = 'visible';
+        }
     }
 
     /**

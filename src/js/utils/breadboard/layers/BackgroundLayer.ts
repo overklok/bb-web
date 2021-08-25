@@ -42,13 +42,16 @@ export default class BackgroundLayer extends Layer {
     /** an offset of domain lines relative to cell positions in schematic mode */
     static DomainSchematicBias = 20;
 
-    /** topology configuration of the specific breadboard */
+    /** layer's main SVG container */
+    protected _container: SVG.Container;
+
+    /** topology configuration of specific breadboard */
     private _domain_config: Domain[];
 
     /** whether to display debug information */
     private _debug: boolean;
 
-    /** SVG group for the main background */
+    /** SVG group for the board background */
     private _boardgroup: SVG.Container;
     /** SVG group for domain lines */
     private _domaingroup: SVG.Container;
@@ -71,6 +74,9 @@ export default class BackgroundLayer extends Layer {
     /** whether another animation frame is scheduled */
     private _scheduled_animation_frame: boolean;
 
+    /**
+     * @inheritdoc
+     */
     constructor(
         container: SVG.Container, 
         grid: Grid, 

@@ -1,7 +1,6 @@
-import BackgroundLayer, { DomainSchematicStyle } from "../../layers/BackgroundLayer";
-import LabelLayer from "../../layers/LabelLayer";
-import Grid, { AuxPointCategory } from "../Grid";
-import {Layout} from "../types";
+import { DomainSchematicStyle } from "../../layers/BackgroundLayer";
+import { AuxPointCategory } from "../Grid";
+import { CellRole, Layout } from "../types";
 
 /**
  * 
@@ -41,21 +40,21 @@ export const LAYOUTS: {[key: string]: Layout} = {
                 from: {x: 0, y: 0}, to: {x: -1, y: 0},
                 minus_from: {x: 0, y: -1}, minus_to: {x: -1, y: -1},
                 style: DomainSchematicStyle.None,
-                role: LabelLayer.CellRoles.Analog,
+                role: CellRole.Analog,
                 value_orientation: 'north'
             },
 
             // Верхняя линия "+"
             {
                 horz: true, from: {x: 0, y: 1}, to: {x: -1, y: 1}, bias_inv: true,
-                role: LabelLayer.CellRoles.Plus,
+                role: CellRole.Plus,
                 no_labels: true
             },
 
             // Нижняя линия "-"
             {
                 horz: true, from: {x: 0, y: -1}, to: {x: -1, y: -1},
-                role: LabelLayer.CellRoles.Minus,
+                role: CellRole.Minus,
                 no_labels: true
             },
 
