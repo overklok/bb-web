@@ -16,7 +16,7 @@ import { XYObject } from './types';
  * 
  * By default, the {@link Layer} uses an SVG container, so its content is SVG-based.
  * But this can be changed to another type via generic parameter. 
- * {@link Layer} is also HTML-aware. Inherit with generic parameter `ST` set to {@link HTMLElement}.
+ * {@link Layer} is also HTML-aware. Inherit with generic parameter `CT` set to {@link HTMLElement}.
  * 
  * If you want to use another type of container, note that you may need to override some default methods 
  * such as {@link show} and {@link hide}.
@@ -55,9 +55,6 @@ export default abstract class Layer<CT = SVG.Container> {
         detailed: boolean = false, 
         verbose: boolean = false
     ) {
-        if (!container) {throw new TypeError("Container is not defined")}
-        if (!grid) {throw new TypeError("Grid is not defined")}
-
         this._container = container;
 
         this.__grid = grid;
@@ -92,8 +89,8 @@ export default abstract class Layer<CT = SVG.Container> {
      * Hides the layer
      */
     hide(): void {
-        if (this._container instanceof SVG.Container) {
-            this._container.hide();
+        if (this._container.hasOwnProperty('hide')) {
+            (this._container as unknown as SVG.Container).hide();
         } else if (this._container instanceof HTMLElement) {
             this._container.style.visibility = 'hidden';
         }
@@ -103,8 +100,8 @@ export default abstract class Layer<CT = SVG.Container> {
      * Shows the layer
      */
     show(): void {
-        if (this._container instanceof SVG.Container) {
-            this._container.show()
+        if (this._container.hasOwnProperty('show')) {
+            (this._container as unknown as SVG.Container).show();
         } else if (this._container instanceof HTMLElement) {
             this._container.style.visibility = 'visible';
         }

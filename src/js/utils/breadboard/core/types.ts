@@ -70,7 +70,7 @@ export type Layout = {
  * 
  * @category Breadboard
  */
-export const enum Direction {
+export enum Direction {
     Up,
     Right,
     Down,

@@ -1,9 +1,9 @@
 import '../styles/menu.css';
-import Layer from "../core/Layer";
 import ContextMenu from "../core/ContextMenu";
 import { getAbsolutePosition } from '../core/extras/helpers';
 import Grid from "../core/Grid";
 import { XYObject } from "../core/types";
+import Layer from '../core/Layer';
 
 /**
  * Contains {@link ContextMenu}s called from other {@link Layer}s of the breadboard

@@ -9,7 +9,7 @@ import {GRADIENTS} from "../styles/gradients";
 import {getCursorPoint} from "../core/extras/helpers";
 import { Domain } from "../core/types";
 
-export const enum DomainSchematicStyle {
+export enum DomainSchematicStyle {
     Default = 'default',
     Dotted = 'dotted',
     None = 'none'

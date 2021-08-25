@@ -11,7 +11,7 @@ import {Domain, XYObject} from "./types";
  * 
  * @category Breadboard
  */
-export const enum BorderType {
+export enum BorderType {
     None = 'none',              // throw an exception / do nothing              | [1 2 3 E E E]
     Replicate = 'replicate',    // 'continue' the last index available          | [1 2 3 3 3 3]
                                 // for each dimenision 
@@ -27,7 +27,7 @@ export const enum BorderType {
  * 
  * @category Breadboard
  */
-export const enum AuxPointType {
+export enum AuxPointType {
     // Voltage and ground pins
     Vcc = 'vcc',
     Gnd = 'gnd',
@@ -50,7 +50,7 @@ export const enum AuxPointType {
  * 
  * @category Breadboard
  */
-export const enum AuxPointCategory {
+export enum AuxPointCategory {
     // Source pins for 5th revision of the board
     SourceV5 = 'source-v5',
     // Source pins for 8th revision of the board
