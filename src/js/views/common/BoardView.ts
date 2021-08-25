@@ -3,6 +3,7 @@ import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
 import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/base/view/View";
 import {Layout} from "../../utils/breadboard/core/types";
+import { Thread } from "~/js/models/common/BoardModel";
 
 namespace BoardView {
     export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
@@ -123,7 +124,7 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        setCurrents(threads: object[]) {
+        setCurrents(threads: Thread[]) {
             this.bb.setCurrents(threads);
         }
 

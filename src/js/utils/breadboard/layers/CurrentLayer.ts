@@ -3,7 +3,7 @@ import SVG from "svg.js";
 import Grid, { AuxPoint, AuxPointCategory, AuxPointType } from "../core/Grid";
 import Cell from "../core/Cell";
 import Layer from "../core/Layer";
-import Current, { Thread } from "../core/Current";
+import Current, { CurrentPath, Thread } from "../core/Current";
 import BackgroundLayer from "./BackgroundLayer";
 import * as Threads from "../core/extras/threads";
 import { XYObject } from "../core/types";
@@ -21,14 +21,27 @@ export default class CurrentLayer extends Layer {
     /** The minimum weight of a {@link Current} that is required to render it */
     static get MeaningfulnessThreshold() {return 1e-8}
 
+    /** list of {@link Current} instances being displayed */
     private _currents: {[key: number]: Current};
+    /** collection of {@link Current} data objects */
     private _threads: {};
+    /** simple graphic mode flag */
     private _spare: any;
-    private _show_source: any;
+    /** SVG group for currents */
     private _currentgroup: any;
+    /** whether short circuit is detected  */
     private _shorted: boolean;
-    private _callbacks: { shortcircuit: () => void; shortcircuitstart: () => void; shortcircuitend: () => void; };
 
+    /** local event handlers */
+    private _callbacks: {
+        shortcircuit: () => void;       // short circuit detected
+        shortcircuitstart: () => void;  // short circuit started
+        shortcircuitend: () => void;    // short circuit ended
+    };
+
+    /**
+     * @inheritdoc
+     */
     constructor(
         container: SVG.Container, 
         grid: Grid, 
@@ -44,7 +57,6 @@ export default class CurrentLayer extends Layer {
         this._threads = {};
 
         this._spare = undefined;
-        this._show_source = undefined;
 
         this._currentgroup = undefined;
 
@@ -58,16 +70,19 @@ export default class CurrentLayer extends Layer {
     }
 
     /**
-     * Организовать структуру SVG-слоя
+     * @inheritdoc
      */
     compose() {
         this._initGroups();
     }
 
+    /**
+     * @inheritdoc
+     */
     recompose(
         schematic: boolean, 
         detailed: boolean, 
-        show_source: boolean = true
+        verbose: boolean = true
     ) {
         super.recompose(schematic, detailed);
 
@@ -77,21 +92,46 @@ export default class CurrentLayer extends Layer {
 
         this._initGroups();
 
-        this.setCurrents(threads, this._spare, show_source);
+        this.setCurrents(threads, this._spare, verbose);
     }
 
+    /**
+     * Attaches callback function as the 'short circuit detected' event handler
+     * 
+     * The event triggers when one of existing currents is 'burning' (see {@link Current.is_burning}).
+     * It triggers each time the currents are updated, independently of which current is burning at the moment
+     * and whether it has burned prevously or not.
+     * 
+     * @param cb callback to attach
+     */
     onShortCircuit(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuit = () => {}}
 
         this._callbacks.shortcircuit = cb;
     }
 
+    /**
+     * Attaches callback function as the 'short circuit started' event handler 
+     * 
+     * The event triggers after 'shortcircuit' only 
+     * if it wasn't triggered prevously without a subsequent 'shortcircuitend' event.
+     * 
+     * @param cb callback to attach
+     */
     onShortCircuitStart(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuitstart = () => {}}
 
         this._callbacks.shortcircuitstart = cb;
     }
 
+    /**
+     * Attaches callback function as the 'short circuit ended' event handler 
+     * 
+     * The event triggers when there is no short-circuit currents were detected 
+     * after the moment when 'shortcircuitstart' event has been triggered.
+     * 
+     * @param cb callback to attach
+     */
     onShortCircuitEnd(cb?: () => void) {
         if (!cb) {this._callbacks.shortcircuitend = () => {}}
 
@@ -99,18 +139,18 @@ export default class CurrentLayer extends Layer {
     }
 
     /**
-     * Возвратить все токи
-     *
-     * @returns {{}} множество текущих токов
+     * Returns all {@link Current} instances presented in the layer at the moment.
+     * 
+     * @returns an object in which the keys are the IDs of the {@link Current} instance presented in the value
      */
-    getAllCurrents() {
+    getAllCurrents(): {[key: number]: Current} {
         return this._currents;
     }
 
     /**
-     * Удалить ток
+     * Removes the selected current
      *
-     * @param id идентификатор тока
+     * @param id current ID
      */
     removeCurrent(id: number) {
         if (typeof id === "undefined") {
@@ -129,7 +169,7 @@ export default class CurrentLayer extends Layer {
     }
 
     /**
-     * Удалить все токи
+     * Removes all of the currents presented in the layer
      */
     removeAllCurrents() {
         for (let current_id in this._currents) {
@@ -140,7 +180,11 @@ export default class CurrentLayer extends Layer {
     };
 
     /**
-     * Активировать все токи
+     * Activates all of the currents presented in the layer
+     * 
+     * By default, the current activates automatilcally when added.
+     * 
+     * @see Current.activate
      */
     activateAllCurrents() {
         for (let current of Object.values(this._currents)) {
@@ -149,7 +193,9 @@ export default class CurrentLayer extends Layer {
     };
 
     /**
-     * Деактивировать все токи
+     * Deactivates all of the currents presented in the layer
+     * 
+     * @see Current.deactivate
      */
     deactivateAllCurrents () {
         for (let current of Object.values(this._currents)) {
@@ -158,14 +204,14 @@ export default class CurrentLayer extends Layer {
     }
 
     /**
-     * Отобразить токи на плате
+     * Sets the currents to be presented in the layer
      *
-     * Создание новых, сохранение текущих и удаление несуществующих токов
-     * производится автоматически
+     * Creation of the new and removal of existing currents is performed automatically.
+     * If the same current is already presented, its weight will be updated only.
      *
-     * @param {Array<Object>}   threads     список контуров токов, которые должны отображаться на слое
-     * @param {boolean}         spare       щадящий режим (для слабых машин)
-     * @param {boolean}         show_source показывать путь тока от источника напряжения
+     * @param threads     list of objects containing data about the currents needed to present 
+     * @param spare       use simple graphics to keep performance comfortable
+     * @param show_source draw additional currents to show the flow from voltage source
      */
     setCurrents(threads: Thread[], spare: boolean, show_source: boolean = true) {
         const threads_filtered = [];
@@ -181,28 +227,27 @@ export default class CurrentLayer extends Layer {
 
         this._threads = threads;
         this._spare = spare;
-        this._show_source = show_source;
 
-        /// снять возможную пометку с локальных токов
+        /// remove possible marks from local currents
         for (let current_id in this._currents) {
             this._currents[current_id].___touched = undefined;
         }
 
-        /// выполнить основной цикл
+        /// perform the main loop
         for (let current_id in this._currents) {
-            /// извлечь ток
+            /// extract the current
             let current = this._currents[current_id];
 
-            /// здесь будет храниться обнаруженный идентичный контур
-            let same: boolean|Thread = false;
+            /// keep here detected identical thread
+            let same: Thread = undefined;
 
-            /// цикл по новым контурам
+            /// loop over new threads
             for (let [i, thread] of threads.entries()) {
-                /// если у данного локального тока контур совпадает
+                /// if local current is found with the same thread
                 if (current.hasSameThread(thread)) {
-                    /// записать контур
+                    /// save that thread
                     same = thread;
-                    /// установить метки
+                    /// set the flags for both current and the thread
                     thread.___touched = true;
                     current.___touched = true;
 
@@ -212,30 +257,30 @@ export default class CurrentLayer extends Layer {
 
             if (same) {
                 if (same.weight < CurrentLayer.MeaningfulnessThreshold) {
-                    // удалить ток, если он недостаточно весомый
+                    // remove the current if it's not weighty enough
                     this.removeCurrent(Number(current_id));
                 } else {
-                    // обновить вес тока
+                    // update the weight of the current
                     current.setWeight(same.weight);
                 }
             }
         }
 
-        /// удалить непомеченные токи
+        /// remove non-marked local currents
         for (let current_id in this._currents) {
             if (!this._currents[current_id].___touched) {
                 this.removeCurrent(Number(current_id))
             }
         }
 
-        /// создать токи для непомеченных контуров
+        /// create currents for non-marked threads
         for (let [i, thread] of threads.entries()) {
             if (!thread.___touched) {
                 if (thread.weight < CurrentLayer.MeaningfulnessThreshold) {
-                    // удалить путь тока, если он недостаточно весомый
+                    // remove current's thread if it's not weighty enough
                     delete threads[i];
                 } else {
-                    // добавить новый ток
+                    // create new current
                     let cur = this._addCurrent(thread, spare, show_source);
 
                     if (cur) {
@@ -248,16 +293,26 @@ export default class CurrentLayer extends Layer {
         this._findShortCircuits();
     }
 
+    /**
+     * Initializes internal SVG groups 
+     */
     _initGroups() {
         this._clearGroups();
 
         this._currentgroup = this._container.group();
     }
 
+    /** 
+     * Removes SVG groups created previously with {@link _initGroups}
+     */
     _clearGroups() {
         if (this._currentgroup) this._currentgroup.remove();
     }
 
+    /**
+     * Detects any short circuited {@link Current}s, i.e. {@link Current}s with the 
+     * {@link Current.is_burning} flag set
+     */
     _findShortCircuits() {
         for (const id in this._currents) {
             if (!this._currents.hasOwnProperty(id)) continue;
@@ -282,16 +337,18 @@ export default class CurrentLayer extends Layer {
     }
 
     /**
-     * Добавить ток
+     * Adds a current to the layer
+     * 
+     * @see setCurrents
      *
-     * @param {Object} thread       контур тока
-     * @param {boolean} spare       щадящий режим
-     * @param {boolean} show_source показывать путь тока от источника напряжения
-     * @returns {Current|null}
-     * @private
+     * @param thread      current's circuit
+     * @param spare       use simple graphics to keep performance comfortable
+     * @param show_source draw additional currents to show the flow from voltage source
+     * 
+     * @returns the {@link Current} instance added to the layer
      */
     _addCurrent(thread: Thread, spare: boolean, show_source: boolean = true) {
-        if (!thread || thread.length === 0) {}
+        if (!thread) {}
 
         let line_path = this._buildCurrentLinePath(thread);
         if (line_path.length === 0) return null;
@@ -307,14 +364,13 @@ export default class CurrentLayer extends Layer {
     };
 
     /**
-     * Построить пути прохождения тока
+     * Builds the path of current's flow
      *
-     * @param   {Object}    points          контур - объект, содержащий точки прохождения тока
+     * @param points object containing source and destination points of current's flow
      *
-     * @returns {Array} последовательность SVG-координат
-     * @private
+     * @returns a sequence of SVG path commands
      */
-    _buildCurrentLinePath(points: {from: XYObject, to: XYObject}) {
+    _buildCurrentLinePath(points: {from: XYObject, to: XYObject}): CurrentPath {
         if (this.__grid.virtualPoint(points.from.x, points.from.y) ||
             this.__grid.virtualPoint(points.to.x, points.to.y)
         ) {
@@ -345,7 +401,15 @@ export default class CurrentLayer extends Layer {
         return this._getLinePathArbitrary(c_from, c_to);
     };
 
-    _getLinePathArbitrary(c_from: Cell, c_to: Cell) {
+    /**
+     * Generates the path for current placed in arbitrary cells
+     * 
+     * @param c_from    starting point of the current flow
+     * @param c_to      end point of the current flow
+     * 
+     * @returns a sequence of SVG path commands
+     */
+    _getLinePathArbitrary(c_from: Cell, c_to: Cell): CurrentPath {
         let needs_bias = false;
 
         if (this.__schematic && this.__detailed) {
@@ -385,7 +449,22 @@ export default class CurrentLayer extends Layer {
         ];
     }
 
-    _getLinePathSource(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false) {
+    /**
+     * Generates the path for current linked with the voltage source
+     * 
+     * Such currents starts (or finishes) in the arbitrary cell, 
+     * and respectively finishes (or starts) in one of the voltage source cells.
+     * 
+     * It is important to explicilty specify the direction of the current flow 
+     * because there is only one {@link Cell} in the method parameters.
+     * 
+     * @param c_arb     single arbitrary current cell (starting of finishing)
+     * @param aux_point single auxiliary point (votage source's Vcc or Gnd)
+     * @param to_source whether the current is directed to the source
+     * 
+     * @returns a sequence of SVG path commands
+     */
+    _getLinePathSource(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false): CurrentPath {
         let needs_bias = this.__schematic && this.__detailed,
             bias_y     = Number(needs_bias) * BackgroundLayer.DomainSchematicBias;
 
@@ -416,7 +495,21 @@ export default class CurrentLayer extends Layer {
         }
     }
 
-    _getLinePathUsb(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false) {
+    /**
+     * Generates the path for current linked with the USB port
+     * 
+     * Such currents starts (or finishes) in the arbitrary cell, 
+     * and respectively finishes (or starts) in one of the voltage source cells.
+     * 
+     * It is important to explicilty specify the direction of the current flow 
+     * because there is only one {@link Cell} in the method parameters.
+     * 
+     * @param c_arb     single arbitrary current cell (starting of finishing)
+     * @param aux_point single auxiliary point (one of USB pins)
+     * @param to_source 
+     * @returns 
+     */
+    _getLinePathUsb(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false): CurrentPath {
         if (to_source) {
             return [
                 ['M', c_arb.center_adj.x, c_arb.center_adj.y],
@@ -435,15 +528,15 @@ export default class CurrentLayer extends Layer {
     }
 
     /**
-     * Достроить путь тока SVG-координатами
+     * Continues the path with SVG coordinates to the next pair of cells
      *
-     * @param {Array}   path        путь, к которому добавлять координаты
-     * @param {Object}  cell_from   точка истока
-     * @param {Object}  cell_to     точка стока
-     * @private
+     * @param path        the path to continue
+     * @param cell_from   source point
+     * @param cell_to     destination point
+     * 
      * @deprecated
      */
-    static _appendLinePath(path: number|string[][], cell_from: Cell, cell_to: Cell) {
+    static _appendLinePath(path: CurrentPath, cell_from: Cell, cell_to: Cell) {
         path.push(['M', cell_from.center.x, cell_from.center.y]);
         path.push(['L', cell_from.center.x, cell_from.center.y]);
         path.push(['L', cell_to.center.x,   cell_to.center.y]);

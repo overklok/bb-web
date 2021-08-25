@@ -350,8 +350,9 @@ export type PlateDiff = {
 }
 
 export type Thread = {
-    from: number;
-    to: number;
+    from: {x: number, y: number};
+    to: {x: number, y: number};
+    weight: number;
 }
 
 export type BoardLayout = {

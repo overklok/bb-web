@@ -20,6 +20,7 @@ import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
 import {layoutToBoardInfo} from "./core/extras/board_info";
 import {buildGrid} from "./core/extras/helpers";
 import {Layout} from "./core/types";
+import { Thread } from './core/Current';
 
 
 require("./styles/main.css");
@@ -347,7 +348,7 @@ export default class Breadboard {
      *
      * @param {Array<Object>} threads контуры токов
      */
-    setCurrents(threads: {}[]) {
+    setCurrents(threads: Thread[]) {
         // this._layers.current.setCurrents(threads, this._spare);
         this._layers.current.setCurrents(threads, false, this._options.showSourceCurrents);
     }

@@ -37,6 +37,8 @@ export type Thread = {
     ___touched?: boolean;
 }
 
+export type CurrentPath = [string, number, number?][];
+
 /**
  * Displays current segment and manages its graphical components and animations. 
  * Single current segment is a line defined by two {@link Cell}s of a breadboard grid with 
@@ -192,7 +194,7 @@ export default class Current {
      *
      * @param path original SVG path (geometric coordinates)
      */
-    draw(path: [string, number, number][]): void {
+    draw(path: CurrentPath): void {
         this._line_path = Current._pathArrayToString(path);
         this._line_length = Current.getPathLength(this._line_path);
 
@@ -768,7 +770,7 @@ export default class Current {
         return path_node.getTotalLength();
     }
 
-    static _pathArrayToString(path_arr: [string, number, number][]): string {
+    static _pathArrayToString(path_arr: CurrentPath): string {
         let str = "";
 
         for (let path_item of path_arr) {

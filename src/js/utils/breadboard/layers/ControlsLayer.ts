@@ -7,7 +7,7 @@ import Grid from "../core/Grid";
 import ContextMenu from "../core/ContextMenu";
 
 /**
- * The {@link Layer} that displays menu button and handles events to
+ * Displays menu button and handles events to
  * open the {@link BoardContextMenu}
  */
 export default class ControlsLayer extends Layer {

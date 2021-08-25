@@ -16,9 +16,7 @@ export const enum DomainSchematicStyle {
 }
 
 /**
- * The lowest {@link Layer} of the {@link Breadboard} to display.
- * 
- * Contains background canvas and some visual details such as:
+ * Contains background canvas and some visual details for the breadboard, such as:
  *  - mount points (cells) and their contact groups (domains)
  *  - voltage source element
  *  - usb contact lines
@@ -150,7 +148,7 @@ export default class BackgroundLayer extends Layer {
 
 
     /**
-     * Initializes internal SVG groups of the layer
+     * Initializes internal SVG groups 
      * 
      * Removes previously created groups and re-attaches event handlers
      */
@@ -392,8 +390,8 @@ export default class BackgroundLayer extends Layer {
         }
 
         if (this.__schematic) {
-            // в простом    схематическом режиме отображать точки только в 0 ряду
-            // в детальном  схематическом режиме отображать точки везде
+            // in default schematic mode, show only dots in 0 row 
+            // in detailed schematic mode, show all dots
             if (cell.isAt(null, 0) || this.__detailed) {
                 this._gcells[cell.idx.x][cell.idx.y] =
                     container
@@ -426,7 +424,7 @@ export default class BackgroundLayer extends Layer {
     }
 
     /**
-     * Draws separate domain as line (intended to use in schematic mode)
+     * Draws separate domain as a line (intended to use in schematic mode)
      * 
      * @see _drawDomain
      * 
@@ -463,7 +461,7 @@ export default class BackgroundLayer extends Layer {
             bias_cont_y = 0;
 
         if (this.__detailed) {
-            // дорисовать засечки
+            // add notches if required
             if (use_notches) {
                 this._drawDomainLineNotches(container, cell_from, cell_to, inversed, color);
             }
