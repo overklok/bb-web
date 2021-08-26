@@ -2,198 +2,84 @@ import SVG from 'svg.js';
 import Layer from "../core/Layer";
 
 import "../styles/selector.css";
-import BridgePlate from "../plates/BridgePlate";
-import SwitchPlate from "../plates/SwitchPlate";
-import LEDPlate from "../plates/LEDPlate";
-import ResistorPlate from "../plates/ResistorPlate";
-import PhotoresistorPlate from "../plates/PhotoresistorPlate";
-import RheostatPlate from "../plates/RheostatPlate";
-import ButtonPlate from "../plates/ButtonPlate";
-import CapacitorPlate from "../plates/CapacitorPlate";
+import ITEMS, { SelectorItem, SelectorItemOption } from "../plates/_selector_items";
 import DummyPlate from "../plates/DummyPlate";
-import TransistorPlate from "../plates/TransistorPlate";
-import InductorPlate from "../plates/InductorPlate";
-import RelayPlate from "../plates/RelayPlate";
-import BuzzerPlate from "../plates/BuzzerPlate";
-import RGBPlate from "../plates/RGBPlate";
 import ControlsLayer from "~/js/utils/breadboard/layers/ControlsLayer";
 import Plate from '../core/Plate';
 import Grid from '../core/Grid';
 
-type SelectorItemOption = {
-    title: string,
-    properties?: {[key: string]: any}
-}
-
-type SelectorItem = {
-    title: string,
-    type: new (...args: any[]) => Plate,
-    tags: string,
-    options?: SelectorItemOption[],
-    custom?: {
-        property_key: string,
-        default: {
-            title: string,
-            properties: { [key: string]: any }
-        }
-    }
-}
-
-const ITEMS: SelectorItem[] = [
-    {
-        title: "Перемычка",
-        type: BridgePlate,
-        tags: "перемычка мост bridge gthtvsxrf vjcn икшвпу",
-        options: [
-            {title: "2 клетки", properties: {[BridgePlate.PROP_LENGTH]: 2}},
-            {title: "3 клетки", properties: {[BridgePlate.PROP_LENGTH]: 3}},
-            {title: "4 клетки", properties: {[BridgePlate.PROP_LENGTH]: 4}},
-            {title: "5 клеток", properties: {[BridgePlate.PROP_LENGTH]: 5}},
-            {title: "6 клеток", properties: {[BridgePlate.PROP_LENGTH]: 6}},
-        ],
-        custom: {
-            default: {title: "Свой размер", properties: {[BridgePlate.PROP_LENGTH]: 2}},
-            property_key: BridgePlate.PROP_LENGTH
-        }
-    },
-    {
-        title: "Светодиод",
-        tags: "светодиод лампа свет led diode light cdtnjlbjl kfvgf cdtn дув вшщву дшпре",
-        type: LEDPlate,
-        options: [
-            {title: "Красный",  properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED}},
-            {title: "Зелёный",  properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.GREEN}},
-            {title: "Синий",    properties: {[LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.BLUE}},
-        ]
-    },
-    {
-        title: "Резистор",
-        tags: "резистор сопротивление resistor htpbcnjh cjghjnbdktybt куышыещк",
-        type: ResistorPlate,
-        options: [
-            {title: "200 Ом",   properties: {[ResistorPlate.PROP_RESISTANCE]: 200}},
-            {title: "1 кОм",    properties: {[ResistorPlate.PROP_RESISTANCE]: 1000}},
-            {title: "10 кОм",   properties: {[ResistorPlate.PROP_RESISTANCE]: 10000}},
-            {title: "30 кОм",   properties: {[ResistorPlate.PROP_RESISTANCE]: 30000}},
-        ],
-        custom: {
-            default: {title: "Свой номинал (кОм)", properties: {[ResistorPlate.PROP_RESISTANCE]: 100}},
-            property_key: ResistorPlate.PROP_RESISTANCE,
-        }
-    },
-    {
-        title: "Конденсатор",
-        tags: "конденсатор ёмкость емкость capacitor rjyltycfnjh `vrjcnm tvrjcnm сфзфсшещк",
-        type: CapacitorPlate,
-        options: [
-            {title: "100 мкФ", properties: {[CapacitorPlate.PROP_CAPACITANCE]: 1e-4}},
-            {title: "1000 мкФ", properties: {[CapacitorPlate.PROP_CAPACITANCE]: 1e-3}},
-        ],
-        custom: {
-            default: {title: "Своя ёмкость (пкФ)", properties: {[CapacitorPlate.PROP_CAPACITANCE]: 200}},
-            property_key: CapacitorPlate.PROP_CAPACITANCE,
-        }
-    },
-
-    {
-        title: "Транзистор",
-        tags: "транзистор transistor nhfypbcnjh екфтышыещк",
-        type: TransistorPlate,
-        options: [{title: "Обычный"}],
-    },
-    {
-        title: "Фоторезистор",
-        tags: "фоторезистор photoresistor ajnjhtpbcnjh зрщещкуышыещк",
-        type: PhotoresistorPlate,
-        options: [{title: "Обычный"}]
-    },
-    {
-        title: "Реостат",
-        tags: "реостат резистор переменный rheostat resistor variable htjcnfn htpbcnjh gthtvtyysq крущыефе куышыещк",
-        type: RheostatPlate,
-        options: [{title: "Обычный"}]
-    },
-    {
-        title: "Кнопка",
-        tags: "кнопка button ryjgrf игввещт",
-        type: ButtonPlate,
-        options: [{title: "Обычная"}]
-    },
-    {
-        title: "Ключ",
-        tags: "ключ switch rk.x ыцшеср",
-        type: SwitchPlate,
-        options: [{title: "Обычный"}]
-    },
-    {
-        title: "Индуктор",
-        tags: "индуктор индуктивность катушка inductor inductance coil bylernjh bylernbdyjcnm rfneirf штвгсещк сщшд",
-        type: InductorPlate,
-        options: [{title: "Обычный"}]
-    },
-    {
-        title: "Реле",
-        tags: "реле relay htkt кудфн",
-        type: RelayPlate,
-        options: [{title: "Обычное"}]
-    },
-    {
-        title: "RGB",
-        tags: "ргб диод rgb diode hu, lbjl кпи вшщву",
-        type: RGBPlate,
-        options: [{title: "Обычная"}]
-    },
-    {
-        title: "Зуммер",
-        tags: "зуммер пищалка buzzer beeper pevvth gbofkrf игяяук иуузук",
-        type: BuzzerPlate,
-        options: [{title: "Обычный"}]
-    },
-    {
-        title: "Dummy",
-        tags: "dummy вгььн",
-        type: DummyPlate,
-        options: [{title: "Обычная"}]
-    },
-]
-
+/**
+ * Contains plate selector flyout menu, which allows to search plates 
+ * and drag'n'drop them to the board
+ */
 export default class SelectorLayer extends Layer<HTMLDivElement> {
-    private _callbacks: { onplatetake: (plate_data: any, plate_x: any, plate_y: any, cursor_x: any, cursor_y: any) => void; clear: () => void; fullscreen: (is_fullscreen: boolean) => void; };
-    private _is_pinned: boolean;
-    private _items: any[];
-    private _oncloseclick: any;
-    private _htmlcontainer: HTMLDivElement;
-    private _btn_pin: any;
-    private _area: HTMLDivElement;
-    private _list: HTMLDivElement;
-    private _controls: HTMLDivElement;
-    private _is_fullscreen: boolean;
     static get Class() {return "bb-layer-selector"}
     static get Items() {return ITEMS}
 
-    constructor(container: HTMLDivElement, grid: Grid) {
-        super(container, grid);
+    /** root container of the flyout */
+    private _htmlcontainer: HTMLDivElement;
+    /** scrollable area */
+    private _area: HTMLDivElement;
+    /** list of selector items */
+    private _list: HTMLDivElement;
+    /** menu controls (buttons) */
+    private _controls: HTMLDivElement;
+
+    /** breadboard fullscreen flag */
+    private _is_fullscreen: boolean;
+    /** is menu should stay opened after free mouse click */
+    private _is_pinned: boolean;
+    /** TODO */
+    private _items: any[];
+    /** TODO */
+    private _btn_pin: any;
+    
+    /** local event handlers */
+    private _callbacks: {
+        /** plate item is started dragging from the selector */
+        onplatetake: (plate_data: any, plate_x: any, plate_y: any, cursor_x: any, cursor_y: any) => void;
+        /** fullscreen mode requested */
+        fullscreen: (is_fullscreen: boolean) => void;
+        /** plate removal requested */
+        clear: () => void;
+        /** menu close request event handler */
+        oncloseclick: () => void;
+    };
+
+    /**
+     * @inheritdoc
+     */
+    constructor(
+        container: HTMLDivElement,
+        grid: Grid,
+        schematic: boolean = false,
+        detailed: boolean = false,
+        verbose: boolean = false
+    ) {
+        super(container, grid, schematic, detailed, verbose);
 
         this._container.classList.add(SelectorLayer.Class);
 
         this._callbacks = {
-            onplatetake: (plate_data, plate_x, plate_y, cursor_x, cursor_y) => {},
-            clear: () => {},
-            fullscreen: () => {},
+            oncloseclick: this._handleCloseClick.bind(this),
+            onplatetake: (plate_data, plate_x, plate_y, cursor_x, cursor_y) => { },
+            clear: () => { },
+            fullscreen: () => { },
         };
 
         this._is_pinned = false;
 
         this._items = [];
 
-        this._oncloseclick = this._handleCloseClick.bind(this);
-
         this._htmlcontainer = undefined;
 
         this.hide();
     }
 
-    compose() {
+    /**
+     * @inheritdoc
+     */
+    public compose() {
         this._htmlcontainer = document.createElement("div");
         this._htmlcontainer.classList.add("bb-sel-root");
         this._container.appendChild(this._htmlcontainer);
@@ -212,24 +98,48 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         document.addEventListener('keyup', this._handleKey.bind(this), false);
     }
 
-    show() {
+    /**
+     * @inheritdoc
+     */
+    public show() {
         this._container.style.left = `4px`;
         this.reveal();
     }
 
-    hide() {
+    /**
+     * @inheritdoc
+     */
+    public hide() {
         this._container.style.left = `-${this._container.offsetWidth + this._container.offsetLeft}px`;
     }
 
-    conceal() {
+    /**
+     * Makes flyout translucent
+     * 
+     * At the moment of dragging, it might be useful to make the menu half-opaque
+     * to see the board cells. To rollback the opacity, see {@link reveal}.
+     */
+    public conceal() {
         this._container.style.opacity = '0.5';
     }
 
-    reveal() {
+    /**
+     * Makes flyout opaque
+     * 
+     * 
+     * @see {@link conceal}
+     */
+    public reveal() {
         this._container.style.opacity = '1';
     }
 
-    togglePin() {
+    /**
+     * Toggles pin state
+     * 
+     * When toggled, the flyout wouldn't hide on free mouse clicks.
+     * It's still possible to close the menu permanently (@link close}).
+     */
+    public togglePin() {
         this._is_pinned = !this._is_pinned;
 
         if (this._is_pinned) {
@@ -241,28 +151,41 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         }
     }
 
-    open(permanently=false) {
+    /**
+     * Shows the flyout unpinned
+     * 
+     * @param permanently pin the flyout
+     */
+    public open(permanently=false) {
         this.show();
 
         if (!permanently) {
-            document.addEventListener('click', this._oncloseclick);
+            document.addEventListener('click', this._callbacks.oncloseclick);
         }
     }
 
-    close(permanently=false) {
+    /**
+     * Hides the flyout 
+     * 
+     * @param permanently unpin (this is required if the flyout were pinned previously)
+     */
+    public close(permanently=false) {
         this.hide();
-
-        console.trace();
 
         // Unpin if requested to close manually
         this._is_pinned = false;
 
         if (!permanently) {
-            document.removeEventListener('click', this._oncloseclick);
+            document.removeEventListener('click', this._callbacks.oncloseclick);
         }
     }
 
-    onPlateTake(cb: (
+    /**
+     * Attaches a callback handler to 'plate drag started' event
+     * 
+     * @param cb callback handler to attach
+     */
+    public onPlateTake(cb: (
         plate_data: {},
         plate_x: number,
         plate_y: number,
@@ -274,7 +197,12 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         this._callbacks.onplatetake = cb;
     }
 
-    onClear(cb: () => void) {
+    /**
+     * Attaches a callback handler to 'board clean' button click event
+     * 
+     * @param cb callback handler to attach
+     */
+    public onClear(cb: () => void) {
         if (!cb) {
             this._callbacks.clear = () => {};
         } else {
@@ -282,7 +210,12 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         }
     }
 
-    onFullscreen(cb: (on: boolean) => void) {
+    /**
+     * Attaches a callback handler to 'toggle fullscreen' button click event
+     * 
+     * @param cb callback handler to attach
+     */
+    public onFullscreen(cb: (on: boolean) => void) {
         if (!cb) {
             this._callbacks.fullscreen = () => {};
         } else {
@@ -290,12 +223,17 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         }
     }
 
-    _handleCloseClick(evt: MouseEvent) {
+    /**
+     * Handles menu close request
+     * 
+     * @param evt document click event
+     */
+    private _handleCloseClick(evt: MouseEvent) {
         let el = evt.target as Element;
 
         if (el.id === ControlsLayer.MenuButtonId) return;
 
-        /// Определить, является ли элемент, по которому выполнено нажатие, частью слоя или кнопкой открытия
+        /// Define if the element clicked is a part of the layer or is the close button
         while (
             (el = el.parentElement) &&
             !(el.classList.contains(SelectorLayer.Class)) &&
@@ -313,7 +251,15 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         }
     }
 
-    _filterItems(query="") {
+    /**
+     * Filters items in the list by their tags
+     * 
+     * Hides items for which none of the space-delimited tags does not match the query string.
+     * The match is correct when the query is a substring of at least one of the tags.
+     * 
+     * @param query case-insensitive request string
+     */
+    private _filterItems(query="") {
         query = query.trim();
 
         for (const item of this._items) {
@@ -336,7 +282,10 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         }
     }
 
-    _appendBasics() {
+    /**
+     * Constructs the root container hierarchy
+     */
+    private _appendBasics() {
         this._area = document.createElement("div");
         this._area.classList.add('bb-sel-area');
 
@@ -352,7 +301,10 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         this._htmlcontainer.appendChild(this._area);
     }
 
-    _appendControls() {
+    /**
+     * Initializes DOM elements for button controls
+     */
+    private _appendControls() {
         let btn_clear = document.createElement("a");
         let btn_fullscreen = document.createElement("a");
         let btn_pin = document.createElement("a");
@@ -396,7 +348,14 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         this._controls.appendChild(inp_search);
     }
 
-    _appendItem(settings: SelectorItem) {
+    /**
+     * Renders single item (cell) for the selector list
+     * 
+     * @param settings item settings
+     * 
+     * @returns the item rendered
+     */
+    private _appendItem(settings: SelectorItem): HTMLDivElement {
         if (!settings.options) return;
 
         const cell = document.createElement("div");
@@ -494,7 +453,22 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         return cell;
     }
 
-    _generateSlide(
+    /**
+     * Generates a single option (slide) for the item (cell)
+     * 
+     * @param cell          selector list item (plate type)
+     * @param pedestal      bullet container
+     * @param subtitle      caption for the option
+     * @param settings_item related list item settings
+     * @param settings      settings for related option
+     * @param bullet_custom is the option is customizable
+     * 
+     * @returns element triplet (`slide`, `bullet`, `svg`), where 
+     *          `slide` is the desired slide, 
+     *          `bullet` is related bullet button instance,
+     *          `svg` is an SVG container which contains the plate preview.
+     */
+    private _generateSlide(
         cell: HTMLElement,
         pedestal: HTMLElement,
         subtitle: HTMLElement,
@@ -529,7 +503,21 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         return [slide, bullet, svg];
     }
 
-    _updateSlide(
+    /**
+     * Updates the slide details
+     * 
+     * The method can be used to generate new slide (based on pre-generated containers)
+     * and also to update existing slides.
+     * 
+     * Re-renders the plate preview based on the new option properties.
+     * 
+     * @param slide         the slide needed to update
+     * @param svg           its related SVG container with the plate drawn
+     * @param subtitle      its related HTML container with subtitle text
+     * @param settings_item its related settings data object
+     * @param settings      new details to update (title, properties)
+     */
+    private _updateSlide(
         slide: HTMLElement,
         svg: SVG.Doc,
         subtitle: HTMLElement,
@@ -575,7 +563,24 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         }
     }
 
-    _onBulletClick(cell: HTMLElement, pedestal: HTMLElement, subtitle: HTMLElement, slide: HTMLElement, bullet: HTMLElement) {
+    /**
+     * Handles 'bullet click' mouse event
+     * 
+     * Switches active option for the item
+     * 
+     * @param cell      selector list item container (plate type)
+     * @param pedestal  bullet list container
+     * @param subtitle  HTML text container with subtitle text
+     * @param slide     item option container (plate preset)
+     * @param bullet    its related bullet button
+     */
+    private _onBulletClick(
+        cell: HTMLElement,
+        pedestal: HTMLElement,
+        subtitle: HTMLElement,
+        slide: HTMLElement,
+        bullet: HTMLElement
+    ) {
         const slide_active  = cell.getElementsByClassName('active')[0];
         const bullet_active = pedestal.getElementsByClassName('active')[0];
 
@@ -615,7 +620,17 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         subtitle.innerText = slide.getAttribute('data-title');
     }
 
-    _onSlideHold(evt: MouseEvent, svg_node: Element, plate: Plate) {
+    /**
+     * Handles 'slide (plate) drag start' event
+     * 
+     * Dragging here should be understood not only moving the plate, but also clicking it,
+     * because plate will be mounted on the board even after a single click.
+     * 
+     * @param evt       original mouse click event
+     * @param svg_node  SVG element that contains the plate preview
+     * @param plate     the plate whose preview are rendered in the SVG element
+     */
+    private _onSlideHold(evt: MouseEvent, svg_node: Element, plate: Plate) {
         if (evt.which !== 1) return;
 
         const rect = svg_node.getBoundingClientRect();
@@ -633,13 +648,25 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         }
     }
 
-    _getElementIndex(node: NonDocumentTypeChildNode) {
+    /**
+     * Gets the number of the element in the parent node
+     * 
+     * @param node 
+     * 
+     * @returns number of the given element in its parent node
+     */
+    private _getElementIndex(node: NonDocumentTypeChildNode) {
         let index = 0;
         while ( (node = node.previousElementSibling) ) {index++;}
         return index;
     }
 
-    _handleKey(evt: KeyboardEvent) {
+    /**
+     * Handles global keyboard event to toggle the flyout pin
+     * 
+     * @param evt original keyboard event
+     */
+    private _handleKey(evt: KeyboardEvent) {
         if (evt.code === 'KeyM') {
             this.togglePin();
         }
