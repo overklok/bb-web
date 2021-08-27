@@ -4,10 +4,11 @@ import Model from "../../core/base/model/Model";
 import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
 import {Plate} from "../common/BoardModel";
 import {ModelEvent} from "../../core/base/Event";
+import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 
 export interface IBoardLogEntry {
     rts: number;
-    plates?: Plate[];
+    plates?: SerializedPlate[];
     layout_name: string;
     error?: {
         code?: number,
@@ -56,7 +57,7 @@ export default class BoardLogModel extends Model<IBoardLog, DummyDatasource> {
         this.is_group_finished = true;
     }
 
-    addPlates(plates: Plate[], layout_name: string) {
+    addPlates(plates: SerializedPlate[], layout_name: string) {
         this.createNewGroupIfRequired();
 
         const idx_grp = this.state.groups.length - 1;

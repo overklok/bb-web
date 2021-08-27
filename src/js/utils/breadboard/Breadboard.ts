@@ -7,7 +7,7 @@ import defaultsDeep from "lodash/defaultsDeep";
 import Grid from "./core/Grid";
 import MenuLayer from "./layers/MenuLayer";
 import LabelLayer from "./layers/LabelLayer";
-import PlateLayer from "./layers/PlateLayer";
+import PlateLayer, { PlatePrototype } from "./layers/PlateLayer";
 import RegionLayer from "./layers/RegionLayer";
 import CurrentLayer from "./layers/CurrentLayer";
 import ControlsLayer from "./layers/ControlsLayer";
@@ -21,6 +21,7 @@ import {layoutToBoardInfo} from "./core/extras/board_info";
 import {buildGrid} from "./core/extras/helpers";
 import {Layout} from "./core/types";
 import { Thread } from './core/Current';
+import { SerializedPlate, SerializedPlatePosition } from './core/Plate';
 
 
 require("./styles/main.css");
@@ -221,7 +222,7 @@ export default class Breadboard {
         this.setReadOnly(this._options.readOnly);
     };
 
-    setRandomPlates(protos: {}, size_mid: number, size_deviation: number, attempts_max: number) {
+    setRandomPlates(protos: PlatePrototype[], size_mid: number, size_deviation: number, attempts_max: number) {
         if (!this._layers.plate) throw new Error("Breadboard must be injected first");
         this._layers.plate.setRandom(protos, size_mid, size_deviation, attempts_max);
     }
@@ -283,8 +284,8 @@ export default class Breadboard {
 
     redraw(schematic: boolean, detailed: boolean, verbose: boolean, debug: boolean) {
         this._layers.background.recompose(schematic, detailed, debug);
-        this._layers.plate.recompose(schematic, verbose,);
-        this._layers.current.recompose(schematic, detailed);
+        this._layers.plate.recompose(schematic, verbose, debug);
+        this._layers.current.recompose(schematic, detailed, debug);
         this._layers.controls.recompose(schematic, detailed, debug);
         this._layers.label.recompose(schematic, detailed, debug);
     }
@@ -299,7 +300,7 @@ export default class Breadboard {
      *
      * @returns {null|int} идентификатор плашки
      */
-    addPlate(type: string, position: {x: number, y: number}, id: number=null, properties: {}) {
+    addPlate(type: string, position: SerializedPlatePosition, id: number=null, properties: {}) {
         return this._layers.plate.addPlateSerialized(type, position, id, properties);
     }
 
@@ -339,7 +340,7 @@ export default class Breadboard {
      *
      * @param {Array<Object>} plates список плашек, которые должны отображаться на плате
      */
-    setPlates(plates: {}[]) {
+    setPlates(plates: SerializedPlate[]) {
         return this._layers.plate.setPlates(plates);
     }
 
@@ -547,7 +548,7 @@ export default class Breadboard {
         this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed, this._options.debug);
         this._layers.label      = new LabelLayer(label_panes, this.__grid, this._options.schematic, this._options.detailed);
         this._layers.current    = new CurrentLayer(current, this.__grid, this._options.schematic, this._options.detailed);
-        this._layers.plate      = new PlateLayer(plate, this.__grid, this._options.schematic, this._options.verbose);
+        this._layers.plate      = new PlateLayer(plate, this.__grid, this._options.schematic, false, this._options.verbose);
         this._layers.region     = new RegionLayer(region, this.__grid);
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
@@ -646,7 +647,7 @@ export default class Breadboard {
         })
 
         this._layers.selector.onPlateTake((
-            plate_data: {},
+            plate_data: SerializedPlate,
             plate_x: number,
             plate_y: number,
             cursor_x: number,

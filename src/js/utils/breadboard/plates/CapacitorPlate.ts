@@ -1,19 +1,29 @@
-import Plate from "../core/Plate";
+import SVG from 'svg.js'
+
+import Plate, { PlateProps } from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
+import Grid from '../core/Grid';
 
 export default class CapacitorPlate extends LinearPlate {
     static get Alias() {return "capacitor"}
 
     static get PROP_CAPACITANCE() {return "cap"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
     }
 
     get __defaultProps__() {
         return {
-            ...super.__defaultProps__,
+            ...super['__defaultProps__'],
             [CapacitorPlate.PROP_CAPACITANCE]: 0.001
         }
     }
@@ -22,7 +32,7 @@ export default class CapacitorPlate extends LinearPlate {
         return this._shortLabel() + 'Ф';
     }
 
-    __setProps__(props) {
+    __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         this._props[CapacitorPlate.PROP_CAPACITANCE] = Number(this._props[CapacitorPlate.PROP_CAPACITANCE]);
@@ -34,7 +44,7 @@ export default class CapacitorPlate extends LinearPlate {
      * @param {Cell}    position    положение конденсатора
      * @param {string}  orientation ориентация конденсатора
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         this._drawLabel();
@@ -82,7 +92,7 @@ export default class CapacitorPlate extends LinearPlate {
     }
 
     _shortLabel() {
-        let text = this._props[CapacitorPlate.PROP_CAPACITANCE];
+        let text = String(this._props[CapacitorPlate.PROP_CAPACITANCE]);
 
         let num = Number(text);
 
@@ -90,6 +100,6 @@ export default class CapacitorPlate extends LinearPlate {
         // if (num * 1e3 >= 1)    {text = String(Number(num * 1e3).toPrecision())   + 'н'}
         if (num >= 1)          {text = String(Number(num).toPrecision())   + 'пк'}
 
-        return String(text);
+        return text;
     }
 }

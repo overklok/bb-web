@@ -138,7 +138,7 @@ export default abstract class Layer<CT = SVG.Container> {
      *
      * @protected
      */
-    protected _callContextMenu(menu: ContextMenu, position: XYObject, inputs: [] = []): void {
+    protected _callContextMenu(menu: ContextMenu, position: XYObject, inputs: any[] = []): void {
         this._onctxmenucall && this._onctxmenucall(menu, position, inputs);
     }
 

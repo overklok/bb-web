@@ -8,7 +8,7 @@ import Grid, { BorderType } from "./Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
 import {coverObjects} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
-import {Direction, DirsClockwise} from "./types";
+import {Direction, DirsClockwise, XYObject} from "./types";
 
 function mod(n: number, m: number): number {
   return ((n % m) + m) % m;
@@ -60,6 +60,23 @@ export type PlateParams = {
 
 export type PlateProps = { [key: string]: number };
 
+export type SerializedPlatePosition = {
+    cell: XYObject;
+    orientation: string;
+}
+
+export type SerializedPlate = {
+    id: number;
+    type: string;
+    length: number;
+    position: SerializedPlatePosition;
+    properties: PlateProps;
+    dynamic: {
+        input: any;
+        output: any;
+    }
+}
+
 /**
  * Класс плашки доски
  *
@@ -72,10 +89,10 @@ export default class Plate {
     private _alias: string;
     private _id: number;
     private _shadow: SVG.Nested;
-    private _container: SVG.Nested;
+    protected _container: SVG.Nested;
     private _shadowgroup: SVG.G;
     protected _group: SVG.G;
-    private _bezel: any;
+    protected _bezel: any;
     private _group_editable: SVG.G;
     private _error_highlighter: any;
     protected _params: PlateParams;
@@ -95,6 +112,9 @@ export default class Plate {
     private _cell_supposed: any;
     private _constraints: any;
     _dir_prev: any;
+
+    /** flag for extra purposes */
+    public ___touched: boolean;
 
     static get PROP_INVERTED() { return "inv" }
 
@@ -331,7 +351,7 @@ export default class Plate {
         return new this.__ctxmenu__(this.id, this.alias, this.variant);
     }
 
-    serialize() {
+    serialize(): SerializedPlate {
         return {
             id: this.id,
             type: this.alias,

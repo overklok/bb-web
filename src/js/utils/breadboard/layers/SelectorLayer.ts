@@ -5,7 +5,7 @@ import "../styles/selector.css";
 import ITEMS, { SelectorItem, SelectorItemOption } from "../plates/_selector_items";
 import DummyPlate from "../plates/DummyPlate";
 import ControlsLayer from "~/js/utils/breadboard/layers/ControlsLayer";
-import Plate from '../core/Plate';
+import Plate, { SerializedPlate } from '../core/Plate';
 import Grid from '../core/Grid';
 
 /**
@@ -37,7 +37,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
     /** local event handlers */
     private _callbacks: {
         /** plate item is started dragging from the selector */
-        onplatetake: (plate_data: any, plate_x: any, plate_y: any, cursor_x: any, cursor_y: any) => void;
+        onplatetake: (plate_data: SerializedPlate, plate_x: any, plate_y: any, cursor_x: any, cursor_y: any) => void;
         /** fullscreen mode requested */
         fullscreen: (is_fullscreen: boolean) => void;
         /** plate removal requested */

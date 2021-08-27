@@ -87,7 +87,7 @@ export default class CurrentLayer extends Layer {
         detailed: boolean, 
         verbose: boolean = true
     ) {
-        super.recompose(schematic, detailed);
+        super.recompose(schematic, detailed, verbose);
 
         let threads = Object.assign([], this._threads);
 

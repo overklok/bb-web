@@ -1,4 +1,8 @@
-import Plate from "../core/Plate";
+import SVG from 'svg.js'
+import Cell from '../core/Cell';
+import Grid from '../core/Grid';
+
+import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 import BackgroundLayer from "../layers/BackgroundLayer";
 
@@ -7,7 +11,14 @@ export default class UnkPlate extends LinearPlate {
 
     static get PROP_TYPE() {return 'type'}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: {} = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: this.__length__, y: 1};
@@ -24,7 +35,7 @@ export default class UnkPlate extends LinearPlate {
 
     get __defaultProps__() {
         return {
-            ...super.__defaultProps__,
+            ...super['__defaultProps__'],
             [UnkPlate.PROP_TYPE]: -1
         }
     }
@@ -37,7 +48,7 @@ export default class UnkPlate extends LinearPlate {
         return 1;
     }
 
-    __setProps__(props) {
+    __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         let type = Number(props[UnkPlate.PROP_TYPE]);
@@ -50,10 +61,10 @@ export default class UnkPlate extends LinearPlate {
      * @param {Cell}    position    положение перемычки
      * @param {string}  orientation ориентация перемычки
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         let cell = this.__grid.cell(0, 0);
 
-        this._bezel = this._group.rect("100%", "100%").radius(BackgroundLayer.CellRadius).style({fill: '#ffbebe'});
+        this._bezel = this._group.rect().width("100%").height("100%").radius(BackgroundLayer.CellRadius).style({fill: '#ffbebe'});
 
         this._group.text(`${this._props[UnkPlate.PROP_TYPE]}`)
             .font({

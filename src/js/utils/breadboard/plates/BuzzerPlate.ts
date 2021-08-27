@@ -1,11 +1,21 @@
-import Plate from "../core/Plate";
+import SVG from 'svg.js'
+
+import Plate, { PlateProps } from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
+import Grid from '../core/Grid';
 
 export default class BuzzerPlate extends LinearPlate {
     static get Alias() {return "buzzer"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
     }
 
@@ -15,7 +25,7 @@ export default class BuzzerPlate extends LinearPlate {
      * @param {Cell}    position    положение зуммера
      * @param {string}  orientation ориентация зуммера
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
     };
 
@@ -25,7 +35,7 @@ export default class BuzzerPlate extends LinearPlate {
      * @private
      */
     _drawPicture(qs=Plate.QuadSizePreferred) {
-        let ls = this.__schematic ? 10 : 6;
+        let ls = this._params.schematic ? 10 : 6;
 
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
