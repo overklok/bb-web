@@ -148,7 +148,7 @@ export default class Grid {
         pos_x=0, pos_y=0,
         gap_x=0, gap_y=0,
         wrap_x=0, wrap_y = 0,
-        aux_points_categories: [] = null,
+        aux_points_categories: string[] = null,
         domains: Domain[] = null,
         curr_straight_top_y: number = null,
         curr_straight_bottom_y: number = null

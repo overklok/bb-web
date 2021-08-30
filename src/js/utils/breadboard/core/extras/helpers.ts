@@ -2,30 +2,47 @@ import Grid, { BorderType } from "../Grid";
 import SVG from "svg.js";
 import PlateLayer from "../../layers/PlateLayer";
 import defaults from "lodash/defaults";
-import { CellRole } from "../types";
+import { CellRole, Layout, XYObject } from "../types";
+import { SerializedPlate } from "../Plate";
 
-export function mod(x, base) {
+/**
+ * Performs a modulo division
+ * 
+ * Native Javascript implementation of `%` operator gives just the remainder instead of the modulo.
+ * 
+ * @param x     the divident
+ * @param base  the divisor
+ * 
+ * @returns the remainder of `x`/`base` division
+ */
+export function mod(x: number, base: number): number {
     return ((x % base) + base) % base;
 }
 
-export const coverObjects = (o, d) => defaults(o, d);
+/**
+ * Applies object's properties over the another object's properties
+ * 
+ * If the destination object's property exists, its value is taken from the source object if it's defined.
+ * Any properties from source object that does not presented in destiation object are ignored.
+ * 
+ * Note: The destination object can be mutated.
+ * 
+ * @param d the destination object
+ * @param s the source object
+ * 
+ * @returns the destiantion object
+ */
+export const coverObjects = (d: any, s: any) => defaults(d, s);
 
 /**
- * Loop over labeled cells in layout config
+ * Loops over labeled cells in layout config
  *
  * @param layout source board layout
  * @param role domain role to filter by
  *
- * @return {Generator<{
- *              cell: Cell,
- *              role: string,
- *              label_pos: string,
- *              value_orientation: string,
- *              pin_num: (number|undefined),
- *              pin_state_initial: (string|number|undefined)
- *          }>}
+ * @return generator that loops over labeled cells
  */
-export function* extractLabeledCells(layout, role=null) {
+export function* extractLabeledCells(layout: Layout, role: CellRole = null) {
     const grid = buildGrid(layout);
 
     for (const domain of layout.domains) {
@@ -67,7 +84,7 @@ export function* extractLabeledCells(layout, role=null) {
     }
 }
 
-export function copyTextToClipboard(text) {
+export function copyTextToClipboard(text: string) {
     if (!navigator.clipboard) {
         return classicCopyTextToClipboard(text);
     }
@@ -78,7 +95,7 @@ export function copyTextToClipboard(text) {
     });
 }
 
-export function classicCopyTextToClipboard(text) {
+export function classicCopyTextToClipboard(text: string) {
     const input = document.createElement('input');
     input.style.position = 'fixed';
     input.style.opacity = '0';
@@ -91,7 +108,7 @@ export function classicCopyTextToClipboard(text) {
     return success;
 }
 
-export function pointsToCoordList(coords_from, coords_to) {
+export function pointsToCoordList(coords_from: XYObject, coords_to: XYObject) {
     let x_val = null,
         y_val = null;
 
@@ -112,7 +129,7 @@ export function pointsToCoordList(coords_from, coords_to) {
     return boundsToCoordList(from, to, x_val, y_val);
 }
 
-export function boundsToCoordList(from, to, x_val, y_val) {
+export function boundsToCoordList(from: number, to: number, x_val: number, y_val: number) {
     if (x_val != null && y_val != null) {
         throw Error("Only one of the dimensions might be fixed");
     }
@@ -144,16 +161,16 @@ export function boundsToCoordList(from, to, x_val, y_val) {
 }
 
 /**
- * Получить положение курсора в системе координат SVG
+ * Gets cursor position in SVG coordinate system
  *
- * @param {SVGSVGElement}   svg_main    SVG-узел, в системе координат которого нужна точка
- * @param {number}          clientX     Положение курсора по оси X
- * @param {number}          clientY     Положение курсора по оси Y
+ * @param svg_main    SVG node in whose coordinate system the point is needed
+ * @param clientX     X cursor position
+ * @param clientY     Y cursor position
  *
- * @returns {SVGPoint}  точка, координаты которой определяют положение курсора
- *                      в системе координат заданного SVG-узла
+ * @returns the point whose coordinates define the position 
+ *          of the cursor in the coordinate system of the this SVG node 
  */
-export function getCursorPoint(svg_main, clientX, clientY) {
+export function getCursorPoint(svg_main: SVGSVGElement, clientX: number, clientY: number) {
     let svg_point = svg_main.createSVGPoint();
 
     svg_point.x = clientX;
@@ -162,7 +179,7 @@ export function getCursorPoint(svg_main, clientX, clientY) {
     return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
 }
 
-export function buildGrid(layout) {
+export function buildGrid(layout: Layout) {
     return new Grid(
         layout.grid_rows,  layout.grid_cols,
         layout.grid_width, layout.grid_height,
@@ -176,27 +193,27 @@ export function buildGrid(layout) {
     );
 }
 
-export function comparePlates(layout, plate1, plate2) {
+export function comparePlates(layout: Layout, plate1: SerializedPlate, plate2: SerializedPlate) {
     const grid = buildGrid(layout);
     const svg = SVG(document.createElement("div"));
 
     return PlateLayer.comparePlates(svg, grid, plate1, plate2);
 }
 
-export function getAbsolutePosition(element) {
-    let absX = 0,
+export function getAbsolutePosition(element: HTMLElement) {
+    let absX = 0, 
         absY = 0;
 
     do {
         absX += element.offsetLeft;
         absY += element.offsetTop;
 
-        element = element.offsetParent;
+        element = element.offsetParent as HTMLElement;
     } while ( element )
 
     return {x: absX, y: absY};
 }
 
-export function getRandomInt(min, max) {
+export function getRandomInt(min: number, max: number) {
     return Math.floor(min + Math.random() * (max + 1 - min));
 }
