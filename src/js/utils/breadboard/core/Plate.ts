@@ -58,7 +58,7 @@ export type PlateParams = {
     verbose: boolean;
 }
 
-export type PlateProps = { [key: string]: number };
+export type PlateProps = { [key: string]: number|string };
 
 export type SerializedPlatePosition = {
     cell: XYObject;

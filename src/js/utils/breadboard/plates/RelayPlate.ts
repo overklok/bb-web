@@ -1,11 +1,21 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
 import Cell from "../core/Cell";
+import Grid from "../core/Grid";
+
+import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 
 export default class RelayPlate extends LinearPlate {
     static get Alias() {return "relay"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
     }
 
@@ -19,7 +29,7 @@ export default class RelayPlate extends LinearPlate {
      * @param {Cell}    position    положение реле
      * @param {string}  orientation ориентация реле
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
@@ -31,7 +41,7 @@ export default class RelayPlate extends LinearPlate {
      * @param {int} dx смещение реле по оси X
      * @param {int} dy смещение реле по оси Y
      */
-    shift(dx, dy) {
+    shift(dx: number, dy: number) {
         super.shift(dx, dy);
     }
 
@@ -40,7 +50,7 @@ export default class RelayPlate extends LinearPlate {
      *
      * @param {string} orientation ориентация реле
      */
-    rotate(orientation) {
+    rotate(orientation: string) {
         super.rotate(orientation);
     }
 

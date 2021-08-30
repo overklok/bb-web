@@ -1,10 +1,20 @@
-import Plate from "../core/Plate";
-import Cell from "../core/Cell";
+import SVG from 'svg.js'
+import Cell from '../core/Cell';
+
+import Grid from '../core/Grid';
+import Plate, { PlateProps } from "../core/Plate";
 
 export default class DummyPlate extends Plate {
     static get Alias() {return "dummy"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, false, verbose, id, props);
 
         this._params.size = {x: 1, y: 1};
@@ -16,7 +26,7 @@ export default class DummyPlate extends Plate {
      * @param {Cell}    position        положение RGB-диода
      * @param {string}  orientation     ориентация RGB-диода
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._bezel.fill("none").stroke({color: "none", opacity: 0});
 
         this._drawPicture();
@@ -42,13 +52,13 @@ export default class DummyPlate extends Plate {
 
         const radius = qs * 1.5;
 
-        const dot = this._group.circle(radius, radius)
+        const dot = this._group.circle(radius)
             .center(
                 center_x,
                 center_y
             )
             .fill('#ff3a47');
 
-        dot.animate('1200ms').radius(0).loop();
+        (dot.animate(1200) as any).radius(0).loop();
     }
 }

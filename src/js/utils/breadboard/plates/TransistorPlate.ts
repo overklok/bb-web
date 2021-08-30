@@ -1,11 +1,21 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
 import Cell from "../core/Cell";
+import Grid from "../core/Grid";
+
+import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 
 export default class TransistorPlate extends LinearPlate {
     static get Alias() {return "transistor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
 
         // Относительные точки плашки (координаты в стандартной ориентации)
@@ -37,7 +47,7 @@ export default class TransistorPlate extends LinearPlate {
      * @param {Cell}    position    положение перемычки
      * @param {string}  orientation ориентация перемычки
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         // this._group.text(`Button`).font({size: 20});

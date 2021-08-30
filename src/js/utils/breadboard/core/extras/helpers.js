@@ -196,3 +196,7 @@ export function getAbsolutePosition(element) {
 
     return {x: absX, y: absY};
 }
+
+export function getRandomInt(min, max) {
+    return Math.floor(min + Math.random() * (max + 1 - min));
+}

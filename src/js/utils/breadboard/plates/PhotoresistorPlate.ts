@@ -1,12 +1,24 @@
-import Plate from "../core/Plate";
-import Cell from "../core/Cell";
+import SVG from "svg.js";
+
+import Plate, { PlateProps, PlateState } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 import {mod} from "~/js/utils/breadboard/core/extras/helpers";
+import Grid from "../core/Grid";
+import Cell from "../core/Cell";
 
 export default class PhotoresistorPlate extends LinearPlate {
+    private _svginp: any;
+    private _svginpbg: SVG.Rect;
     static get Alias() {return "photoresistor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
 
         this._state.input = 0;
@@ -18,7 +30,7 @@ export default class PhotoresistorPlate extends LinearPlate {
      * @param {Cell}    position    положение фоторезистора
      * @param {string}  orientation ориентация фоторезистора
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         if (this._params.verbose) {
@@ -36,7 +48,7 @@ export default class PhotoresistorPlate extends LinearPlate {
      * @param {int} dx смещение фоторезистора по оси X
      * @param {int} dy смещение фоторезистора по оси Y
      */
-    shift(dx, dy) {
+    shift(dx: number, dy: number) {
         super.shift(dx, dy);
     }
 
@@ -45,7 +57,7 @@ export default class PhotoresistorPlate extends LinearPlate {
      *
      * @param {string} orientation ориентация фоторезистора
      */
-    rotate(orientation) {
+    rotate(orientation: string) {
         super.rotate(orientation);
     }
 
@@ -57,7 +69,7 @@ export default class PhotoresistorPlate extends LinearPlate {
         this.setState({input: mod(Number(this.input) - 1, 256)});
     }
 
-    setState(state, suppress_events = false) {
+    setState(state: Partial<PlateState>, suppress_events: boolean = false) {
         if (state.input === undefined) return;
 
         let input = state.input || 0;
@@ -71,7 +83,7 @@ export default class PhotoresistorPlate extends LinearPlate {
         }
     }
 
-    _redrawInput(input_value) {
+    _redrawInput(input_value: string) {
         if (!this._svginp) {
             this._svginpbg = this._container.rect(0, 0).style({fill: '#000'});
 
@@ -139,7 +151,7 @@ export default class PhotoresistorPlate extends LinearPlate {
             .center(frame.cx(), frame.cy());
 
         this._group
-            .circle(qs/6, qs/6)
+            .circle(qs/6)
             .center(frame.cx(), frame.cy());
     }
 }

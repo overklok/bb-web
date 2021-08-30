@@ -1,10 +1,20 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
+
+import Plate, { PlateProps } from "../core/Plate";
 import Cell from "../core/Cell";
+import Grid from "../core/Grid";
 
 export default class RGBPlate extends Plate {
     static get Alias() {return "rgb"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, false, verbose, id, props);
 
         this._params.size = {x: 4, y: 1};
@@ -16,7 +26,7 @@ export default class RGBPlate extends Plate {
      * @param {Cell}    position        положение RGB-диода
      * @param {string}  orientation     ориентация RGB-диода
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         this._drawLabel();
     };
@@ -49,7 +59,7 @@ export default class RGBPlate extends Plate {
             .stroke({color: "#e7e7e7", width: 1})
             .attr('filter', 'url(#glow-led)');
 
-        this._group.circle(ls/1.5, ls/1.5)
+        this._group.circle(ls/1.5)
             .center(
                 center_x,
                 center_y
@@ -57,7 +67,7 @@ export default class RGBPlate extends Plate {
             .fill('#e2e2e2');
 
         for (const cell of cells) {
-            this._group.circle(ls/1.5, ls/1.5)
+            this._group.circle(ls/1.5)
                 .center(
                     cell.center_rel.x,
                     cell.center_rel.y

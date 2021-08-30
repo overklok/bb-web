@@ -1,4 +1,8 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
+import Cell from "../core/Cell";
+import Grid from "../core/Grid";
+
+import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 
 export default class ResistorPlate extends LinearPlate {
@@ -6,13 +10,20 @@ export default class ResistorPlate extends LinearPlate {
 
     static get PROP_RESISTANCE() {return "res"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
     }
 
     get __defaultProps__() {
         return {
-            ...super.__defaultProps__,
+            ...super['__defaultProps__'],
             [ResistorPlate.PROP_RESISTANCE]: 200
         };
     }
@@ -21,7 +32,7 @@ export default class ResistorPlate extends LinearPlate {
         return `${this._shortLabel()} Ω`;
     }
 
-    __setProps__(props) {
+    __setProps__(props: PlateProps) {
         let resistance = Number(props[ResistorPlate.PROP_RESISTANCE]);
 
         if (resistance <= 0) {
@@ -39,7 +50,7 @@ export default class ResistorPlate extends LinearPlate {
      * @param {Cell}   position    положение резистора
      * @param {string}  orientation ориентация резистора
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         this._drawLabel();
     };
@@ -51,7 +62,7 @@ export default class ResistorPlate extends LinearPlate {
      * @param {int} dy смещение резистора по оси Y
      * @param prevent_overflow
      */
-    shift(dx, dy, prevent_overflow) {
+    shift(dx: number, dy: number, prevent_overflow: boolean = true) {
         super.shift(dx, dy, prevent_overflow);
     }
 
@@ -62,7 +73,7 @@ export default class ResistorPlate extends LinearPlate {
      * @param suppress_events
      * @param prevent_overflow
      */
-    rotate(orientation, suppress_events, prevent_overflow) {
+    rotate(orientation: string, suppress_events: boolean = false, prevent_overflow: boolean = true) {
         super.rotate(orientation, suppress_events, prevent_overflow);
     }
 

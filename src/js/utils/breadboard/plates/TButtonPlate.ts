@@ -1,11 +1,21 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
 import Cell from "../core/Cell";
+import Grid from "../core/Grid";
+
+import Plate, { PlateProps } from "../core/Plate";
 import ButtonPlate from "./ButtonPlate";
 
 export default class TButtonPlate extends ButtonPlate {
     static get Alias() {return "button_t"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
     }
 
@@ -23,7 +33,7 @@ export default class TButtonPlate extends ButtonPlate {
      * @param {Cell}    position    положение перемычки
      * @param {string}  orientation ориентация перемычки
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         if (this._params.verbose) {

@@ -1,4 +1,8 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
+import Cell from "../core/Cell";
+import Grid from "../core/Grid";
+
+import Plate, { PlateProps, PlateState } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 
 const LED_COLOURS = {
@@ -14,13 +18,22 @@ export default class LEDPlate extends LinearPlate {
 
     static get COLOURS() {return LED_COLOURS}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    private _svgout: SVG.Text;
+
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
     }
 
     get __defaultProps__() {
         return {
-            ...super.__defaultProps__,
+            ...super['__defaultProps__'],
             [LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED
         }
     }
@@ -29,7 +42,7 @@ export default class LEDPlate extends LinearPlate {
         return this._shortLabel();
     }
 
-    __setProps__(props) {
+    __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         let colour = this._props[LEDPlate.PROP_COLOUR];
@@ -54,7 +67,7 @@ export default class LEDPlate extends LinearPlate {
      * @param {Cell}   position     положение светодиода
      * @param {string}  orientation ориентация светодиода
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         this._drawLabel();
 
@@ -70,7 +83,7 @@ export default class LEDPlate extends LinearPlate {
      *
      * @param {object} state новое состояние светодиода
      */
-    setState(state, suppress_events) {
+    setState(state: Partial<PlateState>, suppress_events: boolean = false) {
         state.output = Number(state.input);
 
         super.setState(state, suppress_events);
@@ -80,7 +93,7 @@ export default class LEDPlate extends LinearPlate {
         }
     }
 
-    _redrawOutput(output_value) {
+    _redrawOutput(output_value: string) {
         if (!this._svgout) {
             let cell = this.__grid.cell(0, 0);
             this._svgout = this._group.text('0')
@@ -97,7 +110,7 @@ export default class LEDPlate extends LinearPlate {
      * @param {int} dx смещение светодиода по оси X
      * @param {int} dy смещение светодиода по оси Y
      */
-    shift(dx, dy) {
+    shift(dx: number, dy: number) {
         super.shift(dx, dy);
     }
 
@@ -106,7 +119,7 @@ export default class LEDPlate extends LinearPlate {
      *
      * @param {string} orientation ориентация светодиода
      */
-    rotate(orientation) {
+    rotate(orientation: string) {
         super.rotate(orientation);
     }
 

@@ -20,7 +20,7 @@ export default class BridgePlate extends LinearPlate {
     ) {
         super(container, grid, schematic, verbose, id, props);
 
-        this._params.size = {x: this.__length__, y: 1};
+        this._params.size = {x: Number(this.__length__), y: 1};
 
         // Относительные точки плашки (координаты в стандартной ориентации)
         // Единица - размер ячейки (в каждом измерении)
@@ -41,10 +41,9 @@ export default class BridgePlate extends LinearPlate {
 
     /**
      * @returns {number}
-     * @protected
      */
-    get __length__() {
-        return this.props[BridgePlate.PROP_LENGTH];
+    get __length__(): number {
+        return Number(this.props[BridgePlate.PROP_LENGTH]);
     }
 
     get variant() {

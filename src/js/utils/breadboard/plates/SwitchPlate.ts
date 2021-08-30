@@ -1,10 +1,24 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
+import Cell from "../core/Cell";
+import Grid from "../core/Grid";
+
+import Plate, { PlateProps } from "../core/Plate";
 import ButtonPlate from "./ButtonPlate";
 
 export default class SwitchPlate extends ButtonPlate {
     static get Alias() {return "switch"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    private jumper_on: SVG.Path;
+    private jumper_off: SVG.Path;
+
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: 3, y: 2};
@@ -23,7 +37,7 @@ export default class SwitchPlate extends ButtonPlate {
      * @param {Cell}    position    положение перемычки
      * @param {string}  orientation ориентация перемычки
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         if (this._params.verbose) {

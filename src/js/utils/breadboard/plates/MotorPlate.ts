@@ -1,10 +1,21 @@
+import SVG from "svg.js";
+
 import LinearPlate from "../core/plate/LinearPlate";
-import Plate from "../core/Plate";
+import Plate, { PlateProps } from "../core/Plate";
+import Grid from "../core/Grid";
+import Cell from "../core/Cell";
 
 export default class MotorPlate extends LinearPlate {
     static get Alias() {return "motor"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: 2, y: 1};
@@ -16,7 +27,7 @@ export default class MotorPlate extends LinearPlate {
      * @param {Cell}    position        положение RGB-диода
      * @param {string}  orientation     ориентация RGB-диода
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         // this._drawLabel('мотор', 40);
 

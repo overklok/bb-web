@@ -144,7 +144,7 @@ export default class BackgroundLayer extends Layer {
      * @inheritdoc
      */
     public recompose(schematic: boolean, detailed: boolean, verbose: boolean) {
-        super.recompose(schematic, detailed);
+        super.recompose(schematic, detailed, verbose);
 
         this._debug = verbose;
 

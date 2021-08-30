@@ -1,24 +1,34 @@
-import Plate from "../core/Plate";
+import SVG from "svg.js";
+
+import Plate, { PlateProps } from "../core/Plate";
 import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
+import Grid from "../core/Grid";
 
 export default class InductorPlate extends LinearPlate {
     static get Alias() {return "inductor"}
 
     static get PROP_INDUCTANCE() {return "ind"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
     }
 
     get __defaultProps__() {
         return {
-            ...super.__defaultProps__,
+            ...super['__defaultProps__'],
             [InductorPlate.PROP_INDUCTANCE]: 100
         }
     }
 
-    __setProps__(props) {
+    __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         this._props[InductorPlate.PROP_INDUCTANCE] = Number(this._props[InductorPlate.PROP_INDUCTANCE]);
@@ -30,7 +40,7 @@ export default class InductorPlate extends LinearPlate {
      * @param {Cell}    position    положение перемычки
      * @param {string}  orientation ориентация перемычки
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         // this._group.text(`Button`).font({size: 20});
@@ -69,6 +79,7 @@ export default class InductorPlate extends LinearPlate {
         let circ_base_x = rect1.cx() + line_len/2 - line_gap;
 
         for (let i = 0; i < 3; i++) {
+            // @ts-ignore
             this._group.circle(line_gap / 1.5)
                 .x(circ_base_x + (line_gap / 1.5 * i))
                 .cy(rect1.cy())

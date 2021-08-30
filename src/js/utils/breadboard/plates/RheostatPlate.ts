@@ -1,11 +1,25 @@
-import Plate from "../core/Plate";
-import Cell from "../core/Cell";
+import SVG from "svg.js";
+
+import Plate, { PlateProps, PlateState } from "../core/Plate";
 import {mod} from "~/js/utils/breadboard/core/extras/helpers";
+import Grid from "../core/Grid";
+import Cell from "../core/Cell";
 
 export default class RheostatPlate extends Plate {
     static get Alias() {return "rheostat"}
 
-    constructor(container, grid, schematic=false, verbose=false, id=null, props=null) {
+    private _svginp: SVG.Text;
+
+    private _svginpbg: SVG.Rect;
+
+    constructor(
+        container: SVG.Container,
+        grid: Grid,
+        schematic: boolean = false,
+        verbose: boolean = false,
+        id: number = null,
+        props: PlateProps = null
+    ) {
         super(container, grid, schematic, verbose, id, props);
 
         this._params.size = {x: 3, y: 2};
@@ -26,7 +40,7 @@ export default class RheostatPlate extends Plate {
      * @param {Cell}   position    положение резистора
      * @param {string}  orientation ориентация резистора
      */
-    __draw__(position, orientation) {
+    __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         if (this._params.verbose) {
@@ -46,7 +60,7 @@ export default class RheostatPlate extends Plate {
      * @param {int} dx смещение резистора по оси X
      * @param {int} dy смещение резистора по оси Y
      */
-    shift(dx, dy) {
+    shift(dx: number, dy: number) {
         super.shift(dx, dy);
     }
 
@@ -55,7 +69,7 @@ export default class RheostatPlate extends Plate {
      *
      * @param {string} orientation ориентация резистора
      */
-    rotate(orientation) {
+    rotate(orientation: string) {
         super.rotate(orientation);
     }
 
@@ -73,7 +87,7 @@ export default class RheostatPlate extends Plate {
      * @param {object} state    новое состояние резистора
      * @param suppress_events   глушить вызов событий
      */
-    setState(state, suppress_events) {
+    setState(state: Partial<PlateState>, suppress_events: boolean = false) {
         if (state.input === undefined) return;
 
         let input = state.input || 0;
@@ -87,7 +101,7 @@ export default class RheostatPlate extends Plate {
         }
     }
 
-    _redrawInput(input_value) {
+    _redrawInput(input_value: string) {
         if (!this._svginp) {
             this._svginpbg = this._container.rect(0, 0).style({fill: '#000'});
 
@@ -100,7 +114,7 @@ export default class RheostatPlate extends Plate {
         this._svginp.style({fill: input_value === undefined ? '#F00' : '#0F0'});
         this._svginp.text(input_value === undefined ? 'n/a' : String(input_value));
 
-        const {x, y, width, height} = this._svginp.node.getBBox();
+        const {x, y, width, height} = (this._svginp.node as unknown as SVGGraphicsElement).getBBox();
 
         this._svginpbg.size(width, height).move(x, y);
     }
