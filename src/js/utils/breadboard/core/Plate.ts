@@ -6,16 +6,12 @@ import isEqual from 'lodash/isEqual';
 import Cell from "./Cell";
 import Grid, { BorderType } from "./Grid";
 import PlateContextMenu from "../menus/PlateContextMenu";
-import {coverObjects} from "./extras/helpers";
+import {coverObjects, mod} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import {Direction, DirsClockwise, XYObject} from "./types";
 
-function mod(n: number, m: number): number {
-  return ((n % m) + m) % m;
-}
-
 /**
- * Коды ориентаций
+ * Orientation codes
  *
  * @type {{West: string, North: string, East: string, South: string}}
  */
@@ -37,34 +33,68 @@ let QUAD_SIZE = QUAD_SIZE_DEFAULT,
 
 export type PlateRef<P extends Plate> = new (...args: any) => P;
 
+/**
+ * Dynamic (modifiable) plate attributes 
+ */
 export type PlateState = {
-    cell: Cell; // ячейка, задающая положение опорной точки
-    orientation: string; // ориентация плашки
-    highlighted: boolean; // подсвечена ли плашка
+    /** cell defining the position of the plate */
+    cell: Cell; 
+    /** current orientation of the plate */
+    orientation: string; 
+    /** is the plate highlighed at the moment */
+    highlighted: boolean; 
+    /** plate currents */
     currents: any;
+    /** plate voltages */
     voltages: any;
+    /** input value */
     input: any;
+    /** output value */
     output: any;
 }
 
+/**
+ * Static (non-modifiable) plate type attributes
+ */
 export type PlateParams = {
-    size: { x: number; y: number; }; // кол-во ячеек, занимаемое плашкой на доске
-    size_px: { x: number; y: number; }; // физический размер плашки (в px)
-    origin: { x: number; y: number; }; // опорная точка плашки
-    surface: any; // контур плашки
-    rels: { x: number, y: number, adj: { x: number, y: number } }[]; // относительные позиции занимаемых ячеек
-    adjs: any; // корректировки положения плашки
-    schematic: boolean; // схематическое отображение плашки
+    /** the number of cells occupied by the plate on the board  */
+    size: { x: number; y: number; }; 
+    /** physical plate size (px) */
+    size_px: { x: number; y: number; }; 
+    /** pivot point of the plate */
+    origin: { x: number; y: number; }; 
+    /** plate outline */
+    surface: any; 
+    /** relative positions of cells occupied */
+    rels: {
+        x: number,
+        y: number,
+        adj: { x: number, y: number }
+    }[];
+    /** plate position adjustments */
+    adjs: any; 
+    /** whether is schematic style is turned on */
+    schematic: boolean; 
+    /** whether debug data should be displayed */
     verbose: boolean;
 }
 
+/**
+ * Static (non-modifiable) plate instance attributes
+ */
 export type PlateProps = { [key: string]: number|string };
 
+/**
+ * Data object defining the position and orientation of the plate
+ */
 export type SerializedPlatePosition = {
     cell: XYObject;
     orientation: string;
 }
 
+/**
+ * Data object that defines the full set of plate attributes
+ */
 export type SerializedPlate = {
     id: number;
     type: string;
@@ -78,68 +108,109 @@ export type SerializedPlate = {
 }
 
 /**
- * Класс плашки доски
+ * Renders a plate, provides an API to manage its state 
  *
- * @class
- * 
  * @category Breadboard
  */
 export default class Plate {
-    private _node_parent: HTMLElement;
-    private _alias: string;
-    private _id: number;
-    private _shadow: SVG.Nested;
-    protected _container: SVG.Nested;
-    private _shadowgroup: SVG.G;
-    protected _group: SVG.G;
-    protected _bezel: any;
-    private _group_editable: SVG.G;
-    private _error_highlighter: any;
-    protected _params: PlateParams;
-    protected __grid: Grid;
-    protected _state: PlateState;
-    protected _props: PlateProps;
-    private _callbacks: {
-        change: CallableFunction; // изменения плашки
-        mousedown: CallableFunction;
-        mousewheel: CallableFunction;
-        dragstart: CallableFunction;
-        dragfinish: CallableFunction;
-    };
-    private _dragging: boolean;
-    private _drawn: boolean;
-    private _shadowimg: SVG.Rect;
-    private _cell_supposed: any;
-    private _constraints: any;
-    _dir_prev: any;
-
-    /** flag for extra purposes */
-    public ___touched: boolean;
-
     static get PROP_INVERTED() { return "inv" }
 
-    // Ориентации плашки
+    /** Plate orientations */
     static get Orientations() { return ORIENTATIONS }
-    // CSS-класс контейнера плашки
+
+    /** SVG container for the plate */
     static get Class() { return "bb-plate" }
-    // Алиас контейнера плашки
+    
+    /** Plate type string descriptor, used to instantiate plates from serialized data */
     static get Alias() { return "default" }
-    // CSS-класс изображения тени
+
+    /** CSS class for shadow iwage */
     static get ShadowImgClass() { return "bb-plate-shadow-img" }
 
+    /** Font family for plate captions */
     static get CaptionFontFamily() { return "'IBM Plex Mono', 'Lucida Console', Monaco, monospace" }
+    /** Font weight for plate captions */
     static get CaptionFontWeight() { return "normal" }
 
+    /** Default size for square elements used in plate pictograms */
     static get QuadSizeDefault() { return QUAD_SIZE_DEFAULT }
+    /** Default size for LED elements used in plate pictograms */
     static get LEDSizeDefault() { return LED_SIZE_DEFAULT }
+    /** Font size for plate captions */
     static get LabelFontSizeDefault() { return LABEL_FONT_SIZE_DEFAULT }
 
+    /** Preferred size for square elements used in plate pictograms */
     static get QuadSizePreferred() { return QUAD_SIZE };
+    /** Preferred size for LED elemets used in plate pictograms */
     static get LEDSizePreferred() { return LED_SIZE };
+    /** Preferred font size for plate captions */
     static get LabelFontSizePreferred() { return LABEL_FONT_SIZE };
+    
+    /** Sets preferred size for square elemets used in plate pictograms */
     static set QuadSizePreferred(v) { QUAD_SIZE = v };
+    /** Sets preferred size for LED elements used in plate pictograms */
     static set LEDSizePreferred(v) { LED_SIZE = v };
+    /** Sets preferred font size for plate captions */
     static set LabelFontSizePreferred(v) { LABEL_FONT_SIZE = v };
+
+    /** extra purpose flag */
+    public ___touched: boolean;
+
+    /** SVG container in which the plate is rendered */
+    protected _container: SVG.Nested;
+    /** SVG container in which the plate is rotated */
+    protected _group: SVG.G;
+    /** plate outline element */
+    protected _bezel: any;
+    /** grid on which the plate is placed */
+    protected __grid: Grid;
+    /** parameters of the plate */
+    protected _params: PlateParams;
+    /** current state of the plate */
+    protected _state: PlateState;
+    /** properties of the plate */
+    protected _props: PlateProps;
+    
+    /** plate identifier */
+    private _id: number;
+    /** plate type string descriptor */
+    private _alias: string;
+    /** parent node of plate container */
+    private _node_parent: HTMLElement;
+    /** SVG container in which the plate shadow is rendered */
+    private _shadow: SVG.Nested;
+    /** SVG container in which the plate shadow is rotated */
+    private _shadowgroup: SVG.G;
+    /** SVG container in which the elements for plate editing are rendered */
+    private _group_editable: SVG.G;
+    /** SVG element that highlights the plate */
+    private _error_highlighter: any;
+    /** a flag that determines if the plate is in the dragging state */
+    private _dragging: boolean;
+    /** is the plate is drawn or not */
+    private _drawn: boolean;
+    /** SVG element of the plate shadow */
+    private _shadowimg: SVG.Rect;
+    /** the cell that is currently defined as the closest to drop to if the dragging is interrupted */
+    private _cell_supposed: any;
+    /** plate placement constraints */
+    private _constraints: any;
+    
+    /** local event handlers */
+    private _callbacks: {
+        /** plate changes */
+        change: CallableFunction; 
+        /** mouse button is clicked on the plate */
+        mousedown: CallableFunction;
+        /** mouse wheel is scrolled on the plate */
+        mousewheel: CallableFunction;
+        /** plate dragging is started */
+        dragstart: CallableFunction;
+        /** plate dragging is finished */
+        dragfinish: CallableFunction;
+    };
+    
+    private _dir_prev: any;
 
     constructor(
         container: SVG.Container,
