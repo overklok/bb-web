@@ -9,6 +9,7 @@ import PlateContextMenu from "../menus/PlateContextMenu";
 import {coverObjects, mod} from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import {Direction, DirsClockwise, XYObject} from "./types";
+import ContextMenu from './ContextMenu';
 
 /**
  * Orientation codes
@@ -64,16 +65,23 @@ export type PlateParams = {
     /** pivot point of the plate */
     origin: { x: number; y: number; }; 
     /** plate outline */
-    surface: any; 
-    /** relative positions of cells occupied */
+    surface: XYObject[]; 
+    /** {@link Current} adjustments for each of the relative positions of cells occupied */
     rels: {
+        /** horizontal index of the cell */
         x: number,
+        /** vertical index of the cell */
         y: number,
-        adj: { x: number, y: number }
+        adj: { 
+            /** horizontal adjustment for the current flowing through the cell */
+            x: number, 
+            /** vertical adjustment for the current flowing through the cell */
+            y: number 
+        }
     }[];
     /** plate position adjustments */
-    adjs: any; 
-    /** whether is schematic style is turned on */
+    adjs: { [orientation: string]: XYObject }; 
+    /** whether schematic style is turned on */
     schematic: boolean; 
     /** whether debug data should be displayed */
     verbose: boolean;
@@ -112,7 +120,7 @@ export type SerializedPlate = {
  *
  * @category Breadboard
  */
-export default class Plate {
+export default abstract class Plate {
     static get PROP_INVERTED() { return "inv" }
 
     /** Plate orientations */
@@ -156,41 +164,41 @@ export default class Plate {
     /** extra purpose flag */
     public ___touched: boolean;
 
-    /** SVG container in which the plate is rendered */
-    protected _container: SVG.Nested;
-    /** SVG container in which the plate is rotated */
-    protected _group: SVG.G;
-    /** plate outline element */
-    protected _bezel: any;
     /** grid on which the plate is placed */
     protected __grid: Grid;
-    /** parameters of the plate */
+    /** static plate type attributes */
     protected _params: PlateParams;
-    /** current state of the plate */
-    protected _state: PlateState;
-    /** properties of the plate */
+    /** static plate instance attributes, evaluates from {@link __defaultProps__}, takes its values from the constructor argument `props` */
     protected _props: PlateProps;
+    /** dynamic plate instance attributes, changes via {@link setState} */
+    protected _state: PlateState;
     
     /** plate identifier */
     private _id: number;
     /** plate type string descriptor */
     private _alias: string;
-    /** parent node of plate container */
-    private _node_parent: HTMLElement;
+
+    /** SVG container in which the plate is rendered */
+    protected _container: SVG.Nested;
+    /** SVG container in which the plate is rotated */
+    protected _group: SVG.G;
+    /** plate outline element */
+    protected _bezel: SVG.Path | SVG.Rect;
+    /** SVG element of the plate shadow */
+    private _shadowimg: SVG.Rect;
     /** SVG container in which the plate shadow is rendered */
     private _shadow: SVG.Nested;
     /** SVG container in which the plate shadow is rotated */
     private _shadowgroup: SVG.G;
-    /** SVG container in which the elements for plate editing are rendered */
-    private _group_editable: SVG.G;
     /** SVG element that highlights the plate */
     private _error_highlighter: any;
+    /** parent node of plate container */
+    private _node_parent: HTMLElement;
+
     /** a flag that determines if the plate is in the dragging state */
     private _dragging: boolean;
     /** is the plate is drawn or not */
     private _drawn: boolean;
-    /** SVG element of the plate shadow */
-    private _shadowimg: SVG.Rect;
     /** the cell that is currently defined as the closest to drop to if the dragging is interrupted */
     private _cell_supposed: any;
     /** plate placement constraints */
@@ -212,6 +220,9 @@ export default class Plate {
     
     private _dir_prev: any;
 
+    /**
+     * Deploys SVG tree for the plate, sets all attributes to its initial state
+     */
     constructor(
         container: SVG.Container,
         grid: Grid,
@@ -228,44 +239,44 @@ export default class Plate {
 
         this._node_parent = container.node;
 
-        /// Кодовое имя плашки
+        /// Plate type code name
         this._alias = (this as any).constructor.Alias;
 
-        /// Идентификатор - по умолчанию случайная строка
+        /// Identifier is random number by default
         this._id = (id === null) ? (Math.floor(Math.random() * (10 ** 6))) : (id);
 
-        /// Контейнер, группа и ссылка на сетку
-        this._shadow = container.nested();        // для тени
-        this._container = container.nested();        // для масштабирования
-        this._shadowgroup = this._shadow.group();             // для поворота тени
-        this._group = this._container.group();          // для поворота
+        /// Structural elements of SVG tree
+        this._shadow = container.nested();        // for shadow 
+        this._container = container.nested();     // for plate rendering and scale transformationa
+        this._shadowgroup = this._shadow.group(); // for shadow rotations
+        this._group = this._container.group();    // for plate rotations
 
-        this._bezel = undefined; // окантовка
+        this._bezel = undefined; // plate outline (repeats plate shape with a bold stroke and without filling)
 
-        /// Дополнительные контейнеры
-        this._group_editable = this._group.group();                     // для режима редактирования
-        this._error_highlighter = undefined;
+        /// Additional containers
+        this._error_highlighter = undefined;        // colored overlay of the same shape
 
-        /// Параметры - статические атрибуты плашки
+        /// Set initial static plate type attributes
         this._params = {
-            size: { x: 0, y: 0 },   // кол-во ячеек, занимаемое плашкой на доске
-            size_px: { x: 0, y: 0 },   // физический размер плашки (в px)
-            origin: { x: 0, y: 0 },   // опорная точка плашки
-            surface: undefined,      // контур плашки
-            rels: undefined,      // относительные позиции занимаемых ячеек
-            adjs: undefined,      // корректировки положения плашки
-            schematic: schematic,       // схематическое отображение плашки
-            verbose: verbose,       // схематическое отображение плашки
+            size: { x: 0, y: 0 },       
+            size_px: { x: 0, y: 0 },    
+            origin: { x: 0, y: 0 },     
+            surface: undefined,         
+            rels: undefined,            
+            adjs: undefined,            
+            schematic: schematic,       
+            verbose: verbose,           
         };
 
-        /// Свойства - неизменяемые атрибуты плашки
+        /// Take plate's default instance attributes
         this._props = this.__defaultProps__;
 
+        /// Apply its values from the argument
         if (props) {
             this.__setProps__(props);
         }
 
-        /// Состояние - изменяемые атрибуты плашки
+        /// Set inital dynamic plate attributes
         this._state = {
             cell: new Cell(0, 0, this.__grid),    // ячейка, задающая положение опорной точки
             orientation: Plate.Orientations.East,        // ориентация плашки
@@ -276,10 +287,10 @@ export default class Plate {
             output: undefined,
         };
 
-        /// Присвоить класс контейнеру
+        /// Assign a class to the container
         this._container.addClass(Plate.Class);
 
-        /// Обработчики событий
+        /// Set initial event handlers
         this._callbacks = {
             change: () => { },           // изменения плашки
             mousedown: () => { },
@@ -288,14 +299,15 @@ export default class Plate {
             dragfinish: () => { },
         };
 
-        /// Режим перетаскивания
+        /// By default, plate is not dragged
         this._dragging = false;
-        /// Отрисована ли была плашка
+        /// The plate will be drawn by the `__draw__` method
         this._drawn = false;
 
+        /// Attach mousedown handler calls
         this._group.mousedown((evt: MouseEvent) => { this._callbacks.mousedown(evt) });
 
-        /// обработчик вращения колёсика мыши на плашке
+        /// Attach mousewheel handler calls
         if ('onwheel' in document) {
             // IE9+, FF17+, Ch31+
             this._group.node.addEventListener("wheel", (evt) => this._callbacks.mousewheel(evt), { passive: true });
@@ -306,122 +318,141 @@ export default class Plate {
             // Firefox < 17
             this._group.node.addEventListener("MozMousePixelScroll", (evt) => this._callbacks.mousewheel(evt));
         }
-
-        this.showGroupEditable(false);
     }
 
     /**
-     * Возвратить строку, определяющую тип плашки
-     *
-     * @returns {string}
+     * @returns plate type alias
      */
-    get alias() {
+    get alias(): string {
         return (this as any).constructor.Alias;
     }
 
     /**
-     * Возвратить строку, определяющую подтип плашки
-     *
-     * @returns {string}
+     * @returns plate subtype 
      */
-    get variant() {
+    get variant(): string {
         return '';
     }
 
     /**
-     * Возвратить идентификатор плашки
-     *
-     * @returns {number|*} число, если задан идентификатор по умолчанию
+     * @returns plate identifier 
      */
-    get id() {
+    get id(): number {
         return this._id;
     }
 
-    get pos() {
+    /**
+     * @returns main cell coordinates
+     */
+    get pos(): XYObject {
         return this._state.cell.idx;
     }
 
-    get length() {
+    /**
+     * @returns plate length (useful for LED strips and bridges)
+     */
+    get length(): number {
         return this._params.size.x;
     }
 
+    /**
+     * @returns current flow adjustments for the cells occupied by the plate
+     */
     get rels() {
         return this._params.rels;
     }
 
+    /**
+     * @returns the location of the cells occupied by the plate
+     */
     get surface() {
         return this._params.surface;
     }
 
-    get props() {
+    /**
+     * @returns static plate instance attributes
+     */
+    get props(): PlateProps {
         return this._props;
     }
 
     /**
-     * Возвратить текущее состояние плашки
-     *
-     * @returns {{}} состояние плашки
+     * @returns dynamic plate instance attributes
      */
-    get state() {
+    get state(): PlateState {
         return this._state;
     }
 
-    get input() {
+    /**
+     * @returns current plate input value
+     */
+    get input(): any {
         return this._state.input || 0;
     }
 
     /**
-     * Возвратить HTML-элемент, содержащий плашку
-     *
-     * @returns {HTMLElement}
+     * @returns HTML element that contains the plate SVG tree
      */
-    get container() {
+    get container(): SVG.Nested {
         return this._container;
     }
 
-    get __defaultProps__() {
+    /**
+     * @returns default properties and its values
+     * 
+     * If some property is not defined here, its value will be ignored when constructing the plate.
+     */
+    get __defaultProps__(): PlateProps {
         return {
             [Plate.PROP_INVERTED]: 0
         };
     }
 
-    get __ctxmenu__() {
+    /**
+     * @returns context menu class
+     */
+    get __ctxmenu__(): typeof ContextMenu {
         return PlateContextMenu;
     }
 
     /**
-     * Функция индивидуальной отрисовки
-     * Используется только у наследников данного класса
-     *
-     * @abstract
-     * @private
+     * Draws plate contents
      */
-    __draw__(cell: Cell, orientation: string) {
-        throw new Error("Method should be implemented");
-    }
+    abstract __draw__(cell: Cell, orientation: string): void
 
     /**
-     * Выдать "противоположную" ячейку
+     * Finds "opposite" cell, in terms of current input and output 
      *
-     * Если cell - вход элемента, то, что выдаёт функция - выход элемента
+     * If {@link cell} is an element input cell, then the method returns an output cell and vice versa.
+     * If there are no opposite cell for given cell, then the function returns `undefined`.
      *
-     * @param cell
-     *
-     * @abstract
-     * @private
+     * @param cell an input/output cell
+     * 
+     * @returns an output cell, if an input cell is provided, and vice versa 
      */
-    __getOppositeCell__(cell: Cell): Cell {
-        throw new Error("Method should be implemented");
-    }
+    abstract __getOppositeCell__(cell: Cell): Cell 
 
-    __setProps__(props: PlateProps) {
+    /**
+     * Sets new props for the plate
+     * 
+     * Props that is not defined by {@link __defaultProps__} will be ignored here.
+     *  
+     * @param props partial props for the plate with values needed to set
+     */
+    __setProps__(props: Partial<PlateProps>) {
         this._props = coverObjects(props, this._props);
     }
 
+    /**
+     * @returns a context menu instance for the plate
+     */
     getCmInstance() {
         return new this.__ctxmenu__(this.id, this.alias, this.variant);
     }
 
+    /**
+     * @returns serialized data object defining all the data needed to represent the plate
+     */
     serialize(): SerializedPlate {
         return {
             id: this.id,
@@ -444,13 +475,13 @@ export default class Plate {
     }
 
     /**
-     * Нарисовать плашку
+     * Draws the surface of the plate and its contents in the given position and orientation
      *
-     * @param {Cell}    cell        положение элемента относительно опорной точки
-     * @param {string}  orientation ориентация элемента относительно опорной точки
-     * @param {boolean} animate     анимировать появление плашки
+     * @param cell        element's position relative to its pivot point
+     * @param orientation element's orientation relative to it's pivot point
+     * @param animate     animate plate appearance
      */
-    draw(cell: Cell, orientation: any, animate = false) {
+    draw(cell: Cell, orientation: string, animate: boolean = false) {
         this._checkParams();
 
         this._beforeReposition();
@@ -498,17 +529,17 @@ export default class Plate {
         this._params.size_px.y = height;
 
         if (animate) {
-            this._bezel.scale(1.15).animate('100ms').scale(1);
+            this._bezel.scale(1.15).animate(100).scale(1);
         }
 
         this._afterReposition();
     };
 
     /**
-     * Установить состояние плашки
+     * Sets plate state 
      *
-     * @param state новое состояние плашки, которое требуется отобразить
-     * @param suppress_events
+     * @param state             new state of the plate to be updated
+     * @param suppress_events   log errors instead of throwing exceptions
      */
     setState(state: Partial<PlateState>, suppress_events=false) {
         const is_dirty = !isEqual(this._state, state);
@@ -526,22 +557,20 @@ export default class Plate {
     }
 
     /**
-     * Выделить ошибку
+     * Toggles error highlight 
      *
-     * @param on
+     * @param on turn on the highlight
      */
     highlightError(on=false) {
         if (on) {
-            // установить подсветку ошибки
             this._error_highlighter.opacity(0.3);
         } else {
-            // снять подсветку ошибки
             this._error_highlighter.opacity(0);
         }
     }
 
     /**
-     * Сымитировать клик на плашку
+     * Triggers plate click event
      */
     click() {
         this._container.fire('mousedown');
@@ -748,19 +777,6 @@ export default class Plate {
 
     getOppositeCell(cell: Cell): Cell {
         return this.__getOppositeCell__(cell);
-    }
-
-    /**
-     * Показать группу для режима редактирования
-     *
-     * @param on
-     */
-    showGroupEditable(on=false) {
-        if (on) {
-            this._group_editable.opacity(1);
-        } else {
-            this._group_editable.opacity(0);
-        }
     }
 
     /**

@@ -12,7 +12,7 @@ export default class PlateContextMenu extends ContextMenu {
     static get CMI_DUPLIC() {return "cmi_dupl"}
 
     constructor(plate_id: number, plate_type: string, plate_variant: string) {
-        super(plate_id);
+        super(plate_id, plate_type, plate_variant);
 
         this._items_props = [
             {

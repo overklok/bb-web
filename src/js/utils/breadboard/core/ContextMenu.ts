@@ -126,7 +126,7 @@ export default class ContextMenu {
      * 
      * @param item_id an arbitrary optional caller object identifier
      */
-    constructor(item_id?: number) {
+    constructor(item_id?: number, item_type?: string, item_variant?: string) {
         this._caller_id = item_id;
         this._container = undefined;
 

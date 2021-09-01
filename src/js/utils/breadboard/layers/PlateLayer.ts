@@ -591,9 +591,6 @@ export default class PlateLayer extends Layer<SVG.Container> {
         if (this._editable) {
             this._attachEventsEditable(plate);
 
-            /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
-            plate.showGroupEditable(true);
-
             plate.onChange((data: ChangeCallbackArg) => this._callbacks.change(data));
         }
 
@@ -693,7 +690,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
                 /// set the flag on it
                 this._plates[id].___touched = true;
 
-                /// ujpdate its state
+                /// update its state
                 this.setPlateState(id, {
                     input: plate.dynamic && plate.dynamic.input,
                     output: plate.dynamic && plate.dynamic.output,
@@ -937,8 +934,6 @@ export default class PlateLayer extends Layer<SVG.Container> {
             for (let plate_id in this._plates) {
                 let plate = this._plates[plate_id];
 
-                /// скрыть на плашке группу, отвечающую за информацию в состоянии редактируемости
-                plate.showGroupEditable(false);
                 plate.setEditable();
             }
 
@@ -948,8 +943,6 @@ export default class PlateLayer extends Layer<SVG.Container> {
         for (let plate_id in this._plates) {
             let plate = this._plates[plate_id];
 
-            /// показать на плашке группу, отвечающую за информацию в состоянии редактируемости
-            plate.showGroupEditable(true);
             this._attachEventsEditable(plate);
 
             if (editable) {
@@ -1260,7 +1253,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
      *
      * @returns the class of the plate
      */
-    public static typeToPlateClass(type: string): typeof Plate {
+    public static typeToPlateClass(type: string): new(...args: any[]) => Plate {
         if (!type) {
             throw new TypeError("Parameter `type` is not defined");
         }
