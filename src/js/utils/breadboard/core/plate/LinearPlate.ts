@@ -6,6 +6,8 @@ import Plate from "../Plate";
 
 /**
  * Represents plates with a thickness of one cell, so its size can be expressed as length
+ * 
+ * @category Breadboard
  */
 export default abstract class LinearPlate extends Plate {
     constructor(container: SVG.Container, grid: Grid, schematic = false, verbose = false, id: number = null, props: {} = null) {
