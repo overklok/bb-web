@@ -5,6 +5,9 @@ import Grid from "../core/Grid";
 import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 
+/**
+ * Transistor plate
+ */
 export default class TransistorPlate extends LinearPlate {
     static get Alias() {return "transistor"}
 
@@ -34,31 +37,34 @@ export default class TransistorPlate extends LinearPlate {
     }
 
     /**
-     * @returns {number}
-     * @private
+     * @inheritdoc
      */
-    get __length__() {
+    protected get __length__() {
         return 3;
     }
 
     /**
-     * Нарисовать перемычку
-     *
-     * @param {Cell}    position    положение перемычки
-     * @param {string}  orientation ориентация перемычки
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         // this._group.text(`Button`).font({size: 20});
     };
 
     /**
-     *
-     * @param {number} qs размер квадратов
-     * @private
+     * Draws a transistor over the plate surface
+     * 
+     * @param {number} qs size of squares
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(1, 0);
         let cell3 = this.__grid.cell(2, 0);

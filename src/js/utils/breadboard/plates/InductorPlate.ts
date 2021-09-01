@@ -5,6 +5,9 @@ import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
 import Grid from "../core/Grid";
 
+/**
+ * Inductor plate
+ */
 export default class InductorPlate extends LinearPlate {
     static get Alias() {return "inductor"}
 
@@ -21,37 +24,41 @@ export default class InductorPlate extends LinearPlate {
         super(container, grid, schematic, verbose, id, props);
     }
 
-    get __defaultProps__() {
+    protected get __defaultProps__() {
         return {
             ...super['__defaultProps__'],
             [InductorPlate.PROP_INDUCTANCE]: 100
         }
     }
 
-    __setProps__(props: PlateProps) {
+    /**
+     * @inheritdoc
+     */
+    protected __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         this._props[InductorPlate.PROP_INDUCTANCE] = Number(this._props[InductorPlate.PROP_INDUCTANCE]);
     }
 
     /**
-     * Нарисовать перемычку
-     *
-     * @param {Cell}    position    положение перемычки
-     * @param {string}  orientation ориентация перемычки
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         // this._group.text(`Button`).font({size: 20});
     };
 
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
+    }
+
     /**
+     * Draws an inductor over the plate surface
      *
-     * @param {number} qs размер квадратов
-     * @private
+     * @param qs size of squares
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 

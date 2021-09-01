@@ -5,12 +5,9 @@ import Grid from '../Grid';
 import Plate from "../Plate";
 
 /**
- * Класс линейной плашки
- *
- * @class
- * @abstract
+ * Represents plates with a thickness of one cell, so its size can be expressed as length
  */
-export default class LinearPlate extends Plate {
+export default abstract class LinearPlate extends Plate {
     constructor(container: SVG.Container, grid: Grid, schematic = false, verbose = false, id: number = null, props: {} = null) {
         super(container, grid, schematic, verbose, id, props);
 
@@ -31,18 +28,17 @@ export default class LinearPlate extends Plate {
         }
     }
 
-    /**
-     * @returns {number}
-     * @protected
+    /** 
+     * Defines length of the plate
      */
-    get __length__() {
+    protected get __length__() {
         return 2;
     }
 
     /**
-     * @private
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: any) {
+    protected __draw__(position: Cell, orientation: any) {
         if (this._params.size.x !== 1 && this._params.size.y !== 1) {
             throw new RangeError("Invalid size of LinearPlate");
         }
@@ -53,10 +49,9 @@ export default class LinearPlate extends Plate {
     }
 
     /**
-     * @param cell
-     * @private
+     * @inheritdoc
      */
-    __getOppositeCell__(cell: Cell) {
+    private __getOppositeCell__(cell: Cell) {
         let cell_main = this._state.cell;
 
         if (cell === cell_main) {

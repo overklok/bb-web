@@ -5,6 +5,9 @@ import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
 import Grid from '../core/Grid';
 
+/**
+ * Bridge plate 
+ */
 export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}
 
@@ -32,7 +35,24 @@ export default class BridgePlate extends LinearPlate {
         }
     }
 
-    get __defaultProps__() {
+    /**
+     * @inheritdoc
+     */
+    public get __length__(): number {
+        return Number(this.props[BridgePlate.PROP_LENGTH]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public get variant() {
+        return String(this.__length__);
+    }
+
+    /** 
+     * @inheritdoc 
+     */
+    protected get __defaultProps__() {
         return {
             ...super['__defaultProps__'],
             [BridgePlate.PROP_LENGTH]: 2
@@ -40,17 +60,16 @@ export default class BridgePlate extends LinearPlate {
     }
 
     /**
-     * @returns {number}
+     * @inheritdoc
      */
-    get __length__(): number {
-        return Number(this.props[BridgePlate.PROP_LENGTH]);
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error('Method not implemented.');
     }
 
-    get variant() {
-        return String(this.__length__);
-    }
-
-    __setProps__(props: PlateProps) {
+    /**
+     * @inheritdoc
+     */
+    protected __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         let length = Number(props[BridgePlate.PROP_LENGTH]);
@@ -58,23 +77,20 @@ export default class BridgePlate extends LinearPlate {
     }
 
     /**
-     * Нарисовать перемычку
-     *
-     * @param {Cell}    position    положение перемычки
-     * @param {string}  orientation ориентация перемычки
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: any) {
+    protected __draw__(position: Cell, orientation: any) {
         this._drawPicture();
 
         // this._group.text(`Bridge ${this._params.len} cells`).font({size: 20});
     };
 
     /**
+     * Draws a bridge over the plate surface
      *
-     * @param {number} qs размер квадратов
-     * @private
+     * @param qs size of squares
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let ls = this._params.schematic ? 10 : 6;
 
         let cell1 = this.__grid.cell(0, 0);

@@ -19,47 +19,35 @@ export default class RelayPlate extends LinearPlate {
         super(container, grid, schematic, verbose, id, props);
     }
 
-    get __length__() {
+    /**
+     * @inheritdoc
+     */
+    public get __length__() {
         return 5;
     }
 
     /**
-     * Нарисовать реле
-     *
-     * @param {Cell}    position    положение реле
-     * @param {string}  orientation ориентация реле
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         // this._group.text(`Resistor ${this._params.resistance} Ohm`).font({size: 20});
     };
 
     /**
-     * Переместить реле
+     * Draws a relay over the plate surface
      *
-     * @param {int} dx смещение реле по оси X
-     * @param {int} dy смещение реле по оси Y
+     * @param qs size of squares
      */
-    shift(dx: number, dy: number) {
-        super.shift(dx, dy);
-    }
-
-    /**
-     * Повернуть реле
-     *
-     * @param {string} orientation ориентация реле
-     */
-    rotate(orientation: string) {
-        super.rotate(orientation);
-    }
-
-    /**
-     *
-     * @param {number} qs размер квадратов
-     * @private
-     */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    protected _drawPicture(qs=Plate.QuadSizePreferred) {
         let cells = [];
         let rects = [];
         let paths = [];

@@ -5,6 +5,9 @@ import Grid from "../core/Grid";
 import Plate, { PlateProps } from "../core/Plate";
 import ButtonPlate from "./ButtonPlate";
 
+/**
+ * Triple contact plate
+ */
 export default class TButtonPlate extends ButtonPlate {
     static get Alias() {return "button_t"}
 
@@ -20,20 +23,16 @@ export default class TButtonPlate extends ButtonPlate {
     }
 
     /**
-     * @returns {number}
-     * @private
+     * @inheritdoc
      */
-    get __length__() {
+    protected get __length__() {
         return 3;
     }
 
     /**
-     * Нарисовать перемычку
-     *
-     * @param {Cell}    position    положение перемычки
-     * @param {string}  orientation ориентация перемычки
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         if (this._params.verbose) {
@@ -44,11 +43,9 @@ export default class TButtonPlate extends ButtonPlate {
     };
 
     /**
-     *
-     * @param {number} qs размер квадратов
-     * @private
+     * Draws a triple contact button over the plate surface
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    protected _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(2, 0);
         let cell3 = this.__grid.cell(1, 0);

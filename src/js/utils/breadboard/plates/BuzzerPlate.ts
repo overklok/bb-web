@@ -5,6 +5,9 @@ import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
 import Grid from '../core/Grid';
 
+/**
+ * Buzzer plate
+ */
 export default class BuzzerPlate extends LinearPlate {
     static get Alias() {return "buzzer"}
 
@@ -20,21 +23,21 @@ export default class BuzzerPlate extends LinearPlate {
     }
 
     /**
-     * Нарисовать зуммер
-     *
-     * @param {Cell}    position    положение зуммера
-     * @param {string}  orientation ориентация зуммера
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
     };
 
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error('Method not implemented.');
+    }
     /**
+     * Draws a buzzer over the plate surface
      *
-     * @param {number} qs размер квадратов
-     * @private
+     * @param qs size of squares
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let ls = this._params.schematic ? 10 : 6;
 
         let cell1 = this.__grid.cell(0, 0);

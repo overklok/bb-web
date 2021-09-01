@@ -6,6 +6,9 @@ import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 import BackgroundLayer from "../layers/BackgroundLayer";
 
+/**
+ * Unknown plate
+ */
 export default class UnkPlate extends LinearPlate {
     static get Alias() {return "undef"}
 
@@ -33,7 +36,10 @@ export default class UnkPlate extends LinearPlate {
         }
     }
 
-    get __defaultProps__() {
+    /**
+     * @inheritdoc
+     */
+    protected get __defaultProps__() {
         return {
             ...super['__defaultProps__'],
             [UnkPlate.PROP_TYPE]: -1
@@ -41,14 +47,23 @@ export default class UnkPlate extends LinearPlate {
     }
 
     /**
-     * @returns {number}
-     * @protected
+     * @inheritdoc
      */
-    get __length__() {
+    protected get __length__() {
         return 1;
     }
 
-    __setProps__(props: PlateProps) {
+    /**
+     * @inheritdoc
+     */
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         let type = Number(props[UnkPlate.PROP_TYPE]);
@@ -56,12 +71,9 @@ export default class UnkPlate extends LinearPlate {
     }
 
     /**
-     * Нарисовать перемычку
-     *
-     * @param {Cell}    position    положение перемычки
-     * @param {string}  orientation ориентация перемычки
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected __draw__(position: Cell, orientation: string) {
         let cell = this.__grid.cell(0, 0);
 
         this._bezel = this._group.rect().width("100%").height("100%").radius(BackgroundLayer.CellRadius).style({fill: '#ffbebe'});

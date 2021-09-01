@@ -5,6 +5,9 @@ import Grid from "../core/Grid";
 import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 
+/**
+ * Resistor plate
+ */
 export default class ResistorPlate extends LinearPlate {
     static get Alias() {return "resistor"}
 
@@ -21,18 +24,27 @@ export default class ResistorPlate extends LinearPlate {
         super(container, grid, schematic, verbose, id, props);
     }
 
-    get __defaultProps__() {
+    /**
+     * @inheritdoc
+     */
+    public get variant() {
+        return `${this._shortLabel()} Ω`;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected get __defaultProps__() {
         return {
             ...super['__defaultProps__'],
             [ResistorPlate.PROP_RESISTANCE]: 200
         };
     }
 
-    get variant() {
-        return `${this._shortLabel()} Ω`;
-    }
-
-    __setProps__(props: PlateProps) {
+    /**
+     * @inheritdoc
+     */
+    protected __setProps__(props: PlateProps) {
         let resistance = Number(props[ResistorPlate.PROP_RESISTANCE]);
 
         if (resistance <= 0) {
@@ -45,44 +57,26 @@ export default class ResistorPlate extends LinearPlate {
     }
 
     /**
-     * Нарисовать резистор
-     *
-     * @param {Cell}   position    положение резистора
-     * @param {string}  orientation ориентация резистора
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         this._drawLabel();
     };
 
     /**
-     * Переместить резистор
+     * Draws a resistor image over the plate surface
      *
-     * @param {int} dx смещение резистора по оси X
-     * @param {int} dy смещение резистора по оси Y
-     * @param prevent_overflow
+     * @param {number} qs size of squares
      */
-    shift(dx: number, dy: number, prevent_overflow: boolean = true) {
-        super.shift(dx, dy, prevent_overflow);
-    }
-
-    /**
-     * Повернуть резистор
-     *
-     * @param {string} orientation ориентация резистора
-     * @param suppress_events
-     * @param prevent_overflow
-     */
-    rotate(orientation: string, suppress_events: boolean = false, prevent_overflow: boolean = true) {
-        super.rotate(orientation, suppress_events, prevent_overflow);
-    }
-
-    /**
-     *
-     * @param {number} qs размер квадратов
-     * @private
-     */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
@@ -109,7 +103,12 @@ export default class ResistorPlate extends LinearPlate {
             .cy(rect1.cy())
     }
 
-    _drawLabel(size=Plate.LabelFontSizePreferred) {
+    /**
+     * Draws label with the nominal value of the resistor
+     * 
+     * @param size label font size
+     */
+    private _drawLabel(size=Plate.LabelFontSizePreferred) {
         this._group.text(this._shortLabel())
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
             .cx(this._container.width() / 2)
@@ -117,7 +116,10 @@ export default class ResistorPlate extends LinearPlate {
             .stroke({width: 0.5})
     }
 
-    _shortLabel() {
+    /**
+     * @returns short designation of the resistor nominal
+     */
+    private _shortLabel() {
         let label = this._props[ResistorPlate.PROP_RESISTANCE]
 
         let num = Number(label);

@@ -11,6 +11,9 @@ const LED_COLOURS = {
     BLUE: 2
 }
 
+/**
+ * LED plate
+ */
 export default class LEDPlate extends LinearPlate {
     static get Alias() {return "LED"}
 
@@ -31,18 +34,34 @@ export default class LEDPlate extends LinearPlate {
         super(container, grid, schematic, verbose, id, props);
     }
 
-    get __defaultProps__() {
+    protected get __defaultProps__() {
         return {
             ...super['__defaultProps__'],
             [LEDPlate.PROP_COLOUR]: LEDPlate.COLOURS.RED
         }
     }
 
-    get variant() {
+    public get variant() {
         return this._shortLabel();
     }
 
-    __setProps__(props: PlateProps) {
+    /**
+     * Установить состояние светодиода
+     *
+     * @param {object} state новое состояние светодиода
+     */
+    public setState(state: Partial<PlateState>, suppress_events: boolean = false) {
+        state.output = Number(state.input);
+
+        super.setState(state, suppress_events);
+
+        if (this._params.verbose) {
+            this._redrawOutput(state.output);
+        }
+    }
+
+
+    protected __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         let colour = this._props[LEDPlate.PROP_COLOUR];
@@ -67,7 +86,7 @@ export default class LEDPlate extends LinearPlate {
      * @param {Cell}   position     положение светодиода
      * @param {string}  orientation ориентация светодиода
      */
-    __draw__(position: Cell, orientation: string) {
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         this._drawLabel();
 
@@ -78,22 +97,11 @@ export default class LEDPlate extends LinearPlate {
         // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };
 
-    /**
-     * Установить состояние светодиода
-     *
-     * @param {object} state новое состояние светодиода
-     */
-    setState(state: Partial<PlateState>, suppress_events: boolean = false) {
-        state.output = Number(state.input);
-
-        super.setState(state, suppress_events);
-
-        if (this._params.verbose) {
-            this._redrawOutput(state.output);
-        }
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
     }
 
-    _redrawOutput(output_value: string) {
+    private _redrawOutput(output_value: string) {
         if (!this._svgout) {
             let cell = this.__grid.cell(0, 0);
             this._svgout = this._group.text('0')
@@ -105,30 +113,11 @@ export default class LEDPlate extends LinearPlate {
     }
 
     /**
-     * Переместить светодиод
+     * Draws LEDs on the plate surface
      *
-     * @param {int} dx смещение светодиода по оси X
-     * @param {int} dy смещение светодиода по оси Y
+     * @param {number} qs size of squares
      */
-    shift(dx: number, dy: number) {
-        super.shift(dx, dy);
-    }
-
-    /**
-     * Повернуть светодиод
-     *
-     * @param {string} orientation ориентация светодиода
-     */
-    rotate(orientation: string) {
-        super.rotate(orientation);
-    }
-
-    /**
-     *
-     * @param {number} qs размер квадратов
-     * @private
-     */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
@@ -174,7 +163,12 @@ export default class LEDPlate extends LinearPlate {
         ptr2.move(trng.x() + trng.width() / 2 + 5, trng.y() - trng.height() / 4 + 5);
     }
 
-    _drawLabel(size=Plate.LabelFontSizePreferred) {
+    /**
+     * Draws a label for the LED
+     * 
+     * @param size label font size
+     */
+    private _drawLabel(size=Plate.LabelFontSizePreferred) {
         this._group.text(this._shortLabel())
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
             .cx(this._container.width() - size/1.5)
@@ -182,7 +176,10 @@ export default class LEDPlate extends LinearPlate {
             .stroke({width: 0.5})
     }
 
-    _shortLabel() {
+    /**
+     * @returns short letter designation of the colour property
+     */
+    private _shortLabel(): string {
         switch (this._props[LEDPlate.PROP_COLOUR]) {
             case LEDPlate.COLOURS.RED:      return 'R'; break;
             case LEDPlate.COLOURS.GREEN:    return 'G'; break;

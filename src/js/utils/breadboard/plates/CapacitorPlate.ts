@@ -5,6 +5,9 @@ import Cell from "../core/Cell";
 import LinearPlate from "../core/plate/LinearPlate";
 import Grid from '../core/Grid';
 
+/**
+ * Capacitor plate
+ */
 export default class CapacitorPlate extends LinearPlate {
     static get Alias() {return "capacitor"}
 
@@ -21,28 +24,28 @@ export default class CapacitorPlate extends LinearPlate {
         super(container, grid, schematic, verbose, id, props);
     }
 
-    get __defaultProps__() {
+    public get variant() {
+        return this._shortLabel() + 'Ф';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected get __defaultProps__() {
         return {
             ...super['__defaultProps__'],
             [CapacitorPlate.PROP_CAPACITANCE]: 0.001
         }
     }
 
-    get variant() {
-        return this._shortLabel() + 'Ф';
-    }
-
-    __setProps__(props: PlateProps) {
+    protected __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
         this._props[CapacitorPlate.PROP_CAPACITANCE] = Number(this._props[CapacitorPlate.PROP_CAPACITANCE]);
     }
 
     /**
-     * Нарисовать конденсатор
-     *
-     * @param {Cell}    position    положение конденсатора
-     * @param {string}  orientation ориентация конденсатора
+     * @inheritdoc
      */
     __draw__(position: Cell, orientation: string) {
         this._drawPicture();
@@ -51,11 +54,18 @@ export default class CapacitorPlate extends LinearPlate {
     };
 
     /**
-     *
-     * @param {number} qs размер квадратов
-     * @private
+     * @inheritdoc
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
+     * Draws a capacitor over the plate surface
+     * 
+     * @param qs size of squares
+     */
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
@@ -83,7 +93,12 @@ export default class CapacitorPlate extends LinearPlate {
         this._group.text("+").move(line2.x() + 4, line2.y() - 8);
     }
 
-    _drawLabel(size=Plate.LabelFontSizePreferred) {
+    /**
+     * Draws a label with the capacitor designation
+     * 
+     * @param size label font size
+     */
+    private _drawLabel(size=Plate.LabelFontSizePreferred) {
         this._group.text(this._shortLabel() + 'Ф')
             .font({size: size, family: Plate.CaptionFontFamily, weight: Plate.CaptionFontWeight})
             .cx(this._container.width() / 2)
@@ -91,7 +106,10 @@ export default class CapacitorPlate extends LinearPlate {
             .stroke({width: 0.5})
     }
 
-    _shortLabel() {
+    /**
+     * @returns short designtation of the capacitor
+     */
+    private _shortLabel(): string {
         let text = String(this._props[CapacitorPlate.PROP_CAPACITANCE]);
 
         let num = Number(text);

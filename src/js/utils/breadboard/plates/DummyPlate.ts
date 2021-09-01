@@ -4,6 +4,9 @@ import Cell from '../core/Cell';
 import Grid from '../core/Grid';
 import Plate, { PlateProps } from "../core/Plate";
 
+/**
+ * Dummy plate
+ */
 export default class DummyPlate extends Plate {
     static get Alias() {return "dummy"}
 
@@ -20,30 +23,31 @@ export default class DummyPlate extends Plate {
         this._params.size = {x: 1, y: 1};
     }
 
-    /**
-     * Нарисовать RGB-диод
-     *
-     * @param {Cell}    position        положение RGB-диода
-     * @param {string}  orientation     ориентация RGB-диода
-     */
-    __draw__(position: Cell, orientation: string) {
-        this._bezel.fill("none").stroke({color: "none", opacity: 0});
-
-        this._drawPicture();
-    };
-
-    deselect() {
+    public deselect() {
         super.deselect();
 
         this._bezel.stroke({color: "none", opacity: 0});
     }
 
     /**
-     *
-     * @private
-     * @param qs
+     * Draws a plate without a bezel
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    protected __draw__(position: Cell, orientation: string) {
+        this._bezel.fill("none").stroke({color: "none", opacity: 0});
+
+        this._drawPicture();
+    };
+
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
+     * Draws an animated dot 
+     *
+     * @param qs size of the dot
+     */
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, 0);
 

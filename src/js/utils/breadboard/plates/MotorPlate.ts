@@ -5,6 +5,9 @@ import Plate, { PlateProps } from "../core/Plate";
 import Grid from "../core/Grid";
 import Cell from "../core/Cell";
 
+/**
+ * Motor plate
+ */
 export default class MotorPlate extends LinearPlate {
     static get Alias() {return "motor"}
 
@@ -22,12 +25,9 @@ export default class MotorPlate extends LinearPlate {
     }
 
     /**
-     * Нарисовать электромотор
-     *
-     * @param {Cell}    position        положение RGB-диода
-     * @param {string}  orientation     ориентация RGB-диода
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         // this._drawLabel('мотор', 40);
 
@@ -35,11 +35,16 @@ export default class MotorPlate extends LinearPlate {
     };
 
     /**
-     *
-     * @param {number} qs размер квадрата
-     * @private
+     * @inheritdoc
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Draws a motor over the plate surface
+     */
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 
@@ -92,7 +97,7 @@ export default class MotorPlate extends LinearPlate {
             .fill('none');
     }
 
-    _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
+    private _drawLabel(text="", size=Plate.LabelFontSizePreferred) {
         let label = this._group.text(String(text))
             .font({size: size, family: "'Lucida Console', Monaco, monospace", weight: "bolder", anchor: "end"});
 

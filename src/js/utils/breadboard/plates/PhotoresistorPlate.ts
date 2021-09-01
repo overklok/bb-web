@@ -6,6 +6,9 @@ import {mod} from "~/js/utils/breadboard/core/extras/helpers";
 import Grid from "../core/Grid";
 import Cell from "../core/Cell";
 
+/**
+ * Draws a photoresistor
+ */
 export default class PhotoresistorPlate extends LinearPlate {
     private _svginp: any;
     private _svginpbg: SVG.Rect;
@@ -25,51 +28,30 @@ export default class PhotoresistorPlate extends LinearPlate {
     }
 
     /**
-     * Нарисовать фоторезистор
-     *
-     * @param {Cell}    position    положение фоторезистора
-     * @param {string}  orientation ориентация фоторезистора
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
-        this._drawPicture();
-
-        if (this._params.verbose) {
-            this._redrawInput(this._state.input);
-        }
-    };
-
-    get input() {
+    public get input() {
         return Number(this._state.input);
     }
 
     /**
-     * Переместить фоторезистор
-     *
-     * @param {int} dx смещение фоторезистора по оси X
-     * @param {int} dy смещение фоторезистора по оси Y
+     * @inheritdoc
      */
-    shift(dx: number, dy: number) {
-        super.shift(dx, dy);
-    }
-
-    /**
-     * Повернуть фоторезистор
-     *
-     * @param {string} orientation ориентация фоторезистора
-     */
-    rotate(orientation: string) {
-        super.rotate(orientation);
-    }
-
-    inputIncrement() {
+    public inputIncrement() {
         this.setState({input: mod(Number(this.input) + 1, 256)});
     }
 
-    inputDecrement() {
+    /**
+     * @inheritdoc
+     */
+    public inputDecrement() {
         this.setState({input: mod(Number(this.input) - 1, 256)});
     }
 
-    setState(state: Partial<PlateState>, suppress_events: boolean = false) {
+    /**
+     * @inheritdoc
+     */
+    public setState(state: Partial<PlateState>, suppress_events: boolean = false) {
         if (state.input === undefined) return;
 
         let input = state.input || 0;
@@ -83,7 +65,30 @@ export default class PhotoresistorPlate extends LinearPlate {
         }
     }
 
-    _redrawInput(input_value: string) {
+    /**
+     * @inheritdoc
+     */
+    protected __draw__(position: Cell, orientation: string) {
+        this._drawPicture();
+
+        if (this._params.verbose) {
+            this._redrawInput(this._state.input);
+        }
+    };
+
+    /**
+     * @inheritdoc
+     */
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Updates debug input value indicator
+     * 
+     * @param input_value value to display
+     */
+    private _redrawInput(input_value: string) {
         if (!this._svginp) {
             this._svginpbg = this._container.rect(0, 0).style({fill: '#000'});
 
@@ -106,7 +111,7 @@ export default class PhotoresistorPlate extends LinearPlate {
      * @param {number} qs размер квадратов
      * @private
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    private _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 

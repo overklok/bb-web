@@ -6,6 +6,9 @@ import LinearPlate from "../core/plate/LinearPlate";
 import Grid from '../core/Grid';
 import Cell from '../core/Cell';
 
+/**
+ * Button plate
+ */
 export default class ButtonPlate extends LinearPlate {
     static get Alias() {return "button"}
 
@@ -28,27 +31,17 @@ export default class ButtonPlate extends LinearPlate {
         this.state.input = true;
     }
 
-    get __ctxmenu__() {
+    /**
+     * @protected
+     */
+    protected get __ctxmenu__() {
         return SwitchPlateContextMenu;
     }
 
     /**
-     * Нарисовать перемычку
-     *
-     * @param {Cell}    position    положение перемычки
-     * @param {string}  orientation ориентация перемычки
+     * @protected
      */
-    __draw__(position: Cell, orientation: string) {
-        this._drawPicture();
-
-        if (this._params.verbose) {
-            this._redrawInput(this._state.input);
-        }
-
-        // this._group.text(`Button`).font({size: 20});
-    };
-
-    handleKeyPress(key_code: string, keydown: boolean) {
+    public handleKeyPress(key_code: string, keydown: boolean) {
         super.handleKeyPress(key_code, keydown);
 
         if (key_code === "KeyQ" && keydown) {
@@ -61,12 +54,9 @@ export default class ButtonPlate extends LinearPlate {
     }
 
     /**
-     * Установить состояние перемычки
-     *
-     * @param {object} state    новое состояние перемычки
-     * @param suppress_events   глушить вызов событий
+     * @inheritdoc
      */
-    setState(state: Partial<PlateState>, suppress_events: boolean = false) {
+    public setState(state: Partial<PlateState>, suppress_events: boolean = false) {
         if (state.input === undefined) return;
 
         state = {input: !!Number(state.input)};
@@ -80,15 +70,44 @@ export default class ButtonPlate extends LinearPlate {
         }
     }
 
-    inputIncrement() {
+    /**
+     * @inheritdoc
+     */
+    public inputIncrement() {
         this.setState({input: !this.input});
     }
 
-    inputDecrement() {
+    /**
+     * @inheritdoc
+     */
+    public inputDecrement() {
         this.inputIncrement();
     }
 
-    _toggleJumper() {
+    /**
+     * @inheritdoc
+     */
+    protected __draw__(position: Cell, orientation: string) {
+        this._drawPicture();
+
+        if (this._params.verbose) {
+            this._redrawInput(this._state.input);
+        }
+
+        // this._group.text(`Button`).font({size: 20});
+    };
+
+    /**
+     * @inheritdoc
+     */
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
+     * Updates the jumper position depending on the state
+     */
+    protected _toggleJumper() {
         let line_len = this._rect2.x() - this._rect1.x();
         let line_gap = line_len / 6;
 
@@ -99,7 +118,12 @@ export default class ButtonPlate extends LinearPlate {
         }
     }
 
-    _redrawInput(input_value: number|string) {
+    /**
+     * Updates debug input value indicator
+     * 
+     * @param input_value value to display
+     */
+    protected _redrawInput(input_value: number|string) {
         if (!this._svginp) {
             this._svginpbg = this._container.rect(0, 0).style({fill: '#000'});
 
@@ -118,11 +142,11 @@ export default class ButtonPlate extends LinearPlate {
     }
 
     /**
+     * Draws a button over the plate surface
      *
-     * @param {number} qs размер квадратов
-     * @private
+     * @param qs size of squares
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    protected _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
 

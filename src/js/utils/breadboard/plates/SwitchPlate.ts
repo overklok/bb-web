@@ -5,6 +5,9 @@ import Grid from "../core/Grid";
 import Plate, { PlateProps } from "../core/Plate";
 import ButtonPlate from "./ButtonPlate";
 
+/**
+ * Switch plate
+ */
 export default class SwitchPlate extends ButtonPlate {
     static get Alias() {return "switch"}
 
@@ -32,12 +35,9 @@ export default class SwitchPlate extends ButtonPlate {
     }
 
     /**
-     * Нарисовать перемычку
-     *
-     * @param {Cell}    position    положение перемычки
-     * @param {string}  orientation ориентация перемычки
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 
         if (this._params.verbose) {
@@ -47,7 +47,10 @@ export default class SwitchPlate extends ButtonPlate {
         // this._group.text(`Switch`).font({size: 20});
     };
 
-    _toggleJumper() {
+    /**
+     * @inheritdoc
+     */
+    protected _toggleJumper() {
         if (this.state.input) {
             this.jumper_off.hide();
             this.jumper_on.show();
@@ -58,11 +61,11 @@ export default class SwitchPlate extends ButtonPlate {
     }
 
     /**
+     * Draws a switch over the plate surface
      *
-     * @param {number} qs размер квадратов
-     * @private
+     * @param {number} qs size of squares
      */
-    _drawPicture(qs=Plate.QuadSizePreferred) {
+    protected _drawPicture(qs=Plate.QuadSizePreferred) {
         let cell1 = this.__grid.cell(0, 0);
         let cell2 = this.__grid.cell(2, 0);
         let cell3 = this.__grid.cell(1, 1);

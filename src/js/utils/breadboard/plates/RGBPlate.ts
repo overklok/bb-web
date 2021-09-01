@@ -4,6 +4,9 @@ import Plate, { PlateProps } from "../core/Plate";
 import Cell from "../core/Cell";
 import Grid from "../core/Grid";
 
+/**
+ * RGB plate
+ */
 export default class RGBPlate extends Plate {
     static get Alias() {return "rgb"}
 
@@ -21,22 +24,26 @@ export default class RGBPlate extends Plate {
     }
 
     /**
-     * Нарисовать RGB-диод
-     *
-     * @param {Cell}    position        положение RGB-диода
-     * @param {string}  orientation     ориентация RGB-диода
+     * @inheritdoc
      */
-    __draw__(position: Cell, orientation: string) {
+    protected _getOppositeCell(cell: Cell): Cell {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
         this._drawLabel();
     };
 
     /**
+     * Draws LEDs over the plate surface
      *
-     * @param {number} ls размер светодиода
-     * @private
+     * @param ls size of LEDs
      */
-    _drawPicture(ls=Plate.LEDSizePreferred) {
+    private _drawPicture(ls=Plate.LEDSizePreferred) {
         let cells = [
             this.__grid.cell(0, 0),
             this.__grid.cell(1, 0),
@@ -77,7 +84,12 @@ export default class RGBPlate extends Plate {
         }
     }
 
-    _drawLabel(size=Plate.LabelFontSizePreferred) {
+    /**
+     * Draws labels for LEDs
+     * 
+     * @param size label font size
+     */
+    private _drawLabel(size=Plate.LabelFontSizePreferred) {
         let cells = [
             this.__grid.cell(0, 0),
             this.__grid.cell(1, 0),
