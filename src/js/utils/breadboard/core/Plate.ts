@@ -64,7 +64,7 @@ export type PlateParams = {
     size_px: { x: number; y: number; }; 
     /** pivot point of the plate */
     origin: { x: number; y: number; }; 
-    /** plate outline */
+    /** full set of points defining the surface of the plate */
     surface: XYObject[]; 
     /** {@link Current} adjustments for each of the relative positions of cells occupied */
     rels: {
@@ -184,7 +184,7 @@ export default abstract class Plate {
     protected _group: SVG.G;
     /** plate outline element */
     protected _bezel: SVG.Path | SVG.Rect;
-    /** SVG element of the plate shadow */
+    /** SVG element of the plate shadow, showing the estimated closest location to move in case of drag interruption */
     private _shadowimg: SVG.Rect;
     /** SVG container in which the plate shadow is rendered */
     private _shadow: SVG.Nested;
@@ -430,7 +430,7 @@ export default abstract class Plate {
      * 
      * @returns an output cell, if an input cell is provided, and vice versa 
      */
-    abstract __getOppositeCell__(cell: Cell): Cell 
+    abstract getOppositeCell(cell: Cell): Cell 
 
     /**
      * Sets new props for the plate
@@ -574,17 +574,17 @@ export default abstract class Plate {
      */
     click() {
         this._container.fire('mousedown');
-        this.rearrange();
+        this._rearrange();
     }
 
     /**
-     * Переместить плашку в новую клетку
+     * Moves the plate to a new cell
      *
-     * @param {Cell}    cell            положение плашки относительно опорной точки
-     * @param {boolean} suppress_events подавить инициацию событий
-     * @param {boolean} animate         анимировать перемещение
+     * @param cell            position of the plate relative to its pivot point
+     * @param suppress_events log errors instead of throwing exceptions
+     * @param animate         animate the movement
      */
-    move(cell: Cell, suppress_events=false, animate=false) {
+    move(cell: Cell, suppress_events: boolean = false, animate: boolean = false) {
         if (cell.grid !== this.__grid) {
             throw new Error("Cell's grid and plate's grid are not the same");
         }
@@ -616,13 +616,13 @@ export default abstract class Plate {
     }
 
     /**
-     * Сместить плашку на (dx, dy) позиций по осям X и Y соответственно
+     * Moves the plate (dx, dy) steps 
      *
-     * @param {int}     dx                  смещение по оси X
-     * @param {int}     dy                  смещение по оси Y
-     * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
+     * @param dx                  the number of steps to move horizontally
+     * @param dy                  the number of steps to move vertically
+     * @param prevent_overflow    prevent movements outside the grid
      */
-    shift(dx: number, dy: number, prevent_overflow=true) {
+    shift(dx: number, dy: number, prevent_overflow: boolean = true) {
         this.move(this.__grid.cell(this._state.cell.idx.x + dx, this._state.cell.idx.y + dy, BorderType.Replicate));
 
         if (prevent_overflow) {
@@ -631,13 +631,13 @@ export default abstract class Plate {
     }
 
     /**
-     * Повернуть плашку
+     * Rotates the plate
      *
-     * @param {string}  orientation         ориентация плашки относительно опорной точки
-     * @param {boolean} suppress_events     подавить инициацию событий
-     * @param {boolean} prevent_overflow    предотвращать выход за пределы сетки
+     * @param orientation         orientation of the plate relative to pivot point
+     * @param suppress_events     do not make preprocessing and postprocessing calls
+     * @param prevent_overflow    prevent movements outside the grid
      */
-    rotate(orientation: string, suppress_events=false, prevent_overflow=true) {
+    rotate(orientation: string, suppress_events: boolean = false, prevent_overflow: boolean = true) {
         if (this._dragging) return;
 
         if (orientation === this._state.orientation) {return}
@@ -680,7 +680,7 @@ export default abstract class Plate {
     }
 
     /**
-     * Повернуть плашку по часовой стрелке
+     * Rotates the plate clockwise
      */
     rotateClockwise() {
         let orientation;
@@ -698,7 +698,7 @@ export default abstract class Plate {
     }
 
     /**
-     * Повернуть плашку против часовой стрелки
+     * Rotates the plate counterclockwise
      */
     rotateCounterClockwise() {
         let orientation;
@@ -716,47 +716,47 @@ export default abstract class Plate {
     }
 
     /**
-     * Увеличить входное значение
+     * Increases input value
      */
     inputIncrement() {
         this.setState({input: Number(this.input) + 1});
     }
 
     /**
-     * Уменшьить входное значение
+     * Decreases input value
      */
     inputDecrement() {
         this.setState({input: Number(this.input) - 1});
     }
 
     /**
-     * Выделить контур плашки
+     * Highlights plate's outline 
      */
     select() {
-        this.rearrange();
+        this._rearrange();
 
         if (this._params.schematic) {
-            this._bezel.animate('100ms').stroke({opacity: 1, color: "#0900fa", width: 2});
+            (this._bezel.animate(100) as any).stroke({opacity: 1, color: "#0900fa", width: 2});
         } else {
-            this._bezel.animate('100ms').stroke({color: "#0900fa", width: 2});
+            (this._bezel.animate(100) as any).stroke({color: "#0900fa", width: 2});
         }
 
         this.highlightError(false);
     }
 
     /**
-     * Снять выделение контура плашки
+     * Removes the highlight from the plate's outline
      */
     deselect() {
         if (this._params.schematic) {
-            this._bezel.animate('100ms').stroke({opacity: 0, color: "#f0eddb", width: 2});
+            (this._bezel.animate(100) as any).stroke({opacity: 0, color: "#f0eddb", width: 2});
         } else {
-            this._bezel.animate('100ms').stroke({color: "#f0eddb", width: 2});
+            (this._bezel.animate(100) as any).stroke({color: "#f0eddb", width: 2});
         }
     }
 
     /**
-     * Удалить плашку
+     * Removes plate's SVG tree
      */
     dispose() {
         this._beforeReposition();
@@ -771,18 +771,20 @@ export default abstract class Plate {
         this._afterReposition();
     }
 
+    /**
+     * Handles key press
+     * 
+     * @param key_code 
+     * @param keydown 
+     */
     handleKeyPress(key_code: any, keydown: boolean) {
 
     }
 
-    getOppositeCell(cell: Cell): Cell {
-        return this.__getOppositeCell__(cell);
-    }
-
     /**
-     * Установить обработчик события изменения плашки
+     * Attaches user plate change event handler
      *
-     * @param {function} cb обработчик события изменения плашки
+     * @param cb plate change event handler
      */
     onChange(cb: CallableFunction) {
         if (!cb) {cb = () => {}}
@@ -791,9 +793,9 @@ export default abstract class Plate {
     }
 
     /**
-     * Установить обработчик начала перетаскивания плашки
+     * Attaches plate drag start event handler
      *
-     * @param {function} cb обработчик начала перетаскивания плашки
+     * @param cb plate drag start event handler
      */
     onDragStart(cb: CallableFunction) {
         if (!cb) {this._callbacks.dragstart = () => {}; return}
@@ -802,9 +804,9 @@ export default abstract class Plate {
     }
 
     /**
-     * Установить обработчик конца перетаскивания плашки
+     * Attaches plate drag end event handler 
      *
-     * @param {function} cb обработчик конца перетаскивания плашки
+     * @param cb plate drag end event handler 
      */
     onDragFinish(cb: CallableFunction) {
         if (!cb) {this._callbacks.dragfinish = () => {}; return}
@@ -812,12 +814,22 @@ export default abstract class Plate {
         this._callbacks.dragfinish = cb;
     }
 
+    /**
+     * Attaches plate click event handler
+     * 
+     * @param cb plate click event handler
+     */
     onMouseDown(cb: CallableFunction) {
         if (!cb) {this._callbacks.mousedown = () => {}; return}
 
         this._callbacks.mousedown = cb;
     }
 
+    /**
+     * Attaches plate scroll event handler
+     * 
+     * @param cb plate scroll event handler
+     */
     onMouseWheel(cb: CallableFunction) {
         if (!cb) {this._callbacks.mousewheel = () => {}; return}
 
@@ -825,10 +837,10 @@ export default abstract class Plate {
     }
 
     /**
-     * "Заморозить" плашку
+     * Makes the plate translucent and unresponsive
      *
-     * Плашка не реагирует на события мыши и становится полупрозрачной.
-     * Необходимо для предотвращения конфликтов при перетаскивании
+     * Plate does not trigger mouse events and becomes translucent.
+     * This is necessary to prevent interaction conflicts while dragging.
      */
     freeze() {
         this._container.style('pointer-events', 'none');
@@ -836,15 +848,25 @@ export default abstract class Plate {
     }
 
     /**
-     * "Разморозить" плашку
+     * Cancels freezing
+     * 
+     * Plate triggers mouse events and becomes opaque.
      *
-     * {@link Plate.freeze}
+     * {@see Plate.freeze}
      */
     unfreeze() {
         this._container.style('pointer-events', 'inherit');
         this._container.animate(100).attr({ 'opacity': 1 });
     }
 
+    /**
+     * Toggles plate editability
+     * 
+     * The method just changes the visual behavior of the plate
+     * without preventing the actions associated with editing.
+     * 
+     * @param editable make plate editable
+     */
     setEditable(editable=true) {
         if (editable) {
             this._container.style({cursor: 'move'});
@@ -853,6 +875,11 @@ export default abstract class Plate {
         }
     }
 
+    /**
+     * Moves the pivot point of the plate to the nearest accessible cell
+     * 
+     * The calculation of the nearest cell is based on the {@link _calcSupposedCell} method.
+     */
     snap() {
         if (!this._cell_supposed) {
             this._cell_supposed = this._calcSupposedCell();
@@ -867,7 +894,14 @@ export default abstract class Plate {
         this._callbacks.dragfinish();
     }
 
-    move_to_point(x: number, y: number, animate=false) {
+    /**
+     * Moves the plate to the arbitrary point in the document
+     * 
+     * @param x         x position of the point
+     * @param y         y position of the point
+     * @param animate   whether to animate the movement
+     */
+    move_to_point(x: number, y: number, animate: boolean = false) {
         if (animate) {
             this._container.animate(100, '<>').move(x, y);
         } else {
@@ -875,7 +909,14 @@ export default abstract class Plate {
         }
     }
 
-    center_to_point(x: number, y: number, animate=false) {
+    /**
+     * Moves the plate's center to the arbitrary point in the document
+     * 
+     * @param x         x position of the point
+     * @param y         y position of the movement
+     * @param animate   whether to animate the movement
+     */
+    center_to_point(x: number, y: number, animate: boolean = false) {
         if (animate) {
             this._container.animate(100, '<>').center(x, y);
         } else {
@@ -883,6 +924,12 @@ export default abstract class Plate {
         }
     }
 
+    /**
+     * Moves the plate by the specified number of units
+     * 
+     * @param dx number of units to move horizontally
+     * @param dy number of units to move vertically
+     */
     dmove(dx: number, dy: number) {
         this._container.dmove(dx, dy);
 
@@ -899,9 +946,7 @@ export default abstract class Plate {
     }
 
     /**
-     * Инициализировать плашку
-     *
-     * @private
+     * Tests parameters values of the plate type
      */
     _checkParams() {
         if (this._params.origin.x >= this._params.size.x || this._params.origin.y >= this._params.size.y) {
@@ -911,9 +956,7 @@ export default abstract class Plate {
     }
 
     /**
-     * Отобразить тень на предполагаемой ближайшей ячейке
-     *
-     * @private
+     * Moves the shadow to supposed nearest cell
      */
     _dropShadowToCell(cell: Cell) {
         let pos = this._getPositionAdjusted(cell);
@@ -923,27 +966,24 @@ export default abstract class Plate {
     }
 
     /**
-     * Показать тень плашки
-     *
-     * @private
+     * Shows the plate's shadow
      */
     _showShadow() {
         this._shadow.opacity(1);
     }
 
     /**
-     * Скрыть тень плашки
-     *
-     * @private
+     * Hides the plate's shadow
      */
     _hideShadow() {
         this._shadow.opacity(0);
     }
 
     /**
-     * Вычислить предполагаемую ближайшую ячейку
-     *
-     * @private
+     * Calculates the estimated nearest cell
+     * 
+     * This method is used to position the plates precisely 
+     * by snapping them to the grid cells when dragging finishes.
      */
     _calcSupposedCell() {
         /// Положениие группы плашки (изм. при вращении)
@@ -1032,6 +1072,15 @@ export default abstract class Plate {
         return nearest;
     }
 
+    /**
+     * Defines placement constraints of the plate in the specific orientation
+     * 
+     * This method caches the result for any orientation so it's tolerant to repetitive calls
+     * 
+     * @param orientation possible orientation of the plate
+     * 
+     * @returns plate's placement constraints in the specific orientation
+     */
     _getPlacementConstraints(orientation: string) {
         if (!this._constraints) {
             this._constraints = this._calcPlacementConstraints();
@@ -1040,7 +1089,15 @@ export default abstract class Plate {
         return this._constraints[orientation];
     }
 
-    _calcPlacementConstraints() {
+    /**
+     * Evaluates placement constraints for all orientations possible for the plate
+     * 
+     * Placement constraint is the maximum possible coordinates of the pivot plate's cell position in the document.
+     * This determines whether the plate can be placed on the board in the specific orientation.
+     * 
+     * @returns plate placement constraints for each orientation
+     */
+    _calcPlacementConstraints(): {[orientation: string]: [number, number, number, number]} {
         /// Размерность доски
         let Dx = this.__grid.dim.x,
             Dy = this.__grid.dim.y;
@@ -1055,7 +1112,7 @@ export default abstract class Plate {
         /// Количество точек от опорной до края
         let rem = {x: Sx - orn.x, y: Sy - orn.y};
 
-        let constraints: {[key: string]: [number, number, number, number]} = {};
+        let constraints: {[orientation: string]: [number, number, number, number]} = {};
 
         // x goes to Nx, y goes to Ny
         constraints[Plate.Orientations.East] =  [orn.x,          orn.y,         Dx - rem.x,        Dy - rem.y];
@@ -1070,14 +1127,13 @@ export default abstract class Plate {
     }
 
     /**
-     * Определить ячейку, над которой находится опорная точка плашки
+     * Evaluates the cell above which the plate's pivot point is located
      *
-     * @param cell          ячейка, над которой находится верхняя левая точка плашки
-     * @returns {Cell|*}    ячейка, над которой находится опорная точка плашки
-     *
-     * @private
+     * @param cell          the cell above which upper left point of the plate is located
+     * 
+     * @returns {Cell|*}    the cell above which the pivot point of the plate is located 
      */
-    _getCellOriginal(cell: Cell) {
+    _getCellOriginal(cell: Cell): Cell {
         let ix = cell.idx.x,
             iy = cell.idx.y;
 
@@ -1101,10 +1157,12 @@ export default abstract class Plate {
     }
 
     /**
-     * Предотвратить выход плашки за пределы сетки
+     * Moves the plate to nearest proper position if it's going out of the grid
      *
-     * Вызывается при смене положения и ориентации (как ручном, так и автоматическом)
+     * The method should be called every time the plate is moved or rotated (both automatically and manually)
      *
+     * @param throw_error throw an error instead of moving the plate to proper position
+     * 
      * @private
      */
     _preventOverflow(throw_error=false) {
@@ -1135,13 +1193,12 @@ export default abstract class Plate {
     }
 
     /**
-     * Переставить плашку в DOM-дереве выше остальных
+     * Moves the plate's DOM node above others inside the parent container 
      *
-     * Используется в случах, когда плашку необходимо отображать поверх остальных
-     *
-     * @private
+     * Used in cases when the plate needs to be displayed on top of the rest 
+     * (e.g. while dragging over another plates to keep pointer events active)
      */
-    rearrange() {
+    _rearrange() {
         let node_temp = this._container.node;
         this._container.node.remove();
         this._node_parent.appendChild(node_temp);
@@ -1149,12 +1206,10 @@ export default abstract class Plate {
 
 
     /**
-     * Выполнить действия, требуемые до перемещения плашки
+     * Performs the actions required before positioning (moving/drawing) the plate
      *
-     * Каждый раз, когда плашка перемещается, необходимо "освободить" ячейки,
-     * занимаемые плашкой ранее, для повторного расчёта токов.
-     *
-     * @private
+     * Every time the plate is moving, it's needed to free the cells occupied by it 
+     * previously to re-calculate current lines possibly going through the plate.
      */
     _beforeReposition() {
         // Освободить все ячейки, занимаемые плашкой
@@ -1162,12 +1217,10 @@ export default abstract class Plate {
     }
 
     /**
-     * Выполнить действия, требуемые после перемещения плашки
+     * Performs the actions required after positioning (moving/drawing) the plate
      *
-     * Каждый раз, когда плашка перемещается, необходимо "занять" ячейки,
-     * которые будут заняты плашкой, для повторного расчёта токов.
-     *
-     * @private
+     * Every time the plate is moving, it;s needed to occupy the cells which
+     * will be covered by it to re-calculate current lines possibly going through the plate.
      */
     _afterReposition() {
         // Занять все ячейки, занимаемые плашкой
@@ -1175,11 +1228,11 @@ export default abstract class Plate {
     }
 
     /**
-     * Занять/освободить ячейки, занимаемые данной плашкой на данной позиции
-     * ВНЕ СХЕМАТИЧЕСКОГО РЕЖИМА: Не запускается
+     * Toggles the occupation of the cells covered by the plate at the current position.
+     * 
+     * Has no effect if schematic mode is disabled
      *
-     * @param {boolean} clear освободить ячейки
-     * @private
+     * @param clear whether to free the cells instead of occupation
      */
     _reoccupyCells(clear: boolean=false) {
         if (!this._params.schematic) return;
@@ -1219,16 +1272,15 @@ export default abstract class Plate {
     }
 
     /**
-     * Возвратить подогнанные координаты для установки плашки
+     * Calculates adjusted coordinates for the plate
      *
-     * ВНЕ СХЕМАТИЧЕСКОГО РЕЖИМА: Координаты не подгоняются
+     * Does not adjust if schematic mode is enabled
      *
-     * @param {Cell|null} cell Ячейка, если не указано - использовать текущую ячейку из состояния
+     * @param cell custom cell to use instead of the current position of the plate pivot point 
      *
-     * @returns {*} координаты с учётном подгонки
-     * @private
+     * @returns adjusted plate coordinates
      */
-    _getPositionAdjusted(cell: Cell = null) {
+    _getPositionAdjusted(cell: Cell = null): XYObject {
         cell = cell || this._state.cell;
 
         /// Опорная точка плашки
@@ -1253,12 +1305,24 @@ export default abstract class Plate {
         return {x: abs.x + adj.x * cell.size.x, y: abs.y + adj.y * cell.size.y};
     }
 
-    _generateSurfacePath(radius=5) {
+    /**
+     * Generates SVG path for the plate surface
+     * 
+     * Surface is a canvas shaped by merging adjacent cell-sized rounded rectangles.
+     * 
+     * Note that surfaces with holes is not supported, the result may be unsatisfactory.
+     * 
+     * @param radius corner radius
+     * 
+     * @returns SVG path commands to build the shape of the surface 
+     */
+    _generateSurfacePath(radius=5): (string|number)[][] {
         if (this._params.surface) {
             let path: (string | number)[][] = [];
 
             // TODO: Verify closed surfaces
 
+            // If the surface exists, convert it from original format to a [x][y]-indexed array 
             let surfcnt = this._convertSurfaceToArray(this._params.surface);
 
             if (!surfcnt) return;
@@ -1270,7 +1334,61 @@ export default abstract class Plate {
         }
     }
 
-    _buildSurfacePath(cell: Cell, surfcnt: number[][], radius: number, dir_idx=0, is_root=true) {
+    /**
+     * Generates SVG path for the plate surface
+     * 
+     * The method is recursive.
+     * 
+     * Path building consists in adding different segments while traversing
+     * all the cells of the plate clockwise, starting from the left upper corner. 
+     * 
+     * There are two types of segments used to build the path:
+     *  - corner + gap push/pull
+     *  - corner + pure edge
+     * 
+     * Pure edges are generated in case there are no neighbor cells in the dimension on the side.
+     * Gap pushes are generated when two adjacent cells appears, and the distance between the corners 
+     * can be different from the size of the cell in the given {@link Grid}.
+     * 
+     * When the gap push is generated, the procedure recursively repeats. 
+     * After the generation, resulting path is closed by the opposite gap pull.
+     * Each gap push should have its opposite gap pull because the surface is closed.
+     * Thus, the procedure is ended when the recursion depth becomes zero.
+     * 
+     * ```
+     *          <corner>             <gap push>            <corner>
+     *                ********|>>>>>>>>>>>>>>>>>>>>>>>|********
+     *               **                                       **
+     *              *                                           *
+     *              -     /-------\               /-------\     —
+     *              v     |       |               |       |     v
+     *      <edge>  v     |   X   | <-- gap*2 --> |   X   |     v <edge>
+     *              v     |       |               |       |     v
+     *              -     \-------/               \-------/     -
+     *              *                                           *
+     *               **                                       **
+     *                ********|<<<<<<<<<<<<<<<<<<<<<<<|******** 
+     *         <corner>              <gap pull>            <corner>
+     * ```
+     * 
+     * path = offset + part + closure
+     * part = edge / (gap push + part + gap pull)
+     * 
+     * @see _buildSurfacePathOffset
+     * @see _buildSurfacePathGapPush
+     * @see _buildSurfacePathGapPull
+     * @see _buildSurfacePathEdge
+     * @see _buildSurfacePathClosure
+     * 
+     * @param cell      starting point of the surface
+     * @param surfcnt   [x][y]-indexed array of surface points
+     * @param radius    corner radius
+     * @param dir_idx   direction index
+     * @param is_root   whether the method is called from the outside
+     * 
+     * @returns SVG path commands to build the shape of the surface
+     */
+    _buildSurfacePath(cell: Cell, surfcnt: number[][], radius: number, dir_idx=0, is_root=true): (string|number)[][] {
         let path: (string | number)[][] = [];
 
         // clockwise dir sequence
@@ -1324,6 +1442,25 @@ export default abstract class Plate {
         return path;
     }
 
+    /**
+     * Generates a "gap push" for the path
+     * 
+     * Gap push continues the path by the width/length of the cell's gap.
+     * If the path is "pushed" by the gap, then it's needed to pull it on the opposite side.
+     * 
+     * Gap pushes/pulls take place when two adjacent cells in a plate surface's side is presented.
+     * The base path continues from the point of previous edge with the corner and another gap push
+     * 
+     * 
+     * @see _buildSurfacePath
+     * @see _buildSurfacePathGapPull
+     * 
+     * @param dir           direction of the path to which the gap is appended
+     * @param dir_corner    direction after the corner preceding the gap
+     * @param radius        radius of the corner to leave some place to add an arc
+     * 
+     * @returns gap push
+     */
     _buildSurfacePathGapPush(dir: Direction, dir_corner: Direction, radius: number) {
         let corner = this._buildSurfacePathCorner(dir_corner, radius);
 
@@ -1351,6 +1488,19 @@ export default abstract class Plate {
         }
     }
 
+    /**
+     * Generates a "gap pull" for the path
+     * 
+     * Gap pull "reverts" the gap push generated previously at the opposite size of the surface path.
+     * 
+     * @see _buildSurfacePathGapPush
+     * 
+     * @param dir           direction of the path to which the gap is appended          
+     * @param dir_corner    direction after the corner preceding the gap
+     * @param radius        radius of the corner to leave some place to add an arc
+     *     
+     * @returns gap pull
+     */
     _buildSurfacePathGapPull(dir: Direction, dir_corner: Direction, radius: number) {
         let corner = this._buildSurfacePathCorner(dir_corner, radius);
 
@@ -1422,7 +1572,18 @@ export default abstract class Plate {
         return closure;
     }
 
-    _buildSurfacePathCorner(dir_curr: Direction, radius: number) {
+    /**
+     * Makes a corner part for the SVG path of the plate surface
+     * 
+     * Is is supposed that the base path leaves some place 
+     * for the arc generated by the path returned from this function.
+     * 
+     * @param dir_curr  current direction of the path "movement" to track the "rotation" of the path
+     * @param radius    corner radius
+     * 
+     * @returns corner part to append to the base path
+     */
+    _buildSurfacePathCorner(dir_curr: Direction, radius: number): (string|number)[] {
         let dir_prev = this._dir_prev;
 
         if (dir_curr === dir_prev) return null;
@@ -1455,11 +1616,11 @@ export default abstract class Plate {
     }
 
     /**
+     * Converts the surface to a sequence of [x][y]-indexed array of zeros
      *
-     * @param surface Array<object>
-     * @private
+     * @param surface original surface of the plate
      */
-    _convertSurfaceToArray(surface: {x: number, y: number}[]) {
+    _convertSurfaceToArray(surface: {x: number, y: number}[]): number[][] {
         let arr: number[][] = [];
 
         for (let item of surface) {
@@ -1490,6 +1651,7 @@ export default abstract class Plate {
     }
 
     /**
+     * Converts string defining plate orientation to the rotation angle
      * Перевести строку, задающую ориентацию плашки, в значение угла поворота
      *
      * @param {string} orientation ориентация плашки
