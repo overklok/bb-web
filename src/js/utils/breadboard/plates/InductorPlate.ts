@@ -7,6 +7,8 @@ import Grid from "../core/Grid";
 
 /**
  * Inductor plate
+ * 
+ * @category Breadboard
  */
 export default class InductorPlate extends LinearPlate {
     static get Alias() {return "inductor"}

@@ -7,6 +7,8 @@ import ButtonPlate from "./ButtonPlate";
 
 /**
  * Switch plate
+ * 
+ * @category Breadboard
  */
 export default class SwitchPlate extends ButtonPlate {
     static get Alias() {return "switch"}

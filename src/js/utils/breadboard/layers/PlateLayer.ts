@@ -35,6 +35,8 @@ import Cell from "../core/Cell";
 /**
  * Object describing required conditions for specific type of plate
  * when generating random plate compositions
+ * 
+ * @category Breadboard
  */
 export type PlatePrototype = {
     type: string;
@@ -43,7 +45,9 @@ export type PlatePrototype = {
 }
 
 /**
- * Visual properties of plates
+ * Visual properties of the plate
+ * 
+ * @category Breadboard
  */
 type PlateStyle = {
     quad_size: number;
@@ -53,6 +57,8 @@ type PlateStyle = {
 
 /**
  * Types of user actions notified in plate change events
+ * 
+ * @category Breadboard
  */
 enum PlateChangeActionType {
     /** plate's input/output has been changed */
@@ -70,6 +76,8 @@ enum PlateChangeActionType {
  * 
  * This type of argument is used to notify user-driven actions in 
  * 'plate change' events (plates has been changed manually via UI)
+ * 
+ * @category Breadboard
  */
 type PlateChangeCallbackArg = {
     id: number;
@@ -81,22 +89,30 @@ type PlateChangeCallbackArg = {
  * 
  * This type of argument is used to notify external changes in 
  * 'plate change' events (plates has been changed programmatically via API)
+ * 
+ * @category Breadboard
  */
 type MassChangeCallbackArg = { [key: number]: Plate }
 
 /**
  * An argument that is passed to the 'plate change' event handler when triggered
+ * 
+ * @category Breadboard
  */
 type ChangeCallbackArg = PlateChangeCallbackArg | MassChangeCallbackArg;
 
 /**
  * A 'plate change' event handler
+ * 
+ * @category Breadboard
  */
 type ChangeCallback = (data: ChangeCallbackArg) => void;
 
 /**
  * An object that imitates real mouse events
  * when calling some handlers manually
+ * 
+ * @category Breadboard
  */
 type PseudoMouseEvent = {
     which: number;
@@ -112,6 +128,8 @@ type PseudoMouseEvent = {
  * {@link Plate} instances.
  * 
  * Also allows to listen to manual and programmatical changes in the composition.
+ * 
+ * @category Breadboard
  */
 export default class PlateLayer extends Layer<SVG.Container> {
     /** CSS class of the layer */
@@ -1044,7 +1062,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
             this._cursor_point_mousedown = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
 
             this._plate_dragging = plate;
-            this._cell_supposed = plate._calcSupposedCell();
+            this._cell_supposed = plate.calcSupposedCell();
         }
     }
 

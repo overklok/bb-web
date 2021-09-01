@@ -7,6 +7,8 @@ import Grid from '../core/Grid';
 
 /**
  * Bridge plate 
+ * 
+ * @category Breadboard
  */
 export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}
@@ -38,15 +40,15 @@ export default class BridgePlate extends LinearPlate {
     /**
      * @inheritdoc
      */
-    public get __length__(): number {
-        return Number(this.props[BridgePlate.PROP_LENGTH]);
+    public get variant() {
+        return String(this.__length__);
     }
 
     /**
      * @inheritdoc
      */
-    public get variant() {
-        return String(this.__length__);
+    protected get __length__(): number {
+        return Number(this.props[BridgePlate.PROP_LENGTH]);
     }
 
     /** 

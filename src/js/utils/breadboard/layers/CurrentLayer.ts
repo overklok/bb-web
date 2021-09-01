@@ -13,6 +13,8 @@ import { XYObject } from "../core/types";
  * Handles current data formats, generates paths for the {@link Current}s.
  * 
  * @see Current
+ * 
+ * @category Breadboard
  */
 export default class CurrentLayer extends Layer {
     /** CSS class of the layer */

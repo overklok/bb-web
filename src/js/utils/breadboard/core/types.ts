@@ -1,14 +1,32 @@
 /**
+ * Coordinates in two-dimensional space
  * 
  * @category Breadboard
  */
 export type XYObject = { x: number, y: number }
 
+/**
+ * Direction of the data flow of the pin
+ * 
+ * @category Breadboard
+ */
 export enum PinState {
     Input = "input",
     Output = "output"
 }
 
+/**
+ * Group of interconnected cells (separate contact line)
+ * 
+ * Domain is a group of interconnected cells. 
+ * It's usually represented as the non-diagonal contact line.
+ * It can have different visual styles, which can be adusted through the parameters
+ * of this method.
+ * 
+ * TODO: describe each property 
+ * 
+ * @category Breadboard
+ */
 export type Domain = {
     horz: boolean,
     from: XYObject,
@@ -41,7 +59,7 @@ export type Domain = {
 type Point = string;
 
 /**
- * 
+ * Board cell topology
  * 
  * @category Breadboard
  */
@@ -77,6 +95,10 @@ export enum Direction {
     Left,
 }
 
+/**
+ * 
+ * @category Breadboard
+ */
 export enum CellRole {
     Plus = 'plus',
     Minus = 'minus',

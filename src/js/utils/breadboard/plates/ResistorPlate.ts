@@ -7,6 +7,8 @@ import LinearPlate from "../core/plate/LinearPlate";
 
 /**
  * Resistor plate
+ * 
+ * @category Breadboard
  */
 export default class ResistorPlate extends LinearPlate {
     static get Alias() {return "resistor"}

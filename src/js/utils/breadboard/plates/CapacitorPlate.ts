@@ -7,6 +7,8 @@ import Grid from '../core/Grid';
 
 /**
  * Capacitor plate
+ * 
+ * @category Breadboard
  */
 export default class CapacitorPlate extends LinearPlate {
     static get Alias() {return "capacitor"}

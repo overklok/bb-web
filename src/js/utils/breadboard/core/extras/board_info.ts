@@ -26,6 +26,8 @@ export type BoardInfo = {
  * @param layout                generic board config (layout)
  * @param no_arduino_embedded   whether to exclude arduino pin functionalty (specifically for board verification)
  * @returns 
+ * 
+ * @category Breadboard
  */
 function layoutToBoardInfo(layout: Layout, no_arduino_embedded=false): BoardInfo {
     const grid = buildGrid(layout);

@@ -2,6 +2,8 @@ import ContextMenu, { ContextMenuItemInputType } from "../core/ContextMenu"
 
 /**
  * Context menu intended to draw when clicking on the plate
+ * 
+ * @category Breadboard
  */
 export default class PlateContextMenu extends ContextMenu {
     // Context menu items aliases

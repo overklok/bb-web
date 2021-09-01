@@ -7,6 +7,8 @@ import Cell from "../core/Cell";
 
 /**
  * Motor plate
+ * 
+ * @category Breadboard
  */
 export default class MotorPlate extends LinearPlate {
     static get Alias() {return "motor"}

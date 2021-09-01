@@ -11,6 +11,8 @@ import Grid from '../core/Grid';
 /**
  * Contains plate selector flyout menu, which allows to search plates 
  * and drag'n'drop them to the board
+ * 
+ * @category Breadboard
  */
 export default class SelectorLayer extends Layer<HTMLDivElement> {
     static get Class() {return "bb-layer-selector"}

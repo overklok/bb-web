@@ -5,6 +5,11 @@ import Grid from "../core/Grid";
 import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 
+/**
+ * Relay plate
+ * 
+ * @category Breadboard
+ */
 export default class RelayPlate extends LinearPlate {
     static get Alias() {return "relay"}
 
@@ -22,7 +27,7 @@ export default class RelayPlate extends LinearPlate {
     /**
      * @inheritdoc
      */
-    public get __length__() {
+    protected get __length__() {
         return 5;
     }
 

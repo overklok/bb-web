@@ -31,6 +31,8 @@ export enum DomainSchematicStyle {
  * To connect cells from different groups, you need a {@link Plate} mounted on cells from each of the groups,
  * and this {@link Plate} should be able to pass current through itself (which depends on its type).
  * This is why it's needed to visually display the contact groups.
+ * 
+ * @category Breadboard
  */
 export default class BackgroundLayer extends Layer {
     /** CSS class of the layer */
@@ -308,11 +310,6 @@ export default class BackgroundLayer extends Layer {
     /**
      * Draws separate contact line (also called "domain" here)
      * 
-     * Domain is a group of interconnected cells. 
-     * It's usually represented as the non-diagonal contact line.
-     * It can have different visual styles, which can be adusted through the parameters
-     * of this method.
-     * 
      * In schematic mode, the contact line has an offset in order not to block 
      * the contact cells themselves (which looks as the dots in this mode).
      * The line and cells are connected with the notches.
@@ -320,6 +317,8 @@ export default class BackgroundLayer extends Layer {
      * You can prepend and append the line without the notches 
      * by setting the `after` and `before` parameters to draw adjacent domains
      * with different styles continuously, which is needed for some of the board configurations.
+     * 
+     * @see Domain
      * 
      * @param container   SVG parent element to render the content to
      * @param cell_from   Starting cell of the domain

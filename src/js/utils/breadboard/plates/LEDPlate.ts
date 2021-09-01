@@ -13,6 +13,8 @@ const LED_COLOURS = {
 
 /**
  * LED plate
+ * 
+ * @category Breadboard
  */
 export default class LEDPlate extends LinearPlate {
     static get Alias() {return "LED"}

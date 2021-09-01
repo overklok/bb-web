@@ -7,7 +7,9 @@ import Grid from "../core/Grid";
 import Cell from "../core/Cell";
 
 /**
- * Draws a photoresistor
+ * Photoresistor plate
+ * 
+ * @category Breadboard
  */
 export default class PhotoresistorPlate extends LinearPlate {
     private _svginp: any;

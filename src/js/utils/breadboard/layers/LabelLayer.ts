@@ -14,7 +14,9 @@ const LABEL_STYLE_DEFAULT = {
 }
 
 /**
- * Renders textual info on the board
+ * Renders textual info to the board
+ * 
+ * @category Breadboard
  */
 export default class LabelLayer extends Layer {
     /** CSS class of the layer */

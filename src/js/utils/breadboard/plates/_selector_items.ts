@@ -20,6 +20,8 @@ import TransistorPlate from "./TransistorPlate"
  * as a preset to use in {@link SelectorLayer} for instant plate selection.
  * 
  * For example, if the type is {@link ResistorPlate}, then one of its options might be '100 Ohm'.
+ * 
+ * @category Breadboard
  */
 export type SelectorItemOption = {
     title: string,
@@ -31,6 +33,8 @@ export type SelectorItemOption = {
  * Each item represents a plate with specific type and it
  * can contain few options, and also the custom one to give the user
  * ability to set preferred property value on one's own.
+ * 
+ * @category Breadboard
  */
 export type SelectorItem = {
     /** item title */
@@ -57,6 +61,8 @@ export type SelectorItem = {
 
 /**
  * Items for {@link SelectorLayer}'s flyout menu
+ * 
+ * @category Breadboard
  */
 const ITEMS: SelectorItem[] = [
     {

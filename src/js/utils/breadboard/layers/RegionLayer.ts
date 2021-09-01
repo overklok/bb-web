@@ -6,6 +6,8 @@ import { XYObject } from "../core/types";
 
 /**
  * Highlights rectangular cell regions to point out user failures
+ * 
+ * @category Breadboard
  */
 export default class RegionLayer extends Layer {
     /** CSS class of the layer */

@@ -13,6 +13,8 @@ import ContextMenu from './ContextMenu';
 
 /**
  * Orientation codes
+ * 
+ * @category Breadboard
  *
  * @type {{West: string, North: string, East: string, South: string}}
  */
@@ -36,6 +38,8 @@ export type PlateRef<P extends Plate> = new (...args: any) => P;
 
 /**
  * Dynamic (modifiable) plate attributes 
+ * 
+ * @category Breadboard
  */
 export type PlateState = {
     /** cell defining the position of the plate */
@@ -56,6 +60,8 @@ export type PlateState = {
 
 /**
  * Static (non-modifiable) plate type attributes
+ * 
+ * @category Breadboard
  */
 export type PlateParams = {
     /** the number of cells occupied by the plate on the board  */
@@ -89,11 +95,15 @@ export type PlateParams = {
 
 /**
  * Static (non-modifiable) plate instance attributes
+ * 
+ * @category Breadboard
  */
 export type PlateProps = { [key: string]: number|string };
 
 /**
  * Data object defining the position and orientation of the plate
+ * 
+ * @category Breadboard
  */
 export type SerializedPlatePosition = {
     cell: XYObject;
@@ -102,6 +112,8 @@ export type SerializedPlatePosition = {
 
 /**
  * Data object that defines the full set of plate attributes
+ * 
+ * @category Breadboard
  */
 export type SerializedPlate = {
     id: number;
@@ -574,7 +586,7 @@ export default abstract class Plate {
      */
     public click() {
         this._container.fire('mousedown');
-        this._rearrange();
+        this.rearrange();
     }
 
     /**
@@ -733,7 +745,7 @@ export default abstract class Plate {
      * Highlights plate's outline 
      */
     public select() {
-        this._rearrange();
+        this.rearrange();
 
         if (this._params.schematic) {
             (this._bezel.animate(100) as any).stroke({opacity: 1, color: "#0900fa", width: 2});
@@ -876,11 +888,11 @@ export default abstract class Plate {
     /**
      * Moves the pivot point of the plate to the nearest accessible cell
      * 
-     * The calculation of the nearest cell is based on the {@link _calcSupposedCell} method.
+     * The calculation of the nearest cell is based on the {@link calcSupposedCell} method.
      */
     public snap() {
         if (!this._cell_supposed) {
-            this._cell_supposed = this._calcSupposedCell();
+            this._cell_supposed = this.calcSupposedCell();
         }
 
         this.move(this._cell_supposed, false, true);
@@ -932,7 +944,7 @@ export default abstract class Plate {
         this._container.dmove(dx, dy);
 
         requestAnimationFrame(() => {
-            this._cell_supposed = this._calcSupposedCell();
+            this._cell_supposed = this.calcSupposedCell();
             this._dropShadowToCell(this._cell_supposed);
         })
 
@@ -983,7 +995,7 @@ export default abstract class Plate {
      * This method is used to position the plates precisely 
      * by snapping them to the grid cells when dragging finishes.
      */
-    private _calcSupposedCell() {
+    public calcSupposedCell() {
         /// Положениие группы плашки (изм. при вращении)
         let gx = this._group.x(),
             gy = this._group.y();
@@ -1196,7 +1208,7 @@ export default abstract class Plate {
      * Used in cases when the plate needs to be displayed on top of the rest 
      * (e.g. while dragging over another plates to keep pointer events active)
      */
-    private _rearrange() {
+    public rearrange() {
         let node_temp = this._container.node;
         this._container.node.remove();
         this._node_parent.appendChild(node_temp);
@@ -1717,7 +1729,7 @@ export default abstract class Plate {
      * @param orientation 
      * @returns 
      */
-    protected static _orientXYObject(xyobj: {x: number, y: number}, orientation: string): {x: number, y: number} {
+    public static _orientXYObject(xyobj: {x: number, y: number}, orientation: string): {x: number, y: number} {
         let xynew: {x: number, y: number} = {x: undefined, y: undefined};
 
         switch (orientation) {

@@ -9,6 +9,7 @@ let SYMBOL_SMOKE = undefined;
 type RGBColor = [number, number, number];
 
 /**
+ * Current style attributes
  * 
  * @category Breadboard
  */
@@ -21,7 +22,7 @@ export type CurrentStyle = {
 }
 
 /**
- * 
+ * Current data object
  * 
  * @category Breadboard
  */

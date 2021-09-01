@@ -2,6 +2,8 @@ import ContextMenu, { ContextMenuItemInputType } from "../core/ContextMenu"
 
 /**
  * Context menu intended to draw when clicking on the board background
+ * 
+ * @category Breadboard
  */
 export default class BoardContextMenu extends ContextMenu {
     /** Whether verbose mode is enabled for the board */

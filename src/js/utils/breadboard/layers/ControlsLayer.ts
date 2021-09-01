@@ -9,6 +9,8 @@ import ContextMenu from "../core/ContextMenu";
 /**
  * Displays menu button and handles events to
  * open the {@link BoardContextMenu}
+ * 
+ * @category Breadboard
  */
 export default class ControlsLayer extends Layer {
     /** CSS class of the layer */

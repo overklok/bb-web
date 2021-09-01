@@ -7,6 +7,8 @@ import Cell from "../core/Cell";
 
 /**
  * Rheostat plate
+ * 
+ * @category Breadboard
  */
 export default class RheostatPlate extends Plate {
     static get Alias() {return "rheostat"}

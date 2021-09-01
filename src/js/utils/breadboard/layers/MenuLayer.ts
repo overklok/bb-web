@@ -11,6 +11,7 @@ import Layer from '../core/Layer';
  * Unlike most of the layers in the {@link Breadboard}, this layer is HTML-based. 
  * This is required because {@link ContextMenu}s renders HTML elements which can be mounted in HTML container only.
  * 
+ * @category Breadboard
  */
 export default class MenuLayer extends Layer<HTMLDivElement> {
     /** CSS class of the layer */
