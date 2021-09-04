@@ -30,13 +30,6 @@ export default class RelayPlate extends LinearPlate {
     protected get __length__() {
         return 5;
     }
-
-    /**
-     * @inheritdoc
-     */
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error("Method not implemented.");
-    }
     
     /**
      * @inheritdoc

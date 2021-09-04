@@ -31,9 +31,6 @@ export default class BuzzerPlate extends LinearPlate {
         this._drawPicture();
     };
 
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error('Method not implemented.');
-    }
     /**
      * Draws a buzzer over the plate surface
      *

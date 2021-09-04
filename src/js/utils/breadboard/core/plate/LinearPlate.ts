@@ -53,7 +53,7 @@ export default abstract class LinearPlate extends Plate {
     /**
      * @inheritdoc
      */
-    private __getOppositeCell__(cell: Cell) {
+    protected _getOppositeCell(cell: Cell) {
         let cell_main = this._state.cell;
 
         if (cell === cell_main) {

@@ -99,10 +99,6 @@ export default class LEDPlate extends LinearPlate {
         // this._group.text(`Diode ${this._params.colour}`).font({size: 20});
     };
 
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error("Method not implemented.");
-    }
-
     private _redrawOutput(output_value: string) {
         if (!this._svgout) {
             let cell = this.__grid.cell(0, 0);

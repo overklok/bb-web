@@ -100,13 +100,6 @@ export default class ButtonPlate extends LinearPlate {
     };
 
     /**
-     * @inheritdoc
-     */
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error('Method not implemented.');
-    }
-
-    /**
      * Updates the jumper position depending on the state
      */
     protected _toggleJumper() {
