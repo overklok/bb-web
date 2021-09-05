@@ -91,13 +91,7 @@ export type AuxPoint = {
 }
 
 type AuxPointOrRow<K> = K extends string ? AuxPoint : AuxPoint[]
-
-type ValueOf<T extends {key: unknown, value: unknown}> = Map<T["key"], T["value"]>
-
-type AuxPointValue = {key: string, value: AuxPoint}
-type AuxPointSeries = {key: number, value: AuxPoint[]}
-
-type AuxPointMap = ValueOf<AuxPointValue | AuxPointSeries>
+type AuxPointMap = Map<string|number, AuxPoint|AuxPoint[]>
 
 /**
  * Logical representation of the breadboard grid
