@@ -2,6 +2,8 @@ import * as React from "react";
 import { ViewEvent } from "~/js/core/base/Event";
 import { IViewProps, View } from "~/js/core/base/view/View";
 
+import i18next from 'i18next';
+
 require('css/logo.less');
 require('css/blocks/about.less');
 require('css/blocks/generic/btn.less');
@@ -27,7 +29,7 @@ namespace AboutView {
                 <div className="about__heading">
                     <div className="about__heading-section">
                         <div className="logo logo__full" />
-                        <p className="logo-subscription">макетная плата</p>
+                        <p className="logo-subscription">{i18next.t('main:about.modal.logo_subscription')}</p>
                     </div>
 
                     <div className="about__heading-section about__version">
@@ -47,7 +49,7 @@ namespace AboutView {
 
                 {(this.props.ver_cli.self[0] != 'n/a') ?
                     <div className="about__footer btn-bar btn-bar_right">
-                        <div className="btn btn_sm btn_danger" onClick={() => this.emit(new IssuePromptEvent())}>Скачать журнал событий{/*Сообщить об ошибке*/}</div>
+                        <div className="btn btn_sm btn_danger" onClick={() => this.emit(new IssuePromptEvent())}>{i18next.t('main:about.modal.event_log_download')}{/*Сообщить об ошибке*/}</div>
                     </div>
                     : null
                 }

@@ -4,6 +4,8 @@ import CourseModel from "../../models/lesson/CourseModel";
 import ProgressModel from "../../models/lesson/ProgressModel";
 import {RequestErrorEvent} from "../../core/base/model/HttpModel";
 
+import i18next from 'i18next';
+
 export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     private course: CourseModel;
     private progress: ProgressModel;
@@ -26,7 +28,7 @@ export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     @on(RequestErrorEvent)
     private showError(evt: RequestErrorEvent) {
         this.setViewProps({
-            error: 'Нет доступа к серверу.'
+            error: i18next.t("main:home.error.no_server_access")
         });
 
         this.load_handle = setTimeout(() => {

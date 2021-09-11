@@ -14,6 +14,8 @@ import AdminCodeModel from "./models/common/AdminCodeModel";
 import BlocklyView from "./views/common/BlocklyView";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 
+import "~/i18n/config";
+
 import "../css/global.less";
 
 interface BlocklyApplicationConfig extends AppConf {

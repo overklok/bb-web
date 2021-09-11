@@ -39,6 +39,8 @@ import ConnectionModel from "./models/common/ConnectionModel";
 import MainRouter from "./routers/MainRouter";
 import ServerModel from "./models/common/ServerModel";
 
+import "~/i18n/config";
+
 require("css/global.less");
 
 interface MainAppConf {

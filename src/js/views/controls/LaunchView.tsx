@@ -3,6 +3,8 @@ import classNames from "classnames";
 import {AllProps, IViewProps, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 
+import i18next from 'i18next';
+
 require('../../../css/blocks/generic/btn.less')
 require('../../../css/blocks/fabdesk.less')
 
@@ -76,7 +78,7 @@ namespace LaunchView {
             return (
                 <div className='fabdesk'>
                     <div className={klasses_btn_execute} onClick={() => this.handleExecuteClick()}>
-                        {this.props.is_executing ? 'Остановить' : 'Запустить'}
+                        {this.props.is_executing ? i18next.t('main:lesson.fabs.stop') : i18next.t('main:lesson.fabs.start')}
                     </div>
                 </div>
             )
@@ -93,7 +95,7 @@ namespace LaunchView {
             return (
                 <div className='fabdesk'>
                     <div className={klasses_btn_check} onClick={() => this.handleCheckClick()}>
-                        {this.props.is_executing ? 'Проверка...' : 'Проверить'}
+                        {this.props.is_executing ? i18next.t('main:lesson.fabs.checking') : i18next.t('main:lesson.fabs.check')}
                     </div>
                 </div>
             )
@@ -117,10 +119,10 @@ namespace LaunchView {
             return (
                 <div className='fabdesk'>
                     <div className={klasses_btn_execute} onClick={() => this.handleExecuteClick()}>
-                        {this.props.is_executing ? 'Остановить' : 'Запустить'}
+                        {this.props.is_executing ? i18next.t('main:lesson.fabs.stop') : i18next.t('main:lesson.fabs.start')}
                     </div>
                     <div className={klasses_btn_check} onClick={() => this.handleCheckClick()}>
-                        {this.props.is_checking ? 'Проверка...' : 'Проверить'}
+                        {this.props.is_checking ? i18next.t('main:lesson.fabs.checking') : i18next.t('main.lesson.fabs.check')}
                     </div>
                 </div>
             )

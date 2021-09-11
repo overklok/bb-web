@@ -1,4 +1,5 @@
 import Presenter, {on, restore} from "../../core/base/Presenter";
+import i18next from "i18next";
 
 import ModalModel from "../../core/models/ModalModel";
 import LessonModel from "../../models/lesson/LessonModel";
@@ -8,8 +9,6 @@ import {BoardStatusEvent} from "../../models/common/BoardModel";
 import {ConnectionStatusEvent} from "../../models/common/ConnectionModel";
 import {ConnectionStatus} from "../../views/controls/topbar/StatusIndicator";
 import TopbarView, {MenuItem} from "../../views/controls/TopbarView";
-import {ModalAction} from "../../core/base/view/Nest";
-import Modal from "src/js/core/views/modal/Modal";
 
 export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private model_lesson: LessonModel;
@@ -121,7 +120,7 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         this.model_modal.showModal({
             widget_alias: 'about',
             size: 'md',
-            dialog: { heading: 'О программе' },
+            dialog: { heading: i18next.t('main:about.modal.heading') },
             is_closable: true
         }); 
     }

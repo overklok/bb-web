@@ -2,6 +2,8 @@ import * as React from "react";
 import { ViewEvent } from "~/js/core/base/Event";
 import { View } from "~/js/core/base/view/View";
 
+import i18next from 'i18next';
+
 require("css/blocks/issue.less");
 require("css/blocks/generic/btn.less");
 require('css/core/form.less');
@@ -35,15 +37,11 @@ namespace IssueView {
                 <hr/> */}
 
                 <div className="issue__section">
-                    <p className="issue__text">
-                        В целях отладки бывает полезно приложить журнал событий, который можно загрузить, нажав на кнопку ниже.
-                        В нём может содержаться полезная информация о предшествующих ошибках или предупреждениях, что может облегчить процесс
-                        выявления причин проблемы.
-                    </p>
+                    <p className="issue__text">{i18next.t('main:issue.event_log_text')}</p>
                 </div>
 
                 <div className="issue__section btn-bar btn-bar_right">
-                    <div className="btn btn_sm btn_success" onClick={() => this.emit(new LogDownloadRequestEvent())}>Скачать журнал событий</div>
+                    <div className="btn btn_sm btn_success" onClick={() => this.emit(new LogDownloadRequestEvent())}>{i18next.t('main:issue.event_log_download')}</div>
                 </div>
             </div>
         }

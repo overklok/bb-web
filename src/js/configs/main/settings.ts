@@ -1,14 +1,16 @@
 import {SettingType} from "../../core/datatypes/settings";
 
+import i18next from 'i18next';
+
 export default function (allow_demo: boolean) {
     return {
         general: {
-            title: 'Основные',
+            title: i18next.t('settings:general.title'),
             groups: [
                 {
                     settings: {
                         is_demo: {
-                            title: 'Автономный режим',
+                            title: i18next.t('settings:general.settings.is_demo.title'),
                             type: SettingType.Boolean,
                             default: false,
                             is_locked: !allow_demo
@@ -18,18 +20,18 @@ export default function (allow_demo: boolean) {
             ]
         },
         board: {
-            title: 'Доска',
+            title: i18next.t('settings:board.title'),
             groups: [
                 {
-                    title: 'Отладка',
+                    title: i18next.t('settings:board.groups.debug.title'),
                     settings: {
                         is_verbose: {
-                            title: 'Показывать подробности',
+                            title: i18next.t('settings:board.settings.is_verbose'),
                             type: SettingType.Boolean,
                             default: false,
                         },
                         is_debug: {
-                            title: 'Подсвечивать ячейки',
+                            title: i18next.t('settings:board.settings.is_debug'),
                             type: SettingType.Boolean,
                             default: false,
                         }

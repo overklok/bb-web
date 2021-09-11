@@ -7,6 +7,8 @@ import SettingsModel, {SettingsChangeEvent, SettingsModalEvent} from "../../core
 import {ModalAction} from "../../core/base/view/Nest";
 import {SettingsValues} from "../../core/datatypes/settings";
 
+import i18next from 'i18next';
+
 export default class SettingsModalPresenter extends ModalPresenter {
     private mdl: number;
     private model: SettingsModel;
@@ -34,9 +36,9 @@ export default class SettingsModalPresenter extends ModalPresenter {
             is_closable: true,
             is_close_manual: true,
             dialog: {
-                heading: 'Настройки',
-                label_accept: 'Сохранить',
-                label_dismiss: 'Отменить',
+                heading: i18next.t('main:settings.modal.main.heading'),
+                label_accept: i18next.t('main:settings.modal.main.accept'),
+                label_dismiss: i18next.t('main:settings.modal.main.dismiss'),
                 is_acceptable: true,
                 is_dismissible: true,
                 on_action: (action: ModalAction) => {
@@ -69,10 +71,10 @@ export default class SettingsModalPresenter extends ModalPresenter {
 
         this.pushModal({
             size: 'sm',
-            content: 'Хотите отменить внесённые изменения?',
+            content: i18next.t('main:settings.modal.escape.content'),
             dialog: {
-                label_accept: 'Назад',
-                label_dismiss: 'Отменить',
+                label_accept: i18next.t('main:settings.modal.escape.accept'),
+                label_dismiss: i18next.t('main:settings.modal.escape.dismiss'),
                 is_acceptable: true,
                 is_dismissible: true,
                 on_action: action => {

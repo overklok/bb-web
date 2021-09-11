@@ -2,11 +2,10 @@ import * as React from "react";
 
 import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
-import {ColorAccent} from "../../helpers/styles";
-import {Toast} from "./Toast";
 import Modal, {ModalSize, Overlay} from "./Modal";
-import Dialog from "./Dialog";
 import DialogModal from "./DialogModal";
+
+import i18next from 'i18next';
 
 export const enum AlertType {
     IssueReportCompleted,
@@ -28,39 +27,6 @@ interface IAlert {
 interface IAlertHandlers {
     on_accept?: Function;
     on_close?: (type: AlertType) => void;
-}
-
-const ALERT_DATA: {[key: number]: IAlert} = {
-    [AlertType.IssueReportCompleted]: {
-        title: 'Отчёт отправлен успешно!',
-        size: 'md',
-        is_closable: true,
-        is_acceptable: true,
-        label_accept: 'Хорошо'
-    },
-    [AlertType.BoardDisconnected]: {
-        title: 'Доска отключена',
-        content: 'Использовать программу без подключённой доски невозможно.',
-        size: 'md',
-        is_closable: false,
-        is_acceptable: false
-    },
-    [AlertType.BoardDisconnectedDemo]: {
-        title: 'Доска отключена',
-        content: 'Использовать программу без подключённой доски невозможно.',
-        label_accept: 'Продолжить в автономном режиме',
-        size: 'md',
-        is_closable: false,
-        is_acceptable: true
-    },
-    [AlertType.ShortCircuit]: {
-        title: 'Короткое замыкание!',
-        content: 'Разомкните цепь, чтобы устранить короткое замыкание.',
-        size: 'md',
-        is_closable: false,
-        is_acceptable: false,
-        no_overlay: false,
-    }
 }
 
 interface AlertViewProps extends IViewState {
@@ -96,7 +62,7 @@ export default class AlertView extends View<AlertViewProps, null> {
     }
 
     renderOverlay(type: number, idx: number) {
-        const alert = ALERT_DATA[type];
+        const alert = this.getAlertData(type);
 
         if (alert.no_overlay) return null;
 
@@ -110,7 +76,7 @@ export default class AlertView extends View<AlertViewProps, null> {
     }
 
     renderAlert(type: number, idx: number) {
-        const alert = ALERT_DATA[type];
+        const alert = this.getAlertData(type);
 
         return (
             <CSSTransition key={'a_' + idx} in out timeout={200} classNames="mdl" unmountOnExit>
@@ -125,5 +91,44 @@ export default class AlertView extends View<AlertViewProps, null> {
                 </DialogModal>
             </CSSTransition>
         )
+    }
+
+    getAlertData(key: number): IAlert {
+        switch (key) {
+         case AlertType.IssueReportCompleted: 
+            return {
+                title: i18next.t('main:alert.issue_report_completed.title'),
+                size: 'md',
+                is_closable: true,
+                is_acceptable: true,
+                label_accept: i18next.t('main:alert.issue_report_completed.accept')
+            };
+        case AlertType.BoardDisconnected: 
+            return {
+                title: i18next.t('main:alert.board_disconnected.title'),
+                content: i18next.t('main:alert.board_disconnected.content'),
+                size: 'md',
+                is_closable: false,
+                is_acceptable: false
+            };
+        case AlertType.BoardDisconnectedDemo: 
+            return {
+                title: i18next.t('main:alert.board_disconnected.title'),
+                content: i18next.t('main:alert.board_disconnected.content'),
+                label_accept: i18next.t('main:alert.board_disconnected.accept'),
+                size: 'md',
+                is_closable: false,
+                is_acceptable: true
+            };
+        case AlertType.ShortCircuit: 
+            return {
+                title: i18next.t('main:short_circuit.title'),
+                content: i18next.t('main:short_circuit.content'),
+                size: 'md',
+                is_closable: false,
+                is_acceptable: false,
+                no_overlay: false,
+            };
+        }
     }
 }

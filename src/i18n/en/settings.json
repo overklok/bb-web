@@ -1,0 +1,22 @@
+{
+	"general": {
+        "title": "General",
+        "settings": {
+            "is_demo": {
+                "title": "Autonomous mode"
+            }
+        }
+    },
+    "board": {
+        "title": "Breadboard",
+        "groups": {
+            "debug": {
+                "title": "Debug"
+            }
+        },
+        "settings": {
+            "is_verbose": "Verbose mode",
+            "is_debug": "Highlight cells on hover"
+        }
+    }
+}

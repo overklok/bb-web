@@ -2,17 +2,17 @@ import * as React from "react";
 import {AllProps, IViewProps, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 import Modal from "../../core/views/modal/Modal";
-import Dialog from "../../core/views/modal/Dialog";
-import AlertView from "../../core/views/modal/AlertView";
 import DialogModal from "../../core/views/modal/DialogModal";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
+
+import i18next from 'i18next';
 
 require("../../../css/home.less");
 require("../../../css/logo.less");
 require("../../../css/core/list.less");
 require("../../../css/core/pave.less");
 
-// passed by DefinePlugin in Webpack config
+// provided by DefinePlugin in Webpack config
 declare const __VERSION__: string;
 
 interface Lesson {
@@ -58,7 +58,7 @@ namespace HomeView {
                 <div className="pave">
                     <div className="home-header">
                         <div className="logo logo_centered logo_light logo__full" />
-                        <p>Макетная плата</p>
+                        <p>{i18next.t('main:home.header.title')}</p>
                     </div>
                     <div className="app-screen">
                         <TransitionGroup component={null}>
@@ -78,9 +78,9 @@ namespace HomeView {
                 return (
                     <CSSTransition key='err' in out timeout={200} classNames="mdl" unmountOnExit>
                         <DialogModal size='md' is_centered={true}>
-                            <h2>Произошла ошибка</h2>
+                            <h2>{i18next.t("main:home.courses.error")}</h2>
                             <p>{this.props.error}</p>
-                            <p>Пробуем загрузиться снова...</p>
+                            <p>{i18next.t("main:home.courses.reloading")}</p>
                         </DialogModal>
                     </CSSTransition>
                 )
@@ -90,7 +90,7 @@ namespace HomeView {
                 return (
                     <CSSTransition key='ldn' in out timeout={200} classNames="mdl" unmountOnExit>
                         <DialogModal size='md' is_centered={true}>
-                            <h2>Загрузка...</h2>
+                            <p>{i18next.t("main:home.courses.loading")}</p>
                         </DialogModal>
                     </CSSTransition>
                 )
@@ -100,7 +100,7 @@ namespace HomeView {
                 <CSSTransition key='crs' in out timeout={200} classNames="mdl" unmountOnExit>
                     <Modal size='lg'>
                         <div className="courses">
-                            <h1 className="courses__heading">Уроки</h1>
+                            <h1 className="courses__heading">{i18next.t("main:home.courses.lessons")}</h1>
 
                             <ul className="list">
                                 {this.props.courses.map((course, idx) =>
@@ -121,7 +121,7 @@ namespace HomeView {
                                                     }
 
                                                     <span>
-                                                        Урок {idx + 1}. {lesson.name}
+                                                        {i18next.t("main:home.courses.lesson")} {idx + 1}. {lesson.name}
                                                     </span>
 
                                                     <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>

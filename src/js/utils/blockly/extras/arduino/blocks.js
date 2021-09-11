@@ -1,6 +1,8 @@
 import {CATEGORIES, FIELDTYPES, BLOCK_INPUTS_CONSTRAINTS} from "../constants";
 import {appendShadowBlock} from "../_common";
 
+import i18next from 'i18next';
+
 let JSONBlocks = {
     /**
      * Блоки-переменные
@@ -9,11 +11,11 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "Контакт",
+                message0:       i18next.t('blockly:blocks.arduino_pin.message'),
                 inputsInline:   false,
                 output:         FIELDTYPES.PIN,
                 colour:         CATEGORIES.ARDUINO.colour,
-                tooltip:        "Хранит номер контакта (пин)"
+                tooltip:        i18next.t('blockly:blocks.arduino_pin.tooltip')
             })
         }
     },
@@ -34,7 +36,7 @@ let JSONBlocks = {
                 inputsInline:   true,
                 output:         FIELDTYPES.PIN,
                 colour:         CATEGORIES.ARDUINO.colour,
-                tooltip:        "Номера доступных контактов"
+                tooltip:        i18next.t('blockly:blocks.arduino_pin_number.tooltip')
             })
         }
     },
@@ -46,7 +48,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:       "block_type",
-                message0:   "подать на %1 %2",
+                message0:   i18next.t('blockly:blocks.arduino_out_write_logical.message'),
                 args0: [
                     {
                         type: "input_value",
@@ -63,7 +65,7 @@ let JSONBlocks = {
                 nextStatement: null,
                 inputsInline: true,
                 colour: CATEGORIES.ARDUINO.colour,
-                tooltip: "Подаёт на выход логический 0 или 1"
+                tooltip: i18next.t('blockly:blocks.arduino_out_write_logical.tooltip')
             });
             appendShadowBlock(this, "PIN", "arduino_pin_number");
         }
@@ -73,7 +75,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:       "block_type",
-                message0:   "считать +/- с %1",
+                message0:   i18next.t('blockly:blocks.arduino_out_read_logical.message'),
                 args0: [
                     {
                         type: "input_value",
@@ -85,7 +87,7 @@ let JSONBlocks = {
                 nextStatement: null,
                 inputsInline: true,
                 colour: CATEGORIES.ARDUINO.colour,
-                tooltip: "Считывает с выхода логический 0 или 1"
+                tooltip: i18next.t('blockly:blocks.arduino_out_read_logical.tooltip'),
             });
             appendShadowBlock(this, "PIN", "arduino_pin_number");
         }
@@ -95,7 +97,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:       "block_type",
-                message0:   "подать на %1 ШИМ %2",
+                message0:   i18next.t('blockly:blocks.arduino_out_write_pwm.message'),
                 args0: [
                     {
                         type: "input_value",
@@ -112,7 +114,7 @@ let JSONBlocks = {
                 nextStatement: null,
                 inputsInline: true,
                 colour: CATEGORIES.ARDUINO.colour,
-                tooltip: "Подаёт на выход значение ШИМ"
+                tooltip: i18next.t('blockly:blocks.arduino_out_write_pwm.tooltip'),
             });
             appendShadowBlock(this, "PIN", "arduino_pin_number");
             appendShadowBlock(this, "LVL_PWM", "math_number_pwm");
@@ -123,7 +125,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:       "block_type",
-                message0:   "аналоговое чтение с %1",
+                message0:   i18next.t('blockly:blocks.arduino_out_read_pwm.message'),
                 args0: [
                     {
                         type: "input_value",
@@ -135,7 +137,7 @@ let JSONBlocks = {
                 nextStatement: null,
                 inputsInline: true,
                 colour: CATEGORIES.ARDUINO.colour,
-                tooltip: "Считывать с выхода значение ШИМ"
+                tooltip: i18next.t('blockly:blocks.arduino_out_read_pwm.tooltip'),
             });
             appendShadowBlock(this, "PIN", "arduino_pin_number");
         }
@@ -148,7 +150,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type: "block_type",
-                message0: "значение с выхода %1",
+                message0: i18next.t('blockly:blocks.arduino_out_value.message'),
                 args0: [{
                     type: "field_dropdown",
                     name: "PIN",
@@ -157,7 +159,7 @@ let JSONBlocks = {
                 inputsInline: true,
                 output: FIELDTYPES.NUMBER,
                 colour: CATEGORIES.ARDUINO.colour,
-                tooltip: "Значение на выходе"
+                tooltip: i18next.t('blockly:blocks.arduino_out_read_pwm.tooltip'),
             })
         }
     },
@@ -179,7 +181,7 @@ let JSONBlocks = {
                 inputsInline: true,
                 output: FIELDTYPES.NUMBER,
                 colour: CATEGORIES.PWM.colour,
-                tooltip: "Значение ШИМ"
+                tooltip: i18next.t('blockly:blocks.math_number_pwm.tooltip'),
             });
         }
     }

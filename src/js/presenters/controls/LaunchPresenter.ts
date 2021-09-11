@@ -2,7 +2,8 @@ import Presenter, {on} from "../../core/base/Presenter";
 import LaunchView from "../../views/controls/LaunchView";
 import CodeModel, {CodeLaunchedEvent, CodeTerminatedEvent} from "../../models/common/CodeModel";
 import ModalModel from "../../core/models/ModalModel";
-import BoardModel from "../../models/common/BoardModel";
+
+import i18next from "i18next";
 
 export default class LaunchPresenter extends Presenter<LaunchView.LaunchView> {
     code: CodeModel;
@@ -21,8 +22,8 @@ export default class LaunchPresenter extends Presenter<LaunchView.LaunchView> {
             if (this.code.isMainChainEmpty()) {
                 this.modal.showModal({
                     is_closable: true,
-                    dialog: {heading: 'Программа пуста'},
-                    content: 'Чтобы запустить программу, необходимо добавить команды в поле редактора.'
+                    dialog: {heading: i18next.t("main:lesson.modal.program_empty.heading")},
+                    content: i18next.t("main:lesson.modal.program_empty.content")
                 });
             }
 

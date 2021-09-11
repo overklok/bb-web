@@ -1,0 +1,34 @@
+{
+    "blocks": {
+        "arduino_pin": {
+            "message": "Pin",
+            "tooltip": "Keeps pin number"
+        },
+        "arduino_pin_number": {
+            "tooltip": "Available pin numbers"
+        },
+        "arduino_out_write_logical": {
+            "message": "logical write %2 to %1",
+            "tooltip": "Writes level (0 or 1) on a logical input"
+        },
+        "arduino_out_read_logical": {
+            "message": "logical read +/- from %1",
+            "tooltip": "Reads level (0 or 1) from a logical output"
+        },
+        "arduino_out_write_pwm": {
+            "message": "analog write %2 to %1",
+            "tooltip": "Write PWM level to an analog input"
+        },
+        "arduino_out_read_pwm": {
+            "message": "analog read from %1",
+            "tooltip": "Read PWM level from an analog output"
+        },
+        "arduino_out_value": {
+            "message": "value from %1 output",
+            "tooltip": "Value on an output"
+        },
+        "math_number_pwm": {
+            "tooltip": "PWM value"
+        }
+    }
+}

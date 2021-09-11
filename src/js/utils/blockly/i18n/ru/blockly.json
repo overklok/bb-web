@@ -1,0 +1,34 @@
+{
+	"blocks": {
+        "arduino_pin": {
+            "message": "Контакт",
+            "tooltip": "Хранит номер контакта (пин)"
+        },
+        "arduino_pin_number": {
+            "tooltip": "Номера доступных контактов"
+        },
+        "arduino_out_write_logical": {
+            "message": "подать на %1 %2",
+            "tooltip": "Подаёт на выход логический 0 или 1"
+        },
+        "arduino_out_read_logical": {
+            "message": "считать +/- с %1",
+            "tooltip": "Считывает с выхода логический 0 или 1"
+        },
+        "arduino_out_write_pwm": {
+            "message": "подать на %1 ШИМ %2",
+            "tooltip": "Подаёт на выход значение ШИМ"
+        },
+        "arduino_out_read_pwm": {
+            "message": "аналоговое чтение с %1",
+            "tooltip": "Считывать с выхода значение ШИМ"
+        },
+        "arduino_out_value": {
+            "message": "значение с выхода %1",
+            "tooltip": "Значение на выходе"
+        },
+        "math_number_pwm": {
+            "tooltip": "Значение ШИМ"
+        }
+    }
+}
