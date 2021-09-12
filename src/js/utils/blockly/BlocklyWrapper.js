@@ -135,6 +135,7 @@ export default class BlocklyWrapper {
         this._block_types       = undefined;    // JSON-типы блоков
         this._generators        = undefined;    // JS-генератор кода
         this._audibles          = undefined;    // Прослушиваемые типы блоков
+        this._block_types_used  = undefined;    // Используемые типы блоков (названия)
 
         // Флаги
         this.silent             = false;        // "тихий" режим, не обрабатывать события
@@ -172,6 +173,14 @@ export default class BlocklyWrapper {
         // Конфигурация Blockly
         Blockly.HSV_SATURATION = 1;
         Blockly.HSV_HUE = 1;
+    }
+
+    static setLanguage(lang) {
+        switch (lang) {
+            case 'ru': Blockly.setLocale(Ru); break;
+            case 'en': Blockly.setLocale(En); break;
+            default: Blockly.setLocale(En); break;
+        }
     }
 
     /**
@@ -373,11 +382,7 @@ export default class BlocklyWrapper {
         dom_node.appendChild(this.container);
         dom_node.appendChild(this.toolbox);
 
-        switch (i18next.language) {
-            case 'ru': Blockly.setLocale(Ru); break;
-            case 'en': Blockly.setLocale(En); break;
-            default: Blockly.setLocale(Ru); break;
-        }
+        BlocklyWrapper.setLanguage(i18next.language);
 
         /// Встроить Blockly в заданную систему контейнеров
         this.workspace = Blockly.inject(
@@ -397,6 +402,10 @@ export default class BlocklyWrapper {
         /// Заполнить буфер текущего кода, если ранее не был заполнен
         if (typeof this._state.code_buffer !== "undefined") {
             Blockly.Xml.domToWorkspace(this._state.code_buffer, this.workspace);
+        }
+
+        if (this.block_types_used) {
+            this.updateBlockTypes(this.block_types_used);
         }
 
         /// если не включён режим только чтения и обработчик событий изменения не был зарегистрирован ранее
@@ -433,6 +442,7 @@ export default class BlocklyWrapper {
         this.toolbox.remove();
 
         // window.removeEventListener('resize', this._onResize, false);
+        return this.container;
     }
 
     /**
@@ -556,6 +566,8 @@ export default class BlocklyWrapper {
         this.workspace.updateToolbox(this.toolbox);
 
         this._getFlyoutWidth();
+
+        this.block_types_used = block_types;
     }
 
     /**

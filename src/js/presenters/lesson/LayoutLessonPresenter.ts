@@ -1,20 +1,30 @@
+import i18next from "i18next";
+
 import LayoutPresenterCore from "../../core/presenters/LayoutPresenter";
 import LessonModel from "../../models/lesson/LessonModel";
 import ProgressModel, {ExerciseRunEvent} from "../../models/lesson/ProgressModel";
 import {LessonRouteEvent, MissionRouteEvent} from "../../routers/MainRouter";
 import {on, restore} from "../../core/base/Presenter";
+import SettingsModel, { SettingsChangeEvent } from "~/js/core/models/SettingsModel";
 
 export default class LayoutLessonPresenter extends LayoutPresenterCore {
     private model_lesson: LessonModel;
+    private model_settings: SettingsModel;
     private model_progress: ProgressModel;
 
     public getInitialProps() {
         this.model_lesson = this.getModel(LessonModel);
+        this.model_settings = this.getModel(SettingsModel);
         this.model_progress = this.getModel(ProgressModel);
 
         document.title = `Tapanda`;
 
         return super.getInitialProps();
+    }
+
+    @on(SettingsChangeEvent)
+    protected handleSettingsChange() {
+        i18next.changeLanguage(String(this.model_settings.getChoiceSingle('general.language', true)));
     }
 
     @restore() @on(LessonRouteEvent, MissionRouteEvent)

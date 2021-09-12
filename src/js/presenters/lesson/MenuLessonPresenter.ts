@@ -1,28 +1,41 @@
-import Presenter, {on} from "../../core/base/Presenter";
-import HomeView from "../../views/common/HomeView";
-import CourseModel from "../../models/lesson/CourseModel";
-import ProgressModel from "../../models/lesson/ProgressModel";
+import Presenter, {on} from "~/js/core/base/Presenter";
+import HomeView from "~/js/views/common/HomeView";
+import CourseModel from "~/js/models/lesson/CourseModel";
+import ProgressModel from "~/js/models/lesson/ProgressModel";
+import SettingsModel from "~/js/core/models/SettingsModel";
 import {RequestErrorEvent} from "../../core/base/model/HttpModel";
 
 import i18next from 'i18next';
 
 export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     private course: CourseModel;
+    private settings: SettingsModel;
     private progress: ProgressModel;
     load_handle: ReturnType<typeof setTimeout>;
 
-    public async getInitialProps() {
+    public getInitialProps() {
         this.course = this.getModel(CourseModel);
+        this.settings = this.getModel(SettingsModel);
         this.progress = this.getModel(ProgressModel);
 
         this.loadCourses();
 
         document.title = `Tapanda | Main menu`;
+
+        return {
+            lang: this.settings.getChoiceSingle("general.language"),
+            lang_options: this.settings.getSetting("general", "language").choices
+        }
     }
 
     @on(HomeView.LessonSelectEvent)
     private forwardLesson(evt: HomeView.LessonSelectEvent) {
         this.forward('lesson', [evt.lesson_id]);
+    }
+
+    @on(HomeView.LanguageChangeEvent)
+    private setLanguage(evt: HomeView.LanguageChangeEvent) {
+        this.settings.setValue("general.language", evt.lang, true);
     }
 
     @on(RequestErrorEvent)

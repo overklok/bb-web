@@ -1,5 +1,6 @@
 import * as React from "react";
 import {ReactNode} from "react";
+
 import ViewConnector from "../ViewConnector";
 import {ViewEvent} from "../Event";
 import {Widget} from "../../services/interfaces/IViewService";
@@ -15,6 +16,7 @@ export interface IViewBasicProps {
     ref_parent?: React.RefObject<HTMLElement>;
     widgets?: {[key: string]: Widget<any>};
     action_request?: ModalRequestCallback;
+    lang?: string;
 }
 
 export type AllProps<P> = P & IViewBasicProps;

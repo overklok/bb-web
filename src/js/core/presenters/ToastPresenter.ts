@@ -3,6 +3,7 @@ import {GenericErrorEvent} from "../base/Event";
 import ToastView from "../views/modal/ToastView";
 import {ColorAccent} from "../helpers/styles";
 import ModalModel, {UpdateToastsEvent} from "../models/ModalModel";
+import i18next from "i18next";
 
 export default class ToastPresenter extends Presenter<ToastView> {
     private modal: ModalModel;
@@ -23,7 +24,7 @@ export default class ToastPresenter extends Presenter<ToastView> {
             const {error} = evt;
 
             this.modal.showToast({
-                title: `Ошибка [${error.name}]`,
+                title: i18next.t('main:general.error', {err: error.name}),
                 content: error.message,
                 timeout: 5000,
                 status: ColorAccent.Danger

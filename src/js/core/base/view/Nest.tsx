@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import {AllProps, IViewProps, MountEvent, UnmountEvent, View} from "./View";
 import classNames from "classnames";
 import ViewConnector from "../ViewConnector";
@@ -18,6 +19,7 @@ export type ModalRequestCallback = (action: ModalAction) => void;
 interface INestProps<P=IViewProps> {
     connector: ViewConnector;
 
+    lang: string;
     widget_alias: string;
     widgets?: {[key: string]: Widget<any>};
     view_type: ViewType<P, any>;
@@ -119,6 +121,7 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
                     <SpecificView
                         {...props}
                         ref={this.onRefUpdated}
+                        lang={this.props.lang}
                         widgets={this.props.widgets}
                         connector={this.props.connector}
                         ref_parent={this.ref}

@@ -53,6 +53,9 @@ interface IProps {
 
     show_headers?: boolean;
 
+    // язык родительского View
+    lang: string;
+
     overlay_node?: HTMLElement;
 }
 
@@ -453,6 +456,7 @@ export default class Pane extends React.Component<IProps, IState> {
                     ref={ref}
                     overlay_node={this.props.overlay_node}
                     show_headers={this.props.show_headers}
+                    lang={this.props.lang}
                 />
             </CSSTransition>
         );
@@ -469,6 +473,7 @@ export default class Pane extends React.Component<IProps, IState> {
                 nest_style={widget.nest_style}
                 connector={widget.connector}
                 label={widget.label}
+                lang={this.props.lang}
                 ref={ref}
             />
         )

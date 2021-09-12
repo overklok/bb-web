@@ -7,7 +7,6 @@ import {ViewEvent} from "../../core/base/Event";
 import Modal from "../../core/views/modal/Modal";
 import DialogModal from "../../core/views/modal/DialogModal";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
-import { BooleanLiteral } from "typescript";
 
 require("~/css/home.less");
 require("~/css/logo.less");
@@ -41,46 +40,58 @@ namespace HomeView {
         courses: Course[];
         lesson_id: number;
         error?: string;
-        lang_redirect?: boolean;
+        lang_options: { value: string, label: string }[];
+        hui: string;
     }
 
     export class HomeView extends View<Props, undefined> {
         static defaultProps: Props = {
             courses: [],
             lesson_id: undefined,
-            lang_redirect: true,
+            lang_options: null,
+            hui: null
         }
 
         constructor(props: AllProps<Props>) {
             super(props);
-
-            this.redirect = this.redirect.bind(this);
         }
 
         handleLessonClick(lesson_id: number) {
             this.emit(new LessonSelectEvent({lesson_id}))
         }
 
-        redirect({ value: lang, label }: { value: string, label: string }) {
-            // if (this.props.lang_redirect) {
-            //     const params = new URLSearchParams(window.location.search)
-            //     params.set('lang', lang);
-
-            //     window.location.search = params.toString();
-            // } else {
-                this.emit(new LanguageChangeEvent({lang}))
-            // }
-        }
-
         render(): React.ReactNode {
+            console.log(this.props);
+            
             const ver = 'v' + __VERSION__.split('/')[1].split('.').slice(0, 3).join('.');
 
-            const options = [
-                { value: 'en', label: '🇺🇸 English' },
-                { value: 'ru', label: '🇷🇺 Русский' },
-            ];
+            return (
+                <div className="pave">
+                    <div className="home-header">
+                        <div className="logo logo_centered logo_light logo__full" />
+                        <p>{i18next.t('main:home.header.title')}</p>
 
-            const defaultOption = options.find(item => item.value === i18next.language);
+                        <div className="home-langselect">
+                            {this.renderLangOptions(this.props.lang_options)}
+                        </div>
+                    </div>
+                    <div className="app-screen">
+                        <TransitionGroup component={null}>
+                            {this.renderCourses()}
+                        </TransitionGroup>
+                    </div>
+
+                    <div className="home-version">
+                        {ver}
+                    </div>
+                </div>
+            )
+        }
+
+        private renderLangOptions(options: { value: string, label: string }[]) {
+            if (!options || options.length === 0) return null;
+
+            const defaultOption = options.find(item => item.value === this.props.lang);
 
             const styles = {
                 dropdownIndicator: (styles: any) => {
@@ -95,34 +106,16 @@ namespace HomeView {
             }
 
             return (
-                <div className="pave">
-                    <div className="home-header">
-                        <div className="logo logo_centered logo_light logo__full" />
-                        <p>{i18next.t('main:home.header.title')}</p>
-
-                        <div className="home-langselect">
-                            <Select
-                                defaultValue={defaultOption}
-                                options={options}
-                                theme={theme => ({
-                                    ...theme,
-                                    borderRadius: 8,
-                                })}
-                                onChange={this.redirect}
-                                styles={styles}
-                            />
-                        </div>
-                    </div>
-                    <div className="app-screen">
-                        <TransitionGroup component={null}>
-                            {this.renderCourses()}
-                        </TransitionGroup>
-                    </div>
-
-                    <div className="home-version">
-                        {ver}
-                    </div>
-                </div>
+                <Select
+                    defaultValue={defaultOption}
+                    options={options}
+                    theme={theme => ({
+                        ...theme,
+                        borderRadius: 8,
+                    })}
+                    onChange={({value}) => this.emit(new LanguageChangeEvent({lang: value}))}
+                    styles={styles}
+                />
             )
         }
 

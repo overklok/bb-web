@@ -1,4 +1,5 @@
 import * as React from "react";
+import i18next from "i18next";
 
 import {IViewProps, View} from "../../base/view/View";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
@@ -78,7 +79,15 @@ export default class ModalView extends View<ModalViewProps, null> {
         content: string | JSX.Element,
         action_request?: ModalRequestCallback
     ) {
-        const dialog_props: IDialogProps = {...modal_data, ...modal_data.dialog};
+        const dialog_props: IDialogProps = {
+            ...modal_data,
+            ...modal_data.dialog,
+            heading: i18next.t(modal_data.dialog.heading),
+            label_accept: i18next.t(modal_data.dialog.label_accept),
+            label_dismiss: i18next.t(modal_data.dialog.label_dismiss),
+        };
+        
+        content = typeof content === 'string' ? i18next.t(content) : content;
 
         return (
             <CSSTransition in out key={'m' + modal_type + idx} timeout={200} classNames="mdl" unmountOnExit>
@@ -98,6 +107,8 @@ export default class ModalView extends View<ModalViewProps, null> {
     }
 
     private renderModal(idx: number, modal_type: string, props: IModalProps, content: string | JSX.Element) {
+        content = typeof content === 'string' ? i18next.t(content) : content;
+
         return (
             <CSSTransition in out key={'m' + modal_type + idx} timeout={200} classNames="mdl" unmountOnExit>
                 <Modal size={props.size} width={props.width} height={props.height}>
@@ -126,13 +137,14 @@ export default class ModalView extends View<ModalViewProps, null> {
 
         const nest = (
             <Nest connector={widget.connector}
-                  index={0}
-                  label={widget.label}
-                  widget_alias={widget.alias}
-                  view_type={widget.view_type}
-                  view_props={widget.view_props}
-                  on_action_request={(action) => this.handleNestModalClose(idx, modal_type, action)}
-                  ref={nest_ref}
+                index={0}
+                label={widget.label}
+                lang={this.props.lang}
+                widget_alias={widget.alias}
+                view_type={widget.view_type}
+                view_props={widget.view_props}
+                on_action_request={(action) => this.handleNestModalClose(idx, modal_type, action)}
+                ref={nest_ref}
             />
         )
 

@@ -36,9 +36,9 @@ export default class SettingsModalPresenter extends ModalPresenter {
             is_closable: true,
             is_close_manual: true,
             dialog: {
-                heading: i18next.t('main:settings.modal.main.heading'),
-                label_accept: i18next.t('main:settings.modal.main.accept'),
-                label_dismiss: i18next.t('main:settings.modal.main.dismiss'),
+                heading: 'main:settings.modal.main.heading',
+                label_accept: 'main:settings.modal.main.accept',
+                label_dismiss: 'main:settings.modal.main.dismiss',
                 is_acceptable: true,
                 is_dismissible: true,
                 on_action: (action: ModalAction) => {
@@ -71,10 +71,10 @@ export default class SettingsModalPresenter extends ModalPresenter {
 
         this.pushModal({
             size: 'sm',
-            content: i18next.t('main:settings.modal.escape.content'),
+            content: 'main:settings.modal.escape.content',
             dialog: {
-                label_accept: i18next.t('main:settings.modal.escape.accept'),
-                label_dismiss: i18next.t('main:settings.modal.escape.dismiss'),
+                label_accept: 'main:settings.modal.escape.accept',
+                label_dismiss: 'main:settings.modal.escape.dismiss',
                 is_acceptable: true,
                 is_dismissible: true,
                 on_action: action => {

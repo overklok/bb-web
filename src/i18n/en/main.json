@@ -1,4 +1,7 @@
 {
+    "general": {
+        "error": "Error {{err}}"
+    },
 	"home": {
         "header": {
             "title": "Breadboard"

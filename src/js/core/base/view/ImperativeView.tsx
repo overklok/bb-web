@@ -22,6 +22,10 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
             this.mounted = true;
             this.viewDidMount();
             this.emit(new MountEvent());
+        } else {
+            if (prevProps.lang !== this.props.lang) {
+                this.update();
+            }
         }
     }
 
@@ -42,6 +46,10 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
         }
 
         super.componentWillUnmount();
+    }
+
+    public update(): void {
+
     }
 
     public render(): React.ReactNode {

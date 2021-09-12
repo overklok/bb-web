@@ -1,6 +1,7 @@
 import * as React from "react";
-
 import * as ReactDOM from "react-dom";
+import i18next from "i18next";
+
 import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 
 import ViewConnector from "../base/ViewConnector";
@@ -57,7 +58,11 @@ export default class ViewService extends IViewService {
     public compose(element: HTMLElement) {
         this.element = element;
 
-        this.recompose();
+        this.recompose(i18next.language);
+
+        i18next.on('languageChanged', lang => {
+            this.recompose(lang);
+        })
     }
 
     /**
@@ -103,7 +108,7 @@ export default class ViewService extends IViewService {
         }
 
         if (this.element) {
-            this.recompose();
+            this.recompose(i18next.language);
         }
     }
 
@@ -138,7 +143,7 @@ export default class ViewService extends IViewService {
     /**
      * Renders root {@link ViewComposer} to root element with {@link Nest}s containing root widgets 
      */
-    protected async recompose() {
+    protected async recompose(lang: string) {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
         this.view_connectors_internal = [];
@@ -152,6 +157,7 @@ export default class ViewService extends IViewService {
 
             return <Nest
                 key={index}
+                lang={lang}
                 index={index}
                 widget_alias={'unnamed'}
                 view_type={SpecificView}

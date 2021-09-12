@@ -1,4 +1,7 @@
 {
+    "general": {
+        "error": "Ошибка {{err}}"
+    },
     "home": {
         "header": {
             "title": "Макетная плата"
