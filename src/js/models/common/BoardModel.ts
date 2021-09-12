@@ -10,8 +10,9 @@ import AsynchronousModel, {
     connect,
 } from "../../core/base/model/AsynchronousModel";
 import {extractLabeledCells} from "../../utils/breadboard/core/extras/helpers";
-import LabelLayer from "../../utils/breadboard/layers/LabelLayer";
 import { ServerGreeting } from "./ConnectionModel";
+import { CellRole, Layout } from "~/js/utils/breadboard/core/types";
+import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 
 // Event channels
 const enum ChannelsTo {
@@ -32,7 +33,7 @@ const enum ChannelsFrom {
 }
 
 interface BreadboardModelState extends ModelState {
-    plates: Plate[];
+    plates: SerializedPlate[];
     elements: PlateDiff[];
     threads: Thread[];
     arduino_pins: ArduinoPin[];
@@ -48,7 +49,7 @@ interface BreadboardModelState extends ModelState {
 export default class BoardModel extends AsynchronousModel<BreadboardModelState> {
     static alias = 'board';
 
-    static Layouts: {[key: string]: BoardLayout} = {
+    static Layouts: {[key: string]: Layout} = {
         v5x: CORE_LAYOUTS['v5x'],
         v8x: LAYOUTS['v8x']
     };
@@ -124,7 +125,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      *
      * @param plates
      */
-    public setUserPlates(plates: Plate[]): void {
+    public setUserPlates(plates: SerializedPlate[]): void {
         this.setState({plates});
         this.sendPlates(this.state.plates);
 
@@ -243,7 +244,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      * @param plates an array of plate data objects
      */
     @listen(ChannelsFrom.Plates)
-    private receivePlates(plates: Plate[]) {
+    private receivePlates(plates: SerializedPlate[]) {
         if (!this.state.layout_confirmed) return;
 
         this.setPlates(plates);
@@ -276,7 +277,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.emit(new BoardErrorEvent({message, code}));
     }
 
-    private sendPlates(plates: Plate[]): void {
+    private sendPlates(plates: SerializedPlate[]): void {
         if (this.state.is_editable) {
             this.send(ChannelsTo.Plates, plates);
         }
@@ -291,7 +292,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      *
      * @param plates
      */
-    public setPlates(plates: Plate[]): void {
+    public setPlates(plates: SerializedPlate[]): void {
         this.setState({plates});
 
         this.saveSnapshot();
@@ -316,7 +317,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
 
         const pins: [number, string|number][] = [];
 
-        for (const cell of extractLabeledCells(layout, LabelLayer.CellRoles.Analog)) {
+        for (const cell of extractLabeledCells(layout, CellRole.Analog)) {
             pins.push([cell.pin_num, cell.pin_state_initial]);
         }
 
@@ -350,19 +351,9 @@ export type PlateDiff = {
 }
 
 export type Thread = {
-    from: number;
-    to: number;
-}
-
-export type BoardLayout = {
-    grid_rows: number;
-    grid_cols: number;
-    domains: {
-        horz: boolean;
-        from: {x: number, y: number},
-        to: {x: number, y: number},
-        pin_state_initial?: any
-    }[];
+    from: {x: number, y: number};
+    to: {x: number, y: number};
+    weight: number;
 }
 
 // Event data types
@@ -377,11 +368,11 @@ interface ErrorData {
 }
 
 export class UserPlateEvent extends ModelEvent<PlateEvent> {
-    plates: Plate[];
+    plates: SerializedPlate[];
 }
 
 export class PlateEvent extends ModelEvent<PlateEvent> {
-    plates: Plate[];
+    plates: SerializedPlate[];
 }
 
 export class ElectronicEvent extends ModelEvent<ElectronicEvent> {

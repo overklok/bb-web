@@ -3,11 +3,11 @@ import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
 import {TestKit, TestKitItemQuanitites} from "./types";
 import {ModelEvent} from "../../core/base/Event";
 import {Plate} from "../common/BoardModel";
-import PlateLayer from "../../utils/breadboard/layers/PlateLayer";
 import BridgePlate from "../../utils/breadboard/plates/BridgePlate";
 import ResistorPlate from "../../utils/breadboard/plates/ResistorPlate";
 import CapacitorPlate from "../../utils/breadboard/plates/CapacitorPlate";
 import LEDPlate from "../../utils/breadboard/plates/LEDPlate";
+import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 
 export class TestkitChangeEvent extends ModelEvent<TestkitChangeEvent> {
     qtys: TestKitItemQuanitites;
@@ -17,7 +17,7 @@ export class TestkitChangeEvent extends ModelEvent<TestkitChangeEvent> {
 
 export class ReferenceRequestEvent extends ModelEvent<ReferenceRequestEvent> {}
 export class ReferenceEvent extends ModelEvent<ReferenceEvent> {
-    plates: Plate[];
+    plates: SerializedPlate[];
 }
 
 interface TestkitModelState {
@@ -74,7 +74,7 @@ export default class TestkitModel extends Model<TestkitModelState, DummyDatasour
         this.emit(new TestkitChangeEvent({qtys, size, size_deviation}));
     }
 
-    public setReference(plates: Plate[]) {
+    public setReference(plates: SerializedPlate[]) {
         this.emit(new ReferenceEvent({plates}));
     }
 

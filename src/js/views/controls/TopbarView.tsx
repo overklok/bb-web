@@ -343,6 +343,8 @@ namespace TopbarView {
 
             const el: any = this.el_scrollable.children.item(index);
 
+            if (!el) return 0;
+            
             return el.offsetLeft - (this.el_scrollable.offsetWidth / 2) + (el.offsetWidth / 2);
         }
     }
