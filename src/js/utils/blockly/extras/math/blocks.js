@@ -1,6 +1,8 @@
 import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS} from '../constants'
 import {appendShadowBlock} from '../_common'
 
+import i18next from 'i18next';
+
 let JSONBlocks = {
     math_mul: {
         init: function() {
@@ -22,7 +24,7 @@ let JSONBlocks = {
                 inputsInline:   true,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.MATH.colour,
-                tooltip:        "Умножает два числа"
+                tooltip:        i18next.t("blockly:blocks.math_mul.tooltip"),
             });
             appendShadowBlock(this, "A", "math_number");
             appendShadowBlock(this, "B", "math_number");
@@ -49,7 +51,7 @@ let JSONBlocks = {
                 inputsInline:   true,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.MATH.colour,
-                tooltip:        "Складывает два числа"
+                tooltip:        i18next.t("blockly:blocks.math_add.tooltip"),
             });
             appendShadowBlock(this, "A", "math_number");
             appendShadowBlock(this, "B", "math_number");
@@ -76,7 +78,7 @@ let JSONBlocks = {
                 inputsInline:   true,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.MATH.colour,
-                tooltip:        "Вычитает два числа"
+                tooltip:        i18next.t("blockly:blocks.math_sub.tooltip"),
             });
             appendShadowBlock(this, "A", "math_number");
             appendShadowBlock(this, "B", "math_number");
@@ -103,7 +105,7 @@ let JSONBlocks = {
                 inputsInline:   true,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.MATH.colour,
-                tooltip:        "Делит два числа"
+                tooltip:        i18next.t("blockly:blocks.math_div.tooltip"),
             });
             appendShadowBlock(this, "A", "math_number");
             appendShadowBlock(this, "B", "math_number");
@@ -130,7 +132,7 @@ let JSONBlocks = {
                 inputsInline:   true,
                 output:         FIELDTYPES.NUMBER,
                 colour:         CATEGORIES.MATH.colour,
-                tooltip:        "Даёт остаток от деления первого числа на второе"
+                tooltip:        i18next.t("blockly:blocks.math_mod.tooltip"),
             });
             appendShadowBlock(this, "A", "math_number");
             appendShadowBlock(this, "B", "math_number");
@@ -153,7 +155,7 @@ let JSONBlocks = {
                 inputsInline: true,
                 output: FIELDTYPES.NUMBER,
                 colour: CATEGORIES.MATH.colour,
-                tooltip: "Целое число"
+                tooltip: i18next.t("blockly:blocks.math_number.tooltip"),
             });
         }
     },

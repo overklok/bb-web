@@ -1,6 +1,8 @@
 import {FIELDTYPES, CATEGORIES, BLOCK_INPUTS_CONSTRAINTS} from '../constants'
 import {appendShadowBlock} from "../_common";
 
+import i18next from 'i18next';
+
 let JSONBlocks = {
     /**
      * Блоки-переменные
@@ -9,7 +11,7 @@ let JSONBlocks = {
         init: function () {
             this.jsonInit({
                 type:               "block_type",
-                message0:           "ждать %1 сек.",
+                message0:           i18next.t('blockly:blocks.controls_wait_seconds.message'),
                 args0: [
                     {
                         type:       "input_value",
@@ -21,7 +23,7 @@ let JSONBlocks = {
                 nextStatement:      null,
                 inputsInline:       true,
                 colour: CATEGORIES.WAIT.colour,
-                tooltip: "Выполняет задержку на заданное число секунд"
+                tooltip: i18next.t('blockly:blocks.controls_wait_seconds.tooltip'),
             });
             appendShadowBlock(this, "SECS", "math_number_seconds");
         }
@@ -68,7 +70,7 @@ let JSONBlocks = {
                 inputsInline: true,
                 output: FIELDTYPES.NUMBER,
                 colour: CATEGORIES.WAIT.colour,
-                tooltip: "Число секунд задержки"
+                tooltip: i18next.t('blockly:blocks.math_number_seconds.tooltip'),
             });
         }
     },
@@ -90,7 +92,7 @@ let JSONBlocks = {
                 inputsInline: true,
                 output: FIELDTYPES.NUMBER,
                 colour: CATEGORIES.LOOP.colour,
-                tooltip: "Число повторений цикла"
+                tooltip: i18next.t('blockly:blocks.math_number_repeats.tooltip'),
             });
         }
     },

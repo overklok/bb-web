@@ -5,11 +5,12 @@
 
 import Blockly from 'blockly';
 import * as Ru from 'blockly/msg/ru';
+import * as En from 'blockly/msg/en';
+
+import i18next from 'i18next';
 
 import 'css/blockly-overrides.css';
 import 'css/blockly-dimmer.css';
-
-Blockly.setLocale(Ru);
 
 Blockly.FieldDropdown.prototype.crtmenu = Blockly.FieldDropdown.prototype.createMenu_;
 
@@ -371,6 +372,12 @@ export default class BlocklyWrapper {
         dom_node.appendChild(this.dimmer);
         dom_node.appendChild(this.container);
         dom_node.appendChild(this.toolbox);
+
+        switch (i18next.language) {
+            case 'ru': Blockly.setLocale(Ru); break;
+            case 'en': Blockly.setLocale(En); break;
+            default: Blockly.setLocale(Ru); break;
+        }
 
         /// Встроить Blockly в заданную систему контейнеров
         this.workspace = Blockly.inject(

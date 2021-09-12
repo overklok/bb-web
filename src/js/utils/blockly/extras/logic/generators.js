@@ -1,6 +1,62 @@
 import Blockly from "blockly";
 
+const controls_if = block => {
+    let n = 0;
+
+    let condition_code, branch_code;
+    let code = "";
+
+    do {
+        condition_code = Blockly.JSON.valueToCode(block, 'IF' + n, Blockly.JSON.ORDER_NONE) || 0;
+        branch_code = Blockly.JSON.statementToCode(block, 'DO' + n, false);
+
+        if (n === 0) {
+            code += JSON.stringify({
+                name: "controls_if",
+                block_id: block.id,
+                args: [
+                    {"value": condition_code, "type": DATATYPES.EXPRSN}
+                ]
+            });
+        }
+        else {
+            code += JSON.stringify({
+                name: "controls_if" + "." + POSTFIXES.ELSE_IF,
+                block_id: block.id,
+                args: [
+                    {"value": condition_code, "type": DATATYPES.EXPRSN}
+                ]
+            });
+        }
+
+        code += "," + branch_code;
+        n++;
+    } while (block.getInput("IF" + n));
+
+    if (block.getInput("ELSE")) {
+        branch_code = Blockly.JSON.statementToCode(block, 'ELSE', false);
+
+        code += JSON.stringify({
+            name: "controls_if" + "." + POSTFIXES.ELSE,
+            block_id: block.id,
+            args: []
+        });
+
+        code += "," + branch_code;
+    }
+
+    code += JSON.stringify({
+        name: "controls_if" + "." + POSTFIXES.END,
+        block_id: block.id,
+        args: []
+    });
+
+    return code + ",";
+};
+
 let BlocklyJSONGenerators = {
+    controls_if: controls_if,
+    controls_ifelse: controls_if,
     logic_boolean: block => {
         let code = (block.getFieldValue('BOOL') === 'TRUE') ? "1" : "0";
         return [code, Blockly.JSON.ORDER_ATOMIC];

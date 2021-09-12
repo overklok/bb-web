@@ -16,7 +16,7 @@ export const resources = {
 
 i18n.init({
     fallbackLng: 'en',
-    lng: 'en',
+    lng: 'ru',
     ns: ['main', 'settings', 'blockly'],
     resources,
     // interpolation: {
