@@ -122,7 +122,7 @@ namespace LaunchView {
                         {this.props.is_executing ? i18next.t('main:lesson.fabs.stop') : i18next.t('main:lesson.fabs.start')}
                     </div>
                     <div className={klasses_btn_check} onClick={() => this.handleCheckClick()}>
-                        {this.props.is_checking ? i18next.t('main:lesson.fabs.checking') : i18next.t('main.lesson.fabs.check')}
+                        {this.props.is_checking ? i18next.t('main:lesson.fabs.checking') : i18next.t('main:lesson.fabs.check')}
                     </div>
                 </div>
             )
