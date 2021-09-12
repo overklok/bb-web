@@ -61,8 +61,6 @@ namespace HomeView {
         }
 
         render(): React.ReactNode {
-            console.log(this.props);
-            
             const ver = 'v' + __VERSION__.split('/')[1].split('.').slice(0, 3).join('.');
 
             return (

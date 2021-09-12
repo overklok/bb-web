@@ -6,6 +6,7 @@ import AsynchronousModel, {
     waiting
 } from "../../core/base/model/AsynchronousModel";
 import {ModelEvent} from "../../core/base/Event";
+import { textChangeRangeIsUnchanged } from "typescript";
 
 type Connection = {
     is_active: boolean;
@@ -18,18 +19,25 @@ export class ServerGreeting {
 const CHANNEL_APP_COMMAND = 'app_command'
 const COMMAND_ISSUE_REPORT_REQUEST = 'issue_report_request'
 const COMMAND_LOG_DOWNLOAD_REQUEST = 'log_download_request'
+const COMMAND_SAVE_LANGUAGE = 'save_language'
 
 export default class ConnectionModel extends AsynchronousModel<Connection> {
     static alias = 'connection';
 
     protected defaultState: Connection = {is_active: undefined}
+    private lang: string;
+
+    public requestSaveLanguage(lang: string) {
+        this.lang = lang;
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_SAVE_LANGUAGE, data: { lang } });
+    }
 
     public requestIssueReport(versions: object, message: string = '') {
-        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_ISSUE_REPORT_REQUEST, data: { versions, message } })
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_ISSUE_REPORT_REQUEST, data: { versions, message } });
     }
 
     public requestLogDownload() {
-        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_LOG_DOWNLOAD_REQUEST })
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_LOG_DOWNLOAD_REQUEST });
     }
 
     @connect()
@@ -42,6 +50,11 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
                 core: greeting.version.core || ['n/a']
             }
         }));
+
+        if (this.lang) {
+            // request to ensure if previous request failed
+            this.requestSaveLanguage(this.lang);
+        }
     }
 
     @disconnect()
