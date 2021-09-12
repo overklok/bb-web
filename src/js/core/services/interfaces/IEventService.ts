@@ -14,12 +14,16 @@ export class EventHandlingError extends Error {
 /**
  * A service that supports basic lifecycle of Event objects and provides management API
  * for another parts of {@link Application} to create and handle events of different types.
+ * 
+ * Note that this is an interface, although it's defined as a class just to keep it available in runtime.
  *
  * @abstract
+ * 
+ * @category Core
  */
 export default class IEventService {
     /**
-     * Subscribe to specific type of Event
+     * Subscribes to specific type of Event
      *
      * Note that this service supports subscription to parent Event classes
      * in order to handle any instance of event_type children.
@@ -51,7 +55,7 @@ export default class IEventService {
     ): Promise<number> {throw new Error('abstract')}
 
     /**
-     * Remove all handlers to specific type of Event
+     * Removes all handlers to specific type of Event
      *
      * @param event_type    type of Event for which a handlers that attached to it will be removed
      * @param anchor        an object that will be used to filter handlers to remove
@@ -61,14 +65,14 @@ export default class IEventService {
     ): void {throw new Error('abstract')}
 
     /**
-     * Remove all handlers for specific anchor object
+     * Removes all handlers for specific anchor object
      *
      * @param obj           an object for that all corresponding handlers will be removed
      */
     public resetObject(obj?: any): void {throw new Error('abstract')}
 
     /**
-     * Remove a specific handler of specific type of Event
+     * Removes a specific handler of specific type of Event
      *
      * @param event_type    type of Event for which a handler will be removed
      * @param handler       a handler to unsubscribe from
@@ -81,19 +85,25 @@ export default class IEventService {
     ): void {throw new Error('abstract')}
 
     /**
-     * Emit event
+     * Emits an event asynchronously
      *
      * When emitting, all related handlers will be fired. If an `anchor` parameter is provided, only handlers that
      * were attached to this object will be fired.
      *
-     * @param event         an instance of Event for which handlers will be fired
-     * @param anchor        an object that will be used to filter handlers to fire
+     * @param event         an instance of Event for which the handlers will be called
+     * @param anchor        an object that will be used to filter handlers to call
      */
     public async emitAsync<E extends AbstractEvent<E>>(
         event: E,
         anchor?: any
     ) {throw new Error('abstract')}
 
+    /** 
+     * Emits an event synchronously
+     * 
+     * @param event         an instance of Event for which the handlers will be called
+     * @param anchor        an object that will be used to filter handlers to call
+     */
     public emit<E extends AbstractEvent<E>>(
         event: E,
         anchor?: any

@@ -2,7 +2,9 @@ import {ImperativeView} from "../../core/base/view/ImperativeView";
 import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
 import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/base/view/View";
-import { defer } from "lodash";
+import {Layout} from "../../utils/breadboard/core/types";
+import { Thread } from "~/js/models/common/BoardModel";
+import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 
 namespace BoardView {
     export class PlateDragStartEvent extends ViewEvent<PlateDragStartEvent> {}
@@ -16,7 +18,7 @@ namespace BoardView {
         verbose?: boolean;
         readonly?: boolean;
         debug?: boolean;
-        layouts: object;
+        layouts: {[name: string]: Layout};
         layout_name: string;
     }
 
@@ -26,7 +28,7 @@ namespace BoardView {
             readonly: true,
             verbose: false,
             debug: false,
-            layouts: [],
+            layouts: {},
             layout_name: 'v5x'
         }
 
@@ -100,7 +102,7 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        setPlates(plates: Array<object>) {
+        setPlates(plates: SerializedPlate[]) {
             if (plates == null) throw new TypeError("Plates is not defined");
 
             this.bb.clearRegions();
@@ -109,7 +111,7 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        highlightErrorPlates(plate_ids: Array<string>) {
+        highlightErrorPlates(plate_ids: number[]) {
             if (!plate_ids) {
                 return true
             }
@@ -123,12 +125,12 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        setCurrents(threads: Array<object>) {
+        setCurrents(threads: Thread[]) {
             this.bb.setCurrents(threads);
         }
 
         @deferUntilMounted
-        setPinsValues(values: Array<object>) {
+        setPinsValues(values: ["input"|"output", number][]) {
             this.bb.setPinsValues(values)
         }
 
