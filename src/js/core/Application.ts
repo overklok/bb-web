@@ -24,13 +24,17 @@ export default abstract class Application<AC extends AppConf = AppConf> {
         this.configure(this.defaultConfig());
         this.configure(config);
 
+        this.execLifecycle();
+
+        this.version = __VERSION__;
+        console.log(`Loaded ${this.version}`);
+    }
+
+    private async execLifecycle() {
         this.initProviders();
         this.setupProviders();
         this.setup();
         this.bootProviders();
-
-        this.version = __VERSION__;
-        console.log(`Loaded ${this.version}`);
     }
 
     protected defaultConfig(): AC {
@@ -62,7 +66,7 @@ export default abstract class Application<AC extends AppConf = AppConf> {
         this.build();
     }
 
-    protected setup(): void {};
+    protected async setup(): Promise<void> {};
 
     /**
      * Настроить службы

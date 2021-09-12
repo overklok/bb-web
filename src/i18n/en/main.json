@@ -94,8 +94,8 @@
             },
             "escape": {
                 "content": "Want to rollback changes?",
-                "accept": "Rollback",
-                "dismiss": "Close"
+                "accept": "Continue editing",
+                "dismiss": "Rollback"
             }
         }
     },

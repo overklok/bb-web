@@ -67,7 +67,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
         ];
     }
 
-    protected setup() {
+    protected async setup() {
         let data_sources: AsynchronousDatasource[] = [];
 
         if (!this.config.silent) {
@@ -96,7 +96,7 @@ class BoardApplication extends Application<BoardApplicationConfig> {
         this.bb = svc_model.retrieve(BoardModel);
     }
 
-    async run(element: HTMLElement) {
+    run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         const wgt_types: WidgetType<any>[] = [

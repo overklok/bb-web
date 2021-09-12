@@ -14,12 +14,16 @@ export const resources = {
     ru: { main: main_ru, settings: settings_ru, blockly: blockly_ru },
 } as const;
 
-i18n.init({
-    fallbackLng: 'en',
-    lng: 'ru',
-    ns: ['main', 'settings', 'blockly'],
-    resources,
-    // interpolation: {
-        // escapeValue: false // react already safes from xss
-    // }
-});
+const NS_DEFAULT = ['main', 'settings', 'blockly']
+
+export default async function i18n_init(lng: string = 'en', namespaces: string[] = NS_DEFAULT) {
+    await i18n.init({
+        fallbackLng: 'en',
+        lng: lng,
+        ns: namespaces,
+        resources,
+        // interpolation: {
+            // escapeValue: false // react already safes from xss
+        // }
+    });
+}

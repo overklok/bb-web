@@ -42,7 +42,7 @@ class MonkeyApplication extends Application {
         ];
     }
 
-    protected setup() {
+    protected async setup() {
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             // new SocketDatasource('127.0.0.1', 8005),
@@ -51,7 +51,7 @@ class MonkeyApplication extends Application {
         this.dds = new DummyDatasource();
     }
 
-    async run(element: HTMLElement) {
+    run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         const svc_view = this.instance(IViewService),
