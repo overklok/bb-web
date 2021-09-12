@@ -35,7 +35,7 @@ export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
 
     @on(HomeView.LanguageChangeEvent)
     private setLanguage(evt: HomeView.LanguageChangeEvent) {
-        this.settings.setValue("general.language", evt.lang, true);
+        this.settings.setValue("general.language", evt.lang);
     }
 
     @on(RequestErrorEvent)

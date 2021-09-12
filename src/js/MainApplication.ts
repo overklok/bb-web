@@ -102,7 +102,7 @@ class MainApplication extends Application<MainAppConf> {
         svc_model.register(ModalModel,      dds);
         svc_model.register(UserModel,       hds);
         svc_model.register(CourseModel,     hds);
-        svc_model.register(SettingsModel,   dds, {config: settings_config(this.config.allow_demo)});
+        svc_model.register(SettingsModel,   dds, {config: settings_config(this.config.allow_demo, this.config.lang)});
         svc_model.register(LessonModel,     hds);
         svc_model.register(ServerModel,     hds);
 

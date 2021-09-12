@@ -27,9 +27,8 @@ export default class SettingsModalPresenter extends ModalPresenter {
 
     @on(SettingsChangeEvent)
     protected handleSettingsChange() {
-        const lang = String(this.settings.getChoiceSingle('general.language', true));
-        i18next.changeLanguage(lang);
-        this.connection.requestSaveLanguage(lang);
+        i18next.changeLanguage(String(this.settings.getChoiceSingle('general.language', true)));
+        this.connection.requestSaveLanguage(String(this.settings.getChoiceSingle('general.language')));
     }
 
     @on(SettingsModalEvent)

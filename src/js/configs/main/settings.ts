@@ -1,8 +1,6 @@
 import {SettingType} from "../../core/datatypes/settings";
 
-import i18next from 'i18next';
-
-export default function (allow_demo: boolean) {
+export default function (allow_demo: boolean, lang: string) {
     return {
         general: {
             title: 'settings:general.title',
@@ -22,7 +20,7 @@ export default function (allow_demo: boolean) {
                                 { value: 'en', label: '🇺🇸 English' },
                                 { value: 'ru', label: '🇷🇺 Русский' },
                             ],
-                            default: 'en',
+                            default: lang || 'en',
                         }
                     }
                 }
