@@ -51,7 +51,7 @@ interface MainAppConf {
     sock_addr: string;
     sock_port: number;
     fake_http_responses?: FakeHttpRule[];
-    lang: string;
+    lang?: string;
 }
 
 /**
@@ -66,7 +66,6 @@ class MainApplication extends Application<MainAppConf> {
             server_port: 8000,
             sock_addr: '127.0.0.1',
             sock_port: 8085,
-            lang: 'en',
         }
     }
 

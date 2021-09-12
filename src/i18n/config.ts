@@ -16,7 +16,12 @@ export const resources = {
 
 const NS_DEFAULT = ['main', 'settings', 'blockly']
 
-export default async function i18n_init(lng: string = 'en', namespaces: string[] = NS_DEFAULT) {
+export default async function i18n_init(lng: string = null, namespaces: string[] = NS_DEFAULT) {
+    lng = lng || new URLSearchParams(window.location.search).get('lang');
+
+    console.log(lng);
+    
+
     await i18n.init({
         fallbackLng: 'en',
         lng: lng,
