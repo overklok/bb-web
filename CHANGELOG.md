@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2021-09-13
+
+### Added
+- I18next intergation
+- English and russian localization (for main app & blockly)
+- Live language switching
+- Language selection in SettingsView and HomeView
+- Saving preferred language via the core
+
 ## [1.1.2b] - 2021-08-19
 
 ### Added
