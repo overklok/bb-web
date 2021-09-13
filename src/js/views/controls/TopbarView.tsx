@@ -9,6 +9,8 @@ import {Exercise} from "./topbar/MissionContextMenu";
 import classNames from "classnames";
 import StatusIndicator, {ConnectionStatus} from "./topbar/StatusIndicator";
 
+import i18next from 'i18next';
+
 require('css/logo.less');
 require('css/blocks/menu/navbar.less');
 require('css/blocks/menu/pager.less');
@@ -216,10 +218,10 @@ namespace TopbarView {
             });
 
             let click_handler = this.toggleMenu,
-                title = 'Меню';
+                title = i18next.t('main:navbar.menu.title');
 
             if (this.props.no_menu) {
-                title = 'Уроки';
+                title = i18next.t('main:navbar.menu.lessons'); 
                 click_handler = () => this.chooseMenuItem(MenuItem.Lessons);
             }
 
@@ -253,7 +255,7 @@ namespace TopbarView {
                     </div>
                     <div className="navbar__section">
                         <h2 className={navbar_title_klasses}>{this.props.lesson_title}</h2>
-                        {this.props.is_demo ? <h2 className='navbar__subtitle'>Автономный режим</h2> : null}
+                        {this.props.is_demo ? <h2 className='navbar__subtitle'>{i18next.t('main:navbar.autonomous_mode')}</h2> : null}
                     </div>
                     <div className="navbar__spacer"/>
                     <div className="navbar__section navbar__section_pagerwrap">
@@ -305,13 +307,13 @@ namespace TopbarView {
             return (
                 <div className={navbar_slide_menu_klasses}>
                     <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Lessons)}>
-                        Уроки
+                        {i18next.t('main:navbar.menu.lessons')}
                     </div>
                     <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Settings)}>
-                        Настройки
+                        {i18next.t('main:navbar.menu.settings')}
                     </div>
                     <div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.About)}>
-                        О программе
+                        {i18next.t('main:navbar.menu.about')}
                     </div>
                     {/*<div className="navbar__button" onClick={() => this.chooseMenuItem(MenuItem.Developer)}>*/}
                     {/*    Разработчик*/}
@@ -341,6 +343,8 @@ namespace TopbarView {
 
             const el: any = this.el_scrollable.children.item(index);
 
+            if (!el) return 0;
+            
             return el.offsetLeft - (this.el_scrollable.offsetWidth / 2) + (el.offsetWidth / 2);
         }
     }

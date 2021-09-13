@@ -10,8 +10,9 @@ import ProgressModel, {
     ExerciseSolutionCommittedEvent,
     ExerciseSolutionValidatedEvent, MissionPassEvent, ValidationVerdictStatus
 } from "../../models/lesson/ProgressModel";
-import { RequestErrorEvent } from "../../core/base/model/HttpModel";
 import { ColorAccent } from "../../core/helpers/styles";
+
+import i18next from 'i18next';
 
 export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchView> {
     private code: CodeModel;
@@ -62,7 +63,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
         if (evt.error) {
             this.modal.showToast({
-                title: 'Ошибка отправки запроса',
+                title: i18next.t('main:lesson.modal.validation_request_error.title'),
                 content: evt.error,
                 status: ColorAccent.Danger,
                 timeout: 5000
@@ -73,7 +74,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
         if (evt.verdict.status === ValidationVerdictStatus.Fail) {
             this.modal.showToast({
-                title: 'Упражнение не выполнено',
+                title: i18next.t('main:lesson.modal.validation_fail.title'),
                 content: evt.verdict.message,
                 status: ColorAccent.Danger,
                 timeout: 5000
@@ -82,7 +83,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
         if (evt.verdict.status === ValidationVerdictStatus.Error) {
             this.modal.showToast({
-                title: 'Ошибка проверки задания',
+                title: i18next.t('main:lesson.modal.validation_error.title'),
                 content: evt.verdict.message,
                 status: ColorAccent.Warning,
                 timeout: 5000
@@ -91,8 +92,8 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
         if (evt.verdict.status === ValidationVerdictStatus.Undefined) {
             this.modal.showToast({
-                title: 'Упражнение не может быть проверено',
-                content: evt.verdict.message || 'Неизвестная ошибка',
+                title: '',
+                content: evt.verdict.message || i18next.t('main:lesson.modal.validation_undefined.content_default'),
                 status: ColorAccent.Warning,
                 timeout: 5000
             })
@@ -107,9 +108,9 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     protected async onExercisePass() {
         const go_forward = await this.modal.showQuestionModal({
             dialog: {
-                heading: 'Упражнение пройдено!',
-                label_accept: 'Продолжить',
-                label_dismiss: 'Остаться',
+                heading: i18next.t("main:lesson.modal.exercise_pass.heading"),
+                label_accept: i18next.t("main:lesson.modal.exercise_pass.accept"),
+                label_dismiss: i18next.t("main:lesson.modal.exercise_pass.dismiss"),
                 is_acceptable: true,
                 is_dismissible: true
             },
@@ -124,8 +125,14 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     @on(MissionPassEvent)
     protected async onMissionPass(evt: MissionPassEvent) {
         const go_forward = await this.modal.showQuestionModal({
-            dialog: {heading: 'Задание пройдено', label_accept: 'Продолжить', label_dismiss: 'Остаться', is_acceptable: true, is_dismissible: true},
-            content: 'Остаться и попробовать ещё, или перейти к следующему заданию?',
+            dialog: {
+                heading: i18next.t('main:lesson.modal.mission_pass.heading'), 
+                label_accept: i18next.t('main:lesson.modal.mission_pass.accept'), 
+                label_dismiss: i18next.t('main:lesson.modal.mission_pass.dismiss'), 
+                is_acceptable: true, 
+                is_dismissible: true
+            },
+            content: i18next.t('main:lesson.modal.mission_pass.content'),
             is_closable: false,
         });
 

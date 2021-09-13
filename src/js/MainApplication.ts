@@ -14,6 +14,7 @@ import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
+import { FakeHttpRule } from "./core/base/model/datasources/HttpDatasource";
 
 import CSRFMiddleware from "./core/models/middlewares/CSRFMiddleware";
 import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";
@@ -38,6 +39,8 @@ import ConnectionModel from "./models/common/ConnectionModel";
 import MainRouter from "./routers/MainRouter";
 import ServerModel from "./models/common/ServerModel";
 
+import i18n_init from "~/i18n/config";
+
 require("css/global.less");
 
 interface MainAppConf {
@@ -47,6 +50,8 @@ interface MainAppConf {
     server_port: number;
     sock_addr: string;
     sock_port: number;
+    fake_http_responses?: FakeHttpRule[];
+    lang?: string;
 }
 
 /**
@@ -60,7 +65,7 @@ class MainApplication extends Application<MainAppConf> {
             server_addr: '127.0.0.1',
             server_port: 8000,
             sock_addr: '127.0.0.1',
-            sock_port: 8085
+            sock_port: 8085,
         }
     }
 
@@ -73,7 +78,9 @@ class MainApplication extends Application<MainAppConf> {
         ];
     }
 
-    protected setup() {
+    protected async setup() {
+        i18n_init(this.config.lang);
+
         const svc_routing = this.instance(IRoutingService),
               svc_model = this.instance(IModelService);
 
@@ -86,12 +93,16 @@ class MainApplication extends Application<MainAppConf> {
 
         const hds = new HttpDatasource(this.config.server_addr, this.config.server_port);
 
+        if (this.config.fake_http_responses) {
+            hds.setFakeRules(this.config.fake_http_responses);
+        }
+
         svc_model.launch(ads);
 
         svc_model.register(ModalModel,      dds);
         svc_model.register(UserModel,       hds);
         svc_model.register(CourseModel,     hds);
-        svc_model.register(SettingsModel,   dds, {config: settings_config(this.config.allow_demo)});
+        svc_model.register(SettingsModel,   dds, {config: settings_config(this.config.allow_demo, this.config.lang)});
         svc_model.register(LessonModel,     hds);
         svc_model.register(ServerModel,     hds);
 
@@ -113,7 +124,7 @@ class MainApplication extends Application<MainAppConf> {
         svc_routing.setRouter(MainRouter);
     }
 
-    async run(element: HTMLElement) {
+    run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         const {root: wgt_root, widgets, composer} = widgets_config(this.config.no_menu);

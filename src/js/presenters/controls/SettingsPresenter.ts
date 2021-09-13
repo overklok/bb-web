@@ -29,6 +29,6 @@ export default class SettingsPresenter extends Presenter<SettingsView.SettingsVi
 
         this.setViewProps({
             values: committed
-        })
+        });
     }
 }

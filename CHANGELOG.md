@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.1.2b] - 2021-08-19
+
+### Added
+- Ability to serve application without backend server
+## [1.1.2] - 2021-08-13
+
+### Updated
+- 'About' widget: issue report request button added
+
 ## [1.1.1] - 2021-08-11
 
 ### Added

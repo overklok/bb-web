@@ -1,0 +1,22 @@
+{
+	"general": {
+        "title": "Основные",
+        "settings": {
+            "is_demo": {
+                "title": "Автономный режим"
+            }
+        }
+    },
+    "board": {
+        "title": "Доска",
+        "groups": {
+            "debug": {
+                "title": "Отладка"
+            }
+        },
+        "settings": {
+            "is_verbose": "Показывать подробности",
+            "is_debug": "Подсвечивать ячейки"
+        }
+    }
+}

@@ -50,6 +50,7 @@ fabric.properties
 node_modules/
 /dist/*
 tmp/
+doc/
 coverage
 
 # Environment files

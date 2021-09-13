@@ -2,6 +2,8 @@ import * as React from "react";
 import classNames from "classnames";
 import {ModalAction} from "../../base/view/Nest";
 
+import i18next from "i18next";
+
 export interface IDialogProps {
     heading?: string;
     hint?: string;
@@ -68,12 +70,12 @@ const Dialog = (props: IDialogProps) => {
                 <div className={klasses_btn_bar}>
                     {props.is_dismissible
                         ? <div className='btn btn_danger'
-                               onClick={e => onDismiss()}>{props.label_dismiss || 'Отклонить'}</div>
+                               onClick={e => onDismiss()}>{props.label_dismiss || i18next.t('main:dialog.decline')}</div>
                         : null
                     }
                     {props.is_acceptable
                         ? <div className='btn btn_primary'
-                               onClick={e => onAccept()}>{props.label_accept || 'Принять'}</div>
+                               onClick={e => onAccept()}>{props.label_accept || i18next.t('main:dialog.accept')}</div>
                         : null
                     }
                 </div>
@@ -95,7 +97,7 @@ const Dialog = (props: IDialogProps) => {
                 </div>
                 <div className='mdl-dlg__buttons'>
                     {props.is_closable
-                        ? <div className='mdl-btn-close' title='Закрыть' onClick={onEscape} />
+                        ? <div className='mdl-btn-close' title={i18next.t('main:dialog.close')} onClick={onEscape} />
                         : null
                     }
                 </div>

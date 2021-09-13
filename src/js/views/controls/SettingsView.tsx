@@ -1,4 +1,6 @@
 import * as React from "react";
+import Select from 'react-select';
+import i18next from "i18next";
 
 import {AllProps, IViewProps, IViewState, View} from "../../core/base/view/View";
 import {Setting, SettingsConfig, SettingsValues, SettingType, SettingValue} from "../../core/datatypes/settings";
@@ -54,7 +56,7 @@ export namespace SettingsView {
 
                             return (
                                 <div key={cat_key} className={klasses} onClick={() => this.handleCategoryChange(cat_key)}>
-                                    {category.title}
+                                    {i18next.t(category.title)}
                                 </div>
                             )}
                         )}
@@ -70,14 +72,14 @@ export namespace SettingsView {
 
             return (
                 <form className="settings__content form" key={cat_key}>
-                    <h2>{category.title}</h2>
+                    <h2>{i18next.t(category.title)}</h2>
 
                     <hr />
 
                     {category.groups.map((group, idx) => {
                         return (
                             <div key={idx} className="form__group">
-                                <h3>{group.title}</h3>
+                                <h3>{i18next.t(group.title)}</h3>
 
                                 {Object.entries(group.settings).map(([key, setting], idx) =>
                                     this.renderInput(idx, cat_key, key, setting)
@@ -97,7 +99,7 @@ export namespace SettingsView {
                     return (
                         <div key={idx} className="form__setting">
                             <label htmlFor={input_id}>
-                                {setting.title}
+                                {i18next.t(setting.title)}
                             </label>
                             <input
                                 id={input_id}
@@ -106,6 +108,41 @@ export namespace SettingsView {
                                 checked={!!this.props.values[cat_key][key]}
                                 disabled={setting.is_locked}
                                 onChange={e => this.handleSettingChange(input_id, !!e.target.checked)}
+                            />
+                        </div>
+                    );
+                case SettingType.ChoiceSingle:
+                    const options = setting.choices;
+                    
+                    const defaultOption = options.find((item) => item.value === i18next.language);
+
+                    const styles = {
+                        container: (styles: any) => {
+                            return { ...styles, width: 250 }
+                        },
+                        dropdownIndicator: (styles: any) => {
+                            return { ...styles, cursor: 'pointer'} 
+                        },
+                        option: (styles: any) => {
+                            return { ...styles, cursor: 'pointer', textAlign: 'left' }
+                        },
+                        singleValue: (styles: any) => {
+                            return { ...styles, cursor: 'pointer' }
+                        }
+                    }
+
+                    return (
+                        <div key={idx} className="form__setting">
+                            {i18next.t(setting.title)}
+                            <Select
+                                defaultValue={defaultOption}
+                                options={options}
+                                theme={theme => ({
+                                    ...theme,
+                                    borderRadius: 8,
+                                })}
+                                onChange={({ value, label }) => this.handleSettingChange(input_id, value)}
+                                styles={styles}
                             />
                         </div>
                     );

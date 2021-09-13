@@ -2,6 +2,8 @@ import * as React from "react";
 import Portal from "../../../core/base/view/Portal";
 import classNames from "classnames";
 
+import i18next from 'i18next';
+
 const TIME_SHOW = 3000;
 
 require('../../../../css/blocks/menu/indicator.less');
@@ -58,11 +60,11 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         this.ref_popup = React.createRef();
 
         this.details = {
-            [ConnectionStatus.Unknown]:           ['default', 'Проверка подключения...', (): null => null],
-            [ConnectionStatus.Waiting]:           ['warning', 'Ожидание подключения...', this.renderWaiting],
-            [ConnectionStatus.Disconnected]:      ['default', 'Подключение недоступно',  this.renderNoCore],
-            [ConnectionStatus.BoardConnected]:    ['success', 'Доска подключена',        this.renderConnected],
-            [ConnectionStatus.BoardDisconnected]: ['danger',  'Доска отключена',         this.renderDisconnected]
+            [ConnectionStatus.Unknown]:           ['default', i18next.t('main:board.connection.unknown.title'),               (): null => null],
+            [ConnectionStatus.Waiting]:           ['warning', i18next.t('main:board.connection.waiting.title'),               this.renderWaiting],
+            [ConnectionStatus.Disconnected]:      ['default', i18next.t('main:board.connection.no_core.title'),               this.renderNoCore],
+            [ConnectionStatus.BoardConnected]:    ['success', i18next.t('main:board.connection.board_connected.title'),       this.renderConnected],
+            [ConnectionStatus.BoardDisconnected]: ['danger',  i18next.t('main:board.connection.board_disconnected.title'),    this.renderDisconnected]
         }
     }
 
@@ -180,8 +182,8 @@ export default class StatusIndicator extends React.Component<IProps, IState>{
         )
     }
 
-    renderConnected()        {return <p>Теперь можно выполнять упражнения по электронике.</p>}
-    renderDisconnected()     {return <p>Подключите доску, используя кабель USB.</p>}
+    renderConnected()        {return <p>{i18next.t('main:board.connection.board_connected.content')}</p>}
+    renderDisconnected()     {return <p>{i18next.t('main:board.connection.board_disconnected.content')}</p>}
     renderWaiting(): void    {return null}
-    renderNoCore()           {return <p>Не удалось подключиться к ядру.</p>}
+    renderNoCore()           {return <p>{i18next.t('main:board.connection.no_core.content')}</p>}
 }

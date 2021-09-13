@@ -12,26 +12,27 @@ import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import AdaptiveAsyncDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
+import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 
 import LayoutModel from "./core/models/LayoutModel";
 import BoardModel from "./models/common/BoardModel";
-
-import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
+import ModalModel from "./core/models/ModalModel";
+import CodeModel from "./models/common/CodeModel";
+import KeyboardModel from "./core/models/KeyboardModel";
 
 import "../css/global.less";
 
 import layouts_config from "./configs/playground/layouts";
 import widgets_config from "./configs/playground/widgets";
-import ModalModel from "./core/models/ModalModel";
-import CodeModel from "./models/common/CodeModel";
-import KeyboardModel from "./core/models/KeyboardModel";
-import IEventService from "./core/services/interfaces/IEventService";
+
+import i18n_init from "~/i18n/config";
 
 interface PlaygroundApplicationConfig extends AppConf {
     silent?: boolean;
     verbose?: boolean;
     readonly?: boolean;
     layout_name?: string;
+    lang: string;
 }
 
 class PlaygroundApplication extends Application<PlaygroundApplicationConfig> {
@@ -43,6 +44,12 @@ class PlaygroundApplication extends Application<PlaygroundApplicationConfig> {
 
     protected config: PlaygroundApplicationConfig;
 
+    protected defaultConfig() {
+        return {
+            lang: 'en'
+        }
+    }
+
     protected providerClasses(): Array<IServiceProvider> {
         return [
             ViewServiceProvider,
@@ -51,7 +58,9 @@ class PlaygroundApplication extends Application<PlaygroundApplicationConfig> {
         ];
     }
 
-    protected setup() {
+    protected async setup() {
+        i18n_init(this.config.lang, ['blockly']);
+
         this.ads = new AdaptiveDatasource([
             new QtIPCDatasource(),
             new SocketDatasource('127.0.0.1', 8085),
@@ -71,7 +80,7 @@ class PlaygroundApplication extends Application<PlaygroundApplicationConfig> {
         });
     }
 
-    async run(element: HTMLElement) {
+    run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         const svc_view = this.instance(IViewService),

@@ -7,6 +7,8 @@ import {AlertType} from "../../core/views/modal/AlertView";
 import {ColorAccent} from "../../core/helpers/styles";
 import {ExerciseRunEvent} from "../../models/lesson/ProgressModel";
 
+import i18next from 'i18next';
+
 export default class BoardLessonPresenter extends Presenter<BoardView.BoardView> {
     private board: BoardModel;
     private modal: ModalModel;
@@ -47,8 +49,8 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
             this.modal.showAlert(AlertType.ShortCircuit);
         } else {
             this.sctoast = this.modal.showToast({
-                title: 'Короткое замыкание!',
-                content: 'Разомкните цепь, чтобы устранить короткое замыкание.',
+                title: i18next.t('main:alert.short_circuit.title'),
+                content: i18next.t('main:alert.short_circuit.content'),
                 status: ColorAccent.Danger,
             });
         }

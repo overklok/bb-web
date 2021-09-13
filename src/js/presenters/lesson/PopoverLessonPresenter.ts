@@ -3,6 +3,8 @@ import ProgressModel, {ExerciseRunEvent} from "../../models/lesson/ProgressModel
 import LessonModel from "../../models/lesson/LessonModel";
 import ModalPresenter from "../../core/presenters/ModalPresenter";
 
+import i18next from 'i18next';
+
 export default class PopoverLessonPresenter extends ModalPresenter {
     private lesson: LessonModel;
     private progress: ProgressModel;
@@ -21,7 +23,7 @@ export default class PopoverLessonPresenter extends ModalPresenter {
 
         for (const [i, popover] of exercise.popovers.entries()) {
             const go_forward = await this.showPopoverModal(
-                popover.title || `Упражнение ${exercise_idx + 1}`,
+                popover.title || i18next.t('main:lesson.modal.popover.title', {num: exercise_idx + 1}),
                 popover.content
             );
 
@@ -38,7 +40,7 @@ export default class PopoverLessonPresenter extends ModalPresenter {
                 widget_alias: 'popover_content',
                 dialog: {
                     heading: title,
-                    label_accept: 'Продолжить',
+                    label_accept: i18next.t('main:lesson.modal.popover.accept'),
                     is_acceptable: true,
                     on_action: () => {resolve(true)},
                 },

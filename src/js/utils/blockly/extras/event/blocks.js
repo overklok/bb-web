@@ -1,5 +1,7 @@
 import {CATEGORIES, BLOCK_INPUTS_CONSTRAINTS} from "../constants";
 
+import i18next from 'i18next';
+
 const DATATYPES = {
     KEY: "Key"
 };
@@ -12,11 +14,11 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "номер клавиши",
+                message0:       i18next.t('blockly:blocks.event_key.message'),
                 inputsInline:   false,
                 output:         DATATYPES.KEY,
                 colour:         CATEGORIES.EVENTS.colour,
-                tooltip:        "Хранит код клавиши"
+                tooltip:        i18next.t('blockly:blocks.event_key.tooltip'),
             })
         }
     },
@@ -28,7 +30,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "когда нажата кнопка %1 %2",
+                message0:       i18next.t('blockly:blocks.event_key_onpush_letter.message'),
                 args0: [
                     {
                         type:   "field_dropdown",
@@ -40,8 +42,8 @@ let JSONBlocks = {
                         "name": "DO"
                     }
                 ],
-                "colour":       CATEGORIES.EVENTS.colour,
-                "tooltip":      "По нажатию указанной кнопки выполнится код внутри этого блока"
+                colour:         CATEGORIES.EVENTS.colour,
+                tooltip:        i18next.t('blockly:blocks.event_key_onpush_letter.tooltip'),
             })
         }
     },
@@ -50,7 +52,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "когда нажата цифра %1 %2",
+                message0:       i18next.t('blockly:blocks.event_key_onpush_number.message'),
                 args0: [
                     {
                         type:   "field_dropdown",
@@ -63,7 +65,7 @@ let JSONBlocks = {
                     }
                 ],
                 colour:         CATEGORIES.EVENTS.colour,
-                tooltip:        "По нажатию указанной кнопки выполнится код внутри этого блока"
+                tooltip:        i18next.t('blockly:blocks.event_key_onpush_number.tooltip'),
             })
         }
     },
@@ -72,7 +74,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "когда нажата любая кнопка %1",
+                message0:       i18next.t('blockly:blocks.event_key_onpush_any.message'),
                 args0: [
                     {
                         "type": "input_statement",
@@ -80,8 +82,7 @@ let JSONBlocks = {
                     }
                 ],
                 colour:         CATEGORIES.EVENTS.colour,
-                tooltip:        "По нажатию любой кнопки выполнится код внутри этого блока." +
-                                "Код нажатой кнопки записывается в переменную \"Номер клавиши\"."
+                tooltip:        i18next.t('blockly:blocks.event_key_onpush_any.tooltip'),
             })
         }
     },
@@ -90,7 +91,7 @@ let JSONBlocks = {
         init: function() {
             this.jsonInit({
                 type:           "block_type",
-                message0:       "когда нажата любая цифра %1",
+                message0:       i18next.t('blockly:blocks.event_key_onpush_any_number.message'),
                 args0: [
                     {
                         "type": "input_statement",
@@ -98,8 +99,7 @@ let JSONBlocks = {
                     }
                 ],
                 colour:         CATEGORIES.EVENTS.colour,
-                tooltip:        "По нажатию любой кнопки выполнится код внутри этого блока." +
-                                "Код нажатой кнопки записывается в переменную \"Номер клавиши\"."
+                tooltip:        i18next.t('blockly:blocks.event_key_onpush_any_number.tooltip'),
             })
         }
     }

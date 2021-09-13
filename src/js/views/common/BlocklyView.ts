@@ -41,7 +41,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
         this.setup();
     }
 
-    public async inject(container: HTMLDivElement) {
+    public async inject(container: HTMLElement) {
         this.blockly.inject(container, false, false, this.props.zoom, false);
 
         if (this.props.force_all_blocks) {
@@ -51,8 +51,14 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
         this.blockly.resize();
     }
 
-    public eject(container: HTMLDivElement): void {
+    public eject(container: HTMLElement): void {
         this.blockly.eject();
+    }
+
+    public update(): void {
+        this.eject(this.props.ref_parent.current);
+        BlocklyWrapper.setLanguage(this.props.lang);
+        this.inject(this.props.ref_parent.current);
     }
 
     /**
@@ -62,7 +68,7 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
      */
     @deferUntilMounted
     public setBlockTypes(block_types: { [block_type: string]: number }) {
-       if (this.props.force_all_blocks) {
+        if (this.props.force_all_blocks) {
             this.blockly.updateBlockTypes(Object.keys(JSONGenerators));
         } else {
             this.blockly.updateBlockTypes(block_types);

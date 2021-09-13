@@ -1,18 +1,19 @@
 import * as React from "react";
+import Select from 'react-select';
+import i18next from 'i18next';
+
 import {AllProps, IViewProps, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 import Modal from "../../core/views/modal/Modal";
-import Dialog from "../../core/views/modal/Dialog";
-import AlertView from "../../core/views/modal/AlertView";
 import DialogModal from "../../core/views/modal/DialogModal";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 
-require("../../../css/home.less");
-require("../../../css/logo.less");
-require("../../../css/core/list.less");
-require("../../../css/core/pave.less");
+require("~/css/home.less");
+require("~/css/logo.less");
+require("~/css/core/list.less");
+require("~/css/core/pave.less");
 
-// passed by DefinePlugin in Webpack config
+// provided by DefinePlugin in Webpack config
 declare const __VERSION__: string;
 
 interface Lesson {
@@ -31,16 +32,24 @@ namespace HomeView {
         lesson_id: number;
     }
 
+    export class LanguageChangeEvent extends ViewEvent<LanguageChangeEvent> {
+        lang: string;
+    }
+
     export interface Props extends IViewProps {
         courses: Course[];
         lesson_id: number;
         error?: string;
+        lang_options: { value: string, label: string }[];
+        hui: string;
     }
 
     export class HomeView extends View<Props, undefined> {
         static defaultProps: Props = {
             courses: [],
-            lesson_id: undefined
+            lesson_id: undefined,
+            lang_options: null,
+            hui: null
         }
 
         constructor(props: AllProps<Props>) {
@@ -58,7 +67,11 @@ namespace HomeView {
                 <div className="pave">
                     <div className="home-header">
                         <div className="logo logo_centered logo_light logo__full" />
-                        <p>Макетная плата</p>
+                        <p>{i18next.t('main:home.header.title')}</p>
+
+                        <div className="home-langselect">
+                            {this.renderLangOptions(this.props.lang_options)}
+                        </div>
                     </div>
                     <div className="app-screen">
                         <TransitionGroup component={null}>
@@ -73,14 +86,45 @@ namespace HomeView {
             )
         }
 
+        private renderLangOptions(options: { value: string, label: string }[]) {
+            if (!options || options.length === 0) return null;
+
+            const defaultOption = options.find(item => item.value === this.props.lang);
+
+            const styles = {
+                dropdownIndicator: (styles: any) => {
+                    return { ...styles, cursor: 'pointer'} 
+                },
+                option: (styles: any) => {
+                    return { ...styles, fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }
+                },
+                singleValue: (styles: any) => {
+                    return { ...styles, fontWeight: 'bold', cursor: 'pointer' }
+                }
+            }
+
+            return (
+                <Select
+                    defaultValue={defaultOption}
+                    options={options}
+                    theme={theme => ({
+                        ...theme,
+                        borderRadius: 8,
+                    })}
+                    onChange={({value}) => this.emit(new LanguageChangeEvent({lang: value}))}
+                    styles={styles}
+                />
+            )
+        }
+
         private renderCourses() {
             if (this.props.error) {
                 return (
                     <CSSTransition key='err' in out timeout={200} classNames="mdl" unmountOnExit>
                         <DialogModal size='md' is_centered={true}>
-                            <h2>Произошла ошибка</h2>
+                            <h2>{i18next.t("main:home.courses.error")}</h2>
                             <p>{this.props.error}</p>
-                            <p>Пробуем загрузиться снова...</p>
+                            <p>{i18next.t("main:home.courses.reloading")}</p>
                         </DialogModal>
                     </CSSTransition>
                 )
@@ -90,7 +134,7 @@ namespace HomeView {
                 return (
                     <CSSTransition key='ldn' in out timeout={200} classNames="mdl" unmountOnExit>
                         <DialogModal size='md' is_centered={true}>
-                            <h2>Загрузка...</h2>
+                            <p>{i18next.t("main:home.courses.loading")}</p>
                         </DialogModal>
                     </CSSTransition>
                 )
@@ -100,7 +144,7 @@ namespace HomeView {
                 <CSSTransition key='crs' in out timeout={200} classNames="mdl" unmountOnExit>
                     <Modal size='lg'>
                         <div className="courses">
-                            <h1 className="courses__heading">Уроки</h1>
+                            <h1 className="courses__heading">{i18next.t("main:home.courses.lessons")}</h1>
 
                             <ul className="list">
                                 {this.props.courses.map((course, idx) =>
@@ -121,7 +165,7 @@ namespace HomeView {
                                                     }
 
                                                     <span>
-                                                        Урок {idx + 1}. {lesson.name}
+                                                        {i18next.t("main:home.courses.lesson")} {idx + 1}. {lesson.name}
                                                     </span>
 
                                                     <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>

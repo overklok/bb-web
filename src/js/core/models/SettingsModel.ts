@@ -55,23 +55,27 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
     }
 
     public getBoolean(path: string, get_uncommited = false): boolean {
-        return this.getValue(path, SettingType.Boolean, get_uncommited) as boolean;
+        return this.getValue(path, get_uncommited, SettingType.Boolean) as boolean;
     }
 
     public getNumber(path: string, get_uncommitted = false): number {
-        return this.getValue(path, SettingType.Number, get_uncommitted) as number;
+        return this.getValue(path, get_uncommitted, SettingType.Number) as number;
     }
 
     public getString(path: string, get_uncommitted = false): string {
-        return this.getValue(path, SettingType.String, get_uncommitted) as string;
+        return this.getValue(path, get_uncommitted, SettingType.String) as string;
     }
 
-    public getValue(path: string, check_type?: SettingType, get_uncommitted = false): SettingValue {
+    public getChoiceSingle(path: string, get_uncommitted = false): number|string {
+        return this.getValue(path, get_uncommitted, SettingType.ChoiceSingle) as number|string;
+    }
+
+    public getValue(path: string, get_uncommitted = false, check_type?: SettingType): SettingValue {
         const [cat_key, key] = this.splitSettingPath(path);
 
         // check setting type
         if (check_type) {
-            assert(this.getSetting(cat_key, key).type == check_type);
+            assert(this.getSetting(cat_key, key).type == check_type, "Invalid value type");
         }
 
         if (get_uncommitted &&
@@ -133,6 +137,22 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         return !!this.getSetting(cat_key, key).is_locked;
     }
 
+    public getSetting(cat_key: string, key: string): Setting {
+        const category = this.state.config[cat_key];
+
+        if (!category) throw new Error(`Category '${cat_key}' does not exist`);
+
+        for (const group of category.groups) {
+            const setting = group.settings[key];
+
+            if (group.settings.hasOwnProperty(key)) {
+                return setting;
+            }
+        }
+
+        throw new Error(`Setting '${key}' does not exist in any group of category '${cat_key}'`);
+    }
+
     /**
      * Get category, key and validate value for specific key-value pair of settings
      *
@@ -161,22 +181,6 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
         if (!this.state.values[cat_key].hasOwnProperty(key)) throw new Error(`Setting '${path}' does not exist`);
 
         return [cat_key, key];
-    }
-
-    protected getSetting(cat_key: string, key: string): Setting {
-        const category = this.state.config[cat_key];
-
-        if (!category) throw new Error(`Category '${cat_key}' does not exist`);
-
-        for (const group of category.groups) {
-            const setting = group.settings[key];
-
-            if (group.settings.hasOwnProperty(key)) {
-                return setting;
-            }
-        }
-
-        throw new Error(`Setting '${key}' does not exist in any group of category '${cat_key}'`);
     }
 }
 

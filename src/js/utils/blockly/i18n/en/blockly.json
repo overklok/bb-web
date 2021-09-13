@@ -1,0 +1,109 @@
+{
+    "blocks": {
+        "arduino_pin": {
+            "message": "Pin",
+            "tooltip": "Keeps pin number."
+        },
+        "arduino_pin_number": {
+            "tooltip": "Available pin numbers."
+        },
+        "arduino_out_write_logical": {
+            "message": "logical write %2 to %1",
+            "tooltip": "Writes level (0 or 1) on a logical input."
+        },
+        "arduino_out_read_logical": {
+            "message": "logical read +/- from %1",
+            "tooltip": "Reads level (0 or 1) from a logical output."
+        },
+        "arduino_out_write_pwm": {
+            "message": "analog write %2 to %1",
+            "tooltip": "Writes PWM level to an analog input."
+        },
+        "arduino_out_read_pwm": {
+            "message": "analog read from %1",
+            "tooltip": "Reads PWM level from an analog output."
+        },
+        "arduino_out_value": {
+            "message": "value from %1 output",
+            "tooltip": "Value on an output."
+        },
+        "math_number_pwm": {
+            "tooltip": "Keeps PWM value."
+        },
+
+        "controls_wait_seconds": {
+            "message": "wait %1 sec.",
+            "tooltip": "Makes a delay for given amount of seconds."
+        },
+        "math_number_seconds": {
+            "tooltip": "Number of seconds to delay."
+        },
+        "math_number_repeats": {
+            "tooltip": "Number of repeats."
+        },
+
+        "event_key": {
+            "message": "button code",
+            "tooltip": "Keeps button code."
+        },
+        "event_key_onpush_letter": {
+            "message": "on button push %1 %2",
+            "tooltip": "When the button is pushed, runs the code inside the block."
+        },
+        "event_key_onpush_number": {
+            "message": "on number button push %1 %2",
+            "tooltip": "When the button is pushed, runs the code inside the block."
+        },
+        "event_key_onpush_any": {
+            "message": "on any button push %1",
+            "tooltip": "When a button is pushed, runs the code inside the block. Code of the button keeps in the \"button code\" variable."
+        },
+        "event_key_onpush_any_number": {
+            "message": "on any number button push %1",
+            "tooltip": "When a button is pushed, runs the code inside the block. Code of the button keeps in the \"button code\" variable."
+        },
+
+        "logic_eq": {
+            "tooltip": "Returns true if the first input is equal to second."
+        },
+        "logic_lt": {
+            "tooltip": "Returns true if the first input is lesser than second."
+        },
+        "logic_gt": {
+            "tooltip": "Returns true if the first input is larger than second."
+        },
+        "logic_ge": {
+            "tooltip": "Returns true if the first input is larger or equal than second."
+        },
+        "logic_le": {
+            "tooltip": "Returns true if the first input is lesser or equal than second."
+        },
+        "logic_and": {
+            "message": "%1 and %2",
+            "tooltip": "Returns true if both inputs are true."
+        },
+        "logic_or": {
+            "message": "%1 or %2",
+            "tooltip": "Returns true if one of the inputs is true."
+        },
+
+        "math_mul": {
+            "tooltip": "Returns the product of the inputs."
+        },
+        "math_add": {
+            "tooltip": "Returns the sum of the inputs."
+        },
+        "math_sub": {
+            "tooltip": "Returns difference of the inputs."
+        },
+        "math_div": {
+            "tooltip": "Returns the integer part of the inputs division."
+        },
+        "math_mod": {
+            "tooltip": "Returns the remainder of the inputs division."
+        },
+        "math_number": {
+            "tooltip": "Keeps integer number."
+        }
+    }
+}

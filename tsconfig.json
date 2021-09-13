@@ -8,6 +8,7 @@
         "types/*",
       ],
     },
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "sourceMap": true,

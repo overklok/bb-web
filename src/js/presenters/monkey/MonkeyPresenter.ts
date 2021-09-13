@@ -5,11 +5,12 @@ import BoardModel, {BoardErrorEvent, Plate, PlateEvent, UserPlateEvent} from "..
 import TestkitModel, {ReferenceEvent} from "../../models/monkey/TestkitModel";
 import BoardLogModel from "../../models/monkey/BoardLogModel";
 import {comparePlates} from "../../utils/breadboard/core/extras/helpers";
+import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 
 export default class MonkeyPresenter extends Presenter<MonkeyView> {
     private modal: ModalModel;
-    private assembly: Plate[];
-    private reference: Plate[];
+    private assembly: SerializedPlate[];
+    private reference: SerializedPlate[];
     private log: BoardLogModel;
 
     private testkit: TestkitModel;
@@ -104,7 +105,7 @@ export default class MonkeyPresenter extends Presenter<MonkeyView> {
         return is_equal;
     }
 
-    private isPlatesEqual(plate_a: Plate, plate_b: Plate): boolean {
+    private isPlatesEqual(plate_a: SerializedPlate, plate_b: SerializedPlate): boolean {
         const layout = BoardModel.Layouts[this.assembly_board.getBoardLayout()];
 
         return comparePlates(layout, plate_a, plate_b);

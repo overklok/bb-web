@@ -6,6 +6,15 @@ import IEventService from "./interfaces/IEventService";
 import {getClassNameAlias} from "../helpers/functions";
 
 
+/** 
+ * An implementation of the MVC/MVP's Model layer 
+ * 
+ * Manages the registry of the {@link Model} singleton objects for apps and services.
+ * 
+ * @see Model
+ * 
+ * @inheritdoc
+ */
 export default class ModelService extends IModelService {
     protected models: Model<any, any>[] = [];
 

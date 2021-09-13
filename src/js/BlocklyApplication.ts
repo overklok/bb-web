@@ -14,18 +14,28 @@ import AdminCodeModel from "./models/common/AdminCodeModel";
 import BlocklyView from "./views/common/BlocklyView";
 import SingleViewComposer from "./core/base/view/viewcomposers/SingleViewComposer";
 
+import i18n_init from "~/i18n/config";
+
 import "../css/global.less";
 
 interface BlocklyApplicationConfig extends AppConf {
     all_blocks?: boolean;
     workspace_zoom?: number;
     edit_limits: boolean;
+    lang: string;
 }
 
 class BlocklyApplication extends Application<BlocklyApplicationConfig> {
     protected config: BlocklyApplicationConfig;
     private dds: DummyDatasource;
     private code: AdminCodeModel;
+
+    protected defaultConfig() {
+        return {
+            lang: 'en',
+            edit_limits: false,
+        }
+    }
 
     protected providerClasses(): Array<IServiceProvider> {
         return [
@@ -35,13 +45,15 @@ class BlocklyApplication extends Application<BlocklyApplicationConfig> {
         ];
     }
 
-    protected setup() {
+    protected async setup() {
         this.dds = new DummyDatasource();
 
         this.instance(IViewService).setRootWidgets(SingleViewComposer, 'main');
+
+        i18n_init(this.config.lang, ["blockly"]);
     }
 
-    async run(element: HTMLElement) {
+    run(element: HTMLElement) {
         if (element == null) throw new Error("Please pass a valid DOM element to run an application");
 
         const svc_view = this.instance(IViewService),

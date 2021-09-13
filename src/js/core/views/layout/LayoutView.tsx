@@ -158,6 +158,7 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
                       ref={this.pane_ref}
                       overlay_node={this.overlay_node}
                       show_headers={this.props.show_headers}
+                      lang={this.props.lang}
                 />
             </DndProvider>
         );

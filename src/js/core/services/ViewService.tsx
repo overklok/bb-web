@@ -1,6 +1,7 @@
 import * as React from "react";
-
 import * as ReactDOM from "react-dom";
+import i18next from "i18next";
+
 import IViewService, {Widget, WidgetType} from "./interfaces/IViewService";
 
 import ViewConnector from "../base/ViewConnector";
@@ -12,6 +13,11 @@ import IModelService from "./interfaces/IModelService";
 import Application from "../Application";
 import IRoutingService from "./interfaces/IRoutingService";
 
+/**
+ * React-based implementation of the MVP's View layer 
+ * 
+ * @inheritdoc
+ */
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;
 
@@ -25,6 +31,9 @@ export default class ViewService extends IViewService {
     private svc_model: IModelService;
     private svc_routing: IRoutingService;
 
+    /**
+     * @inheritdoc
+     */
     constructor(app: Application) {
         super(app);
 
@@ -32,6 +41,9 @@ export default class ViewService extends IViewService {
         this.widget_types = [];
     }
 
+    /**
+     * @inheritdoc
+     */
     public setup() {
         this.widgets = {};
 
@@ -40,12 +52,22 @@ export default class ViewService extends IViewService {
         this.svc_routing = this.app.instance(IRoutingService, false);
     }
 
+    /**
+     * @inheritdoc
+     */
     public compose(element: HTMLElement) {
         this.element = element;
 
-        this.recompose();
+        this.recompose(i18next.language);
+
+        i18next.on('languageChanged', lang => {
+            this.recompose(lang);
+        })
     }
 
+    /**
+     * @inheritdoc
+     */
     public setRootWidgets(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[] = []) {
         this.widgets = {};
         this.view_composer = view_composer;
@@ -57,6 +79,9 @@ export default class ViewService extends IViewService {
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
         for (const [alias, widget_type] of Object.entries(widget_types)) {
             const {view_type, presenter_types, label, view_props, nest_style} = widget_type;
@@ -83,12 +108,12 @@ export default class ViewService extends IViewService {
         }
 
         if (this.element) {
-            this.recompose();
+            this.recompose(i18next.language);
         }
     }
 
     /**
-     * Get views currently attached
+     * @inheritdoc
      */
     public getViews(): {[name: string]: any} {
         const views: {[name: string]: any} = {};
@@ -115,7 +140,10 @@ export default class ViewService extends IViewService {
         return views;
     }
 
-    protected async recompose() {
+    /**
+     * Renders root {@link ViewComposer} to root element with {@link Nest}s containing root widgets 
+     */
+    protected async recompose(lang: string) {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
         this.view_connectors_internal = [];
@@ -129,6 +157,7 @@ export default class ViewService extends IViewService {
 
             return <Nest
                 key={index}
+                lang={lang}
                 index={index}
                 widget_alias={'unnamed'}
                 view_type={SpecificView}
