@@ -5,6 +5,7 @@ TARGET="/home/overklok/tapanda/ch-board/tmp/jsapp-dev"
 GIT_DIR="/home/overklok/tapanda/ch-board/jsapp-dev.git"
 BRANCH="master"
 SRV_ROOT="/home/overklok/tapanda/ch-board/srv-main"
+SRV_WSGI="/var/www/dev_tapanda_ru_wsgi.py"
 
 mkdir -p $TARGET
 
@@ -17,7 +18,7 @@ do
         git --work-tree=$TARGET --git-dir=$GIT_DIR checkout -f
 
         chmod +x $TARGET/scripts/deploy.sh
-        $TARGET/scripts/deploy.sh -j $TARGET -s $SRV_ROOT
+        $TARGET/scripts/deploy.sh -j $TARGET -s $SRV_ROOT -w $SRV_WSGI
     else
         echo "Ref $ref received. Doing nothing: only the ${BRANCH} branch may be deployed on this server."
     fi

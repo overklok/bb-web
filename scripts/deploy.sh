@@ -2,14 +2,16 @@
 
 source /home/overklok/.bashrc
 
-JSAPP_ROOT=/home/overklok/tapanda/ch-board/jsapp
+JSAPP_ROOT=/home/overklok/tapanda/ch-board/tmp/jsapp
 SRV_ROOT=/home/overklok/tapanda/ch-board/srv-main
+WSGI_PATH=/var/www/board_tapanda_ru_wsgi.py
 
-while getopts j:s: flag
+while getopts j:s:w: flag
 do
     case "${flag}" in
         j) JSAPP_ROOT=${OPTARG};;
         s) SRV_ROOT=${OPTARG};;
+        w) WSGI_PATH=${OPTARG};;
     esac
 done
 
@@ -33,11 +35,10 @@ cp $JSAPP_ROOT/dist/blockly.css $STATIC_COURSES/admin/vendor/admin-blockly/block
 cp $JSAPP_ROOT/dist/board.js    $STATIC_COURSES/admin/vendor/admin-board/board.js
 cp $JSAPP_ROOT/dist/board.css   $STATIC_COURSES/admin/vendor/admin-board/board.css
 
-# srv-main
 workon bb-srv-main
-cd /home/overklok/tapanda/ch-board/srv-main/app || exit
+cd $SRV_ROOT/app || exit
 python manage.py collectstatic --no-input
-touch /var/www/board_tapanda_ru_wsgi.py
+touch WSGI_PATH
 deactivate
 
 # hooks/post-receive (+x):
