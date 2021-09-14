@@ -20,6 +20,7 @@ STATIC_COURSES=$SRV_ROOT/app/tapanda/apps/courses/static
 
 cd $JSAPP_ROOT
 
+rm package-lock.json
 npm install
 npm run build
 
