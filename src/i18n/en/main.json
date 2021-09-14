@@ -117,6 +117,8 @@
         "event_log_download":"Download event log"
     },
     "update": {
+        "accept": "OK",
+        "skip": "Skip this version",
         "heading": "Newer version is available",
         "version_details": "You are using 'Tapanda: Breadboard' version <b>{{ver_old}}</b>; however, version <b>{{ver_new}}</b> is available.",
         "update_prompt": "Please update the application by downloading the installer via",

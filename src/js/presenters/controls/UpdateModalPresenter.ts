@@ -3,6 +3,7 @@ import ModalPresenter from "~/js/core/presenters/ModalPresenter";
 import Presenter, { on, restore } from "~/js/core/base/Presenter";
 import ConnectionModel, { ConnectionStatusEvent } from "~/js/models/common/ConnectionModel";
 import ServerModel from "~/js/models/common/ServerModel";
+import i18next from "i18next";
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;
@@ -42,7 +43,9 @@ export default class UpdateModalPresenter extends ModalPresenter {
                         dialog: {
                             is_centered: true,
                             is_acceptable: true,
-                            label_accept: 'OK',
+                            is_dismissible: true,
+                            label_accept: i18next.t('main:update.accept'),
+                            label_dismiss: i18next.t('main:update.skip'),
                             on_action: () => { this.setViewProps({ modals: {} }) },
                         }
                     }]
