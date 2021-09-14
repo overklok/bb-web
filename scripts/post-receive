@@ -1,0 +1,24 @@
+#!/bin/bash
+# hooks/post-receive (+x):
+
+TARGET="/home/overklok/tapanda/ch-board/tmp/jsapp-dev"
+GIT_DIR="/home/overklok/tapanda/ch-board/jsapp-dev.git"
+BRANCH="master"
+SRV_ROOT="/home/overklok/tapanda/ch-board/srv-main"
+
+mkdir -p $TARGET
+
+while read oldrev newrev ref
+do
+    only checking out the branch specified
+    if [[ $ref = refs/heads/$BRANCH ]];
+    then
+        echo "Ref $ref received. Deploying ${BRANCH} branch to production..."
+        git --work-tree=$TARGET --git-dir=$GIT_DIR checkout -f
+
+        chmod +x $TARGET/scripts/build.sh
+        $TARGET/scripts/build.sh -j $TARGET -s $SRV_ROOT
+    else
+        echo "Ref $ref received. Doing nothing: only the ${BRANCH} branch may be deployed on this server."
+    fi
+done
