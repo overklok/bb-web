@@ -369,9 +369,9 @@ export default class CurrentLayer extends Layer {
     };
 
     /**
-     * Builds the path of current's flow
+     * Builds the path of a current flow
      *
-     * @param points object containing source and destination points of current's flow
+     * @param points object containing source and destination points of the current flow
      *
      * @returns a sequence of SVG path commands
      */
@@ -384,7 +384,7 @@ export default class CurrentLayer extends Layer {
 
         const   aux_point_from  = this.__grid.auxPoint(points.from.x, points.from.y),
                 aux_point_to    = this.__grid.auxPoint(points.to.x, points.to.y);
-
+            
         const   aux_point = aux_point_to || aux_point_from,
                 to_aux = !!aux_point_to;
 

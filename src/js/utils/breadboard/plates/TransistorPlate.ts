@@ -48,13 +48,6 @@ export default class TransistorPlate extends LinearPlate {
     /**
      * @inheritdoc
      */
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error("Method not implemented.");
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected __draw__(position: Cell, orientation: string) {
         this._drawPicture();
 

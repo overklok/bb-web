@@ -51,10 +51,6 @@ export default class InductorPlate extends LinearPlate {
         // this._group.text(`Button`).font({size: 20});
     };
 
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error("Method not implemented.");
-    }
-
     /**
      * Draws an inductor over the plate surface
      *

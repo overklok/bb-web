@@ -90,6 +90,9 @@ export type AuxPoint = {
     bias?: number
 }
 
+type AuxPointOrRow<K> = K extends string ? AuxPoint : AuxPoint[]
+type AuxPointMap = Map<string|number, AuxPoint|AuxPoint[]>
+
 /**
  * Logical representation of the breadboard grid
  * 
@@ -122,7 +125,7 @@ export default class Grid {
      * Auxiliary points don't fit into the standard matrix layout of the {@link Grid}
      * so they should be stored in specific attribute
      */
-    private readonly _aux_points: Map<number|string, AuxPoint|AuxPoint[]>
+    private readonly _aux_points: AuxPointMap;
 
     /**
      * Create the {@link Grid} instance
@@ -317,21 +320,24 @@ export default class Grid {
      * 
      * {@link AuxPoint}s are the points with arbitrary coordinates outside the matrix 
      * 
-     * Note that points can be adressed both by pair of numeric coordinates and by single string key
+     * Note that points can be addressed both by pair of numeric coordinates and by single string key
      * 
      * @param i string key / column index
      * @param j optional row index
      */
-    auxPoint(i: string|number, j: number = null): AuxPoint|AuxPoint[] {
+    auxPoint<K extends number | string>(i: K): AuxPointOrRow<K>;
+    auxPoint(i: number, j: number): AuxPoint;
+    auxPoint<K extends number | string>(i: K, j?: number): AuxPointOrRow<K> {
         const item = this._aux_points.get(i);
 
         try {
             if (typeof i === 'string') {
-                return item;
+                if (Array.isArray(item)) throw new Error(i);
+                return item as AuxPointOrRow<K>;
             }
 
-            if (typeof j === 'number' && Array.isArray(item)) {
-                return item[j];
+            if (j && typeof j === 'number' && Array.isArray(item)) {
+                return item[j] as AuxPointOrRow<K>;
             }
         } catch (TypeError) {
             return undefined;
@@ -408,7 +414,7 @@ export default class Grid {
     }
 
     /**
-     * Initializes auxiliary points based on the categories specified for the {@link Grid} 
+     * Initializes auxiliary points based on categories specified for the {@link Grid} 
      */
     private _initAuxPoints() {
         const celldist_y = this.cell(0, 1).pos.y - this.cell(0, 0).pos.y;
@@ -551,8 +557,10 @@ export default class Grid {
             });
         }
 
-        for (const point of Object.values(this._aux_points)) {
-            if (!(point.idx.x in this._aux_points)) {
+        for (const point of this._aux_points.values()) {
+            if (Array.isArray(point)) continue;
+
+            if (!(this._aux_points.has(point.idx.x))) {
                 this._aux_points.set(point.idx.x, []);
             }
 

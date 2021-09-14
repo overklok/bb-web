@@ -40,10 +40,6 @@ export default class DummyPlate extends Plate {
         this._drawPicture();
     };
 
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error('Method not implemented.');
-    }
-
     /**
      * Draws an animated dot 
      *
