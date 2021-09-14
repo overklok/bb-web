@@ -442,7 +442,9 @@ export default abstract class Plate {
      * 
      * @returns an output cell, if an input cell is provided, and vice versa 
      */
-    protected abstract _getOppositeCell(cell: Cell): Cell 
+    protected _getOppositeCell(cell: Cell): Cell {
+        return cell;
+    }
 
     /**
      * Sets new props for the plate

@@ -42,6 +42,8 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
 
     @restore() @on(PlateEvent)
     private onplates(evt: PlateEvent) {
+        console.log(evt);
+        
         this.view.setPlates(evt.plates);
     }
 

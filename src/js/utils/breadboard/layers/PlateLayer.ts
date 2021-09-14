@@ -166,7 +166,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
     /** {@link Plate} instances which currently forms the current composition, keyed by its identifiers */
     private _plates: {[key: number]: Plate};
     /** [debug only] {@link Plate} instances that were overwritten accidentally (to detect leakages or key assignment issues). Keys are salted to keep possible duplicates */
-    private _plates_old: {[key: string]: Plate};
+    private _plates_old: { [key: string]: Plate } = {};
 
     /** the {@link Cell} where the {@link Plate} should go if user interrupts dragging */
     private _cell_supposed: Cell;
@@ -628,8 +628,14 @@ export default class PlateLayer extends Layer<SVG.Container> {
         // If this plate will exist after full board refresh, it can help when debugging
         if (plate.id in this._plates) {
             const old_plate = this._plates[plate.id];
-            const randpostfix = Math.floor(Math.random() * (10 ** 6));
-            this._plates_old[`_old_${plate.id}_#${randpostfix}`] = old_plate;
+            // const randpostfix = Math.floor(Math.random() * (10 ** 6));
+            // this._plates_old[`_old_${plate.id}_#${randpostfix}`] = old_plate;
+            console.info(
+                'Plate', old_plate.id,
+                'of type', `'${old_plate.alias}'`,
+                'will be overwritten with the plate of type', `'${plate.alias}'`
+            );
+            old_plate.dispose();
         }
 
         this._plates[plate.id] = plate;
@@ -679,8 +685,8 @@ export default class PlateLayer extends Layer<SVG.Container> {
         /// are there any changes
         let is_dirty = false;
 
-        /// remove possible flage from local plates 
-        for (let plate_id of Object.keys(this._plates)) {
+        /// remove possible flags from local plates 
+        for (let plate_id in this._plates) {
             this._plates[Number(plate_id)].___touched = undefined;
             this._plates[Number(plate_id)].highlightError(false);
         }

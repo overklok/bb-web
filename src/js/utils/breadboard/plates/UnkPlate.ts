@@ -58,13 +58,6 @@ export default class UnkPlate extends LinearPlate {
     /**
      * @inheritdoc
      */
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error('Method not implemented.');
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected __setProps__(props: PlateProps) {
         super.__setProps__(props);
 
