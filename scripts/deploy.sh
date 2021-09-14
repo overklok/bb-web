@@ -15,8 +15,8 @@ do
     esac
 done
 
-STATIC_FRONTEND=$SRV_ROOT/tapanda/apps/frontend/static
-STATIC_COURSES=$SRV_ROOT/tapanda/apps/courses/static
+STATIC_FRONTEND=$SRV_ROOT/app/tapanda/apps/frontend/static
+STATIC_COURSES=$SRV_ROOT/app/tapanda/apps/courses/static
 
 cd $JSAPP_ROOT
 
