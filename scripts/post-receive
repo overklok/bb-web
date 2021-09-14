@@ -1,11 +1,11 @@
 #!/bin/bash
 # hooks/post-receive (+x):
 
-TARGET="/home/overklok/tapanda/ch-board/tmp/jsapp-dev"
-GIT_DIR="/home/overklok/tapanda/ch-board/jsapp-dev.git"
+TARGET="/home/overklok/tapanda/ch-board/tmp/jsapp"
+GIT_DIR="/home/overklok/tapanda/ch-board/jsapp.git"
 BRANCH="master"
 SRV_ROOT="/home/overklok/tapanda/ch-board/srv-main"
-SRV_WSGI="/var/www/dev_tapanda_ru_wsgi.py"
+SRV_WSGI="/var/www/tapanda_ru_wsgi.py"
 
 mkdir -p $TARGET
 
