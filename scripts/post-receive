@@ -16,8 +16,8 @@ do
         echo "Ref $ref received. Deploying ${BRANCH} branch to production..."
         git --work-tree=$TARGET --git-dir=$GIT_DIR checkout -f
 
-        chmod +x $TARGET/scripts/build.sh
-        $TARGET/scripts/build.sh -j $TARGET -s $SRV_ROOT
+        chmod +x $TARGET/scripts/deploy.sh
+        $TARGET/scripts/deploy.sh -j $TARGET -s $SRV_ROOT
     else
         echo "Ref $ref received. Doing nothing: only the ${BRANCH} branch may be deployed on this server."
     fi
