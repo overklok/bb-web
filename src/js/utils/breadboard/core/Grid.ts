@@ -330,13 +330,16 @@ export default class Grid {
     auxPoint<K extends number | string>(i: K, j?: number): AuxPointOrRow<K> {
         const item = this._aux_points.get(i);
 
+        console.log(i, j, item);
+        
+
         try {
             if (typeof i === 'string') {
                 if (Array.isArray(item)) throw new Error(i);
                 return item as AuxPointOrRow<K>;
             }
 
-            if (j && typeof j === 'number' && Array.isArray(item)) {
+            if (j !== null && typeof j === 'number' && Array.isArray(item)) {
                 return item[j] as AuxPointOrRow<K>;
             }
         } catch (TypeError) {
@@ -559,6 +562,7 @@ export default class Grid {
 
         for (const point of this._aux_points.values()) {
             if (Array.isArray(point)) continue;
+
 
             if (!(this._aux_points.has(point.idx.x))) {
                 this._aux_points.set(point.idx.x, []);

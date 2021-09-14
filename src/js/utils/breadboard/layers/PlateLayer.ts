@@ -166,7 +166,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
     /** {@link Plate} instances which currently forms the current composition, keyed by its identifiers */
     private _plates: {[key: number]: Plate};
     /** [debug only] {@link Plate} instances that were overwritten accidentally (to detect leakages or key assignment issues). Keys are salted to keep possible duplicates */
-    private _plates_old: {[key: string]: Plate};
+    private _plates_old: { [key: string]: Plate } = {};
 
     /** the {@link Cell} where the {@link Plate} should go if user interrupts dragging */
     private _cell_supposed: Cell;
