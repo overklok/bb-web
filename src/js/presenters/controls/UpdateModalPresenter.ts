@@ -23,6 +23,8 @@ export default class UpdateModalPresenter extends ModalPresenter {
 
     @on(ConnectionStatusEvent)
     private async updateVersionNumbers(evt: ConnectionStatusEvent) {
+        if (evt.status !== 'connected') return;
+
         try {
             this.ver_latest_client = this.ver_latest_client || await this.model_server.getLatestClient();
         } catch (e) {
