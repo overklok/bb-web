@@ -34,7 +34,7 @@ import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewCompo
 
 import "../css/global.less";
 import CodeModel from "./models/common/CodeModel";
-import i18n_init from "src/i18n/config";
+import i18n_init from "~/i18n/config";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;
