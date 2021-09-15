@@ -28,7 +28,7 @@ npm run build
 
 cd $SRV_ROOT/app || exit
 
-cp -r $JSAPP_ROOT/dist/fonts    $STATIC_FRONTEND/frontend/app/fonts/
+cp -r $JSAPP_ROOT/dist/fonts    $STATIC_FRONTEND/frontend/app/
 cp $JSAPP_ROOT/dist/main.js     $STATIC_FRONTEND/frontend/app/
 cp $JSAPP_ROOT/dist/main.css    $STATIC_FRONTEND/frontend/app/
 cp $JSAPP_ROOT/dist/blockly.js  $STATIC_COURSES/admin/vendor/admin-blockly/blockly.js
