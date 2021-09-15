@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+- Invalid 'referrerPolicy' value for CORS in SSL requests
+
+### Updated
+- URL scheme is shifted with prefix to work within a separated branch of server URL schema
+
 ### Added
 - Client version check (+ widget)
 ## [1.2.1] - 2021-09-14
