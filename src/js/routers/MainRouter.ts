@@ -12,21 +12,26 @@ export class MissionRouteEvent extends RouteEvent<MissionRouteEvent> {
 
 export default class MainRouter extends LayoutRouter {
     routes = [
+        // Handles root URL [for webpack-dev-server]
         {
-            pathexp: '/', name: 'index',
+            pathexp: '/', name: 'falseindex',
+            destination: () => this.redirect(this.reverse('index'))
+        },
+        {
+            pathexp: '/app', name: 'index',
             destination: 'index'
         },
         {
-            pathexp: '/courses', name: 'course-list',
+            pathexp: '/app/courses', name: 'course-list',
             destination: 'course_list'
         },
         {
-            pathexp: '/lessons/{int}', name: 'lesson',
+            pathexp: '/app/lessons/{int}', name: 'lesson',
             destination: (lesson_id: number) =>
                 this.emit(new LessonRouteEvent({lesson_id}))
         },
         {
-            pathexp: '/lessons/{int}/missions/{int}', name: 'mission',
+            pathexp: '/app/lessons/{int}/missions/{int}', name: 'mission',
             destination: (lesson_id: number, mission_id: number) =>
                 this.emit(new MissionRouteEvent({lesson_id, mission_id}))
         }
