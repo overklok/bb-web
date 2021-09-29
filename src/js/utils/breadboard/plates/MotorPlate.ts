@@ -37,13 +37,6 @@ export default class MotorPlate extends LinearPlate {
     };
 
     /**
-     * @inheritdoc
-     */
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error("Method not implemented.");
-    }
-
-    /**
      * Draws a motor over the plate surface
      */
     private _drawPicture(qs=Plate.QuadSizePreferred) {

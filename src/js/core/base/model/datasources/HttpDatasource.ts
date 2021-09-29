@@ -129,7 +129,7 @@ export default class HttpDatasource extends SynchronousDatasource {
             mode:           this.options.mode,
             cache:          this.options.cache,
             credentials:    this.options.credentials,
-            referrerPolicy: "no-referrer",
+            // referrerPolicy: "no-referrer",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

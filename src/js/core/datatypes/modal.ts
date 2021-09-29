@@ -10,6 +10,7 @@ export interface IDialogData {
     on_action?: (action: ModalAction) => void;
     is_acceptable?: boolean;
     is_dismissible?: boolean;
+    is_centered?: boolean;
 }
 
 export interface IModalData {

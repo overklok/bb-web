@@ -79,13 +79,6 @@ export default class PhotoresistorPlate extends LinearPlate {
     };
 
     /**
-     * @inheritdoc
-     */
-    protected _getOppositeCell(cell: Cell): Cell {
-        throw new Error("Method not implemented.");
-    }
-
-    /**
      * Updates debug input value indicator
      * 
      * @param input_value value to display

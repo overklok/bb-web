@@ -2,7 +2,6 @@ import Presenter, { on, restore } from "~/js/core/base/Presenter";
 import AboutView from "~/js/views/controls/AboutView";
 import ConnectionModel, { ConnectionStatusEvent } from "~/js/models/common/ConnectionModel";
 import ServerModel from "~/js/models/common/ServerModel";
-import ModalModel from "~/js/core/models/ModalModel";
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;

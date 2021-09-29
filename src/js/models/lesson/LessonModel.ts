@@ -42,6 +42,8 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
 
         let missions: Mission[] = [];
 
+        let lang = _lesson.language || "en";
+
         for (let _mission of _lesson.missions) {
             if (_mission.exercises.length > 0) {
                 missions.push(
@@ -54,6 +56,7 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
             id: _lesson.pk,
             name: _lesson.name || "NONAME",
             description: _lesson.description || "NODESC",
+            language: lang,
             missions: missions
         };
     }
@@ -191,9 +194,12 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
         return {
             id: _exercise.pk,
             name: _exercise.name || "unnamed",
-            popovers: cloneDeep(_exercise.popovers),
-            message_success: _exercise.message_success,
+            popovers: [],
+            // popovers: cloneDeep(_exercise.popovers),
+            message_success: null,
+            // message_success: _exercise.message_success,
             task_description: _exercise.task_description,
+            task_description_alt: _exercise.task_description_alt,
 
             is_sandbox: _exercise.is_sandbox || false,
             layout_mode: layout_mode,
@@ -239,6 +245,7 @@ type Exercise = {
     is_sandbox: boolean;
     message_success: string;
     task_description: string;
+    task_description_alt: string;
     layout_mode: string;
     launch_mode: LaunchMode;
     popovers: Popover[];
@@ -300,6 +307,7 @@ export type Lesson = {
     id: number;
     name: string;
     description: string;
+    language: string;
     missions: Mission[];
 }
 

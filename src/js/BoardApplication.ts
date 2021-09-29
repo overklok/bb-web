@@ -34,6 +34,7 @@ import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewCompo
 
 import "../css/global.less";
 import CodeModel from "./models/common/CodeModel";
+import i18n_init from "~/i18n/config";
 
 interface BoardApplicationConfig extends AppConf {
     silent?: boolean;
@@ -68,6 +69,8 @@ class BoardApplication extends Application<BoardApplicationConfig> {
     }
 
     protected async setup() {
+        i18n_init('en', ['main']);
+
         let data_sources: AsynchronousDatasource[] = [];
 
         if (!this.config.silent) {

@@ -12,7 +12,9 @@ type Connection = {
     is_active: boolean;
 }
 export class ServerGreeting {
-    version: { core: (number|string)[], app: (number|string)[], comm: (number|string)[] }
+    version: { core: (number|string)[], comm: (number|string)[] };
+    app_details: { version: (number|string)[], version_skip: string };
+    
     is_editable: boolean;
 }
 
@@ -20,6 +22,7 @@ const CHANNEL_APP_COMMAND = 'app_command'
 const COMMAND_ISSUE_REPORT_REQUEST = 'issue_report_request'
 const COMMAND_LOG_DOWNLOAD_REQUEST = 'log_download_request'
 const COMMAND_SAVE_LANGUAGE = 'save_language'
+const COMMAND_SKIP_VERSION = 'skip_version'
 
 export default class ConnectionModel extends AsynchronousModel<Connection> {
     static alias = 'connection';
@@ -40,14 +43,21 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
         this.send(CHANNEL_APP_COMMAND, { command: COMMAND_LOG_DOWNLOAD_REQUEST });
     }
 
+    public requestSkipVersion(version: string) {
+        this.send(CHANNEL_APP_COMMAND, { command: COMMAND_SKIP_VERSION, data: { version } });
+    }
+
     @connect()
     private onConnect(greeting: ServerGreeting) {
         this.setState({is_active: true});
         this.emit(new ConnectionStatusEvent({
             status: "connected",
             version: {
-                self: greeting.version.app || ['n/a'],
+                self: greeting.app_details.version || ['n/a'],
                 core: greeting.version.core || ['n/a']
+            },
+            version_skip: {
+                self: greeting.app_details.version_skip || 'n/a'
             }
         }));
 
@@ -84,6 +94,7 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
 export class ConnectionStatusEvent extends ModelEvent<ConnectionStatusEvent> {
     status: 'connected' | 'disconnected' | 'waiting' | 'timeout';
     version?: { self: (string|number)[], core: (string|number)[] };
+    version_skip?: { self: string }
 }
 
 export class IssueReportCompleteEvent extends ModelEvent<IssueReportCompleteEvent> {}

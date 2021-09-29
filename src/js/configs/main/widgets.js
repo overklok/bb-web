@@ -18,6 +18,7 @@ import VariableView     from "~/js/views/common/VariableView";
 import {SettingsView}   from "~/js/views/controls/SettingsView";
 import AboutView        from "~/js/views/controls/AboutView";
 import IssueView        from "~/js/views/controls/IssueView";
+import UpdateView       from "~/js/views/controls/UpdateView";
 
 /* Basic Presenters */
 import AlertPresenter           from "~/js/core/presenters/AlertPresenter";
@@ -45,6 +46,8 @@ import AlertLessonPresenter             from "~/js/presenters/lesson/AlertLesson
 import SettingsModalPresenter           from "~/js/presenters/controls/SettingsModalPresenter";
 import AboutPresenter                   from "~/js/presenters/controls/AboutPresenter";
 import IssuePresenter                   from "~/js/presenters/controls/IssuePresenter";
+import UpdateModalPresenter             from "~/js/presenters/controls/UpdateModalPresenter";
+import UpdatePresenter                  from "~/js/presenters/controls/UpdatePresenter";
 
 export default function(no_menu) {
     return {
@@ -52,10 +55,19 @@ export default function(no_menu) {
         root: [
             {view_type: LayoutView, presenter_types: [LayoutPresenter, LayoutLessonPresenter]},
             {view_type: ToastView, presenter_types: [ToastPresenter]},
-            {view_type: ModalView, presenter_types: [ModalPresenter, PopoverLessonPresenter, SettingsModalPresenter]},
+            {view_type: ModalView, presenter_types: [
+                ModalPresenter, 
+                PopoverLessonPresenter, 
+                SettingsModalPresenter,
+            ]},
             {view_type: AlertView, presenter_types: [AlertPresenter, AlertLessonPresenter]},
+            {view_type: ModalView, presenter_types: [UpdateModalPresenter]}
         ],
         widgets: {
+            update: {
+                view_type: UpdateView.UpdateView,
+                presenter_types: [UpdatePresenter]
+            },
             courses: {
                 view_type: HomeView.HomeView,
                 presenter_types: [LessonMenuPresenter],

@@ -9,9 +9,21 @@ export default class ServerModel extends HttpModel<any> {
     async getVersion() {
         const response = await this.request(
             'meta/version',
-            {method: RequestMethod.GET}
+            { method: RequestMethod.GET }
         );
 
         return response;
+    }
+
+    async getLatestClient(): Promise<{ version: string, file: string }> {
+        const response = await this.request(
+            'distros/latest',
+            { method: RequestMethod.GET }
+        );
+
+        return {
+            version: response.version,
+            file: response.file
+        };
     }
 }
