@@ -15,7 +15,9 @@ export default class UpdatePresenter extends Presenter<UpdateView.UpdateView> {
     protected async setVersionNumbers(evt: ConnectionStatusEvent) {
         const ver_latest_client = await this.model_server.getLatestClient();
 
-        const ver_local = evt.version.self.join('.');
+        const [v_min, v_maj, v_ptc, ...postfix] = evt.version.self;
+
+        const ver_local = [v_min, v_maj, v_ptc].join('.') + postfix.join('');
         const ver_remote = ver_latest_client.version;
 
         this.setViewProps({
