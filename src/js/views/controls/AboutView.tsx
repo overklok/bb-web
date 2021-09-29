@@ -25,10 +25,12 @@ namespace AboutView {
         }
 
         render(): React.ReactNode {            
+            const logo_class = i18next.language == 'en' ? 'logo__full_english' : '';
+
             return <div className="about">
                 <div className="about__heading">
                     <div className="about__heading-section">
-                        <div className="logo logo__full" />
+                        <div className={`logo logo__full ${logo_class}`} />
                         <p className="logo-subscription">{i18next.t('main:about.modal.logo_subscription')}</p>
                     </div>
 
