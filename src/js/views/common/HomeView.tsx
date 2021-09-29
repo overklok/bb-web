@@ -62,10 +62,12 @@ namespace HomeView {
         render(): React.ReactNode {
             const ver = 'v' + __VERSION__.split('/')[1].split('.').slice(0, 3).join('.');
 
+            const logo_class = i18next.language == 'en' ? 'logo__full_english' : '';
+
             return (
                 <div className="pave">
                     <div className="home-header">
-                        <div className="logo logo_centered logo_light logo__full" />
+                        <div className={`logo logo_centered logo_light logo__full ${logo_class}`} />
                         <p>{i18next.t('main:home.header.title')}</p>
 
                         <div className="home-langselect">
