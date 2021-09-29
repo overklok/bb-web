@@ -8,12 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Invalid 'referrerPolicy' value for CORS in SSL requests
+- Incorrect client rc version number parsing in the update dialog  
 
 ### Updated
 - URL scheme is shifted with prefix to work within a separated branch of server URL schema
 
 ### Added
 - Client version check (+ widget)
+- Display task description for exercises based on lesson language property
+- Display course's language in the lesson menu (initial view)
+
 ## [1.2.1] - 2021-09-14
 
 ### Fixed

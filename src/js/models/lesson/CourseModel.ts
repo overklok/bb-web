@@ -5,6 +5,7 @@ type CourseLesson = {
     id: number;
     name: string;
     description: string;
+    language: string;
 }
 
 export type Course = {
@@ -58,7 +59,8 @@ export default class CourseModel extends CRUDHttpModel<Course> {
         return {
             id: _lesson.pk,
             name: _lesson.fields.name,
-            description: _lesson.fields.description
+            description: _lesson.fields.description,
+            language: _lesson.fields.language
         }
     }
 

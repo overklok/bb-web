@@ -19,6 +19,7 @@ declare const __VERSION__: string;
 interface Lesson {
     id: number;
     name: string;
+    language: string;
 }
 
 interface Course {
@@ -41,7 +42,6 @@ namespace HomeView {
         lesson_id: number;
         error?: string;
         lang_options: { value: string, label: string }[];
-        hui: string;
     }
 
     export class HomeView extends View<Props, undefined> {
@@ -49,7 +49,6 @@ namespace HomeView {
             courses: [],
             lesson_id: undefined,
             lang_options: null,
-            hui: null
         }
 
         constructor(props: AllProps<Props>) {
@@ -169,7 +168,8 @@ namespace HomeView {
                                                     </span>
 
                                                     <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>
-                                                        0 <i className="fa fa-tasks" />
+                                                        {lesson.language == 'en' ? '🇺🇸' : '🇷🇺'}
+                                                        {/* 0 <i className="fa fa-tasks" /> */}
                                                     </span>
                                                 </li>
                                             </React.Fragment>
