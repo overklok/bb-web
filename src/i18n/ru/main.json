@@ -86,6 +86,12 @@
             "start": "Запустить",
             "check": "Проверить",
             "checking": "Проверка..."
+        },
+        "check": {
+            "invalid_circuit": "Схема собрана неправильно",
+            "board_version_mismatch": "Версии досок не сходятся",
+            "timeout": "Тайм-аут проверки",
+            "unknown": "Неизвестный код"
         }
     },
     "settings": {

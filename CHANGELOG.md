@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [1.2.2] - 2021-10-30
 
 ### Fixed
 - Invalid 'referrerPolicy' value for CORS in SSL requests
@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Updated
 - URL scheme is shifted with prefix to work within a separated branch of server URL schema
+- Verifier responses is localized (only for bb-srv 0.0.9+)
 
 ### Added
 - Client version check (+ widget)

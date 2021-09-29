@@ -86,6 +86,12 @@
             "start": "Launch",
             "check": "Check",
             "checking": "Checking..."
+        },
+        "check": {
+            "invalid_circuit": "The circuit is assembled incorrectly",
+            "board_version_mismatch": "Board version mismatch",
+            "timeout": "Check timeout",
+            "unknown": "Unknown code"
         }
     },
     "settings": {

@@ -72,10 +72,12 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             return;
         }
 
+        const message = i18next.t(`main:lesson.check.${evt.verdict.code || 'unknown'}`, evt.verdict.message);
+
         if (evt.verdict.status === ValidationVerdictStatus.Fail) {
             this.modal.showToast({
                 title: i18next.t('main:lesson.modal.validation_fail.title'),
-                content: evt.verdict.message,
+                content: message,
                 status: ColorAccent.Danger,
                 timeout: 5000
             })
@@ -84,7 +86,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
         if (evt.verdict.status === ValidationVerdictStatus.Error) {
             this.modal.showToast({
                 title: i18next.t('main:lesson.modal.validation_error.title'),
-                content: evt.verdict.message,
+                content: message,
                 status: ColorAccent.Warning,
                 timeout: 5000
             })
@@ -93,7 +95,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
         if (evt.verdict.status === ValidationVerdictStatus.Undefined) {
             this.modal.showToast({
                 title: '',
-                content: evt.verdict.message || i18next.t('main:lesson.modal.validation_undefined.content_default'),
+                content: message || i18next.t('main:lesson.modal.validation_undefined.content_default'),
                 status: ColorAccent.Warning,
                 timeout: 5000
             })

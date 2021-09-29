@@ -13,6 +13,7 @@ export enum ValidationVerdictStatus {
 export type ValidationVerdict = {
     status: ValidationVerdictStatus;
     message: string;
+    code: string;
     details: {
         region?: any
     };
@@ -401,6 +402,7 @@ export default class ProgressModel extends HttpModel<Progress> {
             const verdict: ValidationVerdict = {
                 message: res.message,
                 status: res.status,
+                code: res.code,
                 details: {}
             };
 
