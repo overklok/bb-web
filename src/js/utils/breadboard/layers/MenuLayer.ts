@@ -171,7 +171,7 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
         while ((el = el.parentElement) && !(el.classList.contains(ContextMenu.Class))) {}
 
         if (!el) {
-            evt.preventDefault();
+            // evt.preventDefault();
             this._hideMenu();
         }
     }
