@@ -1,7 +1,0 @@
-.current-line {
-     transition: stroke 500ms;
-}
-
-.current-particle {
-    transition: fill, animation-duration 500ms;
-}

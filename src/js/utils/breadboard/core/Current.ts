@@ -2,10 +2,6 @@ import SVG from 'svg.js';
 
 import { XYObject } from './types';
 
-import '../styles/current.css';
-
-let SYMBOL_SMOKE = undefined;
-
 type RGBColor = [number, number, number];
 
 /**
@@ -202,8 +198,7 @@ export default class Current {
         this._line = this.container
             .path(this._line_path)
             .fill('none')
-            .stroke(this._style)
-            .addClass('current-line');
+            .stroke(this._style);
 
         this._container_anim.before(this._line);
         this._container_anim.opacity(0);
@@ -309,7 +304,7 @@ export default class Current {
             }
 
             // Сгенерировать частицу
-            this._particles[i] = this._container_anim.circle(this._style.particle_radius * 2).addClass('current-particle');
+            this._particles[i] = this._container_anim.circle(this._style.particle_radius * 2);
 
             // Заливка и центрирование
             this._particles[i].fill({
@@ -696,7 +691,7 @@ export default class Current {
         let delay;
 
         // новая длительность цикла анимации (ДЦА), мс
-        let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
+        let dur = Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax);
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;
