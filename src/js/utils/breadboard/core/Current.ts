@@ -693,7 +693,7 @@ export default class Current {
         let delay;
 
         // новая длительность цикла анимации (ДЦА), мс
-        let dur = Math.ceil(Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
+        let dur = (Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;
