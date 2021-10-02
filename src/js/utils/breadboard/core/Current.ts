@@ -2,8 +2,6 @@ import SVG from 'svg.js';
 
 import { XYObject } from './types';
 
-let SYMBOL_SMOKE = undefined;
-
 type RGBColor = [number, number, number];
 
 /**
@@ -693,7 +691,7 @@ export default class Current {
         let delay;
 
         // новая длительность цикла анимации (ДЦА), мс
-        let dur = (Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax));
+        let dur = Current.DurationMax + speed * (Current.DurationMin - Current.DurationMax);
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;

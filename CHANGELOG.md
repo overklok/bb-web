@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.4] - 2021-01-03
+
+### Fixed
+- Current line transition which causes unwanted color appearance when switching from weights close to zero
+- Unmatched current particle positions when switching the weight caused by incorrect math processing
+
+## [1.2.3] - 2021-10-30
+
+### Added
+- Localized Tapanda log (shown at 'home' and 'about' widgets)
+
 ## [1.2.2] - 2021-10-30
 
 ### Fixed
