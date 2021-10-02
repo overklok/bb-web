@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.5] - 2021-01-03
+
+### Fixed
+- Board: fixed unfocusable input fields when injecting the board module 
+
 ## [1.2.4] - 2021-01-03
 
 ### Fixed
