@@ -25,7 +25,7 @@ export default class TaskLessonPresenter extends Presenter<RichTextView.RichText
         let task_description = exercise.task_description,
             task_description_alt = exercise.task_description_alt.trim();
 
-        if (lesson.language == 'en' && task_description_alt) {
+        if (lesson.language == 'ru' && task_description_alt) {
             task_description = task_description_alt;
         }
 

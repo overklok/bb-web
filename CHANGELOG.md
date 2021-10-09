@@ -4,12 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.2.5] - 2021-01-03
+## [1.2.6] - 2021-01-09
+
+### Fixed
+- High CPU usage by HomeView - caused by SVG background animation
+
+### Added
+- Lesson filtering in HomeView based on current language
+
+### Updated
+- Minor visual updates
+
+## [1.2.5] - 2021-10-03
 
 ### Fixed
 - Board: fixed unfocusable input fields when injecting the board module 
 
-## [1.2.4] - 2021-01-03
+## [1.2.4] - 2021-10-03
 
 ### Fixed
 - Current line transition which causes unwanted color appearance when switching from weights close to zero

@@ -39,7 +39,7 @@ cp $JSAPP_ROOT/dist/board.css   $STATIC_COURSES/admin/vendor/admin-board/board.c
 workon bb-srv-main
 cd $SRV_ROOT/app || exit
 python manage.py collectstatic --no-input
-touch WSGI_PATH
+touch $WSGI_PATH
 deactivate
 
 # hooks/post-receive (+x):
