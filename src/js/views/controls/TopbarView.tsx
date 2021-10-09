@@ -287,7 +287,7 @@ namespace TopbarView {
                         </div>
                     </div>
                     <div className="navbar__section">
-                        <i className="fa fa-exclamation-triangle" style={{cursor: 'pointer'}} onClick={() => this.chooseMenuItem(MenuItem.About)}></i>
+                        <i className="fa fa-info-circle" style={{cursor: 'pointer'}} onClick={() => this.chooseMenuItem(MenuItem.About)}></i>
                     </div>
                     <div className="navbar__section">
                         <StatusIndicator status={this.props.status} />

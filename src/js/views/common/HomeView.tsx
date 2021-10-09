@@ -151,31 +151,10 @@ namespace HomeView {
                                 {this.props.courses.map((course, idx) =>
                                     <React.Fragment key={idx}>
                                         <li className="list__delimiter" key={idx}>
-                                            {course.name}
+                                            {/* {course.name} */}
                                         </li>
 
-                                        {course.lessons.map((lesson, idx) =>
-                                            <React.Fragment key={idx}>
-                                                <li className="list__item list__item_clickable"
-                                                    onClick={() => this.handleLessonClick(lesson.id)}
-                                                >
-                                                    {
-                                                        this.props.lesson_id === lesson.id ?
-                                                            <span className="mark mark_warning" /> :
-                                                            <span className="mark" />
-                                                    }
-
-                                                    <span>
-                                                        {i18next.t("main:home.courses.lesson")} {idx + 1}. {lesson.name}
-                                                    </span>
-
-                                                    <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>
-                                                        {lesson.language == 'en' ? '🇺🇸' : '🇷🇺'}
-                                                        {/* 0 <i className="fa fa-tasks" /> */}
-                                                    </span>
-                                                </li>
-                                            </React.Fragment>
-                                        )}
+                                        {this.renderCourse(course)}
                                     </React.Fragment>
                                 )}
                             </ul>
@@ -183,6 +162,31 @@ namespace HomeView {
                     </Modal>
                 </CSSTransition>
             )
+        }
+    
+        private renderCourse(course: Course) {
+            const lessons = course.lessons.filter(lesson => lesson.language == this.props.lang)
+
+            return [lessons.map((lesson, idx) =>
+                <li className="list__item list__item_clickable"
+                    onClick={() => this.handleLessonClick(lesson.id)}
+                >
+                    {
+                        this.props.lesson_id === lesson.id ?
+                            <span className="mark mark_warning" /> :
+                            <span className="mark" />
+                    }
+
+                    <span>
+                        {lesson.name}
+                    </span>
+
+                    <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>
+                        {/* {lesson.language == 'en' ? '🇺🇸' : '🇷🇺'} */}
+                        {/* 0 <i className="fa fa-tasks" /> */}
+                    </span>
+                </li>
+            )]
         }
     }
 }

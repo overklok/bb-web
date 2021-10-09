@@ -17,8 +17,8 @@ export default function (allow_demo: boolean, lang: string) {
                             title: 'Language',
                             type: SettingType.ChoiceSingle,
                             choices: [
-                                { value: 'en', label: '🇺🇸 English' },
-                                { value: 'ru', label: '🇷🇺 Русский' },
+                                { value: 'en', label: 'English' },
+                                { value: 'ru', label: 'Русский' },
                             ],
                             default: lang || 'en',
                         }
