@@ -8,7 +8,9 @@ import IRoutingService from "../services/interfaces/IRoutingService";
 
 /**
  * Communicates single {@link View} with the logical layer of application
- * in the face of Presenter objects.
+ * in the face of Presenter objects
+ * 
+ * Aggregates Presenter requests to update props of the View.
  *
  * For {@link Presenter}, {@link ViewConnector} provides an interface
  * to extract Model instances using {@link IModelService}.
@@ -125,7 +127,7 @@ export default class ViewConnector {
     }
 
     /**
-     * Attach a {@link View} instance that is created by the {@link ViewService}.
+     * Attach a {@link View} instance created by the {@link ViewService}.
      * The instance will be available for {@link Presenter} instances.
      * 
      * The {@link View} will be propagated to all of the presenters collected in the object.

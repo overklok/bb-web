@@ -19,7 +19,7 @@ interface Subscriptable {
 /**
  * Decorator function applied to Presenter methods to subscribe them to events
  *
- * @param event_type_objs
+ * @param event_type_objs types of events to subscribe to
  */
 export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -75,6 +75,15 @@ export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam
     }
 }
 
+/**
+ * Decorator function applied to Presenter methods to call them if an event has been 
+ * triggered previously 
+ * 
+ * Used with {@link on} in order to trigger events when the Presenter is created 
+ * (i.e. when related View is rendered)
+ *
+ * @param event_type_objs types of events to subscribe to
+ */
 export function restore(...event_types: typeof AbstractEvent[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (target.presets == null) {
@@ -103,7 +112,7 @@ export function restore(...event_types: typeof AbstractEvent[]) {
 }
 
 /**
- * Alternative to {@link on} function
+ * Alternative to {@link on} function, works with special kind of events, {@link Action}
  *
  * @param action_type
  */
@@ -129,10 +138,10 @@ export default class Presenter<V extends View> implements Subscriptable {
     private props_deferred: Partial<ViewPropsOf<V>>;
 
     /**
-     * Create a Presenter.
+     * Creates the Presenter
      *
      * @param svc_model   an instance of model service
-     * @param svc_routing      an instance of Router, if used
+     * @param svc_routing an instance of Router, if used
      */
     constructor(svc_model: IModelService, svc_routing?: RoutingService) {
         if (this.presets == null) {this.presets = new Map();}
@@ -146,10 +155,27 @@ export default class Presenter<V extends View> implements Subscriptable {
      */
     public getInitialProps(): ViewPropsOf<V> | any {}
 
+    /**
+     * Attaches a {@link View} instance to the {@link Presenter}
+     * 
+     * The {@link View} attaches once after its mounting, re-attaches when re-mounting.
+     * Does not detach until the end of application lifecycle. 
+     * 
+     * @param view a View instance to attach
+     */
     public attachView(view: V) {
         this.view = view;
     }
 
+    /**
+     * Attaches a callback function to call when prop update is required
+     * 
+     * When {@link setViewProps} is called, the callback function will be called.
+     * It usually combines given props with the previous one, and passes it to the View to
+     * render. 
+     * 
+     * @param cb callback function which updates the View
+     */
     public onPropsUpdate(cb: (props: ViewPropsOf<V>) => void) {
         this.on_props_cb = cb;
 
@@ -159,6 +185,11 @@ export default class Presenter<V extends View> implements Subscriptable {
         }
     }
 
+    /**
+     * Passes given props to the {@link View} instance attached 
+     * 
+     * @param props props for the View required to pass 
+     */
     protected setViewProps(props: Partial<ViewPropsOf<V>>) {
         if (this.on_props_cb) {
             this.on_props_cb(props);
@@ -168,10 +199,13 @@ export default class Presenter<V extends View> implements Subscriptable {
     }
 
     /**
-     * Retrieve an instance of the Model.
+     * Retrieves an instance of the Model.
+     * 
+     * Uses privately accessible ModelService instance to retrieve the 
+     * Model instance from the singleton database by its type.
      *
-     * @param model_type
-     * @param suppress_errors
+     * @param model_type        type of the Model to retrieve
+     * @param suppress_errors   whether to return null when the model can't be found
      */
     protected getModel<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>
         (model_type: M, suppress_errors: boolean = false): InstanceType<M>
@@ -185,6 +219,16 @@ export default class Presenter<V extends View> implements Subscriptable {
         return model;
     }
 
+    /**
+     * Switches the app to a different URL route
+     * 
+     * Updates the URL in the browser's address bar accordingly.
+     * 
+     * @param route_name    name of the route from the router schema
+     * @param params        parameters for the given route       
+     * @param override      whether to replace current history entry with the new URL 
+     *                      instead of pushing it to the history
+     */
     protected forward(route_name: string, params: any[] = [], override: boolean = false) {
         if (!this.svc_routing) {
             throw new Error("No router is available for the application");

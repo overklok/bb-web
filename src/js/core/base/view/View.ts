@@ -71,52 +71,101 @@ export function deferUntilMounted(target: any, propertyKey: string, descriptor: 
     descriptor.value = deferree;
 }
 
+/**
+ * A passive interface that displays data (the {@link Model}) and routes user commands ({@link ViewEvent}) 
+ * to the {@link Presenter} to act upon that data.
+ * 
+ * Views implementation is currently relied on React Components but it depends on the specific {@link ViewService}.
+ */
 export abstract class View<P extends IViewProps = IViewProps, S extends IViewState = IViewState> extends React.Component<AllProps<P>, S> {
+    /** string identifier that can be referred when asking the ViewService to list all Views that currently exist */
     public static alias: string;
+    /** whether to update the `nest_mounted` prop of the View when its Nest is mounted */
     public static notifyNestMount: boolean = false;
 
+    /** whether the View is mounted */
     protected mounted: boolean;
 
+    /** functions to call when the View is mounted */
     private deferrees_mount: Function[];
 
+    /**
+     * Creates the View
+     * 
+     * @param props initial React properties of the View
+     */
     constructor(props: AllProps<P>) {
         super(props);
 
         this.mounted = false;
     }
 
+    /**
+     * Attaches itself to presenters aggregated by given {@link ViewConnector}.
+     * 
+     * @param connector connector for the {@link View}
+     */
     public attachConnector(connector: ViewConnector) {
         if (connector !== this.props.connector) {
             connector.attach(this);
         }
     }
 
+    /**
+     * Detaches itself from presenters aggregated by given {@link ViewConnector}
+     * 
+     * Does not recommended due to the lack of React Component mount-unmount event ordering.
+     * 
+     * @deprecated
+     */
     public detachConnector() {
         if (this.props.connector) {
             this.props.connector.detach();
         }
     }
 
+    /**
+     * Passes events expected by the View when mounted 
+     */
     public componentDidMount() {
         this.mounted = true;
         this.viewDidMount();
         this.emit(new MountEvent({}));
     }
 
+    /**
+     * Passes events expected by the View when unmounted 
+     */
     public componentWillUnmount() {
         this.mounted = false;
         this.emit(new UnmountEvent({}));
         this.viewWillUnmount();
     }
 
+    /**
+     * Renders content of the View
+     * 
+     * @returns child JSX components of the View
+     */
     public render(): ReactNode {
         this.emit(new RenderEvent({}));
 
         return null;
     }
 
+    /**
+     * Handles window resize
+     * 
+     * It may be helpful to optimize the contents when the window is resized,
+     * so this method may be implemented for this purpose.
+     */
     public resize() {}
 
+    /**
+     * Handles modal actions when rendered in {@link Modal}
+     * 
+     * @param action type of the modal action to handle
+     */
     public handleModalAction(action: ModalAction) {
         // pass by default, override if needed to customise
         switch (action) {
@@ -126,6 +175,9 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
         }
     }
 
+    /**
+     * Handles modal accept action when rendered in {@link Modal}
+     */
     protected handleModalAccept() {
         // pass by default, override if needed to customise
         this.requestModalAction(ModalAction.Accept);
