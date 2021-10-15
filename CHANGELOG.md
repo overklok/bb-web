@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.2.6] - 2021-01-09
+## [1.2.7] - 2021-10-15
+
+### Fixed
+- Empty Blockly code when IF/IFELSE block is persented in the workspace
+
+## [1.2.6] - 2021-10-09
 
 ### Fixed
 - High CPU usage by HomeView - caused by SVG background animation
