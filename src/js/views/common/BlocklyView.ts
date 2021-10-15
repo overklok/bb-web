@@ -211,6 +211,8 @@ export default class BlocklyView extends ImperativeView<BlocklyViewProps> {
                 }
             }
         } catch (err) {
+            console.error(err);
+            
             return chains;
         }
 
