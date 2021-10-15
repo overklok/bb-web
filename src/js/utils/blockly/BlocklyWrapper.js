@@ -38,8 +38,6 @@ Blockly.FieldDropdown.prototype.createMenu_ = function() {
 Blockly.InsertionMarkerManager.prototype.createMarkerBlock_ = function (sourceBlock) {
     let imType = sourceBlock.type;
 
-    console.log(imType);
-
     Blockly.Events.disable();
     try {
         let result = this.workspace_.newBlock(imType);
