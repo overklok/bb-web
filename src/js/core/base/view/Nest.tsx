@@ -38,10 +38,20 @@ interface INestState {
     view_props: AllProps<any>;
 }
 
+/**
+ * A component which wraps the View to manage its lifecycle
+ */
 export default class Nest extends React.PureComponent<INestProps<any>, INestState> {
+    /** ref for the node representing the nest */
     private readonly ref = React.createRef<HTMLDivElement>();
+    /** View component instance mounted inside the Nest */
     private view: View;
 
+    /**
+     * Initializes Nest instance with default state
+     * 
+     * @param props 
+     */
     constructor(props: INestProps<any>) {
         super(props);
 
@@ -53,6 +63,14 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
         };
     }
 
+    /**
+     * Handles when the Nest is mounted
+     * 
+     * For Views requiring to notify when the Nest is mounted, updates its `nest_mounted` prop.
+     * Attaches a handler to pass props updates to the View.
+     * 
+     * @inheritdoc
+     */
     componentDidMount() {
         if (Object.getPrototypeOf(this.view).constructor.notifyNestMount) {
             this.setState({mounted: true});
@@ -65,20 +83,43 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
         });
     }
 
+    /**
+     * Handles when the Nest is unmounted
+     * 
+     * Detaches a handler passing props updates to the View
+     * 
+     * @inheritdoc
+     */
     componentWillUnmount() {
         this.props.connector.onPropsUpdate(null);
     }
 
+    /**
+     * Handles when the Nest is updated
+     * 
+     * Attaches ViewConnector instance to the View to control it
+     * from related Presenters.
+     * 
+     * @inheritdoc
+     */
     componentDidUpdate(prevProps: Readonly<INestProps>, prevState: Readonly<INestState>, snapshot?: any) {
         if (this.view) {
             this.view.attachConnector(this.props.connector);
         }
     }
 
+    /**
+     * Propagates to call {@link View.resize} function to handle window resize
+     */
     notifyResizeView() {
         this.props.connector.resizeView();
     }
 
+    /**
+     * Handle View instance updates 
+     * 
+     * @param view 
+     */
     onRefUpdated(view: View) {
         // view created
         if (view && !this.view) {
@@ -96,6 +137,12 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
         }
     }
 
+    /**
+     * TODO: Docs
+     * 
+     * @param action 
+     * @returns 
+     */
     handleModalAction(action: ModalAction): boolean {
         if (this.view) {
             this.view.handleModalAction(action);
@@ -108,7 +155,6 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
     render() {
         const SpecificView = this.props.view_type;
 
-        // Список классов, которые должны использоваться в зависимости от свойств
         let klasses = classNames({
             'nest': true,
         });

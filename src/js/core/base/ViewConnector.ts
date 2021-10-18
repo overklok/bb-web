@@ -169,7 +169,7 @@ export default class ViewConnector {
     }
 
     /**
-     * Emit an event by the {@link View} or by one of {@link Presenter} instances (i.e. Actions)
+     * Emits event by the {@link View} or by one of {@link Presenter} instances (i.e. Actions)
      *
      * @param event the event to be passed
      */
@@ -180,7 +180,7 @@ export default class ViewConnector {
     }
 
     /**
-     * Resize the View attached to the connector
+     * Resizes the View attached to the connector
      */
     resizeView() {
         if (this.view) {

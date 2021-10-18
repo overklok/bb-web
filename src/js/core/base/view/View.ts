@@ -177,26 +177,47 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
 
     /**
      * Handles modal accept action when rendered in {@link Modal}
+     * 
+     * By default, requests ModalView containing the View within the Modal to remove it.
+     * Override if it's needed to customize behavior.
      */
     protected handleModalAccept() {
         // pass by default, override if needed to customise
         this.requestModalAction(ModalAction.Accept);
     }
 
+    /**
+     * Handles modal dismiss action when rendered in {@link Modal}
+     * 
+     * By default, requests ModalView containing the View within the Modal to remove it.
+     * Override if it's needed to customize behavior.
+     */
     protected handleModalDismiss() {
         // pass by default, override if needed to customise
         this.requestModalAction(ModalAction.Dismiss);
     }
 
+    /**
+     * Handles modal escape action when rendered in {@link Modal}
+     * 
+     * By default, requests ModalView containing the View within the Modal to remove it.
+     * Override if it's needed to customize behavior.
+     */
     protected handleModalEscape() {
         // pass by default, override if needed to customise
         this.requestModalAction(ModalAction.Escape);
     }
 
+    /**
+     * TODO: Docs
+     */
     protected requestModalAction(action: ModalAction) {
         this.props.action_request && this.props.action_request(action);
     }
 
+    /**
+     * Handles when the View is mounted
+     */
     protected viewDidMount() {
         // console.log(this.constructor.name, 'mount');
         this.props.connector.attach(this);
