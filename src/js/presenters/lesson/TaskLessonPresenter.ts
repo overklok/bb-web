@@ -22,15 +22,15 @@ export default class TaskLessonPresenter extends Presenter<RichTextView.RichText
         const exercise = this.lesson.getExercise(misson_idx, exercise_idx);
         const lesson = this.lesson.getState();
 
-        let task_description = exercise.task_description,
-            task_description_alt = exercise.task_description_alt.trim();
+        let task_description = exercise.task_description || '',
+            task_description_alt = exercise.task_description_alt || task_description;
 
         if (lesson.language == 'ru' && task_description_alt) {
             task_description = task_description_alt;
         }
 
         this.setViewProps({
-            content: task_description
+            content: task_description.trim()
         });
     }
 }
