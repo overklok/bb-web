@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.8] - 2021-10-19
+
+### Fixed
+- Empty 'distros/latest' sample response for http fakes
+- No key for lesson list item in HomeView
+- No fallback values for task_description, task_description_alt fields
+- Empty app_details object is not handles (actual when the core is connected via Socket.IO)
+
 ## [1.2.7] - 2021-10-15
 
 ### Fixed
