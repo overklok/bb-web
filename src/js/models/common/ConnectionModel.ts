@@ -49,15 +49,17 @@ export default class ConnectionModel extends AsynchronousModel<Connection> {
 
     @connect()
     private onConnect(greeting: ServerGreeting) {
+        const app_details = greeting.app_details || { version: null, version_skip: null };
+
         this.setState({is_active: true});
         this.emit(new ConnectionStatusEvent({
             status: "connected",
             version: {
-                self: greeting.app_details.version || ['n/a'],
+                self: app_details.version || ['n/a'],
                 core: greeting.version.core || ['n/a']
             },
             version_skip: {
-                self: greeting.app_details.version_skip || 'n/a'
+                self: app_details.version_skip || 'n/a'
             }
         }));
 

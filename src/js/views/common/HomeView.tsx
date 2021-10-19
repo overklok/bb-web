@@ -170,6 +170,7 @@ namespace HomeView {
             return [lessons.map((lesson, idx) =>
                 <li className="list__item list__item_clickable"
                     onClick={() => this.handleLessonClick(lesson.id)}
+                    key={lesson.id}
                 >
                     {
                         this.props.lesson_id === lesson.id ?

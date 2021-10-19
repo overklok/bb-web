@@ -1,5 +1,17 @@
 module.exports = [
     {
+        path: 'distros/latest',
+        params: {
+            method: 'get',
+        },
+        response_data: {
+            "file": "google.com", 
+            "arch": "win64", 
+            "version": "0.0.0", 
+            "is_prerelease": false
+        }
+    },
+    {
         path: 'courses',
         params: {
             method: 'get',
@@ -21,6 +33,7 @@ module.exports = [
                         "fields": {
                             "name": "elec lesson",
                             "description": "desc",
+                            "language": "en",
                             "order_num": null
                         }
                     }
@@ -52,6 +65,7 @@ module.exports = [
                             "mission": 83,
                             "name": "elec exercise 1",
                             "task_description": "desc",
+                            "task_description_alt": "desc",
                             "message_success": "",
                             "type": 0,
                             "is_sandbox": false,
@@ -84,6 +98,7 @@ module.exports = [
                             "mission": 84,
                             "name": "elec exercise 2",
                             "task_description": "",
+                            "task_description_alt": "",
                             "message_success": "",
                             "type": 0,
                             "is_sandbox": false,
