@@ -48,10 +48,11 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
      */
     public async componentDidUpdate(prevProps: Readonly<AllProps<P>>, prevState: Readonly<IViewState>, snapshot?: any) {
         if (prevProps.nest_mounted === false && this.props.nest_mounted === true) {
-            // await sleep(0);
+            // Wait until the nest is deployed because sometimes the content is not
+            // centered correctly when required
+            await new Promise(resolve => { requestAnimationFrame(resolve); });
 
             // first injection (i.e. nest just rendered)
-            // await this.injectAsync();
             this.inject(this.props.ref_parent.current);
 
             this.mounted = true;

@@ -370,11 +370,13 @@ export default class Pane extends React.Component<IProps, IState> {
             }
         }
 
-        return (
-            <TransitionGroup component={null}>
-                {elements}
-            </TransitionGroup>
-        );
+        return elements;
+
+        // return (
+        //     <TransitionGroup component={null}>
+        //         {elements}
+        //     </TransitionGroup>
+        // );
     }
 
     private renderNests() {
@@ -430,16 +432,16 @@ export default class Pane extends React.Component<IProps, IState> {
      */
     renderPane(index: number, orientation: PaneOrientation, data: ILayoutPane, ref: RefObject<Pane>): JSX.Element {
         return (
-            <CSSTransition
-                timeout={600}
-                key={'t' + (data.name || index)}
-                classNames="pane"
+            // <CSSTransition
+            //     timeout={600}
+            //     key={'t' + (data.name || index)}
+            //     classNames="pane"
 
-                onEntering={() => this.childWillEnter()}
-                onEntered={() => this.childDidEnter()}
-                onExiting={() => this.childWillLeave()}
-                onExited={() => this.childDidLeave()}
-            >
+            //     onEntering={() => this.childWillEnter()}
+            //     onEntered={() => this.childDidEnter()}
+            //     onExiting={() => this.childWillLeave()}
+            //     onExited={() => this.childDidLeave()}
+            // >
                 <Pane
                     key={data.name || index}
                     name={data.name}
@@ -458,7 +460,7 @@ export default class Pane extends React.Component<IProps, IState> {
                     show_headers={this.props.show_headers}
                     lang={this.props.lang}
                 />
-            </CSSTransition>
+            // </CSSTransition>
         );
     }
 
