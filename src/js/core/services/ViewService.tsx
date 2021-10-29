@@ -158,13 +158,10 @@ export default class ViewService extends IViewService {
             return <Nest
                 key={index}
                 lang={lang}
-                index={index}
-                widget_alias={'unnamed'}
                 view_type={SpecificView}
                 view_props={view_props}
                 connector={view_connector}
                 widgets={this.widgets}
-                label={label}
             />;
         });
 

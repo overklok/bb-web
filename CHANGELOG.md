@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Removed
+- Modal action handling in Views (as unused)
+
 ## [1.2.8] - 2021-10-19
 
 ### Fixed

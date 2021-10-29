@@ -3,7 +3,7 @@ import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {ModelEvent} from "../base/Event";
 import {AlertType} from "../views/modal/AlertView";
 import {IAlertData, IModalData, IModalDataWithIndex, IToastData, IToastDataWithIndex} from "../datatypes/modal";
-import {ModalAction} from "../base/view/Nest";
+import {ModalAction} from "../views/modal/ModalView";
 
 export class UpdateModalsEvent extends ModelEvent<UpdateModalsEvent> {}
 export class UpdateAlertsEvent extends ModelEvent<UpdateAlertsEvent> {}

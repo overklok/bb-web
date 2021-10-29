@@ -16,6 +16,12 @@ export interface IModalProps {
     height?: number|string;
 }
 
+/**
+ * 
+ * 
+ * @param props 
+ * @returns 
+ */
 const Overlay = (props: IOverlayProps) => {
     const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
         props.on_close && props.on_close();

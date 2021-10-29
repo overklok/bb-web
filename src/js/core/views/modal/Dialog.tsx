@@ -1,8 +1,8 @@
 import * as React from "react";
 import classNames from "classnames";
-import {ModalAction} from "../../base/view/Nest";
 
 import i18next from "i18next";
+import {ModalAction} from "./ModalView";
 
 export interface IDialogProps {
     heading?: string;

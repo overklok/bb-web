@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import {AllProps, IViewProps, View} from "./View";
-import classNames from "classnames";
 import ViewConnector from "../ViewConnector";
 import {ViewType} from "../../helpers/types";
 import {Widget} from "../../services/interfaces/IViewService";
@@ -9,26 +8,34 @@ import ErrorBoundary from "./ErrorBoundary";
 import {CSSProperties} from "react";
 
 interface INestProps<P=IViewProps> {
+    /** 
+     * an object which communicates the {@link View} 
+     * inside the {@link Nest} with other parts of the app 
+     */
     connector: ViewConnector;
 
+    /** current language of the {@link View} (defined recursively) */
     lang: string;
-    widget_alias: string;
+    /** children widgets for the {@link View} (to give the View ablilty to render inner Views) */
     widgets?: {[key: string]: Widget<any>};
+    /** function (class) which instantiates {@link View} components */
     view_type: ViewType<P, any>;
+    /** user-defined initial properties of the {@link View} */
     view_props: P;
+    /** additional CSS proprerties for the {@link Nest} */
     nest_style?: CSSProperties;
-
-    label: string;
-    index: number;
 }
 
 interface INestState {
+    /** whether the nest is mounted */
     mounted: boolean;
+    /** props collected from {@link Presenter}s by {@link ViewConnector} */
     view_props: AllProps<any>;
 }
 
 /**
- * A component which wraps the View to manage its lifecycle
+ * A component wrapping the {@link View} component to connect 
+ * it with other parts of the application.
  */
 export default class Nest extends React.PureComponent<INestProps<any>, INestState> {
     /** ref for the node representing the nest */
@@ -55,7 +62,7 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
     /**
      * Handles when the Nest is mounted
      * 
-     * For Views requiring to notify when the Nest is mounted, updates its `nest_mounted` prop.
+     * For the Views required to notify when the Nest is mounted, updates its `nest_mounted` prop.
      * Attaches a handler to pass props updates to the View.
      * 
      * @inheritdoc
@@ -127,16 +134,15 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
     }
 
     render() {
+        // Keep the class in the constant to refer to it in JSX part above
         const SpecificView = this.props.view_type;
 
-        let klasses = classNames({
-            'nest': true,
-        });
-
+        // Merge the props of the View collected by the ViewConnector (in the state) 
+        // with initial values of the View
         const props = {...this.state.view_props, ...this.props.view_props};
 
         return (
-            <div className={klasses} ref={this.ref} style={this.props.nest_style}>
+            <div className='nest' ref={this.ref} style={this.props.nest_style}>
                 <ErrorBoundary view_type={this.props.view_type}>
                     <SpecificView
                         {...props}

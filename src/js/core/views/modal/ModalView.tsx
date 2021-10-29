@@ -7,11 +7,30 @@ import {IModalData} from "../../datatypes/modal";
 import Modal, {IModalProps, Overlay} from "./Modal";
 import {IDialogProps} from "./Dialog";
 import DialogModal from "./DialogModal";
-import Nest, {ModalAction, ModalRequestCallback} from "../../base/view/Nest";
+import Nest from "../../base/view/Nest";
 
-/** {@link ModalView} props */
+/**
+ * Types of actions available in the Modal
+ */
+export enum ModalAction {
+    Escape,
+    Dismiss,
+    Accept
+}
+
+/**
+ * Modal action request handler
+ * 
+ * Calls when user interacts with UI element (button / overlay click)
+ * to perform an modal-related action.
+ */
+export type ModalActionHandler = (action: ModalAction) => void;
+
+/** 
+ * Props for {@link ModalView} component 
+ */
 interface ModalViewProps extends IViewProps {
-    /** the list of the data objects for the Modals required to display */
+    /** the list of the data objects for the Modals required to display, grouped by type */
     modals: {[type: string]: IModalData[]};
     /** a function to call when arbitrary Modal is closed */
     on_close?: (idx: number, modal_type: string) => void;
@@ -22,14 +41,18 @@ interface ModalViewProps extends IViewProps {
  * 
  * Contains {@link} {@link Modal}s required to display currently.
  * It's intended to render it globally with absolute positioning and overlay.
+ * 
+ * Modals are grouped so that they only overlap each other within their specific type.
  */
 export default class ModalView extends View<ModalViewProps, null> {
     static defaultProps: ModalViewProps = {
         modals: {},
     }
 
+    /**
+     * Renders {@link Modal}s based on its data objects, one by one
+     */
     render(): React.ReactNode {
-        // Render Modals based on its data objects, one by one
         return (
             <TransitionGroup component={null}>
                 {Object.keys(this.props.modals).map((modal_type, i) =>
@@ -42,7 +65,7 @@ export default class ModalView extends View<ModalViewProps, null> {
     }
 
     /**
-     * Renders single Modal wrapped depending on the requirements 
+     * Renders single {@link Modal} wrapped depending on the requirements 
      * specified in the data object
      * 
      * To prevent the modal of the same type to duplicate, specify
@@ -53,19 +76,19 @@ export default class ModalView extends View<ModalViewProps, null> {
      * @param modal_type    string identifier of the modal type
      * @param modal_data    properties of the modal
      * 
-     * @returns React nodes to render the modal
+     * @returns React nodes containing the modal
      */
     renderItem(idx: number, modal_type: string, modal_data: IModalData) {
-        /** the pure content of the modal */
+        /** pure content of the modal */
         let content: string | JSX.Element = modal_data.content;
-        /** the function to handle action request */
-        let action_request = (action: ModalAction) => this.handleNestModalAction(idx, modal_type, action);
+        /** function to handle action request */
+        let action_handler = (action: ModalAction) => this.handleNestModalAction(idx, modal_type, modal_data, action);
 
         // If there are the widget required to render inside the modal,
         // render it within the Nest since it's required to wrap the View.
         if (modal_data.widget_alias) {
             // If the complex modal is requested, override default action request handler
-            content = this.renderNest(idx, modal_type, modal_data);
+            content = this.renderNest(modal_data);
         }
 
         // Render overlay then the modal on top of it.
@@ -75,29 +98,34 @@ export default class ModalView extends View<ModalViewProps, null> {
         if (modal_data.dialog) {
             // Renders modal wrapped by dialog on top of the overlay
             return [
-                this.renderOverlay(idx, modal_type, modal_data, action_request),
-                this.renderDialogModal(idx, modal_type, modal_data, content, action_request)
+                this.renderOverlay(idx, modal_type, modal_data, action_handler),
+                this.renderDialogModal(idx, modal_type, modal_data, content, action_handler)
             ]
         } else {
             // Renders pure modal on top of the overlay
             return [
-                this.renderOverlay(idx, modal_type, modal_data, action_request),
+                this.renderOverlay(idx, modal_type, modal_data, action_handler),
                 this.renderModal(idx, modal_type, modal_data, content)
             ]
         }
     }
 
     /**
-     * Handles modal action request
+     * Handles modal action requested by user via modal's UI
      * 
-     * @param idx 
-     * @param modal_type 
-     * @param action 
-     * @returns 
+     * By default, closes the modal if manual closing is not enabled.
+     * Calls user-defined action handler if provided.
+     * 
+     * @param idx           modal item index in the list of modals of given type
+     * @param modal_type    type of the modal
+     * @param action        type of action requested
      */
-    handleNestModalAction(idx: number, modal_type: string, action: ModalAction) {
-        const modal_data = this.props.modals[modal_type][idx];
-
+    handleNestModalAction(
+        idx: number, 
+        modal_type: string, 
+        modal_data: IModalData, 
+        action: ModalAction
+    ) {
         modal_data.dialog && modal_data.dialog.on_action && modal_data.dialog.on_action(action);
 
         if (modal_data.is_close_manual) return;
@@ -105,23 +133,52 @@ export default class ModalView extends View<ModalViewProps, null> {
         this.props.on_close && this.props.on_close(idx, modal_type);
     }
 
-    renderOverlay(idx: number, modal_type: string, modal_data: IModalData, action_request?: ModalRequestCallback) {
-        let onclose = modal_data.is_closable !== false ? () => action_request(ModalAction.Escape) : null;
+    /**
+     * Renders modal overlay
+     * 
+     * Overlay is required to trigger {@link ModalAction.Escape} by clicking 
+     * on the modal surround.
+     * 
+     * Additionally, overlay can be used to dim the space behind the modal to
+     * emphasize its content.
+     * 
+     * @param idx               corresponding modal item index in the list of modals of given type
+     * @param modal_type        type of the modal
+     * @param modal_data        user-defined properties of the modal
+     * @param action_handler    modal action request handler
+     */
+    renderOverlay(
+        idx: number, 
+        modal_type: string, 
+        modal_data: IModalData, 
+        action_handler?: ModalActionHandler
+    ) {
+        let onclose = modal_data.is_closable !== false ? () => action_handler(ModalAction.Escape) : null;
 
         return (
-            <CSSTransition in out key={'o' + idx} classNames='mdl' timeout={0} unmountOnExit>
+            <CSSTransition in out key={'o' + modal_type + idx} classNames='mdl' timeout={0} unmountOnExit>
                 <Overlay on_close={onclose} />
             </CSSTransition>
         );
     }
 
+    /**
+     * Renders modal wrapped in a dialog box
+     * 
+     * @param idx               modal item index in the list of modals of given type
+     * @param modal_type        type of the modal
+     * @param modal_data        user-defined properties of the modal
+     * @param content           modal content (textual or rendered if widget is required)
+     * @param action_handler    modal action request handler
+     */
     renderDialogModal(
         idx: number,
         modal_type: string,
         modal_data: IModalData,
         content: string | JSX.Element,
-        action_request?: ModalRequestCallback
+        action_handler?: ModalActionHandler
     ) {
+        /** Modal user-defined properties converted to Dialog props */
         const dialog_props: IDialogProps = {
             ...modal_data,
             ...modal_data.dialog,
@@ -130,6 +187,7 @@ export default class ModalView extends View<ModalViewProps, null> {
             label_dismiss: i18next.t(modal_data.dialog.label_dismiss),
         };
         
+        // Translate the content if possible
         content = typeof content === 'string' ? i18next.t(content) : content;
 
         return (
@@ -141,7 +199,7 @@ export default class ModalView extends View<ModalViewProps, null> {
 
                     {...dialog_props}
 
-                    on_action={(action: ModalAction) => action_request && action_request(action)}
+                    on_action={(action: ModalAction) => action_handler && action_handler(action)}
                 >
                     {content}
                 </DialogModal>
@@ -149,6 +207,14 @@ export default class ModalView extends View<ModalViewProps, null> {
         )
     }
 
+    /**
+     * Renders pure modal 
+     * 
+     * @param idx           modal item index in the list of modals of given type
+     * @param modal_type    type of the modal
+     * @param props         user-defined properties of the modal
+     * @param content       modal content (textual or rendered if widget is required)
+     */
     private renderModal(idx: number, modal_type: string, props: IModalProps, content: string | JSX.Element) {
         content = typeof content === 'string' ? i18next.t(content) : content;
 
@@ -162,14 +228,18 @@ export default class ModalView extends View<ModalViewProps, null> {
     }
 
     /**
-     * Creates Nest for given modal type
+     * Creates Nest for the {@link Modal} with given properties
      * 
-     * @param idx 
-     * @param modal_type 
-     * @param modal_data 
-     * @returns 
+     * If it's required to render the widget in the properties of the modal,
+     * this method is used to generate its content.
+     * 
+     * Each Widget contains View as the part to be display, and each View
+     * requires to be wrapped in the {@link Nest}, so this method returns the 
+     * Nest element as the modal content.
+     * 
+     * @param modal_data user-defined properties of the modal
      */
-    private renderNest(idx: number, modal_type: string, modal_data: IModalData): JSX.Element {
+    private renderNest(modal_data: IModalData): JSX.Element {
         /** Get the alias of the widget to initialize it */
         const widget_alias = modal_data.widget_alias;
 
@@ -180,25 +250,11 @@ export default class ModalView extends View<ModalViewProps, null> {
         // Resolve the widget by its alias
         const widget = Object.assign({}, this.props.widgets[widget_alias]);
 
-        // 
-        const nest_ref: React.Ref<Nest> = React.createRef();
-
-        // const action_request = (action: ModalAction) => {
-        //     if (nest_ref.current && !nest_ref.current.handleModalAction(action)) {
-        //         this.handleNestModalAction(idx, modal_type, action);
-        //     }
-        // }
-
         const nest = (
             <Nest connector={widget.connector}
-                index={0}
-                label={widget.label}
                 lang={this.props.lang}
-                widget_alias={widget.alias}
                 view_type={widget.view_type}
                 view_props={widget.view_props}
-                // on_action_request={(action) => this.handleNestModalAction(idx, modal_type, action)}
-                ref={nest_ref}
             />
         )
 
