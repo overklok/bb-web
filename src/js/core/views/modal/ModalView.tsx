@@ -59,13 +59,13 @@ export default class ModalView extends View<ModalViewProps, null> {
         /** the pure content of the modal */
         let content: string | JSX.Element = modal_data.content;
         /** the function to handle action request */
-        let action_request = (action: ModalAction) => this.handleNestModalClose(idx, modal_type, action);
+        let action_request = (action: ModalAction) => this.handleNestModalAction(idx, modal_type, action);
 
         // If there are the widget required to render inside the modal,
         // render it within the Nest since it's required to wrap the View.
         if (modal_data.widget_alias) {
             // If the complex modal is requested, override default action request handler
-            [content, action_request] = this.renderNest(idx, modal_type, modal_data);
+            content = this.renderNest(idx, modal_type, modal_data);
         }
 
         // Render overlay then the modal on top of it.
@@ -88,14 +88,14 @@ export default class ModalView extends View<ModalViewProps, null> {
     }
 
     /**
-     * 
+     * Handles modal action request
      * 
      * @param idx 
      * @param modal_type 
      * @param action 
      * @returns 
      */
-    handleNestModalClose(idx: number, modal_type: string, action: ModalAction) {
+    handleNestModalAction(idx: number, modal_type: string, action: ModalAction) {
         const modal_data = this.props.modals[modal_type][idx];
 
         modal_data.dialog && modal_data.dialog.on_action && modal_data.dialog.on_action(action);
@@ -161,22 +161,33 @@ export default class ModalView extends View<ModalViewProps, null> {
         )
     }
 
-    private renderNest(idx: number, modal_type: string, modal_data: IModalData): [JSX.Element, ModalRequestCallback] {
+    /**
+     * Creates Nest for given modal type
+     * 
+     * @param idx 
+     * @param modal_type 
+     * @param modal_data 
+     * @returns 
+     */
+    private renderNest(idx: number, modal_type: string, modal_data: IModalData): JSX.Element {
+        /** Get the alias of the widget to initialize it */
         const widget_alias = modal_data.widget_alias;
 
         if (!(widget_alias in this.props.widgets)) {
             throw new Error(`Cannot resolve widget by alias ${widget_alias}`)
         }
 
+        // Resolve the widget by its alias
         const widget = Object.assign({}, this.props.widgets[widget_alias]);
 
+        // 
         const nest_ref: React.Ref<Nest> = React.createRef();
 
-        const action_request = (action: ModalAction) => {
-            if (nest_ref.current && !nest_ref.current.handleModalAction(action)) {
-                this.handleNestModalClose(idx, modal_type, action);
-            }
-        }
+        // const action_request = (action: ModalAction) => {
+        //     if (nest_ref.current && !nest_ref.current.handleModalAction(action)) {
+        //         this.handleNestModalAction(idx, modal_type, action);
+        //     }
+        // }
 
         const nest = (
             <Nest connector={widget.connector}
@@ -186,11 +197,11 @@ export default class ModalView extends View<ModalViewProps, null> {
                 widget_alias={widget.alias}
                 view_type={widget.view_type}
                 view_props={widget.view_props}
-                on_action_request={(action) => this.handleNestModalClose(idx, modal_type, action)}
+                // on_action_request={(action) => this.handleNestModalAction(idx, modal_type, action)}
                 ref={nest_ref}
             />
         )
 
-        return [nest, action_request];
+        return nest;
     }
 }

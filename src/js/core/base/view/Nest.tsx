@@ -1,20 +1,12 @@
 import * as React from "react";
 
-import {AllProps, IViewProps, MountEvent, UnmountEvent, View} from "./View";
+import {AllProps, IViewProps, View} from "./View";
 import classNames from "classnames";
 import ViewConnector from "../ViewConnector";
 import {ViewType} from "../../helpers/types";
 import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
 import {CSSProperties} from "react";
-
-export enum ModalAction {
-    Escape,
-    Dismiss,
-    Accept
-}
-
-export type ModalRequestCallback = (action: ModalAction) => void;
 
 interface INestProps<P=IViewProps> {
     connector: ViewConnector;
@@ -25,9 +17,6 @@ interface INestProps<P=IViewProps> {
     view_type: ViewType<P, any>;
     view_props: P;
     nest_style?: CSSProperties;
-
-    // Request to close parent modal (available as ModalView child only)
-    on_action_request?: ModalRequestCallback;
 
     label: string;
     index: number;
@@ -137,21 +126,6 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
         }
     }
 
-    /**
-     * TODO: Docs
-     * 
-     * @param action 
-     * @returns 
-     */
-    handleModalAction(action: ModalAction): boolean {
-        if (this.view) {
-            this.view.handleModalAction(action);
-            return true;
-        }
-
-        return false;
-    }
-
     render() {
         const SpecificView = this.props.view_type;
 
@@ -172,7 +146,6 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
                         connector={this.props.connector}
                         ref_parent={this.ref}
                         nest_mounted={this.state.mounted}
-                        action_request={this.props.on_action_request}
                     />
                 </ErrorBoundary>
             </div>

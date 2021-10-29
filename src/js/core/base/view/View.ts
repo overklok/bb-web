@@ -4,18 +4,12 @@ import {ReactNode} from "react";
 import ViewConnector from "../ViewConnector";
 import {ViewEvent} from "../Event";
 import {Widget} from "../../services/interfaces/IViewService";
-import {ModalAction, ModalRequestCallback} from "./Nest";
-
-// export interface IViewOptions {
-//     overflow?: string;
-// }
 
 export interface IViewBasicProps {
     nest_mounted: boolean;
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     widgets?: {[key: string]: Widget<any>};
-    action_request?: ModalRequestCallback;
     lang?: string;
 }
 
@@ -160,60 +154,6 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
      * so this method may be implemented for this purpose.
      */
     public resize() {}
-
-    /**
-     * Handles modal actions when rendered in {@link Modal}
-     * 
-     * @param action type of the modal action to handle
-     */
-    public handleModalAction(action: ModalAction) {
-        // pass by default, override if needed to customise
-        switch (action) {
-            case ModalAction.Accept:    this.handleModalAccept(); return;
-            case ModalAction.Dismiss:   this.handleModalDismiss(); return;
-            case ModalAction.Escape:    this.handleModalEscape(); return;
-        }
-    }
-
-    /**
-     * Handles modal accept action when rendered in {@link Modal}
-     * 
-     * By default, requests ModalView containing the View within the Modal to remove it.
-     * Override if it's needed to customize behavior.
-     */
-    protected handleModalAccept() {
-        // pass by default, override if needed to customise
-        this.requestModalAction(ModalAction.Accept);
-    }
-
-    /**
-     * Handles modal dismiss action when rendered in {@link Modal}
-     * 
-     * By default, requests ModalView containing the View within the Modal to remove it.
-     * Override if it's needed to customize behavior.
-     */
-    protected handleModalDismiss() {
-        // pass by default, override if needed to customise
-        this.requestModalAction(ModalAction.Dismiss);
-    }
-
-    /**
-     * Handles modal escape action when rendered in {@link Modal}
-     * 
-     * By default, requests ModalView containing the View within the Modal to remove it.
-     * Override if it's needed to customize behavior.
-     */
-    protected handleModalEscape() {
-        // pass by default, override if needed to customise
-        this.requestModalAction(ModalAction.Escape);
-    }
-
-    /**
-     * TODO: Docs
-     */
-    protected requestModalAction(action: ModalAction) {
-        this.props.action_request && this.props.action_request(action);
-    }
 
     /**
      * Handles when the View is mounted
