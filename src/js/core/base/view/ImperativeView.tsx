@@ -1,6 +1,6 @@
 import * as React from "react";
 import {AllProps, IViewState, MountEvent, View} from "./View";
-import {sleep} from "../../helpers/functions";
+import {waitAnimationFrame} from "../../helpers/functions";
 
 /**
  * React Component based {@link View} which relies on imperative modules
@@ -48,9 +48,9 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
      */
     public async componentDidUpdate(prevProps: Readonly<AllProps<P>>, prevState: Readonly<IViewState>, snapshot?: any) {
         if (prevProps.nest_mounted === false && this.props.nest_mounted === true) {
-            // Wait until the nest is deployed because sometimes the content is not
-            // centered correctly when required
-            await new Promise(resolve => { requestAnimationFrame(resolve); });
+            // In some browsers (like Safari), it's required to wait some time
+            // to center the contents properly.
+            await waitAnimationFrame();
 
             // first injection (i.e. nest just rendered)
             this.inject(this.props.ref_parent.current);
@@ -71,12 +71,12 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
      */
     public async componentDidMount() {
         // if (this.props.nest_mounted === true) {
-            // await this.injectAsync();
+        //     await this.injectAsync();
 
-            // re-injection (i.e. nest already exists)
-            // this.mounted = true;
-            // this.viewDidMount();
-            // this.emit(new MountEvent());
+        //     // re-injection (i.e. nest already exists)
+        //     this.mounted = true;
+        //     this.viewDidMount();
+        //     this.emit(new MountEvent());
         // }
     }
 
