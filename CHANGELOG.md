@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Modal action handling in Views (as unused)
 - Pane creation/removal transitions
 - Unused ImperativeView methods are deprecated
+- Redundant logic in ImperativeView
 
 ## [1.2.8] - 2021-10-19
 

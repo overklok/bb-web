@@ -60,18 +60,11 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
     }
 
     /**
-     * Handles when the Nest is mounted
-     * 
-     * For the Views required to notify when the Nest is mounted, updates its `nest_mounted` prop.
-     * Attaches a handler to pass props updates to the View.
+     * Attaches a handler to pass props updates to the View
      * 
      * @inheritdoc
      */
     componentDidMount() {
-        if (Object.getPrototypeOf(this.view).constructor.notifyNestMount) {
-            this.setState({mounted: true});
-        }
-
         this.props.connector.onPropsUpdate((props: IViewProps) => {
             this.setState({
                 view_props: {...this.state.view_props, ...props}
@@ -151,7 +144,6 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
                         widgets={this.props.widgets}
                         connector={this.props.connector}
                         ref_parent={this.ref}
-                        nest_mounted={this.state.mounted}
                     />
                 </ErrorBoundary>
             </div>
