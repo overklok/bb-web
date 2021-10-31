@@ -1,12 +1,27 @@
 import * as React from "react";
 
-import '../../../../css/core/modal.less'
-import Modal, {IModalProps} from "./Modal";
-import Dialog, {IDialogProps} from "./Dialog";
+import Modal, {ModalProps} from "./Modal";
+import Dialog, {DialogProps} from "./Dialog";
 
-export type IDialogModalProps = IModalProps & IDialogProps;
+require('../../../../css/core/modal.less')
 
-const DialogModal = (props: IDialogModalProps) => {
+/**
+ * Props for {@link DialogModal}
+ * 
+ * This is the combination of {@link ModalProps} and {@link DialogProps}.
+ */
+type DialogModalProps = ModalProps & DialogProps;
+
+/**
+ * {@link Modal} combined with {@link Dialog}
+ * 
+ * @see {@link DialogModalProps}
+ * 
+ * @category Core.UI
+ * 
+ * @component
+ */
+export default function DialogModal (props: DialogModalProps) {
     return (
         <Modal size={props.size} width={props.width} height={props.height}>
             <Dialog heading={props.heading}
@@ -23,6 +38,4 @@ const DialogModal = (props: IDialogModalProps) => {
             </Dialog>
         </Modal>
     )
-};
-
-export default DialogModal;
+}

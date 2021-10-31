@@ -1,12 +1,18 @@
 import SynchronousDatasource from "./SynchronousDatasource";
 import HttpMiddleware from "../middlewares/HttpMiddleware";
 
+/**
+ * @category Core
+ */
 export enum RequestCredentials {
     Include = 'include',
     SameOrigin = 'same-origin',
     Omit = 'omit'
 }
 
+/**
+ * @category Core
+ */
 export enum RequestCache {
     Default = 'default',
     NoCache = 'no-cache',
@@ -15,12 +21,18 @@ export enum RequestCache {
     OnlyIfCached = 'only-if-cached'
 }
 
+/**
+ * @category Core
+ */
 export enum RequestMode {
     NoCORS = 'no-cors',
     CORS = 'cors',
     SameOrigin = 'same-origin'
 }
 
+/**
+ * @category Core
+ */
 export enum RequestMethod {
     GET = 'get',
     POST = 'post',
@@ -28,20 +40,32 @@ export enum RequestMethod {
     DELETE = 'delete'
 }
 
+/**
+ * @category Core
+ */
 export type Query = {[key: string]: any};
 
+/**
+ * @category Core
+ */
 export type RequestOptions = {
     mode: RequestMode;
     cache: RequestCache;
     credentials: RequestCredentials;
 }
 
+/**
+ * @category Core
+ */
 export enum RequestRedirect {
     Follow = 'follow',
     Error = 'error',
     Manual = 'manual'
 }
 
+/**
+ * @category Core
+ */
 export type RequestParams = {
     query?: Query;
     headers?: {[key: string]: string};
@@ -51,7 +75,9 @@ export type RequestParams = {
     timeout?: number;
 }
 
-
+/**
+ * @category Core
+ */
 export type FakeHttpRule = {
     path: string;
     params: RequestParams;
@@ -79,6 +105,10 @@ async function fetchWithTimeout(resource: RequestInfo, options: any) {
     return response;
   }
 
+/**
+ * @category Core
+ * @subcategory Model
+ */
 export default class HttpDatasource extends SynchronousDatasource {
     private readonly hostname: string;
     private options: RequestOptions;

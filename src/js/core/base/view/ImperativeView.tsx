@@ -7,6 +7,9 @@ import {waitAnimationFrame} from "../../helpers/functions";
  * 
  * Adapts the {@link View} to be more friendly for third-patry components,
  * usually implemented in imperative style.
+ * 
+ * @category Core
+ * @subcategory View
  */
 export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
     /** @inheritdoc */
@@ -79,8 +82,6 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
 
     /**
      * Renders empty content directly into the root of the View 
-     * 
-     * @returns 
      */
     public render(): React.ReactNode {
         super.render();

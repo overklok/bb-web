@@ -5,9 +5,9 @@ import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
 import IRoutingService from "../services/interfaces/IRoutingService";
 import RoutingService from "../services/RoutingService";
-import ModalPresenter from "../presenters/ModalPresenter";
 
 type EventTypeParam = typeof AbstractEvent;
+
 type RestorableEventTypeParam = [typeof AbstractEvent, boolean];
 
 type SubscriptionPreset = {event_type: typeof AbstractEvent, restorable: boolean};
@@ -20,6 +20,8 @@ interface Subscriptable {
  * Decorator function applied to Presenter methods to subscribe them to events
  *
  * @param event_type_objs types of events to subscribe to
+ * 
+ * @category Core
  */
 export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -83,6 +85,9 @@ export function on(...event_type_objs: EventTypeParam[]|RestorableEventTypeParam
  * (i.e. when related View is rendered)
  *
  * @param event_type_objs types of events to subscribe to
+ * 
+ * @category Core
+ * @subcategory Presenter
  */
 export function restore(...event_types: typeof AbstractEvent[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -115,6 +120,9 @@ export function restore(...event_types: typeof AbstractEvent[]) {
  * Alternative to {@link on} function, works with special kind of events, {@link Action}
  *
  * @param action_type
+ * 
+ * @category Core
+ * @subcategory Presenter
  */
 export function action(action_type: typeof Action) {
     return on(action_type);
@@ -126,6 +134,9 @@ export function action(action_type: typeof Action) {
  *
  * @see Model
  * @see View
+ * 
+ * @category Core
+ * @subcategory Presenter
  */
 export default class Presenter<V extends View> implements Subscriptable {
     // Map method name to subscription preset

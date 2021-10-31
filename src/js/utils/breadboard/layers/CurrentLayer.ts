@@ -15,6 +15,7 @@ import { XYObject } from "../core/types";
  * @see Current
  * 
  * @category Breadboard
+ * @subcategory Layers
  */
 export default class CurrentLayer extends Layer {
     /** CSS class of the layer */
@@ -512,7 +513,8 @@ export default class CurrentLayer extends Layer {
      * @param c_arb     single arbitrary current cell (starting of finishing)
      * @param aux_point single auxiliary point (one of USB pins)
      * @param to_source 
-     * @returns 
+     * 
+     * @returns SVG path coordinates for current
      */
     private _getLinePathUsb(c_arb: Cell, aux_point: AuxPoint, to_source: boolean = false): CurrentPath {
         if (to_source) {

@@ -23,6 +23,8 @@ import IRoutingService from "../services/interfaces/IRoutingService";
  *
  * {@link ViewConnector} may be available for any part of {@link ViewService} machinery
  * including some of React components that used in {@link LayoutView}
+ * 
+ * @category Core
  */
 export default class ViewConnector {
     /** An instance of View that is available directly to Presenters */
@@ -79,7 +81,7 @@ export default class ViewConnector {
      * All props from the presenters will be merged and re-written in the order 
      * of presentation in the {@link Widget} definition.
      * 
-     * @returns 
+     * @returns props values merged from all {@link Presenter} instances in a single object
      */
     collectProps(): IViewProps {
         let props = {};
@@ -172,8 +174,10 @@ export default class ViewConnector {
      * Emits event by the {@link View} or by one of {@link Presenter} instances (i.e. Actions)
      *
      * @param event the event to be passed
+     * 
+     * @returns release when an event is handled
      */
-    emit<E>(event: ViewEvent<E>) {
+    emit<E>(event: ViewEvent<E>): Promise<void> {
         const anchor = this.getEventAnchorByInstance(event);
 
         return this.svc_event.emitAsync(event, anchor);

@@ -2,9 +2,13 @@ import * as React from "react";
 import classNames from "classnames";
 import {useDrag} from "react-dnd";
 import TabMenu from "./TabMenu";
-import {DraggableItemTypes} from "../../../../views/layout/LayoutView";
+import {DraggableItemTypes} from "../../../../views/LayoutView";
 
-interface IProps {
+/**
+ * @category Core
+ * @subcategory View
+ */
+interface TabProps {
     label: string;
     index: number;
     is_single?: boolean;
@@ -13,7 +17,7 @@ interface IProps {
     overlay_node?: HTMLElement;
 }
 
-const Tab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>) => {
+const Tab = React.forwardRef((props: TabProps, ref_menu: React.RefObject<TabMenu>) => {
     const onClick = () => {
         const { index, on_click } = props;
 

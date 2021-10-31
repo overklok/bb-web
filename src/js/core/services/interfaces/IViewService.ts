@@ -4,6 +4,9 @@ import {IViewProps, IViewState, View} from "../../base/view/View";
 import {PresenterType, ViewComposerType, ViewType} from "../../helpers/types";
 import {CSSProperties} from "react";
 
+/**
+ * @category Core
+ */
 export type Widget<P extends IViewProps> = {
     connector: ViewConnector,
     view_type: ViewType<P, any>,
@@ -13,6 +16,9 @@ export type Widget<P extends IViewProps> = {
     alias: string
 };
 
+/**
+ * @category Core
+ */
 export type WidgetType<P extends IViewProps> = {
     view_type: ViewType<P, IViewState>;
     presenter_types: PresenterType<View<P>>[];
@@ -29,6 +35,7 @@ export type WidgetType<P extends IViewProps> = {
  * @abstract
  * 
  * @category Core
+ * @subcategory Service
  */
 export default class IViewService {
     /** an instance of application (TODO: App instance should not be available here. Move all dependencies to the constructor signature) */

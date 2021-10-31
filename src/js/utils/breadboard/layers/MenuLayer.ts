@@ -12,6 +12,7 @@ import Layer from '../core/Layer';
  * This is required because {@link ContextMenu}s renders HTML elements which can be mounted in HTML container only.
  * 
  * @category Breadboard
+ * @subcategory Layers
  */
 export default class MenuLayer extends Layer<HTMLDivElement> {
     /** CSS class of the layer */
@@ -24,8 +25,6 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
     private _callbacks: { ctxmenuitemclick: (item_id: number, alias: string, value: any) => void; };
 
     /**
-     * @inheritdoc
-     * 
      * Make sure to pass an HTML container when constructing the layer.
      * Since the other layers all in the SVG, make sure that the container 
      * is placed over entire SVG document in the DOM tree and visible to user.
@@ -55,8 +54,6 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
     }
 
     /**
-     * @inheritdoc
-     * 
      * Attaches global click event handler
      */
     compose() {

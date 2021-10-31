@@ -1,5 +1,9 @@
 import AsynchronousDatasource, {AsyncDatasourceStatus} from "../../base/model/datasources/AsynchronousDatasource";
 
+/**
+ * @category Core.Models
+ * @subcategory Datasources
+ */
 export default class AdaptiveAsyncDatasource extends AsynchronousDatasource {
     private data_source: AsynchronousDatasource;
     private readonly data_sources: AsynchronousDatasource[];

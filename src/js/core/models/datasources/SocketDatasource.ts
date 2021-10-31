@@ -2,6 +2,10 @@ import io from 'socket.io-client';
 
 import AsynchronousDatasource, {AsyncDatasourceStatus} from "../../base/model/datasources/AsynchronousDatasource";
 
+/**
+ * @category Core.Models
+ * @subcategory Datasources
+ */
 export default class SocketDatasource extends AsynchronousDatasource {
     private static readonly ConnectTimeout = 1500; // ms
 

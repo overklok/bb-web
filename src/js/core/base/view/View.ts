@@ -5,37 +5,58 @@ import ViewConnector from "../ViewConnector";
 import {ViewEvent} from "../Event";
 import {Widget} from "../../services/interfaces/IViewService";
 
+/**
+ * Basic props required for a {@link View}
+ * 
+ * @category Core
+ * @subcategory View
+ */
 export interface IViewBasicProps {
-    nest_mounted: boolean;
     connector: ViewConnector;
     ref_parent?: React.RefObject<HTMLElement>;
     widgets?: {[key: string]: Widget<any>};
     lang?: string;
 }
 
+/**
+ * Total props of a {@link View}
+ */
 export type AllProps<P> = P & IViewBasicProps;
 
 /**
- * Helper type that infers nested IViewProps based on View that uses it
+ * Helper type that infers nested {@link IViewProps} based on {@link View} that uses it
  */
 export type ViewPropsOf<V extends View<any, any>> = V extends View<infer P, any> ? P : never;
 
-export interface IViewProps {
+/**
+ * Basic app-defined {@link View} props
+ * 
+ * @category Core
+ * @subcategory View
+ */
+export interface IViewProps { }
 
-}
-
-export interface IViewState {
-
-}
+/**
+ * Basic app-defined {@link View} state
+ * 
+ * @category Core
+ * @subcategory View
+ */
+export interface IViewState { }
 
 export class RenderEvent extends ViewEvent<RenderEvent>     {}
 export class MountEvent extends ViewEvent<MountEvent>       {}
 export class UnmountEvent extends ViewEvent<UnmountEvent>   {}
-export class AcceptEvent extends ViewEvent<AcceptEvent>     {}
-export class DismissEvent extends ViewEvent<DismissEvent>   {}
-export class EscapeEvent extends ViewEvent<EscapeEvent>     {}
-export class ResizeEvent extends ViewEvent<ResizeEvent>     {}
 
+/**
+ * Defers the call of the decorated {@link View} method until it's mounted
+ * 
+ * Used as a decorator for {@link View} methods
+ * 
+ * @param target        prototype of the class
+ * @param propertyKey   name of the method
+ * @param descriptor    the Property Descriptor for the method
+ */
 export function deferUntilMounted(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     // save a reference to the original method this way we keep the values currently in the
     // descriptor and don't overwrite what another decorator might have done to the descriptor.
@@ -46,23 +67,23 @@ export function deferUntilMounted(target: any, propertyKey: string, descriptor: 
     let original_method = descriptor.value;
 
     //editing the descriptor/value parameter
-    const deferree = function () {
+    const deferred = function () {
         const args = arguments;
 
         if (this.mounted) {
             return original_method.bind(this)(...arguments);
         }
 
-        if (this.deferrees_mount == null) {
-            this.deferrees_mount = [];
+        if (this.deferred_mount == null) {
+            this.deferred_mount = [];
         }
 
-        this.deferrees_mount.push(function(): void {
+        this.deferred_mount.push(function(): void {
             original_method.bind(this)(...args);
         });
     }
 
-    descriptor.value = deferree;
+    descriptor.value = deferred;
 }
 
 /**
@@ -70,18 +91,19 @@ export function deferUntilMounted(target: any, propertyKey: string, descriptor: 
  * to the {@link Presenter} to act upon that data.
  * 
  * Views implementation is currently relied on React Components but it depends on the specific {@link ViewService}.
+ * 
+ * @category Core
+ * @subcategory View
  */
 export abstract class View<P extends IViewProps = IViewProps, S extends IViewState = IViewState> extends React.Component<AllProps<P>, S> {
     /** string identifier that can be referred when asking the ViewService to list all Views that currently exist */
     public static alias: string;
-    /** whether to update the `nest_mounted` prop of the View when its Nest is mounted */
-    public static notifyNestMount: boolean = false;
 
     /** whether the View is mounted */
     protected mounted: boolean;
 
     /** functions to call when the View is mounted */
-    private deferrees_mount: Function[];
+    private deferred_mount: Function[];
 
     /**
      * Creates the View
@@ -164,21 +186,34 @@ export abstract class View<P extends IViewProps = IViewProps, S extends IViewSta
         this.callDeferredUntilMount();
     }
 
+    /**
+     * Handles when the View is unmounted
+     */
     protected viewWillUnmount() {
         this.detachConnector();
         // console.log(this.constructor.name, 'unmount');
     }
 
-    protected emit<E>(event: ViewEvent<E>) {
+    /**
+     * Sends an event to the attached connector
+     * 
+     * @param event instance of event required to send
+     * 
+     * @returns release when an event is handled
+     */
+    protected emit<E>(event: ViewEvent<E>): Promise<void> {
         return this.props.connector.emit(event);
     }
 
+    /**
+     * Performs all deferred method calls
+     */
     private callDeferredUntilMount() {
-        if (!this.deferrees_mount) return;
+        if (!this.deferred_mount) return;
 
         let call = undefined;
 
-        while (call = this.deferrees_mount.pop()) {
+        while (call = this.deferred_mount.pop()) {
             call.bind(this)();
         }
     }

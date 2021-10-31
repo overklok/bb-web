@@ -27,7 +27,7 @@ import ConnectionModel from "./models/common/ConnectionModel";
 import AdminCheckModel from "./models/debug/DebugCheckModel";
 
 import BoardView from "./views/common/BoardView";
-import ToastView from "./core/views/modal/ToastView";
+import ToastView from "./core/views/ToastView";
 import DebugDumpBoardView from "./views/debug/DebugDumpBoardView";
 
 import OverlayViewComposer from "./core/base/view/viewcomposers/OverlayViewComposer";

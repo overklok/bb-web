@@ -3,12 +3,22 @@ import classNames from "classnames";
 import Tab from "./Tab";
 import TabMenu from "./TabMenu";
 
-interface IProps {
+/**
+ * @category Core
+ * @subcategory View
+ */
+interface SingleTabProps {
     label: string;
     overlay_node?: HTMLElement;
 }
 
-const SingleTab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>) => {
+/**
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
+ */
+const SingleTab = React.forwardRef((props: SingleTabProps, ref_menu: React.RefObject<TabMenu>) => {
     return (
         <Tab
             active_tab={0}

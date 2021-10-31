@@ -4,11 +4,19 @@ import classNames from "classnames";
 import {Action, BooleanAction} from "../../../Event";
 import TabMenuPopup from "./TabMenuPopup";
 
-interface IProps {
+/**
+ * @category Core
+ * @subcategory View
+ */
+interface TMProps {
     overlay_node?: HTMLElement;
 }
 
-interface IState {
+/**
+ * @category Core
+ * @subcategory View
+ */
+interface TMState {
     active: boolean;
     items?: Array<[string, Action<any>, Function]>;
     m_left: number;
@@ -17,11 +25,17 @@ interface IState {
     m_btn_height: number;
 }
 
-export default class TabMenu extends React.Component<IProps, IState> {
+/**
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
+ */
+export default class TabMenu extends React.Component<TMProps, TMState> {
     private readonly onglobalclick: () => void;
     private readonly btn_ref: React.RefObject<HTMLDivElement> = React.createRef();
 
-    constructor(props: IProps) {
+    constructor(props: TMProps) {
         super(props);
 
         this.state = {

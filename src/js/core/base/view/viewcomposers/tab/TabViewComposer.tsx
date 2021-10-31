@@ -5,23 +5,39 @@ import TabMenu from "./TabMenu";
 import ViewConnector from "../../../ViewConnector";
 import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
-interface IProps extends IVCProps {
+/**
+ * @category Core
+ * @subcategory View
+ */
+interface TVCProps extends IVCProps {
     overlay_node?: HTMLElement
     show_headers?: boolean
 }
 
-interface IState extends IVCState {
+/**
+ * @category Core
+ * @subcategory View
+ */
+interface TVCState extends IVCState {
     active_tab: number
 }
 
-export default class TabViewComposer extends ViewComposer<IProps, IState> {
+/**
+ * Displays only first {@link View} in the collection
+ * 
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
+ */
+export default class TabViewComposer extends ViewComposer<TVCProps, TVCState> {
     static defaultProps = {
         show_headers: true
     }
 
     private view_connectors: Array<[ViewConnector, React.RefObject<TabMenu>]> = [];
 
-    constructor(props: IProps) {
+    constructor(props: TVCProps) {
         super(props);
 
         this.state = {

@@ -4,8 +4,10 @@ import {PaneOrientation} from "./Pane";
 
 /**
  * Свойства рукоятки
+ * 
+ * @category Core.UI
  */
-interface IProps {
+interface HandleProps {
     // ориентация
     orientation: PaneOrientation,
     // номер панели слева от рукоятки
@@ -20,20 +22,18 @@ interface IProps {
     handleDragging:     Function,
 }
 
-/**
- * Состояние рукоятки
- */
-interface IState {
-
-}
 
 /**
  * React-компонент "Рукоятка"
  *
  * Рукоятка позволяет изменять размер панелей, которые её окружают, путём
  * перемещения её в стороны.
+ * 
+ * @category Core.UI
+ * 
+ * @component
  */
-export default class Handle extends React.Component<IProps, IState> {
+export default class Handle extends React.Component<HandleProps> {
     // выполняется ли перемещение в данный момент
     private moving: boolean = false;
     // является ли знак овердрага положительным
@@ -43,7 +43,7 @@ export default class Handle extends React.Component<IProps, IState> {
     private startposX: number;
     private startposY: number;
 
-    constructor(props: IProps) {
+    constructor(props: HandleProps) {
         super(props);
 
         this.handleMouseUp      = this.handleMouseUp.bind(this);

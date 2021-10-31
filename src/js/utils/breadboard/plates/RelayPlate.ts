@@ -9,6 +9,7 @@ import LinearPlate from "../core/plate/LinearPlate";
  * Relay plate
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class RelayPlate extends LinearPlate {
     static get Alias() {return "relay"}

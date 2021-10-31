@@ -9,10 +9,13 @@ import {View} from "../../base/view/View";
 import Nest from "../../base/view/Nest";
 import Frame from "./Frame";
 import TabViewComposer from "../../base/view/viewcomposers/tab/TabViewComposer";
-import {ILayoutPane} from "./LayoutView";
+import {ILayoutPane} from "../LayoutView";
 import {Widget} from "../../services/interfaces/IViewService";
 import OverlayViewComposer from "../../base/view/viewcomposers/OverlayViewComposer";
 
+/**
+ * @category Core.UI
+ */
 export enum PaneOrientation {
     Vertical = 'vertical',
     Horizontal = 'horizontal'
@@ -20,8 +23,10 @@ export enum PaneOrientation {
 
 /**
  * Свойства панели разметки
+ * 
+ * @category Core.UI
  */
-interface IProps {
+interface PaneProps {
     // уникальное название панели
     name: string;
     // заголовок панели
@@ -61,8 +66,10 @@ interface IProps {
 
 /**
  * Состояние панели разметки
+ * 
+ * @category Core.UI
  */
-interface IState {
+interface PaneState {
     // прикрыта ли панель
     covered: boolean;
     // анимирована ли панель
@@ -84,10 +91,11 @@ interface IState {
  *
  * TODO: Calculate size_unit here, pass to class attributes. Same for size_min and size_max
  *
- * @property panes          список ref-объектов, содержащих вложенный компонент Pane
- * @property div_element    div-элемент компонента Pane в документе
+ * @category Core.UI
+ * 
+ * @component
  */
-export default class Pane extends React.Component<IProps, IState> {
+export default class Pane extends React.Component<PaneProps, PaneState> {
     static defaultProps = {
         panes: [] as ILayoutPane[],
         view_aliases: [] as string[],
@@ -109,8 +117,10 @@ export default class Pane extends React.Component<IProps, IState> {
         show_headers: true,
     };
 
+    /** список ref-объектов, содержащих вложенный компонент Pane */
     private panes: RefObject<Pane>[] = [];
     private nests: RefObject<Nest>[] = [];
+    /** div-элемент компонента Pane в документе */
     private div_element: HTMLDivElement;
 
     public size: number;
@@ -129,7 +139,7 @@ export default class Pane extends React.Component<IProps, IState> {
      *
      * @param props
      */
-    constructor(props: IProps) {
+    constructor(props: PaneProps) {
         super(props);
 
         this.handleDragFinish = this.handleDragFinish.bind(this);
@@ -158,7 +168,7 @@ export default class Pane extends React.Component<IProps, IState> {
      * @param prevState свойства после обновления
      * @param snapshot  некоторая информация до обновления компонента, определяемая в getSnapshotBeforeUpdate()
      */
-    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
+    componentDidUpdate(prevProps: Readonly<PaneProps>, prevState: Readonly<PaneState>, snapshot?: any): void {
         if (this.props.covered !== prevProps.covered) {
             this.setState({covered: this.props.covered, animated: this.state.animated})
         }

@@ -2,6 +2,10 @@ import Cookies from 'js-cookie';
 import HttpMiddleware from "../../base/model/middlewares/HttpMiddleware";
 import {RequestParams} from "../../base/model/datasources/HttpDatasource";
 
+/**
+ * @category Core.Models
+ * @subcategory Middlewares
+ */
 export default class CSRFMiddleware extends HttpMiddleware {
     public token: string;
 

@@ -17,6 +17,10 @@ export type RestSchema = {
 
 export type PathParams = {[key: string]: number|string};
 
+/**
+ * @category Core
+ * @subcategory Model
+ */
 export default abstract class CRUDHttpModel<MS> extends HttpModel<MS, HttpDatasource> {
     protected abstract schema(): RestSchema;
 

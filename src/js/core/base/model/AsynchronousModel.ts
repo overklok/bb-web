@@ -49,6 +49,10 @@ export function timeout() {
     }
 }
 
+/**
+ * @category Core
+ * @subcategory Model
+ */
 export default abstract class AsynchronousModel<MS> extends Model<MS, AsynchronousDatasource> {
     public readonly handlers: {[key: string]: Function};
     public readonly handler_waiting:       Function;

@@ -4,6 +4,10 @@ import JWTAuthModel from "../JWTAuthModel";
 
 // TODO: Call JWTAuthModel actions to authenticate
 
+/**
+ * @category Core.Models
+ * @subcategory Middlewares
+ */
 export default class JWTAuthMiddleware extends HttpMiddleware {
     private auth_model: JWTAuthModel<any>;
     public token: string;

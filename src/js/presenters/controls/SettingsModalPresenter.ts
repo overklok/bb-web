@@ -5,7 +5,7 @@ import {on} from "~/js/core/base/Presenter";
 import SettingsModel, {SettingsChangeEvent, SettingsModalEvent} from "~/js/core/models/SettingsModel";
 import {SettingsValues} from "~/js/core/datatypes/settings";
 import ConnectionModel from "~/js/models/common/ConnectionModel";
-import {ModalAction} from "~/js/core/views/modal/ModalView";
+import {ModalAction} from "~/js/core/views/ModalView";
 
 export default class SettingsModalPresenter extends ModalPresenter {
     private mdl: number;

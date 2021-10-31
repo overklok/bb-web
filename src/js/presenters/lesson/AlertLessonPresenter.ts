@@ -1,4 +1,4 @@
-import {AlertType} from "~/js/core/views/modal/AlertView";
+import {AlertType} from "~/js/core/views/AlertView";
 import BoardModel, {BoardStatusEvent} from "~/js/models/common/BoardModel";
 import ConnectionModel, {ConnectionStatusEvent} from "~/js/models/common/ConnectionModel";
 import SettingsModel, {SettingsChangeEvent} from "~/js/core/models/SettingsModel";

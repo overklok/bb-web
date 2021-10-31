@@ -1,5 +1,6 @@
 {
   "opts": {
+    "encoding": "utf-8",
     "template": "./node_modules/better-docs",
     "tutorials": "./man/pages",
     "destination": "./doc",
@@ -18,10 +19,11 @@
     "node_modules/@ckeditor/jsdoc-plugins/lib/longname-fixer/longname-fixer.js"
   ],
   "source": {
-      "include": ["./src/js", "./src/js/utils/breadboard"],
+      "include": ["./src/js"],
       "exclude": ["./src/js/configs/main/settings.ts"],
-      "includePattern": ".+\\.(jsx|js|ts|tsx)?$"
+      "includePattern": ".+\\.(jsx|js|ts|tsx|less)?$"
   },
+  "type": "module",
   "templates": {
     "search": true,
     "default": {
@@ -33,7 +35,6 @@
       "logo": "images/logo.png",
       "title": "HTML TITLE",
       "css": "styles/style.css",
-      "trackingCode": "<script crossorigin src=\"https://unpkg.com/react@17/umd/react.development.js\"></script><script crossorigin src=\"https://unpkg.com/react-dom@17/umd/react-dom.development.js\"></script><script src='https://cdn.jsdelivr.net/npm/enzyme@3.11.0/build/ReactWrapper.js'></script>",
       "hideGenerator": false
     }
   }

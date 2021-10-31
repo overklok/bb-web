@@ -8,6 +8,7 @@ import Plate, { PlateProps } from "../core/Plate";
  * Dummy plate
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class DummyPlate extends Plate {
     static get Alias() {return "dummy"}

@@ -7,6 +7,9 @@ import IEventService from "../../services/interfaces/IEventService";
 
 /**
  * @see Model
+ * 
+ * @category Core
+ * @subcategory Model
  */
 export interface ModelConstructor<MS extends ModelState, DS extends Datasource> {
     new(data_source: DS, svc_event: IEventService): Model<MS, DS>;
@@ -16,6 +19,9 @@ export interface ModelConstructor<MS extends ModelState, DS extends Datasource> 
  * An object defining data that the Model should retrieve and/or send.
  *
  * @see Model
+ * 
+ * @category Core
+ * @subcategory Model
  */
 export type ModelState = {[key: string]: any}
 

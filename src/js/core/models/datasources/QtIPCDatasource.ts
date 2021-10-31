@@ -1,22 +1,35 @@
 import AsynchronousDatasource, {AsyncDatasourceStatus} from "../../base/model/datasources/AsynchronousDatasource";
 import {sleep} from "../../helpers/functions";
 
+/**
+ * @category Core.Models
+ */
 type QtEventSignal = {
     connect(callback: Function): void;
     disconnect(callback: Function): void;
 }
 
+/**
+ * @category Core.Models
+ */
 type QtWebConnector = {} & {
     emit(channel: string, data: string): void;
     event_sig: QtEventSignal;
 }
 
+/**
+ * @category Core.Models
+ */
 enum QtWebStatus {
     Initial,
     Connected,
     Disconnected
 }
 
+/**
+ * @category Core.Models
+ * @subcategory Datasources
+ */
 export default class QtIPCDatasource extends AsynchronousDatasource {
     // Connection retrieval options
     private static readonly AttemptLimit = 30;

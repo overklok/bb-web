@@ -10,6 +10,7 @@ import Cell from "../core/Cell";
  * Photoresistor plate
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class PhotoresistorPlate extends LinearPlate {
     private _svginp: any;

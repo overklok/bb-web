@@ -14,6 +14,9 @@ import {getClassNameAlias} from "../helpers/functions";
  * @see Model
  * 
  * @inheritdoc
+ * 
+ * @category Core
+ * @subcategory Service
  */
 export default class ModelService extends IModelService {
     protected models: Model<any, any>[] = [];

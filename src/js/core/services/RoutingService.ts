@@ -4,6 +4,10 @@ import IModelService from "./interfaces/IModelService";
 import IEventService from "./interfaces/IEventService";
 import {GenericErrorEvent} from "../base/Event";
 
+/**
+ * @category Core
+ * @subcategory Service
+ */
 export default class RoutingService extends IRoutingService {
     private router: Router<any>;
     private svc_model: IModelService;

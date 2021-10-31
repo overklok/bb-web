@@ -15,10 +15,16 @@ const BUTTON_CODES_ALLOWED = [
     57 /* 9 */,
 ];
 
+/**
+ * @category Core.Models
+ */
 interface KeyboardModelState {
     buttons: [string, boolean][];
 }
 
+/**
+ * @category Core.Models
+ */
 export default class KeyboardModel extends Model<KeyboardModelState, DummyDatasource> {
     static alias = 'keyboard';
 

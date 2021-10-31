@@ -8,6 +8,9 @@ type HandlerPool = Map<any, Map<typeof AbstractEvent, Set<Function>>>;
  * An implementation of IEventService based on Map and Set.
  *
  * @inheritDoc
+ * 
+ * @category Core
+ * @subcategory Service
  */
 export default class EventService extends IEventService {
     private handler_pool: HandlerPool = new Map();

@@ -8,6 +8,11 @@ document.body.insertBefore(modalRoot, document.body.firstChild);
 /**
  * A component that renders children into a DOM node that exists 
  * outside the DOM hierarchy of the parent component.
+ * 
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
  */
 export default class Portal extends React.Component {
     private readonly el: HTMLDivElement;

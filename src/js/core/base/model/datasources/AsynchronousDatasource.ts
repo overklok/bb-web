@@ -1,5 +1,8 @@
 import Datasource from "../Datasource";
 
+/**
+ * @category Core
+ */
 export enum AsyncDatasourceStatus {
     Initial,
     Connected,
@@ -7,6 +10,10 @@ export enum AsyncDatasourceStatus {
     Timeouted
 }
 
+/**
+ * @category Core
+ * @subcategory Model
+ */
 export default abstract class AsynchronousDatasource extends Datasource {
     protected _status: AsyncDatasourceStatus = AsyncDatasourceStatus.Initial;
 

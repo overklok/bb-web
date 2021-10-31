@@ -20,6 +20,7 @@ export class EventHandlingError extends Error {
  * @abstract
  * 
  * @category Core
+ * @subcategory Service
  */
 export default class IEventService {
     /**
@@ -92,6 +93,8 @@ export default class IEventService {
      *
      * @param event         an instance of Event for which the handlers will be called
      * @param anchor        an object that will be used to filter handlers to call
+     * 
+     * @returns release when an event is handled
      */
     public async emitAsync<E extends AbstractEvent<E>>(
         event: E,

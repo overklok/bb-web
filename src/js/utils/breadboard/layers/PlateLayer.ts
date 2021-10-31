@@ -130,6 +130,7 @@ type PseudoMouseEvent = {
  * Also allows to listen to manual and programmatical changes in the composition.
  * 
  * @category Breadboard
+ * @subcategory Layers
  */
 export default class PlateLayer extends Layer<SVG.Container> {
     /** CSS class of the layer */
@@ -258,9 +259,6 @@ export default class PlateLayer extends Layer<SVG.Container> {
         return plate;
     }
 
-    /**
-     * @inheritdoc
-     */
     constructor(
         container: SVG.Container,
         grid: Grid,
@@ -295,16 +293,11 @@ export default class PlateLayer extends Layer<SVG.Container> {
         this._handleContextMenu = this._handleContextMenu.bind(this);
     }
 
-    /**
-     * @inheritdoc
-     */
     public compose() {
         this._initGroups();
     }
 
     /**
-     * @inheritdoc
-     * 
      * Also, re-instantiates all {@link Plate} instances with all its properties and states. 
      */
     public recompose(schematic: boolean, detailed: boolean, verbose: boolean) {
@@ -401,7 +394,6 @@ export default class PlateLayer extends Layer<SVG.Container> {
      * @param size_mid          mean total quantity of plates to generate
      * @param size_deviation    deviation of quantity of plates to generate 
      * @param attempts_max      maximum number of attempts to generate if failed
-     * @returns 
      */
     public setRandom(
         _protos: PlatePrototype[],

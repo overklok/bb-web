@@ -13,6 +13,7 @@ import IEventService from "./IEventService";
  * @abstract
  * 
  * @category Core
+ * @subcategory Service
  */
 export default class IModelService {
     /** event service instance */

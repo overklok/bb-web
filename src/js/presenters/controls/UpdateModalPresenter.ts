@@ -4,7 +4,7 @@ import {on} from "~/js/core/base/Presenter";
 import ConnectionModel, { ConnectionStatusEvent } from "~/js/models/common/ConnectionModel";
 import ServerModel from "~/js/models/common/ServerModel";
 import i18next from "i18next";
-import {ModalAction} from "~/js/core/views/modal/ModalView";
+import {ModalAction} from "~/js/core/views/ModalView";
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;

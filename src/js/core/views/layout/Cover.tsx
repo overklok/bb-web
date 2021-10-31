@@ -1,13 +1,23 @@
 import * as React from "react";
 import classNames from "classnames";
 
-interface IProps {
+/**
+ * @category Core.UI
+ * 
+ * @component
+ */
+interface CoverProps {
     enabled: boolean,
     title?: string,
     image?: string,
 }
 
-export default function Cover(props: IProps) {
+/**
+ * @category Core.UI
+ * 
+ * @component
+ */
+export default function Cover(props: CoverProps) {
     const klasses_wrap = classNames({
         'cover': true,
         'cover_enabled': props.enabled

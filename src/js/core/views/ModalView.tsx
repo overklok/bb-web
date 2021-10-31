@@ -1,16 +1,18 @@
 import * as React from "react";
 import i18next from "i18next";
 
-import {IViewProps, View} from "../../base/view/View";
+import {IViewProps, View} from "../base/view/View";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
-import {IModalData} from "../../datatypes/modal";
-import Modal, {IModalProps, Overlay} from "./Modal";
-import {IDialogProps} from "./Dialog";
-import DialogModal from "./DialogModal";
-import Nest from "../../base/view/Nest";
+import {IModalData} from "../datatypes/modal";
+import Modal, {ModalProps, Overlay} from "./modal/Modal";
+import {DialogProps} from "./modal/Dialog";
+import DialogModal from "./modal/DialogModal";
+import Nest from "../base/view/Nest";
 
 /**
  * Types of actions available in the Modal
+ * 
+ * @category Core.Views
  */
 export enum ModalAction {
     Escape,
@@ -23,11 +25,15 @@ export enum ModalAction {
  * 
  * Calls when user interacts with UI element (button / overlay click)
  * to perform an modal-related action.
+ * 
+ * @category Core.Views
  */
-export type ModalActionHandler = (action: ModalAction) => void;
+type ModalActionHandler = (action: ModalAction) => void;
 
 /** 
  * Props for {@link ModalView} component 
+ * 
+ * @category Core.Views
  */
 interface ModalViewProps extends IViewProps {
     /** the list of the data objects for the Modals required to display, grouped by type */
@@ -43,6 +49,10 @@ interface ModalViewProps extends IViewProps {
  * It's intended to render it globally with absolute positioning and overlay.
  * 
  * Modals are grouped so that they only overlap each other within their specific type.
+ * 
+ * @see ModalViewProps
+ * 
+ * @category Core.Views
  */
 export default class ModalView extends View<ModalViewProps, null> {
     static defaultProps: ModalViewProps = {
@@ -114,7 +124,7 @@ export default class ModalView extends View<ModalViewProps, null> {
      * Handles modal action requested by user via modal's UI
      * 
      * By default, closes the modal if manual closing is not enabled.
-     * Calls user-defined action handler if provided.
+     * Calls app-defined action handler if provided.
      * 
      * @param idx           modal item index in the list of modals of given type
      * @param modal_type    type of the modal
@@ -144,7 +154,7 @@ export default class ModalView extends View<ModalViewProps, null> {
      * 
      * @param idx               corresponding modal item index in the list of modals of given type
      * @param modal_type        type of the modal
-     * @param modal_data        user-defined properties of the modal
+     * @param modal_data        app-defined properties of the modal
      * @param action_handler    modal action request handler
      */
     renderOverlay(
@@ -167,7 +177,7 @@ export default class ModalView extends View<ModalViewProps, null> {
      * 
      * @param idx               modal item index in the list of modals of given type
      * @param modal_type        type of the modal
-     * @param modal_data        user-defined properties of the modal
+     * @param modal_data        app-defined properties of the modal
      * @param content           modal content (textual or rendered if widget is required)
      * @param action_handler    modal action request handler
      */
@@ -178,8 +188,8 @@ export default class ModalView extends View<ModalViewProps, null> {
         content: string | JSX.Element,
         action_handler?: ModalActionHandler
     ) {
-        /** Modal user-defined properties converted to Dialog props */
-        const dialog_props: IDialogProps = {
+        /** Modal app-defined properties converted to Dialog props */
+        const dialog_props: DialogProps = {
             ...modal_data,
             ...modal_data.dialog,
             heading: i18next.t(modal_data.dialog.heading),
@@ -212,10 +222,10 @@ export default class ModalView extends View<ModalViewProps, null> {
      * 
      * @param idx           modal item index in the list of modals of given type
      * @param modal_type    type of the modal
-     * @param props         user-defined properties of the modal
+     * @param props         app-defined properties of the modal
      * @param content       modal content (textual or rendered if widget is required)
      */
-    private renderModal(idx: number, modal_type: string, props: IModalProps, content: string | JSX.Element) {
+    private renderModal(idx: number, modal_type: string, props: ModalProps, content: string | JSX.Element) {
         content = typeof content === 'string' ? i18next.t(content) : content;
 
         return (
@@ -237,7 +247,7 @@ export default class ModalView extends View<ModalViewProps, null> {
      * requires to be wrapped in the {@link Nest}, so this method returns the 
      * Nest element as the modal content.
      * 
-     * @param modal_data user-defined properties of the modal
+     * @param modal_data app-defined properties of the modal
      */
     private renderNest(modal_data: IModalData): JSX.Element {
         /** Get the alias of the widget to initialize it */

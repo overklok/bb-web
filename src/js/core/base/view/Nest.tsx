@@ -20,7 +20,7 @@ interface INestProps<P=IViewProps> {
     widgets?: {[key: string]: Widget<any>};
     /** function (class) which instantiates {@link View} components */
     view_type: ViewType<P, any>;
-    /** user-defined initial properties of the {@link View} */
+    /** app-defined initial properties of the {@link View} */
     view_props: P;
     /** additional CSS proprerties for the {@link Nest} */
     nest_style?: CSSProperties;
@@ -36,6 +36,11 @@ interface INestState {
 /**
  * A component wrapping the {@link View} component to connect 
  * it with other parts of the application.
+ * 
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
  */
 export default class Nest extends React.PureComponent<INestProps<any>, INestState> {
     /** ref for the node representing the nest */

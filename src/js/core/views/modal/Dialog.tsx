@@ -2,26 +2,78 @@ import * as React from "react";
 import classNames from "classnames";
 
 import i18next from "i18next";
-import {ModalAction} from "./ModalView";
+import {ModalAction} from "../ModalView";
 
-export interface IDialogProps {
+/**
+ * Props for {@link Dialog}
+ * 
+ * @category Core.UI
+ */
+export interface DialogProps {
+    /** window heading caption */
     heading?: string;
+    /** window footer */
     hint?: string;
+    /** window content */
     children?: string | JSX.Element | JSX.Element[];
+    /** display close button in the heading */
     is_closable?: boolean;
+    /** whether to center the content */
     is_centered?: boolean;
 
+    /** modal action handler */
     on_action?: (action: ModalAction) => void;
+    /** display accept button in the bottom */
     is_acceptable?: boolean;
+    /** display dismiss button in the bottom */
     is_dismissible?: boolean;
 
+    /** accept button caption */
     label_accept?: string;
+    /** dismiss button caption */
     label_dismiss?: string;
 }
 
-const Dialog = (props: IDialogProps) => {
+/**
+ * Dialog frame for floating content such as {@link Modal}
+ * 
+ * Contains basic dialog UI including optional action buttons.
+ * Used with {@link Modal}s to create windows.
+ * 
+ * When both `{@link DialogProps}.is_closable` and `{@link DialogProps}.heading` is undefined,
+ * the heading will not be rendered.
+ * 
+ * If whether `{@link DialogProps}.label_accept` or `{@link DialogProps}.label_dismiss` is omitted,
+ * the default captions will be used for each of the buttons when displayed.
+ * 
+ * @see DialogProps
+ * 
+ * @category Core.UI
+ * 
+ * @component
+ * @example
+ * return (
+ *      <Dialog 
+ *          heading='Sample Heading' 
+ *          hint='Sample Hint' 
+ *          is_closable={true} 
+ *          is_acceptable={true}
+ *          is_dismissible={true}
+ *          label_accept='Sample Accept'
+ *          label_dismiss='Sample Dismiss'
+ *      >
+ *          Sample Content
+ *      </Dialog>
+ * )
+ */
+export default function Dialog(props: DialogProps) {
     const {} = props;
 
+    /**
+     * Calls action handler
+     * 
+     * @param action modal action type
+     */
     const onAction = (action: ModalAction) => {
         props.on_action && props.on_action(action);
     };
@@ -115,6 +167,4 @@ const Dialog = (props: IDialogProps) => {
             {hint}
         </div>
     )
-};
-
-export default Dialog;
+}

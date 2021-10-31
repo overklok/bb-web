@@ -25,7 +25,8 @@ export type BoardInfo = {
  * 
  * @param layout                generic board config (layout)
  * @param no_arduino_embedded   whether to exclude arduino pin functionalty (specifically for board verification)
- * @returns 
+ * 
+ * @returns board config in core-specific format
  * 
  * @category Breadboard
  */

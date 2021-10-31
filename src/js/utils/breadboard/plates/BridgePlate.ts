@@ -9,6 +9,7 @@ import Grid from '../core/Grid';
  * Bridge plate 
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class BridgePlate extends LinearPlate {
     static get Alias() {return "bridge"}

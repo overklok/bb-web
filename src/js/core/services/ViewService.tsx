@@ -17,6 +17,9 @@ import IRoutingService from "./interfaces/IRoutingService";
  * React-based implementation of the MVP's View layer 
  * 
  * @inheritdoc
+ * 
+ * @category Core
+ * @subcategory Service
  */
 export default class ViewService extends IViewService {
     private composer_instance: ViewComposerAny;

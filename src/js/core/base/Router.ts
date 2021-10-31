@@ -1,7 +1,7 @@
 import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
-import {ModelEvent, RouteEvent} from "./Event";
+import {RouteEvent} from "./Event";
 import IEventService from "../services/interfaces/IEventService";
 import {CallbackFunctionVariadic} from "../helpers/types";
 
@@ -66,6 +66,8 @@ const PATHEXP_REGEXP = /({([a-z0-9]+)})/gmi;
  *
  * @param pathexp   path expression, see {@see Route.pathexp}
  * @param name      route name
+ * 
+ * @category Core
  */
 export function route(pathexp: string, name: string) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -83,6 +85,8 @@ export function route(pathexp: string, name: string) {
 
 /**
  * A helper interface to describe the object that constructs {@see Router} objects.
+ * 
+ * @category Core
  */
 export interface IRouter {
     new(svc_model: IModelService, svc_event: IEventService): Router<any>;
@@ -103,6 +107,8 @@ export interface IRouter {
  * For this reason, routes can be specified in tho ways:
  *  - The default way is to set public `routes` property.
  *  - A {@see route} decorator may be applied to specific method of {@see Router} class.
+ * 
+ * @category Core
  */
 export default abstract class Router<RD extends RouteDestination> {
     /* A public list of routes that is usually specified for specific application's router, if needed */

@@ -1,6 +1,6 @@
 import {ColorAccent, ToastPosition} from "../helpers/styles";
-import {AlertType} from "../views/modal/AlertView";
-import {ModalAction} from "../views/modal/ModalView";
+import {AlertType} from "../views/AlertView";
+import {ModalAction} from "../views/ModalView";
 
 export interface IDialogData {
     heading?: string;

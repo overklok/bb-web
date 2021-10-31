@@ -3,26 +3,51 @@ import classNames from "classnames";
 
 import '../../../../css/core/modal.less'
 
+/**
+ * @category Core.UI 
+ */
 export type ModalSize = 'sm'|'md'|'lg';
 
-export interface IOverlayProps {
+/**
+ * Props for {@link Overlay}
+ * 
+ * @category Core.UI
+ */
+export interface OverlayProps {
+    /** overlay click handler */
     on_close?: Function;
 }
 
-export interface IModalProps {
+/**
+ * Props for {@link Modal}
+ * 
+ * @category Core.UI
+ */
+export interface ModalProps {
+    /** content of the modal */
     children?: string | JSX.Element | JSX.Element[];
+    /** size of the elements, defines default width and height */
     size?: ModalSize;
+    /** custom width (overrides default value from the size if defined) */
     width?: number|string;
+    /** custom width (overrides default value from the size if defined) */
     height?: number|string;
 }
 
 /**
+ * Surround of the {@link Modal}
  * 
+ * Renders `div` element to catch outer clicks to provide a UI to close the modal.
  * 
- * @param props 
- * @returns 
+ * Located preceding to the {@link Modal} at the same level of the DOM tree.
+ * 
+ * @see OverlayProps
+ * 
+ * @category Core.UI
+ * 
+ * @component
  */
-const Overlay = (props: IOverlayProps) => {
+export function Overlay (props: OverlayProps) {
     const onOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
         props.on_close && props.on_close();
     };
@@ -37,7 +62,16 @@ const Overlay = (props: IOverlayProps) => {
     )
 }
 
-const Modal = (props: IModalProps) => {
+/**
+ * Component displayed on the top of the rest of the content
+ * 
+ * @see ModalProps
+ * 
+ * @category Core.UI
+ * 
+ * @component
+ */
+export default function Modal (props: ModalProps) {
     // Список классов, которые должны использоваться в зависимости от свойств
     let klasses_modal = classNames({
         'mdl': true,
@@ -51,7 +85,4 @@ const Modal = (props: IModalProps) => {
             {props.children}
         </div>
     )
-};
-
-export {Overlay};
-export default Modal;
+}
