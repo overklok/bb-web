@@ -35,6 +35,7 @@
       "logo": "images/logo.png",
       "title": "HTML TITLE",
       "css": "styles/style.css",
+      "trackingCode": "<meta name='theme-color' content='#6d6c9d'>",
       "hideGenerator": false
     }
   }
