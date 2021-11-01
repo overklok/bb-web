@@ -180,7 +180,7 @@ export default class ViewConnector {
     emit<E>(event: ViewEvent<E>): Promise<void> {
         const anchor = this.getEventAnchorByInstance(event);
 
-        return this.svc_event.emitAsync(event, anchor);
+        return this.svc_event.emit(event, anchor);
     }
 
     /**
@@ -258,7 +258,7 @@ export default class ViewConnector {
                             `to handle '${event_type.name}':\n`, e
                         );
 
-                        svc_event.emitAsync(new GenericErrorEvent({error: e}));
+                        svc_event.emit(new GenericErrorEvent({error: e}));
                     }
                 };
 
@@ -272,7 +272,7 @@ export default class ViewConnector {
                                 `to ${event_type.name}:\n`, suberror
                             );
 
-                            await svc_event.emitAsync(new GenericErrorEvent({error: suberror}));
+                            await svc_event.emit(new GenericErrorEvent({error: suberror}));
                         }
                     } else {
                         throw e;

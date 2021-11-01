@@ -291,7 +291,7 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     protected emit<E>(evt: RouteEvent<E>) {
-        return this.svc_event.emitAsync(evt);
+        return this.svc_event.emit(evt);
     }
 
     /**
