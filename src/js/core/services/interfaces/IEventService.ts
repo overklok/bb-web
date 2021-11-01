@@ -86,7 +86,7 @@ export default class IEventService {
     ): void {throw new Error('abstract')}
 
     /**
-     * Emits an event asynchronously
+     * Emits event asynchronously
      *
      * When emitting, all related handlers will be fired. If an `anchor` parameter is provided, only handlers that
      * were attached to this object will be fired.
@@ -102,7 +102,7 @@ export default class IEventService {
     ) {throw new Error('abstract')}
 
     /** 
-     * Emits an event synchronously
+     * Emits event synchronously
      * 
      * @param event         an instance of Event for which the handlers will be called
      * @param anchor        an object that will be used to filter handlers to call

@@ -1,8 +1,19 @@
+/**
+ @module AsynchronousModel
+*/
+
 import Model from "./Model";
 import AsynchronousDatasource, {AsyncDatasourceStatus} from "./datasources/AsynchronousDatasource";
 import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
 
+/**
+ * Decorates method of the {@link Model} to call it when the given event type is occurred on
+ * related {@link Datasource}
+ * 
+ * @param channels event type(s) to subscribe to
+ * @function
+ */
 export function listen(...channels: string[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (target.handlers == null) {
@@ -50,6 +61,16 @@ export function timeout() {
 }
 
 /**
+ * A {@link Model} which listens events from its data source
+ * 
+ * To subscribe the model to event, apply one of the decorators to one of its methods.
+ * 
+ * @see listen      subscribes a method to data source event(s) (channel(s))
+ * @see waiting     subscribes a method to 
+ * @see connect
+ * @see disconnect
+ * @see timeout
+ * 
  * @category Core
  * @subcategory Model
  */

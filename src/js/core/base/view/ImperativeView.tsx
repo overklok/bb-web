@@ -3,7 +3,7 @@ import {AllProps, IViewState, MountEvent, View} from "./View";
 import {waitAnimationFrame} from "../../helpers/functions";
 
 /**
- * React Component based {@link View} which relies on imperative modules
+ * React.Component based {@link View} which relies on imperative modules
  * 
  * Adapts the {@link View} to be more friendly for third-patry components,
  * usually implemented in imperative style.

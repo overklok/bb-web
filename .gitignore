@@ -59,4 +59,9 @@ coverage
 # Parcel cache
 .cache
 
+# Docs
 doc
+
+# macOS
+.DS_Store
+

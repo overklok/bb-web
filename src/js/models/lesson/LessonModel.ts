@@ -1,5 +1,4 @@
-import cloneDeep from "lodash/cloneDeep";
-import CRUDHttpModel, {CRUDAction, RestSchema} from "../../core/base/model/CRUDHttpModel";
+import CRUDHttpModel, {CRUDAction, CRUDSchema} from "../../core/base/model/CRUDHttpModel";
 import {Query} from "../../core/base/model/datasources/HttpDatasource";
 import {ModelEvent} from "../../core/base/Event";
 
@@ -8,7 +7,7 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
 
     protected defaultState: Lesson = undefined;
 
-    protected schema(): RestSchema {
+    protected schema(): CRUDSchema {
         return {
             [CRUDAction.Read]: ({lesson_id}) => `courses/lesson/${lesson_id}/`,
         }

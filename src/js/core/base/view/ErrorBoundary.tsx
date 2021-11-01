@@ -16,10 +16,7 @@ interface ErrorBoundaryState {
 /**
  * Displays fallback message when an error has occurred in the {@link View}
  * 
- * @category Core
- * @subcategory View
- * 
- * @component
+ * @ignore
  */
 export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     constructor(props: ErrorBoundaryProps) {

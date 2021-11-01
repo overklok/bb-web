@@ -23,7 +23,6 @@
       "exclude": ["./src/js/configs/main/settings.ts"],
       "includePattern": ".+\\.(jsx|js|ts|tsx|less)?$"
   },
-  "type": "module",
   "templates": {
     "search": true,
     "default": {

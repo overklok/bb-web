@@ -11,18 +11,22 @@ export enum CRUDAction {
     List
 }
 
-export type RestSchema = {
+export type CRUDSchema = {
     [action in CRUDAction]?: PathGenerator;
 };
 
 export type PathParams = {[key: string]: number|string};
 
 /**
+ * An {@link HttpModel} which provides CRUD-defined functions
+ * 
+ * To use the model, configure the schema by setting the URL for each available action.
+ * 
  * @category Core
  * @subcategory Model
  */
 export default abstract class CRUDHttpModel<MS> extends HttpModel<MS, HttpDatasource> {
-    protected abstract schema(): RestSchema;
+    protected abstract schema(): CRUDSchema;
 
     get host_name() {
         return this.data_source.host_name;

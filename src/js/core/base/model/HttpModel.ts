@@ -3,6 +3,8 @@ import HttpDatasource, {RequestParams} from "./datasources/HttpDatasource";
 import {ModelEvent} from "../Event";
 
 /**
+ * An {@link Event} which triggers when the request error is occurred
+ * 
  * @category Core
  * @subcategory Event
  */
@@ -12,6 +14,8 @@ export class RequestErrorEvent extends ModelEvent<RequestErrorEvent> {
 }
 
 /**
+ * A {@link Model} which provides an API to make HTTP requests
+ * 
  * @category Core
  * @subcategory Model
  */
