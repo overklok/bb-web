@@ -6,15 +6,20 @@ import ViewConnector from "../../../ViewConnector";
 import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
 /**
+ * Props for {@link TabViewComposer}
+ * 
  * @category Core
  * @subcategory View
  */
 interface TVCProps extends IVCProps {
+    /**  */
     overlay_node?: HTMLElement
     show_headers?: boolean
 }
 
 /**
+ * State for {@link TabViewComposer}
+ * 
  * @category Core
  * @subcategory View
  */
@@ -23,7 +28,10 @@ interface TVCState extends IVCState {
 }
 
 /**
- * Displays only first {@link View} in the collection
+ * Provides a UI to select one of the children {@link View}s 
+ * 
+ * Renders tab selector for each {@link View} on the top.
+ * Clicking on the tab switches the view to display.
  * 
  * @category Core
  * @subcategory View

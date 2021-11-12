@@ -4,7 +4,6 @@
 
 import Model from "./Model";
 import AsynchronousDatasource, {AsyncDatasourceStatus} from "./datasources/AsynchronousDatasource";
-import Application from "../../Application";
 import IEventService from "../../services/interfaces/IEventService";
 
 /**
@@ -12,7 +11,6 @@ import IEventService from "../../services/interfaces/IEventService";
  * related {@link Datasource}
  * 
  * @param channels event type(s) to subscribe to
- * @function
  */
 export function listen(...channels: string[]) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -28,6 +26,10 @@ export function listen(...channels: string[]) {
     }
 }
 
+/**
+ * Decorates method of the {@link Model} to call it when the {@link Datasource} is
+ * waiting for connection
+ */
 export function waiting() {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         target.handler_waiting = target[propertyKey];
@@ -36,6 +38,10 @@ export function waiting() {
     }
 }
 
+/**
+ * Decorates method of the {@link Model} to call it when the {@link Datasource} is
+ * connected
+ */
 export function connect() {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         target.handler_connect = target[propertyKey];
@@ -44,6 +50,10 @@ export function connect() {
     }
 }
 
+/**
+ * Decorates method of the {@link Model} to call it when the {@link Datasource} is
+ * disconnected
+ */
 export function disconnect() {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         target.handler_disconnect = target[propertyKey];
@@ -52,6 +62,10 @@ export function disconnect() {
     }
 }
 
+/**
+ * Decorates method of the {@link Model} to call it when the {@link Datasource} 
+ * has reached connection timeout
+ */
 export function timeout() {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         target.handler_timeout = target[propertyKey];
@@ -61,32 +75,33 @@ export function timeout() {
 }
 
 /**
- * A {@link Model} which listens events from its data source
+ * Shortcut for the {@link Model} driven by {@link AsynchronousDatasource}
  * 
  * To subscribe the model to event, apply one of the decorators to one of its methods.
  * 
- * @see listen      subscribes a method to data source event(s) (channel(s))
- * @see waiting     subscribes a method to 
- * @see connect
- * @see disconnect
- * @see timeout
+ * @see listen      calls the method when the message is triggered in the source's event channel
+ * @see waiting     calls the method when the {@link Datasource} is establishing connection
+ * @see connect     calls the method when the connection is established
+ * @see disconnect  calls the method when the connection is closed / broken
+ * @see timeout     calls the method when the connection is timeouted
  * 
  * @category Core
  * @subcategory Model
  */
 export default abstract class AsynchronousModel<MS> extends Model<MS, AsynchronousDatasource> {
-    public readonly handlers: {[key: string]: Function};
-    public readonly handler_waiting:       Function;
-    public readonly handler_timeout:       Function;
-    public readonly handler_connect:       Function;
-    public readonly handler_disconnect:    Function;
-
-    public counter: number;
+    /** Data source event handlers attached via {@link listen} */
+    public readonly handlers:               {[key: string]: Function};
+    /** Data source event handlers attached via {@link waiting} */
+    public readonly handler_waiting:        Function;
+    /** Data source event handlers attached via {@link timeout} */
+    public readonly handler_timeout:        Function;
+    /** Data source event handlers attached via {@link connect} */
+    public readonly handler_connect:        Function;
+    /** Data source event handlers attached via {@link disconnect} */
+    public readonly handler_disconnect:     Function;
 
     constructor(data_source: AsynchronousDatasource, svc_event: IEventService) {
         super(data_source, svc_event);
-
-        this.counter = 0;
 
         if (this.handlers) {
             for (const [channel, handler] of Object.entries(this.handlers)) {
@@ -108,6 +123,9 @@ export default abstract class AsynchronousModel<MS> extends Model<MS, Asynchrono
         }
     }
 
+    /**
+     * Sends a message to the given channel of the data source
+     */
     protected send(channel: string, data?: object) {
         if (this.data_source.status === AsyncDatasourceStatus.Connected) {
             this.data_source.send(channel, data);

@@ -2,12 +2,22 @@ import * as React from "react";
 import {ErrorInfo} from "react";
 import {ViewType} from "../../helpers/types";
 
-import "../../../../css/core/error.less";
+require("~/js/css/core/error.less");
 
+/**
+ * Props for {@link ErrorBoundary}
+ * 
+ * @ignore
+ */
 interface ErrorBoundaryProps {
     view_type: ViewType<any, any>;
 }
 
+/**
+ * State of {@link ErrorBoundary}
+ * 
+ * @ignore
+ */
 interface ErrorBoundaryState {
     error: Error;
     has_error: boolean;

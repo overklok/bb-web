@@ -1,7 +1,7 @@
 import {ExerciseSolution, Lesson} from "./LessonModel";
 import {ModelEvent} from "~/js/core/base/Event";
-import {RequestMethod} from "~/js/core/base/model/datasources/HttpDatasource";
-import HttpModel from "~/js/core/base/model/HttpModel";
+import {RequestMethod} from "~/js/core/models/datasources/HttpDatasource";
+import HttpModel from "~/js/core/models/HttpModel";
 
 export enum ValidationVerdictStatus {
     Undefined = 'undefined',

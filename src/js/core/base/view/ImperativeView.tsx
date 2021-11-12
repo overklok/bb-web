@@ -81,7 +81,10 @@ export abstract class ImperativeView<P, S=IViewState> extends View<P, S> {
     public update(): void { }
 
     /**
-     * Renders empty content directly into the root of the View 
+     * Renders empty content directly into the root of the View
+     * 
+     * Note that the content of the View will be injected into the root of the {@link Nest},
+     * to reduce amount of useless `div` nodes in the tree.
      */
     public render(): React.ReactNode {
         super.render();

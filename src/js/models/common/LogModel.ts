@@ -1,5 +1,5 @@
-import HttpModel, {RequestErrorEvent} from "../../core/base/model/HttpModel";
-import {RequestMethod} from "../../core/base/model/datasources/HttpDatasource";
+import HttpModel, {RequestErrorEvent} from "../../core/models/HttpModel";
+import {RequestMethod} from "~/js/core/models/datasources/HttpDatasource";
 
 export default class LogModel extends HttpModel<any> {
     static alias = 'log';

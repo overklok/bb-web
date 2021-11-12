@@ -2,10 +2,10 @@ import * as React from "react";
 import ViewComposer, {IVCProps, IVCState} from "../ViewComposer";
 import classNames from "classnames";
 
-require("../../../../../css/core/layer.less");
+require("~/css/core/layer.less");
 
 /**
- * Combines multiple {@link View}s on top of each other
+ * Combines multiple {@link View}s on the top of each other
  * 
  * @category Core
  * @subcategory View

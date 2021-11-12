@@ -9,12 +9,12 @@ import ModelServiceProvider from "./core/providers/ModelServiceProvider";
 import EventServiceProvider from "./core/providers/EventServiceProvider";
 import RoutingServiceProvider from "./core/providers/RoutingServiceProvider";
 
-import HttpDatasource from "./core/base/model/datasources/HttpDatasource";
+import HttpDatasource from "./core/models/datasources/HttpDatasource";
 import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
-import { FakeHttpRule } from "./core/base/model/datasources/HttpDatasource";
+import { FakeHttpRule } from "./core/models/datasources/HttpDatasource";
 
 import CSRFMiddleware from "./core/models/middlewares/CSRFMiddleware";
 import JWTAuthMiddleware from "./core/models/middlewares/JWTAuthMiddleware";

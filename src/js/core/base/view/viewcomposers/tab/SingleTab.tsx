@@ -4,15 +4,21 @@ import Tab from "./Tab";
 import TabMenu from "./TabMenu";
 
 /**
+ * Props for {@link SingleTab}
+ * 
  * @category Core
  * @subcategory View
  */
 interface SingleTabProps {
+    /** caption of the tab */
     label: string;
+    /** a node where the content of the context menu will be rendered via portal */
     overlay_node?: HTMLElement;
 }
 
 /**
+ * Helper component representing single tab
+ * 
  * @category Core
  * @subcategory View
  * 

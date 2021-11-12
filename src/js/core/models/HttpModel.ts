@@ -1,6 +1,6 @@
-import Model from "./Model";
+import Model from "../base/model/Model";
 import HttpDatasource, {RequestParams} from "./datasources/HttpDatasource";
-import {ModelEvent} from "../Event";
+import {ModelEvent} from "../base/Event";
 
 /**
  * An {@link Event} which triggers when the request error is occurred
@@ -14,7 +14,7 @@ export class RequestErrorEvent extends ModelEvent<RequestErrorEvent> {
 }
 
 /**
- * A {@link Model} which provides an API to make HTTP requests
+ * Shortcut for the {@link Model} driven by the {@link HttpDatasource}
  * 
  * @category Core
  * @subcategory Model

@@ -2,6 +2,8 @@ import Datasource from "../Datasource";
 import Model from "../Model";
 
 /**
+ * Dummy implementation of the datasource
+ * 
  * @category Core
  * @subcategory Model
  */

@@ -1,4 +1,4 @@
-import SynchronousDatasource from "./SynchronousDatasource";
+import SynchronousDatasource from "../../base/model/datasources/SynchronousDatasource";
 import HttpMiddleware from "../middlewares/HttpMiddleware";
 
 /**
@@ -106,6 +106,8 @@ async function fetchWithTimeout(resource: RequestInfo, options: any) {
   }
 
 /**
+ * 
+ * 
  * @category Core
  * @subcategory Model
  */

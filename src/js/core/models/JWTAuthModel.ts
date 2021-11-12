@@ -1,5 +1,5 @@
-import HttpDatasource, {RequestMethod} from "../base/model/datasources/HttpDatasource";
-import HttpModel from "../base/model/HttpModel";
+import HttpDatasource, {RequestMethod} from "~/js/core/models/datasources/HttpDatasource";
+import HttpModel from "./HttpModel";
 
 /**
  * @category Core.Models

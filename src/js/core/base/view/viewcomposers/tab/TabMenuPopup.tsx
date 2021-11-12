@@ -3,19 +3,34 @@ import * as ReactDOM from "react-dom";
 import {Action, BooleanAction} from "../../../Event";
 
 /**
+ * Props for {@link TabMenuPopup}
+ * 
  * @category Core
  * @subcategory View
  */
 interface TMPProps {
+    /** a node where the content will be rendered via portal */
     overlay_node?: HTMLElement;
+    /** list of name-action-handler triplets */
     items?: Array<[string, Action<any>, Function]>;
+    /** X position of the mouse event caused the popup to appear */
     left: number;
+    /** Y position of the mouse event caused the popup to appear */
     top: number;
+    /** width of the tab button clicked */
     btn_width: number;
+    /** height of the tab button clicked */
     btn_height: number;
 }
 
 /**
+ * Popup for a {@link Tab} menu component
+ * 
+ * Displays actions defined in {@link Presenter}s related to the {@link View}
+ * the tab links to.
+ * 
+ * @see TabMenu
+ * 
  * @category Core
  * @subcategory View
  * 

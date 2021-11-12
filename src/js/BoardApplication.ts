@@ -10,7 +10,7 @@ import EventServiceProvider from "./core/providers/EventServiceProvider";
 
 import QtIPCDatasource from "./core/models/datasources/QtIPCDatasource";
 import SocketDatasource from "./core/models/datasources/SocketDatasource";
-import HttpDatasource from "./core/base/model/datasources/HttpDatasource";
+import HttpDatasource from "./core/models/datasources/HttpDatasource";
 import DummyDatasource from "./core/base/model/datasources/DummyDatasource";
 import AdaptiveDatasource from "./core/models/datasources/AdaptiveAsyncDatasource";
 import AsynchronousDatasource from "./core/base/model/datasources/AsynchronousDatasource";

@@ -5,27 +5,42 @@ import {Action, BooleanAction} from "../../../Event";
 import TabMenuPopup from "./TabMenuPopup";
 
 /**
+ * Props for {@link TabMenu}
+ * 
  * @category Core
  * @subcategory View
  */
 interface TMProps {
+    /** a node where the content will be rendered via portal */
     overlay_node?: HTMLElement;
 }
 
 /**
+ * State of {@link TabMenu}
+ * 
  * @category Core
  * @subcategory View
  */
 interface TMState {
+    /** whether the menu should be displayed */
     active: boolean;
+    /** list of name-action-handler triplets */
     items?: Array<[string, Action<any>, Function]>;
+    /** X position of the mouse event causes the popup to appear */
     m_left: number;
+    /** Y position of the mouse event causes the popup to appear */
     m_top: number;
+    /** width of the tab button clicked */
     m_btn_width: number;
+    /** height of the tab button clicked */
     m_btn_height: number;
 }
 
 /**
+ * Context menu for a {@link Tab}
+ * 
+ * Controls {@link TabMenuPopup} appearance and positioning.
+ * 
  * @category Core
  * @subcategory View
  * 

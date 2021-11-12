@@ -7,7 +7,10 @@ import {Widget} from "../../services/interfaces/IViewService";
 import ErrorBoundary from "./ErrorBoundary";
 import {CSSProperties} from "react";
 
-interface INestProps<P=IViewProps> {
+/**
+ * Props for {@link Nest}
+ */
+interface NestProps<P=IViewProps> {
     /** 
      * an object which communicates the {@link View} 
      * inside the {@link Nest} with other parts of the app 
@@ -26,7 +29,10 @@ interface INestProps<P=IViewProps> {
     nest_style?: CSSProperties;
 }
 
-interface INestState {
+/**
+ * State of {@link Nest}
+ */
+interface NestState {
     /** whether the nest is mounted */
     mounted: boolean;
     /** props collected from {@link Presenter}s by {@link ViewConnector} */
@@ -42,7 +48,7 @@ interface INestState {
  * 
  * @component
  */
-export default class Nest extends React.PureComponent<INestProps<any>, INestState> {
+export default class Nest extends React.PureComponent<NestProps<any>, NestState> {
     /** ref for the node representing the nest */
     private readonly ref = React.createRef<HTMLDivElement>();
     /** View component instance mounted inside the Nest */
@@ -53,7 +59,7 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
      * 
      * @param props 
      */
-    constructor(props: INestProps<any>) {
+    constructor(props: NestProps<any>) {
         super(props);
 
         this.onRefUpdated = this.onRefUpdated.bind(this);
@@ -96,7 +102,7 @@ export default class Nest extends React.PureComponent<INestProps<any>, INestStat
      * 
      * @inheritdoc
      */
-    componentDidUpdate(prevProps: Readonly<INestProps>, prevState: Readonly<INestState>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<NestProps>, prevState: Readonly<NestState>, snapshot?: any) {
         if (this.view) {
             this.view.attachConnector(this.props.connector);
         }

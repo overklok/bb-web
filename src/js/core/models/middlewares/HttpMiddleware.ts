@@ -1,7 +1,9 @@
 import {RequestParams} from "../datasources/HttpDatasource";
-import {Middleware} from "../Datasource";
+import {Middleware} from "../../base/model/Datasource";
 
 /**
+ * A middleware that applies to {@link HttpDatasource} to modify requests
+ * 
  * @category Core
  * @subcategory Model
  */

@@ -1,4 +1,4 @@
-import SynchronousDatasource from "./SynchronousDatasource";
+import SynchronousDatasource from "../../base/model/datasources/SynchronousDatasource";
 
 /**
  * @category Core

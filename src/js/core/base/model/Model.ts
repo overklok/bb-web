@@ -26,7 +26,7 @@ export interface ModelConstructor<MS extends ModelState, DS extends Datasource> 
 export type ModelState = {[key: string]: any}
 
 /**
- * Provides data in the {@link ModelState} taken from the {@link Datasource}
+ * Provides data of some subject area ({@link ModelState}) taken from its source ({@link Datasource})
  * 
  * Isolates the logic of data processing from other components of the system.
  *
