@@ -3,6 +3,7 @@ import HttpMiddleware from "../middlewares/HttpMiddleware";
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export enum RequestCredentials {
     Include = 'include',
@@ -12,6 +13,7 @@ export enum RequestCredentials {
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export enum RequestCache {
     Default = 'default',
@@ -23,6 +25,7 @@ export enum RequestCache {
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export enum RequestMode {
     NoCORS = 'no-cors',
@@ -32,6 +35,7 @@ export enum RequestMode {
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export enum RequestMethod {
     GET = 'get',
@@ -42,11 +46,13 @@ export enum RequestMethod {
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export type Query = {[key: string]: any};
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export type RequestOptions = {
     mode: RequestMode;
@@ -56,6 +62,7 @@ export type RequestOptions = {
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export enum RequestRedirect {
     Follow = 'follow',
@@ -65,6 +72,7 @@ export enum RequestRedirect {
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export type RequestParams = {
     query?: Query;
@@ -77,6 +85,7 @@ export type RequestParams = {
 
 /**
  * @category Core
+ * @subcategory Model
  */
 export type FakeHttpRule = {
     path: string;
@@ -106,7 +115,11 @@ async function fetchWithTimeout(resource: RequestInfo, options: any) {
   }
 
 /**
+ * An implementation of client-server communication via HTTP
  * 
+ * Based on fetch API.
+ * 
+ * Allows to fake responses (for debugging/testing purposes)
  * 
  * @category Core
  * @subcategory Model
@@ -117,6 +130,13 @@ export default class HttpDatasource extends SynchronousDatasource {
     private middleware: HttpMiddleware[] = [];
     private fake_response_generator: (path: string, params: RequestParams) => object;
 
+    /**
+     * Sets basic config for the datasource
+     * 
+     * @param addr      address of HTTP host to request
+     * @param port      port of the host
+     * @param options   additional request options
+     */
     constructor(addr: string, port?: number, options: RequestOptions = DefaultOptions) {
         super();
 
@@ -128,14 +148,32 @@ export default class HttpDatasource extends SynchronousDatasource {
         this.options = options;
     }
 
+    /**
+     * Provides the hostname configured in the app to models that use this datasource 
+     * 
+     * @returns hostname configured by the app
+     */
     public get host_name() {
         return this.hostname;
     }
 
+    /**
+     * Attaches middlewares provided
+     * 
+     * @param middleware list of middlewares to attach
+     */
     public registerMiddleware(middleware: HttpMiddleware[] = []) {
         this.middleware = middleware;
     }
 
+    /**
+     * Makes a request to the server configured
+     * 
+     * @param path      URL of the request (schema, host and query parts are not included)
+     * @param params    request parameters, some will override defaults
+     * 
+     * @returns JSON response if applicable
+     */
     async request(path: string, params: RequestParams = {}): Promise<any> {
         const fake_response = this.fake_response_generator && this.fake_response_generator(path, params);
 
@@ -187,6 +225,14 @@ export default class HttpDatasource extends SynchronousDatasource {
         return await response.json();
     }
 
+    /**
+     * Constructs complete URL for the server configured by given `path` and `query`
+     * 
+     * @param path  URL of the request (schema, host and query parts are not included)
+     * @param query key-value pairs of query parameters
+     * 
+     * @returns complete URL containing all parts to be requested sufficiently 
+     */
     public buildURL(path: string, query?: Query) {
         path = path.replace(/^\/+|\/+$/gm, '');
         path += '/';
@@ -196,6 +242,10 @@ export default class HttpDatasource extends SynchronousDatasource {
         return `${this.hostname}/${path}?${q}`;
     }
 
+    /**
+     * 
+     * @param rules 
+     */
     public setFakeRules(rules: FakeHttpRule[]) {
         this.fake_response_generator = (path, params) => {
             for (const rule of rules) {
