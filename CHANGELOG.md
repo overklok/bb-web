@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - More docs
 
+### Changed
+- Board disconnection alert message
+
+
 ### Removed
 - Modal action handling in Views (as unused)
 - Pane creation/removal transitions
