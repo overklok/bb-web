@@ -3,7 +3,7 @@ import HttpMiddleware from "../middlewares/HttpMiddleware";
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export enum RequestCredentials {
     Include = 'include',
@@ -13,7 +13,7 @@ export enum RequestCredentials {
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export enum RequestCache {
     Default = 'default',
@@ -25,7 +25,7 @@ export enum RequestCache {
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export enum RequestMode {
     NoCORS = 'no-cors',
@@ -35,7 +35,7 @@ export enum RequestMode {
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export enum RequestMethod {
     GET = 'get',
@@ -46,13 +46,13 @@ export enum RequestMethod {
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export type Query = {[key: string]: any};
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export type RequestOptions = {
     mode: RequestMode;
@@ -62,7 +62,7 @@ export type RequestOptions = {
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export enum RequestRedirect {
     Follow = 'follow',
@@ -72,7 +72,7 @@ export enum RequestRedirect {
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export type RequestParams = {
     query?: Query;
@@ -85,7 +85,7 @@ export type RequestParams = {
 
 /**
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export type FakeHttpRule = {
     path: string;
@@ -122,12 +122,15 @@ async function fetchWithTimeout(resource: RequestInfo, options: any) {
  * Allows to fake responses (for debugging/testing purposes)
  * 
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export default class HttpDatasource extends SynchronousDatasource {
     private readonly hostname: string;
+    /** common request parameters */
     private options: RequestOptions;
+    /** request modifiers */
     private middleware: HttpMiddleware[] = [];
+    /** request-to-response mapper */
     private fake_response_generator: (path: string, params: RequestParams) => object;
 
     /**
@@ -243,6 +246,11 @@ export default class HttpDatasource extends SynchronousDatasource {
     }
 
     /**
+     * Defines given requests (URL and params) mapped to responses in order to return
+     * them instead of requesting an HTTP server if proivded
+     * 
+     * If required to apply more fine-grained mapping, {@link setFakeGenerator} 
+     * to define how rules should be resolved to responses.
      * 
      * @param rules 
      */
@@ -261,10 +269,23 @@ export default class HttpDatasource extends SynchronousDatasource {
         }
     }
 
+    /**
+     * Defines a function to generate fake responses to return them instead
+     * of requesting real HTTP server if provided
+     * 
+     * @param generator response generator
+     */
     public setFakeGenerator(generator: (path: string, params: RequestParams) => object) {
         this.fake_response_generator = generator;
     }
 
+    /**
+     * Converts key-value pairs to URL query string
+     * 
+     * @param query key-value pairs of query parameters
+     * 
+     * @returns query string
+     */
     private static serializeQuery(query: Query = {}): string {
         let i = 0;
         let q = "";

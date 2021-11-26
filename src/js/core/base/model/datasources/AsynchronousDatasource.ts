@@ -26,6 +26,9 @@ export default abstract class AsynchronousDatasource extends Datasource {
 
     protected handlers: {[channel: string]: {func: Function, disposable: boolean}[]} = {};
 
+    /**
+     * Contains current connection status
+     */
     get status() {return this._status};
 
     /**

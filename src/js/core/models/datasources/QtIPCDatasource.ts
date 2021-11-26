@@ -3,6 +3,7 @@ import {sleep} from "../../helpers/functions";
 
 /**
  * @category Core.Models
+ * @subcategory Datasources
  */
 type QtEventSignal = {
     connect(callback: Function): void;
@@ -11,6 +12,7 @@ type QtEventSignal = {
 
 /**
  * @category Core.Models
+ * @subcategory Datasources
  */
 type QtWebConnector = {} & {
     emit(channel: string, data: string): void;
@@ -19,6 +21,7 @@ type QtWebConnector = {} & {
 
 /**
  * @category Core.Models
+ * @subcategory Datasources
  */
 enum QtWebStatus {
     Initial,
@@ -27,6 +30,11 @@ enum QtWebStatus {
 }
 
 /**
+ * An implemenetation of asynchronous data source based on QWebChannel API
+ * 
+ * Intended to be used in Qt-based WebViews (QtWebEngine).
+ * To use in arbitrary browser webpage see {@link SocketDatasource}.
+ * 
  * @category Core.Models
  * @subcategory Datasources
  */
@@ -48,6 +56,9 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         this._handlers = {};
     }
 
+    /**
+     * @inheritdoc
+     */
     get status(): AsyncDatasourceStatus {
         switch (QtIPCDatasource.Status) {
             case QtWebStatus.Initial:       return AsyncDatasourceStatus.Initial;
@@ -56,6 +67,11 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         }
     }
 
+    /**
+     * Waits until QWebChannel interface is possible of timeout is reached
+     * 
+     * @returns whether the interface is detected
+     */
     async init(): Promise<boolean> {
         if (QtIPCDatasource.Status === QtWebStatus.Connected) return;
 
@@ -73,6 +89,12 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         return false;
     }
 
+    /**
+     * Connects to other side by QWebChannel interface found by {@link init}
+     * Assigns a common object provided by webChannelTransport
+     * 
+     * @returns whether the connection is established
+     */
     connect(): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (QtIPCDatasource.Status === QtWebStatus.Connected) {
@@ -123,6 +145,10 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         });
     }
 
+    /**
+     * Send a disconnection signal to other side via QWebChannel interface
+     * Detaches a common object provided by webChannelTransport
+     */
     disconnect(): Promise<void> {
         return new Promise(resolve => {
             if (QtIPCDatasource.Status === QtWebStatus.Disconnected) {
@@ -139,6 +165,9 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         })
     }
 
+    /**
+     * @inheritdoc
+     */
     send(channel: string, data?: object) {
         if (QtIPCDatasource.Status !== QtWebStatus.Connected) throw new Error("Datasource is not connected to Qt");
 
@@ -146,18 +175,39 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
         QtIPCDatasource.Connector.emit(channel, JSON.stringify(data));
     }
 
+    /**
+     * Checks QWebChannel API availability
+     * 
+     * @returns whether the interface is loaded into the page 
+     */
     private static isPossible(): boolean {
         return !!window.QWebChannel;
     }
 
+    /**
+     * Checks QWebChannel connector availability 
+     * 
+     * @returns whether the connector is available
+     */
     private static isReady(): boolean {
         return !!window.qt;
     }
 
+    /**
+     * Checks QWebChannel's common object (signal emiiter) is provided
+     * 
+     * @returns whether the other side of QWebChannel interface is provided the common object
+     */
     private static isConnected(): boolean {
         return !!(QtIPCDatasource.Connector && QtIPCDatasource.Connector.event_sig);
     }
 
+    /**
+     * Handles event signal emission
+     * 
+     * @param channel channel identifier
+     * @param data data provided in the message
+     */
     private onEventSig(channel: string, data: string) {
         console.debug('[QtIPC] received', channel, data);
 
@@ -169,6 +219,9 @@ export default class QtIPCDatasource extends AsynchronousDatasource {
 }
 
 declare global {
+  /**
+   * TypeScript declaration for QWebChannelMessageTypes
+   */
   const enum QWebChannelMessageTypes {
     signal = 1,
     propertyUpdate = 2,
@@ -182,10 +235,16 @@ declare global {
     response = 10,
   }
 
+  /**
+   * TypeScript declaration for QWebChannelTransport
+   */
   type QWebChannelTransport = {
     webChannelTransport: any;
   }
 
+  /**
+   * TypeScript declarations for QWebChannel library
+   */
   class QWebChannel {
     constructor (transport: WebSocket, initCallback: (channel: QWebChannel) => void);
 

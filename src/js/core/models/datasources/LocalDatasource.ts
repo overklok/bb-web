@@ -1,8 +1,10 @@
 import SynchronousDatasource from "../../base/model/datasources/SynchronousDatasource";
 
 /**
+ * An implementation of local data storage
+ * 
  * @category Core
- * @subcategory Model
+ * @subcategory Datasources
  */
 export default class LocalDatasource extends SynchronousDatasource {
 }

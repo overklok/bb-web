@@ -2,7 +2,7 @@ import * as React from "react";
 import {ErrorInfo} from "react";
 import {ViewType} from "../../helpers/types";
 
-require("~/js/css/core/error.less");
+require("~/css/core/error.less");
 
 /**
  * Props for {@link ErrorBoundary}
