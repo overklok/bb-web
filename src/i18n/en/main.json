@@ -1,0 +1,155 @@
+{
+    "general": {
+        "error": "Error {{err}}"
+    },
+	"home": {
+        "header": {
+            "title": "Breadboard"
+        },
+        "courses": {
+            "error": "An error has occurred",
+            "reloading": "Reloading...",
+            "loading": "Loading...",
+            "lesson": "Lesson",
+            "lessons": "Lessons"
+        },
+        "error": {
+            "no_server_access": "Server is not available."
+        }
+    },
+    "navbar": {
+        "autonomous_mode": "Autonomous mode",
+        "menu": {
+            "title": "Menu",
+            "lessons": "Lessons",
+            "settings": "Settings",
+            "about": "About"
+        }
+    },
+    "dialog": {
+        "close": "Close",
+        "decline": "Decline",
+        "accept": "Accept"
+    },
+    "alert": {
+        "issue_report_completed": {
+            "title": "Report sent successfully!",
+            "accept": "OK"
+        },
+        "board_disconnected": {
+            "content": "Make sure the breadboard is connected to the power supply and to your computer.",
+            "accept": "Continue autonomously"
+        },
+        "short_circuit": {
+            "title": "Short circuit detected!",
+            "content": "Break the circuit to fix it."
+        }
+    },
+    "lesson": {
+        "modal": {
+            "program_empty": {
+                "heading": "Program is empty",
+                "content": "Add some command blocks to the editor to launch."
+            },
+            "validation_request_error": {
+                "title": "Request error"
+            },
+            "validation_error": {
+                "title": "Exercise validation error"
+            },
+            "validation_fail": {
+                "title": "Exercise failed"
+            },
+            "validation_undefined": {
+                "title": "Exercise cannot be checked",
+                "content_default": "Unknown error"
+            },
+            "exercise_pass": {
+                "heading": "Exercise passed!",
+                "accept": "Proceed",
+                "dismiss": "Stay here"
+            },
+            "mission_pass": {
+                "heading": "Stage passed",
+                "accept": "Proceed",
+                "dismiss": "Stay here",
+                "content": "Stay here to retry or proceed to the next stage?"
+            },
+            "popover": {
+                "title": "Exercise {{num}}",
+                "accept": "Continue"
+            }
+        },
+        "fabs": {
+            "stop": "Stop",
+            "start": "Launch",
+            "check": "Check",
+            "checking": "Checking..."
+        },
+        "check": {
+            "invalid_circuit": "The circuit is assembled incorrectly",
+            "board_version_mismatch": "Board version mismatch",
+            "timeout": "Check timeout",
+            "unknown": "Unknown code"
+        }
+    },
+    "settings": {
+        "modal": {
+            "main": {
+                "heading": "Settings",
+                "accept": "Submit",
+                "dismiss": "Cancel"
+            },
+            "escape": {
+                "content": "Want to rollback changes?",
+                "accept": "Continue editing",
+                "dismiss": "Rollback"
+            }
+        }
+    },
+    "about": {
+        "logo_subscription": {
+            "breadboard": "breadboard"
+        },
+        "modal": {
+            "heading": "About",
+            "logo_subscription": "breadboard",
+            "event_log_download": "Download event log"
+        }
+    },
+    "issue": {
+        "event_log_text": "It's recommended to attach event log to the report for debug purposes. You can download it by clicking the button below. It might contain useful information on preceding errors or warnings, which can lead to instant reply.",
+        "event_log_download":"Download event log"
+    },
+    "update": {
+        "accept": "OK",
+        "skip": "Skip this version",
+        "heading": "Newer version is available",
+        "version_details": "You are using 'Tapanda: Breadboard' version <b>{{ver_old}}</b>; however, version <b>{{ver_new}}</b> is available.",
+        "update_prompt": "Please update the application by downloading the installer via",
+        "update_link": "this link"
+    },
+    "board": {
+        "connection": {
+            "unknown": {
+                "title": "Checking connection..."
+            },
+            "waiting": {
+                "title": "Establishing connection...",
+                "content": ""
+            },
+            "no_core": {
+                "title": "Connection is not available",
+                "content": "Cannot find the core."
+            },
+            "board_connected": {
+                "title": "The board is connected",
+                "content": "Now you can proceed to exercises."
+            },
+            "board_disconnected": {
+                "title": "The board is disconnected",
+                "content": "Connect the board via USB cable."
+            }
+        }
+    }
+}
