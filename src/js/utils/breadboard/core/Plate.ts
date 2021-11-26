@@ -1729,7 +1729,8 @@ export default abstract class Plate {
      * 
      * @param xyobj 
      * @param orientation 
-     * @returns 
+     * 
+     * @returns translated coordinates
      */
     public static _orientXYObject(xyobj: {x: number, y: number}, orientation: string): {x: number, y: number} {
         let xynew: {x: number, y: number} = {x: undefined, y: undefined};

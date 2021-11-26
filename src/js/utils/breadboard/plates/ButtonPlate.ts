@@ -10,6 +10,7 @@ import Cell from '../core/Cell';
  * Button plate
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class ButtonPlate extends LinearPlate {
     static get Alias() {return "button"}

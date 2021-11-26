@@ -2,7 +2,7 @@ import Presenter, { on } from "~/js/core/base/Presenter";
 import IssueView from "~/js/views/controls/IssueView";
 import ConnectionModel, { IssueReportCompleteEvent } from "~/js/models/common/ConnectionModel";
 import ModalModel from "~/js/core/models/ModalModel";
-import { AlertType } from "~/js/core/views/modal/AlertView";
+import { AlertType } from "~/js/core/views/AlertView";
 
 // passed by DefinePlugin in Webpack config
 declare const __VERSION__: string;

@@ -7,7 +7,7 @@ import BridgePlate from "../../utils/breadboard/plates/BridgePlate";
 import ResistorPlate from "../../utils/breadboard/plates/ResistorPlate";
 import CapacitorPlate from "../../utils/breadboard/plates/CapacitorPlate";
 import LEDPlate from "../../utils/breadboard/plates/LEDPlate";
-import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
+import { SerializedPlate } from "~/js/utils/breadboard/core/Plate";
 
 export class TestkitChangeEvent extends ModelEvent<TestkitChangeEvent> {
     qtys: TestKitItemQuanitites;

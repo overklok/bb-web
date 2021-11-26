@@ -1,12 +1,20 @@
-import SynchronousDatasource from "./SynchronousDatasource";
+import SynchronousDatasource from "../../base/model/datasources/SynchronousDatasource";
 import HttpMiddleware from "../middlewares/HttpMiddleware";
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export enum RequestCredentials {
     Include = 'include',
     SameOrigin = 'same-origin',
     Omit = 'omit'
 }
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export enum RequestCache {
     Default = 'default',
     NoCache = 'no-cache',
@@ -15,12 +23,20 @@ export enum RequestCache {
     OnlyIfCached = 'only-if-cached'
 }
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export enum RequestMode {
     NoCORS = 'no-cors',
     CORS = 'cors',
     SameOrigin = 'same-origin'
 }
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export enum RequestMethod {
     GET = 'get',
     POST = 'post',
@@ -28,20 +44,36 @@ export enum RequestMethod {
     DELETE = 'delete'
 }
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export type Query = {[key: string]: any};
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export type RequestOptions = {
     mode: RequestMode;
     cache: RequestCache;
     credentials: RequestCredentials;
 }
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export enum RequestRedirect {
     Follow = 'follow',
     Error = 'error',
     Manual = 'manual'
 }
 
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export type RequestParams = {
     query?: Query;
     headers?: {[key: string]: string};
@@ -51,7 +83,10 @@ export type RequestParams = {
     timeout?: number;
 }
 
-
+/**
+ * @category Core
+ * @subcategory Datasources
+ */
 export type FakeHttpRule = {
     path: string;
     params: RequestParams;
@@ -79,12 +114,32 @@ async function fetchWithTimeout(resource: RequestInfo, options: any) {
     return response;
   }
 
+/**
+ * An implementation of client-server communication via HTTP
+ * 
+ * Based on fetch API.
+ * 
+ * Allows to fake responses (for debugging/testing purposes)
+ * 
+ * @category Core
+ * @subcategory Datasources
+ */
 export default class HttpDatasource extends SynchronousDatasource {
     private readonly hostname: string;
+    /** common request parameters */
     private options: RequestOptions;
+    /** request modifiers */
     private middleware: HttpMiddleware[] = [];
+    /** request-to-response mapper */
     private fake_response_generator: (path: string, params: RequestParams) => object;
 
+    /**
+     * Sets basic config for the datasource
+     * 
+     * @param addr      address of HTTP host to request
+     * @param port      port of the host
+     * @param options   additional request options
+     */
     constructor(addr: string, port?: number, options: RequestOptions = DefaultOptions) {
         super();
 
@@ -96,14 +151,32 @@ export default class HttpDatasource extends SynchronousDatasource {
         this.options = options;
     }
 
+    /**
+     * Provides the hostname configured in the app to models that use this datasource 
+     * 
+     * @returns hostname configured by the app
+     */
     public get host_name() {
         return this.hostname;
     }
 
+    /**
+     * Attaches middlewares provided
+     * 
+     * @param middleware list of middlewares to attach
+     */
     public registerMiddleware(middleware: HttpMiddleware[] = []) {
         this.middleware = middleware;
     }
 
+    /**
+     * Makes a request to the server configured
+     * 
+     * @param path      URL of the request (schema, host and query parts are not included)
+     * @param params    request parameters, some will override defaults
+     * 
+     * @returns JSON response if applicable
+     */
     async request(path: string, params: RequestParams = {}): Promise<any> {
         const fake_response = this.fake_response_generator && this.fake_response_generator(path, params);
 
@@ -155,6 +228,14 @@ export default class HttpDatasource extends SynchronousDatasource {
         return await response.json();
     }
 
+    /**
+     * Constructs complete URL for the server configured by given `path` and `query`
+     * 
+     * @param path  URL of the request (schema, host and query parts are not included)
+     * @param query key-value pairs of query parameters
+     * 
+     * @returns complete URL containing all parts to be requested sufficiently 
+     */
     public buildURL(path: string, query?: Query) {
         path = path.replace(/^\/+|\/+$/gm, '');
         path += '/';
@@ -164,6 +245,15 @@ export default class HttpDatasource extends SynchronousDatasource {
         return `${this.hostname}/${path}?${q}`;
     }
 
+    /**
+     * Defines given requests (URL and params) mapped to responses in order to return
+     * them instead of requesting an HTTP server if proivded
+     * 
+     * If required to apply more fine-grained mapping, {@link setFakeGenerator} 
+     * to define how rules should be resolved to responses.
+     * 
+     * @param rules 
+     */
     public setFakeRules(rules: FakeHttpRule[]) {
         this.fake_response_generator = (path, params) => {
             for (const rule of rules) {
@@ -179,10 +269,23 @@ export default class HttpDatasource extends SynchronousDatasource {
         }
     }
 
+    /**
+     * Defines a function to generate fake responses to return them instead
+     * of requesting real HTTP server if provided
+     * 
+     * @param generator response generator
+     */
     public setFakeGenerator(generator: (path: string, params: RequestParams) => object) {
         this.fake_response_generator = generator;
     }
 
+    /**
+     * Converts key-value pairs to URL query string
+     * 
+     * @param query key-value pairs of query parameters
+     * 
+     * @returns query string
+     */
     private static serializeQuery(query: Query = {}): string {
         let i = 0;
         let q = "";

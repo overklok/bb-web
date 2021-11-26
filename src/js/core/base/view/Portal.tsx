@@ -5,6 +5,15 @@ const modalRoot = document.createElement('div');
 modalRoot.id = 'modal-root';
 document.body.insertBefore(modalRoot, document.body.firstChild);
 
+/**
+ * A component that renders children into a DOM node that exists 
+ * outside the DOM hierarchy of the parent component.
+ * 
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
+ */
 export default class Portal extends React.Component {
     private readonly el: HTMLDivElement;
 
@@ -14,14 +23,14 @@ export default class Portal extends React.Component {
     }
 
     componentDidMount() {
-        // Элемент портала добавляется в DOM-дерево после того, как
-        // потомки компонента Modal будут смонтированы, это значит,
-        // что потомки будут монтироваться на неприсоединённом DOM-узле.
-        // Если дочерний компонент должен быть присоединён к DOM-дереву
-        // сразу при подключении, например, для замеров DOM-узла,
-        // или вызова в потомке 'autoFocus', добавьте в компонент Modal
-        // состояние и рендерите потомков только тогда, когда
-        // компонент Modal уже вставлен в DOM-дерево.
+        // The portal element is inserted in the DOM tree after
+        // the Modal's children are mounted, meaning that children
+        // will be mounted on a detached DOM node. If a child
+        // component requires to be attached to the DOM tree
+        // immediately when mounted, for example to measure a
+        // DOM node, or uses 'autoFocus' in a descendant, add
+        // state to Modal and only render the children when Modal
+        // is inserted in the DOM tree.
         modalRoot.appendChild(this.el);
     }
 

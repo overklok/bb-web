@@ -5,6 +5,10 @@ import IRoutingService from "../services/interfaces/IRoutingService";
 import RoutingService from "../services/RoutingService";
 import IEventService from "../services/interfaces/IEventService";
 
+/**
+ * @category Core
+ * @subcategory Service
+ */
 export default class RoutingServiceProvider extends ServiceProvider {
     register() {
         this.app.bind(IRoutingService, function (app: Application): any {

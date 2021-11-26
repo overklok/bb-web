@@ -13,6 +13,7 @@ import Grid from '../core/Grid';
  * and drag'n'drop them to the board
  * 
  * @category Breadboard
+ * @subcategory Layers
  */
 export default class SelectorLayer extends Layer<HTMLDivElement> {
     static get Class() {return "bb-layer-selector"}

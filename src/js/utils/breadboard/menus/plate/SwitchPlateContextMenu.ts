@@ -5,6 +5,7 @@ import PlateContextMenu from "../PlateContextMenu";
  * An exclusive version of context menu to use when clicking on a {@link SwitchPlate}
  * 
  * @category Breadboard
+ * @subcategory Menus
  */
 export default class SwitchPlateContextMenu extends PlateContextMenu {
     /** Whether switch is toggled on */

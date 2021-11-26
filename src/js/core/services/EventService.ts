@@ -8,6 +8,9 @@ type HandlerPool = Map<any, Map<typeof AbstractEvent, Set<Function>>>;
  * An implementation of IEventService based on Map and Set.
  *
  * @inheritDoc
+ * 
+ * @category Core
+ * @subcategory Service
  */
 export default class EventService extends IEventService {
     private handler_pool: HandlerPool = new Map();
@@ -47,7 +50,7 @@ export default class EventService extends IEventService {
             const last_event = this.last_events.get(event_type);
 
             if (last_event) {
-                await this.emitAsync(last_event, anchor);
+                await this.emit(last_event, anchor);
             }
         }
 
@@ -112,7 +115,7 @@ export default class EventService extends IEventService {
     /**
      * @inheritDoc
      */
-    async emitAsync<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
+    async emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
         const event_type: typeof AbstractEvent = (event as any).__proto__.constructor;
 
         this.last_events.set(event_type, event);
@@ -158,9 +161,5 @@ export default class EventService extends IEventService {
 
             throw new EventHandlingError('Some handlers are failed', errors);
         }
-    }
-
-    emit<E extends AbstractEvent<E>>(event: E, anchor: any = null) {
-        this.emitAsync(event, anchor);
     }
 }

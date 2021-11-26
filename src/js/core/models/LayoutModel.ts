@@ -1,5 +1,5 @@
 import Model from "../base/model/Model";
-import {ILayoutMode, ILayoutPane} from "../views/layout/LayoutView";
+import {ILayoutMode, ILayoutPane} from "../views/LayoutView";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {PaneOrientation} from "../views/layout/Pane";
 import {WidgetInfo} from "../helpers/types";
@@ -9,11 +9,17 @@ const UNITS_ALLOWED = [
     "px", '%'
 ];
 
+/**
+ * @category Core.Models
+ */
 type Widget = {
     alias: string;
     label: string;
 }
 
+/**
+ * @category Core.Models
+ */
 type Pane = {
     name: string;
     title?: string;
@@ -27,25 +33,42 @@ type Pane = {
     composer?: string;
 }
 
+/**
+ * @category Core.Models
+ */
 type LayoutMode = {
     policy: string;
     panes: Pane[]
 }
 
+/**
+ * @category Core.Models
+ */
 type LayoutOptions = {
     show_headers?: boolean;
 }
 
+/**
+ * @category Core.Models
+ */
 interface LayoutModelState {
     modes: {[key: string]: LayoutMode};
     current_mode: string;
     options?: LayoutOptions;
 }
 
+/**
+ * @category Core.Models
+ * @subcategory Events
+ */
 export class SetModeEvent extends ModelEvent<SetModeEvent> {
     mode: string;
 }
 
+/**
+ * @category Core.Models
+ * @subcategory Events
+ */
 // TODO: Remove
 export class FinishModeEvent extends ModelEvent<FinishModeEvent> {
     mode: string;
@@ -55,6 +78,8 @@ export class FinishModeEvent extends ModelEvent<FinishModeEvent> {
  * Модель разметки
  *
  * @property modes {} режимы разметки
+ * 
+ * @category Core.Models
  */
 export default class LayoutModel extends Model<LayoutModelState, DummyDatasource> {
     static alias = 'layout';

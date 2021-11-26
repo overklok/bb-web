@@ -1,7 +1,10 @@
 import Presenter, {on, restore} from "../base/Presenter";
-import LayoutView, {LayoutFinishedEvent} from "../views/layout/LayoutView";
+import LayoutView, {LayoutFinishedEvent} from "../views/LayoutView";
 import LayoutModel, {SetModeEvent} from "../models/LayoutModel";
 
+/**
+ * @category Core.Presenters
+ */
 export default class LayoutPresenter extends Presenter<LayoutView> {
     protected model_layout: LayoutModel;
 

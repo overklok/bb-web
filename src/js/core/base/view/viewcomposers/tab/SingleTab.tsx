@@ -3,12 +3,28 @@ import classNames from "classnames";
 import Tab from "./Tab";
 import TabMenu from "./TabMenu";
 
-interface IProps {
+/**
+ * Props for {@link SingleTab}
+ * 
+ * @category Core
+ * @subcategory View
+ */
+interface SingleTabProps {
+    /** caption of the tab */
     label: string;
+    /** a node where the content of the context menu will be rendered via portal */
     overlay_node?: HTMLElement;
 }
 
-const SingleTab = React.forwardRef((props: IProps, ref_menu: React.RefObject<TabMenu>) => {
+/**
+ * Helper component representing single tab
+ * 
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
+ */
+const SingleTab = React.forwardRef((props: SingleTabProps, ref_menu: React.RefObject<TabMenu>) => {
     return (
         <Tab
             active_tab={0}

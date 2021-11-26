@@ -1,24 +1,30 @@
 import Model from "../base/model/Model";
 import DummyDatasource from "../base/model/datasources/DummyDatasource";
 import {ModelEvent} from "../base/Event";
-import {AlertType} from "../views/modal/AlertView";
+import {AlertType} from "../views/AlertView";
 import {IAlertData, IModalData, IModalDataWithIndex, IToastData, IToastDataWithIndex} from "../datatypes/modal";
-import {ModalAction} from "../base/view/Nest";
+import {ModalAction} from "../views/ModalView";
 
 export class UpdateModalsEvent extends ModelEvent<UpdateModalsEvent> {}
 export class UpdateAlertsEvent extends ModelEvent<UpdateAlertsEvent> {}
 export class UpdateToastsEvent extends ModelEvent<UpdateToastsEvent> {}
 
-interface ModalStorage {
+/**
+ * @category Core.Models
+ */
+interface ModalModelState {
     alerts: {[type: number]: IAlertData};
     modals: {[type: string]: IModalDataWithIndex[]};
     toasts: IToastDataWithIndex[];
 }
 
-export default class ModalModel extends Model<ModalStorage, DummyDatasource> {
+/**
+ * @category Core.Models
+ */
+export default class ModalModel extends Model<ModalModelState, DummyDatasource> {
     static alias = 'modal';
 
-    protected defaultState: ModalStorage = {
+    protected defaultState: ModalModelState = {
         alerts: {},
         modals: {},
         toasts: []

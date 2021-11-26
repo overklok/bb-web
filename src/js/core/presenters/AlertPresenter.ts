@@ -1,7 +1,10 @@
 import Presenter, {on} from "../base/Presenter";
 import ModalModel, {UpdateAlertsEvent} from "../models/ModalModel";
-import AlertView, {AlertType} from "../views/modal/AlertView";
+import AlertView, {AlertType} from "../views/AlertView";
 
+/**
+ * @category Core.Presenters
+ */
 export default class AlertPresenter extends Presenter<AlertView> {
     private modal: ModalModel;
 

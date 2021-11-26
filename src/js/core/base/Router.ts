@@ -1,19 +1,32 @@
 import IModelService from "../services/interfaces/IModelService";
 import {ModelConstructor, ModelState} from "./model/Model";
 import Datasource from "./model/Datasource";
-import {ModelEvent, RouteEvent} from "./Event";
+import {RouteEvent} from "./Event";
 import IEventService from "../services/interfaces/IEventService";
 import {CallbackFunctionVariadic} from "../helpers/types";
 
+/**
+ * Global state point of the application 
+ * 
+ * When the destination is requested in some way, {@link Router} directs the
+ * application to reach the state required by the destination.
+ * {@link RouteDestination} is the type of objects describing the state.
+ */
 type RouteDestination = unknown;
 
 /**
- * An arbitrary route that matches a path expression
+ * An object defining conditions of a {@link RouteDestination} and related attributes
+ * 
+ * The conditions expressed by {@link Route.pathexp} attribute.
+ * 
+ * @category Core
  */
 export type Route<RD extends RouteDestination> = {
     /* Route name, required to reverse */
     name: string;
-    /* The unique destination of the route */
+    /* 
+     * the unique state of application to apply when the route is reached
+     */
     destination: RD|CallbackFunctionVariadic;
     /**
      * Path expression of the route
@@ -31,21 +44,41 @@ export type Route<RD extends RouteDestination> = {
 }
 
 /**
- * A {@see Route} that points to a {@see Router} method instead of custom {@see RouteDestination}.
+ * A {@link Route} that points to a {@link Router} method instead of custom {@link RouteDestination}.
+ * 
+ * @category Core
  */
 type MethodRoute = Route<null> & {
     method_name: string;
 }
 
 /**
- * A universal form of {@see Route},
- * it contains auxiliary data to simplify route resolve/reverse.
+ * A universal form of {@link Route}
+ * which contains auxiliary data to simplify route resolve/reversal
+ * 
+ * @category Core
  */
 type CompiledRoute<RD extends RouteDestination> = {
-    regexp: RegExp;
+    /**
+     * human-readable path of the route containing typed substitutions
+     */
     pathexp?: string;
+    /**
+     * either of regexp compiled from the regexp
+     * or user-defined regexp
+     */
+    regexp: RegExp;
+    /* 
+     * parameter types extracted from pathexp 
+     * which is required as the regexp does not contain type validation 
+     */
     param_types?: string[];
+    /** 
+     * either of route identifier or arbitrary callback function 
+     * to call when the destiation is reached 
+     */
     destination?: RD|CallbackFunctionVariadic;
+    /** name of the {@link Router} method to call when the app is directed to the route */
     method_name?: string;
 }
 
@@ -56,16 +89,18 @@ type CompiledRoute<RD extends RouteDestination> = {
 const PATHEXP_REGEXP = /({([a-z0-9]+)})/gmi;
 
 /**
- * {@see Router} method decorator
+ * {@link Router} method decorator
  *
- * Use this decorator when it's needed to make the method of {@see Router} a handler of a route.
+ * Use this decorator when it's needed to make the method of {@link Router} a handler of a route.
  *
- * Note that {@see Router} will check that the number of arguments in the method matches the number
+ * Note that {@link Router} will check that the number of arguments in the method matches the number
  * of parameters of the path.
  * It's also not available to use regexps as route's path in this case.
  *
- * @param pathexp   path expression, see {@see Route.pathexp}
+ * @param pathexp   path expression, see {@link Route.pathexp}
  * @param name      route name
+ * 
+ * @category Core
  */
 export function route(pathexp: string, name: string) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -82,27 +117,31 @@ export function route(pathexp: string, name: string) {
 }
 
 /**
- * A helper interface to describe the object that constructs {@see Router} objects.
+ * Helper interface to describe the object that constructs {@see Router} objects.
+ * 
+ * @category Core
  */
 export interface IRouter {
     new(svc_model: IModelService, svc_event: IEventService): Router<any>;
 }
 
 /**
- * A mechanism of matching application's global state points and its string paths
+ * A mechanism of matching application destinations and its string paths
  *
  * This class provides methods of the matching between them in both directions.
  *
- * Correct matching of a state point and its string path is called a route ({@see Route}).
- * An application's global state point is called a route destination ({@see RouteDestination}).
+ * Correct matching of a state point and its string path is called a route ({@link Route}).
+ * An application's global state point is called a route destination ({@link RouteDestination}).
  *
- * A destination is handled by the {@see Router.direct} method or by other arbitrary method of the class.
- * A string path can be either a path expression (see {@see Route.pathexp})
- * or a regular expression ({@see RegExp}, it has some restrictions).
+ * A destination is handled by {@link Router.direct} method or by other arbitrary method of the class.
+ * A string path can be either a path expression (see {@link Route.pathexp})
+ * or a regular expression ({@link RegExp}, it has some restrictions).
  *
  * For this reason, routes can be specified in tho ways:
  *  - The default way is to set public `routes` property.
- *  - A {@see route} decorator may be applied to specific method of {@see Router} class.
+ *  - A {@link route} decorator may be applied to specific method of {@link Router} class.
+ * 
+ * @category Core
  */
 export default abstract class Router<RD extends RouteDestination> {
     /* A public list of routes that is usually specified for specific application's router, if needed */
@@ -126,13 +165,13 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     /**
-     * React to destination change
+     * Handles destination change
      *
      * Specific implementation may need to reflect the path change;
      * this method is called automatically when the path changes and resolves to the destination.
      *
-     * @param destination   a destination to react to
-     * @param params
+     * @param destination   a destination to handle
+     * @param params        optional destination parameters  
      */
     protected abstract direct(destination: RD, params?: (number|string)[]): void;
 
@@ -145,7 +184,7 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     /**
-     * Launch a router
+     * Launches the router
      *
      * Specific implementation may need to make some initial actions
      * (i.e. extract a model and gather initial data).
@@ -155,12 +194,12 @@ export default abstract class Router<RD extends RouteDestination> {
     };
 
     /**
-     * Make a redirection
+     * Makes the redirection
      *
      * This methods resolves a path and calls corresponding handler according to its route.
-     * If the path is invalid (there are no routes corresponding to it), it shows the error and skips.
+     * If the path is invalid (there are no corresponding routes), shows the error and skips.
      *
-     * @param path  a path requested by the user
+     * @param path path requested by the user
      */
     public async redirect(path: string) {
         const resolved = this.resolve(path);
@@ -192,15 +231,17 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     /**
-     * Get the routes' path based on route's name and fill the parameters if required
+     * Gets path of route based on its name and fills the parameters if required
      *
      * This method can be used in couple with {@see redirect} to reproduce user experience or to redirect
      * programmatically a bit more cleaner (but it's still not recommended to do in production).
      *
      * Please note that regexp-based routes cannot be reversed due to its arbitrariness and diversity.
      *
-     * @param route_name
-     * @param params
+     * @param route_name    name of the route
+     * @param params        route parameters if required
+     * 
+     * @returns path of the route
      */
     public reverse(route_name: string, params?: (string|number)[]): string {
         const route = this.routes_compiled.get(route_name);
@@ -244,9 +285,9 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     /**
-     * Find a route and parse parameters for a given path.
+     * Finds route and parses parameters for a given path.
      *
-     * @param path  a path to be resolved
+     * @param path path to be resolved
      */
     public resolve(path: string): null|[CompiledRoute<RD>, (string|number)[]] {
        for (const route of this.routes_compiled.values()) {
@@ -261,9 +302,9 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     /**
-     * Find a model in global repository
+     * Finds model in the global repository
      *
-     * This method isolates {@see Route}'s inheritors to write access to repository, enabling to
+     * This method isolates {@see Route} inheritors to write access to repository, enabling to
      * retrieve the {@see Model} instances.
      *
      * Note that the models may not be available before the {@see launch} method is called
@@ -285,11 +326,11 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     protected emit<E>(evt: RouteEvent<E>) {
-        return this.svc_event.emitAsync(evt);
+        return this.svc_event.emit(evt);
     }
 
     /**
-     * Prepare initial routes to resolve and reverse algorithms
+     * Prepares initial routes to resolve and reverse algorithms
      *
      * Each route that contains a 'pathexp' (path expression) will be converted to a
      * {@see CompiledRoute} which contains regexp version of the 'pathexp'. This format is more suitable to
@@ -328,7 +369,7 @@ export default abstract class Router<RD extends RouteDestination> {
     }
 
     /**
-     * Convert specific route to Router's universal format
+     * Converts specific route to Router's universal format
      *
      * @param route_name    original route name, will be used in {@see reverse}
      * @param pathexp       original path expression to convert to regexp format
@@ -391,6 +432,15 @@ export default abstract class Router<RD extends RouteDestination> {
         return [new RegExp(regexp_str, 'g'), param_types];
     }
 
+    /**
+     * Extracts parameter values from the `path` by given `regexp` and `types`
+     * 
+     * @param regexp    generated regexp from the compiled route  
+     * @param types     types extracted from the pathexp
+     * @param path      original path to extract the parameter values from
+     * 
+     * @returns parameter values listed in the same order as in the path
+     */
     private static applyPathToRegexp(regexp: RegExp, types: null|string[], path: string): null|(string|number)[] {
         let params: (string|number)[] = [];
 

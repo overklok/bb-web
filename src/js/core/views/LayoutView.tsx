@@ -2,15 +2,15 @@ import * as React from "react";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import Pane, {PaneOrientation} from "./Pane";
+import Pane, {PaneOrientation} from "./layout/Pane";
 
 import {RefObject} from "react";
-import {AllProps, IViewProps, IViewState, View} from "../../base/view/View";
-import {Widget} from "../../services/interfaces/IViewService";
-import {WidgetInfo} from "../../helpers/types";
-import {ViewEvent} from "../../base/Event";
+import {AllProps, IViewProps, IViewState, View} from "../base/view/View";
+import {Widget} from "../services/interfaces/IViewService";
+import {WidgetInfo} from "../helpers/types";
+import {ViewEvent} from "../base/Event";
 
-require('../../../../css/core/layout.less');
+require('../../../css/core/layout.less');
 
 export class LayoutMountEvent extends ViewEvent<LayoutMountEvent> {}
 export class LayoutFinishedEvent extends ViewEvent<LayoutFinishedEvent> {
@@ -27,6 +27,9 @@ export enum DraggableItemTypes {
  * Панель является основообразующим элементом разметки.
  * Панель является одновременно самым высокоуровневым и низкоуровневым элементом разметки,
  * так как может содержать в себе другие панели, т.е. эта модель является рекурсивной.
+ * 
+ * @category Core.Views
+ * @subcategory DataObjects
  */
 export interface ILayoutPane {
     name: string;
@@ -47,6 +50,9 @@ export interface ILayoutPane {
  *
  * Режим определяет состояние разметки в определённый момент времени.
  * За счёт возможности переключения режимов разметка является динамической.
+ * 
+ * @category Core.Views
+ * @subcategory DataObjects
  */
 export interface ILayoutMode {
     panes: ILayoutPane[];
@@ -55,13 +61,18 @@ export interface ILayoutMode {
 
 /**
  * Состояние разметки
+ * 
+ * @category Core.Views
  */
-interface ILayoutState extends IViewState {
+interface LayoutState extends IViewState {
     // название текущего режима разметки
     mode_name: string;
 }
 
-interface ILayoutProps extends IViewProps {
+/**
+ * @category Core.Views
+ */
+interface LayoutProps extends IViewProps {
     show_headers?: boolean;
     mode_name: string;
     modes: {[key: string]: ILayoutMode};
@@ -73,14 +84,16 @@ interface ILayoutProps extends IViewProps {
  * Разметка определяет расположение внутренних модулей приложения,
  * компонуя панели в соответствии с выбранным режимом разметки.
  * Режимы разметки задаются в конфигурационном объекте `LayoutConfig`.
+ * 
+ * @category Core.Views
  */
-export default class LayoutView extends View<ILayoutProps, ILayoutState> {
+export default class LayoutView extends View<LayoutProps, LayoutState> {
     private pane_ref: RefObject<Pane> = React.createRef();
 
     private root_ref: RefObject<HTMLDivElement> = React.createRef();
     private readonly overlay_node: HTMLDivElement;
 
-    static defaultProps: ILayoutProps = {
+    static defaultProps: LayoutProps = {
         show_headers: true,
         mode_name: 'default',
         modes: {
@@ -92,7 +105,7 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     }
 
 
-    constructor(props: AllProps<ILayoutProps>) {
+    constructor(props: AllProps<LayoutProps>) {
         super(props);
 
         this.state = {
@@ -133,8 +146,8 @@ export default class LayoutView extends View<ILayoutProps, ILayoutState> {
     }
 
     public componentDidUpdate(
-        prevProps: Readonly<AllProps<ILayoutProps>>,
-        prevState: Readonly<ILayoutState>,
+        prevProps: Readonly<AllProps<LayoutProps>>,
+        prevState: Readonly<LayoutState>,
         snapshot?: any
     ) {
         this.emit(new LayoutFinishedEvent({mode_name: this.state.mode_name}));

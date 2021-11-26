@@ -10,6 +10,7 @@ import BackgroundLayer from "../layers/BackgroundLayer";
  * Unknown plate
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class UnkPlate extends LinearPlate {
     static get Alias() {return "undef"}

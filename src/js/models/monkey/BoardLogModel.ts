@@ -2,9 +2,8 @@ import cloneDeep from "lodash/cloneDeep";
 
 import Model from "../../core/base/model/Model";
 import DummyDatasource from "../../core/base/model/datasources/DummyDatasource";
-import {Plate} from "../common/BoardModel";
 import {ModelEvent} from "../../core/base/Event";
-import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
+import { SerializedPlate } from "~/js/utils/breadboard/core/Plate";
 
 export interface IBoardLogEntry {
     rts: number;

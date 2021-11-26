@@ -4,7 +4,12 @@ import {ColorAccent} from "../../helpers/styles";
 
 require("../../../../css/core/timer.less");
 
-interface Props {
+/**
+ * Props for {@link ToastTimer}
+ * 
+ * @category Core.UI
+ */
+interface ToastTimerProps {
     timeout: number;
     is_hidden: boolean;
     is_paused: boolean;
@@ -13,7 +18,16 @@ interface Props {
     color: ColorAccent;
 }
 
-export function ToastTimer(props: Props) {
+/**
+ * Animated countdown line for the {@link Toast} timeout
+ * 
+ * @see ToastTimerProps
+ * 
+ * @category Core.UI
+ * 
+ * @component
+ */
+export default function ToastTimer(props: ToastTimerProps) {
     const pb_style = {
         animationDuration: `${props.timeout}ms`,
         animationPlayState: props.is_paused ? 'paused' : 'running',

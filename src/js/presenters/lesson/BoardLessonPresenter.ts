@@ -3,7 +3,7 @@ import BoardView from "../../views/common/BoardView";
 import BoardModel from "../../models/common/BoardModel";
 import SettingsModel, {SettingsChangeEvent} from "../../core/models/SettingsModel";
 import ModalModel from "../../core/models/ModalModel";
-import {AlertType} from "../../core/views/modal/AlertView";
+import {AlertType} from "../../core/views/AlertView";
 import {ColorAccent} from "../../core/helpers/styles";
 import {ExerciseRunEvent} from "../../models/lesson/ProgressModel";
 

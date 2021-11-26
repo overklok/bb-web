@@ -2,6 +2,12 @@ import io from 'socket.io-client';
 
 import AsynchronousDatasource, {AsyncDatasourceStatus} from "../../base/model/datasources/AsynchronousDatasource";
 
+/**
+ * An implementation of asynchronous data source based on Socket.IO API
+ * 
+ * @category Core.Models
+ * @subcategory Datasources
+ */
 export default class SocketDatasource extends AsynchronousDatasource {
     private static readonly ConnectTimeout = 1500; // ms
 
@@ -19,6 +25,9 @@ export default class SocketDatasource extends AsynchronousDatasource {
         this._handlers = {};
     }
 
+    /**
+     * Creates Socket.IO client instance
+     */
     async init(): Promise<boolean> {
         if (this.socket) return true;
 
@@ -33,6 +42,9 @@ export default class SocketDatasource extends AsynchronousDatasource {
         return true;
     }
 
+    /**
+     * Initializes Socket.IO connections search loop
+     */
     async connect(): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (this._status !== AsyncDatasourceStatus.Disconnected) {
@@ -65,12 +77,18 @@ export default class SocketDatasource extends AsynchronousDatasource {
         });
     }
 
+    /**
+     * @inheritdoc
+     */
     async disconnect() {
         if (!this.socket) return;
 
         this.socket.disconnect();
     }
 
+    /**
+     * @inheritdoc
+     */
     on(channel: string, handler: Function) {
         super.on(channel, handler);
         // basic 'on' is enough for internal channels (__<name-rounded-with-double-underscores>__)
@@ -84,6 +102,9 @@ export default class SocketDatasource extends AsynchronousDatasource {
         });
     }
 
+    /**
+     * @inheritdoc
+     */
     once(channel: string, handler: Function) {
         super.once(channel, handler);
         // basic 'once' is enough for internal channels (__<name-rounded-with-double-underscores>__)
@@ -97,6 +118,9 @@ export default class SocketDatasource extends AsynchronousDatasource {
         });
     }
 
+    /**
+     * @inheritdoc
+     */
     send(channel: string, data?: object) {
         if (!this.socket) throw new Error("Datasource is not connected to socket");
 

@@ -1,4 +1,5 @@
 async function sleep(ms: number): Promise<void> {await new Promise(r => setTimeout(r, ms))}
+async function waitAnimationFrame(): Promise<void> {await new Promise(resolve => { requestAnimationFrame(resolve); })}
 
 function getClassNameAlias(class_name: string, postfix?: string) {
     if (postfix) {
@@ -67,4 +68,13 @@ function assert(condition: any, msg?: string): asserts condition {
     }
 }
 
-export {sleep, clamp, assert, getClassNameAlias, camelCaseToUnderscores, cumulativeOffset, scrollTo};
+export {
+    sleep, 
+    clamp, 
+    assert, 
+    waitAnimationFrame,
+    getClassNameAlias, 
+    camelCaseToUnderscores, 
+    cumulativeOffset, 
+    scrollTo
+};

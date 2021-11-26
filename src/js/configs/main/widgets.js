@@ -1,10 +1,10 @@
 import OverlayViewComposer from "~/js/core/base/view/viewcomposers/OverlayViewComposer";
 
 /* Generic Views */
-import AlertView        from "~/js/core/views/modal/AlertView";
-import ModalView        from "~/js/core/views/modal/ModalView";
-import ToastView        from "~/js/core/views/modal/ToastView";
-import LayoutView       from "~/js/core/views/layout/LayoutView";
+import AlertView        from "~/js/core/views/AlertView";
+import ModalView        from "~/js/core/views/ModalView";
+import ToastView        from "~/js/core/views/ToastView";
+import LayoutView       from "~/js/core/views/LayoutView";
 
 /* Application-specific Views */
 import BoardView        from "~/js/views/common/BoardView";

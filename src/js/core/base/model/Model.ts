@@ -7,24 +7,37 @@ import IEventService from "../../services/interfaces/IEventService";
 
 /**
  * @see Model
+ * 
+ * @category Core
+ * @subcategory Model
  */
 export interface ModelConstructor<MS extends ModelState, DS extends Datasource> {
     new(data_source: DS, svc_event: IEventService): Model<MS, DS>;
 }
 
 /**
- * An object defining data that the Model should retrieve and/or send.
+ * Contains data of specific subject area {@link Model} 
  *
  * @see Model
+ * 
+ * @category Core
+ * @subcategory Model
  */
 export type ModelState = {[key: string]: any}
 
 /**
- * A class defining the data to be displayed to otherwise acted upon in the user interface.
- * It isolates the logic of formatting and validation from other components in the system.
+ * Provides data of some subject area ({@link ModelState}) taken from its source ({@link Datasource})
+ * 
+ * Isolates the logic of data processing from other components of the system.
  *
- * In this case, models is separated from objects which actually used to keep actual data.
- * These objects extends from ModelState. Each Model required to define its ModelState.
+ * Models are separated from data objects they serve.
+ * These data objects extends {@link ModelState}. 
+ * 
+ * Each Model is required to define its {@link ModelState} and the mechanism it
+ * uses to gather the data, {@link Datasource}.
+ * 
+ * @category Core
+ * @subcategory Model
  */
 export default abstract class Model<MS extends ModelState, DS extends Datasource> {
     static alias: string;
@@ -49,26 +62,42 @@ export default abstract class Model<MS extends ModelState, DS extends Datasource
         }
     }
 
+    /**
+     * Assigns new values of the state from the given partial state
+     * 
+     * @param state partial state to assign the values from
+     * @param deep  copy the values recursively
+     */
     public setState(state: Partial<MS>, deep=false): void {
         const fn = deep ? defaultsDeep : defaults;
 
         this.state = fn(cloneDeep(state), this.state) as MS;
     }
 
-    public getState() {
+    /**
+     * Makes the copy of the state object and returns it
+     * 
+     * As the state object is copied, it can be safely mutated.
+     * 
+     * @returns an object containing current modal state 
+     */
+    public getState(): MS {
         return cloneDeep(this.state);
     }
 
-    protected emitAsync<E>(evt: ModelEvent<E>) {
+    /**
+     * Emits event by the {@link Model} 
+     * 
+     * @param evt the event instance to be passed
+     * 
+     * @returns release when the event is handled
+     */
+    protected emit<E>(evt: ModelEvent<E>) {
         if (!this.svc_event) {
             console.warn("Rejected to pass event because there is no active instances of event service", evt);
             return;
         }
 
-        return this.svc_event.emitAsync(evt);
-    }
-
-    protected emit<E>(evt: ModelEvent<E>) {
         return this.svc_event.emit(evt);
     }
 }

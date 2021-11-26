@@ -25,125 +25,134 @@ body, .content h1, .content header.page-title h1 {
     font-family: 'IBM Plex Mono',Menlo,Bitstream Vera Sans Mono,DejaVu Sans Mono,Monaco,Consolas,monospace;
 }
 
+/* COMPONENT TAG PLUGIN */
+
+.component-wrapper {
+    /* expand iframes with examples */
+    height: fill-available !important;
+    height: -webkit-fill-available !important;
+}
+
 /* DARK */
 
-#main {
-    background: #101010;
-}
-
-#main>.sidebar {
-    border-right-color: #29292a;
-}
-
-@media screen and (max-width: 1023px) {
-    #sidebarNav {
+@media (prefers-color-scheme: dark) {
+    #main {
         background: #101010;
     }
-}
 
-.top-name {
-    background: #101010;
-}
+    #main>.sidebar {
+        border-right-color: #29292a;
+    }
 
-.top-nav .menu .navigation .link {
-    color: #ffffff;
-}
+    @media screen and (max-width: 1023px) {
+        #sidebarNav {
+            background: #101010;
+        }
+    }
 
-.top-nav {
-    background: #1e1e1e;
-    box-shadow: 0 0 40px 0 rgba(74, 72, 72, 0.24);
-}
+    .top-name {
+        background: #101010;
+    }
 
-.dropdown-content {
-    background-color: #2e2e2e;
-}
+    .top-nav .menu .navigation .link {
+        color: #ffffff;
+    }
 
-.dropdown-item {
-    color: #c6c6c6;
-    background-color: #2e2e2e;
-}
+    .top-nav {
+        background: #1e1e1e;
+        box-shadow: 0 0 40px 0 rgba(74, 72, 72, 0.24);
+    }
 
-#main>.core>.content {
-    background: #101010;
-    box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.24);
-}
+    .dropdown-content {
+        background-color: #2e2e2e;
+    }
 
-.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
-    color: #e8e4e4;
-}
+    .dropdown-item {
+        color: #c6c6c6;
+        background-color: #2e2e2e;
+    }
 
-body {
-    color: #c9c8c8;
-}
+    #main>.core>.content {
+        background: #101010;
+        box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.24);
+    }
 
-code {
-    background-color: #191818;
-}
+    .content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
+        color: #e8e4e4;
+    }
 
-.content code {
-    color: #f4f4f4;
-}
+    body {
+        color: #c9c8c8;
+    }
 
-.footer {
-    background: #101010;
-}
+    code {
+        background-color: #191818;
+    }
 
-.footer {
-    border-top-color: #1d1d1d;
-}
+    .content code {
+        color: #f4f4f4;
+    }
 
-.input, .textarea, .select select {
-    background-color: #1b1b1b;
-    border-color: #3e3e3e;
-    color: #b3b3b3;
-}
+    .footer {
+        background: #101010;
+    }
 
-.input::placeholder  {
-    color: #fafafa;
-}
+    .footer {
+        border-top-color: #1d1d1d;
+    }
 
-input:-internal-autofill-selected {
-    background-color: rgb(232, 240, 254) !important;
-}
+    .input, .textarea, .select select {
+        background-color: #1b1b1b;
+        border-color: #3e3e3e;
+        color: #b3b3b3;
+    }
 
-.sidebar h3 {
-    color: #cdbbac;
-}
+    .input::placeholder  {
+        color: #fafafa;
+    }
 
-table.params, table.props {
-    border: none;
-    border-radius: 8px;
-    background: #161616;
-}
+    input:-internal-autofill-selected {
+        background-color: rgb(232, 240, 254) !important;
+    }
 
-.content table thead td, .content table thead th {
-    color: #cdcdcd;
-}
+    .sidebar h3 {
+        color: #cdbbac;
+    }
 
-.table {
-    color: #d8d8d8;
-}
+    table.params, table.props {
+        border: none;
+        border-radius: 8px;
+        background: #161616;
+    }
 
-table.params td.name code, table.props td.name code {
-    color: #ffffff;
-}
+    .content table thead td, .content table thead th {
+        color: #cdcdcd;
+    }
 
-.member>.name .href-link {
-    color: #e7e6e6;
-}
+    .table {
+        color: #d8d8d8;
+    }
 
-.button {
-    background-color: #343434;
-}
+    table.params td.name code, table.props td.name code {
+        color: #ffffff;
+    }
 
-.sidebar .category h2 {
-    color: #f0f0f0;
-}
+    .member>.name .href-link {
+        color: #e7e6e6;
+    }
 
-:root {
-    color-scheme: dark;
-}
+    .button {
+        background-color: #343434;
+    }
 
+    .sidebar .category h2 {
+        color: #f0f0f0;
+    }
+
+    :root {
+        color-scheme: dark;
+    }
+}
 
 /* THEME */
 

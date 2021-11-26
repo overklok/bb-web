@@ -37,8 +37,7 @@
             "accept": "OK"
         },
         "board_disconnected": {
-            "title": "Board disconnected",
-            "content": "Cannot use the program when the board is disconnected.",
+            "content": "Make sure the breadboard is connected to the power supply and to your computer.",
             "accept": "Continue autonomously"
         },
         "short_circuit": {

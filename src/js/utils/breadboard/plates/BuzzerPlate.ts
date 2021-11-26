@@ -9,6 +9,7 @@ import Grid from '../core/Grid';
  * Buzzer plate
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class BuzzerPlate extends LinearPlate {
     static get Alias() {return "buzzer"}

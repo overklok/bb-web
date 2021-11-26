@@ -4,6 +4,10 @@ import IModelService from "./interfaces/IModelService";
 import IEventService from "./interfaces/IEventService";
 import {GenericErrorEvent} from "../base/Event";
 
+/**
+ * @category Core
+ * @subcategory Service
+ */
 export default class RoutingService extends IRoutingService {
     private router: Router<any>;
     private svc_model: IModelService;
@@ -55,7 +59,7 @@ export default class RoutingService extends IRoutingService {
             return await this.router.redirect(path);
         } catch (e) {
             console.error(e);
-            await this.svc_event.emitAsync(new GenericErrorEvent({error: e}));
+            await this.svc_event.emit(new GenericErrorEvent({error: e}));
         }
     }
 }

@@ -31,11 +31,6 @@ export const enum ConnectionStatus {
 /**
  * @category Views
  * @subcategory Controls
- *
- * @component
- * @example return (
- *   <StatusIndicator status={0} />
- * )
  */
 export default class StatusIndicator extends React.Component<IProps, IState>{
     div_root: HTMLDivElement;

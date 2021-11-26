@@ -3,6 +3,10 @@ import IEventService from "../services/interfaces/IEventService";
 import Application from "../Application";
 import EventService from "../services/EventService";
 
+/**
+ * @category Core
+ * @subcategory Service
+ */
 export default class EventServiceProvider extends ServiceProvider {
     register() {
         this.app.bind(IEventService, function (app: Application): any {

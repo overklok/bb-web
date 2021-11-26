@@ -1,10 +1,13 @@
 import Presenter, {on} from "../base/Presenter";
 import {GenericErrorEvent} from "../base/Event";
-import ToastView from "../views/modal/ToastView";
+import ToastView from "../views/ToastView";
 import {ColorAccent} from "../helpers/styles";
 import ModalModel, {UpdateToastsEvent} from "../models/ModalModel";
 import i18next from "i18next";
 
+/**
+ * @category Core.Presenters
+ */
 export default class ToastPresenter extends Presenter<ToastView> {
     private modal: ModalModel;
 

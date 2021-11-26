@@ -14,22 +14,28 @@ import {
 } from "../datatypes/settings";
 import {assert} from "../helpers/functions";
 
-interface Settings {
+/**
+ * @category Core.Models
+ */
+interface SettingsModelState {
     config: SettingsConfig;
     values: SettingsValues;
     uncommitted: SettingsValues;
 }
 
-export default class SettingsModel extends Model<Settings, DummyDatasource> {
+/**
+ * @category Core.Models
+ */
+export default class SettingsModel extends Model<SettingsModelState, DummyDatasource> {
     static alias = 'settings';
 
-    protected defaultState: Settings = {
+    protected defaultState: SettingsModelState = {
         config: {},
         values: {},
         uncommitted: {},
     };
 
-    init(state: Partial<Settings>) {
+    init(state: Partial<SettingsModelState>) {
         super.init({config: state.config});
 
         const values: SettingsValues = {};
@@ -184,7 +190,16 @@ export default class SettingsModel extends Model<Settings, DummyDatasource> {
     }
 }
 
+/**
+ * @category Core.Models
+ * @subcategory Events
+ */
 export class SettingsModalEvent extends ModelEvent<SettingsModalEvent> {}
+
+/**
+ * @category Core.Models
+ * @subcategory Events
+ */
 export class SettingsChangeEvent extends ModelEvent<SettingsChangeEvent> {
     values: SettingsValues;
     force: boolean;

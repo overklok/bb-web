@@ -33,6 +33,7 @@ export enum DomainSchematicStyle {
  * This is why it's needed to visually display the contact groups.
  * 
  * @category Breadboard
+ * @subcategory Layers
  */
 export default class BackgroundLayer extends Layer {
     /** CSS class of the layer */

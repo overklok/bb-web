@@ -3,7 +3,7 @@ import HomeView from "~/js/views/common/HomeView";
 import CourseModel from "~/js/models/lesson/CourseModel";
 import ProgressModel from "~/js/models/lesson/ProgressModel";
 import SettingsModel from "~/js/core/models/SettingsModel";
-import {RequestErrorEvent} from "../../core/base/model/HttpModel";
+import {RequestErrorEvent} from "~/js/core/models/HttpModel";
 
 import i18next from 'i18next';
 

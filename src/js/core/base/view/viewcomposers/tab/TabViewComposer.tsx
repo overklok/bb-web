@@ -5,23 +5,47 @@ import TabMenu from "./TabMenu";
 import ViewConnector from "../../../ViewConnector";
 import ViewComposer, {IVCProps, IVCState} from "../../ViewComposer";
 
-interface IProps extends IVCProps {
+/**
+ * Props for {@link TabViewComposer}
+ * 
+ * @category Core
+ * @subcategory View
+ */
+interface TVCProps extends IVCProps {
+    /**  */
     overlay_node?: HTMLElement
     show_headers?: boolean
 }
 
-interface IState extends IVCState {
+/**
+ * State for {@link TabViewComposer}
+ * 
+ * @category Core
+ * @subcategory View
+ */
+interface TVCState extends IVCState {
     active_tab: number
 }
 
-export default class TabViewComposer extends ViewComposer<IProps, IState> {
+/**
+ * Provides a UI to select one of the children {@link View}s 
+ * 
+ * Renders tab selector for each {@link View} on the top.
+ * Clicking on the tab switches the view to display.
+ * 
+ * @category Core
+ * @subcategory View
+ * 
+ * @component
+ */
+export default class TabViewComposer extends ViewComposer<TVCProps, TVCState> {
     static defaultProps = {
         show_headers: true
     }
 
     private view_connectors: Array<[ViewConnector, React.RefObject<TabMenu>]> = [];
 
-    constructor(props: IProps) {
+    constructor(props: TVCProps) {
         super(props);
 
         this.state = {

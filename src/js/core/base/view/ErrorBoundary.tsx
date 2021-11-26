@@ -2,17 +2,32 @@ import * as React from "react";
 import {ErrorInfo} from "react";
 import {ViewType} from "../../helpers/types";
 
-import "../../../../css/core/error.less";
+require("~/css/core/error.less");
 
+/**
+ * Props for {@link ErrorBoundary}
+ * 
+ * @ignore
+ */
 interface ErrorBoundaryProps {
     view_type: ViewType<any, any>;
 }
 
+/**
+ * State of {@link ErrorBoundary}
+ * 
+ * @ignore
+ */
 interface ErrorBoundaryState {
     error: Error;
     has_error: boolean;
 }
 
+/**
+ * Displays fallback message when an error has occurred in the {@link View}
+ * 
+ * @ignore
+ */
 export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     constructor(props: ErrorBoundaryProps) {
         super(props);

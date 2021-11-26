@@ -1,9 +1,13 @@
-import HttpMiddleware from "../../base/model/middlewares/HttpMiddleware";
-import {RequestParams} from "../../base/model/datasources/HttpDatasource";
+import HttpMiddleware from "./HttpMiddleware";
+import {RequestParams} from "../datasources/HttpDatasource";
 import JWTAuthModel from "../JWTAuthModel";
 
 // TODO: Call JWTAuthModel actions to authenticate
 
+/**
+ * @category Core.Models
+ * @subcategory Middlewares
+ */
 export default class JWTAuthMiddleware extends HttpMiddleware {
     private auth_model: JWTAuthModel<any>;
     public token: string;

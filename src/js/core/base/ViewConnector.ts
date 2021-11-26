@@ -8,7 +8,9 @@ import IRoutingService from "../services/interfaces/IRoutingService";
 
 /**
  * Communicates single {@link View} with the logical layer of application
- * in the face of Presenter objects.
+ * in the face of Presenter objects
+ * 
+ * Aggregates Presenter requests to update props of the View.
  *
  * For {@link Presenter}, {@link ViewConnector} provides an interface
  * to extract Model instances using {@link IModelService}.
@@ -21,6 +23,8 @@ import IRoutingService from "../services/interfaces/IRoutingService";
  *
  * {@link ViewConnector} may be available for any part of {@link ViewService} machinery
  * including some of React components that used in {@link LayoutView}
+ * 
+ * @category Core
  */
 export default class ViewConnector {
     /** An instance of View that is available directly to Presenters */
@@ -77,7 +81,7 @@ export default class ViewConnector {
      * All props from the presenters will be merged and re-written in the order 
      * of presentation in the {@link Widget} definition.
      * 
-     * @returns 
+     * @returns props values merged from all {@link Presenter} instances in a single object
      */
     collectProps(): IViewProps {
         let props = {};
@@ -125,7 +129,7 @@ export default class ViewConnector {
     }
 
     /**
-     * Attach a {@link View} instance that is created by the {@link ViewService}.
+     * Attach a {@link View} instance created by the {@link ViewService}.
      * The instance will be available for {@link Presenter} instances.
      * 
      * The {@link View} will be propagated to all of the presenters collected in the object.
@@ -167,18 +171,20 @@ export default class ViewConnector {
     }
 
     /**
-     * Emit an event by the {@link View} or by one of {@link Presenter} instances (i.e. Actions)
+     * Emits event by the {@link View} or by one of {@link Presenter} instances (i.e. Actions)
      *
      * @param event the event to be passed
+     * 
+     * @returns release when an event is handled
      */
-    emit<E>(event: ViewEvent<E>) {
+    emit<E>(event: ViewEvent<E>): Promise<void> {
         const anchor = this.getEventAnchorByInstance(event);
 
-        return this.svc_event.emitAsync(event, anchor);
+        return this.svc_event.emit(event, anchor);
     }
 
     /**
-     * Resize the View attached to the connector
+     * Resizes the View attached to the connector
      */
     resizeView() {
         if (this.view) {
@@ -252,7 +258,7 @@ export default class ViewConnector {
                             `to handle '${event_type.name}':\n`, e
                         );
 
-                        svc_event.emitAsync(new GenericErrorEvent({error: e}));
+                        svc_event.emit(new GenericErrorEvent({error: e}));
                     }
                 };
 
@@ -266,7 +272,7 @@ export default class ViewConnector {
                                 `to ${event_type.name}:\n`, suberror
                             );
 
-                            await svc_event.emitAsync(new GenericErrorEvent({error: suberror}));
+                            await svc_event.emit(new GenericErrorEvent({error: suberror}));
                         }
                     } else {
                         throw e;

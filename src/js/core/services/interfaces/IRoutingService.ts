@@ -2,6 +2,10 @@ import IModelService from "./IModelService";
 import {IRouter, Route} from "../../base/Router";
 import IEventService from "./IEventService";
 
+/**
+ * @category Core
+ * @subcategory Service
+ */
 export default class IRoutingService {
     setup(svc_model: IModelService, svc_event: IEventService)       {throw new Error("abstract");}
     setRouter(router_class: IRouter)                                {throw new Error("abstract");}

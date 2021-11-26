@@ -8,6 +8,7 @@ import Grid from "../core/Grid";
  * RGB plate
  * 
  * @category Breadboard
+ * @subcategory Plates
  */
 export default class RGBPlate extends Plate {
     static get Alias() {return "rgb"}
