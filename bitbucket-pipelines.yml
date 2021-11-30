@@ -1,0 +1,40 @@
+image: node:14.18
+options:
+  max-time: 30
+definitions:
+  steps:
+    - step: &build
+        name: Build
+        caches:
+          - node
+        script:
+          - npm install
+          - npm run build
+        artifacts:
+          - artifacts/**
+    - step: &deploy
+        name: Deploy 
+        script:
+          - pipe: atlassian/scp-deploy:1.2.1 
+            variables:
+             USER: $SSH_USER
+             SERVER: $SSH_SERVER
+             REMOTE_PATH: '${SRV_WORKDIR}/tmp/frontend'
+             LOCAL_PATH: artifacts/*
+          - pipe: atlassian/ssh-run:0.4.0
+            variables:
+              SSH_USER: $SSH_USER
+              SERVER: $SSH_SERVER
+              MODE: 'command'
+              COMMAND: '${SRV_WORKDIR}/bin/scripts/deploy_webapp.sh'
+              ENV_VARS: >-
+                DEPL_WORKDIR=${SRV_WORKDIR}
+                DEPL_APP_VENV=${SRV_APP_VENV}
+                DEPL_APP_WSGI=${SRV_APP_WSGI}
+pipelines:
+  branches:
+    develop:
+      - step: *build
+      - step:
+          <<: *deploy
+          deployment: Development
