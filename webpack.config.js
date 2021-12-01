@@ -309,14 +309,24 @@ function getCopypaths(env, is_dev, no_copy) {
         }
     }
 
-    if (env.main === true && dotenv && settings.length && 
-        settings.find(e => e.entry === 'main').paths.filter(p => !!p).length) {
-        copypaths = [...copypaths,
-            {
-                source: './src/fonts/',          
-                destination: denv.PATH_DIST_MAIN + '/fonts'
-            },
-        ];
+    if (env.main === true && settings.length && settings.find(e => e.entry === 'main').paths.filter(p => !!p).length) {
+        if (!no_dotenv) {
+            copypaths = [...copypaths,
+                {
+                    source: './src/fonts/',          
+                    destination: denv.PATH_DIST_MAIN + '/fonts'
+                },
+            ];
+        }
+
+        if (process.env.TPND_PATH_DIST_MAIN) {
+            copypaths = [...copypaths,
+                {
+                    source: './src/fonts',
+                    destination: process.env.TPND_PATH_DIST_MAIN + '/fonts'
+                }
+            ]
+        }
     }
 
     if (env.main === true) {
