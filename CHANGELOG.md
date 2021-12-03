@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [1.2.10] - 2021-12-03
+
+### Added
+- Automated deploy with Bitbucket Pipelines
+
+## [1.2.9] - 2021-11-26
 
 ### Added
 - More docs
