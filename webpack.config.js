@@ -13,7 +13,7 @@ const { generate } = require('build-number-generator');
 
 const TerserPlugin                      = require('terser-webpack-plugin');
 const HtmlWebpackPlugin                 = require('html-webpack-plugin');
-const CopyWebpackPlugin                 = require('copy-webpack-plugin');
+const FileManagerPlugin                 = require('filemanager-webpack-plugin');
 const BuildNotifierPlugin               = require('webpack-build-notifier');
 const BundleAnalyzerPlugin              = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const MiniCssExtractPlugin              = require('mini-css-extract-plugin');
@@ -81,9 +81,15 @@ module.exports = (env, argv) => {
                 title: "Tapanda [New]",
                 logo: path.resolve("./img/favicon.png"),
             }),
-            new CopyWebpackPlugin(getCopypaths(env, is_dev, no_copy)),
             new webpack.DefinePlugin({
                 '__VERSION__': `'${VERSION}'`,
+            }),
+            new FileManagerPlugin({
+                events: {
+                    onEnd: {
+                        copy: getCopypaths(env, is_dev, no_copy),
+                    }
+                }
             }),
             // new BundleAnalyzerPlugin()
         ]
@@ -207,41 +213,56 @@ function getHtmlIndexFile(env) {
 function getCopypaths(env, is_dev, no_copy) {
     let settings = [];
 
-    if (!dotenv.parsed || no_copy) {
+    const no_envvars = Object.keys(process.env).filter(k => k.startsWith('TPND_')).length === 0;
+    const no_dotenv = !dotenv.parsed;
+
+    const denv = dotenv.parsed || {};
+
+    if (no_dotenv && no_envvars || no_copy) {
         console.warn("Nothing to copy.");
     } else {
         settings = [
             {
                 enable: env.main === true,
                 paths: [
-                    dotenv.parsed.PATH_DIST_MAIN,
+                    denv.PATH_DIST_MAIN,
+                    process.env.TPND_PATH_DIST_MAIN,
                 ],
                 entry: 'main'
             },
             {
                 enable: env.board === true,
                 paths: [
-                    dotenv.parsed.PATH_DIST_BOARD,
-                    dotenv.parsed.PATH_DIST_BOARD_SOCK,
-                    dotenv.parsed.PATH_DIST_BOARD_ADMIN
+                    denv.PATH_DIST_BOARD,
+                    denv.PATH_DIST_BOARD_SOCK,
+                    denv.PATH_DIST_BOARD_ADMIN,
+                    process.env.TPND_PATH_DIST_BOARD,
+                    process.env.TPND_PATH_DIST_BOARD_ADMIN,
                 ],
                 entry: 'board'
             },
             {
                 enable: env.blockly === true,
                 paths: [
-                    dotenv.parsed.PATH_DIST_BLOCKLY_ADMIN
+                    denv.PATH_DIST_BLOCKLY_ADMIN,
+                    process.env.TPND_PATH_DIST_BLOCKLY_ADMIN,
                 ],
                 entry: 'blockly'
             },
             {
                 enable: env.monkey === true,
-                paths: [dotenv.parsed.PATH_DIST_MONKEY],
+                paths: [
+                    denv.PATH_DIST_MONKEY,
+                    process.env.TPND_PATH_DIST_MONKEY,
+            ],
                 entry: 'monkey'
             },
             {
                 enable: env.playground === true,
-                paths: [dotenv.parsed.PATH_DIST_PLAYGROUND],
+                paths: [
+                    denv.PATH_DIST_PLAYGROUND,
+                    process.env.TPND_PATH_DIST_PLAYGROUND,
+            ],
                 entry: 'playground'
             }
         ]
@@ -257,20 +278,21 @@ function getCopypaths(env, is_dev, no_copy) {
             if (setting.enable && path) {
                 copypaths = [...copypaths,
                     {
-                        from: `./dist/${setting.entry}.js`,
-                        to: path + `/${setting.entry}.js`,
-                        force: true,
+                        source: `./dist/${setting.entry}.js`,
+                        destination: path + `/${setting.entry}.js`,
                     },
                     {
-                        from: `./dist/${setting.entry}.css`,
-                        to: path + `/${setting.entry}.css`,
-                        force: true,
+                        source: `./dist/${setting.entry}.css`,
+                        destination: path + `/${setting.entry}.css`,
                     },
                 ];
 
                 if (setting.entry === 'main') {
                     copypaths = [...copypaths,
-                        {from: './dist/fonts/*', to: path + '/fonts', force: true},
+                        {
+                            source: './dist/fonts/*', 
+                            destination: path + '/fonts'
+                        },
                         // {from: './dist/images', to: path + '/images'}
                     ]
                 }
@@ -278,9 +300,8 @@ function getCopypaths(env, is_dev, no_copy) {
                 if (!is_dev) {
                     copypaths = [...copypaths,
                         {
-                            from: `./dist/${setting.entry}.js.map`,
-                            to: path + `/${setting.entry}.js.map`,
-                            force: true
+                            source: `./dist/${setting.entry}.js.map`,
+                            destination: path + `/${setting.entry}.js.map`,
                         },
                     ];
                 }
@@ -288,18 +309,34 @@ function getCopypaths(env, is_dev, no_copy) {
         }
     }
 
-    if (env.main === true && dotenv.parsed && dotenv.parsed.PATH_DIST_MAIN) {
-        copypaths = [...copypaths,
-            {from: './src/fonts/',          to: dotenv.parsed.PATH_DIST_MAIN + '/fonts', force: true},
-        ];
+    if (env.main === true && settings.length && settings.find(e => e.entry === 'main').paths.filter(p => !!p).length) {
+        if (!no_dotenv) {
+            copypaths = [...copypaths,
+                {
+                    source: './src/fonts/',          
+                    destination: denv.PATH_DIST_MAIN + '/fonts'
+                },
+            ];
+        }
+
+        if (process.env.TPND_PATH_DIST_MAIN) {
+            copypaths = [...copypaths,
+                {
+                    source: './src/fonts',
+                    destination: process.env.TPND_PATH_DIST_MAIN + '/fonts'
+                }
+            ]
+        }
     }
 
     if (env.main === true) {
         copypaths = [...copypaths,
-            {from: './src/fonts/',          to: './fonts', force: true},
+            {
+                source: './src/fonts/',          
+                destination: './dist/fonts'
+            },
         ];
     }
 
     return copypaths;
 }
-
