@@ -44,13 +44,14 @@ pipelines:
           <<: *deploy
           deployment: Production
     feature/aws:
-      - step: &build
+      - step: build
           name: Build
           caches:
             - node
           script:
             - npm install
             - npm run build
+            - apt-get update && apt-get install -y zip
             - zip -r ./bundles.zip artifacts
           artifacts:
             - bundles.zip
