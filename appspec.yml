@@ -1,0 +1,11 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/opt/tapanda/bundles
+hooks:
+  ApplicationStart:
+    # 'tapanda' user should be able to run code
+    - location: scripts/cd_collectstatic.sh
+      timeout: 600
+      runas: tapanda

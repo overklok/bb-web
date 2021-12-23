@@ -43,3 +43,43 @@ pipelines:
       - step:
           <<: *deploy
           deployment: Production
+    feature/aws:
+      - step: &build
+          name: Build
+          caches:
+            - node
+          script:
+            - npm install
+            - npm run build
+            - zip -r ./bundles.zip artifacts
+          artifacts:
+            - bundles.zip
+      - step:
+          name: Upload to S3
+          services:
+            - docker
+          script:
+            - pipe: atlassian/aws-code-deploy:0.2.10
+              variables:
+                AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+                AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+                AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+                COMMAND: 'upload'
+                APPLICATION_NAME: ${AWS_APPLICATION_NAME}
+                ZIP_FILE: 'bundles.zip'
+      - step:
+          name: Deploy with CodeDeploy
+          services:
+            - docker
+          script:
+            - pipe: atlassian/aws-code-deploy:0.2.10
+              variables:
+                AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+                AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+                AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+                COMMAND: 'deploy'
+                APPLICATION_NAME: ${AWS_APPLICATION_NAME}
+                DEPLOYMENT_GROUP: ${AWS_DEPLOYMENT_GROUP}
+                IGNORE_APPLICATION_STOP_FAILURES: 'true'
+                FILE_EXISTS_BEHAVIOR: 'OVERWRITE'
+                WAIT: 'true'
