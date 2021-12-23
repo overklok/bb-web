@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: /
+  - source: /artifacts/**
     destination: /var/opt/tapanda/bundles
 hooks:
   ApplicationStart:
