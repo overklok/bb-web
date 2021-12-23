@@ -44,7 +44,7 @@ pipelines:
           <<: *deploy
           deployment: Production
     feature/aws:
-      - step: build
+      - step:
           name: Build
           caches:
             - node
