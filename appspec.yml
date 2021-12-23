@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /artifacts
-    destination: /var/opt/tapanda/bundles
+    destination: /var/opt/tapanda/bundles_tmp
 hooks:
   ApplicationStart:
     # 'tapanda' user should be able to run code
