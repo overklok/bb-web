@@ -14,7 +14,9 @@ set -e
 
 PROJECT_NAME=tapanda
 
+TMP_ROOT=/tmp/opt/tapanda/bundles
 DIR_ROOT=/var/opt/tapanda/bundles
+
 DIR_APP=$DIR_ROOT/frontend/app
 DIR_ADMIN_BLOCKLY=$DIR_ROOT/admin/vendor/admin-blockly
 DIR_ADMIN_BOARD=$DIR_ROOT/admin/vendor/admin-board
@@ -25,9 +27,9 @@ mkdir -p $DIR_APP
 mkdir -p $DIR_ADMIN_BLOCKLY
 mkdir -p $DIR_ADMIN_BOARD
 
-rsync /var/opt/tapanda/bundles/blockly $DIR_ADMIN_BLOCKLY 
-rsync /var/opt/tapanda/bundles/board $DIR_ADMIN_BOARD 
-rsync /var/opt/tapanda/bundles/main $DIR_APP
+rsync -r $TMP_ROOT/blockly  $DIR_ADMIN_BLOCKLY 
+rsync -r $TMP_ROOT/board    $DIR_ADMIN_BOARD 
+rsync -r $TMP_ROOT/main     $DIR_APP
 
 # Re-collect static files if some were added to sources
 /opt/$PROJECT_NAME/run.sh prod collectstatic
