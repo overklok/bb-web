@@ -27,9 +27,9 @@ mkdir -p $DIR_APP
 mkdir -p $DIR_ADMIN_BLOCKLY
 mkdir -p $DIR_ADMIN_BOARD
 
-rsync -r $TMP_ROOT/blockly  $DIR_ADMIN_BLOCKLY 
-rsync -r $TMP_ROOT/board    $DIR_ADMIN_BOARD 
-rsync -r $TMP_ROOT/main     $DIR_APP
+rsync -r $TMP_ROOT/blockly/  $DIR_ADMIN_BLOCKLY 
+rsync -r $TMP_ROOT/board/    $DIR_ADMIN_BOARD 
+rsync -r $TMP_ROOT/main/     $DIR_APP
 
 # Re-collect static files if some were added to sources
 /opt/$PROJECT_NAME/run.sh prod collectstatic
