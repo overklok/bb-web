@@ -42,12 +42,16 @@ definitions:
               WAIT: 'true'
 pipelines:
   branches:
-    # TODO: develop -> master
-    develop:
+    master:
       - step: *build
       - step:
           <<: *deploy
           deployment: Production
+    develop:
+      - step: *build
+      - step:
+          <<: *deploy
+          deployment: Development
 # definitions:
 #   steps:
 #     - step: &build
