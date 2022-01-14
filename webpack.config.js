@@ -33,10 +33,10 @@ module.exports = (env, argv) => {
 
     return {
         entry: getEntries(env),
-        devtool: is_dev ? 'eval-source-map' : 'source-map',
-        optimization: {
-            minimizer: getMinimizer(is_dev),
-        },
+        devtool: is_dev ? 'source-map' : 'source-map',
+        // optimization: {
+            // minimizer: getMinimizer(is_dev),
+        // },
         output: {
             publicPath: "/"
         },
@@ -84,15 +84,9 @@ module.exports = (env, argv) => {
             new webpack.DefinePlugin({
                 '__VERSION__': `'${VERSION}'`,
             }),
-            new FileManagerPlugin({
-                events: {
-                    onEnd: {
-                        copy: getCopypaths(env, is_dev, no_copy),
-                    }
-                }
-            }),
+            getFileManagerPluginInstance(env, is_dev, no_copy),
             // new BundleAnalyzerPlugin()
-        ]
+        ].filter(x => !!x)
     }
 };
 
@@ -147,6 +141,20 @@ function getVersionTarget(env, mode=null) {
     if (env.blockly === true)       return `blockly`;
     if (env.monkey === true)        return `monkey`;
     if (env.playground === true)    return `playground`;
+}
+
+function getFileManagerPluginInstance(env, is_dev, no_copy) {
+    const paths = getCopypaths(env, is_dev, no_copy);
+
+    if (!paths.length) return;
+
+    return new FileManagerPlugin({
+        events: {
+            onEnd: {
+                copy: paths
+            }
+        }
+    });
 }
 
 function getHtmlCopyPluginInstances(env) {

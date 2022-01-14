@@ -12,6 +12,7 @@ import IEventService from "./interfaces/IEventService";
 import IModelService from "./interfaces/IModelService";
 import Application from "../Application";
 import IRoutingService from "./interfaces/IRoutingService";
+import widgets from "src/js/configs/monkey/widgets";
 
 /**
  * React-based implementation of the MVP's View layer 
@@ -121,7 +122,7 @@ export default class ViewService extends IViewService {
     public getViews(): {[name: string]: any} {
         const views: {[name: string]: any} = {};
 
-        for (const connector of this.view_connectors_internal) {
+        for (const connector of this.view_connectors_internal.values()) {
             if (connector.view) {
                 let view_alias = (connector.view as any).__proto__.constructor.alias;
 
@@ -149,21 +150,33 @@ export default class ViewService extends IViewService {
     protected async recompose(lang: string) {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
-        this.view_connectors_internal = [];
+        if (!this.view_connectors_internal) {
+            this.view_connectors_internal = [];
+        }
 
-        const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
-            const {view_type: SpecificView, presenter_types, label, view_props} = widget_type;
+        // const children = this.widget_types.map((widget_type: WidgetType<any>, index) => {
+            // const {view_type: SpecificView, presenter_types, label, view_props} = widget_type;
 
-            const view_connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
+        const children = Object.entries(this.widgets).map(([widget_alias, widget]) => {
+            // const {view_type: SpecificView, presenter_types, label, view_props} = widget_type;
 
-            this.view_connectors_internal.push(view_connector);
+            // const view_connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
+
+            // let connector = this.view_connectors_internal ? this.view_connectors_internal.get(widget_type) : undefined;
+
+            // if (!connector) {
+                // connector = new ViewConnector(presenter_types, this.svc_event, this.svc_model, this.svc_routing);
+            // } 
+
+            // this.view_connectors_internal.set(widget_type, connector);
+            // this.view_connectors_internal.set(widget_type, view_connector);
 
             return <Nest
-                key={index}
+                key={widget_alias}
                 lang={lang}
-                view_type={SpecificView}
-                view_props={view_props}
-                connector={view_connector}
+                view_type={widget.view_type}
+                view_props={widget.view_props}
+                connector={widget.connector}
                 widgets={this.widgets}
             />;
         });
