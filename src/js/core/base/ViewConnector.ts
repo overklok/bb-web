@@ -6,8 +6,6 @@ import {IViewProps, View} from "./view/View";
 import {PresenterType} from "../helpers/types";
 import IRoutingService from "../services/interfaces/IRoutingService";
 
-let id = 0;
-
 /**
  * Communicates single {@link View} with the logical layer of application
  * in the face of Presenter objects
@@ -76,10 +74,6 @@ export default class ViewConnector {
 
         // Activate presenter action bindings
         this.activateActionBindings();
-
-        this.id = id++;
-        console.log('CONSTR', this.id, this);
-        
     }
 
     /**
@@ -108,8 +102,6 @@ export default class ViewConnector {
 
             this.presenters.push(presenter);
         }
-
-        console.log("ATTACH", this.id, this.presenters);
 
         return props;
     }
@@ -161,8 +153,6 @@ export default class ViewConnector {
         // Assign or reassign the view proposed
         this.view = view;
 
-        console.log("ATTACH", this.id, this.presenters);
-        
         // To prevent duplicated (further) subscriptions, unsubscribe current handlers
         this.unsubscribePresenterHandlers();
 
