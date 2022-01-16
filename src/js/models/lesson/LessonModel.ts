@@ -198,7 +198,7 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
             message_success: null,
             // message_success: _exercise.message_success,
             task_description: _exercise.task_description,
-            task_description_alt: _exercise.task_description_alt,
+            task_description_alt: _exercise.task_description_ru || _exercise.task_description_alt,
 
             is_sandbox: _exercise.is_sandbox || false,
             layout_mode: layout_mode,
