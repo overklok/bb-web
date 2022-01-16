@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Automated deploy to AWS instance
 
+### Fixed
+- Duplicated ViewConnector instantiation for root widgets and when recomposed
+
 ## [1.2.10] - 2021-12-03
 
 ### Added
