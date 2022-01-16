@@ -12,6 +12,7 @@ import IRoutingService from "./interfaces/IRoutingService";
 import {ViewComposerAny, ViewComposerType} from "../helpers/types";
 import {getClassNameAlias} from "../helpers/functions";
 import Nest from "../base/view/Nest";
+import widgets from "src/js/configs/monkey/widgets";
 
 /**
  * React-based implementation of View layer inside MVP pattern
@@ -96,25 +97,7 @@ export default class ViewService extends IViewService {
      * @inheritdoc
      */
     public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
-        for (const [alias, widget_type] of this.allWidgetTypes(widget_types)) {
-            const {view_type, presenter_types, label, view_props, nest_style} = widget_type;
-
-            const connector = new ViewConnector(
-                presenter_types, 
-                this.svc_event, 
-                this.svc_model, 
-                this.svc_routing
-            );
-
-            this.widgets[alias] = {
-                label: label || alias,
-                alias,
-                view_type,
-                connector,
-                view_props,
-                nest_style
-            } as Widget<any>;
-        }
+        this.widgets = this.generateWidgets(widget_types);
 
         if (this.element) {
             this.recompose(i18next.language);
@@ -144,12 +127,51 @@ export default class ViewService extends IViewService {
     }
 
     /**
+     * Instantiates {@link Widget} instances based on {@link WidgetType}s
+     * 
+     * @param widget_types 
+     * 
+     * @returns instances of widgets generated
+     */
+    protected generateWidgets(widget_types?: {[key: string]: WidgetType<any>}) {
+        const widgets: {[key: string]: Widget<any>} = {};
+
+        for (const [alias, widget_type] of this.allWidgetTypes(widget_types)) {
+            const {view_type, presenter_types, label, view_props, nest_style} = widget_type;
+
+            const connector = new ViewConnector(
+                presenter_types, 
+                this.svc_event, 
+                this.svc_model, 
+                this.svc_routing
+            );
+
+            widgets[alias] = {
+                label: label || alias,
+                alias,
+                view_type,
+                connector,
+                view_props,
+                nest_style
+            } as Widget<any>;
+        }
+
+        return widgets;
+    }
+
+    /**
      * Renders root {@link ViewComposer} to root element with {@link Nest}s containing root widgets 
      */
     protected async recompose(lang: string) {
         if (!this.element) {throw new Error("Root view hasn't been composed yet")};
 
         const children = [];
+
+
+        if (Object.keys(this.widgets).length === 0) {
+            // Generate root widget if registerWidgetTypes has not been called
+            this.widgets = this.generateWidgets();
+        }
 
         for (const widget of this.rootWidgets()) {
             const {view_type: SpecificView, connector, view_props} = widget;
@@ -225,15 +247,17 @@ export default class ViewService extends IViewService {
      * 
      * @param local_widget_types key-valued object of widget types to combine with the root widget types
      */
-    protected* allWidgetTypes(local_widget_types: {[key: string]: WidgetType<any>}): Generator<[string, WidgetType<any>]> {
+    protected* allWidgetTypes(local_widget_types?: {[key: string]: WidgetType<any>}): Generator<[string, WidgetType<any>]> {
         let root_num = 0;
 
         for (const widget_type of this.root_widget_types) {
             yield [`__root${root_num++}`, widget_type];
         }
 
-        for (const [alias, widget_type] of Object.entries(local_widget_types)) {
-            yield [alias, widget_type];
+        if (local_widget_types) {
+            for (const [alias, widget_type] of Object.entries(local_widget_types)) {
+                yield [alias, widget_type];
+            }
         }
     }
 }

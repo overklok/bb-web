@@ -103,10 +103,7 @@ export default class IViewService {
     };
 
     /**
-     * Registers widget types to resolve them further by aliases
-     * 
-     * This function is required to call because the service should 
-     * know how to instantiate {@link Widget} objects.
+     * Registers widget types to resolve them dynamically in runtime
      * 
      * @param widget_types types of widgets required in the app
      */
