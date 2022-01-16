@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] - 2021-12-03
+## [1.2.11] - 2021-12-03
 
 ### Added
 - Automated deploy to AWS instance
+- Support for temporary i18n server API updates
 
 ### Fixed
 - Duplicated ViewConnector instantiation for root widgets and when recomposed
