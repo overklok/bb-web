@@ -1,4 +1,5 @@
 import {AbstractEvent} from "../../base/Event";
+import { NotImplementedError } from "../../helpers/exceptions/notimplemented";
 
 
 export class EventHandlingError extends Error {
@@ -53,7 +54,7 @@ export default class IEventService {
               handler: Function,
               anchor?: any,
               emit_last?: boolean
-    ): Promise<number> {throw new Error('abstract')}
+    ): Promise<number> {throw new NotImplementedError('abstract')}
 
     /**
      * Removes all handlers to specific type of Event
@@ -63,14 +64,14 @@ export default class IEventService {
      */
     public reset(event_type: typeof AbstractEvent,
                  anchor?: any
-    ): void {throw new Error('abstract')}
+    ): void {throw new NotImplementedError('abstract')}
 
     /**
      * Removes all handlers for specific anchor object
      *
      * @param obj           an object for that all corresponding handlers will be removed
      */
-    public resetObject(obj?: any): void {throw new Error('abstract')}
+    public resetObject(obj?: any): void {throw new NotImplementedError('abstract')}
 
     /**
      * Removes a specific handler of specific type of Event
@@ -83,7 +84,7 @@ export default class IEventService {
         event_type: typeof AbstractEvent,
         handler: Function,
         anchor?: any
-    ): void {throw new Error('abstract')}
+    ): void {throw new NotImplementedError('abstract')}
 
     /**
      * Emits an event 
@@ -99,5 +100,5 @@ export default class IEventService {
     public async emit<E extends AbstractEvent<E>>(
         event: E,
         anchor?: any
-    ) {throw new Error('abstract')}
+    ) {throw new NotImplementedError('abstract')}
 }

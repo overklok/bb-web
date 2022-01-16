@@ -2,6 +2,7 @@ import Model, {ModelConstructor, ModelState} from "../../base/model/Model";
 import Datasource from "../../base/model/Datasource";
 import AsynchronousDatasource from "../../base/model/datasources/AsynchronousDatasource";
 import IEventService from "./IEventService";
+import { NotImplementedError } from "../../helpers/exceptions/notimplemented";
 
 /**
  * MVC/MVP's Model layer interface
@@ -27,7 +28,7 @@ export default class IModelService {
      * @param svc_event Event service instance
      */
     public setup(svc_event: IEventService): void {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     }
 
     /**
@@ -36,7 +37,7 @@ export default class IModelService {
      * @param args 
      */
     public launch(args: AsynchronousDatasource): void {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     }
     
     /**
@@ -50,7 +51,7 @@ export default class IModelService {
         abstrakt: ModelConstructor<MS, DS>, data_source: DS, state_initial?: Partial<MS>
     ): Model<MS, DS>
     {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     }
 
     /**
@@ -59,13 +60,13 @@ export default class IModelService {
      * @param abstrakt classname of the model to retrieve
      */
     public retrieve<MS extends ModelState, DS extends Datasource, M extends ModelConstructor<MS, DS>>(abstrakt: M): InstanceType<M> {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     }
 
     /**
      * @returns the object containing models keyed by its aliases, see {@link Model.alias}
      */
     public getModels(): {[name: string]: Model<any, any>} {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     }
 }

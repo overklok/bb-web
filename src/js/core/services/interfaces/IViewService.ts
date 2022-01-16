@@ -3,8 +3,13 @@ import ViewConnector from "../../base/ViewConnector";
 import {IViewProps, IViewState, View} from "../../base/view/View";
 import {PresenterType, ViewComposerType, ViewType} from "../../helpers/types";
 import {CSSProperties} from "react";
+import { NotImplementedError } from "../../helpers/exceptions/notimplemented";
 
 /**
+ * Data structure that contains all stuff
+ * required to deploy the View and connect it 
+ * to other components of the application
+ * 
  * @category Core
  */
 export type Widget<P extends IViewProps> = {
@@ -17,6 +22,8 @@ export type Widget<P extends IViewProps> = {
 };
 
 /**
+ * Description of a {@link Widget}
+ * 
  * @category Core
  */
 export type WidgetType<P extends IViewProps> = {
@@ -43,7 +50,7 @@ export default class IViewService {
     /** all registered widget instances keyed by their aliases */
     protected widgets: {[key: string]: Widget<any>};
     /** list of root widget types to use in application */
-    protected widget_types: WidgetType<any>[];
+    protected root_widget_types: WidgetType<any>[];
     /** root widget alias to use in application  */
     protected widget_type_key: string;
 
@@ -62,43 +69,55 @@ export default class IViewService {
      * TODO: Pass external depenencies from 'this.app' here
      */
     public setup() {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     };
 
     /**
-     * Mounts the DOM tree to a given element
+     * Mounts DOM tree to the given element
      * 
      * Creates {@link View}s by instantiating {@link ViewComposer}s.
      * 
      * @param element root element to mount to
      */
     public compose(element: HTMLElement) {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     };
 
     /**
      * Defines root widgets to display
      * 
+     * This function is required to call because the service should
+     * know what to display at the root of tree.
+     * 
+     * This function should be called before {@link registerWidgetTypes}.
+     * It's possible to do from either {@link Application.setup} or {@link Application.run},
+     * but the former one is more preferred.
+     * 
+     * If the function is called multiple times, only the last call will be considered.
+     * 
      * @param view_composer type of {@link ViewComposer} to compose multiple widgets 
      * @param widget_types  types of widgets to compose
      */
     public setRootWidgets(view_composer: ViewComposerType<any, any>, widget_types: string | WidgetType<any>[]) {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     };
 
     /**
-     * Register widget types to resolve them further by aliases
+     * Registers widget types to resolve them further by aliases
      * 
-     * @param widget_types 
+     * This function is required to call because the service should 
+     * know how to instantiate {@link Widget} objects.
+     * 
+     * @param widget_types types of widgets required in the app
      */
     public registerWidgetTypes(widget_types: {[key: string]: WidgetType<any>}) {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     };
 
     /**
      * @returns alias-keyed dictionary of {@link View}s created by the service
      */
     public getViews(): { [name: string]: any } {
-        throw new Error('abstract');
+        throw new NotImplementedError('abstract');
     };
 }

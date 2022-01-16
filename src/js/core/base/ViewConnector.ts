@@ -49,6 +49,7 @@ export default class ViewConnector {
 
     private props_deferred: IViewProps;
     private on_props_cb: (props: IViewProps) => void;
+    id: number;
 
     /**
      * View connectors are usually built by ViewService at the registration of Widget
