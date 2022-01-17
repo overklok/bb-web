@@ -150,7 +150,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
         if (exercise.is_sandbox) {
-            // return LaunchView.Mode.ExecuteOnly;
+            return LaunchView.Mode.ExecuteOnly;
         }
 
         switch (exercise.launch_mode) {

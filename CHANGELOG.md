@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+- "Launch only" mode is not applied when is_sandbox is set
+
 ## [1.2.11] - 2021-12-03
 
 ### Added
