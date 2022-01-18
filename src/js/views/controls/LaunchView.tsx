@@ -14,8 +14,10 @@ namespace LaunchView {
         None,
         CheckOnly,
         ExecuteOnly,
+        SkipOnly,
         CheckOrExecute,
-        CheckAndExecute
+        CheckAndExecute,
+        SkipAndExecute,
     }
 
     export const enum ButtonState {
@@ -38,6 +40,8 @@ namespace LaunchView {
         start: boolean;
     }
 
+    export class SkipClickEvent extends ViewEvent<SkipClickEvent> {}
+
     export class LaunchView extends View<Props, undefined> {
         static defaultProps = {
             mode: Mode.ExecuteOnly,
@@ -57,13 +61,19 @@ namespace LaunchView {
             this.emit(new CheckClickEvent({start: !this.props.is_checking}));
         }
 
+        private handleSkipClick() {
+            this.emit(new SkipClickEvent());
+        }
+
         public render(): React.ReactNode {
             switch (this.props.mode) {
                 case Mode.None:            return null;
                 case Mode.CheckOnly:       return this.renderCheck();
                 case Mode.ExecuteOnly:     return this.renderExecute();
+                case Mode.SkipOnly:        return this.renderSkip();
                 case Mode.CheckOrExecute:  return this.renderCheckAndExecute();
                 case Mode.CheckAndExecute: return this.renderExecute();
+                case Mode.SkipAndExecute:  return this.renderSkipAndExecute();
             }
         }
 
@@ -100,6 +110,49 @@ namespace LaunchView {
                 </div>
             )
         }
+
+        private renderSkip() {
+            const klasses_btn_skip = classNames({
+                'btn': true,
+                'btn_primary': true,
+                'fabdesk__fab': true
+            });
+
+            return (
+                <div className='fabdesk'>
+                    <div className={klasses_btn_skip} onClick={() => this.handleSkipClick()}>
+                        {i18next.t('main:lesson.fabs.skip')}
+                    </div>
+                </div>
+            )
+        }
+
+        private renderSkipAndExecute() {
+            const klasses_btn_skip = classNames({
+                'btn': true,
+                'btn_primary': true,
+                'fabdesk__fab': true
+            });
+
+            const klasses_btn_execute = classNames({
+                'btn': true,
+                'btn_primary': true,
+                'btn_disabled': this.props.is_executing === ButtonState.Busy,
+                'fabdesk__fab': true
+            });
+
+            return (
+                <div className='fabdesk'>
+                    <div className={klasses_btn_skip} onClick={() => this.handleSkipClick()}>
+                        {i18next.t('main:lesson.fabs.skip')}
+                    </div>
+                    <div className={klasses_btn_execute} onClick={() => this.handleExecuteClick()}>
+                        {this.props.is_executing ? i18next.t('main:lesson.fabs.stop') : i18next.t('main:lesson.fabs.start')}
+                    </div>
+                </div>
+            )
+        }
+
 
         private renderCheckAndExecute() {
             const klasses_btn_check = classNames({

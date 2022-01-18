@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2021-01-18
+
+### Added
+
+- skip exercise button 
+
 ## [1.2.12] - 2021-01-17
 
 ### Fixed
@@ -15,106 +21,106 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.2.11] - 2021-12-03
 
 ### Added
-- Automated deploy to AWS instance
-- Support for temporary i18n server API updates
+- automated deploy to AWS instance
+- support for temporary i18n server API updates
 
 ### Fixed
-- Duplicated ViewConnector instantiation for root widgets and when recomposed
+- duplicated ViewConnector instantiation for root widgets and when recomposed
 
 ## [1.2.10] - 2021-12-03
 
 ### Added
-- Automated deploy with Bitbucket Pipelines
+- automated deploy with Bitbucket Pipelines
 
 ## [1.2.9] - 2021-11-26
 
 ### Added
-- More docs
+- more docs
 
 ### Changed
-- Board disconnection alert message
+- board disconnection alert message
 
 
 ### Removed
-- Modal action handling in Views (as unused)
-- Pane creation/removal transitions
-- Unused ImperativeView methods are deprecated
-- Redundant logic in ImperativeView
+- modal action handling in Views (as unused)
+- pane creation/removal transitions
+- unused ImperativeView methods are deprecated
+- redundant logic in ImperativeView
 
 ## [1.2.8] - 2021-10-19
 
 ### Fixed
-- Empty 'distros/latest' sample response for http fakes
-- No key for lesson list item in HomeView
-- No fallback values for task_description, task_description_alt fields
-- Empty app_details object is not handles (actual when the core is connected via Socket.IO)
+- empty 'distros/latest' sample response for http fakes
+- no key for lesson list item in HomeView
+- no fallback values for task_description, task_description_alt fields
+- empty app_details object is not handles (actual when the core is connected via Socket.IO)
 
 ## [1.2.7] - 2021-10-15
 
 ### Fixed
-- Empty Blockly code when IF/IFELSE block is persented in the workspace
+- empty Blockly code when IF/IFELSE block is persented in the workspace
 
 ## [1.2.6] - 2021-10-09
 
 ### Fixed
-- High CPU usage by HomeView - caused by SVG background animation
+- high CPU usage by HomeView - caused by SVG background animation
 
 ### Added
-- Lesson filtering in HomeView based on current language
+- lesson filtering in HomeView based on current language
 
 ### Updated
-- Minor visual updates
+- minor visual updates
 
 ## [1.2.5] - 2021-10-03
 
 ### Fixed
-- Board: fixed unfocusable input fields when injecting the board module 
+- board: fixed unfocusable input fields when injecting the board module 
 
 ## [1.2.4] - 2021-10-03
 
 ### Fixed
-- Current line transition which causes unwanted color appearance when switching from weights close to zero
-- Unmatched current particle positions when switching the weight caused by incorrect math processing
+- current line transition which causes unwanted color appearance when switching from weights close to zero
+- unmatched current particle positions when switching the weight caused by incorrect math processing
 
 ## [1.2.3] - 2021-10-30
 
 ### Added
-- Localized Tapanda log (shown at 'home' and 'about' widgets)
+- localized Tapanda log (shown at 'home' and 'about' widgets)
 
 ## [1.2.2] - 2021-10-30
 
 ### Fixed
-- Invalid 'referrerPolicy' value for CORS in SSL requests
-- Incorrect client rc version number parsing in the update dialog  
+- invalid 'referrerPolicy' value for CORS in SSL requests
+- incorrect client rc version number parsing in the update dialog  
 
 ### Updated
 - URL scheme is shifted with prefix to work within a separated branch of server URL schema
-- Verifier responses is localized (only for bb-srv 0.0.9+)
+- verifier responses is localized (only for bb-srv 0.0.9+)
 
 ### Added
-- Client version check (+ widget)
-- Display task description for exercises based on lesson language property
-- Display course's language in the lesson menu (initial view)
+- client version check (+ widget)
+- display task description for exercises based on lesson language property
+- display course's language in the lesson menu (initial view)
 
 ## [1.2.1] - 2021-09-14
 
 ### Fixed
-- Invalid plate removal caused by plate settling algorithm modification
-- Auxiliary points with numeric coordinates does not exist
+- invalid plate removal caused by plate settling algorithm modification
+- auxiliary points with numeric coordinates does not exist
 
 ## [1.2.0] - 2021-09-13
 
 ### Added
-- I18next intergation
-- English and russian localization (for main app & blockly)
-- Live language switching
-- Language selection in SettingsView and HomeView
-- Saving preferred language via the core
+- i18next intergation
+- english and russian localization (for main app & blockly)
+- live language switching
+- language selection in SettingsView and HomeView
+- saving preferred language via the core
 
 ## [1.1.2b] - 2021-08-19
 
 ### Added
-- Ability to serve application without backend server
+- ability to serve application without backend server
 ## [1.1.2] - 2021-08-13
 
 ### Updated
@@ -128,17 +134,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.1.0] - 2021-30-07
 
 ### Fixed
-- Fix fidget deattaching after attaching because of accidental order of React components mount/unmount.
+- fix fidget deattaching after attaching because of accidental order of React components mount/unmount.
 
 ### Changed
-- Core: Presenter instances are persistent after widget load. Views does not detached from the Presenters when unmounting.
-- Imperative Views methods that write to mount-dependent objects will be called after mount only.
+- core: Presenter instances are persistent after widget load. Views does not detached from the Presenters when unmounting.
+- imperative Views methods that write to mount-dependent objects will be called after mount only.
 
 ### Updated
-- Updated Changelog formatting
+- Changelog formatting
 
 ### Deprecated
-- Any Imperative View methods that reads from mount-dependent objects is removed or marked as deprecated.
+- any Imperative View methods that reads from mount-dependent objects is removed or marked as deprecated.
 
 ## [1.0.9] - 2021-29-07
 
