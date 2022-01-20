@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - skip exercise button 
 - force_demo parameter
 
+### Changed
+
+- prop merge order changed for props defined in widgets and in presenters
+
 ## [1.2.12] - 2021-01-17
 
 ### Fixed

@@ -7,22 +7,37 @@ import BoardModel, {
     BoardAnalogResetEvent
 } from "../../models/common/BoardModel";
 import CodeModel from "../../models/common/CodeModel";
+import SettingsModel, { SettingsChangeEvent } from "../../core/models/SettingsModel";
 
 export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     private code: CodeModel;
     private board: BoardModel;
+    settings: SettingsModel;
 
     public getInitialProps() {
         this.code = this.getModel(CodeModel);
         this.board = this.getModel(BoardModel);
+        this.settings = this.getModel(SettingsModel);
 
         const board_state = this.board.getState();
+
+        const is_demo = this.settings.getBoolean('general.is_demo');
+        const ro_by_state = board_state.is_editable && board_state.is_passive;
 
         return {
             layouts: BoardModel.Layouts,
             layout_name: board_state.layout_name,
-            readonly: board_state.is_editable && board_state.is_passive
-        }
+            readonly: !is_demo && ro_by_state,
+            verbose: this.settings.getBoolean('board.is_verbose'),
+            debug: this.settings.getBoolean('board.is_debug'),
+        };
+    }
+
+    @restore() @on(SettingsChangeEvent)
+    private updateSettingsChange() {
+        this.board.setPassive(this.settings.getBoolean('general.is_demo', true));
+        this.view.setVerbose(this.settings.getBoolean('board.is_verbose', true));
+        this.view.setDebug(this.settings.getBoolean('board.is_debug', true));
     }
 
     @on(BoardView.LayoutChangeEvent)

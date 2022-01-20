@@ -48,6 +48,8 @@ namespace BoardView {
         }
 
         inject(container: HTMLDivElement): void {
+            console.log(this.props);
+            
             this.bb.inject(container, {
                 readOnly: this.props.readonly,
                 schematic: this.props.schematic,
