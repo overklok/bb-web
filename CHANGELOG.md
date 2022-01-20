@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - skip exercise button 
+- force_demo parameter
 
 ## [1.2.12] - 2021-01-17
 

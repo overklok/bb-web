@@ -45,6 +45,7 @@ require("css/global.less");
 
 interface MainAppConf {
     allow_demo: boolean;
+    force_demo: boolean;
     no_menu: boolean;
     server_addr: string;
     server_port: number;
@@ -61,6 +62,7 @@ class MainApplication extends Application<MainAppConf> {
     protected defaultConfig() {
         return {
             allow_demo: true,
+            force_demo: false,
             no_menu: false,
             server_addr: '127.0.0.1',
             server_port: 8000,
@@ -102,7 +104,11 @@ class MainApplication extends Application<MainAppConf> {
         svc_model.register(ModalModel,      dds);
         svc_model.register(UserModel,       hds);
         svc_model.register(CourseModel,     hds);
-        svc_model.register(SettingsModel,   dds, {config: settings_config(this.config.allow_demo, this.config.lang)});
+        svc_model.register(SettingsModel,   dds, {config: settings_config(
+            this.config.lang, 
+            this.config.allow_demo, 
+            this.config.force_demo
+        )});
         svc_model.register(LessonModel,     hds);
         svc_model.register(ServerModel,     hds);
 

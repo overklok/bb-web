@@ -28,7 +28,12 @@ export default class AlertLessonPresenter extends AlertPresenter {
         const allow_demo = !this.settings.isLocked('general.is_demo'),
               is_demo = this.settings.getBoolean('general.is_demo', true);
 
-        if (allow_demo && (is_demo || is_connected)) {
+        if (is_demo) {
+            this.closeAlert(AlertType.BoardDisconnectedDemo);
+            return;
+        }
+
+        if (allow_demo && is_connected) {
             this.closeAlert(AlertType.BoardDisconnectedDemo);
             return;
         }

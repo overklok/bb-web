@@ -1,6 +1,6 @@
 import {SettingType} from "../../core/datatypes/settings";
 
-export default function (allow_demo: boolean, lang: string) {
+export default function (lang: string, allow_demo: boolean, is_demo_default: boolean) {
     return {
         general: {
             title: 'settings:general.title',
@@ -10,7 +10,7 @@ export default function (allow_demo: boolean, lang: string) {
                         is_demo: {
                             title: 'settings:general.settings.is_demo.title',
                             type: SettingType.Boolean,
-                            default: false,
+                            default: is_demo_default,
                             is_locked: !allow_demo
                         },
                         language: {
