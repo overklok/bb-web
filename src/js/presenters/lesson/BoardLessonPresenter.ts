@@ -20,6 +20,25 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         this.modal = this.getModel(ModalModel);
         this.board = this.getModel(BoardModel);
         this.settings = this.getModel(SettingsModel);
+
+        const board_state = this.board.getState();
+
+        const is_demo = this.settings.getBoolean('general.is_demo');
+        const ro_by_state = board_state.is_editable && board_state.is_passive;
+
+        return {
+            layout_name: board_state.layout_name,
+            readonly: !is_demo && ro_by_state,
+            verbose: this.settings.getBoolean('board.is_verbose'),
+            debug: this.settings.getBoolean('board.is_debug'),
+        }
+    }
+
+    @restore() @on(SettingsChangeEvent)
+    private updateSettingsChange() {
+        this.board.setPassive(this.settings.getBoolean('general.is_demo', true));
+        this.view.setVerbose(this.settings.getBoolean('board.is_verbose', true));
+        this.view.setDebug(this.settings.getBoolean('board.is_debug', true));
     }
 
     @on(ExerciseRunEvent)
