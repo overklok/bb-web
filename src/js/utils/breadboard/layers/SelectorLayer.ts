@@ -113,7 +113,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
      * @inheritdoc
      */
     public hide() {
-        this._container.style.left = `-${this._container.offsetWidth + this._container.offsetLeft}px`;
+        this._container.style.left = `-${this._container.offsetWidth + this._container.offsetLeft + 10}px`;
     }
 
     /**
