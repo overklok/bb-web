@@ -15,6 +15,7 @@
     <script type="application/javascript">
         const app = new Application({
             allow_demo: true,
+            force_demo: true,
             no_menu: false,
             fake_http_responses: <%= JSON.stringify(htmlWebpackPlugin.options.configuration.fake_http_responses) %>
         });

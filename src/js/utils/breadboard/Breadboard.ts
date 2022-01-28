@@ -38,6 +38,7 @@ type BreadboardOptions = {
     detailed?: boolean,
     schematic?: boolean,
     readOnly? : boolean,
+    bgVisible?: boolean,
     showControlsDefault?: boolean,
     showSourceCurrents?: boolean
 }
@@ -558,6 +559,7 @@ export default class Breadboard {
         this._layers.label.setLayoutConfig(this._layout);
         this._layers.plate.setPlateStyle(this._layout.plate_style);
         this._layers.label.setLabelStyle(this._layout.label_style);
+        this._layers.background.setBgVisible(this._options.bgVisible);
 
         /// внутренняя компоновка каждого слоя
         for (const layer of Object.values(this._layers)) {
@@ -611,6 +613,7 @@ export default class Breadboard {
             detailed:   options.detailed || false,
             schematic:  options.schematic || false,
 
+            bgVisible:              (options.bgVisible === undefined ? true : options.bgVisible),
             readOnly:               (options.readOnly === undefined ? true : options.readOnly),
             layout_name:            (options.layout_name === undefined ? 'default' : options.layout_name),
             showControlsDefault:    (options.showControlsDefault === undefined ? true : options.showControlsDefault),

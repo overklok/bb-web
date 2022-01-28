@@ -67,12 +67,14 @@ export class LessonPassEvent extends ModelEvent<LessonPassEvent> {
 }
 
 export class MissionPassEvent extends ModelEvent<MissionPassEvent> {
-    mission_idx: number
+    mission_idx: number;
+    no_prompt?: boolean;
 }
 
 export class ExercisePassEvent extends ModelEvent<ExercisePassEvent> {
     mission_idx: number;
     exercise_idx: number;
+    no_prompt?: boolean;
 }
 
 export class LessonRunEvent extends ModelEvent<LessonRunEvent> {
@@ -173,7 +175,7 @@ export default class ProgressModel extends HttpModel<Progress> {
     /**
      * Pass the current exercise
      */
-    public passExercise() {
+    public passExercise(no_prompt?: boolean) {
         const mission_progress = this.state.missions[this.state.mission_idx];
 
         // this case may occur when switching exercises manually
@@ -191,7 +193,8 @@ export default class ProgressModel extends HttpModel<Progress> {
 
             this.emit(new ExercisePassEvent({
                 mission_idx: this.state.mission_idx,
-                exercise_idx: mission_progress.exercise_idx
+                exercise_idx: mission_progress.exercise_idx,
+                no_prompt
             }));
 
             return;
@@ -218,7 +221,7 @@ export default class ProgressModel extends HttpModel<Progress> {
             }
 
             // if it's required to pass the last exercise, it's time to pass the entire mission
-            this.passMission();
+            this.passMission(no_prompt);
         }
     }
 
@@ -360,7 +363,7 @@ export default class ProgressModel extends HttpModel<Progress> {
      *
      * @private
      */
-    private passMission() {
+    private passMission(no_prompt?: boolean) {
         if (this.in_progress) return;
 
         if (this.state.mission_idx < this.state.mission_idx_last) {
@@ -370,10 +373,12 @@ export default class ProgressModel extends HttpModel<Progress> {
 
             this.emit(new MissionPassEvent({
                 mission_idx: this.state.mission_idx + 1,
+                no_prompt
             }));
         } else {
             this.emit(new MissionPassEvent({
                 mission_idx: this.state.mission_idx + 1,
+                no_prompt
             }));
             // this.emit(new LessonPassEvent()); TODO: maybe needed, maybe not
         }

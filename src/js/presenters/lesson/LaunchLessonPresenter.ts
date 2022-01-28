@@ -3,7 +3,7 @@ import LaunchView from "../../views/controls/LaunchView";
 import CodeModel from "../../models/common/CodeModel";
 import ModalModel from "../../core/models/ModalModel";
 import BoardModel from "../../models/common/BoardModel";
-import LessonModel, {LaunchMode} from "../../models/lesson/LessonModel";
+import LessonModel, {ExerciseType, LaunchMode} from "../../models/lesson/LessonModel";
 import ProgressModel, {
     ExercisePassEvent,
     ExerciseRunEvent,
@@ -34,6 +34,11 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
     @restore() @on(ExerciseRunEvent)
     private onExerciseLoaded() {
         this.setViewProps({mode: this.getLaunchMode()});
+    }
+
+    @on(LaunchView.SkipClickEvent)
+    protected onSkipClick(evt: LaunchView.SkipClickEvent) {
+        this.progress.passExercise(true);
     }
 
     @on(LaunchView.CheckClickEvent)
@@ -126,7 +131,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
     @on(MissionPassEvent)
     protected async onMissionPass(evt: MissionPassEvent) {
-        const go_forward = await this.modal.showQuestionModal({
+        const go_forward = evt.no_prompt || await this.modal.showQuestionModal({
             dialog: {
                 heading: i18next.t('main:lesson.modal.mission_pass.heading'), 
                 label_accept: i18next.t('main:lesson.modal.mission_pass.accept'), 
@@ -150,7 +155,21 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
         if (exercise.is_sandbox) {
-            return LaunchView.Mode.ExecuteOnly;
+            switch (exercise.type) {
+                case ExerciseType.ProgramAssembly:
+                case ExerciseType.Combined:
+                case ExerciseType.ButtonPressSeq:
+                case ExerciseType.Arduino: {
+                    return LaunchView.Mode.SkipAndExecute;
+                }
+                case ExerciseType.CircuitAssembly:
+                case ExerciseType.ElectronicAssembly: {
+                    return LaunchView.Mode.SkipOnly; 
+                }
+                default: {
+                    return LaunchView.Mode.SkipOnly; 
+                }
+            }
         }
 
         switch (exercise.launch_mode) {

@@ -193,6 +193,7 @@ export default class LessonModel extends CRUDHttpModel<Lesson> {
         return {
             id: _exercise.pk,
             name: _exercise.name || "unnamed",
+            type: _exercise.type,
             popovers: [],
             // popovers: cloneDeep(_exercise.popovers),
             message_success: null,
@@ -241,6 +242,7 @@ type Popover = {
 type Exercise = {
     id: number;
     name: string;
+    type: ExerciseType;
     is_sandbox: boolean;
     message_success: string;
     task_description: string;

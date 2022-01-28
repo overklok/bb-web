@@ -143,7 +143,7 @@ export default class Nest extends React.PureComponent<NestProps<any>, NestState>
 
         // Merge the props of the View collected by the ViewConnector (in the state) 
         // with initial values of the View
-        const props = {...this.state.view_props, ...this.props.view_props};
+        const props = {...this.props.view_props, ...this.state.view_props};
 
         return (
             <div className='nest' ref={this.ref} style={this.props.nest_style}>

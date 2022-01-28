@@ -14,6 +14,7 @@ namespace BoardView {
     export class BoardChangeEvent extends ViewEvent<BoardChangeEvent> {plates: any[]}
 
     export interface BoardViewProps extends IViewProps {
+        bg_visible?: boolean;
         schematic?: boolean;
         verbose?: boolean;
         readonly?: boolean;
@@ -24,6 +25,7 @@ namespace BoardView {
 
     export class BoardView extends ImperativeView<BoardViewProps> {
         static defaultProps: BoardViewProps = {
+            bg_visible: true,
             schematic: true,
             readonly: true,
             verbose: false,
@@ -49,6 +51,7 @@ namespace BoardView {
 
         inject(container: HTMLDivElement): void {
             this.bb.inject(container, {
+                bgVisible: this.props.bg_visible,
                 readOnly: this.props.readonly,
                 schematic: this.props.schematic,
                 detailed: this.props.schematic,

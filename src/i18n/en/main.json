@@ -81,6 +81,7 @@
             }
         },
         "fabs": {
+            "skip": "Skip",
             "stop": "Stop",
             "start": "Launch",
             "check": "Check",

@@ -89,7 +89,7 @@ export default function(no_menu) {
             board: {
                 view_type: BoardView.BoardView,
                 presenter_types: [BoardPresenter, BoardLessonPresenter],
-                view_props: {readonly: true}
+                view_props: {readonly: true, bg_visible: false}
             },
             blockly: {
                 view_type: BlocklyView,

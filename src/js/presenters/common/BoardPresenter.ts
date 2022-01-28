@@ -7,10 +7,12 @@ import BoardModel, {
     BoardAnalogResetEvent
 } from "../../models/common/BoardModel";
 import CodeModel from "../../models/common/CodeModel";
+import SettingsModel, { SettingsChangeEvent } from "../../core/models/SettingsModel";
 
 export default class BoardPresenter extends Presenter<BoardView.BoardView> {
     private code: CodeModel;
     private board: BoardModel;
+    settings: SettingsModel;
 
     public getInitialProps() {
         this.code = this.getModel(CodeModel);
@@ -18,11 +20,13 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
 
         const board_state = this.board.getState();
 
+        const ro_by_state = board_state.is_editable && board_state.is_passive;
+
         return {
             layouts: BoardModel.Layouts,
             layout_name: board_state.layout_name,
-            readonly: board_state.is_editable && board_state.is_passive
-        }
+            readonly: ro_by_state,
+        };
     }
 
     @on(BoardView.LayoutChangeEvent)

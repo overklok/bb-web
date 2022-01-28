@@ -113,7 +113,7 @@ export default {
                     },
                     {
                         name: 'right',
-                        size: '20%', size_min: '10%',
+                        size: '65%', size_min: '10%',
                         panes: [
                             {name: 'rtop', widgets: [{alias: 'task', label: 'Task'}]
                         },

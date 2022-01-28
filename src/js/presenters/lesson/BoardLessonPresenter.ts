@@ -8,6 +8,7 @@ import {ColorAccent} from "../../core/helpers/styles";
 import {ExerciseRunEvent} from "../../models/lesson/ProgressModel";
 
 import i18next from 'i18next';
+import { MountEvent } from "../../core/base/view/View";
 
 export default class BoardLessonPresenter extends Presenter<BoardView.BoardView> {
     private board: BoardModel;
@@ -20,11 +21,17 @@ export default class BoardLessonPresenter extends Presenter<BoardView.BoardView>
         this.board = this.getModel(BoardModel);
         this.settings = this.getModel(SettingsModel);
 
+        const board_state = this.board.getState();
+
+        const is_demo = this.settings.getBoolean('general.is_demo');
+        const ro_by_state = board_state.is_editable && board_state.is_passive;
+
         return {
-            //readonly: !this.settings.getBoolean('general.is_demo'),
+            layout_name: board_state.layout_name,
+            readonly: !is_demo && ro_by_state,
             verbose: this.settings.getBoolean('board.is_verbose'),
             debug: this.settings.getBoolean('board.is_debug'),
-        };
+        }
     }
 
     @restore() @on(SettingsChangeEvent)

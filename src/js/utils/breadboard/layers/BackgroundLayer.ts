@@ -76,6 +76,7 @@ export default class BackgroundLayer extends Layer {
     private _hover_pos: { x: number; y: number; };
     /** whether another animation frame is scheduled */
     private _scheduled_animation_frame: boolean;
+    private _bg_visible: boolean;
 
     /**
      * @inheritdoc
@@ -111,7 +112,7 @@ export default class BackgroundLayer extends Layer {
     /**
      * Sets the board topology required to display cells and contacts
      * 
-     * The method is expected to be called before the {@link compose} is called
+     * The method is expected to call before the {@link compose} is called
      * 
      * @param domain_config 
      */
@@ -120,15 +121,30 @@ export default class BackgroundLayer extends Layer {
     }
 
     /**
+     * Controls board background rectangle visibility
+     * 
+     * The method is expected to call before the {@link compose} is called
+     * 
+     * @param is_visible 
+     */
+    public setBgVisible(is_visible: boolean) {
+        this._bg_visible = is_visible;
+    }
+
+    /**
      * Draws contents for the layer
      */
     public compose() {
-        this._boardgroup
+        const bgrect = this._boardgroup
             .rect().width('99%').height('99%') /// 99 из-за обрезания рамки
             .radius(20)
             .fill({color: "#f9f9f9"})
             .stroke({color: "#c9c9c9", width: 4})
             .move(4, 4);
+
+        if (!this._bg_visible) {
+            bgrect.opacity(0);
+        }
 
         if (this._debug) {
             this._debug_text = this._boardgroup
