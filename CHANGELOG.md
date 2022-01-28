@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [1.2.13] - 2021-01-28
 
 ### Added
 
@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - prop merge order changed for props defined in widgets and in presenters
 - optional breadboard background (disabled in main app)
 - main: board pane shrinked in 'board' layout 
+- fixed initial position of board selector layer 
 
 ## [1.2.12] - 2021-01-17
 
