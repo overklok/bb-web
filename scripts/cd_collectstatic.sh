@@ -33,3 +33,4 @@ rsync -r $TMP_ROOT/main/*     $DIR_APP
 
 # Re-collect static files if some were added to sources
 /opt/$PROJECT_NAME/run.sh prod collectstatic
+/opt/$PROJECT_NAME/run.sh prod reload
