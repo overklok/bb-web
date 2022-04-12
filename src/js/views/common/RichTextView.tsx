@@ -1,6 +1,8 @@
 import * as React from "react";
 import {AllProps, IViewProps, View} from "../../core/base/view/View";
 
+import ProcessMath from "../../utils/mathjax/ProcessMath"
+
 namespace RichTextView {
     export interface Props extends IViewProps {
         content: string;
@@ -13,7 +15,9 @@ namespace RichTextView {
 
         render(): React.ReactNode {
             return (
-                <div dangerouslySetInnerHTML={{ __html: this.props.content }} style={{padding: '1em'}}/>
+                <ProcessMath>
+                    <div dangerouslySetInnerHTML={{ __html: this.props.content }} style={{padding: '1em'}}/>
+                </ProcessMath>
             )
         }
     }
