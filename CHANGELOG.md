@@ -6,11 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.14] - 2022-04-12
+
 ### Added
 
 - MathJax integration for task description (RTF) widget
 
-## [1.2.13] - 2021-01-28
+## [1.2.13] - 2022-01-28
 
 ### Added
 
