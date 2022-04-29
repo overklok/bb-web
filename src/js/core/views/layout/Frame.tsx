@@ -8,8 +8,8 @@ import {DraggableItemTypes} from "../LayoutView";
  * @category Core.UI
  */
 interface FrameProps {
-    children: JSX.Element|JSX.Element[],
-    covered: boolean,
+    children: React.ReactNode;
+    covered: boolean;
 }
 
 /**

@@ -165,7 +165,7 @@ namespace HomeView {
 
         private renderCourseCollapsible(course: Course, idx: number) {
             return (
-                <Accordion key={idx} head={"test"}>
+                <Accordion key={idx} head={"test asdask asdasd asdasd asd 3jf2dska2d"}>
                     {/* course contents */}
                     <ul className="list">
                         {this.renderExerciseList(course)}

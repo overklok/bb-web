@@ -15,7 +15,7 @@ interface ToastProps {
     /** color accent of the toast */
     status: ColorAccent;
     /** toast content (React Components or plain text) */
-    children: string|JSX.Element|JSX.Element[];
+    children: React.ReactNode;
     /** timeout handler (triggers if timeout is specified */
     on_close: () => void;
     /** toast title */
