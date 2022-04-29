@@ -27,26 +27,38 @@ module.exports = [
                     "order_num": 2
                 },
                 "lessons": [
-                    {
-                        "model": "courses.lesson",
-                        "pk": 9,
-                        "fields": {
-                            "name": "elec lesson",
-                            "description": "desc",
-                            "language": "en",
-                            "order_num": null
-                        }
-                    },
-                    {
-                        "model": "courses.lesson",
-                        "pk": 10,
-                        "fields": {
-                            "name": "arduino lesson",
-                            "description": "desc",
-                            "language": "en",
-                            "order_num": null
-                        }
-                    }
+                    { "model": "courses.lesson", "pk": 9, "fields": { "name": "elec lesson", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 10, "fields": { "name": "filler lesson 1", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 11, "fields": { "name": "filler lesson 2", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 12, "fields": { "name": "filler lesson 3", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 13, "fields": { "name": "filler lesson 4", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 14, "fields": { "name": "filler lesson 5", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 15, "fields": { "name": "filler lesson 6", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 16, "fields": { "name": "filler lesson 7", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 17, "fields": { "name": "filler lesson 8", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 18, "fields": { "name": "filler lesson 9", "description": "desc", "language": "en", "order_num": null } },
+                ]
+            },
+            {
+                "model": "courses.course",
+                "pk": 4,
+                "fields": {
+                    "name": "elec course",
+                    "description": "desc",
+                    "hidden": false,
+                    "order_num": 3
+                },
+                "lessons": [
+                    { "model": "courses.lesson", "pk": 19, "fields": { "name": "elec lesson", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 20, "fields": { "name": "filler lesson 1", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 21, "fields": { "name": "filler lesson 2", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 22, "fields": { "name": "filler lesson 3", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 23, "fields": { "name": "filler lesson 4", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 24, "fields": { "name": "filler lesson 5", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 25, "fields": { "name": "filler lesson 6", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 26, "fields": { "name": "filler lesson 7", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 27, "fields": { "name": "filler lesson 8", "description": "desc", "language": "en", "order_num": null } },
+                    { "model": "courses.lesson", "pk": 28, "fields": { "name": "filler lesson 9", "description": "desc", "language": "en", "order_num": null } },
                 ]
             }
         ]

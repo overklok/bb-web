@@ -67,8 +67,6 @@ export interface DialogProps {
  * )
  */
 export default function Dialog(props: DialogProps) {
-    const {} = props;
-
     /**
      * Calls action handler
      * 

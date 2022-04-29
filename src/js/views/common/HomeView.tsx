@@ -7,6 +7,7 @@ import {ViewEvent} from "../../core/base/Event";
 import Modal from "../../core/views/modal/Modal";
 import DialogModal from "../../core/views/modal/DialogModal";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
+import Accordion from "./home/Accordion";
 
 require("~/css/home.less");
 require("~/css/logo.less");
@@ -141,21 +142,19 @@ namespace HomeView {
                 )
             }
 
+            const is_single = this.props.courses.length <= 1;
+
             return (
                 <CSSTransition key='crs' in out timeout={200} classNames="mdl" unmountOnExit>
                     <Modal size='lg'>
-                        <div className="courses">
+                        <div className="courses" style={{maxHeight: "60vh"}}>
                             <h1 className="courses__heading">{i18next.t("main:home.courses.lessons")}</h1>
 
                             <ul className="list">
                                 {this.props.courses.map((course, idx) =>
-                                    <React.Fragment key={idx}>
-                                        <li className="list__delimiter" key={idx}>
-                                            {/* {course.name} */}
-                                        </li>
-
-                                        {this.renderCourse(course)}
-                                    </React.Fragment>
+                                    <li className="list__item" key={idx}>
+                                        {this.renderCourseCollapsible(course, idx)}
+                                    </li>
                                 )}
                             </ul>
                         </div>
@@ -163,8 +162,31 @@ namespace HomeView {
                 </CSSTransition>
             )
         }
-    
-        private renderCourse(course: Course) {
+
+        private renderCourseCollapsible(course: Course, idx: number) {
+            return (
+                <Accordion key={idx} head={"test"}>
+                    {/* course contents */}
+                    <ul className="list">
+                        {this.renderExerciseList(course)}
+                    </ul>
+                </Accordion>
+            )
+        }
+
+        private renderCourse(course: Course, idx: number, as_single: boolean = false) {
+            <React.Fragment key={idx}>
+                {/* course heading */}
+                <li className="list__delimiter" key={idx}>
+                    {course.name}
+                </li>
+
+                {/* course contents */}
+                {this.renderExerciseList(course)}
+            </React.Fragment>
+        }
+
+        private renderExerciseList(course: Course) {
             const lessons = course.lessons.filter(lesson => lesson.language == this.props.lang)
 
             return [lessons.map((lesson, idx) =>
