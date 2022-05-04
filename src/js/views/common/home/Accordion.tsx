@@ -10,30 +10,30 @@ export interface AccordionProps {
     on_uncollapse?: () => void;
 }
 
-export default function Accordion(props: AccordionProps) {
-    const klasses = classNames({
-        'accordion': true,
-        'accordion_collapsed': props.is_collapsed
-    });
+// export default function Accordion(props: AccordionProps) {
+//     const klasses = classNames({
+//         'accordion': true,
+//         'accordion_collapsed': props.is_collapsed
+//     });
 
-    // TODO: call on_uncollapse, pass control to the outer component
+//     // TODO: call on_uncollapse, pass control to the outer component
 
-    return (
-        <div className={klasses}>
-            <div className="accordion__head acc-head" onClick={() => setIsCollapsed(!is_collapsed)}>
-                <div className="acc-head__content">
-                    {props.head}
-                </div>
-                <div className="acc-head__controls">
-                    <div className="btn__collapse btn__collapse_active">
-                        btn
-                    </div>
-                </div>
-            </div>
+//     return (
+//         <div className={klasses}>
+//             <div className="accordion__head acc-head" onClick={() => setIsCollapsed(!is_collapsed)}>
+//                 <div className="acc-head__content">
+//                     {props.head}
+//                 </div>
+//                 <div className="acc-head__controls">
+//                     <div className="btn__collapse btn__collapse_active">
+//                         btn
+//                     </div>
+//                 </div>
+//             </div>
 
-            <div className="accordion__body">
-                {props.children}
-            </div>
-        </div>
-    )
-}
+//             <div className="accordion__body">
+//                 {props.children}
+//             </div>
+//         </div>
+//     )
+// }

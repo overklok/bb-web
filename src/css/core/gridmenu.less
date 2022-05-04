@@ -1,0 +1,136 @@
+@import '../colors';
+@import '../animations';
+
+.gridmenu {
+  list-style-type: none;
+    
+  margin: 5px;
+  padding: 5px;
+
+  width: calc(100% - 20px);
+
+  display: inline-flex;
+  flex-wrap: wrap;
+
+  &__item, &__delimiter {
+    text-align: left;
+  }
+
+  &__item {
+    cursor: pointer;
+
+    flex-grow: 1;
+    flex-basis: min-content;
+
+    border-radius: .375em;
+
+    overflow: hidden;
+
+    margin: 5px;
+
+    transition: all .3s;
+
+    > span {
+      vertical-align: middle;
+    }
+
+    &:hover {
+      background-color: @primary_weak;
+    }
+
+    &_clickable {
+      cursor: pointer;
+    }
+
+    &_hidden {
+      flex-grow: 0.00001;
+      flex-basis: 0;
+      margin: 0;
+      opacity: 0;
+    }
+  }
+
+  &_expanded {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  &_expanded &__item {
+    margin: 0;
+  }
+
+  &__delimiter {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin: 5px 0;
+  }
+}
+
+// Move to: courses.less
+
+.gm-course {
+  min-width: 200px;
+
+  position: relative;
+
+  background-color: @primary_weaker;
+  font-size: 1em;
+
+  &__head {
+    padding: 5px;
+
+    transition: all .3s @scale;
+  }
+
+  &__body {
+    min-height: 100px;
+    max-height: 100px;
+    overflow-x: auto;
+
+    background-color: @primary_weak;
+    left: 0;
+
+    padding: 5px;
+
+    transition: all .3s @scale;
+  }
+
+  &_expanded &__head {
+    padding: 10px 15px;
+  }
+
+  &_expanded &__body {
+    max-height: 40vh;
+  }
+}
+
+.gmc-nav {
+  display: flex;
+  justify-content: space-between;
+
+  &__heading {
+    font-size: 1.5em;
+    font-weight: 500;
+  }
+
+  &__back {
+    margin: auto 0;
+
+    font-size: 1em;
+    font-weight: 600;
+
+    opacity: 0;
+
+    transition: opacity .3s @scale;
+  }
+
+  &_expanded &__heading {
+    font-size: 2em;
+    font-weight: 600;
+  }
+
+  &_expanded &__back {
+    opacity: 1;
+  }
+}

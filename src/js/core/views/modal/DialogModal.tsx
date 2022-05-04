@@ -21,7 +21,7 @@ type DialogModalProps = ModalProps & DialogProps;
  * 
  * @component
  */
-export default function DialogModal (props: DialogModalProps) {
+export default function DialogModal(props: DialogModalProps) {
     return (
         <Modal size={props.size} width={props.width} height={props.height}>
             <Dialog heading={props.heading}

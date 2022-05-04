@@ -20,9 +20,10 @@
     background-clip: padding-box;
 
     padding: .5em;
-    border-radius: .375em;
 
-    transition: background-color .1s @fade;
+    transition: background-color .1s @fade,
+                opacity .3s ease-in-out,
+                transform .3s ease;
 
     font-weight: 500;
 
@@ -31,11 +32,21 @@
     }
 
     &:hover {
-      background-color: @primary_weak;
+      background-color: @primary_weaker;
     }
 
     &_clickable {
       cursor: pointer;
+    }
+
+    &-appear {
+      opacity: 0;
+      transform: translateY(-50%);
+    }
+
+    &-appear-active {
+      opacity: 1;
+      transform: translateY(0%);
     }
   }
 
@@ -48,8 +59,6 @@
 
 .mark {
   display: inline-block;
-  width: .8em;
-  height: .8em;
 
   border-style: dashed;
   border-color: #474747;

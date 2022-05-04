@@ -1,17 +1,16 @@
 import * as React from "react";
 import Select from 'react-select';
 import i18next from 'i18next';
+import {CSSTransition, TransitionGroup} from "react-transition-group";
 
 import {AllProps, IViewProps, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 import Modal from "../../core/views/modal/Modal";
 import DialogModal from "../../core/views/modal/DialogModal";
-import {CSSTransition, TransitionGroup} from "react-transition-group";
-import Accordion from "./home/Accordion";
+import CourseMenu from "./home/CourseMenu";
 
 require("~/css/home.less");
 require("~/css/logo.less");
-require("~/css/core/list.less");
 require("~/css/core/pave.less");
 
 // provided by DefinePlugin in Webpack config
@@ -41,6 +40,7 @@ namespace HomeView {
     export interface Props extends IViewProps {
         courses: Course[];
         lesson_id: number;
+        course_id: number;
         error?: string;
         lang_options: { value: string, label: string }[];
     }
@@ -49,6 +49,7 @@ namespace HomeView {
         static defaultProps: Props = {
             courses: [],
             lesson_id: undefined,
+            course_id: undefined,
             lang_options: null,
         }
 
@@ -142,74 +143,18 @@ namespace HomeView {
                 )
             }
 
-            const is_single = this.props.courses.length <= 1;
-
             return (
                 <CSSTransition key='crs' in out timeout={200} classNames="mdl" unmountOnExit>
                     <Modal size='lg'>
-                        <div className="courses" style={{maxHeight: "60vh"}}>
-                            <h1 className="courses__heading">{i18next.t("main:home.courses.lessons")}</h1>
-
-                            <ul className="list">
-                                {this.props.courses.map((course, idx) =>
-                                    <li className="list__item" key={idx}>
-                                        {this.renderCourseCollapsible(course, idx)}
-                                    </li>
-                                )}
-                            </ul>
-                        </div>
+                        <CourseMenu 
+                            courses={this.props.courses} 
+                            on_lesson_click={id => this.handleLessonClick(id)} 
+                            lesson_id={this.props.lesson_id}
+                            // TODO: Get current course id
+                        />
                     </Modal>
                 </CSSTransition>
             )
-        }
-
-        private renderCourseCollapsible(course: Course, idx: number) {
-            return (
-                <Accordion key={idx} head={"test asdask asdasd asdasd asd 3jf2dska2d"}>
-                    {/* course contents */}
-                    <ul className="list">
-                        {this.renderExerciseList(course)}
-                    </ul>
-                </Accordion>
-            )
-        }
-
-        private renderCourse(course: Course, idx: number, as_single: boolean = false) {
-            <React.Fragment key={idx}>
-                {/* course heading */}
-                <li className="list__delimiter" key={idx}>
-                    {course.name}
-                </li>
-
-                {/* course contents */}
-                {this.renderExerciseList(course)}
-            </React.Fragment>
-        }
-
-        private renderExerciseList(course: Course) {
-            const lessons = course.lessons.filter(lesson => lesson.language == this.props.lang)
-
-            return [lessons.map((lesson, idx) =>
-                <li className="list__item list__item_clickable"
-                    onClick={() => this.handleLessonClick(lesson.id)}
-                    key={lesson.id}
-                >
-                    {
-                        this.props.lesson_id === lesson.id ?
-                            <span className="mark mark_warning" /> :
-                            <span className="mark" />
-                    }
-
-                    <span>
-                        {lesson.name}
-                    </span>
-
-                    <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>
-                        {/* {lesson.language == 'en' ? '🇺🇸' : '🇷🇺'} */}
-                        {/* 0 <i className="fa fa-tasks" /> */}
-                    </span>
-                </li>
-            )]
         }
     }
 }
