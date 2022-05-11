@@ -57,7 +57,6 @@ export default function CourseMenu(props: CourseMenuProps) {
                             is_expanded={idx === idx_expanded}
                             is_hidden={idx !== idx_expanded && idx_expanded !== -1}
                             is_nonclosable={props.courses.length === 1}
-                            is_current={course_idx === idx}
                             on_click={() => expand(idx)}
                             on_lesson_click={id => props.on_lesson_click(id)}
                             key={idx}
@@ -87,14 +86,13 @@ interface CourseMenuItemProps {
     is_expanded?: boolean;
     is_hidden?: boolean;
     is_nonclosable?: boolean;
-    is_current?: boolean;
     on_click?: () => void;
     on_lesson_click: (lesson_id: number) => void;
     lesson_id: number;
 }
 
 function CourseMenuItem(props: CourseMenuItemProps) {
-    // const lessons = props.lessons.filter(lesson => lesson.language == props.lang)
+    const lesson_cur = props.lessons.find(l => l.id === props.lesson_id);
 
     const body = props.is_expanded ? 
     (
@@ -107,7 +105,7 @@ function CourseMenuItem(props: CourseMenuItemProps) {
         <div>
             <div>{props.lessons.length} lessons</div>
             <div>
-                {props.is_current ? `Currently passing "${props.lessons[props.lesson_id].name}"` : ''}
+                {lesson_cur ? `Currently passing "${lesson_cur.name}"` : ''}
             </div>
         </div>
     );
@@ -134,7 +132,7 @@ function CourseMenuItem(props: CourseMenuItemProps) {
             </div>
         );
 
-    const mark_current = props.is_current ? 
+    const mark_current = lesson_cur ? 
             <span className="mark mark_warning" /> :
             <span className="mark" />;
 

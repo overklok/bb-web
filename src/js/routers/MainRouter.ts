@@ -1,11 +1,17 @@
 import LayoutRouter from "../core/routers/LayoutRouter";
 import {RouteEvent} from "../core/base/Event";
 
+export class CourseRouteEvent extends RouteEvent<CourseRouteEvent> {
+    course_id: number;
+}
+
 export class LessonRouteEvent extends RouteEvent<LessonRouteEvent> {
+    course_id: number;
     lesson_id: number;
 }
 
 export class MissionRouteEvent extends RouteEvent<MissionRouteEvent> {
+    course_id: number;
     lesson_id: number;
     mission_id: number;
 }
@@ -26,14 +32,19 @@ export default class MainRouter extends LayoutRouter {
             destination: 'course_list'
         },
         {
-            pathexp: '/app/lessons/{int}', name: 'lesson',
-            destination: (lesson_id: number) =>
-                this.emit(new LessonRouteEvent({lesson_id}))
+            pathexp: '/app/courses/{int}', name: 'course',
+            destination: (course_id: number) =>
+                this.emit(new CourseRouteEvent({course_id}))
         },
         {
-            pathexp: '/app/lessons/{int}/missions/{int}', name: 'mission',
-            destination: (lesson_id: number, mission_id: number) =>
-                this.emit(new MissionRouteEvent({lesson_id, mission_id}))
+            pathexp: '/app/courses/{int}/lesson/{int}', name: 'lesson',
+            destination: (course_id: number, lesson_id: number) =>
+                this.emit(new LessonRouteEvent({course_id, lesson_id}))
+        },
+        {
+            pathexp: '/app/courses/{int}/lessons/{int}/missions/{int}', name: 'mission',
+            destination: (course_id: number, lesson_id: number, mission_id: number) =>
+                this.emit(new MissionRouteEvent({course_id, lesson_id, mission_id}))
         }
     ]
 }

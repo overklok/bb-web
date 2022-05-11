@@ -22,7 +22,7 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
         if (evt instanceof LessonRouteEvent || evt instanceof MissionRouteEvent) {
             try {
                 const lesson = await this.model_lesson.read({lesson_id: evt.lesson_id});
-                this.model_progress.loadLesson(lesson);
+                this.model_progress.loadLesson(lesson, evt.course_id);
             } catch (e) {
                 this.forward('index');
                 throw e;
