@@ -14,7 +14,7 @@ export default class VariablesLessonPresenter extends Presenter<VariableView.Var
         this.lesson = this.getModel(LessonModel);
         this.progress = this.getModel(ProgressModel);
 
-        const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
+        const [mission_idx, exercise_idx] = this.progress.getOpenedExerciseIndex();
 
         return {
             variables: this.getVariableValues(mission_idx, exercise_idx)

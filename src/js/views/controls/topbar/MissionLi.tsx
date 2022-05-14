@@ -4,16 +4,22 @@ import Portal from "../../../core/base/view/Portal";
 import MissionContextMenu, {Exercise} from "./MissionContextMenu";
 import CaskProgress from "./CaskProgress";
 import classNames from "classnames";
+import { findLastIndex } from "lodash";
 
 require('../../../../css/blocks/menu/mission.less');
 require('../../../../css/blocks/menu/combolist.less');
 
 export interface MissionProgress {
-    exercise_idx: number;
-    exercise_idx_last: number;
-    exercise_idx_passed: number;
-    exercise_idx_passed_max: number;
-    exercise_idx_available: number;
+    id: number;
+    idx_exercise_current: number;
+    idx_exercise_passed: number;
+    is_passed: boolean;
+    exercises: ExerciseProgress[];
+}
+
+interface ExerciseProgress {
+    id: number;
+    is_passed: boolean;
 }
 
 interface MissionLiProps {
@@ -154,30 +160,33 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
     render() {
         const progress = this.props.progress;
-        const exercise_num_total = progress.exercise_idx_last + 1;
+        const exercise_num_total = progress.exercises.length;
         let exercise_num_current = 0;
         let detached = true;
 
-        if (progress.exercise_idx_passed_max === progress.exercise_idx_passed) {
+        const idx_exercise_passed_max = findLastIndex(progress.exercises, e => e.is_passed),
+              idx_exercise_last = exercise_num_total + 1;
+
+        if (idx_exercise_passed_max === progress.idx_exercise_passed) {
             // Synced indices: user follows mission without switching to previous exercises
-            exercise_num_current = progress.exercise_idx_passed + 1;
+            exercise_num_current = progress.idx_exercise_passed + 1;
             detached = false;
-        } else if (progress.exercise_idx_available < progress.exercise_idx) {
+        } else if (progress.idx_exercise_passed < progress.idx_exercise_current) {
             // Admin switching: show progress as if user follows without skipping
-            exercise_num_current = progress.exercise_idx + 1;
+            exercise_num_current = progress.idx_exercise_current + 1;
         } else {
             // User switching: do not show that current exercise was passed
-            exercise_num_current = progress.exercise_idx;
+            exercise_num_current = progress.idx_exercise_current;
         }
 
         let perc_pass  = 100 * exercise_num_current / exercise_num_total;
-        let perc_avail = 100 * (progress.exercise_idx_passed_max + 1) / exercise_num_total;
+        let perc_avail = 100 * (idx_exercise_passed_max + 1) / exercise_num_total;
 
         const {is_current} = this.props;
 
         const klasses_pager__item = classNames({
             'pager__item': true,
-            'pager__item_starred': progress.exercise_idx_passed == progress.exercise_idx_last,
+            'pager__item_starred': progress.idx_exercise_passed == idx_exercise_last,
             'pager__item_active': true,
             'pager__item_current': this.props.is_current,
         });
@@ -197,7 +206,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
             'cask__content_undisposable': is_current
         });
 
-        const is_simple_force = progress.exercise_idx_last == 0;
+        const is_simple_force = idx_exercise_last == 0;
 
         return (
             <li className={klasses_pager__item}>
@@ -245,7 +254,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
                                             title={this.props.title}
                                             description={this.props.description}
-                                            current_exercise_idx={this.props.progress.exercise_idx}
+                                            current_exercise_idx={this.props.progress.idx_exercise_current}
                                             admin_url_prefix={this.props.admin_url_prefix}
                                             on_exercise_select={this.props.on_exercise_select}
                         />
@@ -275,7 +284,7 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
      */
     private isProgressDetached() {
         const progress = this.props.progress;
-        return progress.exercise_idx_available !== progress.exercise_idx;
+        return progress.idx_exercise_passed !== progress.idx_exercise_current;
     }
 }
 

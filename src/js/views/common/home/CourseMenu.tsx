@@ -9,13 +9,13 @@ require("~/css/core/list.less");
 
 export interface CourseMenuProps {
     courses: Course[];
-    lesson_id?: number;
-    on_lesson_click: (lesson_id: number) => void;
+    current_lesson_id: number;
+    on_lesson_click: (course_id: number, lesson_id: number) => void;
 }
 
 export default function CourseMenu(props: CourseMenuProps) {
     let course_idx = props.courses.findIndex(
-        (v, i) => v.lessons.map(l => l.id).indexOf(props.lesson_id) > -1
+        (v, i) => v.lessons.map(l => l.id).indexOf(props.current_lesson_id) > -1
     );
 
     const [idx_expanded, setExpanded] = React.useState(course_idx);
@@ -51,14 +51,15 @@ export default function CourseMenu(props: CourseMenuProps) {
                 <ul className={klasses_gridmenu}>
                     {props.courses.map((course: Course, idx: number) =>
                         <CourseMenuItem 
-                            lesson_id={props.lesson_id}
                             heading={course.name} 
                             lessons={course.lessons} 
+                            current_lesson_id={props.current_lesson_id}
+                            course_id={course.id}
                             is_expanded={idx === idx_expanded}
                             is_hidden={idx !== idx_expanded && idx_expanded !== -1}
                             is_nonclosable={props.courses.length === 1}
                             on_click={() => expand(idx)}
-                            on_lesson_click={id => props.on_lesson_click(id)}
+                            on_lesson_click={id => props.on_lesson_click(course.id, id)}
                             key={idx}
                         />
                     )}
@@ -88,17 +89,19 @@ interface CourseMenuItemProps {
     is_nonclosable?: boolean;
     on_click?: () => void;
     on_lesson_click: (lesson_id: number) => void;
-    lesson_id: number;
+    current_lesson_id: number;
+    course_id: number;
 }
 
 function CourseMenuItem(props: CourseMenuItemProps) {
-    const lesson_cur = props.lessons.find(l => l.id === props.lesson_id);
+    const lesson_cur = props.lessons.find(l => l.id === props.current_lesson_id);
 
     const body = props.is_expanded ? 
     (
-        <ExerciseList 
+        <LessonList 
             lessons={props.lessons} 
-            lesson_id={props.lesson_id} 
+            current_lesson_id={props.current_lesson_id} 
+            course_id={props.course_id}
             on_click={(lesson_id) => props.on_lesson_click(lesson_id)}
             />
     ) : (
@@ -156,13 +159,14 @@ function CourseMenuItem(props: CourseMenuItemProps) {
     )
 }
 
-interface ExerciseListProps {
+interface LessonListProps {
     lessons: Lesson[];
-    lesson_id: number;
+    course_id: number;
+    current_lesson_id: number;
     on_click: (lesson_id: number) => void;
 }
 
-function ExerciseList(props: ExerciseListProps) {
+function LessonList(props: LessonListProps) {
     return (
         <ul className="list">
             <TransitionGroup component={null}>
@@ -174,7 +178,7 @@ function ExerciseList(props: ExerciseListProps) {
                             style={{transitionDelay: `${idx * 50}ms`}}
                         >
                             {
-                                props.lesson_id === lesson.id ?
+                                props.current_lesson_id === lesson.id ?
                                     <span className="mark mark_warning" /> :
                                     <span className="mark" />
                             }

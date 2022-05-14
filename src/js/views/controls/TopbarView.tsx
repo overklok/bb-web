@@ -31,8 +31,8 @@ interface Mission {
 }
 
 interface Progress {
-    mission_idx: number;
-    mission_idx_last: number;
+    idx_mission_current: number;
+    idx_mission_passed: number;
     missions: MissionProgress[];
 }
 
@@ -269,7 +269,7 @@ namespace TopbarView {
                                         <MissionLi key={idx}
                                                    id={mission.id}
                                                    index={idx}
-                                                   is_current={this.props.progress.mission_idx === idx}
+                                                   is_current={this.props.progress.idx_mission_current === idx}
                                                    exercises={mission.exercises}
                                                    title={mission.name}
                                                    description={mission.description}
@@ -339,7 +339,7 @@ namespace TopbarView {
         private getPreferredScrollPosition() {
             if (!this.el_scrollable) return;
 
-            const index = this.props.progress.mission_idx;
+            const index = this.props.progress.idx_mission_current;
 
             const el: any = this.el_scrollable.children.item(index);
 

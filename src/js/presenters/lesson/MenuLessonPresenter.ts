@@ -30,7 +30,7 @@ export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
 
     @on(HomeView.LessonSelectEvent)
     private forwardLesson(evt: HomeView.LessonSelectEvent) {
-        this.forward('lesson', [evt.lesson_id]);
+        this.forward('lesson', [evt.course_id, evt.lesson_id]);
     }
 
     @on(HomeView.LanguageChangeEvent)
@@ -50,8 +50,10 @@ export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     }
 
     private loadCourses() {
-        const lesson_id = this.progress.getState().lesson_id;
+        const lesson_id = this.progress.getState().opened.lesson_id;
+
         this.course.list().then((courses) => {
+            this.progress.loadStructure(courses);
             clearTimeout(this.load_handle);
             this.setViewProps({ error: null, courses, lesson_id });
         });
