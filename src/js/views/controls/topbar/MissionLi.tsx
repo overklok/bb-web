@@ -159,6 +159,10 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
     }
 
     render() {
+        if (!this.props.progress) {
+            throw Error("Progress is empty");
+        }
+
         const progress = this.props.progress;
         const exercise_num_total = progress.exercises.length;
         let exercise_num_current = 0;

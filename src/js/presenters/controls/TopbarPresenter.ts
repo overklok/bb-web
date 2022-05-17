@@ -24,10 +24,14 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
 
         const lesson = this.model_lesson.getState();
 
+        const progress = this.model_progress.getOpenedLesson();
+
+        console.log(progress);
+
         return {
             lesson_title: lesson.name,
             missions: lesson.missions,
-            progress: this.model_progress.getOpenedLesson(),
+            progress: progress,
             status: ConnectionStatus.Unknown,
             is_demo: this.model_settings.getValue('general.is_demo') as boolean,
             admin_url_prefix: this.model_lesson.host_name

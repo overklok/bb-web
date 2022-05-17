@@ -186,7 +186,10 @@ export default class ProgressModel extends HttpModel<Progress> {
     }
 
     /**
-     * Loads details for given lesson
+     * Loads details for the given lesson
+     * 
+     * Opens given lesson which makes it available 
+     * by {@link getOpenedLesson} and related methods.
      *
      * @param lesson        lesson data object
      * @param course_id     
@@ -198,17 +201,20 @@ export default class ProgressModel extends HttpModel<Progress> {
         if (!course)         {throw new Error("Progress structure is not loaded");}
         if (!course.lessons) {throw new Error("Progress structure is invalid");}
 
+        // set loaded lesson as opened
+        this.setState({
+            opened: {
+                course_id: course_id,
+                lesson_id: lesson.id
+            }
+        });
+
         if (!force && course.lessons[lesson.id].missions) {
             console.warn("Another lesson is already loaded, overwrite refused");
             return;
         }
 
-        const progress: Progress = {
-            // set loaded lesson as opened
-            opened: {
-                course_id: course.id,
-                lesson_id: lesson.id
-            },
+        const progress: Partial<Progress> = {
             courses: [...this.state.courses],
             locks: {...this.state.locks}
         };
@@ -497,6 +503,8 @@ export default class ProgressModel extends HttpModel<Progress> {
      */
     public getOpenedLesson() {
         const course = this.state.courses && this.state.courses.find(c => c.id === this.state.opened.course_id);
+        console.log('gop', this.state.opened);
+        
         return course && course.lessons[this.state.opened.lesson_id];
     }
 

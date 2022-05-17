@@ -30,6 +30,7 @@ interface Mission {
     exercises: Exercise[];
 }
 
+// TODO: Remove
 interface Progress {
     idx_mission_current: number;
     idx_mission_passed: number;
@@ -246,7 +247,7 @@ namespace TopbarView {
             const pager__listwrap_klasses = classNames({
                 'pager__listwrap': true,
                 'pager__listwrap_secondary': this.props.is_demo
-            })
+            });
 
             return (
                 <div className={navbar_slide_main_klasses}>
@@ -265,22 +266,28 @@ namespace TopbarView {
                             />
                             <div className={pager__listwrap_klasses}>
                                 <ul className="pager__list" ref={this.onScrollableUpdate}>
-                                    {this.props.missions.map((mission, idx) =>
-                                        <MissionLi key={idx}
-                                                   id={mission.id}
-                                                   index={idx}
-                                                   is_current={this.props.progress.idx_mission_current === idx}
-                                                   exercises={mission.exercises}
-                                                   title={mission.name}
-                                                   description={mission.description}
-                                                   progress={this.props.progress.missions[idx]}
-                                                   on_click={() => this.chooseMission(idx)}
-                                                   on_restart={() => this.restartMission(idx)}
-                                                   on_forward={() => this.forwardMission(idx)}
-                                                   on_exercise_select={e_idx => this.chooseExercise(idx, e_idx)}
-                                                   admin_url_prefix={this.props.admin_url_prefix}
-                                        />
-                                    )}
+                                    {this.props.missions.map((mission, idx) => {
+                                        if (!this.props.progress.missions[idx]) {
+                                            console.error('MISS', this.props.progress)
+                                        }
+
+                                        return (
+                                            <MissionLi key={idx}
+                                                    id={mission.id}
+                                                    index={idx}
+                                                    is_current={this.props.progress.idx_mission_current === idx}
+                                                    exercises={mission.exercises}
+                                                    title={mission.name}
+                                                    description={mission.description}
+                                                    progress={this.props.progress.missions[idx]}
+                                                    on_click={() => this.chooseMission(idx)}
+                                                    on_restart={() => this.restartMission(idx)}
+                                                    on_forward={() => this.forwardMission(idx)}
+                                                    on_exercise_select={e_idx => this.chooseExercise(idx, e_idx)}
+                                                    admin_url_prefix={this.props.admin_url_prefix}
+                                            />
+                                        );
+                                    })}
                                 </ul>
                             </div>
                             <div className="pager__arrow pager__arrow_right" onClick={() => this.scrollToEnd()}/>

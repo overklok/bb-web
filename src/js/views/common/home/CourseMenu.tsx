@@ -140,22 +140,24 @@ function CourseMenuItem(props: CourseMenuItemProps) {
         "gmc-nav_expanded": props.is_expanded
     });
 
+    const klasses_mark = classNames({
+        "mark": true,
+        "mark_warning": exercises_passed && exercises_passed !== exercises_total,
+        "mark_success": exercises_passed && exercises_passed === exercises_total
+    });
+
     const gmc_nav_back = props.is_nonclosable ? null : (
             <div className="gmc-nav__back">
                 {'< Back'}
             </div>
         );
 
-    const mark_current = exercises_passed ? 
-            <span className="mark mark_warning" /> :
-            <span className="mark" />;
-
     return (
         <li className={klasses}>
             <div className={klasses_course}>
                 <div className={klasses_course_head} onClick={() => props.on_click()}>
                     <div className="gmc-nav__heading">
-                        {mark_current}
+                        <span className={klasses_mark} />
                         {props.heading} 
                     </div>
 
