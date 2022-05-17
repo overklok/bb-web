@@ -62,7 +62,7 @@ export default class LayoutLessonPresenter extends LayoutPresenterCore {
             if (mission_idx !== evt.mission_id) {
                 this.forward(
                     'mission',
-                    [progress.opened.lesson_id, mission_idx],
+                    [progress.opened.course_id, progress.opened.lesson_id, mission_idx],
                     true
                 );
                 return;

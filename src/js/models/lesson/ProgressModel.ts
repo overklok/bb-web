@@ -150,6 +150,7 @@ export default class ProgressModel extends HttpModel<Progress> {
     public loadStructure(courses: Course[]) {
         if (this.isStructureLoaded()) {
             console.warn("Another progress structure is already loaded");
+            return;
         }
 
         const courses_: CourseProgress[] = [];
@@ -266,17 +267,19 @@ export default class ProgressModel extends HttpModel<Progress> {
         exercise.is_passed = true;
         mission.idx_exercise_passed = mission.idx_exercise_current;
 
-        if (!was_passed) {
+        // if (!was_passed) {
             if (mission.exercises.length - 1 === mission.idx_exercise_passed) {
                 this.passMission(no_prompt);
             } else {
+                mission.idx_exercise_current += 1;
+
                 this.emit(new ExercisePassEvent({
                     mission_idx: lesson.idx_mission_current,
                     exercise_idx: mission.idx_exercise_current,
                     no_prompt: no_prompt
                 }));
             }
-        }
+        // }
     }
 
     /**
@@ -471,6 +474,9 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         const lesson = this.getOpenedLesson();
 
+        const mission = this.getOpenedMission();
+        mission.is_passed = true;
+
         if (lesson.idx_mission_current < lesson.missions.length - 1) {
             lesson.idx_mission_passed = lesson.idx_mission_current;
 
@@ -508,5 +514,23 @@ export default class ProgressModel extends HttpModel<Progress> {
     private getOpenedExercise() {
         const mission = this.getOpenedMission();
         return mission.idx_exercise_current > -1 && mission.exercises[mission.idx_exercise_current];
+    }
+}
+
+export function getLessonExercisesStats(lesson: LessonProgress) {
+    if (!lesson.missions) return { total: 0, passed: 0 };
+
+    return {
+        total:  lesson.missions.reduce((sum, m) => sum + m.exercises.length, 0),
+        passed: lesson.missions.reduce((sum, m) => sum + m.exercises.reduce((sum, e) => sum + Number(e.is_passed), 0), 0), 
+    }
+}
+
+export function getLessonMissionsStats(lesson: LessonProgress) {
+    if (!lesson.missions) return { total: 0, passed: 0 };
+
+    return {
+        total: lesson.missions.length, 
+        passed: lesson.missions.filter(m => m.is_passed).length
     }
 }

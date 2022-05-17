@@ -7,7 +7,7 @@ import {AllProps, IViewProps, View} from "../../core/base/view/View";
 import {ViewEvent} from "../../core/base/Event";
 import Modal from "../../core/views/modal/Modal";
 import DialogModal from "../../core/views/modal/DialogModal";
-import CourseMenu from "./home/CourseMenu";
+import CourseMenu, { Course } from "./home/CourseMenu";
 
 require("~/css/home.less");
 require("~/css/logo.less");
@@ -15,18 +15,6 @@ require("~/css/core/pave.less");
 
 // provided by DefinePlugin in Webpack config
 declare const __VERSION__: string;
-
-interface Lesson {
-    id: number;
-    name: string;
-    language: string;
-}
-
-interface Course {
-    id: number;
-    name: string;
-    lessons: Lesson[];
-}
 
 namespace HomeView {
     export class LessonSelectEvent extends ViewEvent<LessonSelectEvent> {
@@ -40,8 +28,10 @@ namespace HomeView {
 
     export interface Props extends IViewProps {
         courses: Course[];
-        course_id: number;
-        lesson_id: number;
+        opened: {
+            course_id: number;
+            lesson_id: number;
+        };
         error?: string;
         lang_options: { value: string, label: string }[];
     }
@@ -49,8 +39,10 @@ namespace HomeView {
     export class HomeView extends View<Props, undefined> {
         static defaultProps: Props = {
             courses: [],
-            course_id: undefined,
-            lesson_id: undefined,
+            opened: {
+                course_id: undefined,
+                lesson_id: undefined
+            },
             lang_options: null,
         }
 
@@ -149,7 +141,7 @@ namespace HomeView {
                     <Modal size='lg'>
                         <CourseMenu 
                             courses={this.props.courses} 
-                            current_lesson_id={this.props.lesson_id}
+                            opened={this.props.opened}
                             on_lesson_click={(course_id, id) => this.handleLessonClick(course_id, id)} 
                         />
                     </Modal>
