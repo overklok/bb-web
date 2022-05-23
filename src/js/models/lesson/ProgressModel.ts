@@ -3,6 +3,7 @@ import {Course} from "./CourseModel";
 import {ModelEvent} from "~/js/core/base/Event";
 import {RequestMethod} from "~/js/core/models/datasources/HttpDatasource";
 import HttpModel from "~/js/core/models/HttpModel";
+import { findLastIndex } from "lodash";
 
 export enum ValidationVerdictStatus {
     Undefined = 'undefined',
@@ -211,6 +212,8 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         if (!force && course.lessons[lesson.id].missions) {
             console.warn("Another lesson is already loaded, overwrite refused");
+
+            this.emit(new LessonRunEvent());
             return;
         }
 
@@ -268,34 +271,30 @@ export default class ProgressModel extends HttpModel<Progress> {
         const mission = this.getOpenedMission();
         const exercise = mission.exercises[mission.idx_exercise_current];
 
-        const was_passed = exercise.is_passed;
-
         exercise.is_passed = true;
         mission.idx_exercise_passed = mission.idx_exercise_current;
 
-        // if (!was_passed) {
-            if (mission.exercises.length - 1 === mission.idx_exercise_passed) {
-                this.passMission(no_prompt);
-            } else {
-                mission.idx_exercise_current += 1;
-
-                this.emit(new ExercisePassEvent({
-                    mission_idx: lesson.idx_mission_current,
-                    exercise_idx: mission.idx_exercise_current,
-                    no_prompt: no_prompt
-                }));
-            }
-        // }
+        if (mission.exercises.length - 1 === mission.idx_exercise_passed) {
+            this.passMission(no_prompt);
+        } else {
+            this.emit(new ExercisePassEvent({
+                mission_idx: lesson.idx_mission_current,
+                exercise_idx: mission.idx_exercise_current,
+                no_prompt: no_prompt
+            }));
+        }
     }
 
     /**
-     * Run the next exercise in current mission if available
+     * Runs next exercise after last passed in current mission if available
      */
     public stepForwardMission() {
         if (this.in_progress) return;
 
         const lesson = this.getOpenedLesson();
         const mission = this.getOpenedMission();
+
+        mission.idx_exercise_current = mission.idx_exercise_passed + 1;
 
         this.emit(new ExerciseRunEvent({
             mission_idx: lesson.idx_mission_current,
@@ -314,9 +313,13 @@ export default class ProgressModel extends HttpModel<Progress> {
         const lesson = this.getOpenedLesson();
         const mission = this.getOpenedMission();
 
+        const idx_exercise_passed_max = findLastIndex(
+            mission.exercises, e => e.is_passed
+        );
+
         this.switchExercise(
-            lesson.idx_mission_passed, 
-            mission.idx_exercise_passed
+            lesson.idx_mission_current, 
+            Math.min(idx_exercise_passed_max + 1, mission.exercises.length - 1)
         );
     }
 
@@ -358,6 +361,8 @@ export default class ProgressModel extends HttpModel<Progress> {
             throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
         }
 
+        mission.idx_exercise_current = exercise_idx;
+
         if (this.state.locks.mission) {
             if (mission_idx !== 0 && mission_idx > lesson.idx_mission_passed) {
                 console.debug('Forbidden mission switch prevented: `lock_missions` enabled');
@@ -371,8 +376,6 @@ export default class ProgressModel extends HttpModel<Progress> {
                 return;
             }
         }
-
-        mission.idx_exercise_current = exercise_idx;
 
         // Emit only if switching in the mission currently running
         // External modules should switch to actual mission if they want to receive the run event
@@ -479,8 +482,8 @@ export default class ProgressModel extends HttpModel<Progress> {
         if (this.in_progress) return;
 
         const lesson = this.getOpenedLesson();
-
         const mission = this.getOpenedMission();
+
         mission.is_passed = true;
 
         if (lesson.idx_mission_current < lesson.missions.length - 1) {
@@ -491,10 +494,11 @@ export default class ProgressModel extends HttpModel<Progress> {
                 no_prompt
             }));
         } else {
-            this.emit(new MissionPassEvent({
-                mission_idx: lesson.idx_mission_current + 1,
-                no_prompt
-            }));
+            // TODO: Pass Lesson
+            // this.emit(new MissionPassEvent({
+            //     mission_idx: lesson.idx_mission_current + 1,
+            //     no_prompt
+            // }));
         }
     }
 
@@ -503,7 +507,6 @@ export default class ProgressModel extends HttpModel<Progress> {
      */
     public getOpenedLesson() {
         const course = this.state.courses && this.state.courses.find(c => c.id === this.state.opened.course_id);
-        console.log('gop', this.state.opened);
         
         return course && course.lessons[this.state.opened.lesson_id];
     }

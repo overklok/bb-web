@@ -4,7 +4,7 @@ import Portal from "../../../core/base/view/Portal";
 import MissionContextMenu, {Exercise} from "./MissionContextMenu";
 import CaskProgress from "./CaskProgress";
 import classNames from "classnames";
-import { findLastIndex } from "lodash";
+import { findLastIndex, lowerFirst } from "lodash";
 
 require('../../../../css/blocks/menu/mission.less');
 require('../../../../css/blocks/menu/combolist.less');
@@ -165,32 +165,26 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
         const progress = this.props.progress;
         const exercise_num_total = progress.exercises.length;
-        let exercise_num_current = 0;
+
+        // are indices synced or not
         let detached = true;
 
         const idx_exercise_passed_max = findLastIndex(progress.exercises, e => e.is_passed),
-              idx_exercise_last = exercise_num_total + 1;
+              idx_exercise_last = exercise_num_total - 1;
 
-        if (idx_exercise_passed_max === progress.idx_exercise_passed) {
+        if (idx_exercise_passed_max === progress.idx_exercise_current - 1) {
             // Synced indices: user follows mission without switching to previous exercises
-            exercise_num_current = progress.idx_exercise_passed + 1;
             detached = false;
-        } else if (progress.idx_exercise_passed < progress.idx_exercise_current) {
-            // Admin switching: show progress as if user follows without skipping
-            exercise_num_current = progress.idx_exercise_current + 1;
-        } else {
-            // User switching: do not show that current exercise was passed
-            exercise_num_current = progress.idx_exercise_current;
         }
 
-        let perc_pass  = 100 * exercise_num_current / exercise_num_total;
+        let perc_pass  = 100 * (progress.idx_exercise_passed + 1) / exercise_num_total;
         let perc_avail = 100 * (idx_exercise_passed_max + 1) / exercise_num_total;
 
         const {is_current} = this.props;
 
         const klasses_pager__item = classNames({
             'pager__item': true,
-            'pager__item_starred': progress.idx_exercise_passed == idx_exercise_last,
+            'pager__item_starred': idx_exercise_passed_max == idx_exercise_last,
             'pager__item_active': true,
             'pager__item_current': this.props.is_current,
         });
@@ -205,29 +199,38 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
             'cask__content_disposable': is_current
         });
 
-        const klasses_cask_content_alt = classNames({
+        const klasses_cask_content_icon = classNames({
             'cask__content': true,
             'cask__content_undisposable': is_current
         });
 
-        const is_simple_force = idx_exercise_last == 0;
+        // do not render animation elements for casks
+        const is_simple_force = exercise_num_total === 1;
 
         return (
             <li className={klasses_pager__item}>
                 <div className={klasses_cask}>
-                    {detached ? <CaskProgress is_simple_force={is_simple_force}
-                                              percent={perc_avail} is_simple={!is_current}
+                    {/* Passed progress indicator */}
+                    {detached ? <CaskProgress no_animation={false && is_simple_force}
+                                              // animation for the current mission is disabled
+                                              is_animated={!is_current}
+                                              percent={perc_avail} 
                                               style_fg={is_current ? 'primary-weak' : 'primary-weak'}
                                               style_bg={is_current ? 'warning-weak' : null}
                                 />
                               : null
                     }
-                    <CaskProgress is_simple_force={is_simple_force}
-                                  percent={perc_pass} is_simple={detached || !is_current}
+
+                    {/* Current progress indicator */}
+                    <CaskProgress no_animation={false && is_simple_force}
+                                  // animation for the current mission is enabled only when detached
+                                  is_animated={detached || !is_current}
+                                  percent={perc_pass} 
                                   style_fg={is_current ? 'success' : 'success-weak'}
                                   style_bg={is_current ? 'warning-weak' : null}
                     />
 
+                    {/* Main content (mission number) */}
                     <div ref={this.ref_root}
                          className={klasses_cask__content_main}
                          onClick={this.handleMissionClick}
@@ -237,8 +240,9 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
                         {this.props.index + 1}
                     </div>
 
+                    {/* Action icon */}
                     {this.props.is_current ?
-                        <div className={klasses_cask_content_alt}
+                        <div className={klasses_cask_content_icon}
                              onClick={this.handleMissionClick}
                              onContextMenu={this.handleContextMenu}
                         >
@@ -270,25 +274,30 @@ export default class MissionLi extends React.Component<MissionLiProps, MissionLi
 
     private getActiveIcon() {
         if (this.isProgressDetached()) {
-            // On detached currently active mission, suggest the user to
+            // If currently active mission is detached, suggest the user to
             // forward to the last exercise available in the mission
             return <i className="fa fa-fast-forward" aria-hidden="true"/>
         } else {
-            // On synced currently active mission, suggest the user to
+            // If currently active mission is synced, suggest the user to
             // restart the mission from the first exercise
             return <i className="fa fa-redo-alt" aria-hidden="true"/>
         }
     }
 
     /**
-     * Determine whether user follows the mission' exercises consistently.
+     * Determines whether user follows the mission' exercises consistently.
      * If user switches manually, this method returns `false`.
      *
      * @private
      */
     private isProgressDetached() {
         const progress = this.props.progress;
-        return progress.idx_exercise_passed !== progress.idx_exercise_current;
+
+        if (progress.exercises.length === 1) return false;
+
+        const idx_exercise_passed_max = findLastIndex(progress.exercises, e => e.is_passed);
+
+        return progress.idx_exercise_current !== idx_exercise_passed_max + 1;
     }
 }
 

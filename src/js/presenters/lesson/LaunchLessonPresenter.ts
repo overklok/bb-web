@@ -146,7 +146,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
         if (go_forward) {
             const {course_id, lesson_id} = this.progress.getState().opened;
             this.forward('mission', [course_id, lesson_id, evt.mission_idx]);
-            this.progress.stepForwardMission();
+            // this.progress.stepForwardMission();
         }
     }
 
