@@ -15,7 +15,7 @@ export default class BlocklyLessonPresenter extends Presenter<BlocklyView> {
 
     @restore() @on(MountEvent, ExerciseRunEvent)
     private loadBlockTypes(evt: ExerciseRunEvent) {
-        const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
+        const [mission_idx, exercise_idx] = this.progress.getOpenedExerciseIndex();
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
         if (exercise.module_settings.code) {
@@ -26,7 +26,7 @@ export default class BlocklyLessonPresenter extends Presenter<BlocklyView> {
     @on(BlocklyCodeChangeEvent)
     private saveMissionCode(evt: BlocklyCodeChangeEvent) {
         const code = BlocklyView.getCodeTree(evt.workspace);
-        this.progress.setMissionData({code});
+        this.progress.setOpenedMissionData({code});
     }
 
     @restore() @on(MissionRunEvent)

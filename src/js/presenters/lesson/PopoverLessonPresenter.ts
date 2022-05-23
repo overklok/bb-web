@@ -18,7 +18,7 @@ export default class PopoverLessonPresenter extends ModalPresenter {
 
     @restore() @on(ExerciseRunEvent)
     private async showIntroModal() {
-        const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
+        const [mission_idx, exercise_idx] = this.progress.getOpenedExerciseIndex();
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
         for (const [i, popover] of exercise.popovers.entries()) {

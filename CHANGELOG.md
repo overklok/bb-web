@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - HomeView UI/UX for courses / lessons
+- Lesson/mission/exercise stats for HomeView
 
 ## [1.2.14] - 2022-04-12
 

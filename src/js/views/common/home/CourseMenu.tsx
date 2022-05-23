@@ -2,43 +2,56 @@ import * as React from "react";
 import classNames from "classnames";
 import i18next from 'i18next';
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { endsWith } from "lodash";
 
 require("~/css/core/gridmenu.less");
 require("~/css/core/list.less");
 
+export interface LessonStats {
+    exercises: { total: number; passed: number; };
+    missions:  { total: number; passed: number; }
+}
+
+export interface Lesson {
+    id: number;
+    name: string;
+    language: string;
+    stats: LessonStats;
+}
+
+export interface Course {
+    id: number;
+    name: string;
+    lessons: Lesson[];
+}
+
 export interface CourseMenuProps {
     courses: Course[];
-    lesson_id?: number;
-    on_lesson_click: (lesson_id: number) => void;
+    opened: {
+        course_id: number;
+        lesson_id: number;
+    };
+    on_lesson_click: (course_id: number, lesson_id: number) => void;
 }
 
 export default function CourseMenu(props: CourseMenuProps) {
-    let course_idx = props.courses.findIndex(
-        (v, i) => v.lessons.map(l => l.id).indexOf(props.lesson_id) > -1
-    );
+    const [id_expanded, setExpanded] = React.useState(props.opened.course_id);
 
-    const [idx_expanded, setExpanded] = React.useState(course_idx);
-
-    // current = props.courses[idx].lessons.map(l => l.id).indexOf(props.lesson_id) > -1;
-
-
-    const expand = (idx: number) => {
-        if (idx_expanded === idx) {
-            setExpanded(-1);
+    const expand = (id: number) => {
+        if (id_expanded === id) {
+            setExpanded(undefined);
         } else {
-            setExpanded(idx); 
+            setExpanded(id); 
         }
     }
 
     const klasses_courses = classNames({
         "courses": true,
-        "courses_simplified": idx_expanded !== -1
+        "courses_simplified": id_expanded !== undefined
     });
 
     const klasses_gridmenu = classNames({
         "gridmenu": true,
-        "gridmenu_expanded": idx_expanded !== -1
+        "gridmenu_expanded": id_expanded !== undefined
     })
 
     return (
@@ -51,15 +64,14 @@ export default function CourseMenu(props: CourseMenuProps) {
                 <ul className={klasses_gridmenu}>
                     {props.courses.map((course: Course, idx: number) =>
                         <CourseMenuItem 
-                            lesson_id={props.lesson_id}
+                            opened={props.opened}
                             heading={course.name} 
                             lessons={course.lessons} 
-                            is_expanded={idx === idx_expanded}
-                            is_hidden={idx !== idx_expanded && idx_expanded !== -1}
+                            is_hidden={course.id !== id_expanded && id_expanded !== undefined}
+                            is_expanded={course.id === id_expanded}
                             is_nonclosable={props.courses.length === 1}
-                            is_current={course_idx === idx}
-                            on_click={() => expand(idx)}
-                            on_lesson_click={id => props.on_lesson_click(id)}
+                            on_click={() => expand(course.id)}
+                            on_lesson_click={id => props.on_lesson_click(course.id, id)}
                             key={idx}
                         />
                     )}
@@ -69,46 +81,46 @@ export default function CourseMenu(props: CourseMenuProps) {
     )
 }
 
-interface Lesson {
-    id: number;
-    name: string;
-    language: string;
-}
-
-interface Course {
-    id: number;
-    name: string;
-    lessons: Lesson[];
-}
-
 interface CourseMenuItemProps {
     heading: string;
     lessons: Lesson[];
-    is_expanded?: boolean;
+    opened: {
+        course_id: number;
+        lesson_id: number;
+    };
     is_hidden?: boolean;
+    is_expanded?: boolean;
     is_nonclosable?: boolean;
-    is_current?: boolean;
     on_click?: () => void;
     on_lesson_click: (lesson_id: number) => void;
-    lesson_id: number;
 }
 
+/**
+ * An item for course menu
+ * 
+ * Contains general course info and list of containing lessons.
+ * 
+ * Has two states:
+ *  - Collapsed (as an item of course menu list)
+ *  - Expanded (as a content for course menu, fills the container)
+ */
 function CourseMenuItem(props: CourseMenuItemProps) {
-    // const lessons = props.lessons.filter(lesson => lesson.language == props.lang)
+    const {passed: lessons_passed,   total: lessons_total}   = getLessonsStats(props.lessons),
+          {passed: exercises_passed, total: exercises_total} = getLessonExercisesStats(props.lessons);
 
     const body = props.is_expanded ? 
     (
-        <ExerciseList 
+        <LessonList 
             lessons={props.lessons} 
-            lesson_id={props.lesson_id} 
             on_click={(lesson_id) => props.on_lesson_click(lesson_id)}
-            />
+        />
     ) : (
         <div>
             <div>{props.lessons.length} lessons</div>
-            <div>
-                {props.is_current ? `Currently passing "${props.lessons[props.lesson_id].name}"` : ''}
-            </div>
+            {
+                lessons_total ? 
+                <div>{lessons_passed} of {lessons_total} passed</div> : null
+            }
         </div>
     );
 
@@ -128,22 +140,24 @@ function CourseMenuItem(props: CourseMenuItemProps) {
         "gmc-nav_expanded": props.is_expanded
     });
 
+    const klasses_mark = classNames({
+        "mark": true,
+        "mark_warning": exercises_passed && exercises_passed !== exercises_total,
+        "mark_success": exercises_passed && exercises_passed === exercises_total
+    });
+
     const gmc_nav_back = props.is_nonclosable ? null : (
             <div className="gmc-nav__back">
                 {'< Back'}
             </div>
         );
 
-    const mark_current = props.is_current ? 
-            <span className="mark mark_warning" /> :
-            <span className="mark" />;
-
     return (
         <li className={klasses}>
             <div className={klasses_course}>
                 <div className={klasses_course_head} onClick={() => props.on_click()}>
                     <div className="gmc-nav__heading">
-                        {mark_current}
+                        <span className={klasses_mark} />
                         {props.heading} 
                     </div>
 
@@ -158,41 +172,82 @@ function CourseMenuItem(props: CourseMenuItemProps) {
     )
 }
 
-interface ExerciseListProps {
+interface LessonListProps {
     lessons: Lesson[];
-    lesson_id: number;
     on_click: (lesson_id: number) => void;
 }
 
-function ExerciseList(props: ExerciseListProps) {
+/**
+ * Lesson list UI
+ * 
+ * Each item is a control element that allows to switch lessons.
+ * Each item can be in one of the following states:
+ *  - Default (0 missions passed)
+ *  - Currently passing (less than total missions passed)
+ *  - Completed (all missions passed)
+ * 
+ * @param props 
+ */
+function LessonList(props: LessonListProps) {
     return (
         <ul className="list">
             <TransitionGroup component={null}>
-                {props.lessons.map((lesson, idx) => (
-                    <CSSTransition key={idx} in appear timeout={0} classNames="list__item">
-                        <li className="list__item list__item_clickable"
-                            onClick={() => props.on_click(lesson.id)}
-                            key={lesson.id}
-                            style={{transitionDelay: `${idx * 50}ms`}}
-                        >
-                            {
-                                props.lesson_id === lesson.id ?
-                                    <span className="mark mark_warning" /> :
-                                    <span className="mark" />
-                            }
+                {props.lessons.map((lesson, idx) => {
+                    const klasses_mark = classNames({
+                        "mark": true,
+                        "mark_warning": lesson.stats.exercises.total && lesson.stats.exercises.total !== lesson.stats.exercises.passed,
+                        "mark_success": lesson.stats.exercises.total && lesson.stats.exercises.total === lesson.stats.exercises.passed
+                    });
 
-                            <span>
-                                {lesson.name}
-                            </span>
+                    return (
+                        <CSSTransition key={idx} in appear timeout={0} classNames="list__item">
+                            <li className="list__item list__item_clickable"
+                                onClick={() => props.on_click(lesson.id)}
+                                key={lesson.id}
+                                style={{transitionDelay: `${idx * 50}ms`}}
+                            >
+                                <span className={klasses_mark} />
+                                <span>
+                                    {lesson.name}
+                                </span>
 
-                            <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>
-                                {/* {lesson.language == 'en' ? '🇺🇸' : '🇷🇺'} */}
-                                {/* 0 <i className="fa fa-tasks" /> */}
-                            </span>
-                        </li>
-                    </CSSTransition>
-                ))} 
+                                <span style={{float: "right", lineHeight: "1.5em", marginRight: 10}}>
+                                    {lesson.stats.exercises.total ? `${Math.round(lesson.stats.exercises.passed / lesson.stats.exercises.total * 100)}%` : '-'}
+                                    &nbsp;
+                                    {/* {lesson.stats.exercises_total ? <i className="fa fa-tasks" /> : null} */}
+                                    {/* {lesson.language == 'en' ? '🇺🇸' : '🇷🇺'} */}
+                                    
+                                </span>
+                            </li>
+                        </CSSTransition>
+                    )}
+                )} 
             </TransitionGroup>
         </ul>
     );
+}
+
+function getLessonExercisesStats(lessons: Lesson[]) {
+    return {
+        passed: lessons.reduce((sum, l) => sum + l.stats.exercises.passed, 0),
+        total:  lessons.reduce((sum, l) => sum + l.stats.exercises.total, 0)
+    }
+}
+
+function getLessonMissionsStats(lessons: Lesson[]) {
+    return {
+        passed: lessons.reduce((sum, l) => sum + l.stats.missions.passed, 0),
+        total:  lessons.reduce((sum, l) => sum + l.stats.missions.total, 0),
+    }
+}
+
+function getLessonsStats(lessons: Lesson[]) {
+    return {
+        passed: lessons.reduce(
+            (sum, l) => sum + l.stats.missions.total && 
+                        Number(l.stats.missions.passed === l.stats.missions.total), 
+            0
+        ),
+        total: lessons.length
+    }
 }

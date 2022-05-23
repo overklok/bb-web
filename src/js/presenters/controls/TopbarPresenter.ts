@@ -24,10 +24,14 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
 
         const lesson = this.model_lesson.getState();
 
+        const progress = this.model_progress.getOpenedLesson();
+
+        console.log(progress);
+
         return {
             lesson_title: lesson.name,
             missions: lesson.missions,
-            progress: this.model_progress.getState(),
+            progress: progress,
             status: ConnectionStatus.Unknown,
             is_demo: this.model_settings.getValue('general.is_demo') as boolean,
             admin_url_prefix: this.model_lesson.host_name
@@ -59,14 +63,14 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
         this.setViewProps({
             lesson_title: lesson.name,
             missions: lesson.missions,
-            progress: this.model_progress.getState()
+            progress: this.model_progress.getOpenedLesson()
         });
     }
 
     @on(ExerciseRunEvent, ExercisePassEvent)
     private updateProgress(evt: ExerciseRunEvent) {
         this.setViewProps({
-            progress: this.model_progress.getState()
+            progress: this.model_progress.getOpenedLesson()
         });
     }
 
@@ -74,30 +78,28 @@ export default class TopbarPresenter extends Presenter<TopbarView.TopbarView> {
     private async forwardMission(evt: TopbarView.MissionForwardEvent) {
         this.model_progress.fastForwardMission();
 
-        const lesson_id = this.model_progress.getState().lesson_id;
-        await this.forward('mission', [lesson_id, evt.mission_idx]);
+        const {course_id, lesson_id} = this.model_progress.getState().opened;
+        await this.forward('mission', [course_id, lesson_id, evt.mission_idx]);
     }
 
     @on(TopbarView.MissionRestartEvent)
     private async restartMission(evt: TopbarView.MissionRestartEvent) {
         this.model_progress.restartMission();
 
-        const lesson_id = this.model_progress.getState().lesson_id;
-        await this.forward('mission', [lesson_id, evt.mission_idx]);
+        this.selectMission(evt);
     }
 
     @on(TopbarView.MissionSelectEvent)
     private async selectMission(evt: TopbarView.MissionSelectEvent) {
-        const lesson_id = this.model_progress.getState().lesson_id;
-        await this.forward('mission', [lesson_id, evt.mission_idx]);
+        const {course_id, lesson_id} = this.model_progress.getState().opened;
+        await this.forward('mission', [course_id, lesson_id, evt.mission_idx]);
     }
 
     @on(TopbarView.ExerciseSelectEvent)
     private async selectExercise(evt: TopbarView.ExerciseSelectEvent) {
         this.model_progress.switchExercise(evt.mission_idx, evt.exercise_idx);
 
-        const lesson_id = this.model_progress.getState().lesson_id;
-        await this.forward('mission', [lesson_id, evt.mission_idx]);
+        this.selectMission(evt);
     }
 
     @on(TopbarView.MenuItemEvent)

@@ -1,7 +1,9 @@
 import {ExerciseSolution, Lesson} from "./LessonModel";
+import {Course} from "./CourseModel";
 import {ModelEvent} from "~/js/core/base/Event";
 import {RequestMethod} from "~/js/core/models/datasources/HttpDatasource";
 import HttpModel from "~/js/core/models/HttpModel";
+import { findLastIndex } from "lodash";
 
 export enum ValidationVerdictStatus {
     Undefined = 'undefined',
@@ -19,51 +21,66 @@ export type ValidationVerdict = {
     };
 }
 
-export type ExerciseData = {
+export type MissionData = {
     code: any;
 }
 
-type MissionProgress = {
-    // Current index of the exercise opened
-    exercise_idx: number;
-    // Maximum value of exercise index
-    exercise_idx_last: number;
-    // Lastly passed exercise index
-    exercise_idx_passed: number;
-    // Maximum value of lastly passed exercise index
-    exercise_idx_passed_max: number;
-    // Maximum value of exercise index user can assign to
-    // (if lock_exercises is true)
-    exercise_idx_available: number;
+type ExerciseProgress = {
+    id: number;
+    is_passed: boolean;
+    details: any;
+};
 
-    data: ExerciseData;
-}
+type MissionProgress = {
+    id: number;
+    // index of current exercise inside the mission
+    idx_exercise_current: number;
+    // index of lastly passed exercise inside the mission
+    idx_exercise_passed: number;
+    // whether the mission is passed
+    is_passed: boolean;
+    details: any;
+    data: MissionData;
+    exercises: ExerciseProgress[];
+};
+
+type LessonProgress = {
+    details: any;
+    // index of current mission inside the lesson
+    idx_mission_current: number;
+    // index of lastly passed mission inside the lesson
+    idx_mission_passed: number;
+    // if loaded, defines whether the lesson is passed, else undefined
+    is_passed: boolean;
+    // if loaded, contains an array of missions, else undefined
+    missions: MissionProgress[];
+};
+
+type CourseProgress = {
+    id: number;
+    details: any;
+    lessons: {[id: number]: LessonProgress};
+};
 
 type Progress = {
-    // ID of the lesson opened
-    lesson_id: number;
-    // Array of per-mission sub-progresses
-    missions: MissionProgress[];
-    // Current index of the mission opened
-    mission_idx: number;
-    // Maximum value of mission index
-    mission_idx_last: number;
-    // Lastly passed mission index
-    mission_idx_passed: number;
-    // Maximum value of lastly passed mission index
-    mission_idx_passed_max: number;
-    // Maximum value of mission index user can assign to
-    // (if lock_missions is true)
-    mission_idx_available: number;
-
-    // Whether to lock free exercise switching
-    lock_exercises: boolean;
-    // Whether to lock free mission switching
-    lock_missions: boolean;
+    // progress by courses
+    courses: CourseProgress[];
+    // currently opened
+    opened: {
+        course_id: number;
+        lesson_id: number;
+    };
+    // controls
+    locks: {
+        exercise: boolean;
+        mission: boolean;
+        lesson: boolean;
+        course: boolean;
+    }
 }
 
 export class LessonPassEvent extends ModelEvent<LessonPassEvent> {
-
+    lesson_idx: number;
 }
 
 export class MissionPassEvent extends ModelEvent<MissionPassEvent> {
@@ -88,7 +105,7 @@ export class ExerciseRunEvent extends ModelEvent<ExerciseRunEvent> {
 
 export class MissionRunEvent extends ModelEvent<MissionRunEvent> {
     mission_idx: number;
-    data: ExerciseData;
+    data: MissionData;
 }
 
 export class ExerciseSolutionCommittedEvent extends ModelEvent<ExerciseSolutionCommittedEvent> {}
@@ -101,178 +118,228 @@ export default class ProgressModel extends HttpModel<Progress> {
     static alias = 'progress';
 
     protected defaultState: Progress = {
-        lesson_id: undefined,
-        missions: [],
-        mission_idx: undefined,
-        mission_idx_last: undefined,
-        mission_idx_passed: undefined,
-        mission_idx_passed_max: undefined,
-        mission_idx_available: undefined,
-        lock_exercises: false,
-        lock_missions: false,
+        courses: undefined,
+        opened: {
+            course_id: undefined,
+            lesson_id: undefined
+        },
+        locks: {
+            exercise: false,
+            mission: false,
+            lesson: false,
+            course: false
+        }
     };
 
-    private exercise_preferred: number;
     private in_progress: boolean = false;
 
+    public isStructureLoaded(): boolean {
+        return !!this.state.courses;
+    }
+
     /**
-     * Reset model state with the new lesson structure
-     *
-     * @param lesson lesson data object
-     * @param force  reload even if the same lesson is provided
+     * Initializes progress structure for the global application state
+     * 
+     * Re-initialization means that all progress will be lost.
+     * 
+     * Progress structure does not contain details of lessons
+     * which will be loaded on demand by {@link loadLesson}
+     * since it usually displays on another application screen.
+     * 
+     * @param courses initial course data
      */
-    public loadLesson(lesson: Lesson, force: boolean = false) {
-        if (this.state.lesson_id === lesson.id && !force) return;
-
-        const progress: Progress = {
-            lesson_id: lesson.id,
-            missions: [],
-            mission_idx: -1,
-            mission_idx_last: 0,
-            mission_idx_passed: -1,
-            mission_idx_passed_max: -1,
-            mission_idx_available: 0,
-            lock_exercises: this.state.lock_exercises,
-            lock_missions: this.state.lock_missions,
-        };
-
-        for (const mission of lesson.missions) {
-            progress.missions.push({
-                exercise_idx: 0,
-                exercise_idx_available: 0,
-                exercise_idx_passed: -1,
-                exercise_idx_passed_max: -1,
-                exercise_idx_last: mission.exercises.length - 1,
-                data: null,
-            });
+    public loadStructure(courses: Course[]) {
+        if (this.isStructureLoaded()) {
+            console.warn("Another progress structure is already loaded");
+            return;
         }
 
-        progress.mission_idx_last = progress.missions.length - 1;
+        const courses_: CourseProgress[] = [];
+
+        for (const course of courses) {
+            const lessons_: {[id: number]: LessonProgress} = {};
+
+            for (const lesson of course.lessons) {
+                lessons_[lesson.id] = {
+                    // some details for views to provide navigation inside the structure
+                    details: {},
+                    // these flags are undefined before the lesson is loaded
+                    idx_mission_current: undefined,
+                    idx_mission_passed: undefined,
+                    is_passed: undefined,
+                    // missions will be loaded on demand by loadLesson()
+                    missions: undefined
+                };
+            }
+
+            const course_: CourseProgress = {
+                // unique database identifier
+                id: course.id,
+                // some details for views to provide navigation inside the structure
+                details: {},
+                lessons: lessons_
+            };
+
+            courses_.push(course_);
+        }
+
+        this.setState({courses: courses_});
+    }
+
+    /**
+     * Loads details for the given lesson
+     * 
+     * Opens given lesson which makes it available 
+     * by {@link getOpenedLesson} and related methods.
+     *
+     * @param lesson        lesson data object
+     * @param course_id     
+     * @param force         reload even if the same lesson is provided
+     */
+    public loadLesson(lesson: Lesson, course_id: number, force: boolean = false) {
+        const course = this.state.courses && this.state.courses.find(c => c.id == course_id);
+
+        if (!course)         {throw new Error("Progress structure is not loaded");}
+        if (!course.lessons) {throw new Error("Progress structure is invalid");}
+
+        // set loaded lesson as opened
+        this.setState({
+            opened: {
+                course_id: course_id,
+                lesson_id: lesson.id
+            }
+        });
+
+        if (!force && course.lessons[lesson.id].missions) {
+            console.warn("Another lesson is already loaded, overwrite refused");
+
+            this.emit(new LessonRunEvent());
+            return;
+        }
+
+        const progress: Partial<Progress> = {
+            courses: [...this.state.courses],
+            locks: {...this.state.locks}
+        };
+
+        const lesson_: LessonProgress = {
+            idx_mission_current: 0,
+            idx_mission_passed: -1,
+            is_passed: false,
+            details: {},
+            missions: lesson.missions.map(m => ({
+                id: m.id,
+                idx_exercise_current: 0,
+                idx_exercise_passed: -1,
+                is_passed: false,
+                details: {},
+                data: {code: undefined},
+                exercises: m.exercises.map(e => ({
+                    id: e.id,
+                    is_passed: false,
+                    details: {},
+                }))
+            }))
+        };
+
+        course.lessons[lesson.id] = lesson_;
 
         this.setState(progress);
 
         this.emit(new LessonRunEvent());
     }
 
-    public isLessonLoaded(): boolean {
-        return this.getState().lesson_id != null;
+    public setOpenedMissionData(data: MissionData) {
+        this.getOpenedMission().data = data;
+    }
+
+    public getOpenedExerciseIndex(): [number, number] {
+        const lesson = this.getOpenedLesson();
+        const mission = this.getOpenedMission();
+
+        return [lesson.idx_mission_current, mission.idx_exercise_current];
     }
 
     /**
-     * Возвратить индекс текущего упражнения
-     */
-    public getExerciseCurrent(): [number, number] {
-        let missionIDX = this.state.mission_idx;
-        let exerciseIDX = this.state.missions[missionIDX].exercise_idx;
-
-        return [missionIDX, exerciseIDX];
-    }
-
-    public setMissionData(data: ExerciseData) {
-        this.state.missions[this.state.mission_idx].data = data;
-    }
-
-    /**
-     * Pass the current exercise
+     * Proceeds to the next exercise
+     * 
+     * If current exercise is the last one inside the current mission,
+     * the mission passes.
      */
     public passExercise(no_prompt?: boolean) {
-        const mission_progress = this.state.missions[this.state.mission_idx];
+        const lesson = this.getOpenedLesson();
+        const mission = this.getOpenedMission();
+        const exercise = mission.exercises[mission.idx_exercise_current];
 
-        // this case may occur when switching exercises manually
-        if (mission_progress.exercise_idx > mission_progress.exercise_idx_available) {
-            // this case is available in admin mode only
-            if (this.state.lock_exercises) throw new RangeError(`Trying to pass exercise that is not available yet.`);
+        exercise.is_passed = true;
+        mission.idx_exercise_passed = mission.idx_exercise_current;
 
-            // sync available index to current (this means admin unfairly passes all previous exercises)
-            mission_progress.exercise_idx_available = mission_progress.exercise_idx;
-        }
-
-        // current exercise is being passed another time (index isn't synced)
-        if (mission_progress.exercise_idx < mission_progress.exercise_idx_available) {
-            mission_progress.exercise_idx_passed += 1;
-
-            this.emit(new ExercisePassEvent({
-                mission_idx: this.state.mission_idx,
-                exercise_idx: mission_progress.exercise_idx,
-                no_prompt
-            }));
-
-            return;
-        }
-
-        // `current` index is synced with `available` index
-        if (mission_progress.exercise_idx_available < mission_progress.exercise_idx_last) {
-            // fairly increment the `available` index
-            mission_progress.exercise_idx_available += 1;
-            mission_progress.exercise_idx_passed += 1;
-            mission_progress.exercise_idx_passed_max += 1;
-
-            this.emit(new ExercisePassEvent({
-                mission_idx: this.state.mission_idx,
-                exercise_idx: mission_progress.exercise_idx
-            }));
-        } else {
-            if (mission_progress.exercise_idx_passed < mission_progress.exercise_idx_last) {
-                mission_progress.exercise_idx_passed += 1;
-            }
-
-            if (mission_progress.exercise_idx_passed_max < mission_progress.exercise_idx_last) {
-                mission_progress.exercise_idx_passed_max += 1;
-            }
-
-            // if it's required to pass the last exercise, it's time to pass the entire mission
+        if (mission.exercises.length - 1 === mission.idx_exercise_passed) {
             this.passMission(no_prompt);
+        } else {
+            this.emit(new ExercisePassEvent({
+                mission_idx: lesson.idx_mission_current,
+                exercise_idx: mission.idx_exercise_current,
+                no_prompt: no_prompt
+            }));
         }
     }
 
     /**
-     * Run the next exercise in current mission if available
+     * Runs next exercise after last passed in current mission if available
      */
     public stepForwardMission() {
         if (this.in_progress) return;
 
-        const mission_progress = this.state.missions[this.state.mission_idx];
+        const lesson = this.getOpenedLesson();
+        const mission = this.getOpenedMission();
 
-        // current exercise is being passed another time (index isn't synced)
-        if (mission_progress.exercise_idx < mission_progress.exercise_idx_available) {
-            // just move current index forward until it syncs with the `available` index
-            mission_progress.exercise_idx += 1;
-        }
+        mission.idx_exercise_current = mission.idx_exercise_passed + 1;
 
         this.emit(new ExerciseRunEvent({
-            mission_idx: this.state.mission_idx,
-            exercise_idx: mission_progress.exercise_idx
+            mission_idx: lesson.idx_mission_current,
+            exercise_idx: mission.idx_exercise_current
         }));
     }
 
     /**
-     * Run the last exercise available in current mission
+     * Runs last exercise available in the current mission
      *
-     * This is a shortcut to {@see this.switchExercise()} method call
+     * This is a shortcut to {@see this.switchExercise()} method call.
      */
     public fastForwardMission() {
         if (this.in_progress) return;
 
-        const mission_progress = this.state.missions[this.state.mission_idx];
+        const lesson = this.getOpenedLesson();
+        const mission = this.getOpenedMission();
 
-        this.switchExercise(this.state.mission_idx, mission_progress.exercise_idx_available);
+        const idx_exercise_passed_max = findLastIndex(
+            mission.exercises, e => e.is_passed
+        );
+
+        this.switchExercise(
+            lesson.idx_mission_current, 
+            Math.min(idx_exercise_passed_max + 1, mission.exercises.length - 1)
+        );
     }
 
     /**
-     * Run the first exercise in current mission
+     * Runs first exercise in the current mission
      *
-     * This is a shortcut to {@see this.switchExercise()} method call
+     * This is a shortcut to {@see this.switchExercise()} method call.
      */
     public restartMission() {
         if (this.in_progress) return;
 
-        this.switchExercise(this.state.mission_idx, 0);
+        const lesson = this.getOpenedLesson();
+
+        this.switchExercise(lesson.idx_mission_current, 0);
     }
 
     /**
-     * Switch current exercise pointer in the mission
+     * Switches current exercise pointer in the mission
      *
-     * Restrict if mission/exercise lock is enabled
+     * Restricts if mission/exercise lock is enabled.
      *
      * @param mission_idx   mission to switch the exercise pointer in
      * @param exercise_idx  index of exercise to switch to
@@ -280,49 +347,50 @@ export default class ProgressModel extends HttpModel<Progress> {
     public switchExercise(mission_idx: number, exercise_idx: number = undefined) {
         if (this.in_progress) return;
 
-        exercise_idx = exercise_idx != null ? exercise_idx : this.exercise_preferred | 0;
+        exercise_idx = exercise_idx != null ? exercise_idx : 0;
 
-        if (!(mission_idx in this.state.missions)) {
+        const lesson = this.getOpenedLesson();
+
+        if (!(mission_idx in lesson.missions)) {
             throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
         }
 
-        if (exercise_idx > this.state.missions[mission_idx].exercise_idx_last) {
+        const mission = lesson.missions[mission_idx];
+
+        if (exercise_idx > mission.exercises.length - 1) {
             throw new RangeError(`Exercise ${exercise_idx} does not exist in mission ${mission_idx}`);
         }
 
-        if (this.state.lock_missions) {
-            if (mission_idx !== 0 && mission_idx > this.state.mission_idx_available) {
+        mission.idx_exercise_current = exercise_idx;
+
+        if (this.state.locks.mission) {
+            if (mission_idx !== 0 && mission_idx > lesson.idx_mission_passed) {
                 console.debug('Forbidden mission switch prevented: `lock_missions` enabled');
                 return;
             }
         }
 
-        if (this.state.lock_exercises) {
-            if (exercise_idx !== 0 && exercise_idx > this.state.missions[mission_idx].exercise_idx_available) {
+        if (this.state.locks.exercise) {
+            if (exercise_idx !== 0 && exercise_idx > mission.idx_exercise_passed) {
                 console.debug('Forbidden exercise switch prevented: `lock_exercises` enabled');
                 return;
             }
         }
 
-        // if (this.state.missions[mission_idx].exercise_idx !== exercise_idx) {
-            this.state.missions[mission_idx].exercise_idx = exercise_idx;
-            this.state.missions[mission_idx].exercise_idx_passed = exercise_idx - 1;
-
-            // Emit only if switching in the mission currently running
-            // External modules should switch to actual mission if they want to receive the run event
-            if (mission_idx === this.state.mission_idx) {
-                this.emit(new ExerciseRunEvent({
-                    mission_idx,
-                    exercise_idx
-                }));
-            }
-        // }
+        // Emit only if switching in the mission currently running
+        // External modules should switch to actual mission if they want to receive the run event
+        if (mission_idx === lesson.idx_mission_current) {
+            this.emit(new ExerciseRunEvent({
+                mission_idx,
+                exercise_idx
+            }));
+        }
     }
 
     /**
-     * Switch mission pointer
+     * Switches mission pointer
      *
-     * Restrict if mission lock is enabled
+     * Restricts if mission lock is enabled
      *
      * @param mission_idx
      */
@@ -331,20 +399,25 @@ export default class ProgressModel extends HttpModel<Progress> {
 
         mission_idx = mission_idx | 0;
 
-        if (!(mission_idx in this.state.missions)) {
+        const lesson = this.getOpenedLesson();
+
+        if (!(lesson.missions && mission_idx in lesson.missions)) {
             throw new RangeError(`Mission ${mission_idx} does not exist in this lesson`);
         }
 
-        if (this.state.lock_missions) {
-            if (mission_idx !== 0 && mission_idx > this.state.mission_idx_available) {
+        const mission = this.getOpenedMission();
+
+        if (this.state.locks.mission) {
+            if (mission_idx !== 0 && mission_idx > lesson.idx_mission_passed) {
                 console.debug('Forbidden mission switch prevented: `lock_missions` enabled');
                 return;
             }
         }
 
-        if (this.state.mission_idx !== mission_idx ) {
-            this.state.mission_idx = mission_idx;
-            const exercise_idx = this.state.missions[mission_idx].exercise_idx;
+        if (lesson.idx_mission_current !== mission_idx) {
+            lesson.idx_mission_current = mission_idx;
+
+            const exercise_idx = mission.idx_exercise_current;
 
             this.emit(new ExerciseRunEvent({
                 mission_idx,
@@ -353,34 +426,8 @@ export default class ProgressModel extends HttpModel<Progress> {
 
             this.emit(new MissionRunEvent({
                 mission_idx,
-                data: this.state.missions[mission_idx].data
+                data: mission.data
             }));
-        }
-    }
-
-    /**
-     * Pass the current mission
-     *
-     * @private
-     */
-    private passMission(no_prompt?: boolean) {
-        if (this.in_progress) return;
-
-        if (this.state.mission_idx < this.state.mission_idx_last) {
-            // this.state.mission_idx += 1;
-            this.state.mission_idx_available = this.state.mission_idx + 1;
-            // this.state.missions[this.state.mission_idx].exercise_idx_available = 0;
-
-            this.emit(new MissionPassEvent({
-                mission_idx: this.state.mission_idx + 1,
-                no_prompt
-            }));
-        } else {
-            this.emit(new MissionPassEvent({
-                mission_idx: this.state.mission_idx + 1,
-                no_prompt
-            }));
-            // this.emit(new LessonPassEvent()); TODO: maybe needed, maybe not
         }
     }
 
@@ -424,5 +471,77 @@ export default class ProgressModel extends HttpModel<Progress> {
                 verdict: undefined
             }));
         });
+    }
+
+    /**
+     * Passes the current mission
+     *
+     * @private
+     */
+    private passMission(no_prompt?: boolean) {
+        if (this.in_progress) return;
+
+        const lesson = this.getOpenedLesson();
+        const mission = this.getOpenedMission();
+
+        mission.is_passed = true;
+
+        if (lesson.idx_mission_current < lesson.missions.length - 1) {
+            lesson.idx_mission_passed = lesson.idx_mission_current;
+
+            this.emit(new MissionPassEvent({
+                mission_idx: lesson.idx_mission_current + 1,
+                no_prompt
+            }));
+        } else {
+            // TODO: Pass Lesson
+            // this.emit(new MissionPassEvent({
+            //     mission_idx: lesson.idx_mission_current + 1,
+            //     no_prompt
+            // }));
+        }
+    }
+
+    /**
+     * @returns current lesson if available else undefined
+     */
+    public getOpenedLesson() {
+        const course = this.state.courses && this.state.courses.find(c => c.id === this.state.opened.course_id);
+        
+        return course && course.lessons[this.state.opened.lesson_id];
+    }
+
+    /**
+     * @returns current mission for opened lesson if available else undefined
+     */
+    private getOpenedMission() {
+        const lesson = this.getOpenedLesson();
+        return lesson.idx_mission_current > - 1 && lesson.missions[lesson.idx_mission_current];
+    }
+
+    /**
+     * @returns current exercise for opened lesson if available else undefined
+     */
+    private getOpenedExercise() {
+        const mission = this.getOpenedMission();
+        return mission.idx_exercise_current > -1 && mission.exercises[mission.idx_exercise_current];
+    }
+}
+
+export function getLessonExercisesStats(lesson: LessonProgress) {
+    if (!lesson.missions) return { total: 0, passed: 0 };
+
+    return {
+        total:  lesson.missions.reduce((sum, m) => sum + m.exercises.length, 0),
+        passed: lesson.missions.reduce((sum, m) => sum + m.exercises.reduce((sum, e) => sum + Number(e.is_passed), 0), 0), 
+    }
+}
+
+export function getLessonMissionsStats(lesson: LessonProgress) {
+    if (!lesson.missions) return { total: 0, passed: 0 };
+
+    return {
+        total: lesson.missions.length, 
+        passed: lesson.missions.filter(m => m.is_passed).length
     }
 }

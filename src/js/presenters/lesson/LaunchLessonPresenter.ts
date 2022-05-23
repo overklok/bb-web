@@ -43,7 +43,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
 
     @on(LaunchView.CheckClickEvent)
     protected onCheckClick(evt: LaunchView.CheckClickEvent) {
-        const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
+        const [mission_idx, exercise_idx] = this.progress.getOpenedExerciseIndex();
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
         if (evt.start) {
@@ -144,14 +144,14 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
         });
 
         if (go_forward) {
-            const lesson_id = this.progress.getState().lesson_id;
-            this.forward('mission', [lesson_id, evt.mission_idx]);
-            this.progress.stepForwardMission();
+            const {course_id, lesson_id} = this.progress.getState().opened;
+            this.forward('mission', [course_id, lesson_id, evt.mission_idx]);
+            // this.progress.stepForwardMission();
         }
     }
 
     protected getLaunchMode() {
-        const [mission_idx, exercise_idx] = this.progress.getExerciseCurrent();
+        const [mission_idx, exercise_idx] = this.progress.getOpenedExerciseIndex();
         const exercise = this.lesson.getExercise(mission_idx, exercise_idx);
 
         if (exercise.is_sandbox) {

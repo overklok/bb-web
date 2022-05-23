@@ -16,10 +16,11 @@ export default class TaskLessonPresenter extends Presenter<RichTextView.RichText
         };
     }
 
-    @restore() @on(ExerciseRunEvent)
+    @restore() @on(ExerciseRunEvent, LessonRunEvent)
     private onLessonLoaded() {
-        const [misson_idx, exercise_idx] = this.progress.getExerciseCurrent();
+        const [misson_idx, exercise_idx] = this.progress.getOpenedExerciseIndex();
         const exercise = this.lesson.getExercise(misson_idx, exercise_idx);
+
         // const lesson = this.lesson.getState();
 
         let task_description = exercise.task_description || '';

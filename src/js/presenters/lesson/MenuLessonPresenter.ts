@@ -1,9 +1,9 @@
 import Presenter, {on} from "~/js/core/base/Presenter";
 import HomeView from "~/js/views/common/HomeView";
-import CourseModel from "~/js/models/lesson/CourseModel";
-import ProgressModel from "~/js/models/lesson/ProgressModel";
+import ProgressModel, { getLessonExercisesStats, getLessonMissionsStats } from "~/js/models/lesson/ProgressModel";
 import SettingsModel from "~/js/core/models/SettingsModel";
 import {RequestErrorEvent} from "~/js/core/models/HttpModel";
+import CourseModel, {Course} from "~/js/models/lesson/CourseModel";
 
 import i18next from 'i18next';
 
@@ -30,7 +30,7 @@ export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
 
     @on(HomeView.LessonSelectEvent)
     private forwardLesson(evt: HomeView.LessonSelectEvent) {
-        this.forward('lesson', [evt.lesson_id]);
+        this.forward('lesson', [evt.course_id, evt.lesson_id]);
     }
 
     @on(HomeView.LanguageChangeEvent)
@@ -50,10 +50,26 @@ export default class MenuLessonPresenter extends Presenter<HomeView.HomeView> {
     }
 
     private loadCourses() {
-        const lesson_id = this.progress.getState().lesson_id;
         this.course.list().then((courses) => {
+            this.progress.loadStructure(courses);
             clearTimeout(this.load_handle);
-            this.setViewProps({ error: null, courses, lesson_id });
+
+            const progress = this.progress.getState();
+
+            this.setViewProps({
+                error: null, 
+                opened: progress.opened,
+                courses: courses.map((c, c_id) => ({
+                    ...c, 
+                    lessons: c.lessons.map(l => ({
+                        ...l, 
+                        stats: {
+                            exercises: getLessonExercisesStats(progress.courses[c_id].lessons[l.id]),
+                            missions:  getLessonMissionsStats(progress.courses[c_id].lessons[l.id]),
+                        }
+                    })),
+                })), 
+            });
         });
     }
 }
