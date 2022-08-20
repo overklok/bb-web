@@ -12,7 +12,8 @@
             "loading": "Загрузка...",
             "courses": "Курсы",
             "lesson": "Урок",
-            "lessons": "Уроки"
+            "lessons": "Уроки",
+            "back": "Назад"
         },
         "error": {
             "no_server_access": "Нет доступа к серверу."

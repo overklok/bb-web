@@ -12,7 +12,8 @@
             "loading": "Loading...",
             "courses": "Courses",
             "lesson": "Lesson",
-            "lessons": "Lessons"
+            "lessons": "Lessons",
+            "back": "Back"
         },
         "error": {
             "no_server_access": "Server is not available."

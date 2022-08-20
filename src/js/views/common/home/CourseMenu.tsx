@@ -52,7 +52,25 @@ export default function CourseMenu(props: CourseMenuProps) {
     const klasses_gridmenu = classNames({
         "gridmenu": true,
         "gridmenu_expanded": id_expanded !== undefined
-    })
+    });
+
+    const body_content = (
+        <ul className={klasses_gridmenu}>
+            {props.courses.map((course: Course, idx: number) => 
+                <CourseMenuItem 
+                    opened={props.opened}
+                    heading={course.name} 
+                    lessons={course.lessons} 
+                    is_hidden={course.id !== id_expanded && id_expanded !== undefined}
+                    is_expanded={course.id === id_expanded}
+                    is_nonclosable={props.courses.length === 1}
+                    on_click={() => expand(course.id)}
+                    on_lesson_click={id => props.on_lesson_click(course.id, id)}
+                    key={idx}
+                />
+            )}
+        </ul>
+    )
 
     return (
         <div className={klasses_courses}>
@@ -61,21 +79,7 @@ export default function CourseMenu(props: CourseMenuProps) {
             </div>
 
             <div className="courses__body">
-                <ul className={klasses_gridmenu}>
-                    {props.courses.map((course: Course, idx: number) =>
-                        <CourseMenuItem 
-                            opened={props.opened}
-                            heading={course.name} 
-                            lessons={course.lessons} 
-                            is_hidden={course.id !== id_expanded && id_expanded !== undefined}
-                            is_expanded={course.id === id_expanded}
-                            is_nonclosable={props.courses.length === 1}
-                            on_click={() => expand(course.id)}
-                            on_lesson_click={id => props.on_lesson_click(course.id, id)}
-                            key={idx}
-                        />
-                    )}
-                </ul>
+                {body_content}
             </div>
         </div>
     )
@@ -107,6 +111,9 @@ interface CourseMenuItemProps {
 function CourseMenuItem(props: CourseMenuItemProps) {
     const {passed: lessons_passed,   total: lessons_total}   = getLessonsStats(props.lessons),
           {passed: exercises_passed, total: exercises_total} = getLessonExercisesStats(props.lessons);
+
+    // TODO: Handle props.is_hidden && props.is_expanded
+    // const not_supported = props.is_hidden && props.is_expanded;
 
     const body = props.is_expanded ? 
     (
@@ -148,7 +155,7 @@ function CourseMenuItem(props: CourseMenuItemProps) {
 
     const gmc_nav_back = props.is_nonclosable ? null : (
             <div className="gmc-nav__back">
-                {'< Back'}
+                {'< ' + i18next.t('main:home.courses.back')}
             </div>
         );
 

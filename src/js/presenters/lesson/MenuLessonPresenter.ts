@@ -4,6 +4,7 @@ import ProgressModel, { getLessonExercisesStats, getLessonMissionsStats } from "
 import SettingsModel from "~/js/core/models/SettingsModel";
 import {RequestErrorEvent} from "~/js/core/models/HttpModel";
 import CourseModel, {Course} from "~/js/models/lesson/CourseModel";
+import { CourseRouteEvent } from "~/js/routers/MainRouter";
 
 import i18next from 'i18next';
 

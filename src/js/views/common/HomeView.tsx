@@ -136,11 +136,21 @@ namespace HomeView {
                 )
             }
 
+            const courses_loc = this.props.courses.filter(course => 
+                course.lessons.some(lesson => lesson.language === this.props.lang)
+            );
+
+            for (const course of courses_loc) {
+                course.lessons = course.lessons.filter(
+                    lesson => lesson.language == this.props.lang
+                );
+            }
+
             return (
                 <CSSTransition key='crs' in out timeout={200} classNames="mdl" unmountOnExit>
                     <Modal size='lg'>
                         <CourseMenu 
-                            courses={this.props.courses} 
+                            courses={courses_loc} 
                             opened={this.props.opened}
                             on_lesson_click={(course_id, id) => this.handleLessonClick(course_id, id)} 
                         />
