@@ -56,19 +56,21 @@ export default function CourseMenu(props: CourseMenuProps) {
 
     const body_content = (
         <ul className={klasses_gridmenu}>
-            {props.courses.map((course: Course, idx: number) => 
-                <CourseMenuItem 
-                    opened={props.opened}
-                    heading={course.name} 
-                    lessons={course.lessons} 
-                    is_hidden={course.id !== id_expanded && id_expanded !== undefined}
-                    is_expanded={course.id === id_expanded}
-                    is_nonclosable={props.courses.length === 1}
-                    on_click={() => expand(course.id)}
-                    on_lesson_click={id => props.on_lesson_click(course.id, id)}
-                    key={idx}
-                />
-            )}
+            {props.courses.map((course: Course, idx: number) => {
+                return (
+                    <CourseMenuItem 
+                        opened={props.opened}
+                        heading={course.name} 
+                        lessons={course.lessons} 
+                        is_hidden={course.id !== id_expanded && id_expanded !== undefined}
+                        is_expanded={course.id === id_expanded}
+                        is_nonclosable={props.courses.length === 1}
+                        on_click={() => expand(course.id)}
+                        on_lesson_click={id => props.on_lesson_click(course.id, id)}
+                        key={idx}
+                    />
+                )
+            })}
         </ul>
     )
 
@@ -115,7 +117,9 @@ function CourseMenuItem(props: CourseMenuItemProps) {
     // TODO: Handle props.is_hidden && props.is_expanded
     // const not_supported = props.is_hidden && props.is_expanded;
 
-    const body = props.is_expanded ? 
+    console.log(props);
+
+    let body = props.is_expanded ? 
     (
         <LessonList 
             lessons={props.lessons} 
@@ -153,7 +157,10 @@ function CourseMenuItem(props: CourseMenuItemProps) {
         "mark_success": exercises_passed && exercises_passed === exercises_total
     });
 
-    const gmc_nav_back = props.is_nonclosable ? null : (
+    console.log(i18next.t('main:home.courses.back'), props.is_nonclosable);
+    
+
+    const gmc_nav_back = (
             <div className="gmc-nav__back">
                 {'< ' + i18next.t('main:home.courses.back')}
             </div>
