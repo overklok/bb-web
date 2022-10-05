@@ -180,6 +180,10 @@ export default class Current {
         return this._id;
     }
 
+    get weight(): number {
+        return this._weight;
+    }
+
     /**
      * Whether the current is short-circuited
      */

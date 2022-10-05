@@ -506,6 +506,8 @@ export default abstract class Plate {
         this._container.size(width, height);
         this._shadow.size(width, height);
 
+        this._shadow.style({'pointer-events': 'none'});
+
         let surf_path = this._generateSurfacePath(BackgroundLayer.CellRadius);
 
         // TODO: Move surface generation to ComplexPlate and LinearPlate
@@ -872,14 +874,14 @@ export default abstract class Plate {
     }
 
     /**
-     * Toggles plate editability
+     * Toggles plate editability effect
      * 
      * The method just changes the visual behavior of the plate
      * without preventing the actions associated with editing.
      * 
-     * @param editable make plate editable
+     * @param editable make plate visually editable
      */
-    public setEditable(editable=true) {
+    public setEditableVisibility(editable=true) {
         if (editable) {
             this._container.style({cursor: 'move'});
         } else {

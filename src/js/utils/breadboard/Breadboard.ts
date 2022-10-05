@@ -726,10 +726,14 @@ export default class Breadboard {
         /// current popup display
         this._layers.current.onCurrentHover((id: number, weight: number, over: boolean) => {
             if (over) {
-                this._layers.popup.createPopup(id, `weight: ${weight}`);
+                this._layers.popup.createPopup(id, weight);
             } else {
                 this._layers.popup.destroyPopup(id);
             }
+        });
+
+        this._layers.current.onCurrentUpdate((id: number, weight: number) => {
+            this._layers.popup.updatePopup(id, weight);
         });
     }
 

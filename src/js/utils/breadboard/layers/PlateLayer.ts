@@ -510,9 +510,19 @@ export default class PlateLayer extends Layer<SVG.Container> {
         if (editable) {
             this._setCurrentPlatesEditable(true);
             this._editable = true;
+
+            for (let plate_id in this._plates) {
+                let plate = this._plates[plate_id];
+                plate.container.style({'pointer-events': 'all'});
+            }
         } else {
             this._setCurrentPlatesEditable(false);
             this._editable = false;
+
+            for (let plate_id in this._plates) {
+                let plate = this._plates[plate_id];
+                plate.container.style({'pointer-events': 'none'});
+            }
         }
     }
 
@@ -875,7 +885,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
         }
 
         /// Enable event handling for required plate
-        this.setPlateEditable(plate);
+        this.setPlateEditable(plate, true);
         // plate.onChange(this._callbacks.change);
         plate.onDragFinish(() => this._onPlateDragFinish(plate));
         plate.onDragStart(() => {
@@ -897,7 +907,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
      * @returns whether the flag was set
      */
     public setPlateEditable(plate: Plate, editable: boolean = true) {
-        plate.setEditable(editable);
+        plate.setEditableVisibility(editable);
 
         if (editable) {
             plate.onMouseDown((evt: MouseEvent) => this._handlePlateMouseDown(evt, plate));
@@ -950,7 +960,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
             for (let plate_id in this._plates) {
                 let plate = this._plates[plate_id];
 
-                plate.setEditable();
+                plate.setEditableVisibility(false);
             }
 
             return true;
@@ -964,6 +974,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
             if (editable) {
                 plate.onChange((data: ChangeCallbackArg) => this._callbacks.change(data));
             } else {
+                // FIXME: It seems like this code is unreachable
                 plate.onChange(null);
             }
         }

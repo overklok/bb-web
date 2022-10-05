@@ -154,6 +154,12 @@ export default class CurrentLayer extends Layer {
         this._callbacks.currenthover = cb;
     }
 
+    public onCurrentUpdate(cb?: (id: number, weight: number) => void) {
+        if (!cb) {this._callbacks.currentupdate = () => {}}
+
+        this._callbacks.currentupdate = cb;
+    }
+
     /**
      * Returns all {@link Current} instances presented in the layer at the moment.
      * 

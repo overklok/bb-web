@@ -2,6 +2,8 @@ import '../styles/popup.css';
 import Grid from "../core/Grid";
 import Layer from '../core/Layer';
 import { XYObject } from '../core/types';
+import Current from '../core/Current';
+import { invertHexRGB } from '../core/extras/helpers';
 
 /**
  * Contains popups called from other {@link Layer}s of the breadboard
@@ -60,13 +62,16 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
 
     /**
      */
-    public createPopup(id: number, content: string) {
-        console.log('popup create', id, content);
-        
+    public createPopup(id: number, weight: number) {
+        // TODO: Move Popup to separate class. Define content there in CurrentPopup
         const popup = document.createElement('div');
         popup.setAttribute('id', `popup-${id}`);
         popup.classList.add('bb-popup');
-        popup.innerHTML = content;
+
+        const rgb = Current.pickColorFromRange(weight);
+        popup.style.backgroundColor = rgb;
+        popup.style.color = invertHexRGB(rgb, true);
+        popup.innerHTML = `weight: ${weight}`;
         
         this._popups[id] = popup;
         this._popup = popup;
@@ -78,10 +83,15 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
 
     /**
      */
-    public updatePopup(id: number, content: string) {
+    public updatePopup(id: number, weight: number) {
         if (!(id in this._popups)) throw new Error(`Popup ${id} does not exist`);
 
-        this._popups[id].innerHTML = content;
+        const popup = this._popups[id];
+        
+        const rgb = Current.pickColorFromRange(weight);
+        popup.style.backgroundColor = rgb;
+        popup.style.color = invertHexRGB(rgb, true);
+        popup.innerHTML = `weight: ${weight}`;
     }
 
     /**
