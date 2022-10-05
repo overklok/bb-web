@@ -55,11 +55,13 @@ export type CurrentPath = [string, number, number?][];
  */
 export default class Current {
     /** Root container of the {@link Current} */
-    private container: SVG.Container;
+    public readonly container: SVG.Container;
+    
     /** General properties of the {@link Current} */
-    private _thread: Thread;
+    public readonly thread: Thread;
+
     /** Animation-specific container of the {@link Current} */
-    private _container_anim: SVG.Nested;
+    private container_anim: SVG.Nested;
     /** Debug container of the {@link Current} */
     private _group_debug: any;
     /** Current identifier */
@@ -69,7 +71,7 @@ export default class Current {
     /** Current particle SVG elements */
     private _particles: any[];
     /** Current SVG line */
-    private _line: any;
+    private _line: SVG.Path;
     /** Geometric SVG-formatted path string of the current line */
     private _line_path: string;
     /** Calculated length of the {@link _line_path} */
@@ -91,8 +93,9 @@ export default class Current {
     /** Current burning flag */
     private _burning: boolean;
 
-    /** flag for extra purposes */
+    /** flags for extra purposes */
     public ___touched: boolean;
+    public ___hovered: boolean;
 
     /**
      * Color gradations of the {@link Current} weight
@@ -141,10 +144,10 @@ export default class Current {
     static get FullOpacityThreshold() {return 0.07} 
 
     constructor(container: SVG.Container, thread: Thread, schematic: boolean) {
-        this.container  = container;
-        this._thread = thread;
+        this.thread = thread;
+        this.container = container.nested();
+        this.container_anim = this.container.nested();     // animation root 
 
-        this._container_anim = this.container.nested();     // animation root 
         this._group_debug = undefined; //this.container.group();      // debug root
 
         this._id = Math.floor(Math.random() * (10 ** 6));   // Default identifier is a random six-digit number
@@ -181,7 +184,7 @@ export default class Current {
      * Whether the current is short-circuited
      */
     get is_burning(): boolean {
-        return this._thread.weight > 2;
+        return this.thread.weight > 2;
     }
 
     /**
@@ -195,13 +198,14 @@ export default class Current {
         this._line_path = Current._pathArrayToString(path);
         this._line_length = Current.getPathLength(this._line_path);
 
-        this._line = this.container
-            .path(this._line_path)
+        this._line = this.container.path(this._line_path);
+
+        this._line
             .fill('none')
             .stroke(this._style);
 
-        this._container_anim.before(this._line);
-        this._container_anim.opacity(0);
+        this.container_anim.before(this._line);
+        this.container_anim.opacity(0);
 
         if (this._group_debug) {
             this._group_debug.move(
@@ -227,7 +231,7 @@ export default class Current {
         this._particles = [];
 
         this._line.remove();
-        this._container_anim.remove();
+        this.container_anim.remove();
 
         this._sheet.ownerNode.remove();
 
@@ -245,12 +249,12 @@ export default class Current {
      * @param {Object} thread thread to compare
      */
     hasSameThread(thread: Thread): boolean {
-        if (!this._thread) return false;
+        if (!this.thread) return false;
 
-        return  thread.from.x === this._thread.from.x &&
-                thread.from.y === this._thread.from.y &&
-                thread.to.x === this._thread.to.x &&
-                thread.to.y === this._thread.to.y;
+        return  thread.from.x === this.thread.from.x &&
+                thread.from.y === this.thread.from.y &&
+                thread.to.x === this.thread.to.x &&
+                thread.to.y === this.thread.to.y;
     }
 
     /**
@@ -304,7 +308,7 @@ export default class Current {
             }
 
             // Сгенерировать частицу
-            this._particles[i] = this._container_anim.circle(this._style.particle_radius * 2);
+            this._particles[i] = this.container_anim.circle(this._style.particle_radius * 2);
 
             // Заливка и центрирование
             this._particles[i].fill({
@@ -328,7 +332,7 @@ export default class Current {
             // функция _updateBurning делает это не всегда, поэтому нужно в случае необходимости отображения частиц
             // дополнительно убедится в их видимости
             if (!this.is_burning) {
-                this._container_anim.opacity(1);
+                this.container_anim.opacity(1);
             }
 
             this._activated = true;
@@ -340,7 +344,7 @@ export default class Current {
      */
     deactivate(): void {
         this._particles = [];
-        this._container_anim.clear();
+        this.container_anim.clear();
         this._initStyleSheet();
         this._activated = false;
     };
@@ -351,7 +355,7 @@ export default class Current {
      * @see hideParticles
      */
     showParticles(): void {
-        this._container_anim.opacity(1);
+        this.container_anim.opacity(1);
     }
 
     /**
@@ -360,7 +364,7 @@ export default class Current {
      * @see showParticles
      */
     hideParticles(): void {
-        this._container_anim.opacity(0);
+        this.container_anim.opacity(0);
     }
 
     /**
@@ -371,7 +375,7 @@ export default class Current {
     setWeight(weight: number = 0) {
         const _weight = this._normalizeWeight(weight);
 
-        if (this._thread.weight !== weight) {
+        if (this.thread.weight !== weight) {
             // задать скорость
             this._setParticleSpeed(_weight);
 
@@ -388,7 +392,7 @@ export default class Current {
         }
 
         this._weight = _weight;
-        this._thread.weight = weight;
+        this.thread.weight = weight;
 
         this._updateBurning();
         this._updateDebugInfo();
@@ -695,7 +699,7 @@ export default class Current {
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;
-        let dt = (this._container_anim.node as unknown as SVGSVGElement).getCurrentTime() * 1000;
+        let dt = (this.container_anim.node as unknown as SVGSVGElement).getCurrentTime() * 1000;
 
         // сколько прошло времени для того, чтобы частица попала в текущее положение
         let togo_now = (dt - this._anim_delay) % this._anim_dur; // при текщущей ДЦА, учитывая предыдущую задержку
@@ -802,7 +806,7 @@ export default class Current {
 
     _updateDebugInfo(): void {
         const wght_anim = Number.parseFloat(String(this._weight)).toPrecision(4);
-        const wght_thrd = Number.parseFloat(String(this._thread.weight)).toPrecision(4);
+        const wght_thrd = Number.parseFloat(String(this.thread.weight)).toPrecision(4);
 
         if (this._group_debug) {
             this._group_debug.clear();

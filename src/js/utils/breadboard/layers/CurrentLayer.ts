@@ -43,6 +43,8 @@ export default class CurrentLayer extends Layer {
         shortcircuit: () => void;       // short circuit detected
         shortcircuitstart: () => void;  // short circuit started
         shortcircuitend: () => void;    // short circuit ended
+        currenthover: (id: number, weight: number, over: boolean) => void;       // current hovered
+        currentupdate: (id: number, weight: number) => void;                     // current updated
     };
 
     /**
@@ -72,6 +74,8 @@ export default class CurrentLayer extends Layer {
             shortcircuit: () => {},
             shortcircuitstart: () => {},
             shortcircuitend: () => {},
+            currenthover: () => {},
+            currentupdate: () => {}
         }
     }
 
@@ -142,6 +146,12 @@ export default class CurrentLayer extends Layer {
         if (!cb) {this._callbacks.shortcircuitend = () => {}}
 
         this._callbacks.shortcircuitend = cb;
+    }
+    
+    public onCurrentHover(cb?: (id: number, weight: number, over: boolean) => void) {
+        if (!cb) {this._callbacks.currenthover = () => {}}
+
+        this._callbacks.currenthover = cb;
     }
 
     /**
@@ -267,7 +277,7 @@ export default class CurrentLayer extends Layer {
                     this.removeCurrent(Number(current_id));
                 } else {
                     // update the weight of the current
-                    current.setWeight(same.weight);
+                    this._setCurrentWeight(current, same.weight);
                 }
             }
         }
@@ -297,6 +307,14 @@ export default class CurrentLayer extends Layer {
         }
 
         this._findShortCircuits();
+    }
+
+    private _setCurrentWeight(current: Current, weight: number) {
+        current.setWeight(weight);
+
+        if (current.___hovered) {
+            this._callbacks.currentupdate(current.id, weight);
+        }
     }
 
     /**
@@ -366,8 +384,28 @@ export default class CurrentLayer extends Layer {
         current.draw(line_path);
         current.activate();
 
+        this._attachEventsHoverable(current);
+
         return current;
     };
+
+    private _attachEventsHoverable(current: Current) {
+        if (!current) {
+            throw new TypeError("A `current` argument must be defined");
+        }
+
+        current.container.style({cursor: 'pointer'});
+
+        current.container.mouseover((evt: MouseEvent) => {
+            this._callbacks.currenthover(current.id, current.thread.weight, true);
+            current.___hovered = true;
+        });
+
+        current.container.mouseout((evt: MouseEvent) => {
+            this._callbacks.currenthover(current.id, current.thread.weight, false);
+            current.___hovered = false;
+        });
+    }
 
     /**
      * Builds the path of a current flow

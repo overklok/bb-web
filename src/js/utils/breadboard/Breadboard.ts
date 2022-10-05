@@ -8,6 +8,7 @@ import Grid from "./core/Grid";
 import MenuLayer from "./layers/MenuLayer";
 import LabelLayer from "./layers/LabelLayer";
 import PlateLayer, { PlatePrototype } from "./layers/PlateLayer";
+import PopupLayer from './layers/PopupLayer';
 import RegionLayer from "./layers/RegionLayer";
 import CurrentLayer from "./layers/CurrentLayer";
 import ControlsLayer from "./layers/ControlsLayer";
@@ -61,7 +62,8 @@ export default class Breadboard {
         region?:     RegionLayer,
         controls?:   ControlsLayer,
         selector?:   SelectorLayer,
-        menu?:       MenuLayer
+        menu?:       MenuLayer,
+        popup?:      PopupLayer
     }
 
     private _callbacks: {
@@ -98,6 +100,7 @@ export default class Breadboard {
             controls:   undefined,
             selector:   undefined,
             menu:       undefined,
+            popup:      undefined
         };
 
         this._callbacks = {
@@ -539,11 +542,13 @@ export default class Breadboard {
         let region      = this._brush.nested(); // области выделения
         let plate       = this._brush.nested(); // плашки
         let controls    = this._brush.nested(); // органы управления
-        let selector    = document.createElement("div"); // органы управления
-        let menu        = document.createElement("div"); // органы управления
+        let selector    = document.createElement("div"); // боковое меню (селектор плашек)
+        let menu        = document.createElement("div"); // всплывающее меню
+        let popup       = document.createElement("div")  // всплывающие подсказки
 
         this._div_wrap.appendChild(selector);
         this._div_wrap.appendChild(menu);
+        this._div_wrap.appendChild(popup);
 
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(background, this.__grid, this._options.schematic, this._options.detailed, this._options.debug);
@@ -554,6 +559,7 @@ export default class Breadboard {
         this._layers.controls   = new ControlsLayer(controls, this.__grid);
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
         this._layers.menu       = new MenuLayer(menu, this.__grid);
+        this._layers.popup      = new PopupLayer(popup, this.__grid);
 
         this._layers.background.setDomainConfig(this._layout.domains);
         this._layers.label.setLayoutConfig(this._layout);
@@ -715,7 +721,16 @@ export default class Breadboard {
         /// начало перетаскивания плашки
         this._layers.plate.onDragStart(() => {
             this._callbacks.dragstart();
-        })
+        });
+
+        /// current popup display
+        this._layers.current.onCurrentHover((id: number, weight: number, over: boolean) => {
+            if (over) {
+                this._layers.popup.createPopup(id, `weight: ${weight}`);
+            } else {
+                this._layers.popup.destroyPopup(id);
+            }
+        });
     }
 
     _attachNotificationEvents() {
