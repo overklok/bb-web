@@ -1,4 +1,4 @@
-# tpnd/bb-web
+# tapanda/bb-web
 A set of single-page web applications for Tapanda e-learning system to teach programming and electronics.
 
 > :warning: **This is a public version of the project.** Full documentation is maintained separately, 
