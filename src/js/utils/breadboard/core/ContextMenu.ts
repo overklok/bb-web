@@ -79,6 +79,8 @@ export type ContextMenuItemProps = {
 
 /**
  * Basic context menu drawer
+ * 
+ * TODO: Make this class an inheritor of Plate
  *
  * @category Breadboard
  */

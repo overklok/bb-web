@@ -567,10 +567,16 @@ export default class Breadboard {
         this._layers.label.setLabelStyle(this._layout.label_style);
         this._layers.background.setBgVisible(this._options.bgVisible);
 
-        /// внутренняя компоновка каждого слоя
+        /// internal composition of each layer
         for (const layer of Object.values(this._layers)) {
             layer.compose();
+
+            // TODO: Merge context menu calls to popup calls
+
+            // connect context menu request handlers to each layer
             layer.onContextMenuCall(this._layers.menu.openMenu.bind(this._layers.menu));
+
+            // connect popup request handlers to each layer
             layer.onPopupDraw(this._layers.popup.drawPopup.bind(this._layers.popup));
             layer.onPopupShow(this._layers.popup.showPopup.bind(this._layers.popup));
             layer.onPopupHide(this._layers.popup.hidePopup.bind(this._layers.popup));

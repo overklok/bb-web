@@ -5,6 +5,8 @@ import Grid from './Grid';
 import Popup, { PopupContent } from './Popup';
 import { XYObject } from './types';
 
+type ContextMenuCallCallback = (menu?: ContextMenu, position?: XYObject, inputs?: any[]) => void;
+
 type PopupDrawCallback<C extends PopupContent> = (popup: Popup<C>, content: C) => void;
 type PopupShowCallback = (popup: Popup<any>) => void;
 type PopupHideCallback = (popup: Popup<any>) => void;
@@ -43,7 +45,7 @@ export default abstract class Layer<CT = SVG.Container> {
     protected __verbose: boolean;
 
     /** Context menu call callback */
-    private _onctxmenucall: any;
+    private _onctxmenucall: ContextMenuCallCallback;
     /** Popup draw callback */
     private _onpopupdraw: PopupDrawCallback<any>;
     /** Popup clear callback */
@@ -146,12 +148,15 @@ export default abstract class Layer<CT = SVG.Container> {
      * 
      * @param cb callback handler
      */
-    onContextMenuCall(cb: Function): void {
+    onContextMenuCall(cb: ContextMenuCallCallback): void {
         this._onctxmenucall = cb;
     }
 
     /** 
      * Attaches popup draw handler
+     * 
+     * This is the first stage of a popup lifecycle after its instantiation
+     * by the layer which manages its content
      * 
      * @param cb callback handler
      */
@@ -162,6 +167,9 @@ export default abstract class Layer<CT = SVG.Container> {
     /** 
      * Attaches popup clear handler
      * 
+     * This is the last stage of a popup lifecycle after its instantiation
+     * by the layer which manages its content
+     * 
      * @param cb callback handler
      */
     onPopupClear(cb: PopupClearCallback): void {
@@ -169,6 +177,8 @@ export default abstract class Layer<CT = SVG.Container> {
     }
     /** 
      * Attaches popup show handler
+     * 
+     * Popup can be shown only after render (see {@link onPopupDraw})
      * 
      * @param cb callback handler
      */
@@ -178,6 +188,8 @@ export default abstract class Layer<CT = SVG.Container> {
 
     /** 
      * Attaches popup hide handler
+     * 
+     * Popup can be hidden only after render (see {@link onPopupDraw})
      * 
      * @param cb callback handler
      */
@@ -206,7 +218,7 @@ export default abstract class Layer<CT = SVG.Container> {
     }
 
     /**
-     * Handles popup draw request with specified content
+     * Handles popup draw request
      * 
      * @param popup     popup instance
      */

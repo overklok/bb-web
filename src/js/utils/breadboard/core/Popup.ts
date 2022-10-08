@@ -1,4 +1,5 @@
 import '../styles/popup.css';
+import Layer from './Layer';
 
 export type PopupContent = any;
 
@@ -49,6 +50,9 @@ export default abstract class Popup<C extends PopupContent> {
      * 
      * This method returns the root HTML container where the contents is drawn
      * 
+     * This method is usually called from {@link PopupLayer} instance to put the DOM content into its container.
+     * See {@link Layer.onPopupDraw} for more details on the lifecycle of the {@link Popup}
+     * 
      * @param content
      */
     public draw(content: C): HTMLDivElement {
@@ -72,6 +76,9 @@ export default abstract class Popup<C extends PopupContent> {
      * 
      * Transition time is defined by the {@link TransitionTime} value.
      * 
+     * This method is usually called from {@link PopupLayer} instance to remove the DOM content from its container.
+     * See {@link Layer.onPopupHide} for more details on the lifecycle of the {@link Popup}
+     * 
      * @param cb_hidden callback which will be called when the popup will be actually hidden.
      */
     public hide(cb_hidden?: Function): void {
@@ -90,6 +97,8 @@ export default abstract class Popup<C extends PopupContent> {
      * 
      * Transition time is defined by the {@link TransitionTime} value.
      * 
+     * See {@link Layer.onPopupShow} for more details on the lifecycle of the {@link Popup}
+     * 
      * @param cb_hidden callback which will be called when the popup will be actually hidden.
      */
     public show(cb_shown?: Function): void {
@@ -102,6 +111,8 @@ export default abstract class Popup<C extends PopupContent> {
 
     /**
      * Removes all content drawn by the {@link draw} method
+     * 
+     * See {@link Layer.onPopupClear} for more details on the lifecycle of the {@link Popup}
      */
     public clear(): void {
         // while(this._container.firstChild) {
@@ -111,7 +122,17 @@ export default abstract class Popup<C extends PopupContent> {
         this._container.remove();
     }
 
+    /**
+     * Updates the popup with the given content
+     * 
+     * @param content 
+     */
     public abstract updateContent(content: C): void;
 
+    /**
+     * Performs an actual draw for specific type of popup
+     * 
+     * @param content 
+     */
     protected abstract __draw__(content: C): void;
 }

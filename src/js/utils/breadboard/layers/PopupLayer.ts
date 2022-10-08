@@ -1,11 +1,7 @@
 import Grid from "../core/Grid";
 import Layer from '../core/Layer';
 import Popup, { PopupContent } from '../core/Popup';
-import Current from '../core/Current';
 import { XYObject } from '../core/types';
-import { getAbsolutePosition, invertHexRGB } from '../core/extras/helpers';
-import { preProcessFile } from "typescript";
-import { RequestCredentials } from "src/js/core/models/datasources/HttpDatasource";
 
 /**
  * Contains popups called from other {@link Layer}s of the breadboard
@@ -58,20 +54,36 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
         });
     }
 
+    /**
+     * Draws externally instantiated {@link Popup} instance to the layer container
+     * 
+     * To display the popup {@link showPopup} call should be requested by another layer
+     * 
+     * This method is intended to call from the {@link Layer}'s popup draw request function
+     * 
+     * @param popup     the {@link Popup} instantiated in another layer
+     * @param content   the content for the {@link Popup} needed to display
+     */
     public drawPopup<C extends PopupContent>(popup: Popup<C>, content: C) {
         const container_popup = popup.draw(content);
         this._container.appendChild(container_popup);
     }
 
+    /**
+     * Clears externally instantiated {@link Popup} instance drawn on the layer container
+     * 
+     * This method is intended to call from the {@link Layer}'s popup draw request function
+     * 
+     * @param popup the {@link Popup} instantiated in another layer
+     */
     public clearPopup(popup: Popup<any>) {
         popup.hide(() => popup.clear());
     }
 
     /**
-     * Opens given {@link Popup} instance
+     * Shows externally instantiated {@link Popup} instance drawn on the layer container
      *
-     * @param popup     the popup instance to open
-     * @param position  position of the mouse event
+     * @param popup the {@link Popup} instantiated in another layer
      */
     public showPopup<C extends PopupContent>(popup: Popup<C>) {
         // make active then update its position
@@ -82,15 +94,21 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
     }
 
     /**
-     * Hides {@link Popup} instance 
+     * Hides externally instantiated {@link Popup} instance drawn on the layer container
+     * 
+     * This method does not remove the popup from the DOM.
+     * To remove the popup {@link clearPopup} call should be requested by another layer
+     * 
+     * @param popup the {@link Popup} instantiated in another layer
      */
-    public hidePopup() {
-        this._popup.hide();
+    public hidePopup(popup: Popup<any>) {
+        popup.hide();
+
         this._popup = undefined;
     }
 
     /**
-     * Updates position of the currently active popup
+     * Updates position of the popup which is currently active
      */
     private _updateActivePopupPosition() {
         if (!this._popup) return; 
