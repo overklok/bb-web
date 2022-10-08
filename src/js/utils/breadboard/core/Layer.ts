@@ -2,7 +2,13 @@ import SVG from 'svg.js';
 
 import ContextMenu from './ContextMenu';
 import Grid from './Grid';
+import Popup, { PopupContent } from './Popup';
 import { XYObject } from './types';
+
+type PopupDrawCallback<C extends PopupContent> = (popup: Popup<C>, content: C) => void;
+type PopupShowCallback = (popup: Popup<any>) => void;
+type PopupHideCallback = (popup: Popup<any>) => void;
+type PopupClearCallback = (popup: Popup<any>) => void;
 
 /**
  * Basic element of {@link Breadboard} layer system
@@ -38,6 +44,17 @@ export default abstract class Layer<CT = SVG.Container> {
 
     /** Context menu call callback */
     private _onctxmenucall: any;
+    /** Popup draw callback */
+    private _onpopupdraw: PopupDrawCallback<any>;
+    /** Popup clear callback */
+    private _onpopupclear: PopupClearCallback;
+    /** Popup show callback */
+    private _onpopupshow: PopupShowCallback;
+    /** Popup hide callback */
+    private _onpopuphide: PopupHideCallback;
+
+    /** Popup registry */
+    protected _popups: {[id: number]: Popup<any>};
 
     /**
      * Prepares properties and modifies container as needed
@@ -63,7 +80,11 @@ export default abstract class Layer<CT = SVG.Container> {
         this.__detailed = detailed;
         this.__verbose = verbose;
 
+        this._popups = {};
+
         this._onctxmenucall = undefined;
+        this._onpopupshow = undefined;
+        this._onpopuphide = undefined;
     }
 
     /**
@@ -129,8 +150,43 @@ export default abstract class Layer<CT = SVG.Container> {
         this._onctxmenucall = cb;
     }
 
+    /** 
+     * Attaches popup draw handler
+     * 
+     * @param cb callback handler
+     */
+    onPopupDraw(cb: PopupDrawCallback<any>): void {
+        this._onpopupdraw = cb;
+    }
+
+    /** 
+     * Attaches popup clear handler
+     * 
+     * @param cb callback handler
+     */
+    onPopupClear(cb: PopupClearCallback): void {
+        this._onpopupclear = cb;
+    }
+    /** 
+     * Attaches popup show handler
+     * 
+     * @param cb callback handler
+     */
+    onPopupShow(cb: PopupShowCallback): void {
+        this._onpopupshow = cb;
+    }
+
+    /** 
+     * Attaches popup hide handler
+     * 
+     * @param cb callback handler
+     */
+    onPopupHide(cb: PopupHideCallback): void {
+        this._onpopuphide = cb;
+    }
+
     /**
-     * Handles context menu click
+     * Handles context menu call request
      *
      * @param menu      context menu instance
      * @param position  position of the click
@@ -147,5 +203,51 @@ export default abstract class Layer<CT = SVG.Container> {
      */
     protected _clearContextMenus(): void {
         this._onctxmenucall && this._onctxmenucall();
+    }
+
+    /**
+     * Handles popup draw request with specified content
+     * 
+     * @param popup     popup instance
+     */
+    protected _requestPopupDraw<C extends PopupContent>(popup: Popup<C>, content: C): void {
+        this._onpopupdraw && this._onpopupdraw(popup, content);
+    }
+
+    /**
+     * Handles popup clear request
+     * 
+     * @param popup     popup instance
+     */
+    protected _requestPopupClear(popup: Popup<any>): void {
+        this._onpopupclear && this._onpopupclear(popup);
+    }
+
+    /**
+     * Handles popup show request
+     * 
+     * @param popup     popup instance
+     */
+    protected _requestPopupShow<C extends PopupContent>(popup: Popup<C>): void {
+        this._onpopupshow && this._onpopupshow(popup);
+    }
+
+    /**
+     * Handles popup hide request
+     * 
+     * @param popup     popup instance
+     */
+    protected _requestPopupHide<C extends PopupContent>(popup: Popup<C>): void {
+        this._onpopuphide && this._onpopuphide(popup);
+    }
+
+    /**
+     * Clears all popups deployed at the moment
+     */
+    protected _clearPopups(): void {
+        for (const [key, popup] of Object.entries(this._popups)) {
+            this._onpopupclear && this._onpopupclear(popup);
+        }
+        this._popups = {};
     }
 }

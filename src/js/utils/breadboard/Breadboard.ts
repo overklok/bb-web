@@ -571,6 +571,10 @@ export default class Breadboard {
         for (const layer of Object.values(this._layers)) {
             layer.compose();
             layer.onContextMenuCall(this._layers.menu.openMenu.bind(this._layers.menu));
+            layer.onPopupDraw(this._layers.popup.drawPopup.bind(this._layers.popup));
+            layer.onPopupShow(this._layers.popup.showPopup.bind(this._layers.popup));
+            layer.onPopupHide(this._layers.popup.hidePopup.bind(this._layers.popup));
+            layer.onPopupClear(this._layers.popup.clearPopup.bind(this._layers.popup));
         }
 
         /// включение / отключение режима только чтения
@@ -721,19 +725,6 @@ export default class Breadboard {
         /// начало перетаскивания плашки
         this._layers.plate.onDragStart(() => {
             this._callbacks.dragstart();
-        });
-
-        /// current popup display
-        this._layers.current.onCurrentHover((id: number, weight: number, over: boolean) => {
-            if (over) {
-                this._layers.popup.createPopup(id, weight);
-            } else {
-                this._layers.popup.destroyPopup(id);
-            }
-        });
-
-        this._layers.current.onCurrentUpdate((id: number, weight: number) => {
-            this._layers.popup.updatePopup(id, weight);
         });
     }
 

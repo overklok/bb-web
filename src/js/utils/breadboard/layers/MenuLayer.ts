@@ -46,7 +46,7 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
             ctxmenuitemclick: undefined,
         };
 
-        this._showMenu = this._showMenu.bind(this);
+        this._drawMenu = this._drawMenu.bind(this);
 
         this._menu = undefined;
 
@@ -86,26 +86,25 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
     openMenu(menu: ContextMenu, position: XYObject, inputs: (string|number)[]) {
         this._hideMenu();
 
-        if (menu) {
-            if (!position) throw new Error("parameter 'position' is undefined");
+        if (!menu) { throw new Error("Menu is not provided"); }
+        if (!position) throw new Error("parameter 'position' is undefined");
 
-            this._showMenu(menu, position, inputs)
+        this._drawMenu(menu, position, inputs)
 
-            this._menu.onItemClick((item_id: number, alias: string, value: any) => {
-                this._hideMenu();
-                this._callbacks.ctxmenuitemclick && this._callbacks.ctxmenuitemclick(item_id, alias, value);
-            });
-        }
+        this._menu.onItemClick((item_id: number, alias: string, value: any) => {
+            this._hideMenu();
+            this._callbacks.ctxmenuitemclick && this._callbacks.ctxmenuitemclick(item_id, alias, value);
+        });
     }
 
     /**
-     * Displays given {@link ContextMenu} instance
+     * Draws given {@link ContextMenu} instance and attaches it to the container
      * 
-     * @param menu     the menu instance to open 
+     * @param menu     the menu instance to draw 
      * @param position position of the mouse click
      * @param inputs   optional inputs of the item clicked
      */
-    _showMenu(menu: ContextMenu, position: XYObject, inputs: (string|number)[]) {
+    _drawMenu(menu: ContextMenu, position: XYObject, inputs: (string|number)[]) {
         this._menu = menu;
 
         const container_menu = this._menu.draw(position, inputs);
@@ -145,7 +144,7 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
         if (this._menu) {
             const container = this._menu.container;
 
-            this._menu.fadeOut(() => {
+            this._menu.hide(() => {
                 this._container.removeChild(container);
             });
 

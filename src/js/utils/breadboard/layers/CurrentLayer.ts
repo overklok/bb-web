@@ -7,6 +7,7 @@ import Current, { CurrentPath, Thread } from "../core/Current";
 import BackgroundLayer from "./BackgroundLayer";
 import * as Threads from "../core/extras/threads";
 import { XYObject } from "../core/types";
+import CurrentPopup from "../popups/CurrentPopup";
 
 /**
  * Displays and manages {@link Current} objects.
@@ -27,10 +28,13 @@ export default class CurrentLayer extends Layer {
     /** layer's main SVG container */
     protected _container: SVG.Container;
 
+    protected _popups: {[key: number]: CurrentPopup};
+
     /** list of {@link Current} instances being displayed */
     private _currents: {[key: number]: Current};
     /** collection of {@link Current} data objects */
     private _threads: {};
+
     /** simple graphic mode flag */
     private _spare: any;
     /** SVG group for currents */
@@ -43,8 +47,6 @@ export default class CurrentLayer extends Layer {
         shortcircuit: () => void;       // short circuit detected
         shortcircuitstart: () => void;  // short circuit started
         shortcircuitend: () => void;    // short circuit ended
-        currenthover: (id: number, weight: number, over: boolean) => void;       // current hovered
-        currentupdate: (id: number, weight: number) => void;                     // current updated
     };
 
     /**
@@ -74,8 +76,6 @@ export default class CurrentLayer extends Layer {
             shortcircuit: () => {},
             shortcircuitstart: () => {},
             shortcircuitend: () => {},
-            currenthover: () => {},
-            currentupdate: () => {}
         }
     }
 
@@ -147,18 +147,6 @@ export default class CurrentLayer extends Layer {
 
         this._callbacks.shortcircuitend = cb;
     }
-    
-    public onCurrentHover(cb?: (id: number, weight: number, over: boolean) => void) {
-        if (!cb) {this._callbacks.currenthover = () => {}}
-
-        this._callbacks.currenthover = cb;
-    }
-
-    public onCurrentUpdate(cb?: (id: number, weight: number) => void) {
-        if (!cb) {this._callbacks.currentupdate = () => {}}
-
-        this._callbacks.currentupdate = cb;
-    }
 
     /**
      * Returns all {@link Current} instances presented in the layer at the moment.
@@ -184,10 +172,13 @@ export default class CurrentLayer extends Layer {
         }
 
         let current = this._currents[id];
+        let popup = this._popups[id];
 
         current.erase();
+        this._requestPopupClear(popup);
 
         delete this._currents[current.id];
+        delete this._popups[current.id];
     }
 
     /**
@@ -315,14 +306,6 @@ export default class CurrentLayer extends Layer {
         this._findShortCircuits();
     }
 
-    private _setCurrentWeight(current: Current, weight: number) {
-        current.setWeight(weight);
-
-        if (current.___hovered) {
-            this._callbacks.currentupdate(current.id, weight);
-        }
-    }
-
     /**
      * Initializes internal SVG groups 
      */
@@ -383,33 +366,43 @@ export default class CurrentLayer extends Layer {
         let line_path = this._buildCurrentLinePath(thread);
         if (line_path.length === 0) return null;
 
-        let current = new Current(this._currentgroup, thread, this.__schematic);
+        const current = new Current(this._currentgroup, thread, this.__schematic),
+              popup   = new CurrentPopup(current.id);
 
         this._currents[current.id] = current;
+        this._popups[current.id] = popup;
 
         current.draw(line_path);
         current.activate();
+
+        this._requestPopupDraw(popup, { weight: current.thread.weight, weight_norm: current.weight });
 
         this._attachEventsHoverable(current);
 
         return current;
     };
 
+    private _setCurrentWeight(current: Current, weight: number) {
+        current.setWeight(weight);
+        this._popups[current.id].updateContent({ 
+            weight: current.thread.weight,
+            weight_norm: current.weight
+        });
+    }
+
     private _attachEventsHoverable(current: Current) {
         if (!current) {
             throw new TypeError("A `current` argument must be defined");
         }
 
-        current.container.style({cursor: 'pointer'});
+        current.makeHoverable(true);
 
-        current.container.mouseover((evt: MouseEvent) => {
-            this._callbacks.currenthover(current.id, current.thread.weight, true);
-            current.___hovered = true;
+        current.onMouseEnter(() => {
+            this._requestPopupShow(this._popups[current.id]);
         });
 
-        current.container.mouseout((evt: MouseEvent) => {
-            this._callbacks.currenthover(current.id, current.thread.weight, false);
-            current.___hovered = false;
+        current.onMouseLeave(() => {
+            this._requestPopupHide(this._popups[current.id]);
         });
     }
 

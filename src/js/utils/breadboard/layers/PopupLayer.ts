@@ -1,9 +1,11 @@
-import '../styles/popup.css';
 import Grid from "../core/Grid";
 import Layer from '../core/Layer';
-import { XYObject } from '../core/types';
+import Popup, { PopupContent } from '../core/Popup';
 import Current from '../core/Current';
-import { invertHexRGB } from '../core/extras/helpers';
+import { XYObject } from '../core/types';
+import { getAbsolutePosition, invertHexRGB } from '../core/extras/helpers';
+import { preProcessFile } from "typescript";
+import { RequestCredentials } from "src/js/core/models/datasources/HttpDatasource";
 
 /**
  * Contains popups called from other {@link Layer}s of the breadboard
@@ -19,12 +21,10 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
     static get Class() {return "bb-layer-popup"}
     static get PositionOffset() {return 10}
 
-    /** instances of popups currently opened */
-    private _popups: {[id: number]: HTMLDivElement};
-    /** active popup instance */
-    private _popup: HTMLDivElement;
-
     private _mousepos: XYObject;
+
+    /** active popup */
+    private _popup: Popup<any>;
 
     /**
      * Make sure to pass an HTML container when constructing the layer.
@@ -43,13 +43,11 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
         super(container, grid, schematic, detailed, verbose);
 
         this._container.classList.add(PopupLayer.Class);
-
-        this._popups = [];
+        
         this._popup = undefined;
-
     }
 
-    compose() { 
+    public compose() { 
         this._container.parentElement.onmousemove = ((evt: MouseEvent) => {
             this._mousepos = {
                 x: evt.clientX,
@@ -60,57 +58,44 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
         });
     }
 
+    public drawPopup<C extends PopupContent>(popup: Popup<C>, content: C) {
+        const container_popup = popup.draw(content);
+        this._container.appendChild(container_popup);
+    }
+
+    public clearPopup(popup: Popup<any>) {
+        popup.hide(() => popup.clear());
+    }
+
     /**
+     * Opens given {@link Popup} instance
+     *
+     * @param popup     the popup instance to open
+     * @param position  position of the mouse event
      */
-    public createPopup(id: number, weight: number) {
-        // TODO: Move Popup to separate class. Define content there in CurrentPopup
-        const popup = document.createElement('div');
-        popup.setAttribute('id', `popup-${id}`);
-        popup.classList.add('bb-popup');
-
-        const rgb = Current.pickColorFromRange(weight);
-        popup.style.backgroundColor = rgb;
-        popup.style.color = invertHexRGB(rgb, true);
-        popup.innerHTML = `weight: ${weight}`;
-        
-        this._popups[id] = popup;
+    public showPopup<C extends PopupContent>(popup: Popup<C>) {
+        // make active then update its position
         this._popup = popup;
-
         this._updateActivePopupPosition();
 
-        this._container.appendChild(popup);
+        popup.show();
     }
 
     /**
+     * Hides {@link Popup} instance 
      */
-    public updatePopup(id: number, weight: number) {
-        if (!(id in this._popups)) throw new Error(`Popup ${id} does not exist`);
-
-        const popup = this._popups[id];
-        
-        const rgb = Current.pickColorFromRange(weight);
-        popup.style.backgroundColor = rgb;
-        popup.style.color = invertHexRGB(rgb, true);
-        popup.innerHTML = `weight: ${weight}`;
-    }
-
-    /**
-     */
-    public destroyPopup(id: number) {
-        const popup = this._popups[id]
-
-        delete this._popups[id];
-
-        popup.classList.add('bb-popup_faded');
-        setTimeout(() => popup.remove(), 300);
-
+    public hidePopup() {
+        this._popup.hide();
         this._popup = undefined;
     }
 
+    /**
+     * Updates position of the currently active popup
+     */
     private _updateActivePopupPosition() {
-        if (!this._popup) return;
+        if (!this._popup) return; 
 
-        this._popup.style.left = `${this._mousepos.x + PopupLayer.PositionOffset}px`;
-        this._popup.style.top = `${this._mousepos.y + PopupLayer.PositionOffset}px`;
+        this._popup.container.style.left = `${this._mousepos.x + PopupLayer.PositionOffset}px`;
+        this._popup.container.style.top = `${this._mousepos.y + PopupLayer.PositionOffset}px`;
     }
 }

@@ -1,3 +1,4 @@
+import { Callback } from 'i18next';
 import SVG from 'svg.js';
 
 import { XYObject } from './types';
@@ -54,14 +55,17 @@ export type CurrentPath = [string, number, number?][];
  * @category Breadboard
  */
 export default class Current {
-    /** Root container of the {@link Current} */
-    public readonly container: SVG.Container;
-    
     /** General properties of the {@link Current} */
     public readonly thread: Thread;
 
+    /** flags for extra purposes */
+    public ___touched: boolean;
+
+
+    /** Root container of the {@link Current} */
+    private _container: SVG.Container;
     /** Animation-specific container of the {@link Current} */
-    private container_anim: SVG.Nested;
+    private _container_anim: SVG.Nested;
     /** Debug container of the {@link Current} */
     private _group_debug: any;
     /** Current identifier */
@@ -93,9 +97,10 @@ export default class Current {
     /** Current burning flag */
     private _burning: boolean;
 
-    /** flags for extra purposes */
-    public ___touched: boolean;
-    public ___hovered: boolean;
+    private _callbacks: {
+        mouseenter: CallableFunction,
+        mouseleave:  CallableFunction
+    };
 
     /**
      * Color gradations of the {@link Current} weight
@@ -145,8 +150,8 @@ export default class Current {
 
     constructor(container: SVG.Container, thread: Thread, schematic: boolean) {
         this.thread = thread;
-        this.container = container.nested();
-        this.container_anim = this.container.nested();     // animation root 
+        this._container = container.nested();
+        this._container_anim = this._container.nested();     // animation root 
 
         this._group_debug = undefined; //this.container.group();      // debug root
 
@@ -171,6 +176,11 @@ export default class Current {
         this._visible   = false;
         this._activated = false;
         this._burning   = false;
+
+        this._callbacks = {
+            mouseenter: () => {},
+            mouseleave: () => {}
+        }
     }
 
     /**
@@ -198,18 +208,18 @@ export default class Current {
      *
      * @param path original SVG path (geometric coordinates)
      */
-    draw(path: CurrentPath): void {
+    public draw(path: CurrentPath): void {
         this._line_path = Current._pathArrayToString(path);
         this._line_length = Current.getPathLength(this._line_path);
 
-        this._line = this.container.path(this._line_path);
+        this._line = this._container.path(this._line_path);
 
         this._line
             .fill('none')
             .stroke(this._style);
 
-        this.container_anim.before(this._line);
-        this.container_anim.opacity(0);
+        this._container_anim.before(this._line);
+        this._container_anim.opacity(0);
 
         if (this._group_debug) {
             this._group_debug.move(
@@ -220,22 +230,27 @@ export default class Current {
 
         this._addGlowFilter();
 
+        this._attachEventHandlers();
+
         this._visible = true;
     };
 
     /**
      * Erases the current
      */
-    erase(): void {
+    public erase(): void {
         if (!this._line) {
             console.warn("An attempt to erase NULL line was made");
             return;
         }
 
+        this._detachEventHandlers();
+
         this._particles = [];
 
         this._line.remove();
-        this.container_anim.remove();
+        this._container.remove();
+        this._container_anim.remove();
 
         this._sheet.ownerNode.remove();
 
@@ -252,7 +267,7 @@ export default class Current {
      *
      * @param {Object} thread thread to compare
      */
-    hasSameThread(thread: Thread): boolean {
+    public hasSameThread(thread: Thread): boolean {
         if (!this.thread) return false;
 
         return  thread.from.x === this.thread.from.x &&
@@ -283,7 +298,7 @@ export default class Current {
      *
      * @param weight current particle motion speed
      */
-    activate(): void {
+    public activate(): void {
         if (!this._visible) throw new Error("Cannot activate invisible current");
         if (this._activated) return;
 
@@ -312,7 +327,7 @@ export default class Current {
             }
 
             // Сгенерировать частицу
-            this._particles[i] = this.container_anim.circle(this._style.particle_radius * 2);
+            this._particles[i] = this._container_anim.circle(this._style.particle_radius * 2);
 
             // Заливка и центрирование
             this._particles[i].fill({
@@ -336,7 +351,7 @@ export default class Current {
             // функция _updateBurning делает это не всегда, поэтому нужно в случае необходимости отображения частиц
             // дополнительно убедится в их видимости
             if (!this.is_burning) {
-                this.container_anim.opacity(1);
+                this._container_anim.opacity(1);
             }
 
             this._activated = true;
@@ -346,9 +361,9 @@ export default class Current {
     /**
      * Stops the {@link Current} animation
      */
-    deactivate(): void {
+    public deactivate(): void {
         this._particles = [];
-        this.container_anim.clear();
+        this._container_anim.clear();
         this._initStyleSheet();
         this._activated = false;
     };
@@ -358,8 +373,8 @@ export default class Current {
      * 
      * @see hideParticles
      */
-    showParticles(): void {
-        this.container_anim.opacity(1);
+    public showParticles(): void {
+        this._container_anim.opacity(1);
     }
 
     /**
@@ -367,8 +382,8 @@ export default class Current {
      * 
      * @see showParticles
      */
-    hideParticles(): void {
-        this.container_anim.opacity(0);
+    public hideParticles(): void {
+        this._container_anim.opacity(0);
     }
 
     /**
@@ -376,7 +391,7 @@ export default class Current {
      * 
      * @param weight
      */
-    setWeight(weight: number = 0) {
+    public setWeight(weight: number = 0) {
         const _weight = this._normalizeWeight(weight);
 
         if (this.thread.weight !== weight) {
@@ -400,6 +415,42 @@ export default class Current {
 
         this._updateBurning();
         this._updateDebugInfo();
+    }
+
+    public makeHoverable(hoverable: boolean): void {
+        this._container.style({ cursor: hoverable ? 'pointer' : 'default' });
+    }
+
+    /**
+     * Attaches a mouse enter event 
+     *
+     * @param cb callback function to be called when the cursor entered the current
+     */
+    public onMouseEnter(cb: CallableFunction): void {
+        if (!cb) cb = () => {};
+
+        this._callbacks.mouseenter = cb;
+    }
+
+    /**
+     * Attaches a mouse leave event 
+     *
+     * @param cb callback function to be called when the cursor left the current
+     */
+    public onMouseLeave(cb: CallableFunction): void {
+        if (!cb) cb = () => {};
+
+        this._callbacks.mouseleave = cb;
+    }
+    
+    private _attachEventHandlers() {
+        this._container.on('mouseenter', () => this._callbacks.mouseenter());
+        this._container.on('mouseleave', () => this._callbacks.mouseleave());
+    }
+
+    private _detachEventHandlers() {
+        this._container.off('mouseenter');
+        this._container.off('mouseleave');
     }
 
     /**
@@ -703,7 +754,7 @@ export default class Current {
 
         // время, прошедшее с начала запуска анимации
         // let dt = new Date().getTime() - this._anim_timestamp;
-        let dt = (this.container_anim.node as unknown as SVGSVGElement).getCurrentTime() * 1000;
+        let dt = (this._container_anim.node as unknown as SVGSVGElement).getCurrentTime() * 1000;
 
         // сколько прошло времени для того, чтобы частица попала в текущее положение
         let togo_now = (dt - this._anim_delay) % this._anim_dur; // при текщущей ДЦА, учитывая предыдущую задержку
