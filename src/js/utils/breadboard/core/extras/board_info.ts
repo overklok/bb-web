@@ -194,8 +194,8 @@ function getVoltageSourcePlate(coords_minus: XYObject, coords_vcc: XYObject) {
         id: -100,
         position: {
             cells: [
-                coords_minus,
                 coords_vcc,
+                coords_minus,
             ]
         },
         properties: {
