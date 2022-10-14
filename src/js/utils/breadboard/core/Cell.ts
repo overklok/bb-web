@@ -1,6 +1,10 @@
 import Grid from "./Grid";
 import {Direction, DirsClockwise, XYObject} from "./types";
 
+export type CellData = {
+    voltage: number;
+}
+
 /**
  * Logical representation of single board cell.
  * Cell does not make any drawing, it just manages the data 
@@ -26,6 +30,7 @@ export default class Cell {
 
     /** optional opposite cell from the same {@link Grid} */
     private __opp: Cell;
+    private _data: CellData;
 
     /**
      * Create Cell instance
@@ -155,6 +160,10 @@ export default class Cell {
      */
     get occupied(): boolean {
         return (this.__adj != null || this.__opp != null);
+    }
+
+    public setData(data: CellData) {
+        this._data = {...this._data, ...data};
     }
 
     /**

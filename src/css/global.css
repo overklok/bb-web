@@ -1,0 +1,40 @@
+/* https://flatuicolors.com/palette/defo */
+body {
+  font-family: 'IBM Plex Sans', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+}
+.text-default {
+  color: #95a5a6;
+}
+.text-primary {
+  color: #3a9cff;
+}
+.text-secondary {
+  color: #a29bfe;
+}
+.text-success {
+  color: #69a742;
+}
+.text-warning {
+  color: #ffbe76;
+}
+.text-danger {
+  color: #e74c3c;
+}
+body {
+  margin: 0;
+}
+#app,
+.layout,
+.root {
+  width: 100%;
+  height: 100%;
+}
+#modal-root {
+  position: absolute;
+  z-index: 1;
+}
+.nest {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}

@@ -353,9 +353,10 @@ export default class Breadboard {
      *
      * @param {Array<Object>} threads контуры токов
      */
-    setCurrents(threads: Thread[]) {
+    setCurrents(threads: Thread[], voltages: {[line_id: number]: number}) {
         // this._layers.current.setCurrents(threads, this._spare);
         this._layers.current.setCurrents(threads, false, this._options.showSourceCurrents);
+        this.__grid.setLineVoltages(voltages);
     }
 
     removeAllCurrents() {

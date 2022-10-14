@@ -36,6 +36,7 @@ interface BreadboardModelState extends ModelState {
     plates: SerializedPlate[];
     elements: PlateDiff[];
     threads: Thread[];
+    voltages: VoltageData;
     arduino_pins: ArduinoPin[];
     layout_name: string;
     layout_confirmed: boolean;
@@ -58,6 +59,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         plates: [],
         elements: [],
         threads: [],
+        voltages: {},
         arduino_pins: [],
         layout_name: 'v8x',
         layout_confirmed: false,
@@ -260,10 +262,10 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
      * @param arduino_pins  data objects describing state of Arduino pins
      */
     @listen(ChannelsFrom.Currents)
-    private receiveElectronics({threads, elements, arduino_pins}: ElectronicData) {
+    private receiveElectronics({threads, elements, voltages, arduino_pins}: ElectronicData) {
         if (!this.state.layout_confirmed) return;
 
-        this.setElectronics({threads, elements, arduino_pins});
+        this.setElectronics({threads, elements, voltages, arduino_pins});
     }
 
     /**
@@ -300,16 +302,14 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         this.emit(new PlateEvent({plates}));
     }
 
-    public setElectronics({threads, elements, arduino_pins}: ElectronicData) {
+    public setElectronics({threads, elements, voltages, arduino_pins}: ElectronicData) {
         this.setState({
-            threads: threads,
-            elements: elements,
-            arduino_pins: arduino_pins,
+            threads, elements, voltages, arduino_pins
         });
 
         this.saveSnapshot();
 
-        this.emit(new ElectronicEvent({threads, elements, arduino_pins}));
+        this.emit(new ElectronicEvent({threads, elements, voltages, arduino_pins}));
     }
 
     public resetAnalog() {
@@ -356,10 +356,13 @@ export type Thread = {
     weight: number;
 }
 
+export type VoltageData = {[line_id: number]: number}
+
 // Event data types
 interface ElectronicData {
     threads: Thread[];
     elements: PlateDiff[];
+    voltages: VoltageData;
     arduino_pins: ArduinoPin[];
 }
 
@@ -378,6 +381,7 @@ export class PlateEvent extends ModelEvent<PlateEvent> {
 export class ElectronicEvent extends ModelEvent<ElectronicEvent> {
     threads: Thread[];
     elements: PlateDiff[];
+    voltages: VoltageData;
     arduino_pins: ArduinoPin[];
 }
 

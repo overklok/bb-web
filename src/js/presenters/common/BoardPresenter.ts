@@ -53,7 +53,7 @@ export default class BoardPresenter extends Presenter<BoardView.BoardView> {
 
     @restore() @on(ElectronicEvent)
     private onelec(evt: ElectronicEvent) {
-        this.view.setCurrents(evt.threads);
+        this.view.setCurrents(evt.threads, evt.voltages);
         this.view.setPinsValues(evt.arduino_pins);
 
         for (const element of evt.elements) {

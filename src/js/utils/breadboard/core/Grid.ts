@@ -256,7 +256,7 @@ export default class Grid {
      * @param y             vertical geometric position
      * @param border_type   boundary cell selection behavior, described in {@link cell}
      */
-    getCellByPos(x: number, y: number, border_type?: BorderType) {
+    public getCellByPos(x: number, y: number, border_type?: BorderType) {
         let ix = Math.floor((x - this.pos.x) / this.size.x * this.dim.x);
         let iy = Math.floor((y - this.pos.y) / this.size.y * this.dim.y);
 
@@ -286,7 +286,7 @@ export default class Grid {
      * @param j row index
      * @param border_type boundary cell selection behavior 
      */
-    cell(i: number, j: number, border_type: BorderType = BorderType.None): Cell {
+    public cell(i: number, j: number, border_type: BorderType = BorderType.None): Cell {
         if (!Number.isInteger(i) || !Number.isInteger(j)) {
             throw new TypeError("Indices must be integers");
         }
@@ -325,9 +325,9 @@ export default class Grid {
      * @param i string key / column index
      * @param j optional row index
      */
-    auxPoint<K extends number | string>(i: K): AuxPointOrRow<K>;
-    auxPoint(i: number, j: number): AuxPoint;
-    auxPoint<K extends number | string>(i: K, j?: number): AuxPointOrRow<K> {
+    public auxPoint<K extends number | string>(i: K): AuxPointOrRow<K>;
+    public auxPoint(i: number, j: number): AuxPoint;
+    public auxPoint<K extends number | string>(i: K, j?: number): AuxPointOrRow<K> {
         const item = this._aux_points.get(i);
 
         try {
@@ -350,7 +350,7 @@ export default class Grid {
      * @param x virtual column of the point
      * @param y virtual row of the point
      */
-    virtualPoint(x: number, y: number): XYObject {
+    public virtualPoint(x: number, y: number): XYObject {
         if (!this._virtual_points) return;
 
         for (const point of this._virtual_points) {
@@ -372,8 +372,12 @@ export default class Grid {
      * 
      * @param cat 
      */
-    isAuxPointCatRequired(cat: AuxPointCategory) {
+    public isAuxPointCatRequired(cat: AuxPointCategory) {
         return this._aux_points_cats.indexOf(cat) !== -1;
+    }
+
+    public setLineVoltages(voltages: {[line_id: number]: number}) {
+
     }
 
     /**

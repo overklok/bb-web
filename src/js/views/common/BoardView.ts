@@ -3,7 +3,7 @@ import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
 import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/base/view/View";
 import {Layout} from "../../utils/breadboard/core/types";
-import { Thread } from "~/js/models/common/BoardModel";
+import { Thread, VoltageData } from "~/js/models/common/BoardModel";
 import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 
 namespace BoardView {
@@ -128,8 +128,8 @@ namespace BoardView {
         }
 
         @deferUntilMounted
-        setCurrents(threads: Thread[]) {
-            this.bb.setCurrents(threads);
+        setCurrents(threads: Thread[], voltages: VoltageData) {
+            this.bb.setCurrents(threads, voltages);
         }
 
         @deferUntilMounted
