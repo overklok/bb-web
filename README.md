@@ -1,8 +1,10 @@
-# tpnd/bb-web
-A set of single-page web applications for Tapanda project.
+# tapanda/bb-web
+A set of single-page web applications for Tapanda e-learning system to teach programming and electronics.
 
 > :warning: **This is a public version of the project.** Full documentation is maintained separately, 
 and some components may be omitted here.
+
+Production version is deployed at https://board.tapanda.ru
 
 It's intended to use it as frontends for _Tapanda: Breadboard_ clients, but some of them can be used 
 as independent apps. They all share a common codebase, and at the same time involves specific components:
