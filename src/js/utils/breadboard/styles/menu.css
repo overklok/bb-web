@@ -13,7 +13,6 @@
     pointer-events: none;
 }
 
-
 .bb-layer-menu > * {
     /* we need to make this exception because we also want to handle user events on its contents */
     pointer-events: all;

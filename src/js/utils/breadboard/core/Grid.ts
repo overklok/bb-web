@@ -1,6 +1,6 @@
 import Cell from "./Cell";
-import {pointsToCoordList} from "./extras/helpers";
-import {Domain, XYObject} from "./types";
+import {pointseq, minmaxdyn, enumerate, minmax} from "./extras/helpers";
+import {CellRole, Domain, PinState, XYObject} from "./types";
 
 /**
  * Type of 'out-of-bound' behavour for cell search functions
@@ -74,6 +74,26 @@ type GridParams = {
     wrap: {x: number, y: number}
 }
 
+type Line = {
+    points: XYObject[],
+    role: CellRole
+}
+
+type EmbeddedPlate = {
+    type: string,
+    id: number,
+    position: {
+        cells: XYObject[]
+    },
+    properties: { [key: string]: string|number },
+    pin_state_initial?: PinState,
+}
+
+type ElecricalStructure = {
+    emb_plates: EmbeddedPlate[],
+    cell_struct: { [line_id: number]: XYObject[] }
+}
+
 /**
  * A visible point which is displaced arbitrarily on the {@link Grid}
  * 
@@ -111,6 +131,9 @@ export default class Grid {
     private _cells: Cell[][];
     /** A set of fixed propertis of the {@link Grid} */
     private _params: GridParams;
+
+    private _lines: Line[];
+
     /** Categories of auxiliary points placed in the {@link Grid} */
     private _aux_points_cats: string[];
 
@@ -200,6 +223,8 @@ export default class Grid {
         this._createCells();
         this._initAuxPoints();
         this._initVirtualPoints(domains);
+
+        this._initLines(domains);
     }
 
     /**
@@ -353,15 +378,7 @@ export default class Grid {
     public virtualPoint(x: number, y: number): XYObject {
         if (!this._virtual_points) return;
 
-        for (const point of this._virtual_points) {
-            if (!point) continue;
-
-            if (point.x === x && point.y === y) {
-                return point;
-            }
-        }
-
-        return undefined;
+        return this._virtual_points.find(point => (point.x === x && point.y === y));
     }
 
     /**
@@ -393,28 +410,9 @@ export default class Grid {
             this._cells[i] = [];
 
             for (let j = 0; j < this.dim.y; j++) {
-                this._cells[i][j] = new Cell(i, j, this, this._getTrackOfCell(i, j));
+                this._cells[i][j] = new Cell(i, j, this);
             }
         }
-    }
-
-    /**
-     * Defines the {@link Grid}'s track name based on the position of a cell.
-     *
-     * Grid tracks is a deprecated feature which will be removed 
-     * in further development of the module.
-     * 
-     * @param i
-     * @param j
-     * 
-     * @deprecated
-     */
-    private _getTrackOfCell(i: number, j: number) {
-        if (j === 1)                return "h0";
-        if (j === this.dim.y-1)     return "h1";
-
-        if (j >= 2 && j <= 5) {return "vt" + i;}
-        if (j >= 6 && j <= 9) {return "vb" + i;}
     }
 
     /**
@@ -582,10 +580,155 @@ export default class Grid {
 
         for (const domain of domains) {
             if (domain.virtual) {
-                const coord_list = pointsToCoordList(domain.virtual.from, domain.virtual.to);
+                const coord_list = pointseq(domain.virtual.from, domain.virtual.to);
 
                 this._virtual_points.push(...coord_list);
             }
+        }
+    }
+
+    public getElectricalStructure(embed_arduino: boolean = false): ElecricalStructure {
+        const es: ElecricalStructure = { cell_struct: {}, emb_plates: [] };
+
+        for (const [i, line] of enumerate(this._lines)) {
+            es.cell_struct[i] = line.points;
+        }
+
+        const point_minus = this.auxPoint(AuxPointType.Gnd) as AuxPoint,
+              point_vcc   = this.auxPoint(AuxPointType.Vcc) as AuxPoint;
+
+        if (point_minus && point_vcc) {
+            es.emb_plates.push(
+                getVoltageSourcePlate(point_minus.idx, point_vcc.idx)
+            );
+        }
+
+        if (embed_arduino) {
+
+            const arduino_remap: { minus: XYObject[], plus: XYObject[] } = {
+                minus: [],
+                plus: []
+            };
+
+            const lines_ext: XYObject[][] = [];
+            const emb_plates: any[] = [];
+
+            // in-domain minus mapper
+            // let minus_line = domain.minus ? countseq(line.length, minus_from) :
+            //                                 pointseq(minus_from, minus_to, dyn + dyn_from)
+
+            // for (const [i, point_minus] of enumerate(minus_line)) {
+            //     const point_plus = line[i];
+
+            //     if (no_arduino_embedded) {
+            //         if (domain.pin_state_initial == 'output') arduino_remap.minus.push(point_plus);
+            //         if (domain.pin_state_initial == 'input') arduino_remap.plus.push(point_plus);
+            //     } else {
+            //         lines_ext.push([point_plus]);
+            //         emb_plates.push(getArduinoPinPlate(point_plus, point_minus, domain.pin_state_initial, 0));
+            //     }
+            // }
+        }
+
+        return es;
+    }
+
+    private _initLines(domains: Domain[]) {
+        this._lines = [];
+
+        for (const domain of domains) {
+            // Decompose domain into lines
+            const lines = this._generateLines(domain);
+            this._lines.push(...lines);
+        }
+    }
+
+    private _generateLines(domain: Domain): Line[] {
+        const lines = [];
+
+        const from  = this.cell(domain.from.x, domain.from.y, BorderType.Wrap).idx,
+              to    = this.cell(domain.to.x, domain.to.y, BorderType.Wrap).idx;
+
+        // const [dyn_min, dyn_max] = minmaxdyn(from, to);
+
+        let dyn_min, dyn_max, fix_val;
+
+        if (domain.horz) {
+            [dyn_min, dyn_max] = [from.y, to.y];
+        } else {
+            [dyn_min, dyn_max] = [from.x, to.x];
+        }
+
+        [dyn_min, dyn_max] = minmax(dyn_min, dyn_max);
+
+        for (let dyn = dyn_min; dyn <= dyn_max; dyn++) {
+            let _from, _to;
+
+            if (domain.horz) {
+                _from = { x: from.x, y: dyn };
+                _to   = { x: to.x, y: dyn };
+            } else {
+                _from = { x: dyn, y: from.y };
+                _to   = { x: dyn, y: to.y };
+            }
+
+            if (domain.role === CellRole.Analog) {
+                for (const point of pointseq(_from, _to)) {
+                    lines.push(this._generateLine(point, point, domain, 0));
+                }
+            } else {
+                lines.push(this._generateLine(_from, _to, domain, dyn));
+            }
+
+        }
+
+        return lines;
+    }
+
+    private _generateAnalogMinusMapping(domain: Domain, line: XYObject[], dyn: number) {
+        let minus_from = domain.minus_from || domain.minus,
+            minus_to   = domain.minus_to || domain.minus;
+
+        if (!minus_from || !minus_to) {
+            throw Error("Analog domain specified but minus mapping were not provided");
+        }
+
+        if (!this.virtualPoint(minus_from.x, minus_from.y)) {
+            minus_from = this.cell(minus_from.x, minus_from.y, BorderType.Wrap).idx;
+        }
+
+        if (!this.virtualPoint(minus_to.x, minus_to.y)) {
+            minus_to = this.cell(minus_to.x, minus_to.y, BorderType.Wrap).idx;
+        }
+
+        const [dyn_from, dyn_to] = minmaxdyn(minus_from, minus_to);
+
+        if (dyn_to - dyn_from !== line.length) {
+            throw Error("Invalid domain to minus mapping dimensions");
+        }
+    }
+
+    private _generateLine(from: XYObject, to: XYObject, domain: Domain, dyn: number): Line {
+        let points = [...pointseq(from, to)];
+
+        console.log('gl', from, to, points);
+
+        if (domain.virtual) {
+            points.push(...pointseq(domain.virtual.from, domain.virtual.to));
+        }
+
+        switch(domain.role) {
+            case CellRole.Plus:   { points.unshift({ x: -1, y: from.y }); break; }
+            case CellRole.Minus:  { points.unshift({ x: -1, y: from.y }); break; }
+            case CellRole.Analog: { 
+                // this._generateAnalogMinusMapping(domain, points, dyn); 
+                break; 
+            }
+        }
+
+        return {
+            points,
+            role: domain.role,
         }
     }
 
@@ -603,4 +746,43 @@ export default class Grid {
 
         return how;
     }
+}
+
+function getVoltageSourcePlate(coords_minus: XYObject, coords_vcc: XYObject): EmbeddedPlate {
+    return {
+        type: 'Vss',
+        id: -100,
+        position: {
+            cells: [
+                coords_minus,
+                coords_vcc,
+            ]
+        },
+        properties: {
+            volt: 5
+        }
+    }
+}
+
+function getArduinoPinPlate(
+    arduino_node: XYObject, 
+    minus_node: XYObject, 
+    pin_state_initial: PinState,
+    ard_plate_ser_num: number,
+    ): EmbeddedPlate {
+    return {
+        type: 'ard_pin',
+        id: -101 - ard_plate_ser_num++,
+        position: {
+            cells: [
+                {x: arduino_node.x, y: arduino_node.y},
+                {x: minus_node.x, y: minus_node.y}
+            ]
+        },
+        properties: {
+            volt: 5,
+            analogue_max_value: 100
+        },
+        pin_state_initial
+    };
 }

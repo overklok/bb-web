@@ -84,7 +84,7 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
      * @param inputs    optional inputs of the item clicked
      */
     openMenu(menu: ContextMenu, position: XYObject, inputs: (string|number)[]) {
-        this._hideMenu();
+        this.hideMenu();
 
         if (!menu) { throw new Error("Menu is not provided"); }
         if (!position) throw new Error("parameter 'position' is undefined");
@@ -92,9 +92,24 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
         this._drawMenu(menu, position, inputs)
 
         this._menu.onItemClick((item_id: number, alias: string, value: any) => {
-            this._hideMenu();
+            this.hideMenu();
             this._callbacks.ctxmenuitemclick && this._callbacks.ctxmenuitemclick(item_id, alias, value);
         });
+    }
+
+    /**
+     * Hides {@link ContextMenu} instance currently displaying
+     */
+    hideMenu() {
+        if (this._menu) {
+            const container = this._menu.container;
+
+            this._menu.hide(() => {
+                this._container.removeChild(container);
+            });
+
+            this._menu = undefined;
+        }
     }
 
     /**
@@ -138,21 +153,6 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
     }
 
     /**
-     * Hides {@link ContextMenu} instance currently displaying
-     */
-    _hideMenu() {
-        if (this._menu) {
-            const container = this._menu.container;
-
-            this._menu.hide(() => {
-                this._container.removeChild(container);
-            });
-
-            this._menu = undefined;
-        }
-    }
-
-    /**
      * Handles global document click event
      * 
      * @param evt global click event
@@ -168,7 +168,7 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
 
         if (!el) {
             // evt.preventDefault();
-            this._hideMenu();
+            this.hideMenu();
         }
     }
 }

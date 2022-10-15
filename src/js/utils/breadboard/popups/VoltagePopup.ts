@@ -10,7 +10,7 @@ export type CurrentPopupContent = {
 /**
  * Popup that displays when the cursor hovers a {@link Current} 
  */
-export default class CurrentPopup extends Popup<CurrentPopupContent> {
+export default class VoltagePopup extends Popup<CurrentPopupContent> {
     /**
      * Updates the content of current popup 
      * 

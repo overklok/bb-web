@@ -108,57 +108,84 @@ export function classicCopyTextToClipboard(text: string) {
     return success;
 }
 
-export function pointsToCoordList(coords_from: XYObject, coords_to: XYObject) {
-    let x_val = null,
-        y_val = null;
-
-    let from, to;
-
-    if (coords_from.x === coords_to.x) {
-        x_val = coords_from.x;
-        from = coords_from.y;
-        to = coords_to.y;
+/**
+ * Generates sequence of points lying on the same axis (x or y) in ascending order
+ * 
+ * You can substitute the original fixed axis value, 
+ * which stays the same for the each object
+ * to customize the sequence.
+ * 
+ * If p_from.x === p_to.y, the fixed axis is X
+ * If p_from.y === p_to.y, the fixed axis is Y
+ * 
+ * @param p_from    first point of the sequence (included)
+ * @param p_to      last point of the sequence (included)
+ * @param fix_subst fixed axis value substitutor
+ */
+export function* pointseq(p_from: XYObject, p_to: XYObject, fix_subst?: number) {
+    if (isFixedXY(p_from, p_to)) {
+        // X is fixed
+        for (const y of numseq(p_from.y, p_to.y)) yield {x: fix_subst || p_to.x, y};
+    } else {
+        // Y is fixed
+        for (const x of numseq(p_from.x, p_to.x)) yield {x, y: fix_subst || p_to.y};
     }
-
-    if (coords_from.y === coords_to.y) {
-        y_val = coords_from.y;
-        from = coords_from.x;
-        to = coords_to.x;
-    }
-
-    return boundsToCoordList(from, to, x_val, y_val);
 }
 
-export function boundsToCoordList(from: number, to: number, x_val: number, y_val: number) {
-    if (x_val != null && y_val != null) {
-        throw Error("Only one of the dimensions might be fixed");
+export function* countseq<V>(count: number, value: V) {
+    for (let i = 0; i < count; i++) yield value; 
+}
+
+export function *enumerate<T, E extends Generator<T> | T[]>(it: E extends Generator<T> ? Generator<T> : T[]): Generator<[number, T]> {
+    if (Array.isArray(it)) {
+        for (let i = 0; i < it.length; i++) yield [i, it[i]];
+    } else {
+        let start = 0;
+        for (let x of it) yield [start++, x];
     }
+}
 
-    if (x_val == null && y_val == null) {
-        throw Error("One of the dimensions should be fixed");
-    }
-
-    let is_inversed = false;
-
-    if (from > to) {
-        [from, to] = [to, from];
-        is_inversed = true;
-    }
-
-    const list = [];
+/**
+ * Generates sequence of numbers in given range in acsending order
+ * 
+ * @param from first number of the sequence (included)
+ * @param to   last number of the sequence (included)
+ */
+export function* numseq(from: number, to: number) {
+    [from, to] = [Math.min(from, to), Math.max(from, to)];
 
     for (let i = from; i <= to; i++) {
-        let item = x_val != null ? {x: x_val, y: i} : {x: i, y: y_val};
-
-        if (is_inversed) {
-            list.unshift(item);
-        } else {
-            list.push(item);
-        }
+        yield i;
     }
-
-    return list;
 }
+
+export function minmaxfix(from: XYObject, to: XYObject): [number, number] {
+    if (isFixedXY(from, to)) {
+        return [Math.min(from.x, to.x), Math.max(from.x, to.x)];
+    } else {
+        return [Math.min(from.y, to.y), Math.max(from.y, to.y)];
+    }
+}
+
+export function minmaxdyn(from: XYObject, to: XYObject): [number, number] {
+    if (!isFixedXY(from, to)) {
+        return [Math.min(from.x, to.x), Math.max(from.x, to.x)];
+    } else {
+        return [Math.min(from.y, to.y), Math.max(from.y, to.y)];
+    }
+}
+
+export function minmax(v1: number, v2: number): [number, number] {
+    return [Math.min(v1, v2), Math.max(v1, v2)];
+}
+
+export function isFixedXY(from: XYObject, to: XYObject) {
+    if (from.x === to.x) return true;
+    else if (from.y === to.y) return false;
+
+    throw Error("Points are placed on different axes");
+}
+
 
 /**
  * Gets cursor position in SVG coordinate system

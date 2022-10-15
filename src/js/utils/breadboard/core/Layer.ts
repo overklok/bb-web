@@ -6,6 +6,7 @@ import Popup, { PopupContent } from './Popup';
 import { XYObject } from './types';
 
 type ContextMenuCallCallback = (menu?: ContextMenu, position?: XYObject, inputs?: any[]) => void;
+type ContextMenuCloseCallback = () => void;
 
 type PopupDrawCallback<C extends PopupContent> = (popup: Popup<C>, content: C) => void;
 type PopupShowCallback = (popup: Popup<any>) => void;
@@ -46,6 +47,8 @@ export default abstract class Layer<CT = SVG.Container> {
 
     /** Context menu call callback */
     private _onctxmenucall: ContextMenuCallCallback;
+    /** Context menu close callback */
+    private _onctxmenuclose: ContextMenuCloseCallback;
     /** Popup draw callback */
     private _onpopupdraw: PopupDrawCallback<any>;
     /** Popup clear callback */
@@ -152,6 +155,15 @@ export default abstract class Layer<CT = SVG.Container> {
         this._onctxmenucall = cb;
     }
 
+    /**
+     * Attaches context menu close handler
+     * 
+     * @param cb callback handler
+     */
+    onContextMenuClose(cb: ContextMenuCloseCallback): void {
+        this._onctxmenuclose = cb;
+    }
+
     /** 
      * Attaches popup draw handler
      * 
@@ -214,7 +226,7 @@ export default abstract class Layer<CT = SVG.Container> {
      * Clears all context menu deployed at the moment
      */
     protected _clearContextMenus(): void {
-        this._onctxmenucall && this._onctxmenucall();
+        this._onctxmenuclose && this._onctxmenuclose();
     }
 
     /**

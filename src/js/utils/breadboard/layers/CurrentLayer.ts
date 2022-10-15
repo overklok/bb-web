@@ -7,7 +7,7 @@ import Current, { CurrentPath, Thread } from "../core/Current";
 import BackgroundLayer from "./BackgroundLayer";
 import * as Threads from "../core/extras/threads";
 import { XYObject } from "../core/types";
-import CurrentPopup from "../popups/CurrentPopup";
+import VoltagePopup from "../popups/VoltagePopup";
 
 /**
  * Displays and manages {@link Current} objects.
@@ -28,7 +28,7 @@ export default class CurrentLayer extends Layer {
     /** layer's main SVG container */
     protected _container: SVG.Container;
 
-    protected _popups: {[key: number]: CurrentPopup};
+    protected _popups: {[key: number]: VoltagePopup};
 
     /** list of {@link Current} instances being displayed */
     private _currents: {[key: number]: Current};
@@ -367,7 +367,7 @@ export default class CurrentLayer extends Layer {
         if (line_path.length === 0) return null;
 
         const current = new Current(this._currentgroup, thread, this.__schematic),
-              popup   = new CurrentPopup(current.id);
+              popup   = new VoltagePopup(current.id);
 
         this._currents[current.id] = current;
         this._popups[current.id] = popup;

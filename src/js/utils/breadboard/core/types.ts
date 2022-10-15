@@ -31,22 +31,22 @@ export type Domain = {
     horz: boolean,
     from: XYObject,
     to: XYObject
+    minus?: XYObject
     minus_from?: XYObject,
     minus_to?: XYObject,
     /* TODO: Narrow types 'style' and 'role' */
     style?: string,
-    role?: string,
+    role?: CellRole,
     value_orientation?: string,
     bias_inv?: boolean,
     no_labels?: boolean,
-    virtual?: { from: { x: number, y: number }, to: { x: number, y: number } },
+    virtual?: { from: XYObject, to: XYObject },
     label_pos?: "top" | "bottom" | "left" | "right",
     pins_from?: number,
     pins_to?: number,
     line_after?: number,
     line_before?: number,
     pin_state_initial?: PinState,
-    minus?: {x: number, y: number}
 }
 
 /* TODO: Narrow type 'Point' */

@@ -10,17 +10,18 @@ import LabelLayer from "./layers/LabelLayer";
 import PlateLayer, { PlatePrototype } from "./layers/PlateLayer";
 import PopupLayer from './layers/PopupLayer';
 import RegionLayer from "./layers/RegionLayer";
+import DomainLayer from './layers/DomainLayer';
 import CurrentLayer from "./layers/CurrentLayer";
 import ControlsLayer from "./layers/ControlsLayer";
+import SelectorLayer from "./layers/SelectorLayer";
 import BackgroundLayer from "./layers/BackgroundLayer";
 import BoardContextMenu from "./menus/BoardContextMenu";
 
-import {initGradients} from "./styles/gradients";
-import SelectorLayer from "./layers/SelectorLayer";
-import {LAYOUTS as DEFAULT_LAYOUTS} from "./core/extras/layouts";
-import {layoutToBoardInfo} from "./core/extras/board_info";
-import {buildGrid} from "./core/extras/helpers";
-import {Layout} from "./core/types";
+import { initGradients } from "./styles/gradients";
+import { LAYOUTS as DEFAULT_LAYOUTS } from "./core/extras/layouts";
+import { layoutToBoardInfo } from "./core/extras/board_info";
+import { buildGrid } from "./core/extras/helpers";
+import { Layout } from "./core/types";
 import { Thread } from './core/Current';
 import { SerializedPlate, SerializedPlatePosition } from './core/Plate';
 
@@ -63,7 +64,8 @@ export default class Breadboard {
         controls?:   ControlsLayer,
         selector?:   SelectorLayer,
         menu?:       MenuLayer,
-        popup?:      PopupLayer
+        popup?:      PopupLayer,
+        domain?:     DomainLayer
     }
 
     private _callbacks: {
@@ -541,6 +543,7 @@ export default class Breadboard {
         let label_panes = this._brush.nested(); // подписи
         let current     = this._brush.nested(); // токи
         let region      = this._brush.nested(); // области выделения
+        let domain      = this._brush.nested(); // области доменов
         let plate       = this._brush.nested(); // плашки
         let controls    = this._brush.nested(); // органы управления
         let selector    = document.createElement("div"); // боковое меню (селектор плашек)
@@ -561,27 +564,30 @@ export default class Breadboard {
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
         this._layers.menu       = new MenuLayer(menu, this.__grid);
         this._layers.popup      = new PopupLayer(popup, this.__grid);
+        this._layers.domain     = new DomainLayer(domain, this.__grid);
 
         this._layers.background.setDomainConfig(this._layout.domains);
-        this._layers.label.setLayoutConfig(this._layout);
-        this._layers.plate.setPlateStyle(this._layout.plate_style);
-        this._layers.label.setLabelStyle(this._layout.label_style);
         this._layers.background.setBgVisible(this._options.bgVisible);
+        this._layers.domain.setConfig(layoutToBoardInfo(this._layout).cell_struct);
+        this._layers.label.setLayoutConfig(this._layout);
+        this._layers.label.setLabelStyle(this._layout.label_style);
+        this._layers.plate.setPlateStyle(this._layout.plate_style);
 
         /// internal composition of each layer
         for (const layer of Object.values(this._layers)) {
-            layer.compose();
-
             // TODO: Merge context menu calls to popup calls
 
             // connect context menu request handlers to each layer
             layer.onContextMenuCall(this._layers.menu.openMenu.bind(this._layers.menu));
+            layer.onContextMenuClose(this._layers.menu.hideMenu.bind(this._layers.menu));
 
             // connect popup request handlers to each layer
             layer.onPopupDraw(this._layers.popup.drawPopup.bind(this._layers.popup));
             layer.onPopupShow(this._layers.popup.showPopup.bind(this._layers.popup));
             layer.onPopupHide(this._layers.popup.hidePopup.bind(this._layers.popup));
             layer.onPopupClear(this._layers.popup.clearPopup.bind(this._layers.popup));
+
+            layer.compose();
         }
 
         /// включение / отключение режима только чтения
