@@ -18,20 +18,11 @@ export const LAYOUTS: {[key: string]: Layout} = {
             text_bias: 14,
         },
 
-        wrap_width: 1200, // Ширина рабочей области
-        wrap_height: 1350, // Высота рабочей области
-
-        grid_width: 1000,
-        grid_height: 1100,
-
-        grid_gap_x: 20,
-        grid_gap_y: 20,
-
-        grid_rows: 11,   // Количество рядов в сетке точек
-        grid_cols: 10,   // Количество колонок в сетке точек
-
-        grid_pos_x: 120,
-        grid_pos_y: 200,
+        wrap: { x: 1200, y: 1350 }, 
+        size: { x: 1000, y: 1100 },
+        gap:  { x: 20, y: 20 },
+        dim:  { x: 11, y: 10 },
+        pos:  { x: 120, y: 200 },
 
         domains: [
             // Линия аналоговых пинов
@@ -63,7 +54,7 @@ export const LAYOUTS: {[key: string]: Layout} = {
             {horz: false, from: {x: 0, y: 6}, to: {x: -1, y: 9}},
         ],
 
-        points: [
+        aux_point_cats: [
             AuxPointCategory.SourceV5,
         ],
 

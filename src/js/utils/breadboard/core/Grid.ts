@@ -139,7 +139,7 @@ export default class Grid {
 
     /** An array of cells placed on the {@link Grid} */
     private _cells: Cell[][];
-    /** A set of fixed propertis of the {@link Grid} */
+    /** A set of fixed properties of the {@link Grid} */
     private _params: GridParams;
 
     private _lines: Line[];
@@ -161,96 +161,43 @@ export default class Grid {
     private readonly _aux_points: AuxPointMap;
 
     static layoutToElecLayout(layout: Layout, embed_arduino=true) {
-        const grid = new Grid(
-            layout.grid_rows,  layout.grid_cols,
-            layout.grid_width, layout.grid_height,
-            layout.grid_pos_x, layout.grid_pos_y,
-            layout.grid_gap_x, layout.grid_gap_y,
-            layout.wrap_width, layout.wrap_height,
-            layout.points,
-            layout.domains,
-            layout.curr_straight_top_y,
-            layout.curr_straight_bottom_y,
-        );
-
-        return grid.getElecLayout(embed_arduino);
+        return new Grid(layout).getElecLayout(embed_arduino);
     }
 
     /**
-     * Create the {@link Grid} instance
-     * 
-     * @param rows                      number of visible rows of the {@link Grid}'s matrix
-     * @param cols                      number of visible cols of the {@link Grid}'s matrix
-     * @param width                     width of the matrix 
-     * @param height                    height of the matrix
-     * @param pos_x                     horizontal geometric position of the matrix 
-     * @param pos_y                     horizontal geometric position of the matrix
-     * @param gap_x                     horizontal gap between the {@link Cell}s
-     * @param gap_y                     vertical gap between the {@link Cell}s
-     * @param wrap_x                    width of the total board workspace ({@link Grid} wrap)
-     * @param wrap_y                    height of the total board workspace ({@link Grid} wrap)
-     * @param aux_points_categories     categories of auxiliary points needed in the {@link Grid}
-     * @param domains                   point domains
-     * @param curr_straight_top_y       additional info
-     * @param curr_straight_bottom_y    additional info
+     * Creates the {@link Grid} instance
      */
-    constructor(
-        rows: number, cols: number,
-        width: number, height: number,
-        pos_x=0, pos_y=0,
-        gap_x=0, gap_y=0,
-        wrap_x=0, wrap_y = 0,
-        aux_points_categories: string[] = null,
-        domains: Domain[] = null,
-        curr_straight_top_y: number = null,
-        curr_straight_bottom_y: number = null
-    ) {
-        if (rows == null || cols == null || width == null || height == null) {
-            throw new TypeError("All required arguments should be defined");
-        }
-
-        if (rows <= 0 || cols <= 0)     throw new RangeError("Row/Column count should be positive values");
-        if (width <= 0 || height <= 0)  throw new RangeError("Width/Height should be positive values");
-        if (pos_x < 0 || pos_y < 0)     throw new RangeError("Position X/Y should be non-negative values");
-        if (gap_x < 0 || gap_y < 0)     throw new RangeError("Gap X/Y should be non-negative values");
-        if (wrap_x < 0 || wrap_y < 0)   throw new RangeError("Wrap X/Y should be non-negative values");
+    constructor(layout: Layout) {
+        if (layout.dim.x <= 0 || layout.dim.y <= 0)     throw new RangeError("Grid dimensions should be positive values");
+        if (layout.size.x <= 0 || layout.size.y <= 0)   throw new RangeError("Width/Height should be positive values");
+        if (layout.pos.x < 0 || layout.pos.y < 0)       throw new RangeError("Position X/Y should be non-negative values");
+        if (layout.gap.x < 0 || layout.gap.y < 0)       throw new RangeError("Gap X/Y should be non-negative values");
+        if (layout.wrap.x < 0 || layout.wrap.y < 0)     throw new RangeError("Wrap X/Y should be non-negative values");
 
         this._params = {
-            dim: {
-                x: cols,
-                y: rows
-            },
-            size: {
-                x: width,
-                y: height
-            },
-            gap: {
-                x: gap_x,
-                y: gap_y
-            },
-            pos: {
-                x: pos_x,
-                y: pos_y
-            },
-            wrap: {
-                x: wrap_x,
-                y: wrap_y
-            }
+            dim:  { ...layout.dim },
+            size: { ...layout.size },
+            gap:  { ...layout.gap },
+            pos:  { ...layout.pos },
+            wrap: { ...layout.wrap }
         };
 
-        this.curr_straight_top_y = curr_straight_top_y;
-        this.curr_straight_bottom_y = curr_straight_bottom_y;
+        this.curr_straight_top_y = layout.curr_straight_top_y;
+        this.curr_straight_bottom_y = layout.curr_straight_bottom_y;
 
-        this._aux_points_cats = aux_points_categories || [];
+        this._aux_points_cats = layout.aux_point_cats || [];
 
         this._cells = [];
         this._aux_points = new Map();
         this._virtual_points = [];
-        this._createCells();
-        this._initAuxPoints();
-        this._initVirtualPoints(domains);
 
-        this._initLines(domains);
+        this._createCells();
+
+        if (layout.domains) {
+            this._initAuxPoints();
+            this._initVirtualPoints(layout.domains);
+            this._initLines(layout.domains);
+        }
     }
 
     /**
@@ -632,10 +579,6 @@ export default class Grid {
 
         for (const [i, line] of enumerate(lines_analog)) {
             const mapping = this._generateAnalogMinusMapping(line, i);
-
-            if (line.analog.pin_state_initial === 'output') {
-                console.log(mapping, line);
-            }
 
             for (const [ii, point] of enumerate(line.points)) {
                 if (embed_arduino) {

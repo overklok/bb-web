@@ -19,7 +19,6 @@ import BoardContextMenu from "./menus/BoardContextMenu";
 
 import { initGradients } from "./styles/gradients";
 import { LAYOUTS as DEFAULT_LAYOUTS } from "./core/extras/layouts";
-import { buildGrid } from "./core/extras/helpers";
 import { Layout } from "./core/types";
 import { Thread } from './core/Current';
 import { SerializedPlate, SerializedPlatePosition } from './core/Plate';
@@ -77,7 +76,7 @@ export default class Breadboard {
 
     private readonly _layouts: {[key: string]: Layout};
     private _div_wrap: HTMLDivElement;
-    private _layout: any;
+    private _layout: Layout;
     private _cache: { current: any; };
     private _dom_node_parent: any;
     private _spare: boolean;
@@ -131,7 +130,13 @@ export default class Breadboard {
 
     /* TODO: Define 'properties' type */
     static drawPlate(parent: HTMLElement, type: string, properties: unknown) {
-        const grid = new Grid(10, 10, 1000, 700);
+        const grid = new Grid({
+            dim:  { x: 10, y: 10 }, 
+            size: { x: 1000, y: 700 },
+            gap:  { x: 10, y: 10 },
+            pos:  { x: 0, y: 0 },
+            wrap: { x: 1000, y: 700 },
+        });
         const div_wrap = SVG(parent);
 
         const plate_type: any = PlateLayer.typeToPlateClass(type);
@@ -209,13 +214,13 @@ export default class Breadboard {
 
         /// базовая кисть
         this._brush = SVG(div_wrap);
-        this._brush.node.setAttribute("viewBox", "0 0 " + this._layout.wrap_width + " " + this._layout.wrap_height);
+        this._brush.node.setAttribute("viewBox", "0 0 " + this._layout.wrap.x + " " + this._layout.wrap.y);
         this._brush.node.style.width = "100%";
         this._brush.node.style.height = "100%";
 
         this._brush.style({"user-select": "none"});
 
-        this.__grid = buildGrid(this._layout);
+        this.__grid = new Grid(this._layout);
 
         /// создать фильтры
         this._defineFilters();
@@ -761,7 +766,6 @@ export default class Breadboard {
         reader.readAsText(file, "UTF-8");
 
         reader.onload = (evt: ProgressEvent) => {
-            console.log(evt);
             /* TODO */
             let plates = JSON.parse((evt.target as any).result);
 
@@ -826,11 +830,11 @@ export default class Breadboard {
         if (!svg_node) {return}
 
         let canvas = document.createElement("canvas");
-        canvas.style.minWidth = this._layout.wrap_width;
-        canvas.style.minHeight = this._layout.wrap_height;
+        canvas.style.minWidth = String(this._layout.wrap.x);
+        canvas.style.minHeight = String(this._layout.wrap.y);
 
-        canvas.setAttribute('width', this._layout.wrap_width);
-        canvas.setAttribute('height', this._layout.wrap_height);
+        canvas.setAttribute('width', String(this._layout.wrap.x));
+        canvas.setAttribute('height', String(this._layout.wrap.y));
 
         document.body.appendChild(canvas);
 
@@ -841,7 +845,7 @@ export default class Breadboard {
         let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
 
         if (rasterize) {
-            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: this._layout.wrap_height});
+            canvg(canvas, svgString, {ignoreDimensions: false, scaleHeight: this._layout.wrap.y});
 
             let img = canvas.toDataURL("image/png");
 

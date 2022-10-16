@@ -1,9 +1,7 @@
-import Grid, { BorderType } from "../Grid";
-import SVG from "svg.js";
-import PlateLayer from "../../layers/PlateLayer";
 import defaults from "lodash/defaults";
+
+import Grid, { BorderType } from "../Grid";
 import { CellRole, Layout, XYObject } from "../types";
-import { SerializedPlate } from "../Plate";
 
 /**
  * Performs a modulo division
@@ -43,7 +41,7 @@ export const coverObjects = (d: any, s: any) => defaults(d, s);
  * @return generator that loops over labeled cells
  */
 export function* extractLabeledCells(layout: Layout, role: CellRole = null) {
-    const grid = buildGrid(layout);
+    const grid = new Grid(layout);
 
     for (const domain of layout.domains) {
         if (domain.no_labels) continue;
@@ -192,61 +190,6 @@ export function isFixedXY(from: XYObject, to: XYObject) {
     else if (from.y === to.y) return false;
 
     throw Error("Points are placed on different axes");
-}
-
-
-/**
- * Gets cursor position in SVG coordinate system
- *
- * @param svg_main    SVG node in whose coordinate system the point is needed
- * @param clientX     X cursor position
- * @param clientY     Y cursor position
- *
- * @returns the point whose coordinates define the position 
- *          of the cursor in the coordinate system of the this SVG node 
- */
-export function getCursorPoint(svg_main: SVGSVGElement, clientX: number, clientY: number) {
-    let svg_point = svg_main.createSVGPoint();
-
-    svg_point.x = clientX;
-    svg_point.y = clientY;
-
-    return svg_point.matrixTransform(svg_main.getScreenCTM().inverse());
-}
-
-export function buildGrid(layout: Layout) {
-    return new Grid(
-        layout.grid_rows,  layout.grid_cols,
-        layout.grid_width, layout.grid_height,
-        layout.grid_pos_x, layout.grid_pos_y,
-        layout.grid_gap_x, layout.grid_gap_y,
-        layout.wrap_width, layout.wrap_height,
-        layout.points,
-        layout.domains,
-        layout.curr_straight_top_y,
-        layout.curr_straight_bottom_y,
-    );
-}
-
-export function comparePlates(layout: Layout, plate1: SerializedPlate, plate2: SerializedPlate) {
-    const grid = buildGrid(layout);
-    const svg = SVG(document.createElement("div"));
-
-    return PlateLayer.comparePlates(svg, grid, plate1, plate2);
-}
-
-export function getAbsolutePosition(element: HTMLElement) {
-    let absX = 0, 
-        absY = 0;
-
-    do {
-        absX += element.offsetLeft;
-        absY += element.offsetTop;
-
-        element = element.offsetParent as HTMLElement;
-    } while ( element )
-
-    return {x: absX, y: absY};
 }
 
 export function getRandomInt(min: number, max: number) {

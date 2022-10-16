@@ -6,7 +6,7 @@ import Grid, { AuxPointCategory, BorderType, AuxPoint, AuxPointType } from "../c
 import Cell from "../core/Cell";
 
 import {GRADIENTS} from "../styles/gradients";
-import {getCursorPoint} from "../core/extras/helpers";
+import {getCursorPoint} from "../core/extras/helpers_svg";
 import { Domain } from "../core/types";
 
 export enum DomainSchematicStyle {

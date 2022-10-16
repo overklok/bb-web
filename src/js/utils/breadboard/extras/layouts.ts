@@ -16,20 +16,11 @@ export const LAYOUTS: {[key: string]: Layout} = {
             text_bias: 10,
         },
 
-        wrap_width:     850,  // Ширина рабочей области
-        wrap_height:    1300, // Высота рабочей области
-
-        grid_width:     560,
-        grid_height:    1140,
-
-        grid_gap_x:     10,
-        grid_gap_y:     10,
-
-        grid_rows:      16,   // Количество рядов в сетке точек
-        grid_cols:      8,   // Количество колонок в сетке точек
-
-        grid_pos_x:     190,
-        grid_pos_y:     90,
+        wrap: { x: 850, y: 1300 },
+        size: { x: 560, y: 1140 },
+        gap:  { x: 10, y: 10 },
+        dim:  { x: 8, y: 16 },
+        pos:  { x: 190, y: 90 },
 
         domains: [
             // Верхняя линия
@@ -119,7 +110,7 @@ export const LAYOUTS: {[key: string]: Layout} = {
             {horz: false, from: {x: -1, y: 6},  to: {x: -1, y: 7}},
         ],
 
-        points: [
+        aux_point_cats: [
             AuxPointCategory.SourceV8,
             AuxPointCategory.Usb1,
             AuxPointCategory.Usb3,

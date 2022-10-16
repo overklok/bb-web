@@ -3,7 +3,8 @@ import isEqual from "lodash/isEqual";
 
 import Grid from "../core/Grid";
 import Layer from "../core/Layer";
-import {getCursorPoint, getRandomInt} from "../core/extras/helpers";
+import { getCursorPoint } from "../core/extras/helpers_svg";
+import { getRandomInt } from "../core/extras/helpers";
 
 import Plate, {
     PlateProps,
@@ -50,9 +51,9 @@ export type PlatePrototype = {
  * @category Breadboard
  */
 type PlateStyle = {
-    quad_size: number;
-    led_size: number;
-    label_font_size: number;
+    quad_size?: number;
+    led_size?: number;
+    label_font_size?: number;
 }
 
 /**

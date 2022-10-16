@@ -1,6 +1,6 @@
 import '../styles/menu.css';
 import ContextMenu from "../core/ContextMenu";
-import { getAbsolutePosition } from '../core/extras/helpers';
+import { getAbsolutePosition } from '../core/extras/helpers_svg';
 import Grid from "../core/Grid";
 import { XYObject } from "../core/types";
 import Layer from '../core/Layer';

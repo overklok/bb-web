@@ -1,3 +1,6 @@
+import Cell from "./Cell";
+import { AuxPointCategory } from "./Grid";
+
 /**
  * Coordinates in two-dimensional space
  * 
@@ -64,23 +67,27 @@ type Point = string;
  * @category Breadboard
  */
 export type Layout = {
-    plate_style?: { label_font_size?: number, quad_size?: number },
-    label_style?: { font_size: number, text_bias: number },
-    wrap_width: number,
-    wrap_height: number,
-    grid_width: number,
-    grid_height: number,
-    grid_gap_x: number,
-    grid_gap_y: number,
-    grid_rows: number,
-    grid_cols: number,
-    grid_pos_x: number,
-    grid_pos_y: number,
-    domains: Domain[],
-    points: Point[],
-    controls: { horz: boolean },
-    curr_straight_top_y: number,
-    curr_straight_bottom_y: number
+    /** size of the total board workspace ({@link Grid} wrap) */
+    wrap: { x: number, y: number },
+    /** size of the matrix */
+    size: { x: number, y: number },
+
+    /** gaps between cells */
+    gap: XYObject,
+    /** number of rows & cols of the matrix */
+    dim: XYObject,
+    /** geometric position of the matrix */
+    pos: XYObject,
+
+    domains?: Domain[],
+    aux_point_cats?: AuxPointCategory[],
+    controls?: { horz: boolean },
+
+    curr_straight_top_y?: number,
+    curr_straight_bottom_y?: number,
+
+    plate_style?: { label_font_size?: number, quad_size?: number, led_size?: number },
+    label_style?: { font_size: number, text_bias: number, led_size?: number },
 }
 
 /**
