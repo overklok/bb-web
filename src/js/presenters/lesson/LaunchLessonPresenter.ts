@@ -51,7 +51,7 @@ export default class LaunchLessonPresenter extends Presenter<LaunchView.LaunchVi
             this.progress.validateExerciseSolution(exercise.id, {
                 code: this.code.getState().chainset,
                 board: this.board.getState().plates,
-                board_info: this.board.getCurrentBoardInfo(true),
+                board_info: this.board.getElecLayout(false),
                 board_layout_name: this.board.getBoardLayout()
             });
         }

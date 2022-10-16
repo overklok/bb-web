@@ -10,7 +10,7 @@ import LabelLayer from "./layers/LabelLayer";
 import PlateLayer, { PlatePrototype } from "./layers/PlateLayer";
 import PopupLayer from './layers/PopupLayer';
 import RegionLayer from "./layers/RegionLayer";
-import DomainLayer from './layers/DomainLayer';
+import VoltageLayer from './layers/VoltageLayer';
 import CurrentLayer from "./layers/CurrentLayer";
 import ControlsLayer from "./layers/ControlsLayer";
 import SelectorLayer from "./layers/SelectorLayer";
@@ -19,7 +19,6 @@ import BoardContextMenu from "./menus/BoardContextMenu";
 
 import { initGradients } from "./styles/gradients";
 import { LAYOUTS as DEFAULT_LAYOUTS } from "./core/extras/layouts";
-import { layoutToBoardInfo } from "./core/extras/board_info";
 import { buildGrid } from "./core/extras/helpers";
 import { Layout } from "./core/types";
 import { Thread } from './core/Current';
@@ -65,7 +64,7 @@ export default class Breadboard {
         selector?:   SelectorLayer,
         menu?:       MenuLayer,
         popup?:      PopupLayer,
-        domain?:     DomainLayer
+        domain?:     VoltageLayer
     }
 
     private _callbacks: {
@@ -150,10 +149,10 @@ export default class Breadboard {
         div_wrap.viewbox(0, 0, width, height);
     }
 
-    getBoardInfo() {
+    getElecLayout() {
         if (!this._layout) throw Error("No layout specified yet");
 
-        return layoutToBoardInfo(this._layout);
+        return this.__grid.getElecLayout();
     }
 
     getContainer() {
@@ -564,11 +563,10 @@ export default class Breadboard {
         this._layers.selector   = new SelectorLayer(selector, this.__grid);
         this._layers.menu       = new MenuLayer(menu, this.__grid);
         this._layers.popup      = new PopupLayer(popup, this.__grid);
-        this._layers.domain     = new DomainLayer(domain, this.__grid);
+        this._layers.domain     = new VoltageLayer(domain, this.__grid);
 
         this._layers.background.setDomainConfig(this._layout.domains);
         this._layers.background.setBgVisible(this._options.bgVisible);
-        this._layers.domain.setConfig(layoutToBoardInfo(this._layout).cell_struct);
         this._layers.label.setLayoutConfig(this._layout);
         this._layers.label.setLabelStyle(this._layout.label_style);
         this._layers.plate.setPlateStyle(this._layout.plate_style);

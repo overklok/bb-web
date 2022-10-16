@@ -175,6 +175,14 @@ export function minmaxdyn(from: XYObject, to: XYObject): [number, number] {
     }
 }
 
+export function fixXY(from: XYObject, to: XYObject): number {
+    if (isFixedXY(from, to)) {
+        return from.x;
+    } else {
+        return from.y;
+    }
+}
+
 export function minmax(v1: number, v2: number): [number, number] {
     return [Math.min(v1, v2), Math.max(v1, v2)];
 }

@@ -1,8 +1,6 @@
-import { max } from "lodash";
-import { css } from "react-select/src/components/Control";
 import Cell from "./Cell";
-import {pointseq, minmaxdyn, enumerate, minmax, countseq} from "./extras/helpers";
-import {CellRole, Domain, PinState, XYObject} from "./types";
+import {pointseq, minmaxdyn, enumerate, minmax, countseq, fixXY} from "./extras/helpers";
+import {CellRole, Domain, Layout, PinState, XYObject} from "./types";
 
 /**
  * Type of 'out-of-bound' behavour for cell search functions
@@ -79,6 +77,7 @@ type GridParams = {
 type LineAnalogData = {
     pin_state_initial: PinState,
     minus: { 
+        single?: XYObject,
         from: XYObject, 
         to: XYObject
     }
@@ -100,9 +99,9 @@ type EmbeddedPlate = {
     pin_state_initial?: PinState,
 }
 
-type ElecricalStructure = {
+type ElecLayout = {
     emb_plates: EmbeddedPlate[],
-    cell_struct: { [line_id: number]: XYObject[] }
+    cell_struct: { [line_id: number|string]: XYObject[] }
 }
 
 /**
@@ -160,6 +159,22 @@ export default class Grid {
      * so they should be stored in specific attribute
      */
     private readonly _aux_points: AuxPointMap;
+
+    static layoutToElecLayout(layout: Layout, embed_arduino=true) {
+        const grid = new Grid(
+            layout.grid_rows,  layout.grid_cols,
+            layout.grid_width, layout.grid_height,
+            layout.grid_pos_x, layout.grid_pos_y,
+            layout.grid_gap_x, layout.grid_gap_y,
+            layout.wrap_width, layout.wrap_height,
+            layout.points,
+            layout.domains,
+            layout.curr_straight_top_y,
+            layout.curr_straight_bottom_y,
+        );
+
+        return grid.getElecLayout(embed_arduino);
+    }
 
     /**
      * Create the {@link Grid} instance
@@ -598,8 +613,8 @@ export default class Grid {
         }
     }
 
-    public getElectricalStructure(embed_arduino: boolean = true): ElecricalStructure {
-        const es: ElecricalStructure = { cell_struct: {}, emb_plates: [] };
+    public getElecLayout(embed_arduino: boolean = true): ElecLayout {
+        const es: ElecLayout = { cell_struct: {}, emb_plates: [] };
 
         const lines_analog = this._lines.filter(l => l.analog),
               lines_normal = this._lines.filter(l => !l.analog);
@@ -617,6 +632,10 @@ export default class Grid {
 
         for (const [i, line] of enumerate(lines_analog)) {
             const mapping = this._generateAnalogMinusMapping(line, i);
+
+            if (line.analog.pin_state_initial === 'output') {
+                console.log(mapping, line);
+            }
 
             for (const [ii, point] of enumerate(line.points)) {
                 if (embed_arduino) {
@@ -717,7 +736,7 @@ export default class Grid {
      * @returns 
      */
     private _generateAnalogMinusMapping(line: Line, dyn: number): XYObject[] {
-        let { from, to } = line.analog.minus;
+        let { from, to, single } = line.analog.minus;
 
         if (!from || !to) {
             throw Error("Analog domain specified but minus mapping were not provided");
@@ -732,16 +751,15 @@ export default class Grid {
         }
 
         const [dyn_from, dyn_to] = minmaxdyn(from, to);
+        const fix = fixXY(from, to);
 
         if (dyn_to - dyn_from !== line.points.length - 1) {
             throw Error("Invalid domain to minus mapping dimensions");
         }
 
-        const is_same = (from.x === to.x) && (from.y === to.y);
-
         // in-domain minus mapper
-        const mapper = is_same? countseq(line.points.length, from) :
-                                pointseq(from, to, dyn + dyn_from);
+        const mapper = single ? countseq(line.points.length, single) :
+                                pointseq(from, to, fix);
         
         return [...mapper];
     }
@@ -762,6 +780,7 @@ export default class Grid {
                 analog = { 
                     pin_state_initial: domain.pin_state_initial,
                     minus: {
+                        single: domain.minus,
                         from: domain.minus_from || domain.minus,
                         to: domain.minus_to || domain.minus
                     },

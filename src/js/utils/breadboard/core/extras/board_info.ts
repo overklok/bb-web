@@ -29,7 +29,7 @@ export type BoardInfo = {
 function layoutToBoardInfo(layout: Layout, no_arduino_embedded=false): BoardInfo {
     const grid = buildGrid(layout);
 
-    return grid.getElectricalStructure();
+    return grid.getElecLayout();
 }
 
 function getVoltageSourcePlate(coords_minus: XYObject, coords_vcc: XYObject) {

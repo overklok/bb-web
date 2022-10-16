@@ -1,4 +1,3 @@
-import {layoutToBoardInfo} from "../../utils/breadboard/core/extras/board_info";
 import {LAYOUTS as CORE_LAYOUTS} from "../../utils/breadboard/core/extras/layouts";
 import {LAYOUTS} from "../../utils/breadboard/extras/layouts";
 
@@ -12,7 +11,8 @@ import AsynchronousModel, {
 import {extractLabeledCells} from "../../utils/breadboard/core/extras/helpers";
 import { ServerGreeting } from "./ConnectionModel";
 import { CellRole, Layout } from "~/js/utils/breadboard/core/types";
-import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
+import { SerializedPlate } from "~/js/utils/breadboard/core/Plate";
+import Grid from "~/js/utils/breadboard/core/Grid";
 
 // Event channels
 const enum ChannelsTo {
@@ -158,11 +158,11 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         }));
     }
 
-    public getCurrentBoardInfo(no_arduino_embedded=false) {
+    public getElecLayout(embed_arduino=true) {
         const layout_name = this.state.layout_name;
         if (!layout_name) return;
 
-        const board_info = layoutToBoardInfo(BoardModel.Layouts[layout_name], no_arduino_embedded);
+        const board_info = Grid.layoutToElecLayout(BoardModel.Layouts[layout_name], embed_arduino);
 
         return board_info;
     }
@@ -184,7 +184,7 @@ export default class BoardModel extends AsynchronousModel<BreadboardModelState> 
         // disallow board data before confirmation
         this.setState({layout_confirmed: false});
 
-        const board_info = this.getCurrentBoardInfo();
+        const board_info = this.getElecLayout();
 
         this.send(ChannelsTo.BoardLayout, {layout_name, board_info});
     }

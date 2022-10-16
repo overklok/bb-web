@@ -12,7 +12,7 @@ type VoltageConfig = {[line_id: number]: XYObject[]};
  * @category Breadboard
  * @subcategory Layers
  */
-export default class DomainLayer extends Layer {
+export default class VoltageLayer extends Layer {
     /** CSS class of the layer */
     static get Class() {return "bb-layer-domain"}
 
@@ -39,7 +39,7 @@ export default class DomainLayer extends Layer {
     ) {
         super(container, grid, schematic, detailed, verbose);
 
-        this._container.addClass(DomainLayer.Class);
+        this._container.addClass(VoltageLayer.Class);
 
         this._hovergroup = undefined;
     }
@@ -48,7 +48,7 @@ export default class DomainLayer extends Layer {
      * @inheritdoc
      */
     public compose() {
-        this._drawHoverZones();
+        // this._drawHoverZones();
     }
 
     public setConfig(voltage_lines: VoltageConfig) {
