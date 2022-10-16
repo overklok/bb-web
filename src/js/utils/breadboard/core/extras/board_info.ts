@@ -27,7 +27,9 @@ export type BoardInfo = {
  * @category Breadboard
  */
 function layoutToBoardInfo(layout: Layout, no_arduino_embedded=false): BoardInfo {
-    return {cell_struct: {}, emb_plates: []};
+    const grid = buildGrid(layout);
+
+    return grid.getElectricalStructure();
 }
 
 function getVoltageSourcePlate(coords_minus: XYObject, coords_vcc: XYObject) {

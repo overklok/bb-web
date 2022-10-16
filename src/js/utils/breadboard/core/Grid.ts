@@ -1,5 +1,7 @@
+import { max } from "lodash";
+import { css } from "react-select/src/components/Control";
 import Cell from "./Cell";
-import {pointseq, minmaxdyn, enumerate, minmax} from "./extras/helpers";
+import {pointseq, minmaxdyn, enumerate, minmax, countseq} from "./extras/helpers";
 import {CellRole, Domain, PinState, XYObject} from "./types";
 
 /**
@@ -74,9 +76,18 @@ type GridParams = {
     wrap: {x: number, y: number}
 }
 
+type LineAnalogData = {
+    pin_state_initial: PinState,
+    minus: { 
+        from: XYObject, 
+        to: XYObject
+    }
+}
+
 type Line = {
     points: XYObject[],
-    role: CellRole
+    role: CellRole,
+    analog?: LineAnalogData
 }
 
 type EmbeddedPlate = {
@@ -587,11 +598,52 @@ export default class Grid {
         }
     }
 
-    public getElectricalStructure(embed_arduino: boolean = false): ElecricalStructure {
+    public getElectricalStructure(embed_arduino: boolean = true): ElecricalStructure {
         const es: ElecricalStructure = { cell_struct: {}, emb_plates: [] };
 
-        for (const [i, line] of enumerate(this._lines)) {
+        const lines_analog = this._lines.filter(l => l.analog),
+              lines_normal = this._lines.filter(l => !l.analog);
+
+        let line_id_minus = undefined,
+            line_id_plus  = undefined;
+
+        for (const [i, line] of enumerate(lines_normal)) {
             es.cell_struct[i] = line.points;
+            if (line.role === CellRole.Minus) line_id_minus = i;
+            if (line.role === CellRole.Plus)  line_id_plus  = i;
+        }
+
+        let arduino_pin_num = 0;
+
+        for (const [i, line] of enumerate(lines_analog)) {
+            const mapping = this._generateAnalogMinusMapping(line, i);
+
+            for (const [ii, point] of enumerate(line.points)) {
+                if (embed_arduino) {
+                    const point_minus = mapping[ii];
+
+                    const idx_last = Math.max(...Object.keys(es.cell_struct).map(k => Number(k)))
+                    es.cell_struct[idx_last + 1] = [point];
+
+                    es.emb_plates.push(
+                        getArduinoPinPlate(
+                            point, 
+                            point_minus, 
+                            line.analog.pin_state_initial,
+                            arduino_pin_num++
+                        )
+                    )
+                } else {
+                    // re-map arduino pins to cell structure
+                    if (line.analog.pin_state_initial === PinState.Output) {
+                        es.cell_struct[line_id_minus].push(point);
+                    }
+
+                    if (line.analog.pin_state_initial === PinState.Input) {
+                        es.cell_struct[line_id_plus].push(point);
+                    }
+                }
+            }
         }
 
         const point_minus = this.auxPoint(AuxPointType.Gnd) as AuxPoint,
@@ -601,33 +653,6 @@ export default class Grid {
             es.emb_plates.push(
                 getVoltageSourcePlate(point_minus.idx, point_vcc.idx)
             );
-        }
-
-        if (embed_arduino) {
-
-            const arduino_remap: { minus: XYObject[], plus: XYObject[] } = {
-                minus: [],
-                plus: []
-            };
-
-            const lines_ext: XYObject[][] = [];
-            const emb_plates: any[] = [];
-
-            // in-domain minus mapper
-            // let minus_line = domain.minus ? countseq(line.length, minus_from) :
-            //                                 pointseq(minus_from, minus_to, dyn + dyn_from)
-
-            // for (const [i, point_minus] of enumerate(minus_line)) {
-            //     const point_plus = line[i];
-
-            //     if (no_arduino_embedded) {
-            //         if (domain.pin_state_initial == 'output') arduino_remap.minus.push(point_plus);
-            //         if (domain.pin_state_initial == 'input') arduino_remap.plus.push(point_plus);
-            //     } else {
-            //         lines_ext.push([point_plus]);
-            //         emb_plates.push(getArduinoPinPlate(point_plus, point_minus, domain.pin_state_initial, 0));
-            //     }
-            // }
         }
 
         return es;
@@ -649,9 +674,7 @@ export default class Grid {
         const from  = this.cell(domain.from.x, domain.from.y, BorderType.Wrap).idx,
               to    = this.cell(domain.to.x, domain.to.y, BorderType.Wrap).idx;
 
-        // const [dyn_min, dyn_max] = minmaxdyn(from, to);
-
-        let dyn_min, dyn_max, fix_val;
+        let dyn_min, dyn_max;
 
         if (domain.horz) {
             [dyn_min, dyn_max] = [from.y, to.y];
@@ -672,46 +695,61 @@ export default class Grid {
                 _to   = { x: dyn, y: to.y };
             }
 
-            if (domain.role === CellRole.Analog) {
-                for (const point of pointseq(_from, _to)) {
-                    lines.push(this._generateLine(point, point, domain, 0));
-                }
-            } else {
-                lines.push(this._generateLine(_from, _to, domain, dyn));
-            }
-
+            lines.push(this._generateLine(_from, _to, domain));
         }
 
         return lines;
     }
 
-    private _generateAnalogMinusMapping(domain: Domain, line: XYObject[], dyn: number) {
-        let minus_from = domain.minus_from || domain.minus,
-            minus_to   = domain.minus_to || domain.minus;
+    /**
+     * Returns analog minus point sequence for given line
+     * 
+     * When exporting electronic structure data,
+     * it's required to specifiy a pairing minus point 
+     * for each analog point.
+     * 
+     * For the visual structure of the board, an analog pin
+     * does not specify its pair because it does not have a visual representation
+     * 
+     * @param line line for which the mapping will be generated
+     * @param dyn  
+     * 
+     * @returns 
+     */
+    private _generateAnalogMinusMapping(line: Line, dyn: number): XYObject[] {
+        let { from, to } = line.analog.minus;
 
-        if (!minus_from || !minus_to) {
+        if (!from || !to) {
             throw Error("Analog domain specified but minus mapping were not provided");
         }
 
-        if (!this.virtualPoint(minus_from.x, minus_from.y)) {
-            minus_from = this.cell(minus_from.x, minus_from.y, BorderType.Wrap).idx;
+        if (!this.virtualPoint(from.x, from.y)) {
+            from = this.cell(from.x, from.y, BorderType.Wrap).idx;
         }
 
-        if (!this.virtualPoint(minus_to.x, minus_to.y)) {
-            minus_to = this.cell(minus_to.x, minus_to.y, BorderType.Wrap).idx;
+        if (!this.virtualPoint(to.x, to.y)) {
+            to = this.cell(to.x, to.y, BorderType.Wrap).idx;
         }
 
-        const [dyn_from, dyn_to] = minmaxdyn(minus_from, minus_to);
+        const [dyn_from, dyn_to] = minmaxdyn(from, to);
 
-        if (dyn_to - dyn_from !== line.length) {
+        if (dyn_to - dyn_from !== line.points.length - 1) {
             throw Error("Invalid domain to minus mapping dimensions");
         }
+
+        const is_same = (from.x === to.x) && (from.y === to.y);
+
+        // in-domain minus mapper
+        const mapper = is_same? countseq(line.points.length, from) :
+                                pointseq(from, to, dyn + dyn_from);
+        
+        return [...mapper];
     }
 
-    private _generateLine(from: XYObject, to: XYObject, domain: Domain, dyn: number): Line {
-        let points = [...pointseq(from, to)];
+    private _generateLine(from: XYObject, to: XYObject, domain: Domain): Line {
+        let analog: LineAnalogData = undefined;
 
-        console.log('gl', from, to, points);
+        let points = [...pointseq(from, to)];
 
         if (domain.virtual) {
             points.push(...pointseq(domain.virtual.from, domain.virtual.to));
@@ -721,13 +759,20 @@ export default class Grid {
             case CellRole.Plus:   { points.unshift({ x: -1, y: from.y }); break; }
             case CellRole.Minus:  { points.unshift({ x: -1, y: from.y }); break; }
             case CellRole.Analog: { 
-                // this._generateAnalogMinusMapping(domain, points, dyn); 
+                analog = { 
+                    pin_state_initial: domain.pin_state_initial,
+                    minus: {
+                        from: domain.minus_from || domain.minus,
+                        to: domain.minus_to || domain.minus
+                    },
+                }
                 break; 
             }
         }
 
         return {
             points,
+            analog,
             role: domain.role,
         }
     }
