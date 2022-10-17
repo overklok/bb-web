@@ -3,7 +3,7 @@ import SVG from "svg.js";
 import Layer from "../core/Layer";
 import {extractLabeledCells} from "~/js/utils/breadboard/core/extras/helpers";
 import Grid from "../core/Grid";
-import { CellRole, Layout } from "../core/types";
+import { CellRole, Layout } from "../core/extras/types";
 
 const SYMBOL_UP = "🠩"
 const SYMBOL_DOWN = "🠫"

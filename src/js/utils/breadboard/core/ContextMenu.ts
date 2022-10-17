@@ -1,4 +1,4 @@
-import { XYObject } from "./types"
+import { XYPoint } from "./extras/types"
 
 
 /**
@@ -197,7 +197,7 @@ export default class ContextMenu {
      * @param position  position when the right click is occurred
      * @param inputs    optional input values to pass into the items that has input fields
      */
-    public draw(position: XYObject, inputs: any[] = []): HTMLDivElement {
+    public draw(position: XYPoint, inputs: any[] = []): HTMLDivElement {
         this._container = document.createElement('div');
         this._container.classList.add(ContextMenu.Class);
         this._container.style.opacity = '0';

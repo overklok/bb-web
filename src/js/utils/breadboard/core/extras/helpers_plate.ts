@@ -2,7 +2,7 @@ import SVG from "svg.js";
 
 import Grid from "../Grid";
 import PlateLayer from "../../layers/PlateLayer";
-import { Layout } from "../types";
+import { Layout } from "./types";
 import { SerializedPlate } from "../Plate";
 
 export function comparePlates(layout: Layout, plate1: SerializedPlate, plate2: SerializedPlate) {

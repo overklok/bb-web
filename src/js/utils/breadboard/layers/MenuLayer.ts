@@ -2,7 +2,7 @@ import '../styles/menu.css';
 import ContextMenu from "../core/ContextMenu";
 import { getAbsolutePosition } from '../core/extras/helpers_svg';
 import Grid from "../core/Grid";
-import { XYObject } from "../core/types";
+import { XYPoint } from "../core/extras/types";
 import Layer from '../core/Layer';
 
 /**
@@ -83,7 +83,7 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
      * @param position  position of the mouse click
      * @param inputs    optional inputs of the item clicked
      */
-    openMenu(menu: ContextMenu, position: XYObject, inputs: (string|number)[]) {
+    openMenu(menu: ContextMenu, position: XYPoint, inputs: (string|number)[]) {
         this.hideMenu();
 
         if (!menu) { throw new Error("Menu is not provided"); }
@@ -119,7 +119,7 @@ export default class MenuLayer extends Layer<HTMLDivElement> {
      * @param position position of the mouse click
      * @param inputs   optional inputs of the item clicked
      */
-    _drawMenu(menu: ContextMenu, position: XYObject, inputs: (string|number)[]) {
+    _drawMenu(menu: ContextMenu, position: XYPoint, inputs: (string|number)[]) {
         this._menu = menu;
 
         const container_menu = this._menu.draw(position, inputs);

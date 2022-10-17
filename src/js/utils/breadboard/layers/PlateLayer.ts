@@ -15,96 +15,96 @@ import Plate, {
 
 import ContextMenu from "../core/ContextMenu";
 import PlateContextMenu from "../menus/PlateContextMenu";
-import ResistorPlate        from "../plates/ResistorPlate";
-import PhotoresistorPlate   from "../plates/PhotoresistorPlate";
-import RheostatPlate        from "../plates/RheostatPlate";
-import BridgePlate          from "../plates/BridgePlate";
-import ButtonPlate          from "../plates/ButtonPlate";
-import SwitchPlate          from "../plates/SwitchPlate";
-import CapacitorPlate       from "../plates/CapacitorPlate";
-import TransistorPlate      from "../plates/TransistorPlate";
-import InductorPlate        from "../plates/InductorPlate";
-import RelayPlate           from "../plates/RelayPlate";
-import DiodePlate           from "../plates/LEDPlate";
-import MotorPlate           from "../plates/MotorPlate";
-import RGBPlate             from "../plates/RGBPlate";
-import DummyPlate           from "../plates/DummyPlate";
-import BuzzerPlate          from "../plates/BuzzerPlate";
+import ResistorPlate from "../plates/ResistorPlate";
+import PhotoresistorPlate from "../plates/PhotoresistorPlate";
+import RheostatPlate from "../plates/RheostatPlate";
+import BridgePlate from "../plates/BridgePlate";
+import ButtonPlate from "../plates/ButtonPlate";
+import SwitchPlate from "../plates/SwitchPlate";
+import CapacitorPlate from "../plates/CapacitorPlate";
+import TransistorPlate from "../plates/TransistorPlate";
+import InductorPlate from "../plates/InductorPlate";
+import RelayPlate from "../plates/RelayPlate";
+import DiodePlate from "../plates/LEDPlate";
+import MotorPlate from "../plates/MotorPlate";
+import RGBPlate from "../plates/RGBPlate";
+import DummyPlate from "../plates/DummyPlate";
+import BuzzerPlate from "../plates/BuzzerPlate";
 import UnkPlate from "../plates/UnkPlate";
 import Cell from "../core/Cell";
 
 /**
  * Object describing required conditions for specific type of plate
  * when generating random plate compositions
- * 
+ *
  * @category Breadboard
  */
 export type PlatePrototype = {
     type: string;
     quantity: number;
     properties: PlateProps;
-}
+};
 
 /**
  * Visual properties of the plate
- * 
+ *
  * @category Breadboard
  */
 type PlateStyle = {
     quad_size?: number;
     led_size?: number;
     label_font_size?: number;
-}
+};
 
 /**
  * Types of user actions notified in plate change events
- * 
+ *
  * @category Breadboard
  */
 enum PlateChangeActionType {
     /** plate's input/output has been changed */
-    State = 'state',
+    State = "state",
     /** plate has been rotated */
-    Rotate = 'rotate',
+    Rotate = "rotate",
     /** plate has been moved */
-    Move = 'move',
+    Move = "move",
     /** plate has been removed */
-    Remove = 'remove'
+    Remove = "remove"
 }
 
 /**
  * Description of a single plate change on the board
- * 
- * This type of argument is used to notify user-driven actions in 
+ *
+ * This type of argument is used to notify user-driven actions in
  * 'plate change' events (plates has been changed manually via UI)
- * 
+ *
  * @category Breadboard
  */
 type PlateChangeCallbackArg = {
     id: number;
     action: PlateChangeActionType;
-}
+};
 
 /**
  * Description of a massive plate change on the board
- * 
- * This type of argument is used to notify external changes in 
+ *
+ * This type of argument is used to notify external changes in
  * 'plate change' events (plates has been changed programmatically via API)
- * 
+ *
  * @category Breadboard
  */
-type MassChangeCallbackArg = { [key: number]: Plate }
+type MassChangeCallbackArg = { [key: number]: Plate };
 
 /**
  * An argument that is passed to the 'plate change' event handler when triggered
- * 
+ *
  * @category Breadboard
  */
 type ChangeCallbackArg = PlateChangeCallbackArg | MassChangeCallbackArg;
 
 /**
  * A 'plate change' event handler
- * 
+ *
  * @category Breadboard
  */
 type ChangeCallback = (data: ChangeCallbackArg) => void;
@@ -112,34 +112,36 @@ type ChangeCallback = (data: ChangeCallbackArg) => void;
 /**
  * An object that imitates real mouse events
  * when calling some handlers manually
- * 
+ *
  * @category Breadboard
  */
 type PseudoMouseEvent = {
     which: number;
     clientX: number;
     clientY: number;
-}
+};
 
 /**
  * Contains plates, provides an API to create, delete plates and update their states
- * 
- * Provides an admin user interface to compose plates on the board and 
- * to manually change their individual states by instantiating and managing 
+ *
+ * Provides an admin user interface to compose plates on the board and
+ * to manually change their individual states by instantiating and managing
  * {@link Plate} instances.
- * 
+ *
  * Also allows to listen to manual and programmatical changes in the composition.
- * 
+ *
  * @category Breadboard
  * @subcategory Layers
  */
 export default class PlateLayer extends Layer<SVG.Container> {
     /** CSS class of the layer */
-    static get Class() {return "bb-layer-plate"}
+    static get Class() {
+        return "bb-layer-plate";
+    }
 
     /**
      * list of {@link Plate} types which are invariant to 180-degree rotation
-     * 
+     *
      * TODO: Move this information to Plate classes
      */
     static get TypesReversible() {
@@ -152,7 +154,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
             InductorPlate.Alias,
             BuzzerPlate.Alias,
             DummyPlate.Alias,
-            UnkPlate.Alias,
+            UnkPlate.Alias
         ];
     }
 
@@ -166,7 +168,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
     private _plategroup: SVG.Container;
 
     /** {@link Plate} instances which currently forms the current composition, keyed by its identifiers */
-    private _plates: {[key: number]: Plate};
+    private _plates: { [key: number]: Plate };
     /** [debug only] {@link Plate} instances that were overwritten accidentally (to detect leakages or key assignment issues). Keys are salted to keep possible duplicates */
     private _plates_old: { [key: string]: Plate } = {};
 
@@ -184,51 +186,70 @@ export default class PlateLayer extends Layer<SVG.Container> {
     private _cursor_point_mousedown: any;
 
     /**
-     * Checks if two plates are visually identical 
-     * 
+     * Checks if two plates are visually identical
+     *
      * Visual identity differs from exact equality for several reasons:
-     *  - there are multiple combinations of position an orientation that leads to 
+     *  - there are multiple combinations of position an orientation that leads to
      *    same cell occupancy, which is needed for visual similarity
      *  - some types of {@link Plate} are indepenent of opposite orientations
-     * 
+     *
      * @param svg           arbitrary SVG document to initialize test board
-     * @param grid          {@link Grid} of the test board, must be the same 
+     * @param grid          {@link Grid} of the test board, must be the same
      *                      as the one used to place the plates being compared
      * @param plate1_data   raw data object defining properties of the first plate
      * @param plate2_data   raw data object defining properties of the second plate
-     * 
+     *
      * @returns are the plates visually identical
      */
-    public static comparePlates(svg: SVG.Container, grid: Grid, plate1_data: SerializedPlate, plate2_data: SerializedPlate) {
+    public static comparePlates(
+        svg: SVG.Container,
+        grid: Grid,
+        plate1_data: SerializedPlate,
+        plate2_data: SerializedPlate
+    ) {
         if (plate1_data.type !== plate2_data.type) return false;
-        if (!isEqual(plate1_data.properties, plate2_data.properties)) return false;
+        if (!isEqual(plate1_data.properties, plate2_data.properties))
+            return false;
 
-        let is_orientation_equal = plate1_data.position.orientation === plate2_data.position.orientation;
+        let is_orientation_equal =
+            plate1_data.position.orientation ===
+            plate2_data.position.orientation;
 
         if (PlateLayer.TypesReversible.indexOf(plate1_data.type) === -1) {
             if (!is_orientation_equal) return false;
-            if (plate1_data.position.cell.x !== plate2_data.position.cell.x ||
-                plate1_data.position.cell.y !== plate2_data.position.cell.y) {
+            if (
+                plate1_data.position.cell.x !== plate2_data.position.cell.x ||
+                plate1_data.position.cell.y !== plate2_data.position.cell.y
+            ) {
                 return false;
             }
         } else {
             const plate1 = PlateLayer.jsonToPlate(svg, grid, plate1_data),
-                  plate2 = PlateLayer.jsonToPlate(svg, grid, plate2_data);
+                plate2 = PlateLayer.jsonToPlate(svg, grid, plate2_data);
 
-            const {x: p1_x0, y: p1_y0} = plate1.pos,
-                  {x: p2_x0, y: p2_y0} = plate2.pos,
-                  p1_surf_points = plate1.surface,
-                  p2_surf_points = plate2.surface;
+            const { x: p1_x0, y: p1_y0 } = plate1.pos,
+                { x: p2_x0, y: p2_y0 } = plate2.pos,
+                p1_surf_points = plate1.surface,
+                p2_surf_points = plate2.surface;
 
             for (const p1_surf_point of p1_surf_points) {
-                const {x: p1_x, y: p1_y} = Plate._orientXYObject(p1_surf_point, plate1.state.orientation);
+                const { x: p1_x, y: p1_y } = Plate._orientXYObject(
+                    p1_surf_point,
+                    plate1.state.orientation
+                );
 
                 let has_same_point = false;
 
                 for (const p2_surf_point of p2_surf_points) {
-                    const {x: p2_x, y: p2_y} = Plate._orientXYObject(p2_surf_point, plate2.state.orientation);
+                    const { x: p2_x, y: p2_y } = Plate._orientXYObject(
+                        p2_surf_point,
+                        plate2.state.orientation
+                    );
 
-                    if ((p1_x0 + p1_x === p2_x0 + p2_x) && (p1_y0 + p1_y === p2_y0 + p2_y)) {
+                    if (
+                        p1_x0 + p1_x === p2_x0 + p2_x &&
+                        p1_y0 + p1_y === p2_y0 + p2_y
+                    ) {
                         has_same_point = true;
                         break;
                     }
@@ -243,19 +264,37 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Converts JSON plate data object to rendered plate instance
-     * 
-     * @param svg           SVG container to render to 
+     *
+     * @param svg           SVG container to render to
      * @param grid          grid with proportions required to visualize the plate
      * @param plate_data    plate data object describing its type and properties
-     * 
+     *
      * @returns rendered plate instance
      */
-    public static jsonToPlate(svg: SVG.Container, grid: Grid, plate_data: SerializedPlate) {
-        const {type, position: {cell: {x, y}, orientation}, properties} = plate_data as any;
+    public static jsonToPlate(
+        svg: SVG.Container,
+        grid: Grid,
+        plate_data: SerializedPlate
+    ) {
+        const {
+            type,
+            position: {
+                cell: { x, y },
+                orientation
+            },
+            properties
+        } = plate_data as any;
 
         const plate_class = PlateLayer.typeToPlateClass(type);
-        const plate = new plate_class(svg, grid, false, false, null, properties);
-        plate.draw(grid.cell(x, y), orientation, false);
+        const plate = new plate_class(
+            svg,
+            grid,
+            false,
+            false,
+            null,
+            properties
+        );
+        plate.draw(grid.getCell(x, y), orientation, false);
 
         return plate;
     }
@@ -273,7 +312,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
         this._callbacks = {
             change: () => {},
-            dragstart: () => {},
+            dragstart: () => {}
         };
 
         this._plates = {};
@@ -299,7 +338,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
     }
 
     /**
-     * Also, re-instantiates all {@link Plate} instances with all its properties and states. 
+     * Also, re-instantiates all {@link Plate} instances with all its properties and states.
      */
     public recompose(schematic: boolean, detailed: boolean, verbose: boolean) {
         super.recompose(schematic, detailed, verbose);
@@ -325,7 +364,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Sets allowed visual properties of plates
-     * 
+     *
      * @param style visual properties of plates
      */
     public setPlateStyle(style: PlateStyle) {
@@ -369,7 +408,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
      * Gets plate instance by its identifier
      *
      * @param plate_id plate identifier
-     * 
+     *
      * @returns plate instance if exists
      */
     public getPlateById(plate_id: number): Plate {
@@ -382,18 +421,18 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Compiles random composition of plates based on their prototypes
-     * 
+     *
      * The method will generate random number of plates (within the limits given) additively. \
      * It means it wouldn't apply some kind of tiling but instead it will mount each next plate iteratively
      * until the planned number of them is reached.
-     * 
+     *
      * Since the board has a finite size, high values of {@link size_mid} and {@link size_deviation}
      * may lead the generation to fail. In this case, some number of additional attempts will be applied.
      * This can be adjusted via {@link attempts_max}.
-     * 
+     *
      * @param _protos           limitations on types, max quantities and properties of the plates
      * @param size_mid          mean total quantity of plates to generate
-     * @param size_deviation    deviation of quantity of plates to generate 
+     * @param size_deviation    deviation of quantity of plates to generate
      * @param attempts_max      maximum number of attempts to generate if failed
      */
     public setRandom(
@@ -413,17 +452,26 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
         for (const proto of _protos) {
             if (proto.quantity > 0) {
-                protos.push({type: proto.type, properties: proto.properties, qty: proto.quantity})
+                protos.push({
+                    type: proto.type,
+                    properties: proto.properties,
+                    qty: proto.quantity
+                });
             }
         }
 
-        let remaining = size_mid + getRandomInt(-size_deviation, size_deviation);
+        let remaining =
+            size_mid + getRandomInt(-size_deviation, size_deviation);
 
         while (remaining > 0) {
             if (protos.length === 0) return;
 
-            const p_index = getRandomInt(0, protos.length - 1)
-            const proto = {type: protos[p_index].type, properties: protos[p_index].properties, qty: protos[p_index].qty};
+            const p_index = getRandomInt(0, protos.length - 1);
+            const proto = {
+                type: protos[p_index].type,
+                properties: protos[p_index].properties,
+                qty: protos[p_index].qty
+            };
 
             if (proto.qty === 1) {
                 protos.splice(p_index, 1);
@@ -435,12 +483,20 @@ export default class PlateLayer extends Layer<SVG.Container> {
                 attempts = 0;
 
             while (!placed && attempts < attempts_max) {
-                let orientation = orientations[getRandomInt(0, orientations.length - 1)],
-                    x = getRandomInt(0, this.__grid.dim.x-1),
-                    y = getRandomInt(0, this.__grid.dim.y-1);
+                let orientation =
+                        orientations[getRandomInt(0, orientations.length - 1)],
+                    x = getRandomInt(0, this.__grid.dim.x - 1),
+                    y = getRandomInt(0, this.__grid.dim.y - 1);
 
                 placed = this.addPlate(
-                    proto.type, x, y, orientation, null, proto.properties, false, true
+                    proto.type,
+                    x,
+                    y,
+                    orientation,
+                    null,
+                    proto.properties,
+                    false,
+                    true
                 );
 
                 if (placed != null) {
@@ -459,32 +515,38 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Checks if the plate intersects with others
-     * 
+     *
      * @param plate_id ID of the plate needed to check
-     * 
+     *
      * @returns whether the plate intersects with at least one another plate
      */
     public hasIntersections(plate_id: number): boolean {
         const plate = this._plates[plate_id],
-              {x: px0, y: py0} = plate.pos,
-              plate_rels = plate.surface;
+            { x: px0, y: py0 } = plate.pos,
+            plate_rels = plate.surface;
 
         for (const p of Object.values(this._plates)) {
-            const {x: x0, y: y0} = p.pos,
-                  p_rels = p.surface;
+            const { x: x0, y: y0 } = p.pos,
+                p_rels = p.surface;
 
             if (p.id === plate.id) continue;
 
-            if ((x0 === px0) && (y0 === py0)) return true;
+            if (x0 === px0 && y0 === py0) return true;
 
             for (const p_rel of p_rels) {
-                const {x, y} = Plate._orientXYObject(p_rel, p.state.orientation);
+                const { x, y } = Plate._orientXYObject(
+                    p_rel,
+                    p.state.orientation
+                );
 
                 if (plate_rels) {
                     for (const plate_rel of plate_rels) {
-                        const {x: px, y: py} = Plate._orientXYObject(plate_rel, plate.state.orientation);
+                        const { x: px, y: py } = Plate._orientXYObject(
+                            plate_rel,
+                            plate.state.orientation
+                        );
 
-                        if ((px0 + px === x0 + x) && (py0 + py === y0 + y)) {
+                        if (px0 + px === x0 + x && py0 + py === y0 + y) {
                             return true;
                         }
                     }
@@ -497,13 +559,13 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Toggles editability of the plates
-     * 
-     * Editability means ability to select, move, rotate, delete and 
+     *
+     * Editability means ability to select, move, rotate, delete and
      * open the context menu of any plate in the layer.
      *
      * @param editable should the plates be editable or not
      */
-    public setEditable(editable=false) {
+    public setEditable(editable = false) {
         if (editable === this._editable) {
             return;
         }
@@ -514,7 +576,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
             for (let plate_id in this._plates) {
                 let plate = this._plates[plate_id];
-                plate.container.style({'pointer-events': 'all'});
+                plate.container.style({ "pointer-events": "all" });
             }
         } else {
             this._setCurrentPlatesEditable(false);
@@ -522,27 +584,27 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
             for (let plate_id in this._plates) {
                 let plate = this._plates[plate_id];
-                plate.container.style({'pointer-events': 'none'});
+                plate.container.style({ "pointer-events": "none" });
             }
         }
     }
 
     /**
      * Creates a plate from a drag-and-drop action
-     * 
+     *
      * This method is intended to call as a dragging handler when user takes a plate
      * from the flyout selector menu (see {@link SelectorLayer})
-     * 
+     *
      * The plate is placed in a drag-and-drop state immediately after instantation.
      * It's position adjusts to the cursor position and holds until the mouse button is released.
-     * The plate created then keeps the focus, so even if there was no drag (just a single click), 
+     * The plate created then keeps the focus, so even if there was no drag (just a single click),
      * the plate is placed at first suitable position and remains focused (selected).
-     * 
+     *
      * @param plate_data    serialized object from the plate configured in the flyout
-     * @param plate_x       X position of the SVG document for the plate preview from the flyout      
-     * @param plate_y       Y position of the SVG document for the plate preview from the flyout      
-     * @param cursor_x      X position of the client cursor 
-     * @param cursor_y      Y position of the client cursor  
+     * @param plate_x       X position of the SVG document for the plate preview from the flyout
+     * @param plate_y       Y position of the SVG document for the plate preview from the flyout
+     * @param cursor_x      X position of the client cursor
+     * @param cursor_y      Y position of the client cursor
      */
     public takePlate(
         plate_data: SerializedPlate,
@@ -552,21 +614,33 @@ export default class PlateLayer extends Layer<SVG.Container> {
         cursor_y: number
     ) {
         const id = this.addPlateSerialized(
-            plate_data.type, plate_data.position, null, plate_data.properties, false
+            plate_data.type,
+            plate_data.position,
+            null,
+            plate_data.properties,
+            false
         );
 
         const plate = this._plates[id];
 
         if (this._container.node instanceof SVGSVGElement) {
-            let plate_point = getCursorPoint(this._container.node, plate_x, plate_y);
+            let plate_point = getCursorPoint(
+                this._container.node,
+                plate_x,
+                plate_y
+            );
 
             plate.center_to_point(plate_point.x, plate_point.y);
-            this._handlePlateMouseDown({which: 1, clientX: cursor_x, clientY: cursor_y}, plate);
+            this._handlePlateMouseDown(
+                { which: 1, clientX: cursor_x, clientY: cursor_y },
+                plate
+            );
             this.selectPlate(plate);
         } else {
-            throw new Error(`${this.constructor.name}'s container is not an ${SVGSVGElement.name}`);
+            throw new Error(
+                `${this.constructor.name}'s container is not an ${SVGSVGElement.name}`
+            );
         }
-
     }
 
     /**
@@ -593,8 +667,14 @@ export default class PlateLayer extends Layer<SVG.Container> {
         animate: boolean = false,
         suppress_error: boolean = false
     ): number {
-        if (!(typeof x !== "undefined") || !(typeof y !== "undefined") || !orientation) {
-            throw new TypeError("All of 'type', 'x', 'y', and 'orientation' arguments must be defined");
+        if (
+            !(typeof x !== "undefined") ||
+            !(typeof y !== "undefined") ||
+            !orientation
+        ) {
+            throw new TypeError(
+                "All of 'type', 'x', 'y', and 'orientation' arguments must be defined"
+            );
         }
 
         let plate_class, plate;
@@ -606,17 +686,26 @@ export default class PlateLayer extends Layer<SVG.Container> {
         } else {
             plate_class = PlateLayer.typeToPlateClass(type);
 
-            plate = new plate_class(this._plategroup, this.__grid, this.__schematic, this.__verbose, id, properties);
+            plate = new plate_class(
+                this._plategroup,
+                this.__grid,
+                this.__schematic,
+                this.__verbose,
+                id,
+                properties
+            );
         }
 
         if (this._editable) {
             this._attachEventsEditable(plate);
 
-            plate.onChange((data: ChangeCallbackArg) => this._callbacks.change(data));
+            plate.onChange((data: ChangeCallbackArg) =>
+                this._callbacks.change(data)
+            );
         }
 
         try {
-            plate.draw(this.__grid.cell(x, y), orientation, animate);
+            plate.draw(this.__grid.getCell(x, y), orientation, animate);
         } catch (err) {
             if (!suppress_error) {
                 console.error("Cannot draw the plate", err);
@@ -634,9 +723,12 @@ export default class PlateLayer extends Layer<SVG.Container> {
             // const randpostfix = Math.floor(Math.random() * (10 ** 6));
             // this._plates_old[`_old_${plate.id}_#${randpostfix}`] = old_plate;
             console.info(
-                'Plate', old_plate.id,
-                'of type', `'${old_plate.alias}'`,
-                'will be overwritten with the plate of type', `'${plate.alias}'`
+                "Plate",
+                old_plate.id,
+                "of type",
+                `'${old_plate.alias}'`,
+                "will be overwritten with the plate of type",
+                `'${plate.alias}'`
             );
             old_plate.dispose();
         }
@@ -648,14 +740,14 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Creates a new plate by serialized properties
-     * 
+     *
      * @param type              plate alias
-     * @param position          serialized plate position 
+     * @param position          serialized plate position
      * @param id                prefferred plate id (should be unique for different plates)
      * @param properties        custom plate properties
      * @param animate           animate plate appearance
      * @param suppress_error    log errors instead of throwing exceptions
-     * 
+     *
      * @returns created plate identifier
      */
     public addPlateSerialized(
@@ -666,9 +758,21 @@ export default class PlateLayer extends Layer<SVG.Container> {
         animate: boolean = false,
         suppress_error: boolean = false
     ): number {
-        const {cell: {x, y}, orientation} = position;
+        const {
+            cell: { x, y },
+            orientation
+        } = position;
 
-        return this.addPlate(type, x, y, orientation, id, properties, animate, suppress_error);
+        return this.addPlate(
+            type,
+            x,
+            y,
+            orientation,
+            id,
+            properties,
+            animate,
+            suppress_error
+        );
     }
 
     /**
@@ -677,18 +781,18 @@ export default class PlateLayer extends Layer<SVG.Container> {
      * Creates new (provided but non-existent yet) plates,
      * updates current (provided and existing) plates,
      * removes old (existing but non-provided) plates.
-     * 
+     *
      * If there are no changes at all, no events will be triggered.
-     * 
-     * @param plates list of plates that should be displayed at the layer 
-     * 
+     *
+     * @param plates list of plates that should be displayed at the layer
+     *
      * @returns are there any changes in the composition
      */
     public setPlates(plates: SerializedPlate[]): boolean {
         /// are there any changes
         let is_dirty = false;
 
-        /// remove possible flags from local plates 
+        /// remove possible flags from local plates
         for (let plate_id in this._plates) {
             this._plates[Number(plate_id)].___touched = undefined;
             this._plates[Number(plate_id)].highlightError(false);
@@ -700,7 +804,9 @@ export default class PlateLayer extends Layer<SVG.Container> {
             if (!plate) continue;
 
             // check if there are any changes
-            if (!(plate.id in this._plates)) {is_dirty = true;}
+            if (!(plate.id in this._plates)) {
+                is_dirty = true;
+            }
 
             /// ID of the new/current plate
             let id;
@@ -710,7 +816,12 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
             /// добавить плашку, если таковой нет
             /// add a plate if there is none
-            id = this.addPlateSerialized(plate.type, plate.position, plate.id, plate.properties);
+            id = this.addPlateSerialized(
+                plate.type,
+                plate.position,
+                plate.id,
+                plate.properties
+            );
 
             /// if the plate created with no errors / exists already
             if (id != null) {
@@ -720,7 +831,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
                 /// update its state
                 this.setPlateState(id, {
                     input: plate.dynamic && plate.dynamic.input,
-                    output: plate.dynamic && plate.dynamic.output,
+                    output: plate.dynamic && plate.dynamic.output
                 });
             }
         }
@@ -743,7 +854,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Highlights given plates
-     * 
+     *
      * @param plate_ids IDs of plates needed to highlight
      */
     public highlightPlates(plate_ids: number[]) {
@@ -785,7 +896,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
         this._callbacks.change({
             id: plate.id,
             action: PlateChangeActionType.Remove
-        })
+        });
     }
 
     /**
@@ -796,7 +907,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
      */
     public setPlateState(plate_id: number, state: Partial<PlateState>) {
         if (!(plate_id in this._plates)) {
-            console.debug('This plate does not exist', plate_id);
+            console.debug("This plate does not exist", plate_id);
             return false;
         }
 
@@ -815,12 +926,14 @@ export default class PlateLayer extends Layer<SVG.Container> {
     }
 
     /**
-     * Attach a layer change event handler 
+     * Attach a layer change event handler
      *
-     * @param cb callback function to be called when the layer is changed 
+     * @param cb callback function to be called when the layer is changed
      */
     public onChange(cb: ChangeCallback) {
-        if (!cb) {cb = () => {}}
+        if (!cb) {
+            cb = () => {};
+        }
 
         this._callbacks.change = cb;
     }
@@ -831,7 +944,9 @@ export default class PlateLayer extends Layer<SVG.Container> {
      * @param cb callback function to be called when the drag starts
      */
     public onDragStart(cb: () => void) {
-        if (!cb) {this._callbacks.dragstart = () => {}}
+        if (!cb) {
+            this._callbacks.dragstart = () => {};
+        }
 
         this._callbacks.dragstart = cb;
     }
@@ -843,7 +958,11 @@ export default class PlateLayer extends Layer<SVG.Container> {
      * @param action_alias  context menu item alias
      * @param value         value passed to the item, if possible
      */
-    public handlePlateContextMenuItemClick(plate_id: number, action_alias: string, value: any) {
+    public handlePlateContextMenuItemClick(
+        plate_id: number,
+        action_alias: string,
+        value: any
+    ) {
         if (!this._plates[plate_id]) return;
 
         const plate = this._plates[plate_id];
@@ -866,13 +985,13 @@ export default class PlateLayer extends Layer<SVG.Container> {
                 break;
             }
             case PlateContextMenu.CMI_INPUT: {
-                plate.setState({input: value});
+                plate.setState({ input: value });
                 break;
             }
         }
     }
 
-    /** 
+    /**
      * Sets focus on a given plate
      */
     public selectPlate(plate: Plate) {
@@ -911,14 +1030,17 @@ export default class PlateLayer extends Layer<SVG.Container> {
         plate.setEditableVisibility(editable);
 
         if (editable) {
-            plate.onMouseDown((evt: MouseEvent) => this._handlePlateMouseDown(evt, plate));
-            plate.onMouseWheel((evt: WheelEvent) => this._onPlateMouseWheel(evt, plate));
+            plate.onMouseDown((evt: MouseEvent) =>
+                this._handlePlateMouseDown(evt, plate)
+            );
+            plate.onMouseWheel((evt: WheelEvent) =>
+                this._onPlateMouseWheel(evt, plate)
+            );
         } else {
             plate.onMouseDown(null);
             plate.onMouseWheel(null);
         }
     }
-
 
     /**
      * Initializes internal SVG groups
@@ -943,20 +1065,24 @@ export default class PlateLayer extends Layer<SVG.Container> {
      *
      * @returns whether the flag is set
      */
-    private _setCurrentPlatesEditable(editable=false) {
+    private _setCurrentPlatesEditable(editable = false) {
         if (editable === false) {
             if (this._plate_selected) {
                 this._plate_selected.deselect(); // снять выделение
             }
 
-            this._plate_selected = null;     // удалить ссылку на выделенный элемент
+            this._plate_selected = null; // удалить ссылку на выделенный элемент
             // @ts-ignore
             this._container.select(`svg.${Plate.Class}`).off(); // отписать все плашки от событий
 
-            document.removeEventListener('click', this._handleClick, false);
-            document.removeEventListener('keydown', this._handleKey, false);
-            document.removeEventListener('keyup',   this._handleKey, false);
-            document.removeEventListener('contextmenu', this._handleContextMenu, false);
+            document.removeEventListener("click", this._handleClick, false);
+            document.removeEventListener("keydown", this._handleKey, false);
+            document.removeEventListener("keyup", this._handleKey, false);
+            document.removeEventListener(
+                "contextmenu",
+                this._handleContextMenu,
+                false
+            );
 
             for (let plate_id in this._plates) {
                 let plate = this._plates[plate_id];
@@ -973,17 +1099,23 @@ export default class PlateLayer extends Layer<SVG.Container> {
             this._attachEventsEditable(plate);
 
             if (editable) {
-                plate.onChange((data: ChangeCallbackArg) => this._callbacks.change(data));
+                plate.onChange((data: ChangeCallbackArg) =>
+                    this._callbacks.change(data)
+                );
             } else {
                 // FIXME: It seems like this code is unreachable
                 plate.onChange(null);
             }
         }
 
-        document.addEventListener('click', this._handleClick, false);
-        document.addEventListener('keydown', this._handleKey, false);
-        document.addEventListener('keyup',   this._handleKey, false);
-        document.addEventListener('contextmenu', this._handleContextMenu, false);
+        document.addEventListener("click", this._handleClick, false);
+        document.addEventListener("keydown", this._handleKey, false);
+        document.addEventListener("keyup", this._handleKey, false);
+        document.addEventListener(
+            "contextmenu",
+            this._handleContextMenu,
+            false
+        );
 
         return true;
     }
@@ -991,7 +1123,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
     /**
      * Attaches internal handlers to plates events
      *
-     * @param plate the plate whose events need to be processed 
+     * @param plate the plate whose events need to be processed
      */
     private _attachEventsEditable(plate: Plate) {
         if (!plate) {
@@ -1017,14 +1149,17 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Handles layer click events
-     * 
+     *
      * Free layer click leads to de-focusing any selected plates and disabling its editability.
      */
     private _handleClick(evt: MouseEvent) {
         let el = evt.target as HTMLElement;
 
         /// Определить, является ли элемент, по которому выполнено нажатие, частью плашки
-        while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
+        while (
+            (el = el.parentElement) &&
+            !el.classList.contains(Plate.Class)
+        ) {}
 
         /// Если не попали по плашке, но есть выделенная плашка
         if (!el && this._plate_selected) {
@@ -1041,35 +1176,50 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Handles plate click events
-     * 
+     *
      * The method is usually called on real mouse event when user clicked the plate
-     * to change its position on the board. 
-     * 
+     * to change its position on the board.
+     *
      * The drag and drop process takes place in 3 stages:
      *  - When the mouse button is down on the plate, listen to mouse movements.
      *  - Handle mouse movement events and drag the plate accordingly.
      *  - When the mouse button is released, stop listening to movements.
-     * 
+     *
      * This method initiates dragging, and it may be needed to do this manually,
-     * e.g. to create the feeling of pulling out a plate from the selector menu 
-     * (see {@link SelectorLayer}), when a plate is instantiated on the fly 
+     * e.g. to create the feeling of pulling out a plate from the selector menu
+     * (see {@link SelectorLayer}), when a plate is instantiated on the fly
      * after clicking on an item in the flyout on another layer.
-     * 
+     *
      * @param evt   real mouse event or pseudo event to imitate it
      * @param plate the instance of the plate that was clicked
      */
-    private _handlePlateMouseDown(evt: PseudoMouseEvent | MouseEvent, plate: Plate) {
+    private _handlePlateMouseDown(
+        evt: PseudoMouseEvent | MouseEvent,
+        plate: Plate
+    ) {
         if (!(this._container.node instanceof SVGSVGElement)) return;
 
         if (evt.which === 1 && !this._plate_dragging) {
             plate.rearrange();
 
             // subscribe to mouse movements to move the plate while dragging
-            document.body.addEventListener('mousemove', this._handleMouseMove, false);
+            document.body.addEventListener(
+                "mousemove",
+                this._handleMouseMove,
+                false
+            );
             // until the mouse button is released, so subscribe to mouse btn release to stop dragging
-            document.body.addEventListener('mouseup', this._handleMouseUp, false);
+            document.body.addEventListener(
+                "mouseup",
+                this._handleMouseUp,
+                false
+            );
 
-            this._cursor_point_mousedown = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+            this._cursor_point_mousedown = getCursorPoint(
+                this._container.node,
+                evt.clientX,
+                evt.clientY
+            );
 
             this._plate_dragging = plate;
             this._cell_supposed = plate.calcSupposedCell();
@@ -1078,13 +1228,17 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Handles mouse movements when dragging cursor after clicking down on the plate ({@link _handlePlateMouseDown})
-     * 
+     *
      * @param evt mouse movement event
      */
     private _handleMouseMove(evt: MouseEvent) {
         if (!(this._container.node instanceof SVGSVGElement)) return;
 
-        let cursor_point = getCursorPoint(this._container.node, evt.clientX, evt.clientY);
+        let cursor_point = getCursorPoint(
+            this._container.node,
+            evt.clientX,
+            evt.clientY
+        );
 
         let dx = cursor_point.x - this._cursor_point_mousedown.x;
         let dy = cursor_point.y - this._cursor_point_mousedown.y;
@@ -1097,17 +1251,25 @@ export default class PlateLayer extends Layer<SVG.Container> {
     }
 
     /**
-     * Handles mouse button release after clicking down ({@link _handlePlateMouseDown}) 
+     * Handles mouse button release after clicking down ({@link _handlePlateMouseDown})
      * and dragging ({@link _handleMouseMove})
-     * 
+     *
      * The plate automatically snaps to the nearest possible cell under it.
-     * 
+     *
      * @param evt mouse button release event
      */
     private _handleMouseUp(evt: MouseEvent) {
         if (evt.which === 1) {
-            document.body.removeEventListener('mousemove', this._handleMouseMove, false);
-            document.body.removeEventListener('mouseup', this._handleMouseUp, false);
+            document.body.removeEventListener(
+                "mousemove",
+                this._handleMouseMove,
+                false
+            );
+            document.body.removeEventListener(
+                "mouseup",
+                this._handleMouseUp,
+                false
+            );
 
             // Snap & release
             this._plate_dragging.snap();
@@ -1117,9 +1279,9 @@ export default class PlateLayer extends Layer<SVG.Container> {
 
     /**
      * Handles mouse wheel scroll event when the cursor is over the plate
-     * 
+     *
      * Mouse wheel is bound to the plate rotation.
-     * 
+     *
      * @param evt   mouse wheel scroll event
      * @param plate the instance of the plate the cursor is over
      */
@@ -1141,7 +1303,10 @@ export default class PlateLayer extends Layer<SVG.Container> {
         let el = evt.target as HTMLElement;
 
         /// Define if the element clicked is a part of the plate
-        while ((el = el.parentElement) && !(el.classList.contains(Plate.Class))) {}
+        while (
+            (el = el.parentElement) &&
+            !el.classList.contains(Plate.Class)
+        ) {}
 
         /// If the element is the part of the plate, proceed to call
         if (el) {
@@ -1149,7 +1314,9 @@ export default class PlateLayer extends Layer<SVG.Container> {
             const plate = this._plate_selected;
 
             const ctxmenu = plate.getCmInstance();
-            this._callContextMenu(ctxmenu, {x: evt.pageX, y: evt.pageY}, [plate.state.input]);
+            this._callContextMenu(ctxmenu, { x: evt.pageX, y: evt.pageY }, [
+                plate.state.input
+            ]);
         }
     }
 
@@ -1157,11 +1324,10 @@ export default class PlateLayer extends Layer<SVG.Container> {
      * Handles keyboard button press event
      */
     private _handleKey(evt: KeyboardEvent) {
-        const keydown = evt.type === 'keydown';
+        const keydown = evt.type === "keydown";
 
-        /// If there is a plate with focus 
+        /// If there is a plate with focus
         if (this._plate_selected) {
-
             /// Remove opened context menus
             this._clearContextMenus();
 
@@ -1213,15 +1379,16 @@ export default class PlateLayer extends Layer<SVG.Container> {
             }
         }
 
-        this._plate_selected && this._plate_selected.handleKeyPress(evt.code, keydown);
+        this._plate_selected &&
+            this._plate_selected.handleKeyPress(evt.code, keydown);
     }
 
     /**
      * Duplicates a plate
-     * 
+     *
      * Duplicated plate places at the same cell as the original one.
      * Animation is enabled to highlight the appearance in the same place.
-     * 
+     *
      * @param plate source plate
      */
     private _duplicatePlate(plate: Plate) {
@@ -1245,7 +1412,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
      *
      * All other plates are "frozen".
      *
-     * @param plate the plate being dragged 
+     * @param plate the plate being dragged
      */
     private _onPlateDragStart(plate: Plate) {
         let id = String(plate.id);
@@ -1262,7 +1429,7 @@ export default class PlateLayer extends Layer<SVG.Container> {
      *
      * All other plates are "unfrozen"
      *
-     * @param plate the plate being dragged 
+     * @param plate the plate being dragged
      */
     private _onPlateDragFinish(plate: Plate) {
         let id = String(plate.id);
@@ -1277,33 +1444,69 @@ export default class PlateLayer extends Layer<SVG.Container> {
     /**
      * Converts plate type to its class
      *
-     * @param type string plate type alias 
+     * @param type string plate type alias
      *
      * @returns the class of the plate
      */
-    public static typeToPlateClass(type: string): new(...args: any[]) => Plate {
+    public static typeToPlateClass(
+        type: string
+    ): new (...args: any[]) => Plate {
         if (!type) {
             throw new TypeError("Parameter `type` is not defined");
         }
 
         switch (type) {
-            case ResistorPlate.Alias:       {return ResistorPlate}
-            case PhotoresistorPlate.Alias:  {return PhotoresistorPlate}
-            case RheostatPlate.Alias:       {return RheostatPlate}
-            case BridgePlate.Alias:         {return BridgePlate}
-            case ButtonPlate.Alias:         {return ButtonPlate}
-            case SwitchPlate.Alias:         {return SwitchPlate}
-            case CapacitorPlate.Alias:      {return CapacitorPlate}
-            case TransistorPlate.Alias:     {return TransistorPlate}
-            case InductorPlate.Alias:       {return InductorPlate}
-            case RelayPlate.Alias:          {return RelayPlate}
-            case DiodePlate.Alias:          {return DiodePlate}
-            case BuzzerPlate.Alias:         {return BuzzerPlate}
-            case MotorPlate.Alias:          {return MotorPlate}
-            case RGBPlate.Alias:            {return RGBPlate}
-            case DummyPlate.Alias:          {return DummyPlate}
-            case UnkPlate.Alias:            {return UnkPlate}
-            default:                        {throw new RangeError(`Unknown plate type '${type}'`)}
+            case ResistorPlate.Alias: {
+                return ResistorPlate;
+            }
+            case PhotoresistorPlate.Alias: {
+                return PhotoresistorPlate;
+            }
+            case RheostatPlate.Alias: {
+                return RheostatPlate;
+            }
+            case BridgePlate.Alias: {
+                return BridgePlate;
+            }
+            case ButtonPlate.Alias: {
+                return ButtonPlate;
+            }
+            case SwitchPlate.Alias: {
+                return SwitchPlate;
+            }
+            case CapacitorPlate.Alias: {
+                return CapacitorPlate;
+            }
+            case TransistorPlate.Alias: {
+                return TransistorPlate;
+            }
+            case InductorPlate.Alias: {
+                return InductorPlate;
+            }
+            case RelayPlate.Alias: {
+                return RelayPlate;
+            }
+            case DiodePlate.Alias: {
+                return DiodePlate;
+            }
+            case BuzzerPlate.Alias: {
+                return BuzzerPlate;
+            }
+            case MotorPlate.Alias: {
+                return MotorPlate;
+            }
+            case RGBPlate.Alias: {
+                return RGBPlate;
+            }
+            case DummyPlate.Alias: {
+                return DummyPlate;
+            }
+            case UnkPlate.Alias: {
+                return UnkPlate;
+            }
+            default: {
+                throw new RangeError(`Unknown plate type '${type}'`);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 import Grid from "../core/Grid";
 import Layer from '../core/Layer';
 import Popup, { PopupContent } from '../core/Popup';
-import { XYObject } from '../core/types';
+import { XYPoint } from '../core/extras/types';
 
 /**
  * Contains popups called from other {@link Layer}s of the breadboard
@@ -17,7 +17,7 @@ export default class PopupLayer extends Layer<HTMLDivElement> {
     static get Class() {return "bb-layer-popup"}
     static get PositionOffset() {return 10}
 
-    private _mousepos: XYObject;
+    private _mousepos: XYPoint;
 
     /** active popup */
     private _popup: Popup<any>;

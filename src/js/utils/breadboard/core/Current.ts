@@ -1,7 +1,7 @@
 import { Callback } from 'i18next';
 import SVG from 'svg.js';
 
-import { XYObject } from './types';
+import { XYPoint } from './extras/types';
 
 type RGBColor = [number, number, number];
 
@@ -27,9 +27,9 @@ export type Thread = {
     /** The weight of the current */
     weight: number;
     /** Start point of the current */
-    from: XYObject;
+    from: XYPoint;
     /** Finish point of the current */
-    to: XYObject;
+    to: XYPoint;
 
     /** flag for extra purposes */
     ___touched?: boolean;

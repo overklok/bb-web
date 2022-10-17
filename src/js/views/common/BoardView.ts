@@ -2,7 +2,7 @@ import {ImperativeView} from "../../core/base/view/ImperativeView";
 import Breadboard from "../../utils/breadboard/Breadboard";
 import {ViewEvent} from "../../core/base/Event";
 import {AllProps, deferUntilMounted, IViewProps, IViewState} from "../../core/base/view/View";
-import {Layout} from "../../utils/breadboard/core/types";
+import {Layout} from "../../utils/breadboard/core/extras/types";
 import { Thread, VoltageData } from "~/js/models/common/BoardModel";
 import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 

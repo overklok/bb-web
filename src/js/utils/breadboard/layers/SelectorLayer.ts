@@ -1,23 +1,30 @@
-import SVG from 'svg.js';
+import SVG from "svg.js";
 import Layer from "../core/Layer";
 
 import "../styles/selector.css";
-import ITEMS, { SelectorItem, SelectorItemOption } from "../plates/_selector_items";
+import ITEMS, {
+    SelectorItem,
+    SelectorItemOption
+} from "../plates/_selector_items";
 import DummyPlate from "../plates/DummyPlate";
 import ControlsLayer from "~/js/utils/breadboard/layers/ControlsLayer";
-import Plate, { SerializedPlate } from '../core/Plate';
-import Grid from '../core/Grid';
+import Plate, { SerializedPlate } from "../core/Plate";
+import Grid from "../core/Grid";
 
 /**
- * Contains plate selector flyout menu, which allows to search plates 
+ * Contains plate selector flyout menu, which allows to search plates
  * and drag'n'drop them to the board
- * 
+ *
  * @category Breadboard
  * @subcategory Layers
  */
 export default class SelectorLayer extends Layer<HTMLDivElement> {
-    static get Class() {return "bb-layer-selector"}
-    static get Items() {return ITEMS}
+    static get Class() {
+        return "bb-layer-selector";
+    }
+    static get Items() {
+        return ITEMS;
+    }
 
     /** root container of the flyout */
     private _htmlcontainer: HTMLDivElement;
@@ -36,11 +43,17 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
     private _items: any[];
     /** TODO */
     private _btn_pin: any;
-    
+
     /** local event handlers */
     private _callbacks: {
         /** plate item is started dragging from the selector */
-        onplatetake: (plate_data: SerializedPlate, plate_x: any, plate_y: any, cursor_x: any, cursor_y: any) => void;
+        onplatetake: (
+            plate_data: SerializedPlate,
+            plate_x: any,
+            plate_y: any,
+            cursor_x: any,
+            cursor_y: any
+        ) => void;
         /** fullscreen mode requested */
         fullscreen: (is_fullscreen: boolean) => void;
         /** plate removal requested */
@@ -65,9 +78,15 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
         this._callbacks = {
             oncloseclick: this._handleCloseClick.bind(this),
-            onplatetake: (plate_data, plate_x, plate_y, cursor_x, cursor_y) => { },
-            clear: () => { },
-            fullscreen: () => { },
+            onplatetake: (
+                plate_data,
+                plate_x,
+                plate_y,
+                cursor_x,
+                cursor_y
+            ) => {},
+            clear: () => {},
+            fullscreen: () => {}
         };
 
         this._is_pinned = false;
@@ -98,7 +117,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
         this._filterItems();
 
-        document.addEventListener('keyup', this._handleKey.bind(this), false);
+        document.addEventListener("keyup", this._handleKey.bind(this), false);
     }
 
     /**
@@ -113,32 +132,34 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
      * @inheritdoc
      */
     public hide() {
-        this._container.style.left = `-${this._container.offsetWidth + this._container.offsetLeft + 10}px`;
+        this._container.style.left = `-${
+            this._container.offsetWidth + this._container.offsetLeft + 10
+        }px`;
     }
 
     /**
      * Makes flyout translucent
-     * 
+     *
      * At the moment of dragging, it might be useful to make the menu half-opaque
      * to see the board cells. To rollback the opacity, see {@link reveal}.
      */
     public conceal() {
-        this._container.style.opacity = '0.5';
+        this._container.style.opacity = "0.5";
     }
 
     /**
      * Makes flyout opaque
-     * 
-     * 
+     *
+     *
      * @see {@link conceal}
      */
     public reveal() {
-        this._container.style.opacity = '1';
+        this._container.style.opacity = "1";
     }
 
     /**
      * Toggles pin state
-     * 
+     *
      * When toggled, the flyout wouldn't hide on free mouse clicks.
      * It's still possible to close the menu permanently (@link close}).
      */
@@ -147,54 +168,56 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
         if (this._is_pinned) {
             this.show();
-            this._btn_pin.innerHTML = 'Открепить';
+            this._btn_pin.innerHTML = "Открепить";
         } else {
             this.hide();
-            this._btn_pin.innerHTML = 'Закрепить';
+            this._btn_pin.innerHTML = "Закрепить";
         }
     }
 
     /**
      * Shows the flyout unpinned
-     * 
+     *
      * @param permanently pin the flyout
      */
-    public open(permanently=false) {
+    public open(permanently = false) {
         this.show();
 
         if (!permanently) {
-            document.addEventListener('click', this._callbacks.oncloseclick);
+            document.addEventListener("click", this._callbacks.oncloseclick);
         }
     }
 
     /**
-     * Hides the flyout 
-     * 
+     * Hides the flyout
+     *
      * @param permanently unpin (this is required if the flyout were pinned previously)
      */
-    public close(permanently=false) {
+    public close(permanently = false) {
         this.hide();
 
         // Unpin if requested to close manually
         this._is_pinned = false;
 
         if (!permanently) {
-            document.removeEventListener('click', this._callbacks.oncloseclick);
+            document.removeEventListener("click", this._callbacks.oncloseclick);
         }
     }
 
     /**
      * Attaches a callback handler to 'plate drag started' event
-     * 
+     *
      * @param cb callback handler to attach
      */
-    public onPlateTake(cb: (
-        plate_data: {},
-        plate_x: number,
-        plate_y: number,
-        cursor_x: number,
-        cursor_y: number
-    ) => void) {
+    public onPlateTake(
+        cb: (
+            plate_data: {},
+            plate_x: number,
+            plate_y: number,
+            cursor_x: number,
+            cursor_y: number
+        ) => void
+    ) {
         if (!cb) this._callbacks.onplatetake = () => {};
 
         this._callbacks.onplatetake = cb;
@@ -202,7 +225,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Attaches a callback handler to 'board clean' button click event
-     * 
+     *
      * @param cb callback handler to attach
      */
     public onClear(cb: () => void) {
@@ -215,7 +238,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Attaches a callback handler to 'toggle fullscreen' button click event
-     * 
+     *
      * @param cb callback handler to attach
      */
     public onFullscreen(cb: (on: boolean) => void) {
@@ -228,7 +251,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Handles menu close request
-     * 
+     *
      * @param evt document click event
      */
     private _handleCloseClick(evt: MouseEvent) {
@@ -239,7 +262,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         /// Define if the element clicked is a part of the layer or is the close button
         while (
             (el = el.parentElement) &&
-            !(el.classList.contains(SelectorLayer.Class)) &&
+            !el.classList.contains(SelectorLayer.Class) &&
             el.id !== ControlsLayer.MenuButtonId
         ) {}
 
@@ -248,7 +271,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
                 this.close();
             }
         }
-        
+
         if (this._is_pinned) {
             this.reveal();
         }
@@ -256,13 +279,13 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Filters items in the list by their tags
-     * 
+     *
      * Hides items for which none of the space-delimited tags does not match the query string.
      * The match is correct when the query is a substring of at least one of the tags.
-     * 
+     *
      * @param query case-insensitive request string
      */
-    private _filterItems(query="") {
+    private _filterItems(query = "") {
         query = query.trim();
 
         for (const item of this._items) {
@@ -290,13 +313,13 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
      */
     private _appendBasics() {
         this._area = document.createElement("div");
-        this._area.classList.add('bb-sel-area');
+        this._area.classList.add("bb-sel-area");
 
         this._list = document.createElement("div");
-        this._list.classList.add('bb-sel-list');
+        this._list.classList.add("bb-sel-list");
 
         this._controls = document.createElement("div");
-        this._controls.classList.add('bb-sel-controls');
+        this._controls.classList.add("bb-sel-controls");
 
         this._area.appendChild(this._list);
 
@@ -330,7 +353,9 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
             this._is_fullscreen = !this._is_fullscreen;
             this._callbacks.fullscreen(this._is_fullscreen);
 
-            btn_fullscreen.innerHTML = this._is_fullscreen ? "Свернуть" : "Во весь экран";
+            btn_fullscreen.innerHTML = this._is_fullscreen
+                ? "Свернуть"
+                : "Во весь экран";
         });
 
         btn_pin.addEventListener("click", () => {
@@ -339,7 +364,7 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
         inp_search.addEventListener("input", () => {
             this._filterItems(inp_search.value);
-        })
+        });
 
         btn_clear.innerHTML = "Очистить всё";
         btn_fullscreen.innerHTML = "Во весь экран";
@@ -353,9 +378,9 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Renders single item (cell) for the selector list
-     * 
+     *
      * @param settings item settings
-     * 
+     *
      * @returns the item rendered
      */
     private _appendItem(settings: SelectorItem): HTMLDivElement {
@@ -371,25 +396,37 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         const subtitle = document.createElement("div");
         const inp_custom = document.createElement("input");
 
-        cell.setAttribute('data-tags', settings.tags || "");
+        cell.setAttribute("data-tags", settings.tags || "");
 
-        cell.classList.add('bb-sel-cell');
-        slider.classList.add('bb-sel-slider');
+        cell.classList.add("bb-sel-cell");
+        slider.classList.add("bb-sel-slider");
 
-        pedestal_wrap.classList.add('bb-sel-pedestal-wrap');
-        pedestal.classList.add('bb-sel-pedestal');
-        slidectrl_left.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-left');
-        slidectrl_right.classList.add('bb-sel-slidectrl', 'bb-sel-slidectrl-right');
-        title.classList.add('bb-sel-title');
-        subtitle.classList.add('bb-sel-subtitle');
-        inp_custom.classList.add('bb-sel-inp-custom');
+        pedestal_wrap.classList.add("bb-sel-pedestal-wrap");
+        pedestal.classList.add("bb-sel-pedestal");
+        slidectrl_left.classList.add(
+            "bb-sel-slidectrl",
+            "bb-sel-slidectrl-left"
+        );
+        slidectrl_right.classList.add(
+            "bb-sel-slidectrl",
+            "bb-sel-slidectrl-right"
+        );
+        title.classList.add("bb-sel-title");
+        subtitle.classList.add("bb-sel-subtitle");
+        inp_custom.classList.add("bb-sel-inp-custom");
 
         const elements: [HTMLElement, HTMLElement, SVG.Doc][] = [];
 
         for (const option of settings.options) {
             elements.push(
-                this._generateSlide(slider, pedestal, subtitle, settings, option)
-            )
+                this._generateSlide(
+                    slider,
+                    pedestal,
+                    subtitle,
+                    settings,
+                    option
+                )
+            );
         }
 
         pedestal_wrap.appendChild(subtitle);
@@ -415,38 +452,43 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
             inp_custom.style.display = "display";
 
-            const generated = this._generateSlide(slider, pedestal, subtitle, settings, option, true);
+            const generated = this._generateSlide(
+                slider,
+                pedestal,
+                subtitle,
+                settings,
+                option,
+                true
+            );
 
             elements.push(generated);
             const [slide, bullet, svg] = generated;
 
-            inp_custom.addEventListener('input', () => {
+            inp_custom.addEventListener("input", () => {
                 bullet.click();
-                this._updateSlide(
-                    slide, svg, subtitle, settings, {
-                        title: `${option.title} [${inp_custom.value}]`,
-                        properties: {
-                            [prop_key]: inp_custom.value
-                        }
+                this._updateSlide(slide, svg, subtitle, settings, {
+                    title: `${option.title} [${inp_custom.value}]`,
+                    properties: {
+                        [prop_key]: inp_custom.value
                     }
-                );
-            })
+                });
+            });
         }
 
         elements[0][1].click();
 
         const ellen = elements.length;
 
-        slidectrl_right.addEventListener('click', () => {
-            const bullet_active = pedestal.getElementsByClassName('active')[0];
+        slidectrl_right.addEventListener("click", () => {
+            const bullet_active = pedestal.getElementsByClassName("active")[0];
             const idx_curr = this._getElementIndex(bullet_active);
 
             // negative modulo
             elements[(((idx_curr + 1) % ellen) + ellen) % ellen][1].click();
         });
 
-        slidectrl_left.addEventListener('click', () => {
-            const bullet_active = pedestal.getElementsByClassName('active')[0];
+        slidectrl_left.addEventListener("click", () => {
+            const bullet_active = pedestal.getElementsByClassName("active")[0];
             const idx_curr = this._getElementIndex(bullet_active);
 
             // negative modulo
@@ -458,16 +500,16 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Generates a single option (slide) for the item (cell)
-     * 
+     *
      * @param cell          selector list item (plate type)
      * @param pedestal      bullet container
      * @param subtitle      caption for the option
      * @param settings_item related list item settings
      * @param settings      settings for related option
      * @param bullet_custom is the option is customizable
-     * 
-     * @returns element triplet (`slide`, `bullet`, `svg`), where 
-     *          `slide` is the desired slide, 
+     *
+     * @returns element triplet (`slide`, `bullet`, `svg`), where
+     *          `slide` is the desired slide,
      *          `bullet` is related bullet button instance,
      *          `svg` is an SVG container which contains the plate preview.
      */
@@ -484,12 +526,12 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         const svg_wrap = document.createElement("div");
         const svg = SVG(svg_wrap);
 
-        slide.classList.add('bb-sel-slide');
-        svg.node.classList.add('bb-sel-svg');
-        svg_wrap.classList.add('bb-sel-svg_wrap');
+        slide.classList.add("bb-sel-slide");
+        svg.node.classList.add("bb-sel-svg");
+        svg_wrap.classList.add("bb-sel-svg_wrap");
 
         if (bullet_custom) {
-            bullet.classList.add('custom');
+            bullet.classList.add("custom");
         }
 
         this._updateSlide(slide, svg, subtitle, settings_item, settings);
@@ -498,9 +540,8 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         cell.appendChild(slide);
         pedestal.appendChild(bullet);
 
-        bullet.addEventListener(
-            'click',
-            () => this._onBulletClick(cell, pedestal, subtitle, slide, bullet)
+        bullet.addEventListener("click", () =>
+            this._onBulletClick(cell, pedestal, subtitle, slide, bullet)
         );
 
         return [slide, bullet, svg];
@@ -508,12 +549,12 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Updates the slide details
-     * 
+     *
      * The method can be used to generate new slide (based on pre-generated containers)
      * and also to update existing slides.
-     * 
+     *
      * Re-renders the plate preview based on the new option properties.
-     * 
+     *
      * @param slide         the slide needed to update
      * @param svg           its related SVG container with the plate drawn
      * @param subtitle      its related HTML container with subtitle text
@@ -529,17 +570,24 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
     ) {
         svg.node.innerHTML = "";
 
-        const gcell = this.__grid.cell(0, 0);
+        const gcell = this.__grid.getCell(0, 0);
 
         let plate: Plate,
             error_message = null;
 
         try {
-            plate = new settings_item.type(svg, this.__grid, false, false, undefined, settings.properties);
-            plate.draw(gcell, 'west');
+            plate = new settings_item.type(
+                svg,
+                this.__grid,
+                false,
+                false,
+                undefined,
+                settings.properties
+            );
+            plate.draw(gcell, "west");
         } catch (e) {
             plate = new DummyPlate(svg, this.__grid, false, false);
-            plate.draw(gcell, 'west');
+            plate.draw(gcell, "west");
             error_message = e;
             console.error(e);
         }
@@ -547,20 +595,19 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         plate.move_to_point(0, 0);
 
         const width = plate.container.width(),
-              height = plate.container.width();
+            height = plate.container.width();
 
         plate.container.center(width / 2, height / 2);
 
-        svg.node.setAttributeNS(
-            null,"viewBox", `0 0 ${width} ${height}`
-        );
+        svg.node.setAttributeNS(null, "viewBox", `0 0 ${width} ${height}`);
 
-        slide.onmousedown = (evt: MouseEvent) => this._onSlideHold(evt, svg.node, plate);
+        slide.onmousedown = (evt: MouseEvent) =>
+            this._onSlideHold(evt, svg.node, plate);
 
-        slide.setAttribute('data-title', settings.title);
+        slide.setAttribute("data-title", settings.title);
 
         if (error_message) {
-            subtitle.innerHTML = `<p style="color: red;">${error_message}</p>`
+            subtitle.innerHTML = `<p style="color: red;">${error_message}</p>`;
         } else {
             subtitle.innerHTML = settings.title;
         }
@@ -568,9 +615,9 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Handles 'bullet click' mouse event
-     * 
+     *
      * Switches active option for the item
-     * 
+     *
      * @param cell      selector list item container (plate type)
      * @param pedestal  bullet list container
      * @param subtitle  HTML text container with subtitle text
@@ -584,8 +631,8 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
         slide: HTMLElement,
         bullet: HTMLElement
     ) {
-        const slide_active  = cell.getElementsByClassName('active')[0];
-        const bullet_active = pedestal.getElementsByClassName('active')[0];
+        const slide_active = cell.getElementsByClassName("active")[0];
+        const bullet_active = pedestal.getElementsByClassName("active")[0];
 
         if (slide_active && bullet_active) {
             const idx_prev = this._getElementIndex(bullet_active);
@@ -595,40 +642,52 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
             if (idx_prev > idx_curr) {
                 // Previous element positioned to the right
-                slide_active.animate({
-                    left: ["50%", '100%']
-                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
-                slide.animate({
-                    left: ["0%", '50%']
-                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
+                slide_active.animate(
+                    {
+                        left: ["50%", "100%"]
+                    },
+                    { duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
+                );
+                slide.animate(
+                    {
+                        left: ["0%", "50%"]
+                    },
+                    { duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
+                );
             } else {
                 // Previous element positioned to the left
-                slide_active.animate({
-                    left: ["50%", '0%']
-                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
-                slide.animate({
-                    left: ["100%", '50%']
-                }, {duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)"});
+                slide_active.animate(
+                    {
+                        left: ["50%", "0%"]
+                    },
+                    { duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
+                );
+                slide.animate(
+                    {
+                        left: ["100%", "50%"]
+                    },
+                    { duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
+                );
             }
 
-            slide_active.classList.remove('active');
-            bullet_active.classList.remove('active');
+            slide_active.classList.remove("active");
+            bullet_active.classList.remove("active");
         }
 
         slide.style.left = "50%";
 
-        bullet.classList.add('active');
-        slide.classList.add('active');
+        bullet.classList.add("active");
+        slide.classList.add("active");
 
-        subtitle.innerText = slide.getAttribute('data-title');
+        subtitle.innerText = slide.getAttribute("data-title");
     }
 
     /**
      * Handles 'slide (plate) drag start' event
-     * 
+     *
      * Dragging here should be understood not only moving the plate, but also clicking it,
      * because plate will be mounted on the board even after a single click.
-     * 
+     *
      * @param evt       original mouse click event
      * @param svg_node  SVG element that contains the plate preview
      * @param plate     the plate whose preview are rendered in the SVG element
@@ -640,8 +699,10 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
         this._callbacks.onplatetake(
             plate.serialize(),
-            rect.left + rect.width/2, rect.top + rect.height/2,
-            evt.clientX, evt.clientY
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+            evt.clientX,
+            evt.clientY
         );
 
         if (this._is_pinned) {
@@ -653,24 +714,26 @@ export default class SelectorLayer extends Layer<HTMLDivElement> {
 
     /**
      * Gets the number of the element in the parent node
-     * 
-     * @param node 
-     * 
+     *
+     * @param node
+     *
      * @returns number of the given element in its parent node
      */
     private _getElementIndex(node: NonDocumentTypeChildNode) {
         let index = 0;
-        while ( (node = node.previousElementSibling) ) {index++;}
+        while ((node = node.previousElementSibling)) {
+            index++;
+        }
         return index;
     }
 
     /**
      * Handles global keyboard event to toggle the flyout pin
-     * 
+     *
      * @param evt original keyboard event
      */
     private _handleKey(evt: KeyboardEvent) {
-        if (evt.code === 'KeyM') {
+        if (evt.code === "KeyM") {
             this.togglePin();
         }
     }

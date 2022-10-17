@@ -3,9 +3,9 @@ import SVG from 'svg.js';
 import ContextMenu from './ContextMenu';
 import Grid from './Grid';
 import Popup, { PopupContent } from './Popup';
-import { XYObject } from './types';
+import { XYPoint } from './extras/types';
 
-type ContextMenuCallCallback = (menu?: ContextMenu, position?: XYObject, inputs?: any[]) => void;
+type ContextMenuCallCallback = (menu?: ContextMenu, position?: XYPoint, inputs?: any[]) => void;
 type ContextMenuCloseCallback = () => void;
 
 type PopupDrawCallback<C extends PopupContent> = (popup: Popup<C>, content: C) => void;
@@ -218,7 +218,7 @@ export default abstract class Layer<CT = SVG.Container> {
      *
      * @protected
      */
-    protected _callContextMenu(menu: ContextMenu, position: XYObject, inputs: any[] = []): void {
+    protected _callContextMenu(menu: ContextMenu, position: XYPoint, inputs: any[] = []): void {
         this._onctxmenucall && this._onctxmenucall(menu, position, inputs);
     }
 
