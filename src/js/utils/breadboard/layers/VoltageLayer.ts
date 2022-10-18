@@ -2,7 +2,7 @@ import SVG from "svg.js";
 import Grid, { AuxPoint, AuxPointCategory, AuxPointType } from "../core/Grid";
 
 import Layer from "../core/Layer";
-import { XYPoint } from "../core/extras/types";
+import { CellRole, VoltageTable, XYPoint } from "../core/extras/types";
 import { hsvToRgb } from "../core/extras/helpers";
 import { getSourceLinePath } from "../core/extras/helpers_svg";
 import VoltagePopup, { VoltagePopupContent } from "../popups/VoltagePopup";
@@ -59,6 +59,20 @@ export default class VoltageLayer extends Layer {
         this._attachEventHandlers();
     }
 
+    public setLineVoltages(voltages: VoltageTable) {
+        for (const [line_id, voltage] of Object.entries(voltages)) {
+            this._popups[line_id].updateContent({ voltage });
+
+            if (this.__grid.lines[line_id].role === CellRole.Minus) {
+                this._popups.gnd.updateContent({ voltage });
+            }
+
+            if (this.__grid.lines[line_id].role === CellRole.Plus) {
+                this._popups.vcc.updateContent({ voltage });
+            }
+        }
+    }
+
     private _attachEventHandlers() {
         for (const [line_id, zone] of Object.entries(this._zones)) {
             zone.on("mouseenter", () => {
@@ -73,35 +87,19 @@ export default class VoltageLayer extends Layer {
 
     private _drawHoverZones() {
         for (const [l_id, line] of Object.entries(this.__grid.lines)) {
-            const d_id = Number(l_id.split(".")[0].replace(/[a-zA-Z]/g, ""));
+            // const d_id = Number(l_id.split(".")[0].replace(/[a-zA-Z]/g, ""));
 
-            const rgb = hsvToRgb(
-                Number(d_id) / Object.keys(this.__grid.domains).length,
-                1,
-                1
-            );
+            const { from, to } = line.field;
 
-            this._zones[l_id] = this._drawZone(
-                line.field.from,
-                line.field.to,
-                rgb
-            );
+            // const rgb = hsvToRgb(
+            //     Number(d_id) / Object.keys(this.__grid.domains).length,
+            //     1,
+            //     1
+            // );
 
-            this._popups[l_id] = this._createPopup(l_id, {
-                weight_norm: 1,
-                weight: 1
-            });
+            this._zones[l_id] = this._drawZone(from, to, "#f00");
+            this._popups[l_id] = this._createPopup(l_id);
         }
-    }
-
-    private _createPopup(
-        line_id: string,
-        content: VoltagePopupContent
-    ): VoltagePopup {
-        const popup = new VoltagePopup(line_id);
-        this._requestPopupDraw(popup, content);
-
-        return popup;
     }
 
     private _drawAuxHoverZoneSource() {
@@ -127,14 +125,14 @@ export default class VoltageLayer extends Layer {
         for (const el of [el_vcc, el_gnd]) {
             el.fill({ color: "none" })
                 .stroke({ color: "#f00", width: 30 })
-                .opacity(0.5);
+                .opacity(0);
         }
 
         this._zones.gnd = el_gnd;
         this._zones.vcc = el_vcc;
 
-        this._popups.gnd = new VoltagePopup("gnd");
-        this._popups.vcc = new VoltagePopup("vcc");
+        this._popups.gnd = this._createPopup("gnd");
+        this._popups.vcc = this._createPopup("vcc");
     }
 
     /**
@@ -187,41 +185,17 @@ export default class VoltageLayer extends Layer {
         rect.move(
             cell_from.pos.x - this.__grid.gap.x,
             cell_from.pos.y - this.__grid.gap.y
-        )
-            .fill({ color: color, opacity: 0.2 })
-            .stroke({ color: color, width: 2 })
-            .fill({ opacity: 0.6 });
-        rect.style({ pointerEvents: "none" });
+        ).fill({ color: color });
+        // .stroke({ color: color, width: 2 });
+        rect.opacity(0);
 
         return rect;
     }
 
-    /**
-     * Remove all the highlighters created
-     *
-     * This action will be done automatically if a new region is added via {@link highlightRegion} by default.
-     */
-    public clearRegions() {
-        this._hovergroup.clear();
+    private _createPopup(line_id: string): VoltagePopup {
+        const popup = new VoltagePopup(line_id);
+        this._requestPopupDraw(popup, { voltage: 0 });
+
+        return popup;
     }
-
-    /**
-     * Initializes internal SVG group to draw highlighter elements inside
-     */
-    private _drawRegions() {
-        this._hovergroup = this._container.group().id("regiongroup");
-        // this._regiongroup.move(100, 170);
-    }
-
-    // private _getVoltageLineByCoords(coords: XYPoint): number {
-    //     // get Cell instance just to throw an error if it doesn't exist
-    //     const cell = this.__grid.getCell(coords.x, coords.y);
-    //     coords = cell.idx;
-
-    //     const key = Object.keys(this._voltage_lines).find((line_id) =>
-    //         this._voltage_lines[Number(line_id)].find((_cell) => _cell.x === coords.x && _cell.y === coords.y)
-    //     );
-
-    //     return key ? Number(key) : undefined;
-    // }
 }

@@ -1,14 +1,12 @@
 import Popup from "../core/Popup";
-import Current from "../core/Current";
 import { invertHexRgb } from "../core/extras/helpers";
 
 export type VoltagePopupContent = {
-    weight: number;
-    weight_norm: number;
+    voltage: number;
 };
 
 /**
- * Popup that displays when the cursor hovers a {@link Current}
+ * Popup that displays when the cursor hovers a zone on {@link VoltageLayer}
  */
 export default class VoltagePopup extends Popup<VoltagePopupContent> {
     /**
@@ -17,15 +15,15 @@ export default class VoltagePopup extends Popup<VoltagePopupContent> {
      * @param content details for the popup
      */
     public updateContent(content: VoltagePopupContent): void {
-        this._container.style.visibility = content.weight
+        this._container.style.visibility = content.voltage
             ? "visible"
             : "hidden";
 
-        const rgb = Current.pickColorFromRange(content.weight_norm);
+        const rgb = "#aa0000";
 
         this._container.style.backgroundColor = rgb;
         this._container.style.color = invertHexRgb(rgb, true);
-        this._container.innerHTML = `weight: ${content.weight}`;
+        this._container.innerHTML = `Voltage: ${content.voltage} V`;
     }
 
     protected __draw__(content: VoltagePopupContent): void {

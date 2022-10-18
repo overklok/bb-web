@@ -790,6 +790,9 @@ export default class Breadboard {
      * @private
      */
     _attachControlsEvents() {
+        this.__grid.onVoltageUpdate((vt) => {
+            this._layers.voltage.setLineVoltages(vt);
+        });
         /// очистка платы
         this._layers.selector.onClear(() => {
             this.clearPlates();

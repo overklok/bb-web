@@ -402,7 +402,7 @@ export default class Grid {
         return this._aux_points_cats.indexOf(cat) !== -1;
     }
 
-    public setLineVoltages(voltages: { [line_id: string]: number }) {
+    public setLineVoltages(voltages: VoltageTable) {
         for (const [id, voltage] of Object.entries(voltages)) {
             this._voltages[id] = voltage;
         }
@@ -476,7 +476,7 @@ export default class Grid {
         return { cell_struct, emb_plates };
     }
 
-    public onVoltageUpdate(cb: () => {}) {
+    public onVoltageUpdate(cb: (vt: VoltageTable) => void) {
         this._callbacks.onvoltageupdate = cb || (() => {});
     }
 
