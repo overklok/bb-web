@@ -1,6 +1,7 @@
+import { Callback } from 'i18next';
 import SVG from 'svg.js';
 
-import { XYObject } from './types';
+import { XYPoint } from './extras/types';
 
 type RGBColor = [number, number, number];
 
@@ -26,9 +27,9 @@ export type Thread = {
     /** The weight of the current */
     weight: number;
     /** Start point of the current */
-    from: XYObject;
+    from: XYPoint;
     /** Finish point of the current */
-    to: XYObject;
+    to: XYPoint;
 
     /** flag for extra purposes */
     ___touched?: boolean;
@@ -54,10 +55,15 @@ export type CurrentPath = [string, number, number?][];
  * @category Breadboard
  */
 export default class Current {
-    /** Root container of the {@link Current} */
-    private container: SVG.Container;
     /** General properties of the {@link Current} */
-    private _thread: Thread;
+    public readonly thread: Thread;
+
+    /** flags for extra purposes */
+    public ___touched: boolean;
+
+
+    /** Root container of the {@link Current} */
+    private _container: SVG.Container;
     /** Animation-specific container of the {@link Current} */
     private _container_anim: SVG.Nested;
     /** Debug container of the {@link Current} */
@@ -69,7 +75,7 @@ export default class Current {
     /** Current particle SVG elements */
     private _particles: any[];
     /** Current SVG line */
-    private _line: any;
+    private _line: SVG.Path;
     /** Geometric SVG-formatted path string of the current line */
     private _line_path: string;
     /** Calculated length of the {@link _line_path} */
@@ -91,8 +97,10 @@ export default class Current {
     /** Current burning flag */
     private _burning: boolean;
 
-    /** flag for extra purposes */
-    public ___touched: boolean;
+    private _callbacks: {
+        mouseenter: CallableFunction,
+        mouseleave:  CallableFunction
+    };
 
     /**
      * Color gradations of the {@link Current} weight
@@ -141,10 +149,10 @@ export default class Current {
     static get FullOpacityThreshold() {return 0.07} 
 
     constructor(container: SVG.Container, thread: Thread, schematic: boolean) {
-        this.container  = container;
-        this._thread = thread;
+        this.thread = thread;
+        this._container = container.nested();
+        this._container_anim = this._container.nested();     // animation root 
 
-        this._container_anim = this.container.nested();     // animation root 
         this._group_debug = undefined; //this.container.group();      // debug root
 
         this._id = Math.floor(Math.random() * (10 ** 6));   // Default identifier is a random six-digit number
@@ -168,6 +176,11 @@ export default class Current {
         this._visible   = false;
         this._activated = false;
         this._burning   = false;
+
+        this._callbacks = {
+            mouseenter: () => {},
+            mouseleave: () => {}
+        }
     }
 
     /**
@@ -177,11 +190,15 @@ export default class Current {
         return this._id;
     }
 
+    get weight(): number {
+        return this._weight;
+    }
+
     /**
      * Whether the current is short-circuited
      */
     get is_burning(): boolean {
-        return this._thread.weight > 2;
+        return this.thread.weight > 2;
     }
 
     /**
@@ -191,12 +208,13 @@ export default class Current {
      *
      * @param path original SVG path (geometric coordinates)
      */
-    draw(path: CurrentPath): void {
+    public draw(path: CurrentPath): void {
         this._line_path = Current._pathArrayToString(path);
         this._line_length = Current.getPathLength(this._line_path);
 
-        this._line = this.container
-            .path(this._line_path)
+        this._line = this._container.path(this._line_path);
+
+        this._line
             .fill('none')
             .stroke(this._style);
 
@@ -212,21 +230,26 @@ export default class Current {
 
         this._addGlowFilter();
 
+        this._attachEventHandlers();
+
         this._visible = true;
     };
 
     /**
      * Erases the current
      */
-    erase(): void {
+    public erase(): void {
         if (!this._line) {
             console.warn("An attempt to erase NULL line was made");
             return;
         }
 
+        this._detachEventHandlers();
+
         this._particles = [];
 
         this._line.remove();
+        this._container.remove();
         this._container_anim.remove();
 
         this._sheet.ownerNode.remove();
@@ -244,13 +267,13 @@ export default class Current {
      *
      * @param {Object} thread thread to compare
      */
-    hasSameThread(thread: Thread): boolean {
-        if (!this._thread) return false;
+    public hasSameThread(thread: Thread): boolean {
+        if (!this.thread) return false;
 
-        return  thread.from.x === this._thread.from.x &&
-                thread.from.y === this._thread.from.y &&
-                thread.to.x === this._thread.to.x &&
-                thread.to.y === this._thread.to.y;
+        return  thread.from.x === this.thread.from.x &&
+                thread.from.y === this.thread.from.y &&
+                thread.to.x === this.thread.to.x &&
+                thread.to.y === this.thread.to.y;
     }
 
     /**
@@ -275,7 +298,7 @@ export default class Current {
      *
      * @param weight current particle motion speed
      */
-    activate(): void {
+    public activate(): void {
         if (!this._visible) throw new Error("Cannot activate invisible current");
         if (this._activated) return;
 
@@ -338,7 +361,7 @@ export default class Current {
     /**
      * Stops the {@link Current} animation
      */
-    deactivate(): void {
+    public deactivate(): void {
         this._particles = [];
         this._container_anim.clear();
         this._initStyleSheet();
@@ -350,7 +373,7 @@ export default class Current {
      * 
      * @see hideParticles
      */
-    showParticles(): void {
+    public showParticles(): void {
         this._container_anim.opacity(1);
     }
 
@@ -359,7 +382,7 @@ export default class Current {
      * 
      * @see showParticles
      */
-    hideParticles(): void {
+    public hideParticles(): void {
         this._container_anim.opacity(0);
     }
 
@@ -368,10 +391,10 @@ export default class Current {
      * 
      * @param weight
      */
-    setWeight(weight: number = 0) {
+    public setWeight(weight: number = 0) {
         const _weight = this._normalizeWeight(weight);
 
-        if (this._thread.weight !== weight) {
+        if (this.thread.weight !== weight) {
             // задать скорость
             this._setParticleSpeed(_weight);
 
@@ -388,10 +411,46 @@ export default class Current {
         }
 
         this._weight = _weight;
-        this._thread.weight = weight;
+        this.thread.weight = weight;
 
         this._updateBurning();
         this._updateDebugInfo();
+    }
+
+    public makeHoverable(hoverable: boolean): void {
+        this._container.style({ cursor: hoverable ? 'pointer' : 'default' });
+    }
+
+    /**
+     * Attaches a mouse enter event 
+     *
+     * @param cb callback function to be called when the cursor entered the current
+     */
+    public onMouseEnter(cb: CallableFunction): void {
+        if (!cb) cb = () => {};
+
+        this._callbacks.mouseenter = cb;
+    }
+
+    /**
+     * Attaches a mouse leave event 
+     *
+     * @param cb callback function to be called when the cursor left the current
+     */
+    public onMouseLeave(cb: CallableFunction): void {
+        if (!cb) cb = () => {};
+
+        this._callbacks.mouseleave = cb;
+    }
+    
+    private _attachEventHandlers() {
+        this._container.on('mouseenter', () => this._callbacks.mouseenter());
+        this._container.on('mouseleave', () => this._callbacks.mouseleave());
+    }
+
+    private _detachEventHandlers() {
+        this._container.off('mouseenter');
+        this._container.off('mouseleave');
     }
 
     /**
@@ -802,7 +861,7 @@ export default class Current {
 
     _updateDebugInfo(): void {
         const wght_anim = Number.parseFloat(String(this._weight)).toPrecision(4);
-        const wght_thrd = Number.parseFloat(String(this._thread.weight)).toPrecision(4);
+        const wght_thrd = Number.parseFloat(String(this.thread.weight)).toPrecision(4);
 
         if (this._group_debug) {
             this._group_debug.clear();

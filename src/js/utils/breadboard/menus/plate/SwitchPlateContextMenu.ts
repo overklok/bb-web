@@ -1,4 +1,4 @@
-import { XYObject } from "../../core/types";
+import { XYPoint } from "../../core/extras/types";
 import PlateContextMenu from "../PlateContextMenu";
 
 /**
@@ -37,7 +37,7 @@ export default class SwitchPlateContextMenu extends PlateContextMenu {
     }
 
     /** @inheritdoc */
-    public draw(position: XYObject, inputs: any[] = []) {
+    public draw(position: XYPoint, inputs: any[] = []) {
         // Set initial field value to correspond with the state given before actual draw
         this.setValue(inputs[0]);
 

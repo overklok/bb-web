@@ -1,4 +1,4 @@
-import { XYObject } from "./types"
+import { XYPoint } from "./extras/types"
 
 
 /**
@@ -79,6 +79,8 @@ export type ContextMenuItemProps = {
 
 /**
  * Basic context menu drawer
+ * 
+ * TODO: Make this class an inheritor of Plate
  *
  * @category Breadboard
  */
@@ -179,7 +181,7 @@ export default class ContextMenu {
      * 
      * @param cb_destroy callback which will be called when the menu will be ready to destroy.
      */
-    public fadeOut(cb_destroy: Function): void {
+    public hide(cb_destroy: Function): void {
         this._container.style.opacity = '0';
 
         setTimeout(() => {
@@ -195,7 +197,7 @@ export default class ContextMenu {
      * @param position  position when the right click is occurred
      * @param inputs    optional input values to pass into the items that has input fields
      */
-    public draw(position: XYObject, inputs: any[] = []): HTMLDivElement {
+    public draw(position: XYPoint, inputs: any[] = []): HTMLDivElement {
         this._container = document.createElement('div');
         this._container.classList.add(ContextMenu.Class);
         this._container.style.opacity = '0';
@@ -209,12 +211,14 @@ export default class ContextMenu {
     }
 
     /**
-     * Clears all content from the root HTML container
+     * Removes all content drawn by the {@link draw} method
      */
-    public dispose(): void {
+    public clear(): void {
         while(this._container.firstChild) {
             this._container.removeChild(this._container.firstChild);
         }
+
+        // this._container.remove();
     }
 
     /**
@@ -399,7 +403,7 @@ export default class ContextMenu {
 
                 const value = input_node ? input_node.value : undefined;
 
-                this.dispose();
+                this.clear();
 
                 if (!(input_props && input_props.type === 'file')) {
                     this._itemClick(item_props, value);

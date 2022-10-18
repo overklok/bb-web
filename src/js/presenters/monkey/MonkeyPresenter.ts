@@ -1,10 +1,10 @@
 import Presenter, {on} from "../../core/base/Presenter";
-import MonkeyView, {ApproveClick, ConfigureClick} from "../../views/monkey/MonkeyView";
 import ModalModel from "../../core/models/ModalModel";
-import BoardModel, {BoardErrorEvent, Plate, PlateEvent, UserPlateEvent} from "../../models/common/BoardModel";
+import MonkeyView, {ApproveClick, ConfigureClick} from "../../views/monkey/MonkeyView";
+import BoardModel, {BoardErrorEvent, PlateEvent, UserPlateEvent} from "../../models/common/BoardModel";
 import TestkitModel, {ReferenceEvent} from "../../models/monkey/TestkitModel";
 import BoardLogModel from "../../models/monkey/BoardLogModel";
-import {comparePlates} from "../../utils/breadboard/core/extras/helpers";
+import { comparePlates } from "../../utils/breadboard/core/extras/helpers_plate";
 import { SerializedPlate } from "src/js/utils/breadboard/core/Plate";
 
 export default class MonkeyPresenter extends Presenter<MonkeyView> {

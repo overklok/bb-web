@@ -1,5 +1,5 @@
 import { Thread } from "../Current";
-import { XYObject } from "../types";
+import { XYPoint } from "./types";
 
 type ThreadGroup = {
     pairs: {points: number[], weight: number}[],
@@ -71,11 +71,11 @@ export function overlayThreads(threads: Thread[]): Thread[] {
                 from: {
                     [axis_main as 'x']: group.main_axis_point, 
                     [axis_side]: a_from
-                } as XYObject,
+                } as XYPoint,
                 to: {
                     [axis_main as 'x']: group.main_axis_point, 
                     [axis_side]: a_to
-                } as XYObject,
+                } as XYPoint,
                 weight: 0
             }
 
@@ -86,11 +86,11 @@ export function overlayThreads(threads: Thread[]): Thread[] {
                     from: {
                         [axis_main]: group.main_axis_point, 
                         [axis_side]: p_from
-                    } as XYObject,
+                    } as XYPoint,
                     to: {
                         [axis_main]: group.main_axis_point, 
                         [axis_side]: p_to
-                    } as XYObject,
+                    } as XYPoint,
                     weight: undefined
                 }
 
@@ -153,11 +153,11 @@ function belongsToGroup(group: ThreadGroup, member: ThreadGroupMember) {
             from: {
                 [axis_main]: group.main_axis_point, 
                 [axis_side]: p_from
-            } as XYObject,
+            } as XYPoint,
             to: {
                 [axis_main]: group.main_axis_point, 
                 [axis_side]: p_to
-            } as XYObject,
+            } as XYPoint,
             weight: undefined
         }
 
@@ -165,11 +165,11 @@ function belongsToGroup(group: ThreadGroup, member: ThreadGroupMember) {
             from: {
                 [axis_main]: member.main_axis_point, 
                 [axis_side]: member.points[0]
-            } as XYObject,
+            } as XYPoint,
             to: {
                 [axis_main]: member.main_axis_point, 
                 [axis_side]: member.points[1]
-            } as XYObject,
+            } as XYPoint,
             weight: undefined
         }
 

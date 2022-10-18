@@ -1,19 +1,21 @@
-import SVG from 'svg.js'
+import SVG from "svg.js";
 
 import Plate, { PlateProps, PlateState } from "../core/Plate";
 import SwitchPlateContextMenu from "../menus/plate/SwitchPlateContextMenu";
 import LinearPlate from "../core/plate/LinearPlate";
-import Grid from '../core/Grid';
-import Cell from '../core/Cell';
+import Grid from "../core/Grid";
+import Cell from "../core/Cell";
 
 /**
  * Button plate
- * 
+ *
  * @category Breadboard
  * @subcategory Plates
  */
 export default class ButtonPlate extends LinearPlate {
-    static get Alias() {return "button"}
+    static get Alias() {
+        return "button";
+    }
 
     private _rect1: SVG.Rect;
     private _rect2: SVG.Rect;
@@ -48,21 +50,24 @@ export default class ButtonPlate extends LinearPlate {
         super.handleKeyPress(key_code, keydown);
 
         if (key_code === "KeyQ" && keydown) {
-            this.setState({input: false});
+            this.setState({ input: false });
         }
 
         if (key_code === "KeyQ" && !keydown) {
-            this.setState({input: true});
+            this.setState({ input: true });
         }
     }
 
     /**
      * @inheritdoc
      */
-    public setState(state: Partial<PlateState>, suppress_events: boolean = false) {
+    public setState(
+        state: Partial<PlateState>,
+        suppress_events: boolean = false
+    ) {
         if (state.input === undefined) return;
 
-        state = {input: !!Number(state.input)};
+        state = { input: !!Number(state.input) };
 
         super.setState(state, suppress_events);
 
@@ -77,7 +82,7 @@ export default class ButtonPlate extends LinearPlate {
      * @inheritdoc
      */
     public inputIncrement() {
-        this.setState({input: !this.input});
+        this.setState({ input: !this.input });
     }
 
     /**
@@ -98,7 +103,7 @@ export default class ButtonPlate extends LinearPlate {
         }
 
         // this._group.text(`Button`).font({size: 20});
-    };
+    }
 
     /**
      * Updates the jumper position depending on the state
@@ -108,31 +113,44 @@ export default class ButtonPlate extends LinearPlate {
         let line_gap = line_len / 6;
 
         if (this.state.input) {
-            this._jumper.rotate(-25, this._rect1.cx() + line_len / 2 - line_gap, this._rect1.cy());
+            this._jumper.rotate(
+                -25,
+                this._rect1.cx() + line_len / 2 - line_gap,
+                this._rect1.cy()
+            );
         } else {
-            this._jumper.rotate(0, this._rect1.cx() + line_len / 2 - line_gap, this._rect1.cy());
+            this._jumper.rotate(
+                0,
+                this._rect1.cx() + line_len / 2 - line_gap,
+                this._rect1.cy()
+            );
         }
     }
 
     /**
      * Updates debug input value indicator
-     * 
+     *
      * @param input_value value to display
      */
-    protected _redrawInput(input_value: number|string) {
+    protected _redrawInput(input_value: number | string) {
         if (!this._svginp) {
-            this._svginpbg = this._container.rect(0, 0).style({fill: '#000'});
+            this._svginpbg = this._container.rect(0, 0).style({ fill: "#000" });
 
-            this._svginp = this._container.text('-')
+            this._svginp = this._container
+                .text("-")
                 .center(0, 0)
-                .style({fill: '#0F0'})
-                .font({size: 22});
+                .style({ fill: "#0F0" })
+                .font({ size: 22 });
         }
 
-        this._svginp.style({fill: input_value === undefined ? '#F00' : '#0F0'});
-        this._svginp.text(input_value === undefined ? 'n/a' : String(input_value));
+        this._svginp.style({
+            fill: input_value === undefined ? "#F00" : "#0F0"
+        });
+        this._svginp.text(
+            input_value === undefined ? "n/a" : String(input_value)
+        );
 
-        const {x, y, width, height} = this._svginp.node.getBBox();
+        const { x, y, width, height } = this._svginp.node.getBBox();
 
         this._svginpbg.size(width, height).move(x, y);
     }
@@ -142,9 +160,12 @@ export default class ButtonPlate extends LinearPlate {
      *
      * @param qs size of squares
      */
-    protected _drawPicture(qs=Plate.QuadSizePreferred) {
-        let cell1 = this.__grid.cell(0, 0);
-        let cell2 = this.__grid.cell(this._params.size.x-1, this._params.size.y-1);
+    protected _drawPicture(qs = Plate.QuadSizePreferred) {
+        let cell1 = this.__grid.getCell(0, 0);
+        let cell2 = this.__grid.getCell(
+            this._params.size.x - 1,
+            this._params.size.y - 1
+        );
 
         this._rect1 = this._group.rect(qs, qs);
         this._rect2 = this._group.rect(qs, qs);
@@ -155,25 +176,34 @@ export default class ButtonPlate extends LinearPlate {
         let line_len = this._rect2.x() - this._rect1.x();
         let line_gap = line_len / 6;
 
-        this._group.path([
-            ['M', 0, 0],
-            ['l', line_len/2 - line_gap, 0],
-            ['m', line_gap*2, 0],
-            ['l', line_len/2 - line_gap, 0],
-        ])
-            .stroke({width: 3})
-            .fill('none')
+        this._group
+            .path([
+                ["M", 0, 0],
+                ["l", line_len / 2 - line_gap, 0],
+                ["m", line_gap * 2, 0],
+                ["l", line_len / 2 - line_gap, 0]
+            ])
+            .stroke({ width: 3 })
+            .fill("none")
             .move(this._rect1.cx(), this._rect1.cy());
 
-        this._jumper = this._group.line(
-            0, 0,
-            line_gap*2, 0
-        )
-            .stroke({width: 2, color: "#000"})
-            .move(this._rect1.cx() + line_len/2 - line_gap, this._rect1.cy());
+        this._jumper = this._group
+            .line(0, 0, line_gap * 2, 0)
+            .stroke({ width: 2, color: "#000" })
+            .move(this._rect1.cx() + line_len / 2 - line_gap, this._rect1.cy());
 
-        this._group.circle(this._rect1.width() / 3).center(this._rect1.cx() + line_len/2 - line_gap, this._rect1.cy());
-        this._group.circle(this._rect1.width() / 3).center(this._rect1.cx() + line_len/2 + line_gap, this._rect1.cy());
+        this._group
+            .circle(this._rect1.width() / 3)
+            .center(
+                this._rect1.cx() + line_len / 2 - line_gap,
+                this._rect1.cy()
+            );
+        this._group
+            .circle(this._rect1.width() / 3)
+            .center(
+                this._rect1.cx() + line_len / 2 + line_gap,
+                this._rect1.cy()
+            );
 
         this._toggleJumper();
     }
