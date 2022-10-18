@@ -10,6 +10,7 @@ import { coverObjects, mod } from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import { Direction, DirsClockwise, XYPoint } from "./extras/types";
 import ContextMenu from "./ContextMenu";
+import ContactLayer from "../layers/ContactLayer";
 
 /**
  * Orientation codes
@@ -556,7 +557,7 @@ export default abstract class Plate {
 
         this._shadow.style({ "pointer-events": "none" });
 
-        let surf_path = this._generateSurfacePath(BackgroundLayer.CellRadius);
+        let surf_path = this._generateSurfacePath(ContactLayer.CellRadius);
 
         // TODO: Move surface generation to ComplexPlate and LinearPlate
 
@@ -568,12 +569,12 @@ export default abstract class Plate {
                 .rect()
                 .width("100%")
                 .height("100%")
-                .radius(BackgroundLayer.CellRadius);
+                .radius(ContactLayer.CellRadius);
             this._error_highlighter = this._group
                 .rect()
                 .width("100%")
                 .height("100%")
-                .radius(BackgroundLayer.CellRadius);
+                .radius(ContactLayer.CellRadius);
         }
 
         if (this._params.schematic) {

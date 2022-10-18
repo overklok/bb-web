@@ -1,15 +1,27 @@
+import { isUndefined } from "lodash";
 import Cell from "./Cell";
-import { isDomainAnalog } from "./extras/helpers_data";
-import { ElecLayout, _scanAnalogDomains, _scanDomains } from "./extras/helpers_elec";
-import { isFixedXY, pointseq, rangeOrPointToRange, sliceXYRange } from "./extras/helpers_point";
+import {
+    ElecLayout,
+    extractAnalogPoints,
+    scanDomains
+} from "./extras/helpers_elec";
+import {
+    isFixedXY,
+    pointseq,
+    rangeOrPointToRange,
+    sliceXYRange
+} from "./extras/helpers_point";
 import {
     CellRole,
     Domain,
     DomainDecl,
     DomainTable,
+    ElecLineTable,
     EmbeddedPlate,
     Layout,
+    LineTable,
     PinState,
+    VoltageTable,
     XYPoint,
     XYRange
 } from "./extras/types";
@@ -86,15 +98,6 @@ type GridParams = {
     wrap: { x: number; y: number };
 };
 
-type LineAnalogData = {
-    pin_state_initial: PinState;
-    minus: {
-        single?: XYPoint;
-        from: XYPoint;
-        to: XYPoint;
-    };
-};
-
 /**
  * A visible point which is displaced arbitrarily on the {@link Grid}
  *
@@ -125,14 +128,20 @@ type AuxPointMap = Map<string | number, AuxPoint | AuxPoint[]>;
 export default class Grid {
     /** Table of domains */
     public readonly domains: DomainTable;
+    public readonly lines: LineTable;
 
     /** TODO: Additional info that is not directly related to the Grid, should be generalized */
     public curr_straight_top_y: number;
+
     /** TODO: Additional info that is not directly related to the Grid, should be generalized */
     public curr_straight_bottom_y: number;
 
+    /** Domain voltages */
+    private _voltages: VoltageTable;
+
     /** An array of cells placed on the {@link Grid} */
     private _cells: Cell[][];
+
     /** A set of fixed properties of the {@link Grid} */
     private _params: GridParams;
 
@@ -140,17 +149,21 @@ export default class Grid {
     private _aux_points_cats: string[];
 
     /**
-     * A set of virtual (invisible but logically important) points on the {@link Grid}
-     */
-    private readonly _virtual_points: { x: number; y: number }[];
-
-    /**
-     * A set of {@link AuxPoint} placed on the {@link Grid}.
+     * Set of {@link AuxPoint} placed on the {@link Grid}.
      *
      * Auxiliary points don't fit into the standard matrix layout of the {@link Grid}
      * so they should be stored in specific attribute
      */
     private readonly _aux_points: AuxPointMap;
+
+    /**
+     * A set of virtual (invisible but logically important) points on the {@link Grid}
+     */
+    private readonly _virtual_points: { x: number; y: number }[];
+
+    private _callbacks: {
+        onvoltageupdate: (vt: VoltageTable) => void;
+    };
 
     static layoutToElecLayout(layout: Layout, embed_arduino = true) {
         return new Grid(layout).getElecLayout(embed_arduino);
@@ -160,11 +173,16 @@ export default class Grid {
      * Creates the {@link Grid} instance
      */
     constructor(layout: Layout) {
-        if (layout.dim.x <= 0 || layout.dim.y <= 0) throw new RangeError("Grid dimensions should be positive values");
-        if (layout.size.x <= 0 || layout.size.y <= 0) throw new RangeError("Width/Height should be positive values");
-        if (layout.pos.x < 0 || layout.pos.y < 0) throw new RangeError("Position X/Y should be non-negative values");
-        if (layout.gap.x < 0 || layout.gap.y < 0) throw new RangeError("Gap X/Y should be non-negative values");
-        if (layout.wrap.x < 0 || layout.wrap.y < 0) throw new RangeError("Wrap X/Y should be non-negative values");
+        if (layout.dim.x <= 0 || layout.dim.y <= 0)
+            throw new RangeError("Grid dimensions should be positive values");
+        if (layout.size.x <= 0 || layout.size.y <= 0)
+            throw new RangeError("Width/Height should be positive values");
+        if (layout.pos.x < 0 || layout.pos.y < 0)
+            throw new RangeError("Position X/Y should be non-negative values");
+        if (layout.gap.x < 0 || layout.gap.y < 0)
+            throw new RangeError("Gap X/Y should be non-negative values");
+        if (layout.wrap.x < 0 || layout.wrap.y < 0)
+            throw new RangeError("Wrap X/Y should be non-negative values");
 
         this._params = {
             dim: { ...layout.dim },
@@ -174,12 +192,17 @@ export default class Grid {
             wrap: { ...layout.wrap }
         };
 
+        this._callbacks = {
+            onvoltageupdate: () => {}
+        };
+
         this.curr_straight_top_y = layout.curr_straight_top_y;
         this.curr_straight_bottom_y = layout.curr_straight_bottom_y;
 
         this._aux_points_cats = layout.aux_point_cats || [];
 
         this._cells = [];
+        this._voltages = {};
 
         this._aux_points = new Map();
         this._virtual_points = [];
@@ -190,6 +213,7 @@ export default class Grid {
             this._initAuxPoints();
             this._initVirtualPoints(layout.ddecls);
             this.domains = this._declsToDomains(layout.ddecls);
+            this.lines = scanDomains(this.domains);
         }
     }
 
@@ -277,7 +301,11 @@ export default class Grid {
      * @param j row index
      * @param border_type boundary cell selection behavior
      */
-    public getCell(i: number, j: number, border_type: BorderType = BorderType.None): Cell {
+    public getCell(
+        i: number,
+        j: number,
+        border_type: BorderType = BorderType.None
+    ): Cell {
         if (!Number.isInteger(i) || !Number.isInteger(j)) {
             throw new TypeError("Indices must be integers");
         }
@@ -295,14 +323,22 @@ export default class Grid {
                 break;
             }
             case BorderType.Wrap: {
-                i = i < 0 ? (i % this._params.dim.x) + this._params.dim.x : i % this._params.dim.x;
-                j = j < 0 ? (j % this._params.dim.y) + this._params.dim.y : j % this._params.dim.y;
+                i =
+                    i < 0
+                        ? (i % this._params.dim.x) + this._params.dim.x
+                        : i % this._params.dim.x;
+                j =
+                    j < 0
+                        ? (j % this._params.dim.y) + this._params.dim.y
+                        : j % this._params.dim.y;
                 break;
             }
         }
 
         if (!(i in this._cells) || !(j in this._cells[i])) {
-            throw new RangeError("Coordinates of cell is out of grid's range" + `: ${i}, ${j}`);
+            throw new RangeError(
+                "Coordinates of cell is out of grid's range" + `: ${i}, ${j}`
+            );
         }
 
         return this._cells[i][j];
@@ -320,7 +356,10 @@ export default class Grid {
      */
     public auxPoint<K extends number | string>(i: K): AuxPointOrRow<K>;
     public auxPoint(i: number, j: number): AuxPoint;
-    public auxPoint<K extends number | string>(i: K, j?: number): AuxPointOrRow<K> {
+    public auxPoint<K extends number | string>(
+        i: K,
+        j?: number
+    ): AuxPointOrRow<K> {
         const item = this._aux_points.get(i);
 
         try {
@@ -346,7 +385,9 @@ export default class Grid {
     public virtualPoint(x: number, y: number): XYPoint {
         if (!this._virtual_points) return;
 
-        return this._virtual_points.find((point) => point.x === x && point.y === y);
+        return this._virtual_points.find(
+            (point) => point.x === x && point.y === y
+        );
     }
 
     /**
@@ -361,31 +402,82 @@ export default class Grid {
         return this._aux_points_cats.indexOf(cat) !== -1;
     }
 
-    public setLineVoltages(voltages: { [line_id: number]: number }) {}
+    public setLineVoltages(voltages: { [line_id: string]: number }) {
+        for (const [id, voltage] of Object.entries(voltages)) {
+            this._voltages[id] = voltage;
+        }
+
+        this._callbacks.onvoltageupdate({ ...voltages });
+    }
 
     public getElecLayout(embed_arduino = true): ElecLayout {
-        const ds = Object.entries(this.domains);
+        const cell_struct: ElecLineTable = {};
+        const emb_plates = [];
 
-        const ds_normal = ds.filter(([_, d]) => !isDomainAnalog(d));
-        const ds_analog = ds.filter(([_, d]) => isDomainAnalog(d));
+        for (const [line_id, line] of Object.entries(this.lines)) {
+            let elec_line: XYPoint[] = [];
 
-        // scan normal domains
-        const [cs, id_plus, id_minus] = _scanDomains(ds_normal);
+            switch (line.role) {
+                case CellRole.Analog: {
+                    if (embed_arduino) {
+                        elec_line = line.points;
+                        emb_plates.push(line.embedded_plate);
+                    }
+                    break;
+                }
 
-        // scan analog domains
-        const [cs_analog, emb_plates] = _scanAnalogDomains(ds_analog, embed_arduino, id_plus, id_minus);
+                case CellRole.Minus: {
+                    elec_line = line.points;
+
+                    if (!embed_arduino) {
+                        elec_line.push(
+                            ...extractAnalogPoints(this.lines, PinState.Output)
+                        );
+                    }
+                    break;
+                }
+
+                case CellRole.Plus: {
+                    elec_line = line.points;
+
+                    if (!embed_arduino) {
+                        elec_line.push(
+                            ...extractAnalogPoints(this.lines, PinState.Input)
+                        );
+                    }
+                    break;
+                }
+
+                default: {
+                    elec_line = line.points;
+                }
+            }
+
+            cell_struct[line_id] = elec_line;
+        }
 
         const point_minus = this.auxPoint(AuxPointType.Gnd) as AuxPoint,
             point_vcc = this.auxPoint(AuxPointType.Vcc) as AuxPoint;
 
         if (point_vcc && point_minus) {
-            emb_plates.push(getVoltageSourcePlate(point_minus.idx, point_vcc.idx));
+            emb_plates.push(
+                getVoltageSourcePlate(point_minus.idx, point_vcc.idx)
+            );
         }
 
-        return {
-            cell_struct: { ...cs, ...cs_analog },
-            emb_plates
-        };
+        const sizes: { [n: number]: number } = {};
+
+        for (const points of Object.values(cell_struct)) {
+            sizes[points.length] = isUndefined(sizes[points.length])
+                ? 1
+                : sizes[points.length] + 1;
+        }
+
+        return { cell_struct, emb_plates };
+    }
+
+    public onVoltageUpdate(cb: () => {}) {
+        this._callbacks.onvoltageupdate = cb || (() => {});
     }
 
     /**
@@ -636,7 +728,10 @@ export default class Grid {
     }
 }
 
-function getVoltageSourcePlate(coords_minus: XYPoint, coords_vcc: XYPoint): EmbeddedPlate {
+function getVoltageSourcePlate(
+    coords_minus: XYPoint,
+    coords_vcc: XYPoint
+): EmbeddedPlate {
     return {
         type: "Vss",
         id: -100,

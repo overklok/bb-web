@@ -54,12 +54,7 @@ export default class RegionLayer extends Layer {
      * @param clear remove prevously created highighters
      * @param color color of the highlighter
      */
-    public highlightRegion(
-        from: XYPoint,
-        to: XYPoint,
-        clear: boolean = false,
-        color: string = "#d40010"
-    ) {
+    public highlightRegion(from: XYPoint, to: XYPoint, clear: boolean = false, color: string = "#d40010") {
         if (clear) {
             this._regiongroup.clear();
         }
@@ -76,35 +71,22 @@ export default class RegionLayer extends Layer {
         }
 
         if (from.x >= this.__grid.dim.x || to.x >= this.__grid.dim.x) {
-            throw new RangeError(
-                "X coordinate does not fit the grid's dimension"
-            );
+            throw new RangeError("X coordinate does not fit the grid's dimension");
         }
 
         if (from.y >= this.__grid.dim.y || to.y >= this.__grid.dim.y) {
-            throw new RangeError(
-                "Y coordinate does not fit the grid's dimension"
-            );
+            throw new RangeError("Y coordinate does not fit the grid's dimension");
         }
 
         let cell_from = this.__grid.getCell(from.x, from.y);
         let cell_to = this.__grid.getCell(to.x, to.y);
 
-        let width =
-            Math.abs(cell_from.pos.x - cell_to.pos.x) +
-            cell_from.size.x +
-            this.__grid.gap.x * 2;
-        let height =
-            Math.abs(cell_from.pos.y - cell_to.pos.y) +
-            cell_from.size.y +
-            this.__grid.gap.y * 2;
+        let width = Math.abs(cell_from.pos.x - cell_to.pos.x) + cell_from.size.x + this.__grid.gap.x * 2;
+        let height = Math.abs(cell_from.pos.y - cell_to.pos.y) + cell_from.size.y + this.__grid.gap.y * 2;
 
         this._regiongroup
             .rect(width, height)
-            .move(
-                cell_from.pos.x - this.__grid.gap.x,
-                cell_from.pos.y - this.__grid.gap.y
-            )
+            .move(cell_from.pos.x - this.__grid.gap.x, cell_from.pos.y - this.__grid.gap.y)
             .radius(10)
             .fill({ color: color, opacity: 0.2 })
             .stroke({ color: color, width: 2 })

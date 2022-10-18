@@ -22,6 +22,7 @@ import { LAYOUTS as DEFAULT_LAYOUTS } from "./core/extras/layouts";
 import { Layout } from "./core/extras/types";
 import { Thread } from "./core/Current";
 import { SerializedPlate, SerializedPlatePosition } from "./core/Plate";
+import ContactLayer from "./layers/ContactLayer";
 
 require("./styles/main.css");
 
@@ -54,6 +55,7 @@ export default class Breadboard {
     private __grid: Grid;
     private _layers: {
         background?: BackgroundLayer;
+        contact?: ContactLayer;
         label?: LabelLayer;
         current?: CurrentLayer;
         plate?: PlateLayer;
@@ -62,7 +64,7 @@ export default class Breadboard {
         selector?: SelectorLayer;
         menu?: MenuLayer;
         popup?: PopupLayer;
-        domain?: VoltageLayer;
+        voltage?: VoltageLayer;
     };
 
     private _callbacks: {
@@ -620,10 +622,11 @@ export default class Breadboard {
     _composeLayers() {
         /// создание DOM-контейнеров
         let background = this._brush.nested(); // фон
+        let contact = this._brush.nested();
         let label_panes = this._brush.nested(); // подписи
+        let voltage = this._brush.nested(); // области доменов
         let current = this._brush.nested(); // токи
         let region = this._brush.nested(); // области выделения
-        let domain = this._brush.nested(); // области доменов
         let plate = this._brush.nested(); // плашки
         let controls = this._brush.nested(); // органы управления
         let selector = document.createElement("div"); // боковое меню (селектор плашек)
@@ -637,6 +640,13 @@ export default class Breadboard {
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(
             background,
+            this.__grid,
+            this._options.schematic,
+            this._options.detailed,
+            this._options.debug
+        );
+        this._layers.contact = new ContactLayer(
+            contact,
             this.__grid,
             this._options.schematic,
             this._options.detailed,
@@ -661,12 +671,17 @@ export default class Breadboard {
             false,
             this._options.verbose
         );
+        this._layers.voltage = new VoltageLayer(
+            voltage,
+            this.__grid,
+            this._options.schematic,
+            this._options.detailed
+        );
         this._layers.region = new RegionLayer(region, this.__grid);
         this._layers.controls = new ControlsLayer(controls, this.__grid);
         this._layers.selector = new SelectorLayer(selector, this.__grid);
         this._layers.menu = new MenuLayer(menu, this.__grid);
         this._layers.popup = new PopupLayer(popup, this.__grid);
-        this._layers.domain = new VoltageLayer(domain, this.__grid);
 
         this._layers.background.setBgVisible(this._options.bgVisible);
         this._layers.label.setLayoutConfig(this._layout);

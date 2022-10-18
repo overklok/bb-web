@@ -1,9 +1,17 @@
-import { ElectronicEvent } from "src/js/models/common/BoardModel";
-import { AuxPoint, AuxPointType } from "../Grid";
+import { idText } from "typescript";
 import { enumerate } from "./helpers";
 import { isDomainAnalog } from "./helpers_data";
 import { pointseq, rangeOrPointToRange } from "./helpers_point";
-import { CellRole, Domain, DomainTable, PinState, XYPoint } from "./types";
+import {
+    CellRole,
+    Domain,
+    DomainTable,
+    ElecLineTable,
+    Line,
+    LineTable,
+    PinState,
+    XYPoint
+} from "./types";
 
 export type EmbeddedPlate = {
     type: string;
@@ -15,89 +23,105 @@ export type EmbeddedPlate = {
     pin_state_initial?: PinState;
 };
 
-export type CellStruct = {
-    [line_id: string]: XYPoint[];
-};
-
 export type ElecLayout = {
     emb_plates: EmbeddedPlate[];
-    cell_struct: CellStruct;
+    cell_struct: ElecLineTable;
 };
 
-export function _scanDomains(domains: [string, Domain][]): [CellStruct, string, string] {
-    const cell_struct: CellStruct = {};
-
-    let id_plus, id_minus;
-
-    // scan non-analog domains
-    for (const [d_id, d] of domains) {
-        const field = rangeOrPointToRange(d.field);
-        // generate scanning of the range
-        const points = [...pointseq(field)];
-        // add scanning of the virtual range if exists
-        d.virtual && points.push(...pointseq(d.virtual));
-
-        // find line of plus and minus
-        if (d.props.role === CellRole.Plus) {
-            id_plus = d_id;
-            points.unshift({ x: -1, y: d.field.from.y });
-        }
-        if (d.props.role === CellRole.Minus) {
-            id_minus = d_id;
-            points.unshift({ x: -1, y: d.field.from.y });
-        }
-
-        if (d.props.role in [CellRole.Minus, CellRole.Plus]) {
-            points.unshift({ x: -1, y: field.from.y });
-        }
-
-        cell_struct[d_id] = points;
-    }
-
-    return [cell_struct, id_plus, id_minus];
+export function extractAnalogPoints(
+    lines: LineTable,
+    pin_state: PinState
+): XYPoint[] {
+    // prettier-ignore
+    return Object.values(lines).filter(
+        // take analog lines only
+        line => (
+            line.role === CellRole.Analog && 
+            line.pin_state_initial === pin_state
+        )
+    ).map(
+        // take only points from them
+        line => line.points
+    ).reduce(
+        // join all points to single array
+        (prev, next) => prev.concat(next)
+    );
 }
 
-export function _scanAnalogDomains(
-    domains: [string, Domain][],
-    embed_arduino = true,
-    id_plus: string,
-    id_minus: string
-): [CellStruct, EmbeddedPlate[]] {
-    const cell_struct: CellStruct = {};
-    const emb_plates: EmbeddedPlate[] = [];
+export function scanDomains(domains: DomainTable): LineTable {
+    const ds = Object.entries(domains);
+
+    let lines: LineTable = {};
+
+    // scan non-analog domains
+    for (const [d_id, d] of ds) {
+        if (d.props.role === CellRole.Analog) {
+            lines = { ...lines, ...scanDomainAnalog(d, d_id) };
+        } else {
+            lines = { ...lines, ...scanDomain(d, d_id) };
+        }
+    }
+
+    return lines;
+}
+
+function scanDomain(d: Domain, d_id: string): LineTable {
+    let line_id = d_id;
+
+    const field = rangeOrPointToRange(d.field);
+    // generate scanning of the range
+    const points = [...pointseq(field)];
+    // add scanning of the virtual range if exists
+    d.virtual && points.push(...pointseq(d.virtual));
+
+    // find line of plus and minus
+    if (d.props.role === CellRole.Plus) {
+        points.unshift({ x: -1, y: d.field.from.y });
+        line_id = `p${d_id}`;
+    }
+    if (d.props.role === CellRole.Minus) {
+        points.unshift({ x: -1, y: d.field.from.y });
+        line_id = `m${d_id}`;
+    }
+
+    if (d.props.role in [CellRole.Minus, CellRole.Plus]) {
+        points.unshift({ x: -1, y: field.from.y });
+    }
+
+    return { [line_id]: { points, role: d.props.role, field: d.field } };
+}
+
+function scanDomainAnalog(d: Domain, d_id: string): LineTable {
+    const lines: LineTable = {};
 
     let id_analog = 0;
 
-    for (const [d_id, d] of domains) {
-        const field = rangeOrPointToRange(d.field);
-        // generate scanning of the range
-        const points = [...pointseq(field)];
+    const field = rangeOrPointToRange(d.field);
+    // generate scanning of the range
+    const points = [...pointseq(field)];
 
-        for (const [p_id, point] of enumerate(points)) {
-            const p_id_liter = "abcedf"[p_id];
-
-            if (embed_arduino) {
-                cell_struct[`${d_id}${p_id_liter}`] = [point];
-
-                emb_plates.push(
-                    getArduinoPinPlate(point, d.minus(p_id, point), d.props.pin_state_initial, id_analog++)
-                );
-            } else {
-                if (d.props.pin_state_initial === PinState.Output) {
-                    cell_struct[id_minus].push(point);
-                }
-
-                if (d.props.pin_state_initial === PinState.Input) {
-                    cell_struct[id_plus].push(point);
-                }
-            }
-        }
+    for (const [p_id, point] of enumerate(points)) {
+        lines[`${d_id}.${p_id}`] = {
+            points: [point],
+            role: d.props.role,
+            pin_state_initial: d.props.pin_state_initial,
+            field: rangeOrPointToRange(point),
+            embedded_plate: getArduinoPinPlate(
+                point,
+                d.minus(p_id, point),
+                d.props.pin_state_initial,
+                id_analog++
+            )
+        };
     }
 
-    return [cell_struct, emb_plates];
+    return lines;
 }
 
-function getVoltageSourcePlate(coords_minus: XYPoint, coords_vcc: XYPoint): EmbeddedPlate {
+function getVoltageSourcePlate(
+    coords_minus: XYPoint,
+    coords_vcc: XYPoint
+): EmbeddedPlate {
     return {
         type: "Vss",
         id: -100,

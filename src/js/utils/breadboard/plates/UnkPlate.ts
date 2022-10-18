@@ -5,6 +5,7 @@ import Grid from "../core/Grid";
 import Plate, { PlateProps } from "../core/Plate";
 import LinearPlate from "../core/plate/LinearPlate";
 import BackgroundLayer from "../layers/BackgroundLayer";
+import ContactLayer from "../layers/ContactLayer";
 
 /**
  * Unknown plate
@@ -80,7 +81,7 @@ export default class UnkPlate extends LinearPlate {
             .rect()
             .width("100%")
             .height("100%")
-            .radius(BackgroundLayer.CellRadius)
+            .radius(ContactLayer.CellRadius)
             .style({ fill: "#ffbebe" });
 
         this._group

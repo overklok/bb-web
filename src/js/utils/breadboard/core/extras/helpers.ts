@@ -61,10 +61,8 @@ export function* extractLabeledCells(layout: Layout, role: CellRole = null) {
 
         pin_num = pin_num || 0;
 
-        const [d_from_y, d_to_y] =
-                d_from.y > d_to.y ? [d_to.y, d_from.y] : [d_from.y, d_to.y],
-            [d_from_x, d_to_x] =
-                d_from.x > d_to.x ? [d_to.x, d_from.x] : [d_from.x, d_to.x];
+        const [d_from_y, d_to_y] = d_from.y > d_to.y ? [d_to.y, d_from.y] : [d_from.y, d_to.y],
+            [d_from_x, d_to_x] = d_from.x > d_to.x ? [d_to.x, d_from.x] : [d_from.x, d_to.x];
 
         for (let row = d_from_y; row <= d_to_y; row++) {
             for (let col = d_from_x; col <= d_to_x; col++) {
@@ -78,8 +76,7 @@ export function* extractLabeledCells(layout: Layout, role: CellRole = null) {
                     label_pos: props.label_pos,
                     value_orientation: props.value_orientation,
                     pin_num: is_analog && pin_num,
-                    pin_state_initial:
-                        (is_analog && props.pin_state_initial) || 0
+                    pin_state_initial: (is_analog && props.pin_state_initial) || 0
                 };
 
                 pin_num += pin_dir;
@@ -130,7 +127,7 @@ export function getRandomInt(min: number, max: number) {
     return Math.floor(min + Math.random() * (max + 1 - min));
 }
 
-export function invertHexRGB(hex: string, bw: boolean) {
+export function invertHexRgb(hex: string, bw: boolean) {
     if (hex.indexOf("#") === 0) {
         hex = hex.slice(1);
     }
@@ -154,5 +151,38 @@ export function invertHexRGB(hex: string, bw: boolean) {
     g = (255 - g).toString(16);
     b = (255 - b).toString(16);
     // pad each with zeros and return
+    return "#" + r.padStart(2, "0") + g.padStart(2, "0") + b.padStart(2, "0");
+}
+
+/**
+ * Converts HSV to RGB color code
+ *
+ * @param h hue level
+ * @param s saturation level
+ * @param v value level
+ */
+export function hsvToRgb(h: number, s: number, v: number) {
+    let r, g, b, i, f, p, q, t;
+
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+
+    // prettier-ignore
+    switch (i % 6) {
+        case 0: [r, g, b] = [v, t, p]; break;
+        case 1: [r, g, b] = [q, v, p]; break;
+        case 2: [r, g, b] = [p, v, t]; break;
+        case 3: [r, g, b] = [p, q, v]; break;
+        case 4: [r, g, b] = [t, p, v]; break;
+        case 5: [r, g, b] = [v, p, q]; break;
+    }
+
+    r = Math.round(r * 255).toString(16);
+    g = Math.round(g * 255).toString(16);
+    b = Math.round(b * 255).toString(16);
+
     return "#" + r.padStart(2, "0") + g.padStart(2, "0") + b.padStart(2, "0");
 }

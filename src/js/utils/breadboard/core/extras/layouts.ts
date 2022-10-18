@@ -1,4 +1,4 @@
-import { DomainSchematicStyle } from "../../layers/BackgroundLayer";
+import { DomainSchematicStyle } from "../../layers/ContactLayer";
 import { AuxPointCategory } from "../Grid";
 import { CellRole, DomainSlice, Layout } from "./types";
 

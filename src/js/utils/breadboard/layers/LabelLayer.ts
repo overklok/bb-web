@@ -1,27 +1,29 @@
 import SVG from "svg.js";
 
 import Layer from "../core/Layer";
-import {extractLabeledCells} from "~/js/utils/breadboard/core/extras/helpers";
+import { extractLabeledCells } from "~/js/utils/breadboard/core/extras/helpers";
 import Grid from "../core/Grid";
-import { CellRole, Layout } from "../core/extras/types";
+import { Layout, CellRole } from "../core/extras/types";
 
-const SYMBOL_UP = "🠩"
-const SYMBOL_DOWN = "🠫"
+const SYMBOL_UP = "\u2191";
+const SYMBOL_DOWN = "\u2193";
 
 const LABEL_STYLE_DEFAULT = {
     font_size: 20,
-    text_bias: 10,
-}
+    text_bias: 10
+};
 
 /**
  * Renders textual info to the board
- * 
+ *
  * @category Breadboard
  * @subcategory Layers
  */
 export default class LabelLayer extends Layer {
     /** CSS class of the layer */
-    static get Class() {return "bb-layer-label"}
+    static get Class() {
+        return "bb-layer-label";
+    }
 
     /** layer's main SVG container */
     protected _container: SVG.Container;
@@ -36,7 +38,7 @@ export default class LabelLayer extends Layer {
     private _pinval_labels: SVG.Text[];
 
     /** text style of SVG labels */
-    private _label_style: { font_size: number; text_bias: number; };
+    private _label_style: { font_size: number; text_bias: number };
 
     /**
      * @inheritdoc
@@ -60,16 +62,16 @@ export default class LabelLayer extends Layer {
 
         this._label_style = {
             font_size: LABEL_STYLE_DEFAULT.font_size,
-            text_bias: LABEL_STYLE_DEFAULT.text_bias,
-        }
+            text_bias: LABEL_STYLE_DEFAULT.text_bias
+        };
 
         this._initGroups();
     }
 
     /**
      * Sets the board topology required to display pin numbers and directions
-     * 
-     * @param layout_config 
+     *
+     * @param layout_config
      */
     public setLayoutConfig(layout_config: Layout) {
         this._layout_config = layout_config;
@@ -82,7 +84,7 @@ export default class LabelLayer extends Layer {
         this._drawLabels();
     }
 
-    /** 
+    /**
      * @inheritdoc
      */
     public recompose(schematic: boolean, detailed: boolean = false, verbose: boolean = false) {
@@ -94,10 +96,10 @@ export default class LabelLayer extends Layer {
 
     /**
      * Sets the visual style of layer's labels
-     * 
-     * @param style 
+     *
+     * @param style
      */
-    public setLabelStyle(style: { font_size: number; text_bias: number; }) {
+    public setLabelStyle(style: { font_size: number; text_bias: number }) {
         if (style && style.font_size != null) {
             this._label_style.font_size = style.font_size;
         } else {
@@ -113,10 +115,10 @@ export default class LabelLayer extends Layer {
 
     /**
      * Sets the values and updates modes of the pins
-     * 
+     *
      * Method updates pin states for all items presented in array
-     * 
-     * @param values_arr array, where keys are pin numbers and values are 
+     *
+     * @param values_arr array, where keys are pin numbers and values are
      *                   string-number pairs for pin's mode and value.
      */
     public setPinsValues(values_arr: [string, number][]) {
@@ -130,14 +132,14 @@ export default class LabelLayer extends Layer {
             const [mode, value] = values_arr.hasOwnProperty(i) ? values_arr[i] : [null, 0];
 
             let arrow = "",
-                color = 'black';
+                color = "black";
 
-            if (mode === 'input') {
+            if (mode === "input") {
                 arrow = SYMBOL_UP;
                 color = "green";
             }
 
-            if (mode === 'output') {
+            if (mode === "output") {
                 arrow = SYMBOL_DOWN;
                 color = "red";
             }
@@ -148,9 +150,9 @@ export default class LabelLayer extends Layer {
             }
 
             if (mode !== null) {
-                pinval_label.text(`${value}${arrow}`).fill(color).font({anchor: 'middle'});
+                pinval_label.text(`${value}${arrow}`).fill(color).font({ anchor: "middle" });
             } else {
-                pinval_label.text(``).fill('black').font({anchor: 'middle'});
+                pinval_label.text(``).fill("black").font({ anchor: "middle" });
             }
 
             i++;
@@ -158,8 +160,8 @@ export default class LabelLayer extends Layer {
     }
 
     /**
-     * Initializes internal SVG groups 
-     * 
+     * Initializes internal SVG groups
+     *
      * Removes previously created groups and re-attaches event handlers
      */
     private _initGroups() {
@@ -168,11 +170,11 @@ export default class LabelLayer extends Layer {
         this._labelgroup = this._container.group();
     }
 
-    /** 
+    /**
      * Removes SVG groups created previously with {@link _initGroups}
      */
     private _clearGroups() {
-        if (this._labelgroup)  this._labelgroup.remove();
+        if (this._labelgroup) this._labelgroup.remove();
     }
 
     /**
@@ -181,8 +183,8 @@ export default class LabelLayer extends Layer {
     private _drawLabels() {
         if (!this._layout_config) return;
 
-        const   font_size = this._label_style.font_size,
-                text_bias = this._label_style.text_bias;
+        const font_size = this._label_style.font_size,
+            text_bias = this._label_style.text_bias;
 
         const i = extractLabeledCells(this._layout_config);
 
@@ -193,15 +195,30 @@ export default class LabelLayer extends Layer {
                 pos_y = cell.center.y - cell.size.y - text_bias;
 
             switch (labeled.role) {
-                case CellRole.Plus:     {text = "+";                    break;}
-                case CellRole.Minus:    {text = "-";                    break;}
-                case CellRole.Analog:   {text = 'A' + labeled.pin_num;  break}
+                case CellRole.Plus: {
+                    text = "+";
+                    break;
+                }
+                case CellRole.Minus: {
+                    text = "-";
+                    break;
+                }
+                case CellRole.Analog: {
+                    text = "A" + labeled.pin_num;
+                    break;
+                }
             }
 
             switch (labeled.label_pos) {
-                case "top":     pos_y = cell.center.y - cell.size.y - text_bias/2; break;
-                case "bottom":  pos_y = cell.center.y + cell.size.y + text_bias/2; break;
-                default:        pos_y = cell.center.y - cell.size.y/2 - text_bias; break;
+                case "top":
+                    pos_y = cell.center.y - cell.size.y - text_bias / 2;
+                    break;
+                case "bottom":
+                    pos_y = cell.center.y + cell.size.y + text_bias / 2;
+                    break;
+                default:
+                    pos_y = cell.center.y - cell.size.y / 2 - text_bias;
+                    break;
             }
 
             this._drawLabelText(cell.center.x, pos_y, text, font_size);
@@ -211,41 +228,48 @@ export default class LabelLayer extends Layer {
                     cy = pos_y;
 
                 switch (labeled.value_orientation) {
-                    case 'north':   {cy -= cell.size.y; break;}
-                    case 'south':   {cy += cell.size.y * .10; break;}
-                    case 'west':    {cy -= cell.size.y * .45; cx -= cell.size.x * 1.2; break;}
-                    case "east":    {cy -= cell.size.y * .45; cx += cell.size.x * 1.2; break;}
+                    case "north": {
+                        cy -= cell.size.y;
+                        break;
+                    }
+                    case "south": {
+                        cy += cell.size.y * 0.1;
+                        break;
+                    }
+                    case "west": {
+                        cy -= cell.size.y * 0.45;
+                        cx -= cell.size.x * 1.2;
+                        break;
+                    }
+                    case "east": {
+                        cy -= cell.size.y * 0.45;
+                        cx += cell.size.x * 1.2;
+                        break;
+                    }
                 }
 
-                this._pinval_labels[labeled.pin_num] =
-                    this._drawLabelText(cx, cy, '', font_size + 4);
+                this._pinval_labels[labeled.pin_num] = this._drawLabelText(cx, cy, "", font_size + 4);
             }
         }
     }
 
     /**
      * Draws single label to represent pin state
-     * 
+     *
      * @see _drawLabels
-     * 
+     *
      * @param pos_x     absolute horizontal position of the label in SVG document
      * @param pos_y     absolute vertical position of the label in SVG document
      * @param text      text content of the label
      * @param size      font size for the text (px)
      * @param weight    font weight for the text (px)
-     * 
+     *
      * @returns SVG text element rendered
      */
-    private _drawLabelText(
-        pos_x: number,
-        pos_y: number,
-        text: string,
-        size: number,
-        weight: string = "bold"
-    ) {
+    private _drawLabelText(pos_x: number, pos_y: number, text: string, size: number, weight: string = "bold") {
         return this._labelgroup
             .text(text)
-            .font({size, weight, family: "'IBM Plex Mono', 'Lucida Console', Monaco, monospace"})
+            .font({ size, weight, family: "'IBM Plex Mono', 'Lucida Console', Monaco, monospace" })
             .center(pos_x, pos_y);
 
         // .rect(this._params.width, this._params.thickness)
@@ -256,7 +280,7 @@ export default class LabelLayer extends Layer {
 
     // /**
     //  * Draws single direction pointer to prepresent pin mode (or direction, input or output)
-    //  * 
+    //  *
     //  * @param pane_name name of the label pane (top, bottom)
     //  * @param pos_x     horizontal position of the label relative to its pane
     //  * @param pos_y     vertical position of the label relative to its pane

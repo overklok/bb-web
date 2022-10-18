@@ -1,6 +1,6 @@
-import { DomainSchematicStyle } from "../layers/BackgroundLayer";
 import { AuxPointCategory } from "../core/Grid";
 import { CellRole, DomainSlice, Layout, PinState } from "../core/extras/types";
+import { DomainSchematicStyle } from "../layers/ContactLayer";
 
 const ARD_GND_Y = -144;
 
@@ -116,20 +116,45 @@ export const LAYOUTS: { [key: string]: Layout } = {
             },
 
             // Groups of vertical lines of 5 cells
-            { slice: DomainSlice.Vertical, field: { from: { x: 0, y: 1 }, to: { x: -2, y: 5 } } },
-            { slice: DomainSlice.Vertical, field: { from: { x: 0, y: 6 }, to: { x: -2, y: 9 } } },
-            { slice: DomainSlice.Vertical, field: { from: { x: 0, y: 10 }, to: { x: -2, y: 14 } } },
+            {
+                slice: DomainSlice.Vertical,
+                field: { from: { x: 0, y: 1 }, to: { x: -2, y: 5 } }
+            },
+            {
+                slice: DomainSlice.Vertical,
+                field: { from: { x: 0, y: 6 }, to: { x: -2, y: 9 } }
+            },
+            {
+                slice: DomainSlice.Vertical,
+                field: { from: { x: 0, y: 10 }, to: { x: -2, y: 14 } }
+            },
 
             // Top and bottom group lines of 3 cells
-            { slice: DomainSlice.Vertical, field: { from: { x: -1, y: 1 }, to: { x: -1, y: 3 } } },
-            { slice: DomainSlice.Vertical, field: { from: { x: -1, y: 12 }, to: { x: -1, y: 14 } } },
+            {
+                slice: DomainSlice.Vertical,
+                field: { from: { x: -1, y: 1 }, to: { x: -1, y: 3 } }
+            },
+            {
+                slice: DomainSlice.Vertical,
+                field: { from: { x: -1, y: 12 }, to: { x: -1, y: 14 } }
+            },
 
             // Middle group lines of 2 cells
-            { slice: DomainSlice.Vertical, field: { from: { x: -1, y: 8 }, to: { x: -1, y: 9 } } },
-            { slice: DomainSlice.Vertical, field: { from: { x: -1, y: 6 }, to: { x: -1, y: 7 } } }
+            {
+                slice: DomainSlice.Vertical,
+                field: { from: { x: -1, y: 8 }, to: { x: -1, y: 9 } }
+            },
+            {
+                slice: DomainSlice.Vertical,
+                field: { from: { x: -1, y: 6 }, to: { x: -1, y: 7 } }
+            }
         ],
 
-        aux_point_cats: [AuxPointCategory.SourceV8, AuxPointCategory.Usb1, AuxPointCategory.Usb3],
+        aux_point_cats: [
+            AuxPointCategory.SourceV8,
+            AuxPointCategory.Usb1,
+            AuxPointCategory.Usb3
+        ],
 
         controls: { horz: false },
 

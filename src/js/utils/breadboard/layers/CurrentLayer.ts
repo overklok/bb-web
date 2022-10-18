@@ -4,10 +4,10 @@ import Grid, { AuxPoint, AuxPointCategory, AuxPointType } from "../core/Grid";
 import Cell from "../core/Cell";
 import Layer from "../core/Layer";
 import Current, { CurrentPath, Thread } from "../core/Current";
-import BackgroundLayer from "./BackgroundLayer";
 import * as Threads from "../core/extras/threads";
 import { XYPoint } from "../core/extras/types";
 import VoltagePopup from "../popups/VoltagePopup";
+import ContactLayer from "./ContactLayer";
 
 /**
  * Displays and manages {@link Current} objects.
@@ -119,11 +119,7 @@ export default class CurrentLayer extends Layer {
      * @param cb callback to attach
      */
     public onShortCircuit(cb?: () => void) {
-        if (!cb) {
-            this._callbacks.shortcircuit = () => {};
-        }
-
-        this._callbacks.shortcircuit = cb;
+        this._callbacks.shortcircuit = cb || (() => {});
     }
 
     /**
@@ -391,7 +387,7 @@ export default class CurrentLayer extends Layer {
                 thread,
                 this.__schematic
             ),
-            popup = new VoltagePopup(current.id);
+            popup = new VoltagePopup(String(current.id));
 
         this._currents[current.id] = current;
         this._popups[current.id] = popup;
@@ -500,11 +496,11 @@ export default class CurrentLayer extends Layer {
 
         let bias_x =
             needs_bias && !Cell.IsLineHorizontal(c_from, c_to)
-                ? BackgroundLayer.DomainSchematicBias
+                ? ContactLayer.DomainSchematicBias
                 : 0;
         let bias_y =
             needs_bias && Cell.IsLineHorizontal(c_from, c_to)
-                ? BackgroundLayer.DomainSchematicBias
+                ? ContactLayer.DomainSchematicBias
                 : 0;
 
         if (
@@ -567,7 +563,7 @@ export default class CurrentLayer extends Layer {
         to_source: boolean = false
     ): CurrentPath {
         let needs_bias = this.__schematic && this.__detailed,
-            bias_y = Number(needs_bias) * BackgroundLayer.DomainSchematicBias;
+            bias_y = Number(needs_bias) * ContactLayer.DomainSchematicBias;
 
         if (to_source) {
             if (aux_point.name === AuxPointType.Vcc) {

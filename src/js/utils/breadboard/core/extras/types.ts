@@ -38,6 +38,28 @@ export type DomainTable = {
     [id: number]: Domain;
 };
 
+export type VoltageTable = {
+    [line_id: string]: number;
+};
+
+export type ElecLineTable = {
+    [line_id: string]: XYPoint[];
+};
+
+export type LineTable = {
+    [line_id: string]: Line;
+};
+
+export type Line = {
+    points: XYPoint[];
+
+    role: CellRole;
+    pin_state_initial?: PinState;
+    embedded_plate?: EmbeddedPlate;
+
+    field: XYRange;
+};
+
 /**
  * Group of interconnected cells
  *
