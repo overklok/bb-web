@@ -385,7 +385,7 @@ export type Thread = {
     weight: number;
 };
 
-export type VoltageData = { [line_id: number]: number };
+export type VoltageData = { [line_id: string]: number };
 
 // Event data types
 interface ElectronicData {

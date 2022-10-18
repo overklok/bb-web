@@ -19,7 +19,7 @@ import BoardContextMenu from "./menus/BoardContextMenu";
 
 import { initGradients } from "./styles/gradients";
 import { LAYOUTS as DEFAULT_LAYOUTS } from "./core/extras/layouts";
-import { Layout } from "./core/extras/types";
+import { Layout, VoltageTable } from "./core/extras/types";
 import { Thread } from "./core/Current";
 import { SerializedPlate, SerializedPlatePosition } from "./core/Plate";
 
@@ -397,14 +397,15 @@ export default class Breadboard {
      *
      * @param {Array<Object>} threads контуры токов
      */
-    setCurrents(threads: Thread[], voltages: { [line_id: number]: number }) {
+    setCurrents(threads: Thread[], voltages: VoltageTable) {
         // this._layers.current.setCurrents(threads, this._spare);
         this._layers.current.setCurrents(
             threads,
             false,
             this._options.showSourceCurrents
         );
-        this.__grid.setLineVoltages(voltages);
+
+        voltages && this.__grid.setLineVoltages(voltages);
     }
 
     removeAllCurrents() {

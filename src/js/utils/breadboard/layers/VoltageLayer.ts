@@ -75,12 +75,13 @@ export default class VoltageLayer extends Layer {
 
     private _attachEventHandlers() {
         for (const [line_id, zone] of Object.entries(this._zones)) {
-            zone.on("mouseenter", () => {
-                this._requestPopupShow(this._popups[line_id]);
-            });
+            const popup = this._popups[line_id];
 
+            zone.on("mouseenter", () => {
+                this._requestPopupShow(popup);
+            });
             zone.on("mouseleave", () => {
-                this._requestPopupHide(this._popups[line_id]);
+                this._requestPopupHide(popup);
             });
         }
     }
