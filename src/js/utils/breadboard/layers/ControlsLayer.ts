@@ -6,7 +6,6 @@ import BoardContextMenu from "~/js/utils/breadboard/menus/BoardContextMenu";
 import Grid from "../core/Grid";
 import ContextMenu from "../core/ContextMenu";
 import VoltageLayer from "./VoltageLayer";
-import ContactLayer from "./ContactLayer";
 
 /**
  * Displays menu button and handles events to
@@ -172,7 +171,6 @@ export default class ControlsLayer extends Layer {
             (el = el.parentElement) &&
             !(
                 el.classList.contains(BackgroundLayer.Class) ||
-                el.classList.contains(ContactLayer.Class) ||
                 el.classList.contains(VoltageLayer.Class) ||
                 el.classList.contains(LabelLayer.Class)
             )

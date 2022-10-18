@@ -16,7 +16,7 @@ import VoltagePopup, { VoltagePopupContent } from "../popups/VoltagePopup";
 export default class VoltageLayer extends Layer {
     /** CSS class of the layer */
     static get Class() {
-        return "bb-layer-domain";
+        return "bb-layer-voltage";
     }
 
     /** layer's main SVG container */
@@ -25,6 +25,7 @@ export default class VoltageLayer extends Layer {
     /** SVG group for hover zones */
     private _hovergroup: any;
 
+    /** Hoverable SVG elements */
     private _zones: { [zone_id: string]: SVG.Element };
 
     /**

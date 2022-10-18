@@ -7,7 +7,7 @@ import Current, { CurrentPath, Thread } from "../core/Current";
 import * as Threads from "../core/extras/threads";
 import { XYPoint } from "../core/extras/types";
 import VoltagePopup from "../popups/VoltagePopup";
-import ContactLayer from "./ContactLayer";
+import BackgroundLayer from "./BackgroundLayer";
 
 /**
  * Displays and manages {@link Current} objects.
@@ -496,11 +496,11 @@ export default class CurrentLayer extends Layer {
 
         let bias_x =
             needs_bias && !Cell.IsLineHorizontal(c_from, c_to)
-                ? ContactLayer.DomainSchematicBias
+                ? BackgroundLayer.DomainSchematicBias
                 : 0;
         let bias_y =
             needs_bias && Cell.IsLineHorizontal(c_from, c_to)
-                ? ContactLayer.DomainSchematicBias
+                ? BackgroundLayer.DomainSchematicBias
                 : 0;
 
         if (
@@ -563,7 +563,7 @@ export default class CurrentLayer extends Layer {
         to_source: boolean = false
     ): CurrentPath {
         let needs_bias = this.__schematic && this.__detailed,
-            bias_y = Number(needs_bias) * ContactLayer.DomainSchematicBias;
+            bias_y = Number(needs_bias) * BackgroundLayer.DomainSchematicBias;
 
         if (to_source) {
             if (aux_point.name === AuxPointType.Vcc) {

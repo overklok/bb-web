@@ -1,6 +1,6 @@
 import { AuxPointCategory } from "../core/Grid";
 import { CellRole, DomainSlice, Layout, PinState } from "../core/extras/types";
-import { DomainSchematicStyle } from "../layers/ContactLayer";
+import { DomainSchematicStyle } from "../layers/BackgroundLayer";
 
 const ARD_GND_Y = -144;
 

@@ -22,7 +22,6 @@ import { LAYOUTS as DEFAULT_LAYOUTS } from "./core/extras/layouts";
 import { Layout } from "./core/extras/types";
 import { Thread } from "./core/Current";
 import { SerializedPlate, SerializedPlatePosition } from "./core/Plate";
-import ContactLayer from "./layers/ContactLayer";
 
 require("./styles/main.css");
 
@@ -55,7 +54,6 @@ export default class Breadboard {
     private __grid: Grid;
     private _layers: {
         background?: BackgroundLayer;
-        contact?: ContactLayer;
         label?: LabelLayer;
         current?: CurrentLayer;
         plate?: PlateLayer;
@@ -622,7 +620,6 @@ export default class Breadboard {
     _composeLayers() {
         /// создание DOM-контейнеров
         let background = this._brush.nested(); // фон
-        let contact = this._brush.nested();
         let label_panes = this._brush.nested(); // подписи
         let voltage = this._brush.nested(); // области доменов
         let current = this._brush.nested(); // токи
@@ -640,13 +637,6 @@ export default class Breadboard {
         /// инициализация слоёв
         this._layers.background = new BackgroundLayer(
             background,
-            this.__grid,
-            this._options.schematic,
-            this._options.detailed,
-            this._options.debug
-        );
-        this._layers.contact = new ContactLayer(
-            contact,
             this.__grid,
             this._options.schematic,
             this._options.detailed,

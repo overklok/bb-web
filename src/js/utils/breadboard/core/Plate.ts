@@ -10,7 +10,6 @@ import { coverObjects, mod } from "./extras/helpers";
 import BackgroundLayer from "../layers/BackgroundLayer";
 import { Direction, DirsClockwise, XYPoint } from "./extras/types";
 import ContextMenu from "./ContextMenu";
-import ContactLayer from "../layers/ContactLayer";
 
 /**
  * Orientation codes
@@ -362,7 +361,9 @@ export default abstract class Plate {
             this._group.node.addEventListener(
                 "wheel",
                 (evt) => this._callbacks.mousewheel(evt),
-                { passive: true }
+                {
+                    passive: true
+                }
             );
         } else if ("onmousewheel" in document) {
             // устаревший вариант события
@@ -557,7 +558,7 @@ export default abstract class Plate {
 
         this._shadow.style({ "pointer-events": "none" });
 
-        let surf_path = this._generateSurfacePath(ContactLayer.CellRadius);
+        let surf_path = this._generateSurfacePath(BackgroundLayer.CellRadius);
 
         // TODO: Move surface generation to ComplexPlate and LinearPlate
 
@@ -569,12 +570,12 @@ export default abstract class Plate {
                 .rect()
                 .width("100%")
                 .height("100%")
-                .radius(ContactLayer.CellRadius);
+                .radius(BackgroundLayer.CellRadius);
             this._error_highlighter = this._group
                 .rect()
                 .width("100%")
                 .height("100%")
-                .radius(ContactLayer.CellRadius);
+                .radius(BackgroundLayer.CellRadius);
         }
 
         if (this._params.schematic) {
